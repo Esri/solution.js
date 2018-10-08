@@ -24,6 +24,12 @@
             _this.type = "Group";
             return _this;
         }
+        /**
+         * Performs item-specific initialization.
+         *
+         * @param requestOptions Options for initialization request for group contents
+         * @returns A promise that will resolve with the item
+         */
         Group.prototype.init = function (requestOptions) {
             var _this = this;
             return new Promise(function (resolve, reject) {
@@ -41,6 +47,13 @@
                 });
             });
         };
+        /**
+         * Gets the ids of a group's contents.
+         *
+         * @param id Group id
+         * @param pagingRequest Options for requesting group contents
+         * @returns A promise that will resolve with a list of the ids of the group's contents
+         */
         Group.prototype.getGroupContentsTranche = function (id, pagingRequest) {
             var _this = this;
             return new Promise(function (resolve, reject) {

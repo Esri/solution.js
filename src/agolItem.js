@@ -12,6 +12,11 @@
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
     var AgolItem = /** @class */ (function () {
+        /**
+         * Performs common item initialization.
+         *
+         * @param itemSection The item's JSON
+         */
         function AgolItem(itemSection) {
             if (itemSection.type) {
                 this.type = itemSection.type;
@@ -20,12 +25,21 @@
             this.itemSection = itemSection;
             this.removeUncloneableItemProperties();
         }
+        /**
+         * Performs item-specific initialization.
+         *
+         * @param requestOptions Options for initialization request(s)
+         * @returns A promise that will resolve with the item
+         */
         AgolItem.prototype.init = function (requestOptions) {
             var _this = this;
             return new Promise(function (resolve) {
                 resolve(_this);
             });
         };
+        /**
+         * Removes item properties irrelevant to cloning.
+         */
         AgolItem.prototype.removeUncloneableItemProperties = function () {
             var itemSection = this.itemSection;
             delete itemSection.avgRating;

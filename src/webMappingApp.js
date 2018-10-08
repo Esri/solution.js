@@ -21,6 +21,12 @@
         function WebMappingApp() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        /**
+         * Performs item-specific initialization.
+         *
+         * @param requestOptions Options for initialization request for item's data section
+         * @returns A promise that will resolve with the item
+         */
         WebMappingApp.prototype.init = function (requestOptions) {
             var _this = this;
             return new Promise(function (resolve) {

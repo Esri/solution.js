@@ -12,7 +12,21 @@ export declare class AgolItem {
      * Item JSON
      */
     itemSection: any;
+    /**
+     * Performs common item initialization.
+     *
+     * @param itemSection The item's JSON
+     */
     constructor(itemSection: any);
+    /**
+     * Performs item-specific initialization.
+     *
+     * @param requestOptions Options for initialization request(s)
+     * @returns A promise that will resolve with the item
+     */
     init(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    /**
+     * Removes item properties irrelevant to cloning.
+     */
     private removeUncloneableItemProperties;
 }

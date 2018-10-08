@@ -17,6 +17,11 @@ export class AgolItem {
    */
   itemSection: any;
 
+  /**
+   * Performs common item initialization.
+   * 
+   * @param itemSection The item's JSON
+   */
   constructor (itemSection:any) {
     if (itemSection.type) {
       this.type = itemSection.type;
@@ -26,12 +31,21 @@ export class AgolItem {
     this.removeUncloneableItemProperties();
   }
 
+  /**
+   * Performs item-specific initialization.
+   * 
+   * @param requestOptions Options for initialization request(s)
+   * @returns A promise that will resolve with the item
+   */
   init (requestOptions?: IRequestOptions): Promise<AgolItem> {
     return new Promise(resolve => {
       resolve(this);
     });
   }
 
+  /**
+   * Removes item properties irrelevant to cloning.
+   */
   private removeUncloneableItemProperties (): void {
     let itemSection = this.itemSection;
 

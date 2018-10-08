@@ -11,6 +11,12 @@ export class Item extends AgolItem {
    */
   dataSection?: any;
 
+  /**
+   * Performs item-specific initialization.
+   * 
+   * @param requestOptions Options for initialization request for item's data section
+   * @returns A promise that will resolve with the item
+   */
   init (requestOptions?: IRequestOptions): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section

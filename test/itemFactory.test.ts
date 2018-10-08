@@ -19,7 +19,7 @@ import { TOMORROW } from "./lib/utils";
 
 describe("converting an item into JSON", () => {
 
-  // setup a UserSession to use in all these tests
+  // Set up a UserSession to use in all these tests
   const MOCK_USER_SESSION = new UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",

@@ -21,7 +21,7 @@
     var arcgis_rest_auth_1 = require("@esri/arcgis-rest-auth");
     var utils_1 = require("./lib/utils");
     describe("converting an item into JSON", function () {
-        // setup a UserSession to use in all these tests
+        // Set up a UserSession to use in all these tests
         var MOCK_USER_SESSION = new arcgis_rest_auth_1.UserSession({
             clientId: "clientId",
             redirectUri: "https://example-app.com/redirect-uri",

@@ -10,6 +10,12 @@ import { Item } from "./item";
  */
 export class Webmap extends Item {
 
+  /**
+   * Performs item-specific initialization.
+   * 
+   * @param requestOptions Options for initialization request for item's data section
+   * @returns A promise that will resolve with the item
+   */
   init (requestOptions?: IRequestOptions): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
@@ -32,6 +38,11 @@ export class Webmap extends Item {
     });
   }
 
+  /**
+   * Updates the item's list of dependencies.
+   * 
+   * @param layerList List of operational layers or tables to examine
+   */
   private getDependencyLayerIds (layerList:any, requestOptions?: IRequestOptions): void {
     layerList.forEach((layer:any) => {
       let urlStr = layer.url as string;

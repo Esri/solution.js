@@ -22,6 +22,12 @@
         function Webmap() {
             return _super !== null && _super.apply(this, arguments) || this;
         }
+        /**
+         * Performs item-specific initialization.
+         *
+         * @param requestOptions Options for initialization request for item's data section
+         * @returns A promise that will resolve with the item
+         */
         Webmap.prototype.init = function (requestOptions) {
             var _this = this;
             return new Promise(function (resolve) {
@@ -41,6 +47,11 @@
                 });
             });
         };
+        /**
+         * Updates the item's list of dependencies.
+         *
+         * @param layerList List of operational layers or tables to examine
+         */
         Webmap.prototype.getDependencyLayerIds = function (layerList, requestOptions) {
             var _this = this;
             layerList.forEach(function (layer) {

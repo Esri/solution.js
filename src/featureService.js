@@ -35,6 +35,12 @@
             _this.tables = [];
             return _this;
         }
+        /**
+         * Performs item-specific initialization.
+         *
+         * @param requestOptions Options for initialization request for item's data section
+         * @returns A promise that will resolve with the item
+         */
         FeatureService.prototype.init = function (requestOptions) {
             var _this = this;
             return new Promise(function (resolve) {
