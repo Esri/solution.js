@@ -35,15 +35,22 @@
                 _super.prototype.init.call(_this, requestOptions)
                     .then(function () {
                     // Extract the dependencies
+                    var dependencyIdsDfd = [];
                     if (_this.dataSection) {
                         if (_this.dataSection.operationalLayers) {
-                            _this.getDependencyLayerIds(_this.dataSection.operationalLayers);
+                            dependencyIdsDfd.push(_this.getDependencyLayerIds(_this.dataSection.operationalLayers, requestOptions));
                         }
                         if (_this.dataSection.tables) {
-                            _this.getDependencyLayerIds(_this.dataSection.tables);
+                            dependencyIdsDfd.push(_this.getDependencyLayerIds(_this.dataSection.tables, requestOptions));
                         }
                     }
-                    resolve(_this);
+                    Promise.all(dependencyIdsDfd)
+                        .then(function (results) {
+                        results.forEach(function (subarray) {
+                            _this.dependencies = _this.dependencies.concat(subarray);
+                        });
+                        resolve(_this);
+                    });
                 });
             });
         };
@@ -51,26 +58,45 @@
          * Updates the item's list of dependencies.
          *
          * @param layerList List of operational layers or tables to examine
+         * @param requestOptions Options for the request
+         * @returns A promise that will resolve with the ids of the layers in the layer list
          */
         Webmap.prototype.getDependencyLayerIds = function (layerList, requestOptions) {
             var _this = this;
-            layerList.forEach(function (layer) {
-                var urlStr = layer.url;
-                // Get the AGOL item id
-                _this.getLayerItemId(layer, requestOptions)
-                    .then(function (itemId) {
-                    // Get the feature layer index number
-                    var id = urlStr.substr(urlStr.lastIndexOf("/") + 1);
-                    // Append the index number to the end of the AGOL item id to uniquely identify the feature layer
-                    // and save as a dependency
-                    itemId += "_" + id;
-                    _this.dependencies.push(itemId);
-                    // Remove the URL parameter from the layer definition and update/add its item id
-                    delete layer.url;
-                    layer.itemId = itemId;
+            return new Promise(function (resolve) {
+                // Request the AGOL item id(s)
+                var dependencyIdsDfd = [];
+                layerList.forEach(function (layer) {
+                    var urlStr = layer.url;
+                    var layerDfd = new Promise(function (resolve) {
+                        _this.getLayerItemId(layer, requestOptions)
+                            .then(function (itemId) {
+                            // Get the feature layer index number
+                            var id = urlStr.substr(urlStr.lastIndexOf("/") + 1);
+                            // Append the index number to the end of the AGOL item id to uniquely identify the feature layer
+                            // and save as a dependency
+                            itemId += "_" + id;
+                            // Remove the URL parameter from the layer definition and update/add its item id
+                            delete layer.url;
+                            layer.itemId = itemId;
+                            // Return the updated itemId
+                            resolve(itemId);
+                        });
+                    });
+                    dependencyIdsDfd.push(layerDfd);
                 });
+                // Assemble the results
+                Promise.all(dependencyIdsDfd)
+                    .then(resolve);
             });
         };
+        /**
+         * Gets the AGOL id of a layer either from the layer or via a query to its service.
+         *
+         * @param layer Layer whose id is sought
+         * @param requestOptions Options for the request
+         * @returns A promise that will resolve with the item id string
+         */
         Webmap.prototype.getLayerItemId = function (layer, requestOptions) {
             return new Promise(function (resolve) {
                 var urlStr = layer.url;
