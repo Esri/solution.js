@@ -101,13 +101,13 @@
          * Instantiates an item subclass and its dependencies using an AGOL id to load the item and get its type.
          *
          * ```typescript
-         * import { ItemFactory, IItemList } from "../src/itemFactory";
+         * import { ItemFactory, IItemHash } from "../src/itemFactory";
          * import { AgolItem } from "../src/agolItem";
          * import { Item } from "../src/item";
          *
          * ItemFactory.itemToJSON(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
          * .then(
-         *   (response:IItemList) => {
+         *   (response:IItemHash) => {
          *     let keys = Object.keys(response);
          *     console.log(keys.length);  // => "6"
          *     console.log((response[keys[0]] as AgolItem).type);  // => "Web Mapping Application"
@@ -121,7 +121,9 @@
          * );
          * ```
          *
-         * @param id AGOL id string or list of AGOL id strings
+         * @param rootIds AGOL id string or list of AGOL id strings
+         * @param collection A hash of items already converted useful for avoiding duplicate conversions and
+         * hierarchy tracing
          * @param requestOptions Options for the request
          * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
          * if either id is inaccessible, a single error response will be produced for the set

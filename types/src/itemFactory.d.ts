@@ -2,7 +2,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItemUpdateResponse } from "@esri/arcgis-rest-items";
 import { IRequestOptions } from "@esri/arcgis-rest-request";
 import { AgolItem } from "./agolItem";
-export interface IItemList {
+export interface IItemHash {
     [id: string]: AgolItem | Promise<AgolItem>;
 }
 export declare class ItemFactory {
@@ -37,13 +37,13 @@ export declare class ItemFactory {
      * Instantiates an item subclass and its dependencies using an AGOL id to load the item and get its type.
      *
      * ```typescript
-     * import { ItemFactory, IItemList } from "../src/itemFactory";
+     * import { ItemFactory, IItemHash } from "../src/itemFactory";
      * import { AgolItem } from "../src/agolItem";
      * import { Item } from "../src/item";
      *
      * ItemFactory.itemToJSON(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
      * .then(
-     *   (response:IItemList) => {
+     *   (response:IItemHash) => {
      *     let keys = Object.keys(response);
      *     console.log(keys.length);  // => "6"
      *     console.log((response[keys[0]] as AgolItem).type);  // => "Web Mapping Application"
@@ -57,13 +57,15 @@ export declare class ItemFactory {
      * );
      * ```
      *
-     * @param id AGOL id string or list of AGOL id strings
+     * @param rootIds AGOL id string or list of AGOL id strings
+     * @param collection A hash of items already converted useful for avoiding duplicate conversions and
+     * hierarchy tracing
      * @param requestOptions Options for the request
      * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
      * if either id is inaccessible, a single error response will be produced for the set
      * of ids
      */
-    static itemHierarchyToJSON(rootIds: string | string[], collection?: IItemList, requestOptions?: IRequestOptions): Promise<IItemList>;
+    static itemHierarchyToJSON(rootIds: string | string[], collection?: IItemHash, requestOptions?: IRequestOptions): Promise<IItemHash>;
     /**
      * Creates a Solution item containing JSON descriptions of items forming the solution.
      *
@@ -73,7 +75,7 @@ export declare class ItemFactory {
      * @param requestOptions Options for the request
      * @returns A promise that will resolve with an object reporting success and the Solution id
      */
-    static publishItemJSON(title: string, collection: IItemList, access: string, requestOptions?: IUserRequestOptions): Promise<IItemUpdateResponse>;
+    static publishItemJSON(title: string, collection: IItemHash, access: string, requestOptions?: IUserRequestOptions): Promise<IItemUpdateResponse>;
     /**
      * Extracts the 32-character AGOL id from the front of a string.
      *

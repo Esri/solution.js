@@ -3,7 +3,7 @@
 
 import * as fetchMock from "fetch-mock";
 
-import { ItemFactory, IItemList } from "../src/itemFactory";
+import { ItemFactory, IItemHash } from "../src/itemFactory";
 import { Item } from "../src/item";
 import { AgolItem } from "../src/agolItem";
 
@@ -98,7 +98,7 @@ describe("converting an item into JSON", () => {
     it("should return a list of WMA details for a valid AGOL id", done => {
       ItemFactory.itemHierarchyToJSON("6fc5992522d34f26b2210d17835eea21")
       .then(
-        (response:IItemList) => {
+        (response:IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");
@@ -113,7 +113,7 @@ describe("converting an item into JSON", () => {
     it("should return a list of WMA details for a valid AGOL id in a list", done => {
       ItemFactory.itemHierarchyToJSON(["6fc5992522d34f26b2210d17835eea21"])
       .then(
-        (response:IItemList) => {
+        (response:IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");
@@ -128,7 +128,7 @@ describe("converting an item into JSON", () => {
     it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
       ItemFactory.itemHierarchyToJSON(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
       .then(
-        (response:IItemList) => {
+        (response:IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(6);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");

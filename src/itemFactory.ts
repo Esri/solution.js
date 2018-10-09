@@ -16,7 +16,7 @@ import { Group } from "./group";
 import { Webmap } from "./webmap";
 import { WebMappingApp } from "./webMappingApp";
 
-export interface IItemList {
+export interface IItemHash {
   [id:string]: AgolItem | Promise<AgolItem>;
 }
 
@@ -109,13 +109,13 @@ export class ItemFactory {
    * Instantiates an item subclass and its dependencies using an AGOL id to load the item and get its type.
    *
    * ```typescript
-   * import { ItemFactory, IItemList } from "../src/itemFactory";
+   * import { ItemFactory, IItemHash } from "../src/itemFactory";
    * import { AgolItem } from "../src/agolItem";
    * import { Item } from "../src/item";
    *
    * ItemFactory.itemToJSON(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
    * .then(
-   *   (response:IItemList) => {
+   *   (response:IItemHash) => {
    *     let keys = Object.keys(response);
    *     console.log(keys.length);  // => "6"
    *     console.log((response[keys[0]] as AgolItem).type);  // => "Web Mapping Application"
@@ -129,7 +129,9 @@ export class ItemFactory {
    * );
    * ```
    *
-   * @param id AGOL id string or list of AGOL id strings
+   * @param rootIds AGOL id string or list of AGOL id strings
+   * @param collection A hash of items already converted useful for avoiding duplicate conversions and 
+   * hierarchy tracing
    * @param requestOptions Options for the request
    * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
    * if either id is inaccessible, a single error response will be produced for the set
@@ -137,9 +139,9 @@ export class ItemFactory {
    */
   static itemHierarchyToJSON (
     rootIds: string | string[],
-    collection?: IItemList,
+    collection?: IItemHash,
     requestOptions?: IRequestOptions
-  ): Promise<IItemList> {
+  ): Promise<IItemHash> {
     if (!collection) {
       collection = {};
     }
@@ -168,7 +170,7 @@ export class ItemFactory {
               } else {
                 // Get its dependents, asking each to get its dependents via
                 // recursive calls to this function
-                let dependentDfds:Promise<IItemList>[] = [];
+                let dependentDfds:Promise<IItemHash>[] = [];
                 item.dependencies.forEach(dependentId => {
                   if (!collection[this.baseId(dependentId)]) {
                     dependentDfds.push(this.itemHierarchyToJSON(dependentId, collection, requestOptions));
@@ -184,7 +186,7 @@ export class ItemFactory {
               let error = new ArcGISRequestError(
                 "Item or group does not exist or is inaccessible."
               );
-              reject(error);      
+              reject(error);
             }
           );
         }
@@ -192,7 +194,7 @@ export class ItemFactory {
       } else {
         // Handle a list of one or more AGOL ids by stepping through the list
         // and calling this function recursively
-        let hierarchyDfds:Promise<IItemList>[] = [];
+        let hierarchyDfds:Promise<IItemHash>[] = [];
         rootIds.forEach(rootId => {
           hierarchyDfds.push(this.itemHierarchyToJSON(rootId, collection, requestOptions));
         });
@@ -207,7 +209,7 @@ export class ItemFactory {
               let error = new ArcGISRequestError(
               "Item or group does not exist or is inaccessible."
             );
-            reject(error);      
+            reject(error);
           }
       );
       }
@@ -216,7 +218,7 @@ export class ItemFactory {
 
   /**
    * Creates a Solution item containing JSON descriptions of items forming the solution.
-   * 
+   *
    * @param title Title for Solution item to create
    * @param collection List of JSON descriptions of items to publish into Solution
    * @param access Access to set for item: 'public', 'org', 'private'
@@ -225,7 +227,7 @@ export class ItemFactory {
    */
   static publishItemJSON (
     title: string,
-    collection: IItemList,
+    collection: IItemHash,
     access: string,
     requestOptions?: IUserRequestOptions
   ): Promise<IItemUpdateResponse> {
@@ -280,7 +282,7 @@ export class ItemFactory {
 
   /**
    * Extracts the 32-character AGOL id from the front of a string.
-   * 
+   *
    * @param extendedId A string of 32 or more characters that begins with an AGOL id
    * @returns A 32-character string
    */
