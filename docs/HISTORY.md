@@ -20,3 +20,31 @@ As with any new JavaScript project there are numerous decisions to make regardin
 * Use Jasmine and the Jasmine CLI for Node tests.
 
 It is worth noting that a TypeScript/Intern approach aligns perfectly with the direction of the JavaScript API team.
+
+### AGOL item class hierarchy
+
+* AgolItem
+	* Group
+	* Item
+		* Dashboard
+		* FeatureService
+		* Webmap
+		* WebMappingApp
+
+Items are created using static factory functions `ItemFactory.itemToJSON()` (for a single item) and `ItemFactory.itemHierarchyToJSON()` (for one or more items and the items that they depend on; e.g., for a web mapping item, the webmap that it uses and the feature service(s) displayed in the webmap). Items are specified by their AGOL item id; the factory function fetches the item to determine the class to create.
+
+### Solution item data packet
+
+The Solution item contains a single property--`items`--that is a hash by AGOL id of the items in the solution. Hashes use the ids of the Solution's source items; these ids are swizzled into new ids when the solution is cloned.
+
+Each item contains
+
+* `type`: its AGOL item type string; for groups, "Group" is used
+* `dependencies`: a list of AGOL item ids that the item depends upon; for feature service dependencies, the id is suffixed with "\_" and the feature layer's id number in the service (e.g., "dbca451a5e1546998137bb0a09d94240\_0")
+* `itemSection`: the JSON structure that every AGOL item and group has as its basic information (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21?f=json)
+
+Some items also contain
+
+* `dataSection`: the JSON structure holding additional data for the item (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21/data?f=json)
+
+The Solution does not contain explicit information about its hierarchy or the order in which items need to be created to satisfy dependencies because these can be quickly generated on the fly.
