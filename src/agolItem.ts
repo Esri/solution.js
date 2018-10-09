@@ -19,7 +19,7 @@ export class AgolItem {
 
   /**
    * Performs common item initialization.
-   * 
+   *
    * @param itemSection The item's JSON
    */
   constructor (itemSection:any) {
@@ -33,11 +33,13 @@ export class AgolItem {
 
   /**
    * Performs item-specific initialization.
-   * 
+   *
    * @param requestOptions Options for initialization request(s)
    * @returns A promise that will resolve with the item
    */
-  init (requestOptions?: IRequestOptions): Promise<AgolItem> {
+  init (
+    requestOptions?: IRequestOptions
+  ): Promise<AgolItem> {
     return new Promise(resolve => {
       resolve(this);
     });

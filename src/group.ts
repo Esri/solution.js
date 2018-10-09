@@ -14,11 +14,13 @@ export class Group extends AgolItem {
 
   /**
    * Performs item-specific initialization.
-   * 
+   *
    * @param requestOptions Options for initialization request for group contents
    * @returns A promise that will resolve with the item
    */
-  init (requestOptions?: IRequestOptions): Promise<AgolItem> {
+  init (
+    requestOptions?: IRequestOptions
+  ): Promise<AgolItem> {
     return new Promise((resolve, reject) => {
       let pagingRequest:IPagingParamsRequestOptions = {
         paging: {
@@ -43,12 +45,15 @@ export class Group extends AgolItem {
 
   /**
    * Gets the ids of a group's contents.
-   * 
+   *
    * @param id Group id
    * @param pagingRequest Options for requesting group contents
    * @returns A promise that will resolve with a list of the ids of the group's contents
    */
-  private getGroupContentsTranche (id:string, pagingRequest:IPagingParamsRequestOptions):Promise<string[]> {
+  private getGroupContentsTranche (
+    id:string,
+    pagingRequest:IPagingParamsRequestOptions
+  ):Promise<string[]> {
     return new Promise((resolve, reject) => {
       // Fetch group items
       groups.getGroupContent(id, pagingRequest)

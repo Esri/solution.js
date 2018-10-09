@@ -15,7 +15,7 @@
     var arcgis_rest_request_1 = require("@esri/arcgis-rest-request");
     var item_1 = require("./item");
     /**
-     *  AGOL web map application item
+     *  AGOL hosted feature service item
      */
     var FeatureService = /** @class */ (function (_super) {
         tslib_1.__extends(FeatureService, _super);
@@ -65,9 +65,10 @@
                             "Feature Service";
                         _this.serviceSection = serviceData;
                         // Get the affiliated layer and table items
-                        var layersPromise = _this.getLayers(serviceUrl, serviceData["layers"], requestOptions);
-                        var tablesPromise = _this.getLayers(serviceUrl, serviceData["tables"], requestOptions);
-                        Promise.all([layersPromise, tablesPromise])
+                        Promise.all([
+                            _this.getLayers(serviceUrl, serviceData["layers"], requestOptions),
+                            _this.getLayers(serviceUrl, serviceData["tables"], requestOptions)
+                        ])
                             .then(function (results) {
                             _this.layers = results[0];
                             _this.tables = results[1];
@@ -77,6 +78,13 @@
                 });
             });
         };
+        /**
+         * Gets the full definitions of the layers affiliated with a hosted service.
+         *
+         * @param serviceUrl URL to hosted service
+         * @param layerList List of layers at that service
+         * @param requestOptions Options for the request
+         */
         FeatureService.prototype.getLayers = function (serviceUrl, layerList, requestOptions) {
             return new Promise(function (resolve) {
                 if (!Array.isArray(layerList)) {
@@ -97,6 +105,11 @@
                 });
             });
         };
+        /**
+         * Gets the name of the first layer in list of layers that has a name
+         * @param layerList List of layers to use as a name source
+         * @returns The name of the found layer or an empty string if no layers have a name
+         */
         FeatureService.prototype.getFirstUsableName = function (layerList) {
             // Return the first layer name found
             if (layerList !== null) {

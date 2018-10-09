@@ -6,7 +6,7 @@ import { AgolItem } from "./agolItem";
 import { Item } from "./item";
 
 /**
- *  AGOL web map application item
+ *  AGOL hosted feature service item
  */
 export class FeatureService extends Item {
   /**
@@ -59,9 +59,10 @@ export class FeatureService extends Item {
               this.serviceSection = serviceData;
 
               // Get the affiliated layer and table items
-              let layersPromise = this.getLayers(serviceUrl, serviceData["layers"], requestOptions)
-              let tablesPromise = this.getLayers(serviceUrl, serviceData["tables"], requestOptions)
-              Promise.all([layersPromise, tablesPromise])
+              Promise.all([
+                this.getLayers(serviceUrl, serviceData["layers"], requestOptions),
+                this.getLayers(serviceUrl, serviceData["tables"], requestOptions)
+              ])
               .then(results => {
                 this.layers = results[0];
                 this.tables = results[1];
@@ -74,6 +75,13 @@ export class FeatureService extends Item {
     });
   }
 
+  /**
+   * Gets the full definitions of the layers affiliated with a hosted service.
+   * 
+   * @param serviceUrl URL to hosted service
+   * @param layerList List of layers at that service
+   * @param requestOptions Options for the request
+   */
   private getLayers (
     serviceUrl: string,
     layerList: any[],
@@ -101,6 +109,11 @@ export class FeatureService extends Item {
     });
   }
 
+  /**
+   * Gets the name of the first layer in list of layers that has a name
+   * @param layerList List of layers to use as a name source
+   * @returns The name of the found layer or an empty string if no layers have a name
+   */
   private getFirstUsableName (
     layerList: any[]
   ): string {
