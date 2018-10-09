@@ -4,7 +4,9 @@
   "description": "Transfer sets of ArcGIS Online items from one organization to another",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json"
+    "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
+    "docs:build": "npm run docs:typedoc",
+    "docs:typedoc": "node docs/build-typedoc.js"
   },
   "repository": {
     "type": "git",
@@ -30,11 +32,21 @@
     "@types/isomorphic-fetch": "0.0.34",
     "@types/jasmine": "^2.8.8",
     "@types/node": "^10.11.2",
+    "acetate": "^2.0.2",
+    "cheerio": "^1.0.0-rc.2",
+    "cross-spawn": "^6.0.5",
     "fetch-mock": "^7.0.5",
+    "fs": "0.0.1-security",
     "jasmine": "^3.2.0",
     "jasmine-core": "^3.2.1",
+    "lodash": "^4.17.11",
+    "markdown-it": "^8.4.2",
+    "minimatch": "^3.0.4",
     "node-fetch": "^2.2.0",
+    "path": "^0.12.7",
+    "slug": "^0.9.1",
     "ts-node": "^7.0.1",
+    "typedoc": "^0.12.0",
     "typescript": "^3.1.1"
   },
   "dependencies": {
