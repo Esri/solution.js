@@ -4,10 +4,7 @@
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import { IItemUpdateResponse } from "@esri/arcgis-rest-items";
 import { IRequestOptions, ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { ISetAccessRequestOptions } from "@esri/arcgis-rest-sharing";
 import { AgolItem } from "./agolItem";
 import { Dashboard } from "./dashboard";
 import { FeatureService } from "./FeatureService";

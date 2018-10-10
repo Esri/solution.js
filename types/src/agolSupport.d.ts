@@ -1,6 +1,9 @@
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItemUpdateResponse } from "@esri/arcgis-rest-items";
 import { IItemHash } from "./itemFactory";
+export interface ISortVertex {
+    [id: string]: number;
+}
 export declare class SolutionItem {
     /**
      * Creates a Solution item containing JSON descriptions of items forming the solution.
@@ -12,4 +15,5 @@ export declare class SolutionItem {
      * @returns A promise that will resolve with an object reporting success and the Solution id
      */
     static publishItemJSON(title: string, collection: IItemHash, access: string, requestOptions?: IUserRequestOptions): Promise<IItemUpdateResponse>;
+    static topologicallySortItems(items: IItemHash): string[];
 }
