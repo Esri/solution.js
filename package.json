@@ -30,7 +30,7 @@
     "@types/arcgis-js-api": "^4.8.1",
     "@types/fetch-mock": "^6.0.3",
     "@types/isomorphic-fetch": "0.0.34",
-    "@types/jasmine": "^2.8.8",
+    "@types/jasmine": "^2.8.9",
     "@types/node": "^10.11.2",
     "acetate": "^2.0.2",
     "cheerio": "^1.0.0-rc.2",
