@@ -18,7 +18,7 @@
          * @param itemSection The item's JSON
          */
         function AgolItem(itemSection) {
-            if (itemSection.type) {
+            if (itemSection && itemSection.type) {
                 this.type = itemSection.type;
             }
             this.dependencies = [];
