@@ -23,7 +23,7 @@ export class AgolItem {
    * @param itemSection The item's JSON
    */
   constructor (itemSection:any) {
-    if (itemSection.type) {
+    if (itemSection && itemSection.type) {
       this.type = itemSection.type;
     }
     this.dependencies = [];

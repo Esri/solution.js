@@ -7,5 +7,6 @@ export * from "./featureService";
 export * from "./group";
 export * from "./item";
 export * from "./itemFactory";
+export * from "./solution";
 export * from "./webmap";
 export * from "./webMappingApp";
