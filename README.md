@@ -51,7 +51,7 @@ ItemFactory.itemToJSON("6fc5992522d34f26b2210d17835eea21")
 
 ### Instructions
 
-You can install dependencies (and bootstrap lerna) by cloning the repository and running:
+You can install dependencies by cloning the repository and running:
 
 ```bash
 npm install
