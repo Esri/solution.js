@@ -20,8 +20,8 @@
         SortVisitColor[SortVisitColor["Gray"] = 1] = "Gray";
         SortVisitColor[SortVisitColor["Black"] = 2] = "Black"; // finished
     })(SortVisitColor || (SortVisitColor = {}));
-    var SolutionItem = /** @class */ (function () {
-        function SolutionItem() {
+    var Solution = /** @class */ (function () {
+        function Solution() {
         }
         /**
          * Creates a Solution item containing JSON descriptions of items forming the solution.
@@ -32,7 +32,7 @@
          * @param requestOptions Options for the request
          * @returns A promise that will resolve with an object reporting success and the Solution id
          */
-        SolutionItem.publishItemJSON = function (title, collection, access, requestOptions) {
+        Solution.publishItemJSON = function (title, collection, access, requestOptions) {
             return new Promise(function (resolve) {
                 // Define the solution item
                 var itemSection = {
@@ -69,13 +69,14 @@
             });
         };
         /**
-         * Topologically sort solution items into a build list.
+         * Topologically sort a Solution's items into a build list.
          *
          * @param items Hash of JSON descriptions of items
          * @return List of ids of items in the order in which they need to be built so that dependencies
          * are built before items that require those dependencies
+         * @throws Error("Cyclical dependency graph detected")
          */
-        SolutionItem.topologicallySortItems = function (items) {
+        Solution.topologicallySortItems = function (items) {
             // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
             // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
             // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -126,6 +127,9 @@
                     if (verticesToVisit[dependencyId] === SortVisitColor.White) { // if not yet visited
                         visit(dependencyId);
                     }
+                    else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) { // visited, in progress
+                        throw Error("Cyclical dependency graph detected");
+                    }
                 });
                 verticesToVisit[vertexId] = SortVisitColor.Black; // finished
                 buildList.push(vertexId); // add to end of list of ordered vertices because we want dependents first
@@ -133,14 +137,14 @@
             return buildList;
         };
         /**
-         * Extract item hierarchy from solution items list.
+         * Extract item hierarchy structure from a Solution's items list.
          *
          * @param items Hash of JSON descriptions of items
          * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated;
          * each element of structure contains 1) AGOL type of item, 2) AGOL id of item (groups have a type of 'Group'),
          * 3) list of dependencies, and, for Feature Services only, 4) the feature layer id in the feature service
          */
-        SolutionItem.getItemHierarchy = function (items) {
+        Solution.getItemHierarchy = function (items) {
             var hierarchy = [];
             // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
             var topLevelNodes = Object.keys(items);
@@ -183,12 +187,12 @@
          * @param extendedId A string of 32 or more characters that begins with an AGOL id
          * @returns A 32-character string
          */
-        SolutionItem.baseId = function (extendedId) {
+        Solution.baseId = function (extendedId) {
             // AGOL ids are 32 characters long; additional chars after that hold modifiers
             return extendedId.substr(0, 32);
         };
-        return SolutionItem;
+        return Solution;
     }());
-    exports.SolutionItem = SolutionItem;
+    exports.Solution = Solution;
 });
-//# sourceMappingURL=agolSupport.js.map
+//# sourceMappingURL=solution.js.map

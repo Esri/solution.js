@@ -26,7 +26,7 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
-export class SolutionItem {
+export class Solution {
 
   /**
    * Creates a Solution item containing JSON descriptions of items forming the solution.
@@ -93,11 +93,12 @@ export class SolutionItem {
   }
 
   /**
-   * Topologically sort solution items into a build list.
+   * Topologically sort a Solution's items into a build list.
    *
    * @param items Hash of JSON descriptions of items
    * @return List of ids of items in the order in which they need to be built so that dependencies
    * are built before items that require those dependencies
+   * @throws Error("Cyclical dependency graph detected")
    */
   static topologicallySortItems (
     items:IItemHash
@@ -156,6 +157,8 @@ export class SolutionItem {
         dependencyId = dependencyId.substr(0, 32);
         if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
           visit(dependencyId);
+        } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {  // visited, in progress
+          throw Error("Cyclical dependency graph detected");
         }
       });
 
@@ -167,7 +170,7 @@ export class SolutionItem {
   }
 
   /**
-   * Extract item hierarchy from solution items list.
+   * Extract item hierarchy structure from a Solution's items list.
    *
    * @param items Hash of JSON descriptions of items
    * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated;
