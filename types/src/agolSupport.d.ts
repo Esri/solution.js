@@ -1,6 +1,12 @@
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItemUpdateResponse } from "@esri/arcgis-rest-items";
 import { IItemHash } from "./itemFactory";
+export interface IHierarchyEntry {
+    type: string;
+    id: string;
+    idPart?: string;
+    dependencies: IHierarchyEntry[];
+}
 export declare class SolutionItem {
     /**
      * Creates a Solution item containing JSON descriptions of items forming the solution.
@@ -20,4 +26,20 @@ export declare class SolutionItem {
      * are built before items that require those dependencies
      */
     static topologicallySortItems(items: IItemHash): string[];
+    /**
+     * Extract item hierarchy from solution items list.
+     *
+     * @param items Hash of JSON descriptions of items
+     * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated;
+     * each element of structure contains 1) AGOL type of item, 2) AGOL id of item (groups have a type of 'Group'),
+     * 3) list of dependencies, and, for Feature Services only, 4) the feature layer id in the feature service
+     */
+    static getItemHierarchy(items: IItemHash): IHierarchyEntry[];
+    /**
+     * Extracts the 32-character AGOL id from the front of a string.
+     *
+     * @param extendedId A string of 32 or more characters that begins with an AGOL id
+     * @returns A 32-character string
+     */
+    private static baseId;
 }
