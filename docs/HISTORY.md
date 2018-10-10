@@ -50,3 +50,5 @@ Some items also contain
 * `dataSection`: the JSON structure holding additional data for the item (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21/data?f=json)
 
 The Solution does not contain explicit information about its hierarchy or the order in which items need to be created to satisfy dependencies because these can be quickly generated on the fly.
+
+Example Solution data packet: [exampleSolutionItem.json](https://github.com/ArcGIS/arcgis-clone-js/blob/master/docs/exampleSolutionItem.json)
