@@ -14,6 +14,12 @@
     var tslib_1 = require("tslib");
     var items = require("@esri/arcgis-rest-items");
     var sharing = require("@esri/arcgis-rest-sharing");
+    var SortVisitColor;
+    (function (SortVisitColor) {
+        SortVisitColor[SortVisitColor["White"] = 0] = "White";
+        SortVisitColor[SortVisitColor["Gray"] = 1] = "Gray";
+        SortVisitColor[SortVisitColor["Black"] = 2] = "Black"; // finished
+    })(SortVisitColor || (SortVisitColor = {}));
     var SolutionItem = /** @class */ (function () {
         function SolutionItem() {
         }
@@ -21,7 +27,7 @@
          * Creates a Solution item containing JSON descriptions of items forming the solution.
          *
          * @param title Title for Solution item to create
-         * @param collection List of JSON descriptions of items to publish into Solution
+         * @param collection Hash of JSON descriptions of items to publish into Solution
          * @param access Access to set for item: 'public', 'org', 'private'
          * @param requestOptions Options for the request
          * @returns A promise that will resolve with an object reporting success and the Solution id
@@ -62,8 +68,14 @@
                 });
             });
         };
+        /**
+         * Topologically sort solution items into a build list.
+         *
+         * @param items Hash of JSON descriptions of items
+         * @return List of ids of items in the order in which they need to be built so that dependencies
+         * are built before items that require those dependencies
+         */
         SolutionItem.topologicallySortItems = function (items) {
-            // Topologically sort solution items into build list
             // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
             // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
             // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -94,29 +106,28 @@
             // 2 as each vertex is finished, insert it onto front of a linked list
             // 3 return the linked list of vertices
             var buildList = []; // list of ordered vertices--don't need linked list because we just want relative ordering
-            // Use nums for algorithm's colors: WHITE = 0; GRAY = 1; BLACK = 2
             var verticesToVisit = {};
             Object.keys(items).forEach(function (vertexId) {
-                verticesToVisit[vertexId] = 0; // WHITE; not yet visited
+                verticesToVisit[vertexId] = SortVisitColor.White; // not yet visited
             });
             // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
             Object.keys(verticesToVisit).forEach(function (vertexId) {
-                if (!verticesToVisit[vertexId]) { // if WHITE
+                if (verticesToVisit[vertexId] === SortVisitColor.White) { // if not yet visited
                     visit(vertexId);
                 }
             });
             // Visit vertex
             function visit(vertexId) {
-                verticesToVisit[vertexId] = 1; // GRAY; visited, in progress
+                verticesToVisit[vertexId] = SortVisitColor.Gray; // visited, in progress
                 // Visit dependents if not already visited
                 var dependencies = items[vertexId].dependencies || [];
                 dependencies.forEach(function (dependencyId) {
                     dependencyId = dependencyId.substr(0, 32);
-                    if (!verticesToVisit[dependencyId]) { // if WHITE
+                    if (verticesToVisit[dependencyId] === SortVisitColor.White) { // if not yet visited
                         visit(dependencyId);
                     }
                 });
-                verticesToVisit[vertexId] = 2; // BLACK; finished
+                verticesToVisit[vertexId] = SortVisitColor.Black; // finished
                 buildList.push(vertexId); // add to end of list of ordered vertices because we want dependents first
             }
             return buildList;

@@ -9,8 +9,14 @@ import { ISetAccessRequestOptions } from "@esri/arcgis-rest-sharing";
 import { AgolItem } from "./agolItem";
 import { IItemHash } from "./itemFactory";
 
-export interface ISortVertex {
+interface ISortVertex {
   [id:string]: number;
+}
+
+enum SortVisitColor {
+  White,  // not yet visited
+  Gray,   // visited, in progress
+  Black   // finished
 }
 
 export class SolutionItem {
@@ -19,7 +25,7 @@ export class SolutionItem {
    * Creates a Solution item containing JSON descriptions of items forming the solution.
    *
    * @param title Title for Solution item to create
-   * @param collection List of JSON descriptions of items to publish into Solution
+   * @param collection Hash of JSON descriptions of items to publish into Solution
    * @param access Access to set for item: 'public', 'org', 'private'
    * @param requestOptions Options for the request
    * @returns A promise that will resolve with an object reporting success and the Solution id
@@ -78,11 +84,17 @@ export class SolutionItem {
       });
     });
   }
-
+  
+  /**
+   * Topologically sort solution items into a build list.
+   * 
+   * @param items Hash of JSON descriptions of items
+   * @return List of ids of items in the order in which they need to be built so that dependencies
+   * are built before items that require those dependencies
+   */
   static topologicallySortItems (
     items:IItemHash
   ): string[] {
-    // Topologically sort solution items into build list
     // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
     // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
     // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -115,33 +127,32 @@ export class SolutionItem {
 
     let buildList:string[] = [];  // list of ordered vertices--don't need linked list because we just want relative ordering
 
-    // Use nums for algorithm's colors: WHITE = 0; GRAY = 1; BLACK = 2
     let verticesToVisit:ISortVertex = {};
     Object.keys(items).forEach(function(vertexId) {
-      verticesToVisit[vertexId] = 0;  // WHITE; not yet visited
+      verticesToVisit[vertexId] = SortVisitColor.White;  // not yet visited
     });
 
     // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
     Object.keys(verticesToVisit).forEach(function(vertexId) {
-      if (!verticesToVisit[vertexId]) {  // if WHITE
+      if (verticesToVisit[vertexId] === SortVisitColor.White) {  // if not yet visited
         visit(vertexId);
       }
     });
 
     // Visit vertex
     function visit(vertexId:string) {
-      verticesToVisit[vertexId] = 1;  // GRAY; visited, in progress
+      verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
       // Visit dependents if not already visited
       var dependencies:string[] = (items[vertexId] as AgolItem).dependencies || [];
       dependencies.forEach(function (dependencyId) {
         dependencyId = dependencyId.substr(0, 32);
-        if (!verticesToVisit[dependencyId]) {  // if WHITE
+        if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
           visit(dependencyId);
         }
       });
 
-      verticesToVisit[vertexId] = 2;  // BLACK; finished
+      verticesToVisit[vertexId] = SortVisitColor.Black;  // finished
       buildList.push(vertexId);  // add to end of list of ordered vertices because we want dependents first
     }
 
