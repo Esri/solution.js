@@ -1,4 +1,5 @@
 export * from "./agolItem";
+export * from "./agolSupport";
 export * from "./dashboard";
 export * from "./featureService";
 export * from "./group";
