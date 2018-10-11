@@ -348,3 +348,8 @@ ASALocalRun/
 
 # Local History for Visual Studio
 .localhistory/
+
+# Built files
+dist
+.zip
+
