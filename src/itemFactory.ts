@@ -126,17 +126,17 @@ export class ItemFactory {
    * ```
    *
    * @param rootIds AGOL id string or list of AGOL id strings
+   * @param requestOptions Options for the request
    * @param collection A hash of items already converted useful for avoiding duplicate conversions and
    * hierarchy tracing
-   * @param requestOptions Options for the request
    * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
    * if either id is inaccessible, a single error response will be produced for the set
    * of ids
    */
   static itemHierarchyToJSON (
     rootIds: string | string[],
-    collection?: IItemHash,
-    requestOptions?: IRequestOptions
+    requestOptions?: IRequestOptions,
+    collection?: IItemHash
   ): Promise<IItemHash> {
     if (!collection) {
       collection = {};
@@ -169,7 +169,7 @@ export class ItemFactory {
                 let dependentDfds:Promise<IItemHash>[] = [];
                 item.dependencies.forEach(dependentId => {
                   if (!collection[this.baseId(dependentId)]) {
-                    dependentDfds.push(this.itemHierarchyToJSON(dependentId, collection, requestOptions));
+                    dependentDfds.push(this.itemHierarchyToJSON(dependentId, requestOptions, collection));
                   }
                 });
                 Promise.all(dependentDfds)
@@ -192,7 +192,7 @@ export class ItemFactory {
         // and calling this function recursively
         let hierarchyDfds:Promise<IItemHash>[] = [];
         rootIds.forEach(rootId => {
-          hierarchyDfds.push(this.itemHierarchyToJSON(rootId, collection, requestOptions));
+          hierarchyDfds.push(this.itemHierarchyToJSON(rootId, requestOptions, collection));
         });
         Promise.all(hierarchyDfds)
         .then(
