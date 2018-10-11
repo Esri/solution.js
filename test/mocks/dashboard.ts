@@ -4,7 +4,7 @@
 import { IItem } from "@esri/arcgis-rest-common-types";
 
 export const DashboardItemSuccessResponse: IItem = {
-  "id": "abc123",
+  "id": "dash1234657890",
   "owner": "LocalGovTryItLive",
   "created": 1520967813000,
   "modified": 1525447266000,

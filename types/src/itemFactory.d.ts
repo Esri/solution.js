@@ -65,10 +65,11 @@ export declare class ItemFactory {
      */
     static itemHierarchyToJSON(rootIds: string | string[], collection?: IItemHash, requestOptions?: IRequestOptions): Promise<IItemHash>;
     /**
-     * Extracts the 32-character AGOL id from the front of a string.
+     * Extracts the AGOL id from the front of a string.
      *
-     * @param extendedId A string of 32 or more characters that begins with an AGOL id
-     * @returns A 32-character string
+     * @param extendedId A string of hex characters that begins with an AGOL id;
+     *   characters including and after "_" are considered a modifier
+     * @returns An AGOL id
      */
     private static baseId;
 }
