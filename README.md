@@ -48,6 +48,7 @@ ItemFactory.itemToJSON("6fc5992522d34f26b2210d17835eea21")
 
 ### API Reference
 
+The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
 
 ### Instructions
 
