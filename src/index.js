@@ -22,4 +22,4 @@
     tslib_1.__exportStar(require("./webmap"), exports);
     tslib_1.__exportStar(require("./webMappingApp"), exports);
 });
-//# sourceMappingURL=clone.js.map
+//# sourceMappingURL=index.js.map
