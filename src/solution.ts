@@ -225,16 +225,21 @@ export class Solution {
   }
 
   /**
-   * Extracts the 32-character AGOL id from the front of a string.
+   * Extracts the AGOL id from the front of a string.
    *
-   * @param extendedId A string of 32 or more characters that begins with an AGOL id
-   * @returns A 32-character string
+   * @param extendedId A string of hex characters that begins with an AGOL id;
+   *   characters including and after "_" are considered a modifier
+   * @returns An AGOL id
    */
   private static baseId (
     extendedId: string
   ): string {
-    // AGOL ids are 32 characters long; additional chars after that hold modifiers
-    return extendedId.substr(0,32);
+    let iModifierFlag = extendedId.indexOf("_");
+    if (iModifierFlag < 0) {
+      return extendedId;
+    } else {
+      return extendedId.substr(0, iModifierFlag);
+    }
   }
 
 }
