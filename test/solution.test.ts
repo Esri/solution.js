@@ -9,9 +9,6 @@ import { AgolItem } from "../src/agolItem";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
-import { IItemHash } from '../src/clone';
-
-
 
 describe("supporting Solution item", () => {
 
