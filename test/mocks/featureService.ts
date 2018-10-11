@@ -4,7 +4,7 @@
 import { IItem } from "@esri/arcgis-rest-common-types";
 
 export const FeatureServiceItemSuccessResponse: IItem = {
-  "id": "abc123",
+  "id": "svc1234567890",
   "owner": "LocalGovTryItLive",
   "created": 1520968092000,
   "modified": 1522178516000,
@@ -24,7 +24,7 @@ export const FeatureServiceItemSuccessResponse: IItem = {
   "spatialReference": null,
   "culture": "en-us",
   "properties": null,
-  "url": "https://services123.arcgis.com/myOrg123/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
+  "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   "protected": false
 };
 
@@ -393,7 +393,7 @@ export const FeatureServiceItemDataSuccessResponse: any = {
 
 export const FeatureServiceSuccessResponse: any = {
   "currentVersion": 10.61,
-  "serviceItemId": "dbca451a5e1546998137bb0a09d94240",
+  "serviceItemId": "svc1234567890",
   "isView": true,
   "isUpdatableView": true,
   "sourceSchemaChangesAllowed": true,
@@ -477,7 +477,7 @@ export const FeatureServiceLayer0SuccessResponse: any = {
   "id": 0,
   "name": "ROW Permits",
   "type": "Feature Layer",
-  "serviceItemId": "dbca451a5e1546998137bb0a09d94240",
+  "serviceItemId": "svc1234567890",
   "isView": true,
   "isUpdatableView": true,
   "sourceSchemaChangesAllowed": true,
@@ -1794,7 +1794,7 @@ export const FeatureServiceLayer1SuccessResponse: any = {
   "id": 1,
   "name": "ROW Permit Comment",
   "type": "Table",
-  "serviceItemId": "dbca451a5e1546998137bb0a09d94240",
+  "serviceItemId": "svc1234567890",
   "isView": true,
   "isUpdatableView": true,
   "sourceSchemaChangesAllowed": true,

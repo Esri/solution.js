@@ -4,7 +4,7 @@
 import { IItem } from "@esri/arcgis-rest-common-types";
 
 export const WebMappingAppItemSuccessResponse: IItem = {
-  "id": "abc123",
+  "id": "wma1234657890",
   "owner": "LocalGovTryItLive",
   "created": 1520968147000,
   "modified": 1522178539000,
