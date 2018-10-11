@@ -117,7 +117,7 @@ describe("converting an item into JSON", () => {
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
-      ItemFactory.itemHierarchyToJSON("wma1234567890", null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
           let keys = Object.keys(response);
@@ -142,7 +142,7 @@ describe("converting an item into JSON", () => {
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
-      ItemFactory.itemHierarchyToJSON(["wma1234567890"], null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
           let keys = Object.keys(response);
@@ -167,7 +167,7 @@ describe("converting an item into JSON", () => {
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
-      ItemFactory.itemHierarchyToJSON(["wma1234567890", "svc1234567890"], null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
           let keys = Object.keys(response);
@@ -185,7 +185,7 @@ describe("converting an item into JSON", () => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
       .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-      ItemFactory.itemHierarchyToJSON("fail1234567890", null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail("Invalid item 'found'");
@@ -201,7 +201,7 @@ describe("converting an item into JSON", () => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
       .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-      ItemFactory.itemHierarchyToJSON(["fail1234567890"], null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON(["fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail("Invalid item 'found'");
@@ -226,7 +226,7 @@ describe("converting an item into JSON", () => {
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse)
       .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
       .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-      ItemFactory.itemHierarchyToJSON(["wma1234567890", "fail1234567890"], null, MOCK_USER_REQOPTS)
+      ItemFactory.itemHierarchyToJSON(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail("Invalid item 'found'");
