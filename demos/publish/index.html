@@ -136,27 +136,33 @@
 
       // Get the publisher's organization URL for creating links to source items
       request.getPortal(null, requestOptions)
-      .then(function (response) {
-        orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-        portal = 'https://' + response.portalHostname + '/';
+      .then(
+        function (response) {
+          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          portal = 'https://' + response.portalHostname + '/';
 
-        // Get the items to include in the solution
-        var solutionRootIds = getCheckedItems();
+          // Get the items to include in the solution
+          var solutionRootIds = getCheckedItems();
 
-        // Prepare the Solution
-        clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
-        .then(function (solutionResponse) {
-          solution = solutionResponse;
-          document.getElementById('createDisplay').innerHTML =
-            'Source hierarchy:' + createSolutionContentsDisplay(solution, true, orgUrl);
-        }, function (error) {
-           document.getElementById('createDisplay').innerHTML = error.toString();
-        })
-        .finally(function () {
-          document.getElementById('creating').style.display = 'none';
-          document.getElementById('createResults').style.display = 'block';
-        });
-      });
+          // Prepare the Solution
+          clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
+          .then(function (solutionResponse) {
+            solution = solutionResponse;
+            document.getElementById('createDisplay').innerHTML =
+              'Source hierarchy:' + createSolutionContentsDisplay(solution, true, orgUrl);
+          }, function (error) {
+             document.getElementById('createDisplay').innerHTML = error.toString();
+          })
+          .finally(function () {
+            document.getElementById('creating').style.display = 'none';
+            document.getElementById('createResults').style.display = 'block';
+          });
+        },
+        function () {
+          document.getElementById('create').style.display = 'none';
+          alert('Please refresh page and provide credentials');
+        }
+      );
     }
 
     function publishSolution() {
