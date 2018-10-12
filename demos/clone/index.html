@@ -17,7 +17,7 @@
      | See the License for the specific language governing permissions and
      | limitations under the License.
     -->
-  <title>Publish solution template</title>
+  <title>Clone solution template</title>
   <style>
   .section {
     margin: 8px 0 8px 0;
@@ -50,39 +50,35 @@
   <div id="page" style="display:none">
 
     <div class="section">
-      <div class="section-title">Credentials in publishing organization</div>
+      <div class="section-title">Credentials in destination organization</div>
       <label for="username">Username:</label> <input type="text" id="username"></input>
       <label for="password">Password:</label> <input type="password" id="password"></input>
     </div>
 
-    <div class="section">
-      <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21"></input>
-        <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6"></input>
-        <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934"></input>
-        <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
-      <br>
-      <button id="createBtn" onclick="createSolutionFcn()" disabled="disabled">Create solution</button>
-    </div>
-
-    <div id="create" class="section" style="display:none">
-      <div class="section-title">Solution ready for publishing</div>
-      <img id="creating" src="loading.gif"/>
-      <div id="createResults" style="display:none">
-        <div id="createDisplay"></div>
-        <br>
-        <label for="username">Name for published Solution</label> <input type="text" id="solutionName"></input><br>
-        <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
+    <div id="availableSolutions" class="section">
+      <div class="section-title">Available Solutions</div>
+      <img id="fetchingSolutions" src="loading.gif"/>
+      <div id="solutionsResults" style="display:none">
+        <div id="solutionsDisplay"></div>
       </div>
     </div>
 
     <div id="display" class="section" style="display:none">
-      <div class="section-title">Published Solution details</div>
+      <div class="section-title">Details of selected Solution</div>
       <img id="fetchingDetails" src="loading.gif"/>
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
+        <br>
+        <button id="createBtn" onclick="createSolutionFcn()">Create solution in your organization</button>
+        using name <input type="text" id="solutionNameField"></input>
+      </div>
+    </div>
+
+    <div id="create" class="section" style="display:none">
+      <div class="section-title">Details of your Solution <span id="solutionName"></span></div>
+      <img id="creating" src="loading.gif"/>
+      <div id="createResults" style="display:none">
+        <div id="createDisplay"></div>
       </div>
     </div>
 
@@ -90,20 +86,14 @@
 
   <script src="require_2.3.6.min.js"></script>
   <script>
-  var createSolutionFcn = publishSolutionFcn = null;
+  var showSolutionFcn = createSolutionFcn = null;
+  var currentSolutionId, currentSolutionName, currentSolutionItems;
 
-  function onCheckboxClicked() {
-    document.getElementById('createBtn').disabled = getCheckedItems().length === 0 ? 'disabled' : '';
-  }
-
-  function getCheckedItems() {
-    var checkedItems = [];
-    Array.prototype.slice.call(document.getElementsByTagName('input')).forEach(function (item) {
-      if (item.type === 'checkbox' && item.checked) {
-        checkedItems.push(item.name);
-      }
-    });
-    return checkedItems;
+  function onRadioClicked(event) {
+    var currentSolutionParts = event.value.split('|');
+    currentSolutionId = currentSolutionParts[0];
+    currentSolutionName = event.value.substr(currentSolutionId.length + 1);
+    showSolutionFcn(currentSolutionId, currentSolutionName);
   }
 
   requirejs.config({
@@ -120,49 +110,99 @@
   });
   requirejs([
     '../../dist/src/index',
+    'cloneJS',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
   ], function (
     clone,
+    cloneJS,
     auth,
     items,
     request
   ) {
+    showSolutionFcn = showSolution;
     createSolutionFcn = createSolution;
-    publishSolutionFcn = publishSolution;
-    var requestOptions, orgUrl, portal, solution, publishedSolutionId;
 
     document.getElementById('page').style.display = 'block';
 
+    // Fetch solutions
+    items.searchItems('type:Solution owner:ArcGISTeamLocalGovOrg')
+    .then(
+      function (foundItems) {
+        if (foundItems.total === 0) {
+          document.getElementById('solutionsDisplay').innerHTML = 'No Solution items found';
+        } else {
+          var itemsDisplay = '';
+          foundItems.results.forEach(function (item) {
+            itemsDisplay += '<input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
+              item.id + '|' + item.title + '">' + item.title + '</input><br>';
+          });
+          document.getElementById('solutionsDisplay').innerHTML = itemsDisplay;
+        }
+      },
+      function (error) {
+        document.getElementById('solutionsDisplay').innerHTML = error.toString();
+      }
+    )
+    .finally(function () {
+      document.getElementById('fetchingSolutions').style.display = 'none';
+      document.getElementById('solutionsResults').style.display = 'block';
+    });
+
     //----------------------------------------------------------------------------------------------------------------//
+
+    function showSolution(publishedSolutionId, publishedSolutionTitle) {
+      document.getElementById('display').style.display = 'block';
+      document.getElementById('fetchingDetails').style.display = 'block';
+      document.getElementById('detailsResults').style.display = 'none';
+
+      items.getItemData(publishedSolutionId)
+      .then(
+        publishedSolution => {
+          currentSolutionItems = publishedSolution.items;
+          document.getElementById('detailsDisplay').innerHTML =
+            createItemLinksDisplay(publishedSolutionId,
+              'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+            '<br>Published Solution item hierarchy:' +
+            createHierarchyDisplay(currentSolutionItems, clone.Solution.getItemHierarchy(currentSolutionItems));
+
+          document.getElementById('solutionNameField').value = publishedSolutionTitle;
+        }
+      )
+      .finally(function () {
+        document.getElementById('fetchingDetails').style.display = 'none';
+        document.getElementById('detailsResults').style.display = 'block';
+      });
+    }
 
     function createSolution() {
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
+      document.getElementById('availableSolutions').style.display = 'none';
 
       // Prepare credentials for library
       requestOptions = getRequestOptions('username', 'password');
 
-      // Get the publisher's organization URL for creating links to source items
+      // Get the destination organization URL for creating links to source items
       request.getPortal(null, requestOptions)
       .then(
         function (response) {
           orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
           portal = 'https://' + response.portalHostname + '/';
-
-          // Get the items to include in the solution
-          var solutionRootIds = getCheckedItems();
-
-          // Prepare the Solution
-          clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
-          .then(function (solutionResponse) {
-            solution = solutionResponse;
-            document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-              createHierarchyDisplay(solution, clone.Solution.getItemHierarchy(solution), true, orgUrl);
-          }, function (error) {
-             document.getElementById('createDisplay').innerHTML = error.toString();
-          })
+          currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
+          cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
+            requestOptions.authentication)
+          .then(
+            createResponse => {
+              document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+              document.getElementById('createDisplay').innerHTML =
+                'Folder "' + createResponse.folderName + '" contains:<br>' + JSON.stringify(createResponse);
+            },
+            error => {
+              document.getElementById('createDisplay').innerHTML = error.toString();
+            }
+          )
           .finally(function () {
             document.getElementById('creating').style.display = 'none';
             document.getElementById('createResults').style.display = 'block';
@@ -173,34 +213,6 @@
           alert('Please refresh page and provide credentials');
         }
       );
-    }
-
-    function publishSolution() {
-      document.getElementById('publishBtn').disabled = 'disabled';
-      document.getElementById('display').style.display = 'block';
-
-      // Publish the Solution
-      var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
-      .then(function (publishResponse) {
-        publishedSolutionId = publishResponse.id;
-
-        items.getItemData(publishedSolutionId, requestOptions)
-        .then(
-          publishedSolution => {
-            document.getElementById('detailsDisplay').innerHTML =
-              createItemLinksDisplay(publishedSolutionId, orgUrl, portal) +
-              '<br>Published Solution item hierarchy:' +
-              createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
-          }
-        );
-      }, function (error) {
-         document.getElementById('detailsDisplay').innerHTML = error.toString();
-      })
-      .finally(function () {
-        document.getElementById('fetchingDetails').style.display = 'none';
-        document.getElementById('detailsResults').style.display = 'block';
-      });
     }
 
     //----------------------------------------------------------------------------------------------------------------//

@@ -32,6 +32,9 @@
     margin: 0;
     margin-top: 0.25em;
   }
+  .solutionList {
+    list-style-type: none;
+  }
   li {
     margin-top: 0.25em;
   }
@@ -102,12 +105,11 @@
         if (foundItems.total === 0) {
           document.getElementById('solutionsDisplay').innerHTML = 'No Solution items found';
         } else {
-          var itemsDisplay = '<ul>';
+          var itemsDisplay = '';
           foundItems.results.forEach(function (item) {
-            itemsDisplay += '<li><input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
-              item.id + '">' + item.title + '</input></li>';
+            itemsDisplay += '<input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
+              item.id + '">' + item.title + '</input><br>';
           });
-          itemsDisplay += '</ul>';
           document.getElementById('solutionsDisplay').innerHTML = itemsDisplay;
         }
       },
@@ -155,7 +157,7 @@
         'Web Mapping Application': 'images/apps16.svg'
       };
 
-      var display = '<ul>';
+      var display = '<ul class="solutionList">';
       hierarchy.forEach(function (item) {
         var itemSection = solutionItems[item.id].itemSection;
         var itemLabel = (itemSection.title || itemSection.name || item.type);
