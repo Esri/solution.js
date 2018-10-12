@@ -113,10 +113,12 @@
   requirejs([
     '../../dist/src/index',
     '@esri/arcgis-rest-auth',
+    '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
   ], function (
     clone,
     auth,
+    items,
     request
   ) {
     onRunCreate = createSolution;
@@ -136,27 +138,33 @@
 
       // Get the publisher's organization URL for creating links to source items
       request.getPortal(null, requestOptions)
-      .then(function (response) {
-        orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-        portal = 'https://' + response.portalHostname + '/';
+      .then(
+        function (response) {
+          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          portal = 'https://' + response.portalHostname + '/';
 
-        // Get the items to include in the solution
-        var solutionRootIds = getCheckedItems();
+          // Get the items to include in the solution
+          var solutionRootIds = getCheckedItems();
 
-        // Prepare the Solution
-        clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
-        .then(function (solutionResponse) {
-          solution = solutionResponse;
-          document.getElementById('createDisplay').innerHTML =
-            'Source hierarchy:' + createSolutionContentsDisplay(solution, true, orgUrl);
-        }, function (error) {
-           document.getElementById('createDisplay').innerHTML = error.toString();
-        })
-        .finally(function () {
-          document.getElementById('creating').style.display = 'none';
-          document.getElementById('createResults').style.display = 'block';
-        });
-      });
+          // Prepare the Solution
+          clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
+          .then(function (solutionResponse) {
+            solution = solutionResponse;
+            document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
+              createHierarchyDisplay(clone.Solution.getItemHierarchy(solution), true, orgUrl);
+          }, function (error) {
+             document.getElementById('createDisplay').innerHTML = error.toString();
+          })
+          .finally(function () {
+            document.getElementById('creating').style.display = 'none';
+            document.getElementById('createResults').style.display = 'block';
+          });
+        },
+        function () {
+          document.getElementById('create').style.display = 'none';
+          alert('Please refresh page and provide credentials');
+        }
+      );
     }
 
     function publishSolution() {
@@ -168,7 +176,14 @@
       clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
       .then(function (publishResponse) {
         publishedSolutionId = publishResponse.id;
-        document.getElementById('publishDisplay').innerHTML = createPublishedDisplay(publishedSolutionId);
+
+        items.getItemData(publishedSolutionId, requestOptions)
+        .then(
+          publishedSolution => {
+            document.getElementById('publishDisplay').innerHTML = 'Published Solution item hierarchy:' +
+              createHierarchyDisplay(clone.Solution.getItemHierarchy(publishedSolution.items));
+          }
+        );
       }, function (error) {
          document.getElementById('publishDisplay').innerHTML = error.toString();
       })
@@ -189,48 +204,42 @@
       };
     }
 
-    function createSolutionContentsDisplay(solution, createLinks, orgUrl) {
+    function createHierarchyDisplay(hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
-      var hierarchy = clone.Solution.getItemHierarchy(solution);
+      var icons = {
+        'Dashboard': 'images/dashboard16.svg',
+        'Feature Service': 'images/features16.svg',
+        'Group': 'images/group.svg',
+        'Web Map': 'images/maps16.svg',
+        'Web Mapping Application': 'images/apps16.svg'
+      };
 
-      function createHierarchyDisplay(hierarchy, createLinks) {
-        var icons = {
-          'Dashboard': 'images/dashboard16.svg',
-          'Feature Service': 'images/features16.svg',
-          'Group': 'images/group.svg',
-          'Web Map': 'images/maps16.svg',
-          'Web Mapping Application': 'images/apps16.svg'
-        };
+      var display = '<ul>';
+      hierarchy.forEach(function (item) {
+        var itemSection = solution[item.id].itemSection;
+        var itemLabel = (itemSection.title || itemSection.name || item.type);
+        if (item.type === 'Feature Service') {
+          itemLabel += ' (' + item.idPart + ')';
+        }
 
-        var display = '<ul>';
-        hierarchy.forEach(function (item) {
-          var itemSection = solution[item.id].itemSection;
-          var itemLabel = (itemSection.title || itemSection.name || item.type);
-          if (item.type === 'Feature Service') {
-            itemLabel += ' (' + item.idPart + ')';
-          }
+        var webpage = item.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
+          '" width="16" height="16" alt="">&nbsp;&nbsp;';
+        if (createLinks) {
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
+            itemLabel + '</a>';
+        } else {
+          display += itemLabel;
+        }
 
-          var webpage = item.type === 'Group' ? 'group' : 'item';
-          display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
-            '" width="16" height="16" alt="">&nbsp;&nbsp;';
-          if (createLinks) {
-            display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
-              itemLabel + '</a>';
-          } else {
-            display += itemLabel;
-          }
+        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
+          display += createHierarchyDisplay(item.dependencies, createLinks, orgUrl);
+        }
 
-          if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-            display += createHierarchyDisplay(item.dependencies, createLinks);
-          }
-
-          display += '</li>';
-        });
-        display += '</ul>';
-        return display;
-      }
-
-      return createHierarchyDisplay(hierarchy, createLinks);
+        display += '</li>';
+      });
+      display += '</ul>';
+      return display;
     }
 
     function createPublishedDisplay(publishedId) {

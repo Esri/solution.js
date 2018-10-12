@@ -6,7 +6,7 @@ import * as items from "@esri/arcgis-rest-items";
 import { IRequestOptions, ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { AgolItem } from "./agolItem";
 import { Dashboard } from "./dashboard";
-import { FeatureService } from "./FeatureService";
+import { FeatureService } from "./featureService";
 import { Item } from "./item";
 import { Group } from "./group";
 import { Webmap } from "./webmap";
