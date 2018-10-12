@@ -45,6 +45,7 @@
 </head>
 <body>
   <div id="page" style="display:none">
+
     <div class="section">
       <div class="section-title">Credentials in publishing organization</div>
       <label for="username">Username:</label> <input type="text" id="username"></input>
@@ -53,11 +54,14 @@
 
     <div class="section">
       <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
-      <input type="checkbox" onclick="onCheckboxChanged()" name="6fc5992522d34f26b2210d17835eea21"></input> <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxChanged()" name="8974dec44d794311a69f5562659587e6"></input> <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxChanged()" name="9bccd0fac5f3422c948e15c101c26934"></input> <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21"></input>
+        <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6"></input>
+        <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934"></input>
+        <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
       <br>
-      <button id="createBtn" onclick="onRunCreate()" disabled="disabled">Create solution</button>
+      <button id="createBtn" onclick="onRunCreateFcn()" disabled="disabled">Create solution</button>
     </div>
 
     <div id="create" class="section" style="display:none">
@@ -67,15 +71,15 @@
         <div id="createDisplay"></div>
         <br>
         <label for="username">Name for published Solution</label> <input type="text" id="solutionName"></input><br>
-        <button id="publishBtn" onclick="onRunPublish()">Publish solution</button>
+        <button id="publishBtn" onclick="onRunPublishFcn()">Publish solution</button>
       </div>
     </div>
 
-    <div id="publish" class="section" style="display:none">
-      <div class="section-title">Published Solution</div>
-      <img id="publishing" src="loading.gif"/>
-      <div id="publishResults" style="display:none">
-        <div id="publishDisplay"></div>
+    <div id="display" class="section" style="display:none">
+      <div class="section-title">Published Solution details</div>
+      <img id="fetchingDetails" src="loading.gif"/>
+      <div id="detailsResults" style="display:none">
+        <div id="detailsDisplay"></div>
       </div>
     </div>
 
@@ -83,9 +87,9 @@
 
   <script src="require_2.3.6.min.js"></script>
   <script>
-  var onRunCreate = onRunPublish = null;
+  var onRunCreateFcn = onRunPublishFcn = null;
 
-  function onCheckboxChanged() {
+  function onCheckboxClicked() {
     document.getElementById('createBtn').disabled = getCheckedItems().length === 0 ? 'disabled' : '';
   }
 
@@ -103,7 +107,8 @@
     baseUrl: './',
     paths: {  // for the benefit of called libraries
       '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
-      '@esri/arcgis-rest-feature-service-admin': 'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
       '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
       '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
       '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
@@ -121,8 +126,8 @@
     items,
     request
   ) {
-    onRunCreate = createSolution;
-    onRunPublish = publishSolution;
+    onRunCreateFcn = createSolution;
+    onRunPublishFcn = publishSolution;
     var requestOptions, orgUrl, portal, solution, publishedSolutionId;
 
     document.getElementById('page').style.display = 'block';
@@ -151,7 +156,7 @@
           .then(function (solutionResponse) {
             solution = solutionResponse;
             document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-              createHierarchyDisplay(clone.Solution.getItemHierarchy(solution), true, orgUrl);
+              createHierarchyDisplay(solution, clone.Solution.getItemHierarchy(solution), true, orgUrl);
           }, function (error) {
              document.getElementById('createDisplay').innerHTML = error.toString();
           })
@@ -169,7 +174,7 @@
 
     function publishSolution() {
       document.getElementById('publishBtn').disabled = 'disabled';
-      document.getElementById('publish').style.display = 'block';
+      document.getElementById('display').style.display = 'block';
 
       // Publish the Solution
       var solutionName = document.getElementById('solutionName').value || 'My Solution';
@@ -180,16 +185,18 @@
         items.getItemData(publishedSolutionId, requestOptions)
         .then(
           publishedSolution => {
-            document.getElementById('publishDisplay').innerHTML = 'Published Solution item hierarchy:' +
-              createHierarchyDisplay(clone.Solution.getItemHierarchy(publishedSolution.items));
+            document.getElementById('detailsDisplay').innerHTML =
+              createItemLinksDisplay(publishedSolutionId, orgUrl, portal) +
+              '<br>Published Solution item hierarchy:' +
+              createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
           }
         );
       }, function (error) {
-         document.getElementById('publishDisplay').innerHTML = error.toString();
+         document.getElementById('detailsDisplay').innerHTML = error.toString();
       })
       .finally(function () {
-        document.getElementById('publishing').style.display = 'none';
-        document.getElementById('publishResults').style.display = 'block';
+        document.getElementById('fetchingDetails').style.display = 'none';
+        document.getElementById('detailsResults').style.display = 'block';
       });
     }
 
@@ -204,7 +211,7 @@
       };
     }
 
-    function createHierarchyDisplay(hierarchy, createLinks, orgUrl) {
+    function createHierarchyDisplay(solutionItems, hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
       var icons = {
         'Dashboard': 'images/dashboard16.svg',
@@ -216,7 +223,7 @@
 
       var display = '<ul>';
       hierarchy.forEach(function (item) {
-        var itemSection = solution[item.id].itemSection;
+        var itemSection = solutionItems[item.id].itemSection;
         var itemLabel = (itemSection.title || itemSection.name || item.type);
         if (item.type === 'Feature Service') {
           itemLabel += ' (' + item.idPart + ')';
@@ -233,7 +240,7 @@
         }
 
         if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += createHierarchyDisplay(item.dependencies, createLinks, orgUrl);
+          display += createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
         }
 
         display += '</li>';
@@ -242,13 +249,13 @@
       return display;
     }
 
-    function createPublishedDisplay(publishedId) {
+    function createItemLinksDisplay(publishedId, orgUrl, portalUrl) {
       var display = '<ul>';
       display += '<li><a href="' + orgUrl + 'item.html?id=' + publishedId +
         '" target="_blank">Item</a></li>';
-      display += '<li><a href="' + portal + 'sharing/content/items/' + publishedId +
+      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
         '?f=json" target="_blank">Item JSON</a></li>';
-      display += '<li><a href="' + portal + 'sharing/content/items/' + publishedId +
+      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
         '/data?f=json" target="_blank">Data JSON</a></li>';
       display += '</ul>';
 
@@ -259,4 +266,3 @@
   </script>
 </body>
 </html>
-
