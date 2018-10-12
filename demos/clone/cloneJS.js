@@ -2,17 +2,25 @@
  * Apache-2.0 */
 define([
   '../../dist/src/index',
+  '@esri/arcgis-rest-feature-service-admin',
+  '@esri/arcgis-rest-groups',
   '@esri/arcgis-rest-items',
-  '@esri/arcgis-rest-request'
+  '@esri/arcgis-rest-request',
+  '@esri/arcgis-rest-sharing'
 ], function (
   clone,
+  featureServiceAdmin,
+  groups,
   items,
-  request
+  request,
+  sharing
 ) {
   return {
+    cloneJS: null,
     swizzleList: {},
 
     createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems, userSession) {
+      cloneJS = this;
       return new Promise((resolve, reject) => {
 
         var buildList = clone.Solution.topologicallySortItems(solutionItems);
@@ -30,7 +38,7 @@ define([
           url: portalClone + '/portals/self'
         };
         var folderName = solutionName + ' (' + cloningUniquenessTimestamp() + ')';
-        this.createFolder(folderName, solutionItems, userSession)
+        cloneJS.createFolder(folderName, solutionItems, userSession)
         .then(
           createdFolderId => {
             folderId = createdFolderId;
@@ -41,8 +49,7 @@ define([
                 console.log('orgUrl: ' + orgUrl);//???
                 console.log('organization: ' + organization);//???
 
-                resolve({folderName: folderName});//???
-                //hydrateTopOfList();  //???
+                hydrateTopOfList();
               }
             );
           }
@@ -52,7 +59,8 @@ define([
         function hydrateTopOfList () {
           if (buildList.length === 0) {
             resolve({
-              folderName: folderName
+              folderName: folderName,
+              folderId: folderId
             });
             return;
           }
@@ -62,7 +70,7 @@ define([
           var item = solutionItems[sourceId].itemSection;
           switch (itemType) {
             case 'Feature Service':
-              dfd = this.createFeatureService(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createFeatureService(sourceId, folderId, solutionItems, userSession);
               break;
             case 'Feature Layer':
               console.error('solo feature layer not implemented');
@@ -71,16 +79,16 @@ define([
               console.error('solo table not implemented');
               break;
             case 'Web Map':
-              dfd = this.createWebmap(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createWebmap(sourceId, folderId, solutionItems, userSession);
               break;
             case 'Web Mapping Application':
-              dfd = this.createWebApp(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createWebApp(sourceId, folderId, solutionItems, userSession);
               break;
             case 'Group':
-              dfd = this.createGroup(sourceId, solutionItems, userSession);
+              dfd = cloneJS.createGroup(sourceId, solutionItems, userSession);
               break;
             case 'Dashboard':
-              dfd = this.createDashboard(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createDashboard(sourceId, folderId, solutionItems, userSession);
               break;
             default:
               console.warn('Item ' + sourceId + ' ("' + (item.title || item.name) + '" ' + item.type + ') not hydrated');
@@ -152,19 +160,19 @@ define([
         groups.createGroup(options)
         .then(
           createResp => {
-            this.swizzleList[sourceId] = {
+            cloneJS.swizzleList[sourceId] = {
               'id': createResp.group.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(this.swizzleList[sourceId]) + ' (group)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (group)');//???
 
             if (component.dependencies.length > 0) {
               // Add each of the group's items to it
               var awaitGroupAdds = [];
               component.dependencies.forEach(function (depId) {
                 awaitGroupAdds.push(new Promise(resolve => {
-                  var swizzledDepId = this.swizzleList[depId].id;
+                  var swizzledDepId = cloneJS.swizzleList[depId].id;
                   sharing.shareItemWithGroup({
-                    id: this.swizzleList[depId].id,
+                    id: cloneJS.swizzleList[depId].id,
                     groupId: createResp.group.id,
                     authentication: userSession
                   })
@@ -220,11 +228,11 @@ define([
         .then(
           createResp => {
             if (createResp.success) {
-              this.swizzleList[sourceId] = {
+              cloneJS.swizzleList[sourceId] = {
                 'serviceItemId': createResp.serviceItemId,
                 'serviceurl': createResp.serviceurl
               };
-              console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(this.swizzleList[sourceId]) + ' (feat svc)');//???
+              console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (feat svc)');//???
 
               // Sort layers and tables by id so that they're added with the same ids
               var layersAndTables = [];
@@ -280,12 +288,12 @@ define([
                     featureServiceAdmin.addToServiceDefinition(createResp.serviceurl, options)
                     .then(
                       response => {
-                        this.swizzleList[sourceId + '_' + originalId] = {
+                        cloneJS.swizzleList[sourceId + '_' + originalId] = {
                           'name': response.layers[0].name,
                           'itemId': createResp.serviceItemId,
                           'url': createResp.serviceurl + '/' + response.layers[0].id
                         };
-                        console.log('swizzle ' + sourceId + '_' + originalId + ' to ' + JSON.stringify(this.swizzleList[sourceId + '_' + originalId]) + ' (feat layer)');//???
+                        console.log('swizzle ' + sourceId + '_' + originalId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId + '_' + originalId]) + ' (feat layer)');//???
                         addToDefinition(listToAdd).then(resolve);
                       },
                       response => {
@@ -367,7 +375,7 @@ define([
         // Swizzle its map layers
         if (Array.isArray(options.item.text.operationalLayers)) {
           options.item.text.operationalLayers.forEach(function(layer) {
-            var itsSwizzle = this.swizzleList[layer.itemId];
+            var itsSwizzle = cloneJS.swizzleList[layer.itemId];
             if (itsSwizzle) {
               layer.title = itsSwizzle.name;
               layer.itemId = itsSwizzle.itemId;
@@ -377,7 +385,7 @@ define([
         }
         if (Array.isArray(options.item.text.tables)) {
           options.item.text.tables.forEach(function (layer) {
-            var itsSwizzle = this.swizzleList[layer.itemId];
+            var itsSwizzle = cloneJS.swizzleList[layer.itemId];
             if (itsSwizzle) {
               layer.title = itsSwizzle.name;
               layer.itemId = itsSwizzle.itemId;
@@ -394,10 +402,10 @@ define([
         items.createItemInFolder(options)
         .then(
           createResp => {
-            this.swizzleList[sourceId] = {
+            cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(this.swizzleList[sourceId]) + ' (webmap)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (webmap)');//???
             resolve();
           },
           error => {
@@ -421,7 +429,7 @@ define([
 
         // Swizzle its webmap
         if (options.item.text.values && options.item.text.values.webmap) {
-          options.item.text.values.webmap = this.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+          options.item.text.values.webmap = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
         }
 
         if (folderId) {
@@ -434,10 +442,10 @@ define([
         items.createItemInFolder(options)
         .then(
           createResp => {
-            this.swizzleList[sourceId] = {
+            cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(this.swizzleList[sourceId]) + ' (web app)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (web app)');//???
 
             // Update its URL
             var options = {
@@ -483,7 +491,7 @@ define([
         if (widgets) {
           widgets.forEach(function (widget) {
             if (widget.type === 'mapWidget') {
-              widget.itemId = this.swizzleList[widget.itemId].id;
+              widget.itemId = cloneJS.swizzleList[widget.itemId].id;
             }
           });
         }
@@ -492,10 +500,10 @@ define([
         items.createItemInFolder(options)
         .then(
           createResp => {
-            this.swizzleList[sourceId] = {
+            cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(this.swizzleList[sourceId]) + ' (dashboard)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (dashboard)');//???
             resolve();
           },
           error => {

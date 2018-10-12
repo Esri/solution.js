@@ -191,30 +191,62 @@
       // Get the destination organization URL for creating links to source items
       request.getPortal(null, requestOptions)
       .then(
-        function (response) {
-          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-          portal = 'https://' + response.portalHostname + '/';
+        function (portalResponse) {
+          orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl + '/home/';
+          portal = 'https://' + portalResponse.portalHostname + '/';
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
             requestOptions.authentication)
           .then(
             createResponse => {
               document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
-              document.getElementById('createDisplay').innerHTML =
-                'Folder "' + createResponse.folderName + '" contains:<br>' + JSON.stringify(createResponse);
+
+              // Fetch solution folder
+              setTimeout(
+                () => {
+                  var display = 'Folder "' + createResponse.folderName + '" contains:<br>';
+                  var searchOptions = {
+                    searchForm: {
+                      q: 'owner:' + portalResponse.user.username +
+                        ' orgid:' + portalResponse.id +
+                        ' ownerfolder:' + createResponse.folderId
+                    },
+                    authentication: requestOptions.authentication
+                  }
+                  items.searchItems(searchOptions)
+                  .then(
+                    foundItems => {
+                      if (foundItems.total === 0) {
+                        document.getElementById('solutionsDisplay').innerHTML = 'Solution not found';
+                      } else {
+                        display += '<ul>';
+                        foundItems.results.forEach(function (item) {
+                          display += '<li><a href="' + orgUrl + 'item.html?id=' + item.id +
+                          '" target="_blank">' + item.title + ' (' + item.type + ')</a></li>';
+                        });
+                        display += '</ul>';
+                        document.getElementById('createDisplay').innerHTML = display;
+                      }
+                    },
+                    error => {
+                      document.getElementById('createDisplay').innerHTML = error.toString();
+                    }
+                  )
+                  .finally(
+                    () => {
+                      document.getElementById('creating').style.display = 'none';
+                      document.getElementById('createResults').style.display = 'block';
+                    }
+                  );
+                },
+                2000
+              );
             },
-            error => {
-              document.getElementById('createDisplay').innerHTML = error.toString();
+            () => {
+              document.getElementById('create').style.display = 'none';
+              alert('Please refresh page and provide credentials');
             }
-          )
-          .finally(function () {
-            document.getElementById('creating').style.display = 'none';
-            document.getElementById('createResults').style.display = 'block';
-          });
-        },
-        function () {
-          document.getElementById('create').style.display = 'none';
-          alert('Please refresh page and provide credentials');
+          );
         }
       );
     }
