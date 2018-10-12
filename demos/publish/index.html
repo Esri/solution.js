@@ -19,6 +19,9 @@
     -->
   <title>Publish solution template</title>
   <style>
+  html {
+    font-family: Arial;
+  }
   .section {
     margin: 8px 0 8px 0;
     border: 1px solid gray;
@@ -32,6 +35,9 @@
     margin: 0;
     margin-top: 0.25em;
   }
+  .solutionList {
+    list-style-type: none;
+  }
   li {
     margin-top: 0.25em;
   }
@@ -44,6 +50,7 @@
   </style>
 </head>
 <body>
+  <h3>Publish solution template</h3>
   <div id="page" style="display:none">
 
     <div class="section">
@@ -54,14 +61,16 @@
 
     <div class="section">
       <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21"></input>
-        <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6"></input>
-        <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
       <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934"></input>
         <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6"></input>
+        <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="164831217e154849a731573e1855cb1a"></input>
+        <label for="164831217e154849a731573e1855cb1a">ROW Permit Public Comment (Web Map)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21"></input>
+        <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
       <br>
-      <button id="createBtn" onclick="onRunCreateFcn()" disabled="disabled">Create solution</button>
+      <button id="createBtn" onclick="createSolutionFcn()" disabled="disabled">Create solution</button>
     </div>
 
     <div id="create" class="section" style="display:none">
@@ -71,7 +80,7 @@
         <div id="createDisplay"></div>
         <br>
         <label for="username">Name for published Solution</label> <input type="text" id="solutionName"></input><br>
-        <button id="publishBtn" onclick="onRunPublishFcn()">Publish solution</button>
+        <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
       </div>
     </div>
 
@@ -87,7 +96,7 @@
 
   <script src="require_2.3.6.min.js"></script>
   <script>
-  var onRunCreateFcn = onRunPublishFcn = null;
+  var createSolutionFcn = publishSolutionFcn = null;
 
   function onCheckboxClicked() {
     document.getElementById('createBtn').disabled = getCheckedItems().length === 0 ? 'disabled' : '';
@@ -126,8 +135,8 @@
     items,
     request
   ) {
-    onRunCreateFcn = createSolution;
-    onRunPublishFcn = publishSolution;
+    createSolutionFcn = createSolution;
+    publishSolutionFcn = publishSolution;
     var requestOptions, orgUrl, portal, solution, publishedSolutionId;
 
     document.getElementById('page').style.display = 'block';
@@ -177,7 +186,7 @@
       document.getElementById('display').style.display = 'block';
 
       // Publish the Solution
-      var solutionName = document.getElementById('solutionName').value || 'My Solution';
+      var solutionName = document.getElementById('solutionName').value || 'Solution';
       clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
       .then(function (publishResponse) {
         publishedSolutionId = publishResponse.id;
@@ -221,7 +230,7 @@
         'Web Mapping Application': 'images/apps16.svg'
       };
 
-      var display = '<ul>';
+      var display = '<ul class="solutionList">';
       hierarchy.forEach(function (item) {
         var itemSection = solutionItems[item.id].itemSection;
         var itemLabel = (itemSection.title || itemSection.name || item.type);

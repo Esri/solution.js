@@ -17,7 +17,7 @@
      | See the License for the specific language governing permissions and
      | limitations under the License.
     -->
-  <title>View solution template</title>
+  <title>Clone solution template</title>
   <style>
   html {
     font-family: Arial;
@@ -50,10 +50,16 @@
   </style>
 </head>
 <body>
-  <h3>View solution template</h3>
+  <h3>Clone solution template</h3>
   <div id="page" style="display:none">
 
     <div class="section">
+      <div class="section-title">Credentials in destination organization</div>
+      <label for="username">Username:</label> <input type="text" id="username"></input>
+      <label for="password">Password:</label> <input type="password" id="password"></input>
+    </div>
+
+    <div id="availableSolutions" class="section">
       <div class="section-title">Available Solutions</div>
       <img id="fetchingSolutions" src="loading.gif"/>
       <div id="solutionsResults" style="display:none">
@@ -62,10 +68,21 @@
     </div>
 
     <div id="display" class="section" style="display:none">
-      <div class="section-title">Solution details</div>
+      <div class="section-title">Details of selected Solution</div>
       <img id="fetchingDetails" src="loading.gif"/>
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
+        <br>
+        <button id="createBtn" onclick="createSolutionFcn()">Create solution in your organization</button>
+        using name <input type="text" id="solutionNameField"></input>
+      </div>
+    </div>
+
+    <div id="create" class="section" style="display:none">
+      <div class="section-title">Details of your Solution <span id="solutionName"></span></div>
+      <img id="creating" src="loading.gif"/>
+      <div id="createResults" style="display:none">
+        <div id="createDisplay"></div>
       </div>
     </div>
 
@@ -73,10 +90,14 @@
 
   <script src="require_2.3.6.min.js"></script>
   <script>
-  var showSolutionFcn = null;
+  var showSolutionFcn = createSolutionFcn = null;
+  var currentSolutionId, currentSolutionName, currentSolutionItems;
 
   function onRadioClicked(event) {
-    showSolutionFcn(event.value);
+    var currentSolutionParts = event.value.split('|');
+    currentSolutionId = currentSolutionParts[0];
+    currentSolutionName = event.value.substr(currentSolutionId.length + 1);
+    showSolutionFcn(currentSolutionId, currentSolutionName);
   }
 
   requirejs.config({
@@ -93,12 +114,19 @@
   });
   requirejs([
     '../../dist/src/index',
-    '@esri/arcgis-rest-items'
+    'cloneJS',
+    '@esri/arcgis-rest-auth',
+    '@esri/arcgis-rest-items',
+    '@esri/arcgis-rest-request'
   ], function (
     clone,
-    items
+    cloneJS,
+    auth,
+    items,
+    request
   ) {
     showSolutionFcn = showSolution;
+    createSolutionFcn = createSolution;
 
     document.getElementById('page').style.display = 'block';
 
@@ -112,7 +140,7 @@
           var itemsDisplay = '';
           foundItems.results.forEach(function (item) {
             itemsDisplay += '<input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
-              item.id + '">' + item.title + '</input><br>';
+              item.id + '|' + item.title + '">' + item.title + '</input><br>';
           });
           document.getElementById('solutionsDisplay').innerHTML = itemsDisplay;
         }
@@ -128,7 +156,7 @@
 
     //----------------------------------------------------------------------------------------------------------------//
 
-    function showSolution(publishedSolutionId) {
+    function showSolution(publishedSolutionId, publishedSolutionTitle) {
       document.getElementById('display').style.display = 'block';
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
@@ -136,11 +164,14 @@
       items.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
+          currentSolutionItems = publishedSolution.items;
           document.getElementById('detailsDisplay').innerHTML =
             createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
-            createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+            createHierarchyDisplay(currentSolutionItems, clone.Solution.getItemHierarchy(currentSolutionItems));
+
+          document.getElementById('solutionNameField').value = publishedSolutionTitle;
         }
       )
       .finally(function () {
@@ -149,7 +180,87 @@
       });
     }
 
+    function createSolution() {
+      document.getElementById('createBtn').disabled = 'disabled';
+      document.getElementById('create').style.display = 'block';
+      document.getElementById('availableSolutions').style.display = 'none';
+
+      // Prepare credentials for library
+      requestOptions = getRequestOptions('username', 'password');
+
+      // Get the destination organization URL for creating links to source items
+      request.getPortal(null, requestOptions)
+      .then(
+        function (portalResponse) {
+          orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl + '/home/';
+          portal = 'https://' + portalResponse.portalHostname + '/';
+          currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
+          cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
+            requestOptions.authentication)
+          .then(
+            createResponse => {
+              document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+
+              // Fetch solution folder
+              setTimeout(
+                () => {
+                  var display = 'Folder "' + createResponse.folderName + '" contains:<br>';
+                  var searchOptions = {
+                    searchForm: {
+                      q: 'owner:' + portalResponse.user.username +
+                        ' orgid:' + portalResponse.id +
+                        ' ownerfolder:' + createResponse.folderId
+                    },
+                    authentication: requestOptions.authentication
+                  }
+                  items.searchItems(searchOptions)
+                  .then(
+                    foundItems => {
+                      if (foundItems.total === 0) {
+                        document.getElementById('solutionsDisplay').innerHTML = 'Solution not found';
+                      } else {
+                        display += '<ul>';
+                        foundItems.results.forEach(function (item) {
+                          display += '<li><a href="' + orgUrl + 'item.html?id=' + item.id +
+                          '" target="_blank">' + item.title + ' (' + item.type + ')</a></li>';
+                        });
+                        display += '</ul>';
+                        document.getElementById('createDisplay').innerHTML = display;
+                      }
+                    },
+                    error => {
+                      document.getElementById('createDisplay').innerHTML = error.toString();
+                    }
+                  )
+                  .finally(
+                    () => {
+                      document.getElementById('creating').style.display = 'none';
+                      document.getElementById('createResults').style.display = 'block';
+                    }
+                  );
+                },
+                2000
+              );
+            },
+            () => {
+              document.getElementById('create').style.display = 'none';
+              alert('Please refresh page and provide credentials');
+            }
+          );
+        }
+      );
+    }
+
     //----------------------------------------------------------------------------------------------------------------//
+
+    function getRequestOptions(usernameElementId, passwordElementId) {
+      return {
+        authentication: new auth.UserSession({
+          username: document.getElementById(usernameElementId).value,
+          password: document.getElementById(passwordElementId).value
+        })
+      };
+    }
 
     function createHierarchyDisplay(solutionItems, hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
