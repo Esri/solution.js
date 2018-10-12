@@ -76,7 +76,8 @@
     baseUrl: './',
     paths: {  // for the benefit of called libraries
       '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
-      '@esri/arcgis-rest-feature-service-admin': 'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
       '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
       '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
       '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
@@ -85,12 +86,10 @@
   });
   requirejs([
     '../../dist/src/index',
-    '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request'
+    '@esri/arcgis-rest-items'
   ], function (
     clone,
-    items,
-    request
+    items
   ) {
     showSolutionFcn = showSolution;
 
@@ -134,7 +133,7 @@
           document.getElementById('detailsDisplay').innerHTML =
             createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
-              '<br>Published Solution item hierarchy:' +
+            '<br>Published Solution item hierarchy:' +
             createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
         }
       )
@@ -146,7 +145,7 @@
 
     //----------------------------------------------------------------------------------------------------------------//
 
-    function createHierarchyDisplay(solution, hierarchy, createLinks, orgUrl) {
+    function createHierarchyDisplay(solutionItems, hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
       var icons = {
         'Dashboard': 'images/dashboard16.svg',
@@ -158,7 +157,7 @@
 
       var display = '<ul>';
       hierarchy.forEach(function (item) {
-        var itemSection = solution[item.id].itemSection;
+        var itemSection = solutionItems[item.id].itemSection;
         var itemLabel = (itemSection.title || itemSection.name || item.type);
         if (item.type === 'Feature Service') {
           itemLabel += ' (' + item.idPart + ')';
@@ -175,7 +174,7 @@
         }
 
         if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += createHierarchyDisplay(solution, item.dependencies, createLinks, orgUrl);
+          display += createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
         }
 
         display += '</li>';
