@@ -113,10 +113,12 @@
   requirejs([
     '../../dist/src/index',
     '@esri/arcgis-rest-auth',
+    '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
   ], function (
     clone,
     auth,
+    items,
     request
   ) {
     onRunCreate = createSolution;
@@ -174,7 +176,14 @@
       clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
       .then(function (publishResponse) {
         publishedSolutionId = publishResponse.id;
-        document.getElementById('publishDisplay').innerHTML = createPublishedDisplay(publishedSolutionId);
+
+        items.getItemData(publishedSolutionId, requestOptions)
+        .then(
+          publishedSolution => {
+            document.getElementById('publishDisplay').innerHTML = 'Published Solution item hierarchy:' +
+              createHierarchyDisplay(clone.Solution.getItemHierarchy(publishedSolution.items));
+          }
+        );
       }, function (error) {
          document.getElementById('publishDisplay').innerHTML = error.toString();
       })
