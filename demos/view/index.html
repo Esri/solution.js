@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset=utf-8>
+    <!--
+     | Copyright 2018 Esri
+     |
+     | Licensed under the Apache License, Version 2.0 (the "License");
+     | you may not use this file except in compliance with the License.
+     | You may obtain a copy of the License at
+     |
+     |    http://www.apache.org/licenses/LICENSE-2.0
+     |
+     | Unless required by applicable law or agreed to in writing, software
+     | distributed under the License is distributed on an "AS IS" BASIS,
+     | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     | See the License for the specific language governing permissions and
+     | limitations under the License.
+    -->
+  <title>View solution template</title>
+  <style>
+  .section {
+    margin: 8px 0 8px 0;
+    border: 1px solid gray;
+    padding: 8px;
+  }
+  .section-title {
+    font-size: larger;
+    margin-bottom: 4px;
+  }
+  ul {
+    margin: 0;
+    margin-top: 0.25em;
+  }
+  li {
+    margin-top: 0.25em;
+  }
+  a {
+    color: dodgerblue;
+  }
+  a:link {
+    color: dodgerblue;
+  }
+  </style>
+</head>
+<body>
+  <div id="page" style="display:none">
+
+    <div class="section">
+      <div class="section-title">Available Solutions</div>
+      <img id="fetchingSolutions" src="loading.gif"/>
+      <div id="solutionsResults" style="display:none">
+        <div id="solutionsDisplay"></div>
+      </div>
+    </div>
+
+    <div id="display" class="section" style="display:none">
+      <div class="section-title">Solution details</div>
+      <img id="fetchingDetails" src="loading.gif"/>
+      <div id="detailsResults" style="display:none">
+        <div id="detailsDisplay"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="require_2.3.6.min.js"></script>
+  <script>
+  var showSolutionFcn = null;
+
+  function onRadioClicked(event) {
+    showSolutionFcn(event.value);
+  }
+
+  requirejs.config({
+    baseUrl: './',
+    paths: {  // for the benefit of called libraries
+      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
+      '@esri/arcgis-rest-feature-service-admin': 'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.11.1/dist/umd/sharing.umd'
+    }
+  });
+  requirejs([
+    '../../dist/src/index',
+    '@esri/arcgis-rest-items',
+    '@esri/arcgis-rest-request'
+  ], function (
+    clone,
+    items,
+    request
+  ) {
+    showSolutionFcn = showSolution;
+
+    document.getElementById('page').style.display = 'block';
+
+    // Fetch solutions
+    items.searchItems('type:Solution owner:ArcGISTeamLocalGovOrg')
+    .then(
+      function (foundItems) {
+        if (foundItems.total === 0) {
+          document.getElementById('solutionsDisplay').innerHTML = 'No Solution items found';
+        } else {
+          var itemsDisplay = '<ul>';
+          foundItems.results.forEach(function (item) {
+            itemsDisplay += '<li><input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
+              item.id + '">' + item.title + '</input></li>';
+          });
+          itemsDisplay += '</ul>';
+          document.getElementById('solutionsDisplay').innerHTML = itemsDisplay;
+        }
+      },
+      function (error) {
+        document.getElementById('solutionsDisplay').innerHTML = error.toString();
+      }
+    )
+    .finally(function () {
+      document.getElementById('fetchingSolutions').style.display = 'none';
+      document.getElementById('solutionsResults').style.display = 'block';
+    });
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+    function showSolution(publishedSolutionId) {
+      document.getElementById('display').style.display = 'block';
+      document.getElementById('fetchingDetails').style.display = 'block';
+      document.getElementById('detailsResults').style.display = 'none';
+
+      items.getItemData(publishedSolutionId)
+      .then(
+        publishedSolution => {
+          document.getElementById('detailsDisplay').innerHTML =
+            createItemLinksDisplay(publishedSolutionId,
+              'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+              '<br>Published Solution item hierarchy:' +
+            createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+        }
+      )
+      .finally(function () {
+        document.getElementById('fetchingDetails').style.display = 'none';
+        document.getElementById('detailsResults').style.display = 'block';
+      });
+    }
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+    function createHierarchyDisplay(solution, hierarchy, createLinks, orgUrl) {
+      // Show solution contents as they'd be in the solution's AGOL item
+      var icons = {
+        'Dashboard': 'images/dashboard16.svg',
+        'Feature Service': 'images/features16.svg',
+        'Group': 'images/group.svg',
+        'Web Map': 'images/maps16.svg',
+        'Web Mapping Application': 'images/apps16.svg'
+      };
+
+      var display = '<ul>';
+      hierarchy.forEach(function (item) {
+        var itemSection = solution[item.id].itemSection;
+        var itemLabel = (itemSection.title || itemSection.name || item.type);
+        if (item.type === 'Feature Service') {
+          itemLabel += ' (' + item.idPart + ')';
+        }
+
+        var webpage = item.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
+          '" width="16" height="16" alt="">&nbsp;&nbsp;';
+        if (createLinks) {
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
+            itemLabel + '</a>';
+        } else {
+          display += itemLabel;
+        }
+
+        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
+          display += createHierarchyDisplay(solution, item.dependencies, createLinks, orgUrl);
+        }
+
+        display += '</li>';
+      });
+      display += '</ul>';
+      return display;
+    }
+
+    function createItemLinksDisplay(publishedId, orgUrl, portalUrl) {
+      var display = '<ul>';
+      display += '<li><a href="' + orgUrl + 'item.html?id=' + publishedId +
+        '" target="_blank">Item</a></li>';
+      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
+        '?f=json" target="_blank">Item JSON</a></li>';
+      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
+        '/data?f=json" target="_blank">Data JSON</a></li>';
+      display += '</ul>';
+
+      return display;
+    }
+
+  });
+  </script>
+</body>
+</html>
