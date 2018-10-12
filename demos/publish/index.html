@@ -180,7 +180,8 @@
         items.getItemData(publishedSolutionId, requestOptions)
         .then(
           publishedSolution => {
-            document.getElementById('publishDisplay').innerHTML = 'Published Solution item hierarchy:' +
+            document.getElementById('publishDisplay').innerHTML =
+              createPublishedDisplay(publishedSolutionId) + '<br>Published Solution item hierarchy:' +
               createHierarchyDisplay(clone.Solution.getItemHierarchy(publishedSolution.items));
           }
         );
