@@ -18,6 +18,7 @@ define([
   return {
     cloneJS: null,
     swizzleList: {},
+    groups: [],
 
     createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems, userSession) {
       cloneJS = this;
@@ -60,7 +61,8 @@ define([
           if (buildList.length === 0) {
             resolve({
               folderName: folderName,
-              folderId: folderId
+              folderId: folderId,
+              groups: cloneJS.groups
             });
             return;
           }
@@ -164,6 +166,7 @@ define([
               'id': createResp.group.id
             };
             console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (group)');//???
+            cloneJS.groups.push(createResp.group.id);
 
             if (component.dependencies.length > 0) {
               // Add each of the group's items to it
