@@ -29,7 +29,7 @@
   }
   .section-title {
     font-size: larger;
-    margin-bottom: 4px;
+    margin-bottom: 12px;
   }
   ul {
     margin: 0;
@@ -116,12 +116,14 @@
     '../../dist/src/index',
     'cloneJS',
     '@esri/arcgis-rest-auth',
+    '@esri/arcgis-rest-groups',
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
   ], function (
     clone,
     cloneJS,
     auth,
+    groups,
     items,
     request
   ) {
@@ -225,7 +227,33 @@
                           '" target="_blank">' + item.title + ' (' + item.type + ')</a></li>';
                         });
                         display += '</ul>';
-                        document.getElementById('createDisplay').innerHTML = display;
+
+                        if (Array.isArray(createResponse.groups) && createResponse.groups.length > 0) {
+                          var groupDfds = [];
+                          display += '<br>The following groups were created:<ul>';
+                          createResponse.groups.forEach(
+                            groupId => {
+                              var groupDfd = groups.getGroup(groupId, requestOptions);
+                              groupDfds.push(groupDfd);
+                              groupDfd
+                              .then(
+                                group => {
+                                  display += '<li><a href="' + orgUrl + 'group.html?id=' + group.id +
+                                    '" target="_blank">' + group.title + '</a></li>';
+                                }
+                              );
+                            }
+                          );
+                          Promise.all(groupDfds)
+                          .then(
+                            () => {
+                              display += '</ul>';
+                              document.getElementById('createDisplay').innerHTML = display;
+                            }
+                          );
+                        } else {
+                          document.getElementById('createDisplay').innerHTML = display;
+                        }
                       }
                     },
                     error => {
