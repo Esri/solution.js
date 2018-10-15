@@ -1,6 +1,6 @@
 {
   "name": "arcgis-clone-js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Transfer sets of ArcGIS Online items from one organization to another",
   "main": "index.js",
   "scripts": {

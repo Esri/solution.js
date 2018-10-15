@@ -56,14 +56,14 @@ export declare class ItemFactory {
      * ```
      *
      * @param rootIds AGOL id string or list of AGOL id strings
+     * @param requestOptions Options for the request
      * @param collection A hash of items already converted useful for avoiding duplicate conversions and
      * hierarchy tracing
-     * @param requestOptions Options for the request
      * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
      * if either id is inaccessible, a single error response will be produced for the set
      * of ids
      */
-    static itemHierarchyToJSON(rootIds: string | string[], collection?: IItemHash, requestOptions?: IRequestOptions): Promise<IItemHash>;
+    static itemHierarchyToJSON(rootIds: string | string[], requestOptions?: IRequestOptions, collection?: IItemHash): Promise<IItemHash>;
     /**
      * Extracts the AGOL id from the front of a string.
      *
