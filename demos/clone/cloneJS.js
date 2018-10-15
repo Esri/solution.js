@@ -431,8 +431,13 @@ define([
         options.item.text = solutionItems[sourceId].dataSection;
 
         // Swizzle its webmap
-        if (options.item.text.values && options.item.text.values.webmap) {
-          options.item.text.values.webmap = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+        if (options.item.text.values) {
+          if (options.item.text.values.webmap) {
+            options.item.text.values.webmap = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+          }
+          if (options.item.text.values.group) {
+            options.item.text.values.group = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+          }
         }
 
         if (folderId) {

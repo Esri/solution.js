@@ -3,51 +3,11 @@
 <head>
     <meta charset=utf-8>
     <!--
-     | Copyright 2018 Esri
-     |
-     | Licensed under the Apache License, Version 2.0 (the "License");
-     | you may not use this file except in compliance with the License.
-     | You may obtain a copy of the License at
-     |
-     |    http://www.apache.org/licenses/LICENSE-2.0
-     |
-     | Unless required by applicable law or agreed to in writing, software
-     | distributed under the License is distributed on an "AS IS" BASIS,
-     | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     | See the License for the specific language governing permissions and
-     | limitations under the License.
+     | Copyright (c) 2018 Esri
+     | Apache-2.0
     -->
   <title>Clone solution template</title>
-  <style>
-  html {
-    font-family: Arial;
-  }
-  .section {
-    margin: 8px 0 8px 0;
-    border: 1px solid gray;
-    padding: 8px;
-  }
-  .section-title {
-    font-size: larger;
-    margin-bottom: 12px;
-  }
-  ul {
-    margin: 0;
-    margin-top: 0.25em;
-  }
-  .solutionList {
-    list-style-type: none;
-  }
-  li {
-    margin-top: 0.25em;
-  }
-  a {
-    color: dodgerblue;
-  }
-  a:link {
-    color: dodgerblue;
-  }
-  </style>
+  <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
 </head>
 <body>
   <h3>Clone solution template</h3>
@@ -61,7 +21,7 @@
 
     <div id="availableSolutions" class="section">
       <div class="section-title">Available Solutions</div>
-      <img id="fetchingSolutions" src="loading.gif"/>
+      <img id="fetchingSolutions" src="../demo_common/images/loading.gif"/>
       <div id="solutionsResults" style="display:none">
         <div id="solutionsDisplay"></div>
       </div>
@@ -69,7 +29,7 @@
 
     <div id="display" class="section" style="display:none">
       <div class="section-title">Details of selected Solution</div>
-      <img id="fetchingDetails" src="loading.gif"/>
+      <img id="fetchingDetails" src="../demo_common/images/loading.gif"/>
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
         <br>
@@ -80,7 +40,7 @@
 
     <div id="create" class="section" style="display:none">
       <div class="section-title">Details of your Solution <span id="solutionName"></span></div>
-      <img id="creating" src="loading.gif"/>
+      <img id="creating" src="../demo_common/images/loading.gif"/>
       <div id="createResults" style="display:none">
         <div id="createDisplay"></div>
       </div>
@@ -88,21 +48,32 @@
 
   </div>
 
-  <script src="require_2.3.6.min.js"></script>
+  <script src="../demo_common/require_2.3.6.min.js"></script>
   <script>
   var showSolutionFcn = createSolutionFcn = null;
   var currentSolutionId, currentSolutionName, currentSolutionItems;
 
+  /**
+   * Shows the currently-selected solution.
+   * @param event Radio-button click event
+   */
   function onRadioClicked(event) {
+    // Save id & name of the selected solution so that we can build it
     var currentSolutionParts = event.value.split('|');
     currentSolutionId = currentSolutionParts[0];
     currentSolutionName = event.value.substr(currentSolutionId.length + 1);
-    showSolutionFcn(currentSolutionId, currentSolutionName);
+    document.getElementById('solutionNameField').value = currentSolutionName;
+
+    // Show the hierarchy of the selected solution
+    showSolutionFcn(currentSolutionId);
   }
 
   requirejs.config({
     baseUrl: './',
-    paths: {  // for the benefit of called libraries
+    paths: {
+      // for the benefit of arcgis-clone-js
+      'tslib': '../demo_common/tslib',
+      // for the benefit of called libraries that use arcgis-rest-auth
       '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
       '@esri/arcgis-rest-feature-service-admin':
         'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
@@ -114,165 +85,76 @@
   });
   requirejs([
     '../../dist/src/index',
+    '../demo_common/common',
     'cloneJS',
     '@esri/arcgis-rest-auth',
-    '@esri/arcgis-rest-groups',
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
   ], function (
     clone,
+    demoCommon,
     cloneJS,
     auth,
-    groups,
     items,
     request
   ) {
-    showSolutionFcn = showSolution;
+    showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
     createSolutionFcn = createSolution;
 
     document.getElementById('page').style.display = 'block';
 
-    // Fetch solutions
-    items.searchItems('type:Solution owner:ArcGISTeamLocalGovOrg')
-    .then(
-      function (foundItems) {
-        if (foundItems.total === 0) {
-          document.getElementById('solutionsDisplay').innerHTML = 'No Solution items found';
-        } else {
-          var itemsDisplay = '';
-          foundItems.results.forEach(function (item) {
-            itemsDisplay += '<input type="radio" onclick="onRadioClicked(this)" name="solutions" value="' +
-              item.id + '|' + item.title + '">' + item.title + '</input><br>';
-          });
-          document.getElementById('solutionsDisplay').innerHTML = itemsDisplay;
-        }
-      },
-      function (error) {
-        document.getElementById('solutionsDisplay').innerHTML = error.toString();
-      }
-    )
-    .finally(function () {
-      document.getElementById('fetchingSolutions').style.display = 'none';
-      document.getElementById('solutionsResults').style.display = 'block';
-    });
+    // Fetch and list solutions
+    demoCommon.showAvailableSolutions();
 
     //----------------------------------------------------------------------------------------------------------------//
 
-    function showSolution(publishedSolutionId, publishedSolutionTitle) {
-      document.getElementById('display').style.display = 'block';
-      document.getElementById('fetchingDetails').style.display = 'block';
-      document.getElementById('detailsResults').style.display = 'none';
-
-      items.getItemData(publishedSolutionId)
-      .then(
-        publishedSolution => {
-          currentSolutionItems = publishedSolution.items;
-          document.getElementById('detailsDisplay').innerHTML =
-            createItemLinksDisplay(publishedSolutionId,
-              'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
-            '<br>Published Solution item hierarchy:' +
-            createHierarchyDisplay(currentSolutionItems, clone.Solution.getItemHierarchy(currentSolutionItems));
-
-          document.getElementById('solutionNameField').value = publishedSolutionTitle;
-        }
-      )
-      .finally(function () {
-        document.getElementById('fetchingDetails').style.display = 'none';
-        document.getElementById('detailsResults').style.display = 'block';
-      });
-    }
-
+    /**
+     * Creates the items described in a solution in the user's organization.
+     */
     function createSolution() {
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
 
       // Prepare credentials for library
-      requestOptions = getRequestOptions('username', 'password');
+      requestOptions = demoCommon.getRequestOptions('username', 'password');
 
       // Get the destination organization URL for creating links to source items
       request.getPortal(null, requestOptions)
       .then(
-        function (portalResponse) {
+        portalResponse => {
           orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl + '/home/';
           portal = 'https://' + portalResponse.portalHostname + '/';
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
-          cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
-            requestOptions.authentication)
+
+          // Get the solution contents
+          items.getItemData(currentSolutionId)
           .then(
-            createResponse => {
-              document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+            publishedSolution => {
+              currentSolutionItems = publishedSolution.items;
 
-              // Fetch solution folder
-              setTimeout(
-                () => {
-                  var display = 'Folder "' + createResponse.folderName + '" contains:<br>';
-                  var searchOptions = {
-                    searchForm: {
-                      q: 'owner:' + portalResponse.user.username +
-                        ' orgid:' + portalResponse.id +
-                        ' ownerfolder:' + createResponse.folderId
-                    },
-                    authentication: requestOptions.authentication
-                  }
-                  items.searchItems(searchOptions)
-                  .then(
-                    foundItems => {
-                      if (foundItems.total === 0) {
-                        document.getElementById('solutionsDisplay').innerHTML = 'Solution not found';
-                      } else {
-                        display += '<ul>';
-                        foundItems.results.forEach(function (item) {
-                          display += '<li><a href="' + orgUrl + 'item.html?id=' + item.id +
-                          '" target="_blank">' + item.title + ' (' + item.type + ')</a></li>';
-                        });
-                        display += '</ul>';
+              // Clone the contents into the destination org
+              cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
+                requestOptions.authentication)
+              .then(
+                createResponse => {
+                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
 
-                        if (Array.isArray(createResponse.groups) && createResponse.groups.length > 0) {
-                          var groupDfds = [];
-                          display += '<br>The following groups were created:<ul>';
-                          createResponse.groups.forEach(
-                            groupId => {
-                              var groupDfd = groups.getGroup(groupId, requestOptions);
-                              groupDfds.push(groupDfd);
-                              groupDfd
-                              .then(
-                                group => {
-                                  display += '<li><a href="' + orgUrl + 'group.html?id=' + group.id +
-                                    '" target="_blank">' + group.title + '</a></li>';
-                                }
-                              );
-                            }
-                          );
-                          Promise.all(groupDfds)
-                          .then(
-                            () => {
-                              display += '</ul>';
-                              document.getElementById('createDisplay').innerHTML = display;
-                            }
-                          );
-                        } else {
-                          document.getElementById('createDisplay').innerHTML = display;
-                        }
-                      }
-                    },
-                    error => {
-                      document.getElementById('createDisplay').innerHTML = error.toString();
-                    }
-                  )
-                  .finally(
+                  // List the created items in the solution folder
+                  // There appears to be a lag between when the service says that the items are added and when
+                  // they show up in response to a search. Wait a couple of seconds before searching
+                  setTimeout(
                     () => {
-                      document.getElementById('creating').style.display = 'none';
-                      document.getElementById('createResults').style.display = 'block';
-                    }
+                      demoCommon.showCreatedItems(portalResponse, createResponse);
+                    },
+                    2000
                   );
                 },
-                2000
+                () => {
+                  document.getElementById('create').style.display = 'none';
+                  alert('Please refresh page and provide credentials');
+                }
               );
-            },
-            () => {
-              document.getElementById('create').style.display = 'none';
-              alert('Please refresh page and provide credentials');
             }
           );
         }
@@ -280,66 +162,6 @@
     }
 
     //----------------------------------------------------------------------------------------------------------------//
-
-    function getRequestOptions(usernameElementId, passwordElementId) {
-      return {
-        authentication: new auth.UserSession({
-          username: document.getElementById(usernameElementId).value,
-          password: document.getElementById(passwordElementId).value
-        })
-      };
-    }
-
-    function createHierarchyDisplay(solutionItems, hierarchy, createLinks, orgUrl) {
-      // Show solution contents as they'd be in the solution's AGOL item
-      var icons = {
-        'Dashboard': 'images/dashboard16.svg',
-        'Feature Service': 'images/features16.svg',
-        'Group': 'images/group.svg',
-        'Web Map': 'images/maps16.svg',
-        'Web Mapping Application': 'images/apps16.svg'
-      };
-
-      var display = '<ul class="solutionList">';
-      hierarchy.forEach(function (item) {
-        var itemSection = solutionItems[item.id].itemSection;
-        var itemLabel = (itemSection.title || itemSection.name || item.type);
-        if (item.type === 'Feature Service') {
-          itemLabel += ' (' + item.idPart + ')';
-        }
-
-        var webpage = item.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
-          '" width="16" height="16" alt="">&nbsp;&nbsp;';
-        if (createLinks) {
-          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
-            itemLabel + '</a>';
-        } else {
-          display += itemLabel;
-        }
-
-        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
-        }
-
-        display += '</li>';
-      });
-      display += '</ul>';
-      return display;
-    }
-
-    function createItemLinksDisplay(publishedId, orgUrl, portalUrl) {
-      var display = '<ul>';
-      display += '<li><a href="' + orgUrl + 'item.html?id=' + publishedId +
-        '" target="_blank">Item</a></li>';
-      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
-        '?f=json" target="_blank">Item JSON</a></li>';
-      display += '<li><a href="' + portalUrl + 'sharing/content/items/' + publishedId +
-        '/data?f=json" target="_blank">Data JSON</a></li>';
-      display += '</ul>';
-
-      return display;
-    }
 
   });
   </script>
