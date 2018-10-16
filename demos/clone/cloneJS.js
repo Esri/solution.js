@@ -20,12 +20,16 @@ define([
     swizzleList: {},
     groups: [],
 
-    createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems, userSession) {
+    createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems,
+      progressCallback, userSession) {
       cloneJS = this;
       return new Promise((resolve, reject) => {
 
         var buildList = clone.Solution.topologicallySortItems(solutionItems);
         console.log('Build order list: ' + buildList);//???
+        var progressStep = 100 / (buildList.length + 2);  // for creating folder & getting org info minus front-loaded hydrateTopOfList
+        var currentProgress = 0;
+        progressCallback(currentProgress);
 
         var folderId;
         var portalClone = portalUrl + 'sharing/rest';
@@ -58,6 +62,7 @@ define([
 
         // Hydrate the top item in the to-do list
         function hydrateTopOfList () {
+          progressCallback(currentProgress += progressStep);
           if (buildList.length === 0) {
             resolve({
               folderName: folderName,
