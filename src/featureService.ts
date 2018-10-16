@@ -40,6 +40,11 @@ export class FeatureService extends Item {
           // the item and data sections with sections for the service, full layers, and
           // full tables
 
+          // Add to the standard cost of creating an item: extra for creating because they're
+          // slower than other items to create and extra because they have to be moved to the 
+          // desired folder
+          this.estimatedCost += 2;
+
           // Get the service description
           let serviceUrl = this.itemSection.url;
           request(serviceUrl + "?f=json", requestOptions)
@@ -58,9 +63,6 @@ export class FeatureService extends Item {
 
               this.serviceSection = serviceData;
 
-              // Update cost estimate because we have to move it to the desired folder in addition to creating it
-              this.estimatedCost = 2;
-
               // Get the affiliated layer and table items
               Promise.all([
                 this.getLayers(serviceUrl, serviceData["layers"], requestOptions),
@@ -70,19 +72,19 @@ export class FeatureService extends Item {
                 this.layers = results[0];
                 this.tables = results[1];
 
-                // Update cost based on number of layers & tables
-                this.estimatedCost += this.layers.length;
-                this.estimatedCost += this.tables.length;
+                // Update cost based on number of layers & tables; doubled because they're extra slow
+                this.estimatedCost += this.layers.length * 2;
+                this.estimatedCost += this.tables.length * 2;
 
-                // Update cost based on number of relationships
+                // Update cost based on number of relationships; doubled because they're extra slow
                 this.layers.forEach(item => {
                   if (Array.isArray(item.relationships)) {
-                    this.estimatedCost += item.relationships.length;
+                    this.estimatedCost += item.relationships.length * 2;
                   }
                 });
                 this.tables.forEach(item => {
                   if (Array.isArray(item.relationships)) {
-                    this.estimatedCost += item.relationships.length;
+                    this.estimatedCost += item.relationships.length * 2;
                   }
                 });
 
