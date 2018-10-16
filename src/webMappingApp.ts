@@ -24,6 +24,8 @@ export class WebMappingApp extends Item {
       super.init(requestOptions)
       .then(
         () => {
+          this.estimatedCost += 1;  // cost to update URL after item is created
+
           // Extract the dependencies
           if (this.dataSection && this.dataSection.values) {
             let values = this.dataSection.values;

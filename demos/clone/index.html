@@ -44,6 +44,7 @@
       <div id="createResults" style="display:none">
         <div id="createDisplay"></div>
       </div>
+      <div id="progressBarContainer"><div id="progressBar"></div></div>
     </div>
 
   </div>
@@ -86,6 +87,7 @@
   requirejs([
     '../../dist/src/index',
     '../demo_common/common',
+    '../demo_common/progress',
     'cloneJS',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
@@ -93,6 +95,7 @@
   ], function (
     clone,
     demoCommon,
+    progress,
     cloneJS,
     auth,
     items,
@@ -116,6 +119,9 @@
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
 
+      progress.init('progressBarContainer', 'progressBar');
+      progress.show();
+
       // Prepare credentials for library
       requestOptions = demoCommon.getRequestOptions('username', 'password');
 
@@ -135,7 +141,7 @@
 
               // Clone the contents into the destination org
               cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
-                requestOptions.authentication)
+                progress.set.bind(progress), requestOptions.authentication)
               .then(
                 createResponse => {
                   document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -145,6 +151,7 @@
                   // they show up in response to a search. Wait a couple of seconds before searching
                   setTimeout(
                     () => {
+                      progress.hide();
                       demoCommon.showCreatedItems(portalResponse, createResponse);
                     },
                     2000

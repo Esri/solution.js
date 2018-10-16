@@ -24,7 +24,7 @@ export class FeatureService extends Item {
 
   /**
    * Performs item-specific initialization.
-   * 
+   *
    * @param requestOptions Options for initialization request for item's data section
    * @returns A promise that will resolve with the item
    */
@@ -37,14 +37,19 @@ export class FeatureService extends Item {
       .then(
         () => {
           // To have enough information for reconstructing the service, we'll supplement
-          // the item and data sections with sections for the service, full layers, and 
+          // the item and data sections with sections for the service, full layers, and
           // full tables
+
+          // Add to the standard cost of creating an item: extra for creating because they're
+          // slower than other items to create and extra because they have to be moved to the 
+          // desired folder
+          this.estimatedCost += 2;
 
           // Get the service description
           let serviceUrl = this.itemSection.url;
           request(serviceUrl + "?f=json", requestOptions)
           .then(
-            serviceData => {              
+            serviceData => {
               // Fill in some missing parts
               serviceData["name"] = this.itemSection["name"];
               serviceData["snippet"] = this.itemSection["snippet"];
@@ -55,7 +60,7 @@ export class FeatureService extends Item {
                 this.getFirstUsableName(serviceData["layers"]) ||
                 this.getFirstUsableName(serviceData["tables"]) ||
                 "Feature Service";
-  
+
               this.serviceSection = serviceData;
 
               // Get the affiliated layer and table items
@@ -66,6 +71,23 @@ export class FeatureService extends Item {
               .then(results => {
                 this.layers = results[0];
                 this.tables = results[1];
+
+                // Update cost based on number of layers & tables; doubled because they're extra slow
+                this.estimatedCost += this.layers.length * 2;
+                this.estimatedCost += this.tables.length * 2;
+
+                // Update cost based on number of relationships; doubled because they're extra slow
+                this.layers.forEach(item => {
+                  if (Array.isArray(item.relationships)) {
+                    this.estimatedCost += item.relationships.length * 2;
+                  }
+                });
+                this.tables.forEach(item => {
+                  if (Array.isArray(item.relationships)) {
+                    this.estimatedCost += item.relationships.length * 2;
+                  }
+                });
+
                 resolve(this);
               });
             }
@@ -77,7 +99,7 @@ export class FeatureService extends Item {
 
   /**
    * Gets the full definitions of the layers affiliated with a hosted service.
-   * 
+   *
    * @param serviceUrl URL to hosted service
    * @param layerList List of layers at that service
    * @param requestOptions Options for the request

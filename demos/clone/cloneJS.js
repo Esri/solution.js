@@ -20,12 +20,22 @@ define([
     swizzleList: {},
     groups: [],
 
-    createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems, userSession) {
+    createItemHierachyFromJSON: function (orgUrl, portalUrl, solutionName, solutionItems,
+      progressCallback, userSession) {
       cloneJS = this;
       return new Promise((resolve, reject) => {
 
         var buildList = clone.Solution.topologicallySortItems(solutionItems);
-        console.log('Build order list: ' + buildList);//???
+
+        // Get the estimated cost of the rehydration
+        var currentProgress = 0, estimatedCost = 0;
+        Object.keys(solutionItems).forEach(key => {
+          estimatedCost += solutionItems[key].estimatedCost;
+        });
+        estimatedCost += 2; // item costs plus creating folder & getting org info
+
+        var progressStep = 100 / estimatedCost;
+        progressCallback(0);
 
         var folderId;
         var portalClone = portalUrl + 'sharing/rest';
@@ -42,10 +52,12 @@ define([
         cloneJS.createFolder(folderName, solutionItems, userSession)
         .then(
           createdFolderId => {
+            progressIncrement();
             folderId = createdFolderId;
             request.request(options.url, options)
             .then(
               orgResp => {
+                progressIncrement();
                 organization = (orgResp.allSSL ? 'https://' : 'http://') + orgResp.urlKey + '.' + orgResp.customBaseUrl;
                 console.log('orgUrl: ' + orgUrl);//???
                 console.log('organization: ' + organization);//???
@@ -56,9 +68,15 @@ define([
           }
         );
 
+        function progressIncrement (costMultiplier) {
+          var increase = costMultiplier ? costMultiplier * progressStep : progressStep;
+          progressCallback(currentProgress += increase);
+        }
+
         // Hydrate the top item in the to-do list
         function hydrateTopOfList () {
           if (buildList.length === 0) {
+            progressCallback(100);
             resolve({
               folderName: folderName,
               folderId: folderId,
@@ -72,7 +90,7 @@ define([
           var item = solutionItems[sourceId].itemSection;
           switch (itemType) {
             case 'Feature Service':
-              dfd = cloneJS.createFeatureService(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createFeatureService(sourceId, folderId, solutionItems, userSession, progressIncrement);
               break;
             case 'Feature Layer':
               console.error('solo feature layer not implemented');
@@ -81,26 +99,32 @@ define([
               console.error('solo table not implemented');
               break;
             case 'Web Map':
-              dfd = cloneJS.createWebmap(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createWebmap(sourceId, folderId, solutionItems, userSession, progressIncrement);
               break;
             case 'Web Mapping Application':
-              dfd = cloneJS.createWebApp(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createWebApp(sourceId, folderId, solutionItems, userSession, progressIncrement);
               break;
             case 'Group':
-              dfd = cloneJS.createGroup(sourceId, solutionItems, userSession);
+              dfd = cloneJS.createGroup(sourceId, solutionItems, userSession, progressIncrement);
               break;
             case 'Dashboard':
-              dfd = cloneJS.createDashboard(sourceId, folderId, solutionItems, userSession);
+              dfd = cloneJS.createDashboard(sourceId, folderId, solutionItems, userSession, progressIncrement);
               break;
             default:
-              console.warn('Item ' + sourceId + ' ("' + (item.title || item.name) + '" ' + item.type + ') not hydrated');
+              console.warn('Item ' + sourceId + ' ("' + (item.title || item.name) + '" ' +
+                item.type + ') not hydrated');
               hydrateTopOfList();
               break;
           }
           if (dfd) {
-            dfd.then(hydrateTopOfList, function (error) {
-              console.warn(error);
-            });
+            dfd.then(
+              result => {
+                hydrateTopOfList();
+              },
+              error => {
+                console.warn(error);
+              }
+            );
           }
         }
       });
@@ -149,7 +173,7 @@ define([
       });
     },
 
-    createGroup: function (sourceId, solutionItems, userSession) {
+    createGroup: function (sourceId, solutionItems, userSession, progressIncrement) {
       var component = solutionItems[sourceId];
       return new Promise((resolve, reject) => {
 
@@ -162,10 +186,12 @@ define([
         groups.createGroup(options)
         .then(
           createResp => {
+            progressIncrement();
             cloneJS.swizzleList[sourceId] = {
               'id': createResp.group.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (group)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + //???
+              ' (group)');//???
             cloneJS.groups.push(createResp.group.id);
 
             if (component.dependencies.length > 0) {
@@ -179,7 +205,11 @@ define([
                     groupId: createResp.group.id,
                     authentication: userSession
                   })
-                  .then(resolve(),
+                  .then(
+                    () => {
+                      progressIncrement();
+                      resolve();
+                    },
                     error => {
                       console.log("Unable to share group's items with it: " + JSON.stringify(error));
                     }
@@ -206,20 +236,20 @@ define([
       });
     },
 
-    createFeatureService: function (sourceId, folderId, solutionItems, userSession) {
+    createFeatureService: function (sourceId, folderId, solutionItems, userSession, progressIncrement) {
       var component = solutionItems[sourceId];
       return new Promise((resolve, reject) => {
 
-        var item = solutionItems[sourceId].itemSection;
+        var item = component.itemSection;
         item.name += '_' + cloningUniquenessTimestamp();
 
         var relationships = {};
 
         // Remove the layers and tables because they aren't added when the service is added, but their presence
         // prevents them from being added later via addToDefinition
-        var layers = solutionItems[sourceId].layers || [];
+        var layers = component.layers || [];
         item.layers = [];
-        var tables = solutionItems[sourceId].tables || [];
+        var tables = component.tables || [];
         item.tables = [];
 
         var options = {
@@ -231,11 +261,13 @@ define([
         .then(
           createResp => {
             if (createResp.success) {
+              progressIncrement(3);
               cloneJS.swizzleList[sourceId] = {
                 'serviceItemId': createResp.serviceItemId,
                 'serviceurl': createResp.serviceurl
               };
-              console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (feat svc)');//???
+              console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) +  //???
+                ' (feat svc)');//???
 
               // Sort layers and tables by id so that they're added with the same ids
               var layersAndTables = [];
@@ -291,12 +323,14 @@ define([
                     featureServiceAdmin.addToServiceDefinition(createResp.serviceurl, options)
                     .then(
                       response => {
+                        progressIncrement(2);
                         cloneJS.swizzleList[sourceId + '_' + originalId] = {
                           'name': response.layers[0].name,
                           'itemId': createResp.serviceItemId,
                           'url': createResp.serviceurl + '/' + response.layers[0].id
                         };
-                        console.log('swizzle ' + sourceId + '_' + originalId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId + '_' + originalId]) + ' (feat layer)');//???
+                        console.log('swizzle ' + sourceId + '_' + originalId + ' to ' +   //???
+                          JSON.stringify(cloneJS.swizzleList[sourceId + '_' + originalId]) + ' (feat layer)');//???
                         addToDefinition(listToAdd).then(resolve);
                       },
                       response => {
@@ -331,11 +365,14 @@ define([
                         featureServiceAdmin.addToServiceDefinition(createResp.serviceurl + "/" + id, options)
                         .then(
                           addRelationshipsResponse => {
-                            restoredRelationships += '<li>Layer ' + id + ' -> ' + JSON.stringify(relationships[id]) + '</li>';
+                            progressIncrement(2);
+                            restoredRelationships += '<li>Layer ' + id + ' -> ' +
+                              JSON.stringify(relationships[id]) + '</li>';
                             resolve();
                           },
                           addRelationshipsResponse => {
-                            console.log('failed to update relationships for ' + id + ': ' + JSON.stringify(addRelationshipsResponse));
+                            console.log('failed to update relationships for ' + id + ': ' +
+                              JSON.stringify(addRelationshipsResponse));
                             resolve();
                           }
                         );
@@ -364,16 +401,16 @@ define([
       });
     },
 
-    createWebmap: function (sourceId, folderId, solutionItems, userSession) {
+    createWebmap: function (sourceId, folderId, solutionItems, userSession, progressIncrement) {
       var component = solutionItems[sourceId];
       return new Promise((resolve, reject) => {
 
         //  Set up clone item for creation
         var options = {
           authentication: userSession,
-          item: solutionItems[sourceId].itemSection
+          item: component.itemSection
         };
-        options.item.text = solutionItems[sourceId].dataSection;
+        options.item.text = component.dataSection;
 
         // Swizzle its map layers
         if (Array.isArray(options.item.text.operationalLayers)) {
@@ -405,10 +442,12 @@ define([
         items.createItemInFolder(options)
         .then(
           createResp => {
+            progressIncrement();
             cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (webmap)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) +   //???
+              ' (webmap)');//???
             resolve();
           },
           error => {
@@ -419,24 +458,24 @@ define([
       });
     },
 
-    createWebApp: function (sourceId, folderId, solutionItems, userSession) {
+    createWebApp: function (sourceId, folderId, solutionItems, userSession, progressIncrement) {
       var component = solutionItems[sourceId];
       return new Promise((resolve, reject) => {
 
         //  Set up clone item for creation
         var options = {
           authentication: userSession,
-          item: solutionItems[sourceId].itemSection
+          item: component.itemSection
         };
-        options.item.text = solutionItems[sourceId].dataSection;
+        options.item.text = component.dataSection;
 
         // Swizzle its webmap
         if (options.item.text.values) {
           if (options.item.text.values.webmap) {
-            options.item.text.values.webmap = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+            options.item.text.values.webmap = cloneJS.swizzleList[component.dependencies[0]].id;
           }
           if (options.item.text.values.group) {
-            options.item.text.values.group = cloneJS.swizzleList[solutionItems[sourceId].dependencies[0]].id;
+            options.item.text.values.group = cloneJS.swizzleList[component.dependencies[0]].id;
           }
         }
 
@@ -444,16 +483,18 @@ define([
           options.folder = folderId;
         }
 
-        var appUrl = solutionItems[sourceId].itemSection.url;
+        var appUrl = component.itemSection.url;
 
         // Create the item
         items.createItemInFolder(options)
         .then(
           createResp => {
+            progressIncrement();
             cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (web app)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) +   //???
+              ' (web app)');//???
 
             // Update its URL
             var options = {
@@ -466,6 +507,7 @@ define([
             items.updateItem(options)
             .then(
               updateResp => {
+                progressIncrement();
                 resolve();
               },
               error => {
@@ -481,15 +523,15 @@ define([
       });
     },
 
-    createDashboard: function (sourceId, folderId, solutionItems, userSession) {
+    createDashboard: function (sourceId, folderId, solutionItems, userSession, progressIncrement) {
       var component = solutionItems[sourceId];
       return new Promise((resolve, reject) => {
         //  Set up clone item for creation
         var options = {
           authentication: userSession,
-          item: solutionItems[sourceId].itemSection
+          item: component.itemSection
         };
-        options.item.text = solutionItems[sourceId].dataSection;
+        options.item.text = component.dataSection;
         if (folderId) {
           options.folder = folderId;
         }
@@ -508,10 +550,12 @@ define([
         items.createItemInFolder(options)
         .then(
           createResp => {
+            progressIncrement();
             cloneJS.swizzleList[sourceId] = {
               'id': createResp.id
             };
-            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) + ' (dashboard)');//???
+            console.log('swizzle ' + sourceId + ' to ' + JSON.stringify(cloneJS.swizzleList[sourceId]) +   //???
+              ' (dashboard)');//???
             resolve();
           },
           error => {

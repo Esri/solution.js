@@ -34,6 +34,7 @@ export class Group extends AgolItem {
       .then(
         contents => {
           this.dependencies = contents;
+          this.estimatedCost += this.dependencies.length;
           resolve(this);
         },
         error => {
