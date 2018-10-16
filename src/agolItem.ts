@@ -16,6 +16,10 @@ export class AgolItem {
    * Item JSON
    */
   itemSection: any;
+  /**
+   * Estimated cost factor for rehydrating item
+   */
+  estimatedCost: number;
 
   /**
    * Performs common item initialization.
@@ -28,6 +32,7 @@ export class AgolItem {
     }
     this.dependencies = [];
     this.itemSection = itemSection;
+    this.estimatedCost = 1;
     this.removeUncloneableItemProperties();
   }
 

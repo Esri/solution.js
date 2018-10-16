@@ -27,8 +27,14 @@ define([
 
         var buildList = clone.Solution.topologicallySortItems(solutionItems);
         console.log('Build order list: ' + buildList);//???
-        var progressStep = 100 / (buildList.length + 2);  // for creating folder & getting org info minus front-loaded hydrateTopOfList
-        var currentProgress = 0;
+
+        // Get the estimated cost of the rehydration
+        var currentProgress = 0, estimatedCost = 0;
+        Object.keys(solutionItems).forEach(key => {
+          estimatedCost += solutionItems[key].estimatedCost;
+        });
+
+        var progressStep = 100 / (estimatedCost + 2);  // item costs plus creating folder & getting org info
         progressCallback(currentProgress);
 
         var folderId;
@@ -62,7 +68,6 @@ define([
 
         // Hydrate the top item in the to-do list
         function hydrateTopOfList () {
-          progressCallback(currentProgress += progressStep);
           if (buildList.length === 0) {
             resolve({
               folderName: folderName,
@@ -75,6 +80,7 @@ define([
           var sourceId = buildList.shift();
           var itemType = solutionItems[sourceId].type;
           var item = solutionItems[sourceId].itemSection;
+          var itemEstimatedCost = solutionItems[sourceId].estimatedCost;
           switch (itemType) {
             case 'Feature Service':
               dfd = cloneJS.createFeatureService(sourceId, folderId, solutionItems, userSession);
@@ -103,9 +109,15 @@ define([
               break;
           }
           if (dfd) {
-            dfd.then(hydrateTopOfList, function (error) {
-              console.warn(error);
-            });
+            dfd.then(
+              result => {
+                progressCallback(currentProgress += itemEstimatedCost * progressStep);
+                hydrateTopOfList();
+              },
+              error => {
+                console.warn(error);
+              }
+            );
           }
         }
       });
