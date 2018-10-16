@@ -13,6 +13,10 @@ export declare class AgolItem {
      */
     itemSection: any;
     /**
+     * Estimated cost factor for rehydrating item
+     */
+    estimatedCost: number;
+    /**
      * Performs common item initialization.
      *
      * @param itemSection The item's JSON

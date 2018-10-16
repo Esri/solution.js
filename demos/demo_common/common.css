@@ -28,3 +28,13 @@ a {
 a:link {
   color: dodgerblue;
 }
+#progressBarContainer {
+  width: 100%;
+  height: 8px;
+  margin-top: 8px;
+}
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background-color: dodgerblue;
+}
