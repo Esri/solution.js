@@ -26,12 +26,12 @@ export class Group extends AgolItem {
   type: string = "Group";
 
   /**
-   * Performs item-specific initialization.
+   * Completes the creation of the item.
    *
    * @param requestOptions Options for initialization request for group contents
    * @returns A promise that will resolve with the item
    */
-  init (
+  complete (
     requestOptions?: IRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve, reject) => {

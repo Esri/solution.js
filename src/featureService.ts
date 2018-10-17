@@ -36,17 +36,17 @@ export class FeatureService extends Item {
   tables: any[] = [];
 
   /**
-   * Performs item-specific initialization.
+   * Completes the creation of the item.
    *
    * @param requestOptions Options for initialization request for item's data section
    * @returns A promise that will resolve with the item
    */
-  init (
+  complete (
     requestOptions?: IRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
-      super.init(requestOptions)
+      super.complete(requestOptions)
       .then(
         () => {
           // To have enough information for reconstructing the service, we'll supplement

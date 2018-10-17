@@ -16,21 +16,17 @@
 
 import * as items from "@esri/arcgis-rest-items";
 import { IRequestOptions } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
+import { AgolItemPrototype, AgolItem } from "./agolItem";
 
 export class Item extends AgolItem {
-  /**
-   * Item data section JSON
-   */
-  dataSection?: any;
 
   /**
-   * Performs item-specific initialization.
+   * Completes the creation of the item.
    *
    * @param requestOptions Options for initialization request for item's data section
    * @returns A promise that will resolve with the item
    */
-  init (
+  complete (
     requestOptions?: IRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {

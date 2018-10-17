@@ -18,29 +18,15 @@ import * as fetchMock from "fetch-mock";
 import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
 
 import { Solution } from "../src/solution";
-import { AgolItem } from "../src/agolItem";
+import { AgolItem, AgolItemPrototype } from "../src/agolItem";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
 
 describe("supporting Solution item", () => {
 
-  // Set up a UserSession to use in all these tests
-  const MOCK_USER_SESSION = new UserSession({
-    clientId: "clientId",
-    redirectUri: "https://example-app.com/redirect-uri",
-    token: "fake-token",
-    tokenExpires: TOMORROW,
-    refreshToken: "refreshToken",
-    refreshTokenExpires: TOMORROW,
-    refreshTokenTTL: 1440,
-    username: "casey",
-    password: "123456",
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
-  });
-
-  const MOCK_USER_REQOPTS = {
-    authentication: MOCK_USER_SESSION
+  const MOCK_ITEM_PROTOTYPE:AgolItemPrototype = {
+    itemSection: null
   };
 
   beforeEach(() => {
@@ -52,9 +38,9 @@ describe("supporting Solution item", () => {
   });
 
   it("sorts an item and its dependencies 1", () => {
-    let abc = new AgolItem({});
-    let def = new AgolItem({});
-    let ghi = new AgolItem({});
+    let abc = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let def = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let ghi = new AgolItem(MOCK_ITEM_PROTOTYPE);
 
     abc.dependencies = ["ghi", "def"];
 
@@ -69,9 +55,9 @@ describe("supporting Solution item", () => {
   });
 
   it("sorts an item and its dependencies 2", () => {
-    let abc = new AgolItem({});
-    let def = new AgolItem({});
-    let ghi = new AgolItem({});
+    let abc = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let def = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let ghi = new AgolItem(MOCK_ITEM_PROTOTYPE);
 
     abc.dependencies = ["ghi", "def"];
     def.dependencies = ["ghi"];
@@ -88,9 +74,9 @@ describe("supporting Solution item", () => {
   });
 
   it("sorts an item and its dependencies 3", () => {
-    let abc = new AgolItem({});
-    let def = new AgolItem({});
-    let ghi = new AgolItem({});
+    let abc = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let def = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let ghi = new AgolItem(MOCK_ITEM_PROTOTYPE);
 
     abc.dependencies = ["ghi"];
     ghi.dependencies = ["def"];
@@ -107,9 +93,9 @@ describe("supporting Solution item", () => {
   });
 
   it("reports a multi-item cyclic dependency graph", () => {
-    let abc = new AgolItem({});
-    let def = new AgolItem({});
-    let ghi = new AgolItem({});
+    let abc = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let def = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let ghi = new AgolItem(MOCK_ITEM_PROTOTYPE);
 
     abc.dependencies = ["ghi"];
     def.dependencies = ["ghi"];
@@ -125,9 +111,9 @@ describe("supporting Solution item", () => {
   });
 
   it("reports a single-item cyclic dependency graph", () => {
-    let abc = new AgolItem({});
-    let def = new AgolItem({});
-    let ghi = new AgolItem({});
+    let abc = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let def = new AgolItem(MOCK_ITEM_PROTOTYPE);
+    let ghi = new AgolItem(MOCK_ITEM_PROTOTYPE);
 
     def.dependencies = ["def"];
 

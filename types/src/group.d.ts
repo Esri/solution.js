@@ -6,12 +6,12 @@ export declare class Group extends AgolItem {
      */
     type: string;
     /**
-     * Performs item-specific initialization.
+     * Completes the creation of the item.
      *
      * @param requestOptions Options for initialization request for group contents
      * @returns A promise that will resolve with the item
      */
-    init(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    complete(requestOptions?: IRequestOptions): Promise<AgolItem>;
     /**
      * Gets the ids of a group's contents.
      *

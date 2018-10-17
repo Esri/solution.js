@@ -5,7 +5,7 @@ export interface IItemHash {
 }
 export declare class ItemFactory {
     /**
-     * Instantiates an item subclass using an AGOL id to load the item and get its type.
+     * Converts an AGOL item into a generic JSON item description.
      *
      * ```typescript
      * import { ItemFactory } from "../src/itemFactory";
@@ -32,7 +32,7 @@ export declare class ItemFactory {
      */
     static itemToJSON(id: string, requestOptions?: IRequestOptions): Promise<AgolItem>;
     /**
-     * Instantiates an item subclass and its dependencies using an AGOL id to load the item and get its type.
+     * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
      *
      * ```typescript
      * import { ItemFactory, IItemHash } from "../src/itemFactory";

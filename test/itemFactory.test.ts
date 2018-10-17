@@ -31,6 +31,7 @@ import { WebMapItemSuccessResponse, WebMapItemDataSuccessResponse } from "./mock
 import { WebMappingAppItemSuccessResponse, WebMappingAppItemDataSuccessResponse } from "./mocks/webMappingApp";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { IRequestOptions } from "@esri/arcgis-rest-request";
 import { TOMORROW } from "./lib/utils";
 
 describe("converting an item into JSON", () => {
@@ -51,7 +52,7 @@ describe("converting an item into JSON", () => {
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
 
-  const MOCK_USER_REQOPTS = {
+  const MOCK_USER_REQOPTS:IRequestOptions = {
     authentication: MOCK_USER_SESSION
   };
 

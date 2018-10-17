@@ -17,7 +17,7 @@
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
 import { IRequestOptions, ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
+import { AgolItemPrototype, AgolItem } from "./agolItem";
 import { Dashboard } from "./dashboard";
 import { FeatureService } from "./featureService";
 import { Item } from "./item";
@@ -30,8 +30,9 @@ export interface IItemHash {
 }
 
 export class ItemFactory {
+  
   /**
-   * Instantiates an item subclass using an AGOL id to load the item and get its type.
+   * Converts an AGOL item into a generic JSON item description.
    *
    * ```typescript
    * import { ItemFactory } from "../src/itemFactory";
@@ -66,25 +67,28 @@ export class ItemFactory {
         items.getItem(this.baseId(id), requestOptions)
         .then(
           itemSection => {
+            let itemPrototype:AgolItemPrototype = {
+              itemSection: itemSection
+            };
             let newItem:Item;
             switch(itemSection.type) {
               case "Dashboard":
-                newItem = new Dashboard(itemSection);
+                newItem = new Dashboard(itemPrototype);
                 break;
               case "Feature Service":
-                newItem = new FeatureService(itemSection);
+                newItem = new FeatureService(itemPrototype);
                 break;
               case "Web Map":
-                newItem = new Webmap(itemSection);
+                newItem = new Webmap(itemPrototype);
                 break;
               case "Web Mapping Application":
-                newItem = new WebMappingApp(itemSection);
+                newItem = new WebMappingApp(itemPrototype);
                 break;
               default:
-                newItem = new Item(itemSection);
+                newItem = new Item(itemPrototype);
                 break;
             }
-            newItem.init(requestOptions)
+            newItem.complete(requestOptions)
             .then(resolve);
           },
           () => {
@@ -92,8 +96,11 @@ export class ItemFactory {
             groups.getGroup(id, requestOptions)
             .then(
               itemSection => {
-                let newGroup:Item = new Group(itemSection);
-                newGroup.init(requestOptions)
+                let itemPrototype:AgolItemPrototype = {
+                  itemSection: itemSection
+                };
+                let newGroup:Item = new Group(itemPrototype);
+                newGroup.complete(requestOptions)
                 .then(resolve);
               },
               () => {
@@ -115,7 +122,7 @@ export class ItemFactory {
   }
 
   /**
-   * Instantiates an item subclass and its dependencies using an AGOL id to load the item and get its type.
+   * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
    *
    * ```typescript
    * import { ItemFactory, IItemHash } from "../src/itemFactory";
