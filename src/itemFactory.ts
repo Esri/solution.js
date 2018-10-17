@@ -22,6 +22,7 @@ import { Dashboard } from "./dashboard";
 import { FeatureService } from "./featureService";
 import { Item } from "./item";
 import { Group } from "./group";
+import { Solution } from "./solution";
 import { Webmap } from "./webmap";
 import { WebMappingApp } from "./webMappingApp";
 
@@ -30,7 +31,7 @@ export interface IItemHash {
 }
 
 export class ItemFactory {
-  
+
   /**
    * Converts an AGOL item into a generic JSON item description.
    *
@@ -229,6 +230,96 @@ export class ItemFactory {
           }
       );
       }
+    });
+  }
+
+  /**
+   * Converts a generic JSON item description into an AGOL item.
+   * @param itemJson Generic JSON form of item
+   * @param orgUrl URL to destination organization's home, 
+   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
+   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+   * @returns A promise that will resolve with a subclass of AgolItem containing the JSON and id of the item created in AGOL
+   */
+  static JSONToItem(
+    itemJson: any,
+    orgUrl: string,
+    folderId: string,
+    requestOptions?: IRequestOptions
+  ): Promise<AgolItem> {
+    return new Promise((resolve, reject) => {
+      let itemType = (itemJson && itemJson.type) || "Unknown";
+
+      // Load the JSON into a type of item
+      let item:AgolItem;
+      switch(itemType) {
+        case "Dashboard":
+          item = new Dashboard(itemJson);
+          break;
+        case "Feature Service":
+          item = new FeatureService(itemJson);
+          break;
+        case "Group":
+          item = new Group(itemJson);
+          break;
+        case "Web Map":
+          item = new Webmap(itemJson);
+          break;
+        case "Web Mapping Application":
+          item = new WebMappingApp(itemJson);
+          break;
+        default:
+          reject(itemJson);
+          break;
+      }
+
+      // Clone the item
+      item.clone(orgUrl, folderId, requestOptions)
+      .then(resolve, reject);
+    });
+  }
+
+  /**
+   * Converts a hash by id of generic JSON item descriptions into AGOL items.
+   * @param itemJson A hash of item descriptions to convert
+   * @param orgUrl URL to destination organization's home, 
+   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
+   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+   * @returns A promise that will resolve with a list of the ids of items created in AGOL
+   */
+  static JSONToItemHierarchy(
+    collection: IItemHash,
+    orgUrl: string,
+    folderId: string,
+    requestOptions?: IRequestOptions
+  ): Promise<AgolItem[]> {
+    return new Promise((resolve, reject) => {
+      let itemList:AgolItem[] = [];
+
+      // Run through the list of item ids in clone order
+      let cloneOrderChecklist:string[] = Solution.topologicallySortItems(collection);
+
+      function runThroughChecklist () {
+        if (cloneOrderChecklist.length === 0) {
+          resolve(itemList);
+          return;
+        }
+
+        // Clone item at top of list
+        let itemId = cloneOrderChecklist.shift();
+        ItemFactory.JSONToItem(collection[itemId], orgUrl, folderId, requestOptions)
+        .then(
+          newItem => {
+            itemList.push(newItem);
+            runThroughChecklist();
+          },
+          error => {
+            reject(error);
+          }
+        )
+      }
+
+      runThroughChecklist();
     });
   }
 

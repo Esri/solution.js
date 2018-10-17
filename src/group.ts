@@ -17,13 +17,18 @@
 import * as groups from "@esri/arcgis-rest-groups";
 import { IRequestOptions } from "@esri/arcgis-rest-request";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
-import { AgolItem } from "./agolItem";
+import { AgolItemPrototype, AgolItem } from "./agolItem";
 
 export class Group extends AgolItem {
   /**
-   * AGOL item type name
+   * Performs common item initialization.
+   *
+   * @param itemSection The item's JSON
    */
-  type: string = "Group";
+  constructor (prototype:AgolItemPrototype) {
+    super(prototype);
+    this.type = "Group";
+  }
 
   /**
    * Completes the creation of the item.

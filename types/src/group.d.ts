@@ -1,10 +1,12 @@
 import { IRequestOptions } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
+import { AgolItemPrototype, AgolItem } from "./agolItem";
 export declare class Group extends AgolItem {
     /**
-     * AGOL item type name
+     * Performs common item initialization.
+     *
+     * @param itemSection The item's JSON
      */
-    type: string;
+    constructor(prototype: AgolItemPrototype);
     /**
      * Completes the creation of the item.
      *

@@ -150,6 +150,21 @@
             publishedSolution => {
               currentSolutionItems = publishedSolution.items;
 
+              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems,
+                orgUrl, null, requestOptions)
+              .then(
+                createResponse => {
+                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                  document.getElementById('creating').style.display = 'none';
+                  document.getElementById('createResults').style.display = 'block';
+                  progress.hide();
+
+                  document.getElementById('createDisplay').innerHTML = JSON.stringify(createResponse);
+                }
+              );
+
+
+              /*
               // Clone the contents into the destination org
               cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
                 progress.set.bind(progress), requestOptions.authentication)
@@ -172,7 +187,7 @@
                   document.getElementById('create').style.display = 'none';
                   alert('Please refresh page and provide credentials');
                 }
-              );
+              );*/
 
             }
           );

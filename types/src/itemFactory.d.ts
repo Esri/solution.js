@@ -65,6 +65,24 @@ export declare class ItemFactory {
      */
     static itemHierarchyToJSON(rootIds: string | string[], requestOptions?: IRequestOptions, collection?: IItemHash): Promise<IItemHash>;
     /**
+     * Converts a generic JSON item description into an AGOL item.
+     * @param itemJson Generic JSON form of item
+     * @param orgUrl URL to destination organization's home,
+     *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/"
+     * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+     * @returns A promise that will resolve with a subclass of AgolItem containing the JSON and id of the item created in AGOL
+     */
+    static JSONToItem(itemJson: any, orgUrl: string, folderId: string, requestOptions?: IRequestOptions): Promise<AgolItem>;
+    /**
+     * Converts a hash by id of generic JSON item descriptions into AGOL items.
+     * @param itemJson A hash of item descriptions to convert
+     * @param orgUrl URL to destination organization's home,
+     *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/"
+     * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+     * @returns A promise that will resolve with a list of the ids of items created in AGOL
+     */
+    static JSONToItemHierarchy(collection: IItemHash, orgUrl: string, folderId: string, requestOptions?: IRequestOptions): Promise<AgolItem[]>;
+    /**
      * Extracts the AGOL id from the front of a string.
      *
      * @param extendedId A string of hex characters that begins with an AGOL id;

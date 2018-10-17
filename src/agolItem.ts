@@ -92,6 +92,26 @@ export class AgolItem implements AgolItemPrototype {
   }
 
   /**
+   * Clones the item into the destination organization and folder
+   * 
+   * @param orgUrl URL to destination organization's home, 
+   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
+   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+   * @param requestOptions Options for creation request(s)
+   * @returns A promise that will resolve with the item
+   */
+  clone (
+    orgUrl: string,
+    folderId: string,
+    requestOptions?: IRequestOptions
+  ): Promise<AgolItem> {
+    return new Promise(resolve => {
+      console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
+      resolve(this);
+    });
+  }
+
+  /**
    * Removes item properties irrelevant to cloning.
    */
   private removeUncloneableItemProperties (): void {
