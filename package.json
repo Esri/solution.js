@@ -4,8 +4,11 @@
   "description": "Transfer sets of ArcGIS Online items from one organization to another",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
-    "docs": "typedoc --out ./docs/src/ src/index.ts"
+    "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
+    "test": "karma start --single-run --browsers=Chrome",
+    "docs": "typedoc --out ./docs/src/ src/index.ts",
+    "build:esm": "tsc --module ES2015 --outDir ./dist/esm --declaration",
+    "build:cjs": "tsc --module CommonJS --outDir ./dist/cjs"
   },
   "repository": {
     "type": "git",

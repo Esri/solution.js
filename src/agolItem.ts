@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
- import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IRequestOptions } from "@esri/arcgis-rest-request";
 
 export class AgolItem {
   /**

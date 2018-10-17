@@ -1,6 +1,8 @@
 // Karma configuration
 // Generated on Tue Oct 16 2018 14:43:15 GMT-0700 (Pacifique (heure d’été))
 
+// const fs = require("fs");
+
 module.exports = function(config) {
   config.set({
 
@@ -34,15 +36,31 @@ module.exports = function(config) {
       compilerOptions: {
         module: "umd"
       },
-      tsconfig: "./tsconfig.json"
+      tsconfig: "./tsconfig.json",
+      // bundlerOptions: {
+      //   transforms: [require("karma-typescript-es6-transform")()],
+      //   ignore: ["@esri/arcgis-rest-common-types"],
+      //   resolve: {
+      //     // karmas resolver cant figure out the symlinked deps from lerna
+      //     // so we need to manually alias each package here.
+      //     alias: fs
+      //       .readdirSync("src")
+      //       .filter(p => p[0] !== ".")
+      //       .reduce((alias, p) => {
+      //         alias[`${p}`] = `src/index.ts`;
+      //         console.log(alias);
+      //         return alias;
+      //       }, {})
+      //   }
+      // }
     },
 
 
     // coveralls uses this one. still need to figure out how to DRY this up.
-    coverageReporter: {
-      type: 'lcov',
-      dir: 'coverage/'
-    },
+    // coverageReporter: {
+    //   type: 'lcov',
+    //   dir: 'coverage/'
+    // },
 
 
     // preprocess matching files before serving them to the browser
@@ -56,7 +74,7 @@ module.exports = function(config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     //reporters: ['karma-typescript', 'coverage', 'coveralls'],
-    reporters: ['karma-typescript'],
+    reporters: ['dots', 'karma-typescript', 'coverage'],
 
 
     // web server port
