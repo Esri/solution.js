@@ -26,8 +26,8 @@
 
     <div class="section">
       <div class="section-title">Credentials in destination organization</div>
-      <label for="username">Username:</label> <input type="text" id="username"></input>
-      <label for="password">Password:</label> <input type="password" id="password"></input>
+      <label for="username">Username:</label> <input type="text" id="username">
+      <label for="password">Password:</label> <input type="password" id="password">
     </div>
 
     <div id="availableSolutions" class="section">
@@ -45,7 +45,7 @@
         <div id="detailsDisplay"></div>
         <br>
         <button id="createBtn" onclick="createSolutionFcn()">Create solution in your organization</button>
-        using name <input type="text" id="solutionNameField"></input>
+        using name <input type="text" id="solutionNameField">
       </div>
     </div>
 
@@ -173,6 +173,7 @@
                   alert('Please refresh page and provide credentials');
                 }
               );
+
             }
           );
         }
