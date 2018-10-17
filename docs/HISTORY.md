@@ -42,6 +42,7 @@ The Solution item contains a single property--`items`--that is a hash by AGOL id
 Each item contains
 
 * `type`: its AGOL item type string; for groups, "Group" is used
+* `estimatedCost`: a number indicating the approximate relative cost of cloning the item; for example, a web map has an estimated cost of 1, while a web mapping app has an estimated cost of 2 because it requires an extra server call to update its URL; feature services and their layers are particularly slow and have an increased cost estimate as a result
 * `dependencies`: a list of AGOL item ids that the item depends upon; for feature service dependencies, the id is suffixed with "\_" and the feature layer's id number in the service (e.g., "dbca451a5e1546998137bb0a09d94240\_0")
 * `itemSection`: the JSON structure that every AGOL item and group has as its basic information (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21?f=json)
 
