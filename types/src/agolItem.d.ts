@@ -1,4 +1,8 @@
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IItemAddRequestOptions } from "@esri/arcgis-rest-items";
+export interface ISwizzleHash {
+    [id: string]: string;
+}
 export interface AgolItemPrototype {
     /**
      * Item JSON
@@ -50,17 +54,27 @@ export declare class AgolItem implements AgolItemPrototype {
      * @param requestOptions Options for initialization request(s)
      * @returns A promise that will resolve with the item
      */
-    complete(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    complete(requestOptions?: IUserRequestOptions): Promise<AgolItem>;
     /**
      * Clones the item into the destination organization and folder
      *
-     * @param orgUrl URL to destination organization's home,
-     *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/"
      * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
      * @param requestOptions Options for creation request(s)
-     * @returns A promise that will resolve with the item
+     * @returns A promise that will resolve with the item's id
      */
-    clone(orgUrl: string, folderId: string, requestOptions?: IRequestOptions): Promise<AgolItem>;
+    clone(folderId: string, swizzles: ISwizzleHash, requestOptions?: IUserRequestOptions): Promise<string>;
+    prepareForCreate(swizzles: ISwizzleHash): void;
+    concludeCreation(clonedItemId: string, swizzles: ISwizzleHash): Promise<string>;
+    swizzleContainedItems(swizzles: ISwizzleHash): void;
+    /**
+     * Assembles the standard contents needed to create an item.
+     *
+     * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+     * @param requestOptions Options for creation request(s)
+     * @returns An options structure for calling arcgis-rest-js' createItemInFolder function
+     */
+    getCreateItemOptions(folderId: string, requestOptions?: IUserRequestOptions): IItemAddRequestOptions;
+    cloningUniquenessTimestamp(): number;
     /**
      * Removes item properties irrelevant to cloning.
      */

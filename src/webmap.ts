@@ -14,14 +14,15 @@
  | limitations under the License.
  */
 
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { request } from "@esri/arcgis-rest-request";
 import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 
 /**
  *  AGOL webmap item
  */
-export class Webmap extends Item {
+export class Webmap  extends ItemWithData {
 
   /**
    * Completes the creation of the item.
@@ -30,7 +31,7 @@ export class Webmap extends Item {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
@@ -69,7 +70,7 @@ export class Webmap extends Item {
    */
   private getDependencyLayerIds (
     layerList:any,
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<string[]> {
     return new Promise(resolve => {
       // Request the AGOL item id(s)
@@ -114,7 +115,7 @@ export class Webmap extends Item {
    */
   private getLayerItemId (
     layer:any,
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<string> {
     return new Promise(resolve => {
       let urlStr = layer.url as string;

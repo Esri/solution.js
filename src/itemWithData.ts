@@ -14,11 +14,11 @@
  | limitations under the License.
  */
 
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
-import { IRequestOptions } from "@esri/arcgis-rest-request";
-import { AgolItemPrototype, AgolItem } from "./agolItem";
+import { AgolItem } from "./agolItem";
 
-export class Item extends AgolItem {
+export class ItemWithData extends AgolItem {
 
   /**
    * Completes the creation of the item.
@@ -27,7 +27,7 @@ export class Item extends AgolItem {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section

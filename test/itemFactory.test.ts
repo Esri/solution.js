@@ -17,13 +17,13 @@
 import * as fetchMock from "fetch-mock";
 
 import { ItemFactory, IItemHash } from "../src/itemFactory";
-import { Item } from "../src/item";
+import { ItemWithData } from "../src/itemWithData";
 import { AgolItem } from "../src/agolItem";
 
 import { ItemFailResponse,
   ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
   ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
-  ItemSuccessResponseService, ItemDataSuccessResponseService } from "./mocks/item";
+  ItemSuccessResponseService, ItemDataSuccessResponseService } from "./mocks/itemWithData";
 import { DashboardItemSuccessResponse, DashboardItemDataSuccessResponse } from "./mocks/dashboard";
 import { FeatureServiceItemSuccessResponse, FeatureServiceItemDataSuccessResponse, FeatureServiceSuccessResponse,
   FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse } from "./mocks/featureService";
@@ -31,7 +31,7 @@ import { WebMapItemSuccessResponse, WebMapItemDataSuccessResponse } from "./mock
 import { WebMappingAppItemSuccessResponse, WebMappingAppItemDataSuccessResponse } from "./mocks/webMappingApp";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
 
 describe("converting an item into JSON", () => {
@@ -52,7 +52,7 @@ describe("converting an item into JSON", () => {
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
 
-  const MOCK_USER_REQOPTS:IRequestOptions = {
+  const MOCK_USER_REQOPTS:IUserRequestOptions = {
     authentication: MOCK_USER_SESSION
   };
 
@@ -97,7 +97,7 @@ describe("converting an item into JSON", () => {
         (response:AgolItem) => {
           expect(response.type).toEqual("Web Mapping Application");
           expect(response.itemSection.title).toEqual("ROW Permit Public Comment");
-          expect((response as Item).dataSection.source).toEqual("template1234567890");
+          expect((response as ItemWithData).dataSection.source).toEqual("template1234567890");
           done();
         },
         done.fail
@@ -138,7 +138,7 @@ describe("converting an item into JSON", () => {
           expect(keys.length).toEqual(3);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");
           expect((response[keys[0]] as AgolItem).itemSection.title).toEqual("ROW Permit Public Comment");
-          expect((response[keys[0]] as Item).dataSection.source).toEqual("template1234567890");
+          expect((response[keys[0]] as ItemWithData).dataSection.source).toEqual("template1234567890");
           done();
         },
         done.fail
@@ -163,7 +163,7 @@ describe("converting an item into JSON", () => {
           expect(keys.length).toEqual(3);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");
           expect((response[keys[0]] as AgolItem).itemSection.title).toEqual("ROW Permit Public Comment");
-          expect((response[keys[0]] as Item).dataSection.source).toEqual("template1234567890");
+          expect((response[keys[0]] as ItemWithData).dataSection.source).toEqual("template1234567890");
           done();
         },
         done.fail
@@ -188,7 +188,7 @@ describe("converting an item into JSON", () => {
           expect(keys.length).toEqual(3);
           expect((response[keys[0]] as AgolItem).type).toEqual("Web Mapping Application");
           expect((response[keys[0]] as AgolItem).itemSection.title).toEqual("ROW Permit Public Comment");
-          expect((response[keys[0]] as Item).dataSection.source).toEqual("template1234567890");
+          expect((response[keys[0]] as ItemWithData).dataSection.source).toEqual("template1234567890");
           done();
         },
         done.fail
@@ -267,7 +267,7 @@ describe("converting an item into JSON", () => {
         .mock("path:/sharing/rest/content/items/" + id + "/data", data, {});
 
         ItemFactory.itemToJSON(id, MOCK_USER_REQOPTS)
-        .then((response:Item) => {
+        .then((response:AgolItem) => {
           expect(fetchMock.called("path:/sharing/rest/content/items/" + id)).toEqual(true);
           expect(fetchMock.called("path:/sharing/rest/content/items/" + id + "/data")).toEqual(true);
 
@@ -298,7 +298,7 @@ describe("converting an item into JSON", () => {
       .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
 
       ItemFactory.itemToJSON("svc1234567890", MOCK_USER_REQOPTS)
-      .then((response:Item) => {
+      .then((response:AgolItem) => {
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/data")).toEqual(true);
         expect(fetchMock.called("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json")).toEqual(true);

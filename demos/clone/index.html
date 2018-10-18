@@ -150,8 +150,7 @@
             publishedSolution => {
               currentSolutionItems = publishedSolution.items;
 
-              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems,
-                orgUrl, null, requestOptions)
+              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems, null, requestOptions)
               .then(
                 createResponse => {
                   document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -159,7 +158,8 @@
                   document.getElementById('createResults').style.display = 'block';
                   progress.hide();
 
-                  document.getElementById('createDisplay').innerHTML = JSON.stringify(createResponse);
+                  document.getElementById('createDisplay').innerHTML = 
+                    JSON.stringify(createResponse).replace(',', ', ');
                 }
               );
 

@@ -14,13 +14,14 @@
  | limitations under the License.
  */
 
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
-import { IRequestOptions, ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { AgolItemPrototype, AgolItem } from "./agolItem";
+import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+import { AgolItemPrototype, AgolItem, ISwizzleHash } from "./agolItem";
 import { Dashboard } from "./dashboard";
 import { FeatureService } from "./featureService";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 import { Group } from "./group";
 import { Solution } from "./solution";
 import { Webmap } from "./webmap";
@@ -38,14 +39,14 @@ export class ItemFactory {
    * ```typescript
    * import { ItemFactory } from "../src/itemFactory";
    * import { AgolItem } from "../src/agolItem";
-   * import { Item } from "../src/item";
+   * import { ItemWithData } from "../src/itemWithData";
    *
    * ItemFactory.itemToJSON("6fc5992522d34f26b2210d17835eea21")
    * .then(
    *   (response:AgolItem) => {
    *     console.log(response.type);  // => "Web Mapping Application"
    *     console.log(response.itemSection.title);  // => "ROW Permit Public Comment"
-   *     console.log((response as Item).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+   *     console.log((response as ItemWithData).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
    *   },
    *   error => {
    *     // (should not see this as long as above id--a real one--stays available)
@@ -60,7 +61,7 @@ export class ItemFactory {
    */
   static itemToJSON (
     id: string,
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve, reject) => {
       try {
@@ -71,7 +72,7 @@ export class ItemFactory {
             let itemPrototype:AgolItemPrototype = {
               itemSection: itemSection
             };
-            let newItem:Item;
+            let newItem:ItemWithData;
             switch(itemSection.type) {
               case "Dashboard":
                 newItem = new Dashboard(itemPrototype);
@@ -86,7 +87,7 @@ export class ItemFactory {
                 newItem = new WebMappingApp(itemPrototype);
                 break;
               default:
-                newItem = new Item(itemPrototype);
+                newItem = new ItemWithData(itemPrototype);
                 break;
             }
             newItem.complete(requestOptions)
@@ -100,7 +101,7 @@ export class ItemFactory {
                 let itemPrototype:AgolItemPrototype = {
                   itemSection: itemSection
                 };
-                let newGroup:Item = new Group(itemPrototype);
+                let newGroup:AgolItem = new Group(itemPrototype);
                 newGroup.complete(requestOptions)
                 .then(resolve);
               },
@@ -128,7 +129,7 @@ export class ItemFactory {
    * ```typescript
    * import { ItemFactory, IItemHash } from "../src/itemFactory";
    * import { AgolItem } from "../src/agolItem";
-   * import { Item } from "../src/item";
+   * import { ItemWithData } from "../src/itemWithData";
    *
    * ItemFactory.itemToJSON(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
    * .then(
@@ -137,7 +138,7 @@ export class ItemFactory {
    *     console.log(keys.length);  // => "6"
    *     console.log((response[keys[0]] as AgolItem).type);  // => "Web Mapping Application"
    *     console.log((response[keys[0]] as AgolItem).itemSection.title);  // => "ROW Permit Public Comment"
-   *     console.log((response[keys[0]] as Item).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+   *     console.log((response[keys[0]] as ItemWithData).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
    *   },
    *   error => {
    *     // (should not see this as long as both of the above ids--real ones--stay available)
@@ -156,7 +157,7 @@ export class ItemFactory {
    */
   static itemHierarchyToJSON (
     rootIds: string | string[],
-    requestOptions?: IRequestOptions,
+    requestOptions?: IUserRequestOptions,
     collection?: IItemHash
   ): Promise<IItemHash> {
     if (!collection) {
@@ -236,17 +237,15 @@ export class ItemFactory {
   /**
    * Converts a generic JSON item description into an AGOL item.
    * @param itemJson Generic JSON form of item
-   * @param orgUrl URL to destination organization's home, 
-   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
    * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
-   * @returns A promise that will resolve with a subclass of AgolItem containing the JSON and id of the item created in AGOL
+   * @returns A promise that will resolve with the item's id
    */
   static JSONToItem(
     itemJson: any,
-    orgUrl: string,
     folderId: string,
-    requestOptions?: IRequestOptions
-  ): Promise<AgolItem> {
+    swizzles: ISwizzleHash,
+    requestOptions?: IUserRequestOptions
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
       let itemType = (itemJson && itemJson.type) || "Unknown";
 
@@ -274,7 +273,7 @@ export class ItemFactory {
       }
 
       // Clone the item
-      item.clone(orgUrl, folderId, requestOptions)
+      item.clone(folderId, swizzles, requestOptions)
       .then(resolve, reject);
     });
   }
@@ -282,35 +281,33 @@ export class ItemFactory {
   /**
    * Converts a hash by id of generic JSON item descriptions into AGOL items.
    * @param itemJson A hash of item descriptions to convert
-   * @param orgUrl URL to destination organization's home, 
-   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
    * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
    * @returns A promise that will resolve with a list of the ids of items created in AGOL
    */
   static JSONToItemHierarchy(
     collection: IItemHash,
-    orgUrl: string,
     folderId: string,
-    requestOptions?: IRequestOptions
-  ): Promise<AgolItem[]> {
+    requestOptions?: IUserRequestOptions
+  ): Promise<string[]> {
     return new Promise((resolve, reject) => {
-      let itemList:AgolItem[] = [];
+      let itemIdList:string[] = [];
+      let swizzles:ISwizzleHash = {};
 
       // Run through the list of item ids in clone order
       let cloneOrderChecklist:string[] = Solution.topologicallySortItems(collection);
 
       function runThroughChecklist () {
         if (cloneOrderChecklist.length === 0) {
-          resolve(itemList);
+          resolve(itemIdList);
           return;
         }
 
         // Clone item at top of list
         let itemId = cloneOrderChecklist.shift();
-        ItemFactory.JSONToItem(collection[itemId], orgUrl, folderId, requestOptions)
+        ItemFactory.JSONToItem(collection[itemId], folderId, swizzles, requestOptions)
         .then(
-          newItem => {
-            itemList.push(newItem);
+          newItemId => {
+            itemIdList.push(newItemId);
             runThroughChecklist();
           },
           error => {

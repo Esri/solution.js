@@ -14,14 +14,15 @@
  | limitations under the License.
  */
 
-import { IRequestOptions, request } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { request } from "@esri/arcgis-rest-request";
 import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 
 /**
  *  AGOL hosted feature service item
  */
-export class FeatureService extends Item {
+export class FeatureService  extends ItemWithData {
   /**
    * Service description
    */
@@ -42,7 +43,7 @@ export class FeatureService extends Item {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
@@ -120,7 +121,7 @@ export class FeatureService extends Item {
   private getLayers (
     serviceUrl: string,
     layerList: any[],
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<any[]> {
     return new Promise<any[]>(resolve => {
       if (!Array.isArray(layerList)) {

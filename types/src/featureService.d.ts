@@ -1,10 +1,10 @@
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 /**
  *  AGOL hosted feature service item
  */
-export declare class FeatureService extends Item {
+export declare class FeatureService extends ItemWithData {
     /**
      * Service description
      */
@@ -23,7 +23,7 @@ export declare class FeatureService extends Item {
      * @param requestOptions Options for initialization request for item's data section
      * @returns A promise that will resolve with the item
      */
-    complete(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    complete(requestOptions?: IUserRequestOptions): Promise<AgolItem>;
     /**
      * Gets the full definitions of the layers affiliated with a hosted service.
      *

@@ -14,7 +14,13 @@
  | limitations under the License.
  */
 
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IItemAddRequestOptions } from "@esri/arcgis-rest-items";
+import * as items from "@esri/arcgis-rest-items";
+
+export interface ISwizzleHash {
+  [id:string]: string;
+}
 
 export interface AgolItemPrototype {
   /**
@@ -84,7 +90,7 @@ export class AgolItem implements AgolItemPrototype {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise(resolve => {
       resolve(this);
@@ -93,22 +99,92 @@ export class AgolItem implements AgolItemPrototype {
 
   /**
    * Clones the item into the destination organization and folder
-   * 
-   * @param orgUrl URL to destination organization's home, 
-   *        e.g., "https://arcgis4localgov2.maps.arcgis.com/home/" 
+   *
    * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
    * @param requestOptions Options for creation request(s)
-   * @returns A promise that will resolve with the item
+   * @returns A promise that will resolve with the item's id
    */
   clone (
-    orgUrl: string,
     folderId: string,
-    requestOptions?: IRequestOptions
-  ): Promise<AgolItem> {
-    return new Promise(resolve => {
+    swizzles: ISwizzleHash,
+    requestOptions?: IUserRequestOptions
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
       console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
-      resolve(this);
+
+      // Prepare for create
+      this.prepareForCreate(swizzles);
+
+      // Create the item
+      let options = this.getCreateItemOptions(folderId, requestOptions);
+      items.createItemInFolder(options)
+      .then(
+        createResp => {
+          // Wrap up creation
+          this.concludeCreation(createResp.id, swizzles)
+          .then(resolve);
+        },
+        error => {
+          reject('Unable to create ' + this.type + ': ' + JSON.stringify(error));
+        }
+      )
     });
+  }
+
+  prepareForCreate (
+    swizzles: ISwizzleHash
+  ): void {
+      // Swizzle the items that this item contains
+      this.swizzleContainedItems(swizzles);
+  }
+
+  concludeCreation (
+    clonedItemId: string,
+    swizzles: ISwizzleHash
+  ): Promise<string> {
+    // Save the swizzle to this new item
+    swizzles[this.itemSection.id] = clonedItemId;
+    this.itemSection.id = clonedItemId;
+
+    return new Promise(resolve => {
+      resolve(clonedItemId);
+    });
+  }
+
+  swizzleContainedItems (
+    swizzles: ISwizzleHash
+  ): void {
+  }
+
+  /**
+   * Assembles the standard contents needed to create an item.
+   * 
+   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+   * @param requestOptions Options for creation request(s)
+   * @returns An options structure for calling arcgis-rest-js' createItemInFolder function
+   */
+  getCreateItemOptions (
+    folderId: string,
+    requestOptions?: IUserRequestOptions
+  ): IItemAddRequestOptions {
+    let options:IItemAddRequestOptions = {
+      item: this.itemSection,
+      ...requestOptions
+    };
+
+    if (this.dataSection) {
+      options.item.text = this.dataSection;
+    }
+
+    if (folderId) {
+      options.folder = folderId;
+    }
+
+    return options;
+  }
+
+  cloningUniquenessTimestamp () {
+    return (new Date()).getTime();
   }
 
   /**

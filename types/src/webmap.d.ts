@@ -1,17 +1,17 @@
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 /**
  *  AGOL webmap item
  */
-export declare class Webmap extends Item {
+export declare class Webmap extends ItemWithData {
     /**
      * Completes the creation of the item.
      *
      * @param requestOptions Options for initialization request for item's data section
      * @returns A promise that will resolve with the item
      */
-    complete(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    complete(requestOptions?: IUserRequestOptions): Promise<AgolItem>;
     /**
      * Updates the item's list of dependencies.
      *

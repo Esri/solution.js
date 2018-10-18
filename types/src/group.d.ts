@@ -1,5 +1,5 @@
-import { IRequestOptions } from "@esri/arcgis-rest-request";
-import { AgolItemPrototype, AgolItem } from "./agolItem";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { AgolItemPrototype, AgolItem, ISwizzleHash } from "./agolItem";
 export declare class Group extends AgolItem {
     /**
      * Performs common item initialization.
@@ -13,7 +13,7 @@ export declare class Group extends AgolItem {
      * @param requestOptions Options for initialization request for group contents
      * @returns A promise that will resolve with the item
      */
-    complete(requestOptions?: IRequestOptions): Promise<AgolItem>;
+    complete(requestOptions?: IUserRequestOptions): Promise<AgolItem>;
     /**
      * Gets the ids of a group's contents.
      *
@@ -22,4 +22,12 @@ export declare class Group extends AgolItem {
      * @returns A promise that will resolve with a list of the ids of the group's contents
      */
     private getGroupContentsTranche;
+    /**
+     * Clones the item into the destination organization and folder
+     *
+     * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+     * @param requestOptions Options for creation request(s)
+     * @returns A promise that will resolve with the item's id
+     */
+    clone(folderId: string, swizzles: ISwizzleHash, requestOptions?: IUserRequestOptions): Promise<string>;
 }

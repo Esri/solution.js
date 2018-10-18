@@ -14,14 +14,19 @@
  | limitations under the License.
  */
 
-import { IRequestOptions } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { AgolItem, ISwizzleHash } from "./agolItem";
+import { ItemWithData } from "./itemWithData";
+
+interface IDashboardWidget {
+  itemId: string;
+  type:string;
+}
 
 /**
  *  AGOL web map application item
  */
-export class Dashboard extends Item {
+export class Dashboard  extends ItemWithData {
 
   /**
    * Completes the creation of the item.
@@ -30,7 +35,7 @@ export class Dashboard extends Item {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
@@ -39,7 +44,7 @@ export class Dashboard extends Item {
         () => {
           // Extract the dependencies
           if (this.dataSection && this.dataSection.widgets) {
-            let widgets = this.dataSection.widgets;
+            let widgets:IDashboardWidget[] = this.dataSection.widgets;
             widgets.forEach((widget:any) => {
               if (widget.type === "mapWidget") {
                 this.dependencies.push(widget.itemId);
@@ -51,6 +56,20 @@ export class Dashboard extends Item {
         }
       );
     });
+  }
+
+  swizzleContainedItems (
+    swizzles: ISwizzleHash
+  ): void {
+    // Swizzle its webmap(s)
+    let widgets:IDashboardWidget[] = this.dataSection && this.dataSection.widgets;
+    if (widgets) {
+      widgets.forEach(widget => {
+        if (widget.type === "mapWidget") {
+          widget.itemId = swizzles[widget.itemId];
+        }
+      });
+    }
   }
 
 }

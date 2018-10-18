@@ -14,14 +14,14 @@
  | limitations under the License.
  */
 
-import { IRequestOptions } from "@esri/arcgis-rest-request";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { AgolItem } from "./agolItem";
-import { Item } from "./item";
+import { ItemWithData } from "./itemWithData";
 
 /**
  *  AGOL web map application item
  */
-export class WebMappingApp extends Item {
+export class WebMappingApp  extends ItemWithData {
 
   /**
    * Completes the creation of the item.
@@ -30,7 +30,7 @@ export class WebMappingApp extends Item {
    * @returns A promise that will resolve with the item
    */
   complete (
-    requestOptions?: IRequestOptions
+    requestOptions?: IUserRequestOptions
   ): Promise<AgolItem> {
     return new Promise((resolve) => {
       // Fetch item data section
