@@ -20,6 +20,8 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { AgolItemPrototype, AgolItem, ISwizzleHash } from "./agolItem";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 export class Group extends AgolItem {
   /**
    * Performs common item initialization.
@@ -64,6 +66,77 @@ export class Group extends AgolItem {
   }
 
   /**
+   * Clones the item into the destination organization and folder
+   *
+   * @param notUsed (not used by subclass)
+   * @param requestOptions Options for creation request(s)
+   * @returns A promise that will resolve with the item's id
+   */
+  clone (
+    notUsed: string,
+    swizzles: ISwizzleHash,
+    requestOptions?: IUserRequestOptions
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
+
+      let options = {
+        group: this.itemSection,
+        ...requestOptions
+      }
+      options.group.title += '_' + this.cloningUniquenessTimestamp();
+
+      // Create the item
+      groups.createGroup(options)
+      .then(
+        createResp => {
+          swizzles[this.itemSection.id].id = createResp.group.id;
+          this.itemSection.id = createResp.group.id;
+
+          if (this.dependencies.length > 0) {
+            // Add each of the group's items to it
+            var awaitGroupAdds:Promise<null>[] = [];
+            this.dependencies.forEach(depId => {
+              awaitGroupAdds.push(new Promise(resolve => {
+                var swizzledDepId = swizzles[depId].id;
+                sharing.shareItemWithGroup({
+                  id: swizzledDepId,
+                  groupId: createResp.group.id,
+                  ...requestOptions
+                })
+                .then(
+                  () => {
+                    //progressIncrement();
+                    resolve();
+                  },
+                  error => {
+                    console.log("Unable to share group's items with it: " + JSON.stringify(error));
+                  }
+                );
+              }));
+            });
+            // After all items have been added to the group
+            Promise.all(awaitGroupAdds)
+            .then(
+              () => {
+                resolve(createResp.group.id);
+              }
+            );
+          } else {
+            // No items in this group
+            resolve(createResp.group.id);
+          }
+        },
+        error => {
+          reject('Unable to create ' + this.type + ': ' + JSON.stringify(error));
+        }
+      )
+    });
+  }
+
+  //------------------------------------------------------------------------------------------------------------------//
+
+  /**
    * Gets the ids of a group's contents.
    *
    * @param id Group id
@@ -105,75 +178,6 @@ export class Group extends AgolItem {
           reject(error);
         }
       );
-    });
-  }
-
-  /**
-   * Clones the item into the destination organization and folder
-   *
-   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
-   * @param requestOptions Options for creation request(s)
-   * @returns A promise that will resolve with the item's id
-   */
-  clone (
-    folderId: string,
-    swizzles: ISwizzleHash,
-    requestOptions?: IUserRequestOptions
-  ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
-
-      let options = {
-        group: this.itemSection,
-        ...requestOptions
-      }
-      options.group.title += '_' + this.cloningUniquenessTimestamp();
-
-      // Create the item
-      groups.createGroup(options)
-      .then(
-        createResp => {
-          swizzles[this.itemSection.id] = createResp.group.id;
-          this.itemSection.id = createResp.group.id;
-
-          if (this.dependencies.length > 0) {
-            // Add each of the group's items to it
-            var awaitGroupAdds:Promise<null>[] = [];
-            this.dependencies.forEach(depId => {
-              awaitGroupAdds.push(new Promise(resolve => {
-                var swizzledDepId = swizzles[depId];
-                sharing.shareItemWithGroup({
-                  id: swizzledDepId,
-                  groupId: createResp.group.id,
-                  ...requestOptions
-                })
-                .then(
-                  () => {
-                    //progressIncrement();
-                    resolve();
-                  },
-                  error => {
-                    console.log("Unable to share group's items with it: " + JSON.stringify(error));
-                  }
-                );
-              }));
-            });
-            // After all items have been added to the group
-            Promise.all(awaitGroupAdds)
-            .then(
-              () => {
-                resolve(createResp.group.id);
-              }
-            );
-          } else {
-            // No items in this group
-            resolve(createResp.group.id);
-          }
-        },
-        error => {
-          reject('Unable to create ' + this.type + ': ' + JSON.stringify(error));
-        }
-      )
     });
   }
 

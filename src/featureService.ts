@@ -19,6 +19,8 @@ import { request } from "@esri/arcgis-rest-request";
 import { AgolItem } from "./agolItem";
 import { ItemWithData } from "./itemWithData";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 /**
  *  AGOL hosted feature service item
  */
@@ -110,6 +112,8 @@ export class FeatureService  extends ItemWithData {
       );
     });
   }
+
+  //------------------------------------------------------------------------------------------------------------------//
 
   /**
    * Gets the full definitions of the layers affiliated with a hosted service.

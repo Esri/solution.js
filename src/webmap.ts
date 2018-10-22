@@ -14,10 +14,13 @@
  | limitations under the License.
  */
 
+import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { request } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
+import { AgolItem, ISwizzleHash } from "./agolItem";
 import { ItemWithData } from "./itemWithData";
+
+//--------------------------------------------------------------------------------------------------------------------//
 
 /**
  *  AGOL webmap item
@@ -60,6 +63,34 @@ export class Webmap  extends ItemWithData {
       );
     });
   }
+
+  swizzleContainedItems (
+    swizzles: ISwizzleHash
+  ): void {
+    // Swizzle its map layers
+    if (Array.isArray(this.dataSection.operationalLayers)) {
+      this.dataSection.operationalLayers.forEach((layer:ILayer) => {
+        var itsSwizzle = swizzles[layer.itemId];
+        if (itsSwizzle) {
+          layer.title = itsSwizzle.name;
+          layer.itemId = itsSwizzle.id;
+          layer.url = itsSwizzle.url;
+        }
+      });
+    }
+    if (Array.isArray(this.dataSection.tables)) {
+      this.dataSection.tables.forEach((layer:ILayer) => {
+        var itsSwizzle = swizzles[layer.itemId];
+        if (itsSwizzle) {
+          layer.title = itsSwizzle.name;
+          layer.itemId = itsSwizzle.id;
+          layer.url = itsSwizzle.url;
+        }
+      });
+    }
+  }
+
+  //------------------------------------------------------------------------------------------------------------------//
 
   /**
    * Updates the item's list of dependencies.

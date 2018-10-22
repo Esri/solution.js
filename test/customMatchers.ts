@@ -20,6 +20,8 @@ import CustomEqualityTester = jasmine.CustomEqualityTester;
 import CustomMatcher = jasmine.CustomMatcher;
 import CustomMatcherResult = jasmine.CustomMatcherResult;
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 export interface IToHaveOrder {
   predecessor:string,
   successor:string

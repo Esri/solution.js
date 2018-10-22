@@ -18,6 +18,8 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { AgolItem, ISwizzleHash } from "./agolItem";
 import { ItemWithData } from "./itemWithData";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 interface IDashboardWidget {
   itemId: string;
   type:string;
@@ -66,7 +68,7 @@ export class Dashboard  extends ItemWithData {
     if (widgets) {
       widgets.forEach(widget => {
         if (widget.type === "mapWidget") {
-          widget.itemId = swizzles[widget.itemId];
+          widget.itemId = swizzles[widget.itemId].id;
         }
       });
     }

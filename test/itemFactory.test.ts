@@ -34,6 +34,8 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 describe("converting an item into JSON", () => {
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms

@@ -18,6 +18,8 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
 import { AgolItem } from "./agolItem";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 export class ItemWithData extends AgolItem {
 
   /**

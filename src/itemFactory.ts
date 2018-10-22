@@ -18,7 +18,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { AgolItemPrototype, AgolItem, ISwizzleHash } from "./agolItem";
+import { AgolItemPrototype, AgolItem, IOrgSession, ISwizzleHash } from "./agolItem";
 import { Dashboard } from "./dashboard";
 import { FeatureService } from "./featureService";
 import { ItemWithData } from "./itemWithData";
@@ -26,6 +26,8 @@ import { Group } from "./group";
 import { Solution } from "./solution";
 import { Webmap } from "./webmap";
 import { WebMappingApp } from "./webMappingApp";
+
+//--------------------------------------------------------------------------------------------------------------------//
 
 export interface IItemHash {
   [id:string]: AgolItem | Promise<AgolItem>;
@@ -244,7 +246,7 @@ export class ItemFactory {
     itemJson: any,
     folderId: string,
     swizzles: ISwizzleHash,
-    requestOptions?: IUserRequestOptions
+    orgSession: IOrgSession
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       let itemType = (itemJson && itemJson.type) || "Unknown";
@@ -273,7 +275,7 @@ export class ItemFactory {
       }
 
       // Clone the item
-      item.clone(folderId, swizzles, requestOptions)
+      item.clone(folderId, swizzles, orgSession)
       .then(resolve, reject);
     });
   }
@@ -287,7 +289,7 @@ export class ItemFactory {
   static JSONToItemHierarchy(
     collection: IItemHash,
     folderId: string,
-    requestOptions?: IUserRequestOptions
+    orgSession: IOrgSession
   ): Promise<string[]> {
     return new Promise((resolve, reject) => {
       let itemIdList:string[] = [];
@@ -304,7 +306,7 @@ export class ItemFactory {
 
         // Clone item at top of list
         let itemId = cloneOrderChecklist.shift();
-        ItemFactory.JSONToItem(collection[itemId], folderId, swizzles, requestOptions)
+        ItemFactory.JSONToItem(collection[itemId], folderId, swizzles, orgSession)
         .then(
           newItemId => {
             itemIdList.push(newItemId);
@@ -319,6 +321,8 @@ export class ItemFactory {
       runThroughChecklist();
     });
   }
+
+  //------------------------------------------------------------------------------------------------------------------//
 
   /**
    * Extracts the AGOL id from the front of a string.

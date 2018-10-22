@@ -14,12 +14,35 @@
  | limitations under the License.
  */
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItemAddRequestOptions } from "@esri/arcgis-rest-items";
 import * as items from "@esri/arcgis-rest-items";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
+export interface IOrgSession {
+  /**
+   * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+   */
+  orgUrl: string;
+  /**
+   * The base URL for the portal, e.g., https://www.arcgis.com
+   */
+  portalUrl: string;
+  /**
+   * A session representing a logged-in user
+   */
+  authentication: UserSession;
+}
+
+export interface ISwizzle {
+  id: string;
+  name?: string;
+  url?: string;
+}
+
 export interface ISwizzleHash {
-  [id:string]: string;
+  [id:string]: ISwizzle;
 }
 
 export interface AgolItemPrototype {
@@ -101,13 +124,13 @@ export class AgolItem implements AgolItemPrototype {
    * Clones the item into the destination organization and folder
    *
    * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
-   * @param requestOptions Options for creation request(s)
+   * @param orgSession Information about current organization and login: org URL, portal URL, authentication
    * @returns A promise that will resolve with the item's id
    */
   clone (
     folderId: string,
     swizzles: ISwizzleHash,
-    requestOptions?: IUserRequestOptions
+    orgSession: IOrgSession
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
@@ -116,12 +139,16 @@ export class AgolItem implements AgolItemPrototype {
       this.prepareForCreate(swizzles);
 
       // Create the item
-      let options = this.getCreateItemOptions(folderId, requestOptions);
+      let options = this.getCreateItemOptions(folderId, orgSession);
       items.createItemInFolder(options)
       .then(
         createResp => {
+          // Save the swizzle to this new item
+          swizzles[this.itemSection.id].id = createResp.id;
+          this.itemSection.id = createResp.id;
+
           // Wrap up creation
-          this.concludeCreation(createResp.id, swizzles)
+          this.concludeCreation(swizzles, orgSession)
           .then(resolve);
         },
         error => {
@@ -138,38 +165,34 @@ export class AgolItem implements AgolItemPrototype {
       this.swizzleContainedItems(swizzles);
   }
 
-  concludeCreation (
-    clonedItemId: string,
-    swizzles: ISwizzleHash
-  ): Promise<string> {
-    // Save the swizzle to this new item
-    swizzles[this.itemSection.id] = clonedItemId;
-    this.itemSection.id = clonedItemId;
-
-    return new Promise(resolve => {
-      resolve(clonedItemId);
-    });
-  }
-
   swizzleContainedItems (
     swizzles: ISwizzleHash
   ): void {
   }
 
+  concludeCreation (
+    swizzles: ISwizzleHash,
+    orgSession: IOrgSession
+  ): Promise<string> {
+    return new Promise(resolve => {
+      resolve(this.itemSection.id);
+    });
+  }
+
   /**
    * Assembles the standard contents needed to create an item.
-   * 
+   *
    * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
-   * @param requestOptions Options for creation request(s)
+   * @param orgSession Information about current organization and login: org URL, portal URL, authentication
    * @returns An options structure for calling arcgis-rest-js' createItemInFolder function
    */
   getCreateItemOptions (
     folderId: string,
-    requestOptions?: IUserRequestOptions
+    orgSession: IOrgSession
   ): IItemAddRequestOptions {
     let options:IItemAddRequestOptions = {
       item: this.itemSection,
-      ...requestOptions
+      authentication: orgSession.authentication
     };
 
     if (this.dataSection) {
@@ -186,6 +209,8 @@ export class AgolItem implements AgolItemPrototype {
   cloningUniquenessTimestamp () {
     return (new Date()).getTime();
   }
+
+  //------------------------------------------------------------------------------------------------------------------//
 
   /**
    * Removes item properties irrelevant to cloning.

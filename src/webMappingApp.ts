@@ -15,8 +15,11 @@
  */
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import { AgolItem } from "./agolItem";
+import { AgolItem, IOrgSession, ISwizzleHash } from "./agolItem";
 import { ItemWithData } from "./itemWithData";
+import * as items from "@esri/arcgis-rest-items";
+
+//--------------------------------------------------------------------------------------------------------------------//
 
 /**
  *  AGOL web map application item
@@ -39,6 +42,12 @@ export class WebMappingApp  extends ItemWithData {
         () => {
           this.estimatedCost += 1;  // cost to update URL after item is created
 
+          // Simplify app URL for cloning: remove org base URL and app id
+          // Need to add fake server because otherwise AGOL makes URL null
+          let orgUrl = this.itemSection.url.replace(this.itemSection.id, "");
+          let iSep = orgUrl.indexOf("//");
+          this.itemSection.url = "https://arcgis.com" + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+
           // Extract the dependencies
           if (this.dataSection && this.dataSection.values) {
             let values = this.dataSection.values;
@@ -51,6 +60,46 @@ export class WebMappingApp  extends ItemWithData {
           }
 
           resolve(this);
+        }
+      );
+    });
+  }
+
+  swizzleContainedItems (
+    swizzles: ISwizzleHash
+  ): void {
+    // Swizzle its webmap or group
+    let values = this.dataSection && this.dataSection.values;
+    if (values) {
+      if (values.webmap) {
+        values.webmap = swizzles[values.webmap].id;
+      } else if (values.group) {
+        values.group = swizzles[values.group].id;
+      }
+    }
+  }
+
+  concludeCreation (
+    swizzles: ISwizzleHash,
+    orgSession: IOrgSession
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      // Update its URL
+      var options = {
+        item: {
+          'id': this.itemSection.id,
+          'url': orgSession.orgUrl + this.itemSection.url + this.itemSection.id
+        },
+        authentication: orgSession.authentication
+      };
+      items.updateItem(options)
+      .then(
+        updateResp => {
+          //progressIncrement();
+          resolve(this.itemSection.id);
+        },
+        error => {
+          reject('Unable to update webmap');
         }
       );
     });

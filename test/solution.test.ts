@@ -23,6 +23,8 @@ import { AgolItem, AgolItemPrototype } from "../src/agolItem";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 describe("supporting Solution item", () => {
 
   const MOCK_ITEM_PROTOTYPE:AgolItemPrototype = {

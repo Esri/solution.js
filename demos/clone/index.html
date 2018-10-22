@@ -134,14 +134,14 @@
       progress.show();
 
       // Prepare credentials for library
-      requestOptions = demoCommon.getRequestOptions('username', 'password');
+      var orgSession = demoCommon.getRequestOptions('username', 'password');
 
       // Get the destination organization URL for creating links to source items
       request.getPortal(null, requestOptions)
       .then(
         portalResponse => {
-          orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl + '/home/';
-          portal = 'https://' + portalResponse.portalHostname + '/';
+          orgSession.orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;
+          orgSession.portalUrl = 'https://' + portalResponse.portalHostname;
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
 
           // Get the solution contents
@@ -150,7 +150,7 @@
             publishedSolution => {
               currentSolutionItems = publishedSolution.items;
 
-              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems, null, requestOptions)
+              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems, null, orgSession)
               .then(
                 createResponse => {
                   document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -158,7 +158,7 @@
                   document.getElementById('createResults').style.display = 'block';
                   progress.hide();
 
-                  document.getElementById('createDisplay').innerHTML = 
+                  document.getElementById('createDisplay').innerHTML =
                     JSON.stringify(createResponse).replace(',', ', ');
                 }
               );

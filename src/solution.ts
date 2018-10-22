@@ -22,6 +22,8 @@ import { ISetAccessRequestOptions } from "@esri/arcgis-rest-sharing";
 import { AgolItem } from "./agolItem";
 import { IItemHash } from "./itemFactory";
 
+//--------------------------------------------------------------------------------------------------------------------//
+
 interface ISortVertex {
   [id:string]: number;
 }
@@ -236,6 +238,8 @@ export class Solution {
     itemChildren(topLevelNodes, hierarchy);
     return hierarchy;
   }
+
+  //------------------------------------------------------------------------------------------------------------------//
 
   /**
    * Extracts the AGOL id from the front of a string.
