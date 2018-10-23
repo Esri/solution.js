@@ -144,7 +144,9 @@ export class AgolItem implements AgolItemPrototype {
       .then(
         createResp => {
           // Save the swizzle to this new item
-          swizzles[this.itemSection.id].id = createResp.id;
+          swizzles[this.itemSection.id] = {
+            id: createResp.id
+          };
           this.itemSection.id = createResp.id;
 
           // Wrap up creation

@@ -137,7 +137,7 @@
       var orgSession = demoCommon.getRequestOptions('username', 'password');
 
       // Get the destination organization URL for creating links to source items
-      request.getPortal(null, requestOptions)
+      request.getPortal(null, orgSession)
       .then(
         portalResponse => {
           orgSession.orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;

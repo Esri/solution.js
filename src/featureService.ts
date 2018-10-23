@@ -14,12 +14,17 @@
  | limitations under the License.
  */
 
+import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { request } from "@esri/arcgis-rest-request";
-import { AgolItem } from "./agolItem";
+import { AgolItem, IOrgSession, ISwizzleHash } from "./agolItem";
 import { ItemWithData } from "./itemWithData";
 
 //--------------------------------------------------------------------------------------------------------------------//
+
+interface IRelationship {
+  [id:string]: string[];
+}
 
 /**
  *  AGOL hosted feature service item
@@ -113,6 +118,111 @@ export class FeatureService  extends ItemWithData {
     });
   }
 
+  /**
+   * Clones the item into the destination organization and folder
+   *
+   * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+   * @param requestOptions Options for creation request(s)
+   * @returns A promise that will resolve with the item's id
+   */
+  clone (
+    folderId: string,
+    swizzles: ISwizzleHash,
+    requestOptions?: IUserRequestOptions
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      console.log("Clone " + (this.itemSection.name || this.itemSection.title) + " (" + this.type + ")");//???
+
+      let options = {
+        item: this.itemSection,
+        folderId: folderId,
+        ...requestOptions
+      }
+
+      // Make the item name unique
+      options.item.name += '_' + this.cloningUniquenessTimestamp();
+
+      // Remove the layers and tables from the create request because while they aren't added when
+      // the service is added, their presence prevents them from being added later via addToDefinition
+      options.item.layers = [];
+      options.item.tables = [];
+
+      // Create the item
+      featureServiceAdmin.createFeatureService(options)
+      .then(
+        createResp => {
+          if (createResp.success) {
+            swizzles[this.itemSection.id] = {
+              id: createResp.serviceItemId,
+              url: createResp.serviceurl
+            };
+
+            // Sort layers and tables by id so that they're added with the same ids
+            let layersAndTables:any[] = [];
+
+            (this.layers || []).forEach(function (layer) {
+              layersAndTables[layer.id] = {
+                item: layer,
+                type: 'layer'
+              };
+            });
+
+            (this.tables || []).forEach(function (table) {
+              layersAndTables[table.id] = {
+                item: table,
+                type: 'table'
+              };
+            });
+
+            // Hold a hash of relationships
+            let relationships:IRelationship = {};
+
+            // Add the service's layers and tables to it
+            this.addToDefinition(createResp.serviceItemId, createResp.serviceurl, layersAndTables, 
+              swizzles, relationships, requestOptions)
+            .then(
+              () => {
+                // Restore relationships for all layers and tables in the service
+                let awaitRelationshipUpdates:Promise<void>[] = [];
+                Object.keys(relationships).forEach(
+                  id => {
+                    awaitRelationshipUpdates.push(new Promise(resolve => {
+                      var options = {
+                        params: {
+                          addToDefinition: {
+                            relationships: relationships[id]
+                          }
+                        },
+                        ...requestOptions
+                      };
+                      featureServiceAdmin.addToServiceDefinition(createResp.serviceurl + "/" + id, options)
+                      .then(
+                        () => {
+                          resolve();
+                        },
+                        resolve);
+                    }));
+                  }
+                );
+                Promise.all(awaitRelationshipUpdates)
+                .then(
+                  () => {
+                    resolve(createResp.serviceItemId);
+                  }
+                );
+              }
+            );
+          } else {
+            reject('Unable to create feature service');
+          }
+        },
+        error => {
+          reject('Unable to create feature service');
+        }
+      );
+    });
+  }
+
   //------------------------------------------------------------------------------------------------------------------//
 
   /**
@@ -166,6 +276,63 @@ export class FeatureService  extends ItemWithData {
       });
     }
     return "";
+  }
+
+  private addToDefinition(serviceItemId:string, serviceUrl:string, listToAdd:any[], 
+    swizzles: ISwizzleHash, relationships:IRelationship, requestOptions?: IUserRequestOptions) {
+    // Launch the adds serially because server doesn't support parallel adds
+    return new Promise((resolve) => {
+      if (listToAdd.length > 0) {
+        var toAdd = listToAdd.shift();
+
+        var item = toAdd.item;
+        var originalId = item.id;
+        //delete item.id;  // Updated by addToDefinition
+        delete item.serviceItemId;  // Updated by addToDefinition
+
+        // Need to remove relationships and add them back individually after all layers and tables
+        // have been added to the definition
+        if (Array.isArray(item.relationships) && item.relationships.length > 0) {
+          relationships[originalId] = item.relationships;
+          item.relationships = [];
+        }
+
+        let options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
+          ...requestOptions
+        };
+
+        if (toAdd.type === 'layer') {
+          item.adminLayerInfo = {  //???
+            'geometryField': {
+              'name': 'Shape',
+              'srid': 102100
+            }
+          };
+          options.layers = [item];
+        } else {
+          options.tables = [item];
+        }
+
+        featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
+        .then(
+          response => {
+            swizzles[serviceItemId + '_' + originalId] = {
+              'name': response.layers[0].name,
+              'id': serviceItemId,
+              'url': serviceUrl + '/' + response.layers[0].id
+            };
+            this.addToDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+            .then(resolve);
+          },
+          response => {
+            this.addToDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+            .then(resolve);
+          }
+        );
+      } else {
+        resolve();
+      }
+    });
   }
 
 }

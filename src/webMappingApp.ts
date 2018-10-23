@@ -26,6 +26,8 @@ import * as items from "@esri/arcgis-rest-items";
  */
 export class WebMappingApp  extends ItemWithData {
 
+  private aServer:string = "https://arcgis.com";
+
   /**
    * Completes the creation of the item.
    *
@@ -46,7 +48,7 @@ export class WebMappingApp  extends ItemWithData {
           // Need to add fake server because otherwise AGOL makes URL null
           let orgUrl = this.itemSection.url.replace(this.itemSection.id, "");
           let iSep = orgUrl.indexOf("//");
-          this.itemSection.url = "https://arcgis.com" + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+          this.itemSection.url = this.aServer + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
 
           // Extract the dependencies
           if (this.dataSection && this.dataSection.values) {
@@ -88,7 +90,9 @@ export class WebMappingApp  extends ItemWithData {
       var options = {
         item: {
           'id': this.itemSection.id,
-          'url': orgSession.orgUrl + this.itemSection.url + this.itemSection.id
+          'url': orgSession.orgUrl + 
+            (this.itemSection.url.substr(this.aServer.length)) + // remove fake server
+            this.itemSection.id
         },
         authentication: orgSession.authentication
       };

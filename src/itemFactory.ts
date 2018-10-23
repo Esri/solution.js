@@ -313,7 +313,7 @@ export class ItemFactory {
             runThroughChecklist();
           },
           error => {
-            reject(error);
+            reject(error)
           }
         )
       }

@@ -84,13 +84,18 @@ export class Group extends AgolItem {
         group: this.itemSection,
         ...requestOptions
       }
+
+      // Make the item title unique
       options.group.title += '_' + this.cloningUniquenessTimestamp();
 
       // Create the item
       groups.createGroup(options)
       .then(
         createResp => {
-          swizzles[this.itemSection.id].id = createResp.group.id;
+          // Save the swizzle to this new item
+          swizzles[this.itemSection.id] = {
+            id: createResp.group.id
+          };
           this.itemSection.id = createResp.group.id;
 
           if (this.dependencies.length > 0) {
