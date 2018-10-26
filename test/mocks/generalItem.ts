@@ -14,6 +14,14 @@
  | limitations under the License.
  */
 
-export * from "./dependencies";
-export * from "./fullItem";
-export * from "./fullItemHierarchy";
+import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+
+export const ItemFailResponse: ArcGISRequestError = {
+  "name":  "",
+  "message": "Item or group does not exist or is inaccessible.",
+  "originalMessage": "",
+  "code": "400",
+  "response": "",
+  "url": "",
+  "options": null
+};

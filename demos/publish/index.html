@@ -146,18 +146,23 @@
           var solutionRootIds = getCheckedItems();
 
           // Prepare the Solution
-          clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
-          .then(function (solutionResponse) {
-            solution = solutionResponse;
-            document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-              demoCommon.createHierarchyDisplay(solution, clone.Solution.getItemHierarchy(solution), true, orgUrl);
-          }, function (error) {
+          clone.getFullItemHierarchy(solutionRootIds, requestOptions)
+          .then(
+            solution => {
+              document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
+                demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
+            },
+            error => {
              document.getElementById('createDisplay').innerHTML = error.toString();
-          })
-          .finally(() => {
-            document.getElementById('creating').style.display = 'none';
-            document.getElementById('createResults').style.display = 'block';
-          });
+            }
+          )
+          .finally(
+            () => {
+              document.getElementById('creating').style.display = 'none';
+              document.getElementById('createResults').style.display = 'block';
+            }
+          );
+
         },
         function () {
           document.getElementById('create').style.display = 'none';

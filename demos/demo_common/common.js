@@ -65,25 +65,22 @@ define([
       };
 
       var display = '<ul class="solutionList">';
-      hierarchy.forEach(item => {
-        var itemSection = solutionItems[item.id].itemSection;
-        var itemLabel = (itemSection.title || itemSection.name || item.type);
-        if (item.type === 'Feature Service') {
-          itemLabel += ' (' + item.idPart + ')';
-        }
+      hierarchy.forEach(hierarchyItem => {
+        var item = solutionItems[hierarchyItem.id].item;
+        var itemLabel = (item.title || item.name || hierarchyItem.type);
 
-        var webpage = item.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
+        var webpage = hierarchyItem.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[hierarchyItem.type] +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
-          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
             itemLabel + '</a>';
         } else {
           display += itemLabel;
         }
 
-        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += this.createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
+        if (Array.isArray(hierarchyItem.dependencies) && hierarchyItem.dependencies.length > 0) {
+          display += this.createHierarchyDisplay(solutionItems, hierarchyItem.dependencies, createLinks, orgUrl);
         }
 
         display += '</li>';
