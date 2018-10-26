@@ -36,7 +36,7 @@ export interface IFullItem {
   /**
    * Item data section JSON
    */
-  text?: any;
+  data?: any;
   /**
    * Item resources section JSON
    */
@@ -90,7 +90,7 @@ export function getFullItem (
           ])
           .then(
             responses => {
-              fullItem.text = responses[0];
+              fullItem.data = responses[0];
               fullItem.resources = responses[1] && responses[1].total > 0 ? responses[1].resources : null;
               resolve(fullItem);
             }

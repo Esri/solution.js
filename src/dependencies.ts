@@ -77,8 +77,8 @@ function getDashboardDependencies (
       type:string;
     }
 
-    if (fullItem.text && fullItem.text.widgets) {
-      let widgets:IDashboardWidget[] = fullItem.text.widgets;
+    if (fullItem.data && fullItem.data.widgets) {
+      let widgets:IDashboardWidget[] = fullItem.data.widgets;
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
           dependencies.push(widget.itemId);
@@ -155,10 +155,10 @@ function getWebMapDependencies (
   return new Promise(resolve => {
     let dependencies:string[] = [];
 
-    if (fullItem.text) {
+    if (fullItem.data) {
       dependencies = [
-        ...getWebMapLayerIds(fullItem.text.operationalLayers),
-        ...getWebMapLayerIds(fullItem.text.tables)
+        ...getWebMapLayerIds(fullItem.data.operationalLayers),
+        ...getWebMapLayerIds(fullItem.data.tables)
       ];
     }
 
@@ -180,8 +180,8 @@ function getWebMappingApplicationDependencies (
   return new Promise(resolve => {
     let dependencies:string[] = [];
 
-    if (fullItem.text && fullItem.text.values) {
-      let values = fullItem.text.values;
+    if (fullItem.data && fullItem.data.values) {
+      let values = fullItem.data.values;
       if (values.webmap) {
         dependencies.push(values.webmap);
       }
