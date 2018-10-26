@@ -20,6 +20,35 @@ import { IItemHash, getFullItemHierarchy} from "./fullItemHierarchy";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
+ *
+ * ```typescript
+ * import { IItemHash } from "../src/fullItemHierarchy";
+ * import { createSolution } from "../src/solution";
+ *
+ * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
+ * .then(
+ *   (response:IItemHash) => {
+ *     let keys = Object.keys(response);
+ *     console.log(keys.length);  // => "6"
+ *     console.log((response[keys[0]] as IFullItem).type);  // => "Web Mapping Application"
+ *     console.log((response[keys[0]] as IFullItem).item.title);  // => "ROW Permit Public Comment"
+ *     console.log((response[keys[0]] as IFullItem).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+ *   },
+ *   error => {
+ *     // (should not see this as long as both of the above ids--real ones--stay available)
+ *     console.log(error); // => "Item or group does not exist or is inaccessible: " + the problem id number
+ *   }
+ * );
+ * ```
+ *
+ * @param rootIds AGOL id string or list of AGOL id strings
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with a hash by id of IFullItems;
+ * if any id is inaccessible, a single error response will be produced for the set
+ * of ids
+ */
 export function createSolution (
   solutionRootIds: string | string[],
   requestOptions?: IUserRequestOptions
@@ -39,7 +68,7 @@ export function createSolution (
             fullItem.item = removeUncloneableItemProperties(fullItem.item);
 
             // 2. for web mapping apps,
-            //    a. generalize app URLs
+            //    a. generalize app URL
             if (fullItem.type === "Web Mapping Application") {
               generalizeWebMappingApplicationURLs(fullItem);
 
@@ -63,7 +92,10 @@ export function createSolution (
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
- * Removes item properties irrelevant to cloning.
+ * Creates a copy of item base properties with properties irrelevant to cloning removed.
+ * 
+ * @param itemSection The base section of an item
+ * @returns Cloned copy of itemSection without certain properties such as `created`, `modified`, `owner`,...
  */
 function removeUncloneableItemProperties (
   itemSection: any
@@ -87,10 +119,15 @@ function removeUncloneableItemProperties (
   return itemSection;
 }
 
+/**
+ * Simplifies a web mapping application's app URL for cloning.
+ * 
+ * @param fullItem Web mapping application definition to be modified
+ */
 function generalizeWebMappingApplicationURLs (
   fullItem: IFullItem
 ): void {
-  // Simplify app URL for cloning: remove org base URL and app id
+  // Remove org base URL and app id
   // Need to add fake server because otherwise AGOL makes URL null
   let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
   let iSep = orgUrl.indexOf("//");
@@ -98,9 +135,9 @@ function generalizeWebMappingApplicationURLs (
 }
 
 /**
- * Fills in missing data, including full layer and table definitions.
+ * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  * 
- * @param fullItem Feature service item, data, dependencies
+ * @param fullItem Feature service item, data, dependencies definition to be modified
  */
 function fleshOutFeatureService (
   fullItem: IFullItem
@@ -109,4 +146,8 @@ function fleshOutFeatureService (
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
+ * name has to be acceptable to AGOL.
+ */
 const aPlaceholderServerName:string = "https://arcgis.com";

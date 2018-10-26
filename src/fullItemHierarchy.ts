@@ -20,13 +20,31 @@ import { getDependencies } from "./dependencies";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * A collection of AGOL items for serializing.
+ */
 export interface IItemHash {
+  /**
+   * An AGOL item description
+   */
   [id:string]: IFullItem | Promise<IFullItem>;
 }
 
+/**
+ * A recursive structure describing the hierarchy of a collection of AGOL items.
+ */
 export interface IHierarchyEntry {
+  /**
+   * AGOL item type name
+   */
   type: string,
+  /**
+   * AGOL item id
+   */
   id: string,
+  /**
+   * Item's dependencies
+   */
   dependencies: IHierarchyEntry[]
 }
 
@@ -56,8 +74,8 @@ export interface IHierarchyEntry {
  * @param requestOptions Options for requesting information from AGOL
  * @param collection A hash of items already converted useful for avoiding duplicate conversions and
  * hierarchy tracing
- * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
- * if either id is inaccessible, a single error response will be produced for the set
+ * @returns A promise that will resolve with a hash by id of IFullItems;
+ * if any id is inaccessible, a single error response will be produced for the set
  * of ids
  */
 export function getFullItemHierarchy (

@@ -21,6 +21,13 @@ import { IFullItem } from "./fullItem";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Gets the ids of the dependencies of an AGOL item.
+ *
+ * @param fullItem An item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 export function getDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -51,6 +58,13 @@ export function getDependencies (
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Gets the ids of the dependencies of an AGOL dashboard item.
+ *
+ * @param fullItem A dashboard item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 function getDashboardDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -76,6 +90,13 @@ function getDashboardDependencies (
   });
 }
 
+/**
+ * Gets the ids of the dependencies of an AGOL feature service item.
+ *
+ * @param fullItem A feature service item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 function getFeatureServiceDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -87,6 +108,13 @@ function getFeatureServiceDependencies (
   });
 }
 
+/**
+ * Gets the ids of the dependencies (contents) of an AGOL group.
+ *
+ * @param fullItem A group whose contents are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 function getGroupDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -113,6 +141,13 @@ function getGroupDependencies (
   });
 }
 
+/**
+ * Gets the ids of the dependencies of an AGOL webmap item.
+ *
+ * @param fullItem A webmap item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 function getWebMapDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -131,6 +166,13 @@ function getWebMapDependencies (
   });
 }
 
+/**
+ * Gets the ids of the dependencies of an AGOL webapp item.
+ *
+ * @param fullItem A webapp item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with list of dependent ids
+ */
 function getWebMappingApplicationDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
@@ -154,14 +196,20 @@ function getWebMappingApplicationDependencies (
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Removes duplicates from an array of strings.
+ * 
+ * @param arrayWithDups An array to be copied
+ * @returns Copy of array with duplicates removed
+ */
 function removeDuplicates (
   arrayWithDups:string[]
 ): string[] {
-  let uniqueNames:{
-    [name:string]: boolean;
+  let uniqueStrings:{
+    [value:string]: boolean;
   } = {};
-  arrayWithDups.forEach((elem:string) => uniqueNames[elem] = true);
-  return Object.keys(uniqueNames);
+  arrayWithDups.forEach((arrayElem:string) => uniqueStrings[arrayElem] = true);
+  return Object.keys(uniqueStrings);
 }
 
 /**
@@ -208,6 +256,12 @@ function getGroupContentsTranche (
   });
 }
 
+/**
+ * Extracts the AGOL id or URL for each layer or table object in a list.
+ * 
+ * @param layerList List of map layers or tables
+ * @returns List of ids and/or URLs
+ */
 function getWebMapLayerIds (
   layerList: any
 ): string[] {

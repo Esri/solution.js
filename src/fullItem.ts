@@ -21,6 +21,9 @@ import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * An AGOL item for serializing.
+ */
 export interface IFullItem {
   /**
    * AGOL item type name
@@ -44,6 +47,13 @@ export interface IFullItem {
   dependencies?: string[];
 }
 
+/**
+ * Fetches the item, data, and resources of an AGOL item.
+ *
+ * @param id AGOL item id
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve with an IFullItem; its dependencies section is not filled in
+ */
 export function getFullItem (
   id: string,
   requestOptions?: IUserRequestOptions
@@ -112,6 +122,12 @@ export function getFullItem (
 
 //--------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Creates an error object.
+ *
+ * @param id AGOL item id that caused failure
+ * @returns Error object with message "Item or group does not exist or is inaccessible: <id>"
+ */
 function UnavailableItemError (
   id: string
 ): ArcGISRequestError {
