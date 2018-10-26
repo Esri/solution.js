@@ -15,6 +15,7 @@
  */
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IFullItem, getFullItem } from "./fullItem";
 import { getDependencies } from "./dependencies";
 
@@ -115,7 +116,8 @@ export function getFullItemHierarchy (
                 }
               }
             );
-          }
+          },
+          (error:ArcGISRequestError) => reject(error)
         );
       }
 
@@ -130,7 +132,8 @@ export function getFullItemHierarchy (
       .then(
         () => {
           resolve(collection);
-        }
+        },
+        (error:ArcGISRequestError) => reject(error)
       );
     }
   });
