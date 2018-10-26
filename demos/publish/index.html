@@ -148,7 +148,9 @@
           // Get the items forming the solution
           clone.createSolution(solutionRootIds, requestOptions)
           .then(
-            solution => {
+            createdSolution => {
+              solution = createdSolution;
+
               // Display the Solution
               document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
                 demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
@@ -181,7 +183,7 @@
 
       // Publish the Solution
       var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
+      clone.publishSolution(solutionName, solution, 'public', requestOptions)
       .then(function (publishResponse) {
         var publishedSolutionId = publishResponse.id;
 
@@ -191,7 +193,7 @@
             document.getElementById('detailsDisplay').innerHTML =
               demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
               '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+              demoCommon.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
           }
         );
       }, function (error) {

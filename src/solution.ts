@@ -15,6 +15,8 @@
  */
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import * as items from "@esri/arcgis-rest-items";
+import * as sharing from "@esri/arcgis-rest-sharing";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy} from "./fullItemHierarchy";
 
@@ -89,19 +91,83 @@ export function createSolution (
   });
 }
 
+/**
+ * Creates a Solution item containing JSON descriptions of items forming the solution.
+ *
+ * @param title Title for Solution item to create
+ * @param solution Hash of JSON descriptions of items to publish into Solution
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @param requestOptions Options for the request
+ * @returns A promise that will resolve with an object reporting success and the Solution id
+ */
+export function publishSolution (
+  title: string,
+  solution: IItemHash,
+  access: string,
+  requestOptions?: IUserRequestOptions
+): Promise<items.IItemUpdateResponse> {
+  return new Promise((resolve) => {
+    // Define the solution item
+    let item = {
+      title: title,
+      type: 'Solution',
+      itemType: 'text',
+      access: access,
+      listed: false,
+      commentsEnabled: false
+    };
+    let data = {
+      items: solution
+    };
+
+    // Create it and add its data section
+    let options = {
+      title: title,
+      item: item,
+      ...requestOptions
+    };
+    items.createItem(options)
+    .then(function (results) {
+      if (results.success) {
+        let options = {
+          id: results.id,
+          data: data,
+          ...requestOptions
+        };
+        items.addItemJsonData(options)
+        .then(function (results) {
+          // Set the access manually since the access value in createItem appears to be ignored
+          let options = {
+            id: results.id,
+            access: access,
+            ...requestOptions as sharing.ISetAccessRequestOptions
+          };
+          sharing.setItemAccess(options)
+          .then(function (results) {
+            resolve({
+              success: true,
+              id: results.itemId
+            })
+          });
+        });
+      }
+    });
+  });
+}
+
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
  * Creates a copy of item base properties with properties irrelevant to cloning removed.
- * 
- * @param itemSection The base section of an item
- * @returns Cloned copy of itemSection without certain properties such as `created`, `modified`, `owner`,...
+ *
+ * @param item The base section of an item
+ * @returns Cloned copy of item without certain properties such as `created`, `modified`, `owner`,...
  */
 function removeUncloneableItemProperties (
-  itemSection: any
+  item: any
 ): void {
-  if (itemSection) {
-    let itemSectionClone = {...itemSection};
+  if (item) {
+    let itemSectionClone = {...item};
     delete itemSectionClone.avgRating;
     delete itemSectionClone.created;
     delete itemSectionClone.guid;
@@ -116,12 +182,12 @@ function removeUncloneableItemProperties (
     delete itemSectionClone.uploaded;
     return itemSectionClone;
   }
-  return itemSection;
+  return item;
 }
 
 /**
  * Simplifies a web mapping application's app URL for cloning.
- * 
+ *
  * @param fullItem Web mapping application definition to be modified
  */
 function generalizeWebMappingApplicationURLs (
@@ -136,7 +202,7 @@ function generalizeWebMappingApplicationURLs (
 
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
- * 
+ *
  * @param fullItem Feature service item, data, dependencies definition to be modified
  */
 function fleshOutFeatureService (
