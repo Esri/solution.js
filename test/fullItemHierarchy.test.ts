@@ -61,6 +61,7 @@ describe("converting an item into JSON", () => {
   });
 
   it("should return a list of WMA details for a valid AGOL id", done => {
+    let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
     .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
     .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -71,9 +72,9 @@ describe("converting an item into JSON", () => {
     .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+    .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+    .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+    .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
     getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
     .then(
       (response:IItemHash) => {
@@ -90,6 +91,7 @@ describe("converting an item into JSON", () => {
   });
 
   it("should return a list of WMA details for a valid AGOL id in a list", done => {
+    let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
     .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
     .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -100,9 +102,9 @@ describe("converting an item into JSON", () => {
     .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+    .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+    .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+    .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
     getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
     .then(
       (response:IItemHash) => {
@@ -119,6 +121,7 @@ describe("converting an item into JSON", () => {
   });
 
   it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
+    let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
     .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
     .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -129,9 +132,9 @@ describe("converting an item into JSON", () => {
     .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+    .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+    .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+    .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
     getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
     .then(
       (response:IItemHash) => {
@@ -180,6 +183,7 @@ describe("converting an item into JSON", () => {
   });
 
   it("should return an error message for an invalid AGOL id in a list with more than one id", done => {
+    let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
     .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
     .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -190,9 +194,9 @@ describe("converting an item into JSON", () => {
     .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
     .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-    .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse)
+    .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+    .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+    .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse)
     .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
     .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
     getFullItemHierarchy(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)

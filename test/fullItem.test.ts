@@ -120,19 +120,18 @@ describe("converting an item into JSON", () => {
   });
 
   describe("for different item types", () => {
-
     [
       {
-        id: "dash1234657890", type: "Dashboard",
-        item: ItemSuccessResponseDashboard, data: ItemDataSuccessResponseDashboard, resources: ItemResourcesSuccessResponseNone
+        id: "dash1234657890", type: "Dashboard", item: ItemSuccessResponseDashboard,
+        data: ItemDataSuccessResponseDashboard, resources: ItemResourcesSuccessResponseNone
       },
       {
-        id: "map1234657890", type: "Web Map",
-        item: ItemSuccessResponseWebmap, data: ItemDataSuccessResponseWebmap, resources: ItemResourcesSuccessResponseNone
+        id: "map1234657890", type: "Web Map", item: ItemSuccessResponseWebmap,
+        data: ItemDataSuccessResponseWebmap, resources: ItemResourcesSuccessResponseNone
       },
       {
-        id: "wma1234657890", type: "Web Mapping Application",
-        item: ItemSuccessResponseWMA, data: ItemDataSuccessResponseWMA, resources: ItemResourcesSuccessResponseNone
+        id: "wma1234657890", type: "Web Mapping Application", item: ItemSuccessResponseWMA,
+        data: ItemDataSuccessResponseWMA, resources: ItemResourcesSuccessResponseNone
       }
     ].forEach(({id, type, item, data, resources}) => {
       it("should create a " + type + " based on the AGOL response", done => {
@@ -162,22 +161,23 @@ describe("converting an item into JSON", () => {
     });
 
     it("should create a Feature Service based on the AGOL response", done => {
+      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
 
       getFullItem("svc1234567890", MOCK_USER_REQOPTS)
       .then(response => {
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/data")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/resources")).toEqual(true);
-        //expect(fetchMock.called("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer?f=json")).toEqual(true);
-        //expect(fetchMock.called("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0?f=json")).toEqual(true);
-        //expect(fetchMock.called("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1?f=json")).toEqual(true);
+        //expect(fetchMock.called(baseSvcURL + "FeatureServer?f=json")).toEqual(true);
+        //expect(fetchMock.called(baseSvcURL + "FeatureServer/0?f=json")).toEqual(true);
+        //expect(fetchMock.called(baseSvcURL + "FeatureServer/1?f=json")).toEqual(true);
 
         expect(response.type).toEqual("Feature Service");
 
