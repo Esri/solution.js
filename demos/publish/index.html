@@ -142,13 +142,14 @@
           orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
           portalUrl = 'https://' + response.portalHostname + '/';
 
-          // Get the items to include in the solution
+          // Get the items to include in the solution, then generate the solution
           var solutionRootIds = getCheckedItems();
 
-          // Prepare the Solution
-          clone.getFullItemHierarchy(solutionRootIds, requestOptions)
+          // Get the items forming the solution
+          clone.createSolution(solutionRootIds, requestOptions)
           .then(
             solution => {
+              // Display the Solution
               document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
                 demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
             },

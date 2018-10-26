@@ -34,7 +34,6 @@ export interface IHierarchyEntry {
  * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
  *
  * ```typescript
- * import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
  * import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
  *
  * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
@@ -54,7 +53,7 @@ export interface IHierarchyEntry {
  * ```
  *
  * @param rootIds AGOL id string or list of AGOL id strings
- * @param requestOptions Options for the request
+ * @param requestOptions Options for requesting information from AGOL
  * @param collection A hash of items already converted useful for avoiding duplicate conversions and
  * hierarchy tracing
  * @returns A promise that will resolve with a hash by id of subclasses of AgolItem;
@@ -185,5 +184,3 @@ export function getItemHierarchy (
   itemChildren(topLevelNodes, hierarchy);
   return hierarchy;
 }
-
-//--------------------------------------------------------------------------------------------------------------------//
