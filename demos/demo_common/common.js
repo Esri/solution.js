@@ -128,7 +128,7 @@ define([
             this.createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
-            this.createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+            this.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
         }
       )
       .finally(() => {
