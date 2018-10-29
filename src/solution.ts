@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
@@ -39,6 +39,21 @@ export interface IFullItemFeatureService extends IFullItem {
    * Description for each table
    */
   tables: any[];
+}
+
+export interface IOrgSession {
+  /**
+   * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+   */
+  orgUrl: string;
+  /**
+   * The base URL for the portal, e.g., https://www.arcgis.com
+   */
+  portalUrl: string;
+  /**
+   * A session representing a logged-in user
+   */
+  authentication: UserSession;
 }
 
 /**
@@ -182,6 +197,69 @@ export function publishSolution (
   });
 }
 
+
+/**
+ * Converts a hash by id of generic JSON item descriptions into AGOL items.
+ * @param itemJson A hash of item descriptions to convert
+ * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created; folder name
+ *     is a combination of the solution name and a timestamp for uniqueness, e.g., "Dashboard (1540841846958)"
+ * @returns A promise that will resolve with a list of the ids of items created in AGOL
+ */
+export function cloneSolution (
+  solutionName: string,
+  solution: IItemHash,
+  folderId: string,
+  orgSession: IOrgSession
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    let itemIdList:string[] = [];
+    let swizzles:ISwizzleHash = {};
+
+    // Run through the list of item ids in clone order
+    let cloneOrderChecklist:string[] = topologicallySortItems(solution);
+
+    function runThroughChecklist () {
+      if (cloneOrderChecklist.length === 0) {
+        resolve(itemIdList);
+        return;
+      }
+
+      // Clone item at top of list
+      let itemId = cloneOrderChecklist.shift();
+      JSONToItem(solution[itemId], folderId, swizzles, orgSession)
+      .then(
+        newItemId => {
+          itemIdList.push(newItemId);
+          runThroughChecklist();
+        },
+        error => {
+          reject(error)
+        }
+      )
+    }
+
+    // Use specified folder to hold the hydrated items to avoid name clashes
+    if (folderId) {
+      runThroughChecklist();
+    } else {
+      // Create a folder to hold the hydrated items to avoid name clashes
+      let folderName = solutionName + ' (' + cloningUniquenessTimestamp() + ')';
+      let options = {
+        title: folderName,
+        authentication: orgSession.authentication
+      };
+      items.createFolder(options)
+      .then(
+        createdFolderResponse => {
+          folderId = createdFolderResponse.folder.id;
+          runThroughChecklist();
+        }
+      );
+    }
+  });
+}
+
+
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
@@ -191,46 +269,39 @@ export function publishSolution (
 const aPlaceholderServerName:string = "https://arcgis.com";
 
 /**
- * Creates a copy of item base properties with properties irrelevant to cloning removed.
- *
- * @param item The base section of an item
- * @returns Cloned copy of item without certain properties such as `created`, `modified`, `owner`,...
+ * A vertex used in the topological sort algorithm.
  */
-function removeUncloneableItemProperties (
-  item: any
-): void {
-  if (item) {
-    let itemSectionClone = {...item};
-    delete itemSectionClone.avgRating;
-    delete itemSectionClone.created;
-    delete itemSectionClone.guid;
-    delete itemSectionClone.modified;
-    delete itemSectionClone.numComments;
-    delete itemSectionClone.numRatings;
-    delete itemSectionClone.numViews;
-    delete itemSectionClone.orgId;
-    delete itemSectionClone.owner;
-    delete itemSectionClone.scoreCompleteness;
-    delete itemSectionClone.size;
-    delete itemSectionClone.uploaded;
-    return itemSectionClone;
-  }
-  return item;
+interface ISortVertex {
+  /**
+   * Vertex (AGOL) id and its visited status, described by the SortVisitColor enum
+   */
+  [id:string]: number;
+}
+
+interface ISwizzle {
+  id: string;
+  name?: string;
+  url?: string;
+}
+
+interface ISwizzleHash {
+  [id:string]: ISwizzle;
 }
 
 /**
- * Simplifies a web mapping application's app URL for cloning.
- *
- * @param fullItem Web mapping application definition to be modified
+ * A visit flag used in the topological sort algorithm.
  */
-function generalizeWebMappingApplicationURLs (
-  fullItem: IFullItem
-): void {
-  // Remove org base URL and app id
-  // Need to add fake server because otherwise AGOL makes URL null
-  let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
-  let iSep = orgUrl.indexOf("//");
-  fullItem.item.url = aPlaceholderServerName + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+enum SortVisitColor {
+  /** not yet visited */
+  White,
+  /** visited, in progress */
+  Gray,
+  /** finished */
+  Black
+}
+
+function cloningUniquenessTimestamp () {
+  return (new Date()).getTime();
 }
 
 /**
@@ -280,6 +351,21 @@ function fleshOutFeatureService (
       }
     );
   });
+}
+
+/**
+ * Simplifies a web mapping application's app URL for cloning.
+ *
+ * @param fullItem Web mapping application definition to be modified
+ */
+function generalizeWebMappingApplicationURLs (
+  fullItem: IFullItem
+): void {
+  // Remove org base URL and app id
+  // Need to add fake server because otherwise AGOL makes URL null
+  let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
+  let iSep = orgUrl.indexOf("//");
+  fullItem.item.url = aPlaceholderServerName + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
 }
 
 /**
@@ -333,4 +419,157 @@ function getLayers (
       resolve(layers);
     });
   });
+}
+
+/**
+ * Converts a generic JSON item description into an AGOL item.
+ * @param itemJson Generic JSON form of item
+ * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
+ * @returns A promise that will resolve with the item's id
+ */
+function JSONToItem (
+  itemJson: any,
+  folderId: string,
+  swizzles: ISwizzleHash,
+  orgSession: IOrgSession
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let itemType = (itemJson && itemJson.type) || "Unknown";
+
+    /*
+    // Load the JSON into a type of item
+    let item:IFullItem;
+    switch(itemType) {
+      case "Dashboard":
+        item = new Dashboard(itemJson);
+        break;
+      case "Feature Service":
+        item = new FeatureService(itemJson);
+        break;
+      case "Group":
+        item = new Group(itemJson);
+        break;
+      case "Web Map":
+        item = new Webmap(itemJson);
+        break;
+      case "Web Mapping Application":
+        item = new WebMappingApp(itemJson);
+        break;
+      default:
+        reject(itemJson);
+        break;
+    }
+
+    // Clone the item
+    item.clone(folderId, swizzles, orgSession)
+    .then(resolve, reject);
+    */
+
+    resolve();//???
+  });
+}
+
+/**
+ * Creates a copy of item base properties with properties irrelevant to cloning removed.
+ *
+ * @param item The base section of an item
+ * @returns Cloned copy of item without certain properties such as `created`, `modified`, `owner`,...
+ */
+function removeUncloneableItemProperties (
+  item: any
+): void {
+  if (item) {
+    let itemSectionClone = {...item};
+    delete itemSectionClone.avgRating;
+    delete itemSectionClone.created;
+    delete itemSectionClone.guid;
+    delete itemSectionClone.modified;
+    delete itemSectionClone.numComments;
+    delete itemSectionClone.numRatings;
+    delete itemSectionClone.numViews;
+    delete itemSectionClone.orgId;
+    delete itemSectionClone.owner;
+    delete itemSectionClone.scoreCompleteness;
+    delete itemSectionClone.size;
+    delete itemSectionClone.uploaded;
+    return itemSectionClone;
+  }
+  return item;
+}
+
+/**
+ * Topologically sort a Solution's items into a build list.
+ *
+ * @param items Hash of JSON descriptions of items
+ * @return List of ids of items in the order in which they need to be built so that dependencies
+ * are built before items that require those dependencies
+ * @throws Error("Cyclical dependency graph detected")
+ */
+function topologicallySortItems (
+  items:IItemHash
+): string[] {
+  // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
+  // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
+  // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
+  //
+  // DFS(G)
+  // 1 for each vertex u ∈ G,V
+  // 2     u.color = WHITE
+  // 3     u.π = NIL
+  // 4 time = 0
+  // 5 for each vertex u ∈ G,V
+  // 6     if u.color == WHITE
+  // 7         DFS-VISIT(G,u)
+  //
+  // DFS-VISIT(G,u)
+  // 1 time = time + 1    // white vertex u has just been discovered
+  // 2 u.d = time
+  // 3 u.color = GRAY
+  // 4 for each v ∈ G.Adj[u]     // explore edge (u,v)
+  // 5     if v.color == WHITE
+  // 6         v.π = u
+  // 7         DFS-VISIT(G,v)
+  // 8 u.color = BLACK         // blacken u; it is finished
+  // 9 time = time + 1
+  // 10 u.f = time
+  //
+  // TOPOLOGICAL-SORT(G)
+  // 1 call DFS(G) to compute finishing times v.f for each vertex v
+  // 2 as each vertex is finished, insert it onto front of a linked list
+  // 3 return the linked list of vertices
+
+  let buildList:string[] = [];  // list of ordered vertices--don't need linked list because we just want relative ordering
+
+  let verticesToVisit:ISortVertex = {};
+  Object.keys(items).forEach(function(vertexId) {
+    verticesToVisit[vertexId] = SortVisitColor.White;  // not yet visited
+  });
+
+  // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
+  Object.keys(verticesToVisit).forEach(function(vertexId) {
+    if (verticesToVisit[vertexId] === SortVisitColor.White) {  // if not yet visited
+      visit(vertexId);
+    }
+  });
+
+  // Visit vertex
+  function visit(vertexId:string) {
+    verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
+
+    // Visit dependents if not already visited
+    var dependencies:string[] = (items[vertexId] as IFullItem).dependencies || [];
+    dependencies.forEach(function (dependencyId) {
+      dependencyId = dependencyId.substr(0, 32);
+      if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
+        visit(dependencyId);
+      } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {  // visited, in progress
+        throw Error("Cyclical dependency graph detected");
+      }
+    });
+
+    verticesToVisit[vertexId] = SortVisitColor.Black;  // finished
+    buildList.push(vertexId);  // add to end of list of ordered vertices because we want dependents first
+  }
+
+  return buildList;
 }

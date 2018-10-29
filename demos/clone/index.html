@@ -44,7 +44,7 @@
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
         <br>
-        <button id="createBtn" onclick="createSolutionFcn()">Create solution in your organization</button>
+        <button id="createBtn" onclick="cloneSolutionFcn()">Create solution in your organization</button>
         using name <input type="text" id="solutionNameField">
       </div>
     </div>
@@ -62,7 +62,7 @@
 
   <script src="../demo_common/require_2.3.6.min.js"></script>
   <script>
-  var showSolutionFcn = createSolutionFcn = null;
+  var showSolutionFcn = cloneSolutionFcn = null;
   var currentSolutionId, currentSolutionName, currentSolutionItems;
 
   /**
@@ -113,7 +113,7 @@
     request
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    createSolutionFcn = createSolution;
+    cloneSolutionFcn = cloneSolution;
 
     document.getElementById('page').style.display = 'block';
 
@@ -125,13 +125,13 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function createSolution() {
+    function cloneSolution() {
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
 
-      progress.init('progressBarContainer', 'progressBar');
-      progress.show();
+      //progress.init('progressBarContainer', 'progressBar');
+      //progress.show();
 
       // Prepare credentials for library
       var orgSession = demoCommon.getRequestOptions('username', 'password');
@@ -150,45 +150,18 @@
             publishedSolution => {
               currentSolutionItems = publishedSolution.items;
 
-              clone.ItemFactory.JSONToItemHierarchy(currentSolutionItems, null, orgSession)
+              clone.cloneSolution(currentSolutionName, currentSolutionItems, null, orgSession)
               .then(
                 createResponse => {
                   document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
                   document.getElementById('creating').style.display = 'none';
                   document.getElementById('createResults').style.display = 'block';
-                  progress.hide();
+                  //progress.hide();
 
                   document.getElementById('createDisplay').innerHTML =
                     JSON.stringify(createResponse).replace(',', ', ');
                 }
               );
-
-
-              /*
-              // Clone the contents into the destination org
-              cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
-                progress.set.bind(progress), requestOptions.authentication)
-              .then(
-                createResponse => {
-                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
-
-                  // List the created items in the solution folder
-                  // There appears to be a lag between when the service says that the items are added and when
-                  // they show up in response to a search. Wait a couple of seconds before searching
-                  setTimeout(
-                    () => {
-                      progress.hide();
-                      demoCommon.showCreatedItems(portalResponse, createResponse);
-                    },
-                    2000
-                  );
-                },
-                () => {
-                  document.getElementById('create').style.display = 'none';
-                  alert('Please refresh page and provide credentials');
-                }
-              );*/
-
             }
           );
         }
