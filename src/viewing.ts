@@ -24,10 +24,6 @@ import { IFullItem } from "./fullItem";
  */
 export interface IHierarchyEntry {
   /**
-   * AGOL item type name
-   */
-  type: string,
-  /**
    * AGOL item id
    */
   id: string,
@@ -41,9 +37,8 @@ export interface IHierarchyEntry {
  * Extract item hierarchy structure from a Solution's items list.
  *
  * @param items Hash of JSON descriptions of items
- * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated;
- * each element of structure contains 1) AGOL type of item, 2) AGOL id of item (groups have a type of 'Group'),
- * 3) list of dependencies, and, for Feature Services only, 4) the feature layer id in the feature service
+ * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated; each element
+ * of the structure contains the AGOL id of an item and a list of ids of the item's dependencies
  */
 export function getItemHierarchy (
   items:IItemHash
@@ -68,7 +63,6 @@ export function getItemHierarchy (
     children.forEach(function (id) {
       let child:IHierarchyEntry = {
         id: id,
-        type: (items[id] as IFullItem).type,
         dependencies: []
       };
 

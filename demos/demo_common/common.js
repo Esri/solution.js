@@ -47,7 +47,7 @@ define([
     /**
      * Creates a display of the hierarchy involving in a set of AGOL items.
      * @param {object} solutionItems Hash containing items in solution
-     * @param {object} hierachy Hash contining, at each level, an item id, type, and array of dependencies
+     * @param {object} hierachy Hash contining, at each level, an item id and array of dependencies
      * @param {boolean} createLinks Indicates if a link to AGOL should be created for each item
      * @param {string} orgUrl URL to organization's home, e.g.,
      *        "https://arcgis4localgov2.maps.arcgis.com/home/"
@@ -66,11 +66,12 @@ define([
 
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var item = solutionItems[hierarchyItem.id].item;
-        var itemLabel = (item.title || item.name || hierarchyItem.type);
+        var fullItem = solutionItems[hierarchyItem.id];
+        var item = fullItem.item;
+        var itemLabel = (item.title || item.name || fullItem.type);
 
-        var webpage = hierarchyItem.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[hierarchyItem.type] +
+        var webpage = fullItem.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[fullItem.type] +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
           display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
