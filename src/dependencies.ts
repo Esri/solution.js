@@ -39,7 +39,6 @@ export function getDependencies (
 
     let getDependenciesByType:IFunctionLookup = {
       "Dashboard": getDashboardDependencies,
-      "Feature Service": getFeatureServiceDependencies,
       "Group": getGroupDependencies,
       "Web Map": getWebMapDependencies,
       "Web Mapping Application": getWebMappingApplicationDependencies
@@ -85,24 +84,6 @@ function getDashboardDependencies (
         }
       })
     }
-
-    resolve(dependencies);
-  });
-}
-
-/**
- * Gets the ids of the dependencies of an AGOL feature service item.
- *
- * @param fullItem A feature service item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with list of dependent ids
- */
-function getFeatureServiceDependencies (
-  fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    let dependencies:string[] = [];
 
     resolve(dependencies);
   });

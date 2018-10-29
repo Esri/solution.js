@@ -17,10 +17,29 @@
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
+import { request } from "@esri/arcgis-rest-request";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy} from "./fullItemHierarchy";
 
 //--------------------------------------------------------------------------------------------------------------------//
+
+/**
+ * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
+ */
+export interface IFullItemFeatureService extends IFullItem {
+  /**
+   * Service description
+   */
+  service: any;
+  /**
+   * Description for each layer
+   */
+  layers: any[];
+  /**
+   * Description for each table
+   */
+  tables: any[];
+}
 
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
@@ -61,6 +80,8 @@ export function createSolution (
     getFullItemHierarchy(solutionRootIds, requestOptions)
     .then(
       solution => {
+        let adjustmentPromises:Promise<void>[] = [];
+
         // Prepare the Solution by adjusting its items
         Object.keys(solution).forEach(
           key => {
@@ -74,18 +95,24 @@ export function createSolution (
             if (fullItem.type === "Web Mapping Application") {
               generalizeWebMappingApplicationURLs(fullItem);
 
-
             // 3. for feature services,
             //    a. fill in missing data
             //    b. get layer & table details
             //    c. generalize layer & table URLs
             } else if (fullItem.type === "Feature Service") {
-              fleshOutFeatureService(fullItem);
+              adjustmentPromises.push(fleshOutFeatureService(fullItem as IFullItemFeatureService, requestOptions));
             }
           }
         );
 
-        resolve(solution);
+        if (adjustmentPromises.length === 0) {
+          resolve(solution);
+        } else {
+          Promise.all(adjustmentPromises)
+          .then(
+            () => resolve(solution)
+          );
+        }
       }
     );
   });
@@ -158,6 +185,12 @@ export function publishSolution (
 //--------------------------------------------------------------------------------------------------------------------//
 
 /**
+ * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
+ * name has to be acceptable to AGOL.
+ */
+const aPlaceholderServerName:string = "https://arcgis.com";
+
+/**
  * Creates a copy of item base properties with properties irrelevant to cloning removed.
  *
  * @param item The base section of an item
@@ -206,14 +239,98 @@ function generalizeWebMappingApplicationURLs (
  * @param fullItem Feature service item, data, dependencies definition to be modified
  */
 function fleshOutFeatureService (
-  fullItem: IFullItem
-): void {
+  fullItem: IFullItemFeatureService,
+  requestOptions?: IUserRequestOptions
+): Promise<void> {
+  return new Promise<void>(resolve => {
+    fullItem.service = {};
+    fullItem.layers = [];
+    fullItem.tables = [];
+
+    // To have enough information for reconstructing the service, we'll supplement
+    // the item and data sections with sections for the service, full layers, and
+    // full tables
+
+    // Get the service description
+    let serviceUrl = fullItem.item.url;
+    request(serviceUrl + "?f=json", requestOptions)
+    .then(
+      serviceData => {
+        // Fill in some missing parts
+        // If the service doesn't have a name, try to get a name from its layers or tables
+        serviceData["snippet"] = fullItem.item["snippet"];
+        serviceData["description"] = fullItem.item["description"];
+        serviceData["name"] = fullItem.item["name"] ||
+          getFirstUsableName(serviceData["layers"]) ||
+          getFirstUsableName(serviceData["tables"]) ||
+          "Feature Service";
+
+        fullItem.service = serviceData;
+
+        // Get the affiliated layer and table items
+        Promise.all([
+          getLayers(serviceUrl, serviceData["layers"], requestOptions),
+          getLayers(serviceUrl, serviceData["tables"], requestOptions)
+        ])
+        .then(results => {
+          fullItem.layers = results[0];
+          fullItem.tables = results[1];
+          resolve();
+        });
+      }
+    );
+  });
 }
 
-//--------------------------------------------------------------------------------------------------------------------//
+/**
+ * Gets the name of the first layer in list of layers that has a name
+ * @param layerList List of layers to use as a name source
+ * @returns The name of the found layer or an empty string if no layers have a name
+ */
+function getFirstUsableName (
+  layerList: any[]
+): string {
+  // Return the first layer name found
+  if (layerList !== null) {
+    layerList.forEach(layer => {
+      if (layer["name"] !== "") {
+        return layer["name"];
+      }
+    });
+  }
+  return "";
+}
 
 /**
- * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
- * name has to be acceptable to AGOL.
+ * Gets the full definitions of the layers affiliated with a hosted service.
+ *
+ * @param serviceUrl URL to hosted service
+ * @param layerList List of layers at that service
+ * @param requestOptions Options for the request
  */
-const aPlaceholderServerName:string = "https://arcgis.com";
+function getLayers (
+  serviceUrl: string,
+  layerList: any[],
+  requestOptions?: IUserRequestOptions
+): Promise<any[]> {
+  return new Promise<any[]>(resolve => {
+    if (!Array.isArray(layerList)) {
+      resolve([]);
+    }
+
+    let requestsDfd:Promise<any>[] = [];
+    layerList.forEach(layer => {
+      requestsDfd.push(request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions));
+    });
+
+    // Wait until all layers are heard from
+    Promise.all(requestsDfd)
+    .then(layers => {
+      // Remove the editFieldsInfo because it references fields that may not be in the layer/table
+      layers.forEach(layer => {
+        layer["editFieldsInfo"] = null;
+      });
+      resolve(layers);
+    });
+  });
+}
