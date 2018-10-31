@@ -63,7 +63,7 @@ export function getDependencies (
 }
 
 /**
- * Gets the ids of the dependencies of an AGOL item.
+ * Swizzles the dependencies of an AGOL item.
  *
  * @param fullItem An item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids

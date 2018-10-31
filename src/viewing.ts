@@ -34,7 +34,7 @@ export interface IHierarchyEntry {
 }
 
 /**
- * Extract item hierarchy structure from a Solution's items list.
+ * Extracts item hierarchy structure from a Solution's items list.
  *
  * @param items Hash of JSON descriptions of items
  * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated; each element

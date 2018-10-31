@@ -60,7 +60,7 @@ export interface IOrgSession {
 }
 
 /**
- * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
+ * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *
  * ```typescript
  * import { IItemHash } from "../src/fullItemHierarchy";
