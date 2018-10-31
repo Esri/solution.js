@@ -14,12 +14,23 @@
  | limitations under the License.
  */
 
+import { ILayer } from "@esri/arcgis-rest-common-types";
 import * as groups from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IFullItem } from "./fullItem";
 
-//--------------------------------------------------------------------------------------------------------------------//
+//-- Exports ---------------------------------------------------------------------------------------------------------//
+
+export interface ISwizzle {
+  id: string;
+  name?: string;
+  url?: string;
+}
+
+export interface ISwizzleHash {
+  [id:string]: ISwizzle;
+}
 
 /**
  * Gets the ids of the dependencies of an AGOL item.
@@ -33,10 +44,6 @@ export function getDependencies (
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
-    interface IFunctionLookup {
-      [name:string]: Function
-    }
-
     let getDependenciesByType:IFunctionLookup = {
       "Dashboard": getDashboardDependencies,
       "Group": getGroupDependencies,
@@ -55,7 +62,38 @@ export function getDependencies (
   });
 }
 
-//--------------------------------------------------------------------------------------------------------------------//
+/**
+ * Gets the ids of the dependencies of an AGOL item.
+ *
+ * @param fullItem An item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ */
+export function swizzleDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  let swizzleDependenciesByType:IFunctionLookup = {
+    "Dashboard": swizzleDashboardDependencies,
+    "Group": swizzleGroupDependencies,
+    "Web Map": swizzleWebMapDependencies,
+    "Web Mapping Application": swizzleWebMappingApplicationDependencies
+  };
+
+  if (swizzleDependenciesByType[fullItem.type]) {
+    swizzleDependenciesByType[fullItem.type](fullItem, swizzles)
+  }
+}
+
+//-- Internals -------------------------------------------------------------------------------------------------------//
+
+interface IDashboardWidget {
+  itemId: string;
+  type:string;
+}
+
+interface IFunctionLookup {
+  [name:string]: Function
+}
 
 /**
  * Gets the ids of the dependencies of an AGOL dashboard item.
@@ -175,11 +213,109 @@ function getWebMappingApplicationDependencies (
   });
 }
 
-//--------------------------------------------------------------------------------------------------------------------//
+/**
+ * Swizzles the ids of the dependencies of an AGOL dashboard item.
+ *
+ * @param fullItem A dashboard item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ */
+function swizzleDashboardDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  // Swizzle its webmap(s)
+  let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+  if (widgets) {
+    widgets.forEach(widget => {
+      if (widget.type === "mapWidget") {
+        widget.itemId = swizzles[widget.itemId].id;
+      }
+    });
+  }
+}
+
+/**
+ * Swizzles the ids of the dependencies of an AGOL group.
+ *
+ * @param fullItem A group whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ */
+function swizzleGroupDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  if (fullItem.dependencies.length > 0) {
+    // Swizzle the id of each of the group's items to it
+    let updatedDependencies:string[] = [];
+    fullItem.dependencies.forEach(depId => {
+      updatedDependencies.push(swizzles[depId].id);
+    });
+    fullItem.dependencies = updatedDependencies;
+  }
+}
+
+/**
+ * Swizzles the ids of the dependencies of an AGOL webmap item.
+ *
+ * @param fullItem A webmap item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ */
+function swizzleWebMapDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  if (fullItem.data) {
+    // Swizzle its map layers
+    if (Array.isArray(fullItem.data.operationalLayers)) {
+      fullItem.data.operationalLayers.forEach((layer:ILayer) => {
+        var itsSwizzle = swizzles[layer.itemId];
+        if (itsSwizzle) {
+          layer.title = itsSwizzle.name;
+          layer.itemId = itsSwizzle.id;
+          layer.url = itsSwizzle.url + layer.url.substr(layer.url.lastIndexOf("/"));
+        }
+      });
+    }
+    // Swizzle its tables
+    if (Array.isArray(fullItem.data.tables)) {
+      fullItem.data.tables.forEach((layer:ILayer) => {
+        var itsSwizzle = swizzles[layer.itemId];
+        if (itsSwizzle) {
+          layer.title = itsSwizzle.name;
+          layer.itemId = itsSwizzle.id;
+          layer.url = itsSwizzle.url + layer.url.substr(layer.url.lastIndexOf("/"));
+        }
+      });
+    }
+  }
+}
+
+/**
+ * Swizzles the ids of the dependencies of an AGOL webapp item.
+ *
+ * @param fullItem A webapp item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ */
+function swizzleWebMappingApplicationDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  // Swizzle its webmap or group
+  let values = fullItem.data && fullItem.data.values;
+  if (values) {
+    if (values.webmap) {
+      values.webmap = swizzles[values.webmap].id;
+    } else if (values.group) {
+      values.group = swizzles[values.group].id;
+    }
+  }
+}
+
+//-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
  * Removes duplicates from an array of strings.
- * 
+ *
  * @param arrayWithDups An array to be copied
  * @returns Copy of array with duplicates removed
  */
@@ -239,7 +375,7 @@ function getGroupContentsTranche (
 
 /**
  * Extracts the AGOL id or URL for each layer or table object in a list.
- * 
+ *
  * @param layerList List of map layers or tables
  * @returns List of ids and/or URLs
  */

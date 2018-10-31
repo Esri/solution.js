@@ -16,12 +16,15 @@
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
+import * as groups from "@esri/arcgis-rest-groups";
+import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy} from "./fullItemHierarchy";
+import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
 
-//--------------------------------------------------------------------------------------------------------------------//
+//-- Exports ---------------------------------------------------------------------------------------------------------//
 
 /**
  * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
@@ -152,8 +155,8 @@ export function publishSolution (
     // Define the solution item
     let item = {
       title: title,
-      type: 'Solution',
-      itemType: 'text',
+      type: "Solution",
+      itemType: "text",
       access: access,
       listed: false,
       commentsEnabled: false
@@ -197,7 +200,6 @@ export function publishSolution (
   });
 }
 
-
 /**
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
  * @param itemJson A hash of item descriptions to convert
@@ -226,9 +228,12 @@ export function cloneSolution (
 
       // Clone item at top of list
       let itemId = cloneOrderChecklist.shift();
-      JSONToItem(solution[itemId], folderId, swizzles, orgSession)
+      let itemType:string = (solution[itemId] as IFullItem).type;//???
+      console.log("Cloning item " + itemId + " (" + itemType + ")...");//???
+      createItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
       .then(
         newItemId => {
+          console.log("...created item " + newItemId + " from " + itemId + " (" + itemType + ")");//???
           itemIdList.push(newItemId);
           runThroughChecklist();
         },
@@ -243,7 +248,7 @@ export function cloneSolution (
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      let folderName = solutionName + ' (' + cloningUniquenessTimestamp() + ')';
+      let folderName = solutionName + " (" + cloningUniquenessTimestamp() + ")";
       let options = {
         title: folderName,
         authentication: orgSession.authentication
@@ -259,14 +264,17 @@ export function cloneSolution (
   });
 }
 
-
-//--------------------------------------------------------------------------------------------------------------------//
+//-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
  * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
- * name has to be acceptable to AGOL.
+ * name has to be acceptable to AGOL, otherwise it discards the URL.
  */
 const aPlaceholderServerName:string = "https://arcgis.com";
+
+interface IRelationship {
+  [id:string]: string[];
+}
 
 /**
  * A vertex used in the topological sort algorithm.
@@ -276,16 +284,6 @@ interface ISortVertex {
    * Vertex (AGOL) id and its visited status, described by the SortVisitColor enum
    */
   [id:string]: number;
-}
-
-interface ISwizzle {
-  id: string;
-  name?: string;
-  url?: string;
-}
-
-interface ISwizzleHash {
-  [id:string]: ISwizzle;
 }
 
 /**
@@ -300,8 +298,234 @@ enum SortVisitColor {
   Black
 }
 
+function addFeatureServiceLayersAndTables (
+  fullItem: IFullItemFeatureService,
+  swizzles: ISwizzleHash,
+  orgSession: IOrgSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+
+    // Sort layers and tables by id so that they're added with the same ids
+    let layersAndTables:any[] = [];
+
+    (fullItem.layers || []).forEach(function (layer) {
+      layersAndTables[layer.id] = {
+        item: layer,
+        type: "layer"
+      };
+    });
+
+    (fullItem.tables || []).forEach(function (table) {
+      layersAndTables[table.id] = {
+        item: table,
+        type: "table"
+      };
+    });
+
+    // Hold a hash of relationships
+    let relationships:IRelationship = {};
+
+    // Add the service's layers and tables to it
+    updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables, swizzles, relationships, orgSession)
+    .then(
+      () => {
+        // Restore relationships for all layers and tables in the service
+        let awaitRelationshipUpdates:Promise<void>[] = [];
+        Object.keys(relationships).forEach(
+          id => {
+            awaitRelationshipUpdates.push(new Promise(resolve => {
+              var options = {
+                params: {
+                  updateFeatureServiceDefinition: {
+                    relationships: relationships[id]
+                  }
+                },
+                ...orgSession
+              };
+              featureServiceAdmin.addToServiceDefinition(fullItem.item.url + "/" + id, options)
+              .then(
+                () => {
+                  resolve();
+                },
+                resolve);
+            }));
+          }
+        );
+        Promise.all(awaitRelationshipUpdates)
+        .then(
+          () => {
+            resolve();
+          }
+        );
+      }
+    );
+  });
+}
+
+function addGroupMembers (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash,
+  orgSession: IOrgSession
+):Promise<void> {
+  return new Promise<void>(resolve => {
+    // Add each of the group's items to it
+    if (fullItem.dependencies.length > 0) {
+      var awaitGroupAdds:Promise<null>[] = [];
+      fullItem.dependencies.forEach(depId => {
+        awaitGroupAdds.push(new Promise(resolve => {
+          sharing.shareItemWithGroup({
+            id: depId,
+            groupId: fullItem.item.id,
+            ...orgSession
+          })
+          .then(
+            () => {
+              resolve();
+            },
+            error => {
+              console.log("Unable to share group's items with it: " + JSON.stringify(error));
+            }
+          );
+        }));
+      });
+      // After all items have been added to the group
+      Promise.all(awaitGroupAdds)
+      .then(
+        () => resolve()
+      );
+    } else {
+      // No items in this group
+      resolve();
+    }
+  });
+}
+
 function cloningUniquenessTimestamp () {
   return (new Date()).getTime();
+}
+
+function createItem (
+  fullItem: IFullItem,
+  folderId: string,
+  swizzles: ISwizzleHash,
+  orgSession: IOrgSession
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+
+    // Swizzle item's dependencies
+    swizzleDependencies(fullItem, swizzles);
+
+    // Feature Services
+    if (fullItem.type === "Feature Service") {
+      let options = {
+        item: fullItem.item,
+        folderId: folderId,
+        ...orgSession
+      }
+      if (fullItem.data) {
+        options.item.text = fullItem.data;
+      }
+
+      // Make the item name unique
+      options.item.name += "_" + cloningUniquenessTimestamp();
+
+      // Remove the layers and tables from the create request because while they aren't added when
+      // the service is added, their presence prevents them from being added later via updateFeatureServiceDefinition
+      options.item.layers = [];
+      options.item.tables = [];
+
+      // Create the item
+      featureServiceAdmin.createFeatureService(options)
+      .then(
+        createResponse => {
+          // Add the new item to the swizzle list
+          swizzles[fullItem.item.id] = {
+            id: createResponse.serviceItemId,
+            url: createResponse.serviceurl
+          };
+          fullItem.item.id = createResponse.serviceItemId;
+          fullItem.item.url = createResponse.serviceurl;
+
+          // Add the feature service's layers and tables to it
+          addFeatureServiceLayersAndTables((fullItem as IFullItemFeatureService), swizzles, orgSession)
+          .then(
+            () => resolve(fullItem.item.id)
+          );
+        },
+        error => {
+          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
+        }
+      );
+
+    // Groups
+    } else if (fullItem.type === "Group") {
+      let options = {
+        group: fullItem.item,
+        ...orgSession
+      }
+
+      // Make the item title unique
+      options.group.title += "_" + cloningUniquenessTimestamp();
+
+      // Create the item
+      groups.createGroup(options)
+      .then(
+        createResponse => {
+          // Add the new item to the swizzle list
+          swizzles[fullItem.item.id] = {
+            id: createResponse.group.id
+          };
+          fullItem.item.id = createResponse.group.id;
+
+          // Add the group's items to it
+          addGroupMembers(fullItem, swizzles, orgSession)
+          .then(
+            () => resolve(fullItem.item.id)
+          );
+        },
+        error => {
+          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
+        }
+      );
+
+    // All other types
+    } else {
+      let options:items.IItemAddRequestOptions = {
+        item: fullItem.item,
+        folder: folderId,
+        ...orgSession
+      };
+      if (fullItem.data) {
+        options.item.text = fullItem.data;
+      }
+
+      // Create the item
+      items.createItemInFolder(options)
+      .then(
+        createResponse => {
+          // Add the new item to the swizzle list
+          swizzles[fullItem.item.id] = {
+            id: createResponse.id
+          };
+          fullItem.item.id = createResponse.id;
+
+          // For a web mapping app, update its app URL
+          if (fullItem.type === "Web Mapping Application") {
+            updateWebMappingApplicationURL(fullItem, orgSession)
+            .then(
+              () => resolve(fullItem.item.id)
+            );
+          } else {
+            resolve(fullItem.item.id)
+          }
+        },
+        error => {
+          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
+        }
+      );
+    }
+
+  });
 }
 
 /**
@@ -362,10 +586,11 @@ function generalizeWebMappingApplicationURLs (
   fullItem: IFullItem
 ): void {
   // Remove org base URL and app id
-  // Need to add fake server because otherwise AGOL makes URL null
+  // Need to add placeholder server name because otherwise AGOL makes URL null
   let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
   let iSep = orgUrl.indexOf("//");
-  fullItem.item.url = aPlaceholderServerName + orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+  fullItem.item.url = aPlaceholderServerName +  // add placeholder server name
+    orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
 }
 
 /**
@@ -418,54 +643,6 @@ function getLayers (
       });
       resolve(layers);
     });
-  });
-}
-
-/**
- * Converts a generic JSON item description into an AGOL item.
- * @param itemJson Generic JSON form of item
- * @param folderId AGOL id of folder to receive item, or null/empty if item is destined for root level
- * @returns A promise that will resolve with the item's id
- */
-function JSONToItem (
-  itemJson: any,
-  folderId: string,
-  swizzles: ISwizzleHash,
-  orgSession: IOrgSession
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    let itemType = (itemJson && itemJson.type) || "Unknown";
-
-    /*
-    // Load the JSON into a type of item
-    let item:IFullItem;
-    switch(itemType) {
-      case "Dashboard":
-        item = new Dashboard(itemJson);
-        break;
-      case "Feature Service":
-        item = new FeatureService(itemJson);
-        break;
-      case "Group":
-        item = new Group(itemJson);
-        break;
-      case "Web Map":
-        item = new Webmap(itemJson);
-        break;
-      case "Web Mapping Application":
-        item = new WebMappingApp(itemJson);
-        break;
-      default:
-        reject(itemJson);
-        break;
-    }
-
-    // Clone the item
-    item.clone(folderId, swizzles, orgSession)
-    .then(resolve, reject);
-    */
-
-    resolve();//???
   });
 }
 
@@ -572,4 +749,88 @@ function topologicallySortItems (
   }
 
   return buildList;
+}
+
+function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string, listToAdd:any[],
+  swizzles: ISwizzleHash, relationships:IRelationship, requestOptions?: IUserRequestOptions) {
+  // Launch the adds serially because server doesn't support parallel adds
+  return new Promise((resolve) => {
+    if (listToAdd.length > 0) {
+      var toAdd = listToAdd.shift();
+
+      var item = toAdd.item;
+      var originalId = item.id;
+      //delete item.id;  // Updated by updateFeatureServiceDefinition
+      delete item.serviceItemId;  // Updated by updateFeatureServiceDefinition
+
+      // Need to remove relationships and add them back individually after all layers and tables
+      // have been added to the definition
+      if (Array.isArray(item.relationships) && item.relationships.length > 0) {
+        relationships[originalId] = item.relationships;
+        item.relationships = [];
+      }
+
+      let options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
+        ...requestOptions
+      };
+
+      if (toAdd.type === "layer") {
+        item.adminLayerInfo = {  //???
+          "geometryField": {
+            "name": "Shape",
+            "srid": 102100
+          }
+        };
+        options.layers = [item];
+      } else {
+        options.tables = [item];
+      }
+
+      featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
+      .then(
+        response => {
+          /*swizzles[serviceItemId + "_" + originalId] = {
+            "name": response.layers[0].name,
+            "id": serviceItemId,
+            "url": serviceUrl + "/" + response.layers[0].id
+          };*/
+          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+          .then(resolve);
+        },
+        response => {
+          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+          .then(resolve);
+        }
+      );
+    } else {
+      resolve();
+    }
+  });
+}
+
+function updateWebMappingApplicationURL (
+  fullItem: IFullItem,
+  orgSession: IOrgSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Update its URL
+    var options = {
+      item: {
+        'id': fullItem.item.id,
+        'url': orgSession.orgUrl +
+          (fullItem.item.url.substr(aPlaceholderServerName.length)) +  // remove placeholder server name
+          fullItem.item.id
+      },
+      authentication: orgSession.authentication
+    };
+    items.updateItem(options)
+    .then(
+      updateResp => {
+        resolve(fullItem.item.id);
+      },
+      error => {
+        reject('Unable to update webmap');
+      }
+    );
+  });
 }

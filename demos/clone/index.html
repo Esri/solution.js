@@ -99,7 +99,6 @@
     '../../dist/src/index',
     '../demo_common/common',
     '../demo_common/progress',
-    'cloneJS',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
@@ -107,7 +106,6 @@
     clone,
     demoCommon,
     progress,
-    cloneJS,
     auth,
     items,
     request
@@ -159,7 +157,7 @@
                   //progress.hide();
 
                   document.getElementById('createDisplay').innerHTML =
-                    JSON.stringify(createResponse).replace(',', ', ');
+                    JSON.stringify(createResponse).replace(/,/g, ', ');
                 }
               );
             }

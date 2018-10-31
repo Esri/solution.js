@@ -17,7 +17,7 @@
 import { IItemHash } from "./fullItemHierarchy";
 import { IFullItem } from "./fullItem";
 
-//--------------------------------------------------------------------------------------------------------------------//
+//-- Exports ---------------------------------------------------------------------------------------------------------//
 
 /**
  * A recursive structure describing the hierarchy of a collection of AGOL items.

@@ -19,7 +19,7 @@ import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IFullItem, getFullItem } from "./fullItem";
 import { getDependencies } from "./dependencies";
 
-//--------------------------------------------------------------------------------------------------------------------//
+//-- Exports ---------------------------------------------------------------------------------------------------------//
 
 /**
  * A collection of AGOL items for serializing.
