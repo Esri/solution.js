@@ -60,6 +60,74 @@ describe("converting an item into JSON", () => {
     fetchMock.restore();
   });
 
+  it("throws an error if the hierarchy to be created fails: missing id", done => {
+    fetchMock.once("*", ItemFailResponse);
+    getFullItemHierarchy(null, MOCK_USER_REQOPTS)
+    .then(
+      fail,
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+        done();
+      }
+    );
+  });
+
+  it("throws an error if the hierarchy to be created fails: empty id list", done => {
+    fetchMock.once("*", ItemFailResponse);
+    getFullItemHierarchy([], MOCK_USER_REQOPTS)
+    .then(
+      fail,
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+        done();
+      }
+    );
+  });
+
+  it("throws an error if the hierarchy to be created fails: missing id in list", done => {
+    fetchMock.once("*", ItemFailResponse);
+    getFullItemHierarchy([null], MOCK_USER_REQOPTS)
+    .then(
+      fail,
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+        done();
+      }
+    );
+  });
+
+  it("throws an error if the hierarchy to be created fails: inaccessible", done => {
+    fetchMock
+    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
+    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+    getFullItemHierarchy("fail1234567890", MOCK_USER_REQOPTS)
+    .then(
+      () => {
+        done.fail("Invalid item 'found'");
+      },
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+        done();
+      }
+    );
+  });
+
+  it("throws an error if the hierarchy to be created fails: inaccessible in a list", done => {
+    fetchMock
+    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
+    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+    getFullItemHierarchy(["fail1234567890"], MOCK_USER_REQOPTS)
+    .then(
+      () => {
+        done.fail("Invalid item 'found'");
+      },
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+        done();
+      }
+    );
+  });
+
   it("should return a list of WMA details for a valid AGOL id", done => {
     let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
@@ -150,39 +218,7 @@ describe("converting an item into JSON", () => {
     );
   });
 
-  it("should return an error message for an invalid AGOL id (getFullItemHierarchy)", done => {
-    fetchMock
-    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-    getFullItemHierarchy("fail1234567890", MOCK_USER_REQOPTS)
-    .then(
-      () => {
-        done.fail("Invalid item 'found'");
-      },
-      error => {
-        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
-        done();
-      }
-    );
-  });
-
-  it("should return an error message for an invalid AGOL id in a list", done => {
-    fetchMock
-    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-    getFullItemHierarchy(["fail1234567890"], MOCK_USER_REQOPTS)
-    .then(
-      () => {
-        done.fail("Invalid item 'found'");
-      },
-      error => {
-        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
-        done();
-      }
-    );
-  });
-
-  it("should return an error message for an invalid AGOL id in a list with more than one id", done => {
+  it("throws an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
     let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
     fetchMock
     .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
@@ -206,6 +242,33 @@ describe("converting an item into JSON", () => {
       },
       error => {
         expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+        done();
+      }
+    );
+  });
+
+  it("throws an error if the hierarchy to be created fails: list of [valid, null]", done => {
+    let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+    fetchMock
+    .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+    .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+    .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+    .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+    .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+    .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+    .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+    .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+    .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
+    .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+    .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+    .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+    getFullItemHierarchy(["wma1234567890", null], MOCK_USER_REQOPTS)
+    .then(
+      () => {
+        done.fail("Invalid item 'found'");
+      },
+      error => {
+        expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
         done();
       }
     );

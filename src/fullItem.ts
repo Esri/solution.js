@@ -109,18 +109,16 @@ export function getFullItem (
               resolve(fullItem);
             },
             () => {
-              reject(UnavailableItemError(id));
+              reject(createUnavailableItemError(id));
             }
           );
         }
       );
     } catch (notUsed) {
-      reject(UnavailableItemError(id));
+      reject(createUnavailableItemError(id));
     }
   });
 }
-
-//-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
  * Creates an error object.
@@ -128,7 +126,7 @@ export function getFullItem (
  * @param id AGOL item id that caused failure
  * @returns Error object with message "Item or group does not exist or is inaccessible: <id>"
  */
-function UnavailableItemError (
+export function createUnavailableItemError (
   id: string
 ): ArcGISRequestError {
   return new ArcGISRequestError(

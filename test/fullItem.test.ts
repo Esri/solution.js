@@ -60,7 +60,7 @@ describe("converting an item into JSON", () => {
     fetchMock.restore();
   });
 
-  it("throws an error if the item id is not accessible: missing id", done => {
+  it("throws an error if the item to be created fails: missing id", done => {
     fetchMock.mock("*", ItemFailResponse);
     getFullItem(null, MOCK_USER_REQOPTS)
     .then(
@@ -72,7 +72,7 @@ describe("converting an item into JSON", () => {
     );
   });
 
-  it("throws an error if the item id is not accessible: inaccessible", done => {
+  it("throws an error if the item to be created fails: inaccessible", done => {
     fetchMock
     .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
     .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
@@ -100,22 +100,6 @@ describe("converting an item into JSON", () => {
         done();
       },
       done.fail
-    );
-  });
-
-  it("should return an error message for an invalid AGOL id (itemToJSON)", done => {
-    fetchMock
-    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-    getFullItem("fail1234567890", MOCK_USER_REQOPTS)
-      .then(
-      () => {
-        done.fail("Invalid item 'found'");
-      },
-      error => {
-        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
-        done();
-      }
     );
   });
 

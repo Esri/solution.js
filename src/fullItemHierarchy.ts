@@ -16,7 +16,7 @@
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { IFullItem, getFullItem } from "./fullItem";
+import { IFullItem, getFullItem, createUnavailableItemError } from "./fullItem";
 import { getDependencies } from "./dependencies";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
@@ -71,7 +71,10 @@ export function getFullItemHierarchy (
   }
 
   return new Promise((resolve, reject) => {
-    if (typeof rootIds === "string") {
+    if (!rootIds || (Array.isArray(rootIds) && rootIds.length === 0)) {
+      reject(createUnavailableItemError(null));
+
+    } else if (typeof rootIds === "string") {
       // Handle a single AGOL id
       let rootId = rootIds;
       if (collection[rootId]) {

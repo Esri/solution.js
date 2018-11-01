@@ -21,7 +21,7 @@ import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
 import { IFullItem } from "./fullItem";
-import { IItemHash, getFullItemHierarchy} from "./fullItemHierarchy";
+import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
 import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
@@ -722,9 +722,10 @@ function removeUncloneableItemProperties (
  * @returns List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
+ * @private
  */
-function topologicallySortItems (
-  items:IItemHash
+export function topologicallySortItems (
+  items: IItemHash
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -794,7 +795,7 @@ function topologicallySortItems (
 
 /**
  * Updates a feature service with a list of layers and/or tables.
- * 
+ *
  * @param serviceItemId AGOL id of feature service
  * @param serviceUrl URL of feature service
  * @param listToAdd List of layers and/or tables to add
@@ -803,8 +804,13 @@ function topologicallySortItems (
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve when the feature service has been updated
  */
-function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string, listToAdd:any[],
-  swizzles: ISwizzleHash, relationships:IRelationship, requestOptions?: IUserRequestOptions
+function updateFeatureServiceDefinition(
+  serviceItemId: string,
+  serviceUrl: string,
+  listToAdd: any[],
+  swizzles: ISwizzleHash,
+  relationships: IRelationship,
+  requestOptions?: IUserRequestOptions
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve) => {
@@ -857,7 +863,7 @@ function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string,
 
 /**
  * Updates the URL of a web mapping application to one usable for running the app.
- * 
+ *
  * @param fullItem A web mapping application
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve when fullItem has been updated
