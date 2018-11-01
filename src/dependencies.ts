@@ -86,12 +86,27 @@ export function swizzleDependencies (
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
+/**
+ * The relevant elements of a Dashboard widget.
+ */
 interface IDashboardWidget {
+  /**
+   * AGOL item id for some widget types
+   */
   itemId: string;
-  type:string;
+  /**
+   * Dashboard widget type
+   */
+  type: string;
 }
 
+/**
+ * A mapping between a keyword and a function.
+ */
 interface IFunctionLookup {
+  /**
+   * Keyword lookup of a function
+   */
   [name:string]: Function
 }
 
@@ -108,11 +123,6 @@ function getDashboardDependencies (
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
-
-    interface IDashboardWidget {
-      itemId: string;
-      type:string;
-    }
 
     if (fullItem.data && fullItem.data.widgets) {
       let widgets:IDashboardWidget[] = fullItem.data.widgets;
@@ -314,22 +324,6 @@ function swizzleWebMappingApplicationDependencies (
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
- * Removes duplicates from an array of strings.
- *
- * @param arrayWithDups An array to be copied
- * @returns Copy of array with duplicates removed
- */
-function removeDuplicates (
-  arrayWithDups:string[]
-): string[] {
-  let uniqueStrings:{
-    [value:string]: boolean;
-  } = {};
-  arrayWithDups.forEach((arrayElem:string) => uniqueStrings[arrayElem] = true);
-  return Object.keys(uniqueStrings);
-}
-
-/**
  * Gets the ids of a group's contents.
  *
  * @param id Group id
@@ -397,4 +391,20 @@ function getWebMapLayerIds (
   }
 
   return dependencies;
+}
+
+/**
+ * Removes duplicates from an array of strings.
+ *
+ * @param arrayWithDups An array to be copied
+ * @returns Copy of array with duplicates removed
+ */
+function removeDuplicates (
+  arrayWithDups:string[]
+): string[] {
+  let uniqueStrings:{
+    [value:string]: boolean;
+  } = {};
+  arrayWithDups.forEach((arrayElem:string) => uniqueStrings[arrayElem] = true);
+  return Object.keys(uniqueStrings);
 }

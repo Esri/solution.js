@@ -82,7 +82,7 @@ export interface IOrgSession {
  * );
  * ```
  *
- * @param rootIds AGOL id string or list of AGOL id strings
+ * @param solutionRootIds AGOL id string or list of AGOL id strings
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve with a hash by id of IFullItems;
  * if any id is inaccessible, a single error response will be produced for the set
@@ -202,6 +202,7 @@ export function publishSolution (
 
 /**
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
+ *
  * @param itemJson A hash of item descriptions to convert
  * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created; folder name
  *     is a combination of the solution name and a timestamp for uniqueness, e.g., "Dashboard (1540841846958)"
@@ -248,7 +249,7 @@ export function cloneSolution (
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      let folderName = solutionName + " (" + cloningUniquenessTimestamp() + ")";
+      let folderName = solutionName + " (" + getTimestamp() + ")";
       let options = {
         title: folderName,
         authentication: orgSession.authentication
@@ -272,7 +273,13 @@ export function cloneSolution (
  */
 const aPlaceholderServerName:string = "https://arcgis.com";
 
+/**
+ * Storage of a one-way relationship.
+ */
 interface IRelationship {
+  /**
+   * Relationship id and the ids of the items that it is related to.
+   */
   [id:string]: string[];
 }
 
@@ -298,6 +305,14 @@ enum SortVisitColor {
   Black
 }
 
+/**
+ * Adds the layers and tables of a feature service to it and restores their relationships.
+ *
+ * @param fullItem Feature service
+ * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @returns A promise that will resolve when fullItem has been updated
+ */
 function addFeatureServiceLayersAndTables (
   fullItem: IFullItemFeatureService,
   swizzles: ISwizzleHash,
@@ -326,7 +341,8 @@ function addFeatureServiceLayersAndTables (
     let relationships:IRelationship = {};
 
     // Add the service's layers and tables to it
-    updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables, swizzles, relationships, orgSession)
+    updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
+      swizzles, relationships, orgSession)
     .then(
       () => {
         // Restore relationships for all layers and tables in the service
@@ -362,6 +378,14 @@ function addFeatureServiceLayersAndTables (
   });
 }
 
+/**
+ * Adds the members of a group to it.
+ *
+ * @param fullItem Group
+ * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @returns A promise that will resolve when fullItem has been updated
+ */
 function addGroupMembers (
   fullItem: IFullItem,
   swizzles: ISwizzleHash,
@@ -400,10 +424,15 @@ function addGroupMembers (
   });
 }
 
-function cloningUniquenessTimestamp () {
-  return (new Date()).getTime();
-}
-
+/**
+ * Creates an item in a specified folder.
+ *
+ * @param fullItem Group
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root folder
+ * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @returns A promise that will resolve with the id of the created item
+ */
 function createItem (
   fullItem: IFullItem,
   folderId: string,
@@ -427,7 +456,7 @@ function createItem (
       }
 
       // Make the item name unique
-      options.item.name += "_" + cloningUniquenessTimestamp();
+      options.item.name += "_" + getTimestamp();
 
       // Remove the layers and tables from the create request because while they aren't added when
       // the service is added, their presence prevents them from being added later via updateFeatureServiceDefinition
@@ -465,7 +494,7 @@ function createItem (
       }
 
       // Make the item title unique
-      options.group.title += "_" + cloningUniquenessTimestamp();
+      options.group.title += "_" + getTimestamp();
 
       // Create the item
       groups.createGroup(options)
@@ -532,6 +561,8 @@ function createItem (
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
  * @param fullItem Feature service item, data, dependencies definition to be modified
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve when fullItem has been updated
  */
 function fleshOutFeatureService (
   fullItem: IFullItemFeatureService,
@@ -618,6 +649,7 @@ function getFirstUsableName (
  * @param serviceUrl URL to hosted service
  * @param layerList List of layers at that service
  * @param requestOptions Options for the request
+ * @returns A promise that will resolve with a list of the enhanced layers
  */
 function getLayers (
   serviceUrl: string,
@@ -644,6 +676,15 @@ function getLayers (
       resolve(layers);
     });
   });
+}
+
+/**
+ * Creates a timestamp string using the current date and time.
+ *
+ * @returns Timestamp
+ */
+function getTimestamp (): string {
+  return (new Date()).getTime().toString();
 }
 
 /**
@@ -678,7 +719,7 @@ function removeUncloneableItemProperties (
  * Topologically sort a Solution's items into a build list.
  *
  * @param items Hash of JSON descriptions of items
- * @return List of ids of items in the order in which they need to be built so that dependencies
+ * @returns List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
  */
@@ -751,8 +792,20 @@ function topologicallySortItems (
   return buildList;
 }
 
+/**
+ * Updates a feature service with a list of layers and/or tables.
+ * 
+ * @param serviceItemId AGOL id of feature service
+ * @param serviceUrl URL of feature service
+ * @param listToAdd List of layers and/or tables to add
+ * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
+ * @param requestOptions Options for requesting information from AGOL
+ * @returns A promise that will resolve when the feature service has been updated
+ */
 function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string, listToAdd:any[],
-  swizzles: ISwizzleHash, relationships:IRelationship, requestOptions?: IUserRequestOptions) {
+  swizzles: ISwizzleHash, relationships:IRelationship, requestOptions?: IUserRequestOptions
+): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve) => {
     if (listToAdd.length > 0) {
@@ -760,7 +813,6 @@ function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string,
 
       var item = toAdd.item;
       var originalId = item.id;
-      //delete item.id;  // Updated by updateFeatureServiceDefinition
       delete item.serviceItemId;  // Updated by updateFeatureServiceDefinition
 
       // Need to remove relationships and add them back individually after all layers and tables
@@ -789,11 +841,6 @@ function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string,
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
         response => {
-          /*swizzles[serviceItemId + "_" + originalId] = {
-            "name": response.layers[0].name,
-            "id": serviceItemId,
-            "url": serviceUrl + "/" + response.layers[0].id
-          };*/
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           .then(resolve);
         },
@@ -808,6 +855,13 @@ function updateFeatureServiceDefinition(serviceItemId:string, serviceUrl:string,
   });
 }
 
+/**
+ * Updates the URL of a web mapping application to one usable for running the app.
+ * 
+ * @param fullItem A web mapping application
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @returns A promise that will resolve when fullItem has been updated
+ */
 function updateWebMappingApplicationURL (
   fullItem: IFullItem,
   orgSession: IOrgSession

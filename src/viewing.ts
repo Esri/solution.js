@@ -37,8 +37,9 @@ export interface IHierarchyEntry {
  * Extracts item hierarchy structure from a Solution's items list.
  *
  * @param items Hash of JSON descriptions of items
- * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are repeated; each element
- * of the structure contains the AGOL id of an item and a list of ids of the item's dependencies
+ * @returns JSON structure reflecting dependency hierarchy of items; shared dependencies are
+ * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
+ * item's dependencies
  */
 export function getItemHierarchy (
   items:IItemHash
