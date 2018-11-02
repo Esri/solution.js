@@ -15,10 +15,8 @@
  */
 
 import * as fetchMock from "fetch-mock";
-
 import * as dependencies from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
-import { IItemHash } from "../src/fullItemHierarchy";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
@@ -242,6 +240,219 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         done();
       });
+    });
+
+  });
+
+  describe("getDependencies", () => {
+
+    describe("webmap", () => {
+
+      it("one operational layer", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def"
+          }],
+          tables: []
+        };
+        let expected:string[] = ["def"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("two operational layers", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def"
+          }, {
+            itemId: "ghi"
+          }],
+          tables: []
+        };
+        let expected:string[] = ["def", "ghi"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("one operational layer and a table", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def"
+          }],
+          tables: [{
+            itemId: "ghi"
+          }]
+        };
+        let expected:string[] = ["def", "ghi"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
+    describe("web mapping application", () => {
+
+      it("based on webmap", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {
+          values: {
+            webmap: "def"
+          }
+        };
+        let expected:string[] = ["def"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("based on group", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {
+          values: {
+            group: "def"
+          }
+        };
+        let expected:string[] = ["def"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
+  });
+
+  describe("swizzleDependencies", () => {
+
+    let swizzles:dependencies.ISwizzleHash = {
+      def: {
+        id: "DEF",
+        name: "'Def'",
+        url: "http://services2/SVC67890"
+  },
+      ghi: {
+        id: "GHI",
+        name: "'Ghi'",
+        url: "http://services2/SVC67890"
+      }
+    };
+
+    describe("webmap", () => {
+
+      it("one operational layer", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def",
+            title: "'def'",
+            url: "http://services1/svc12345/0"
+          }],
+          tables: []
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+      });
+
+      it("two operational layers", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def",
+            title: "'def'",
+            url: "http://services1/svc12345/0"
+          }, {
+            itemId: "ghi",
+            title: "'ghi'",
+            url: "http://services1/svc12345/1"
+          }],
+          tables: []
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+        expect(abc.data.operationalLayers[1].itemId).toEqual("GHI");
+      });
+
+      it("one operational layer and a table", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "def",
+            title: "'def'",
+            url: "http://services1/svc12345/0"
+          }],
+          tables: [{
+            itemId: "ghi",
+            title: "'ghi'",
+            url: "http://services1/svc12345/1"
+          }]
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+        expect(abc.data.tables[0].itemId).toEqual("GHI");
+      });
+
+    });
+
+    describe("web mapping application", () => {
+
+      it("based on webmap", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {
+          values: {
+            webmap: "def"
+          }
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.values.webmap).toEqual("DEF");
+      });
+
+      it("based on group", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {
+          values: {
+            group: "def"
+          }
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.values.group).toEqual("DEF");
+      });
+
     });
 
   });

@@ -47,7 +47,7 @@ export function getDependencies (
     let getDependenciesByType:IFunctionLookup = {
       "Dashboard": getDashboardDependencies,
       "Group": getGroupDependencies,
-      "Web Map": getWebMapDependencies,
+      "Web Map": getWebmapDependencies,
       "Web Mapping Application": getWebMappingApplicationDependencies
     };
 
@@ -75,7 +75,7 @@ export function swizzleDependencies (
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
     "Group": swizzleGroupDependencies,
-    "Web Map": swizzleWebMapDependencies,
+    "Web Map": swizzleWebmapDependencies,
     "Web Mapping Application": swizzleWebMappingApplicationDependencies
   };
 
@@ -178,7 +178,7 @@ function getGroupDependencies (
  * @returns A promise that will resolve with list of dependent ids
  * @protected
  */
-function getWebMapDependencies (
+function getWebmapDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
@@ -275,7 +275,7 @@ function swizzleGroupDependencies (
  * @param swizzles Hash mapping original ids to replacement ids
  * @protected
  */
-function swizzleWebMapDependencies (
+function swizzleWebmapDependencies (
   fullItem: IFullItem,
   swizzles: ISwizzleHash
 ): void {

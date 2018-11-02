@@ -153,7 +153,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: list of [valid, null]", done => {
+    it("throws an error if the hierarchy to be created fails: list of [valid, missing id]", done => {
       let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
