@@ -60,14 +60,14 @@ export function getItemHierarchy (
 
   // Hierarchically list the children of specified nodes
   function itemChildren(children:string[], hierarchy:IHierarchyEntry[]): void {
-
+    // Visit each child
     children.forEach(function (id) {
       let child:IHierarchyEntry = {
         id: id,
         dependencies: []
       };
 
-      // Fill in the dependencies array with any children
+      // Fill in the child's dependencies array with any of its children
       let dependencyIds = (items[id] as IFullItem).dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
