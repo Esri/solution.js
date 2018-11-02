@@ -20,7 +20,7 @@ import { IItemHash } from "../src/fullItemHierarchy";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
-describe("supporting solution item display in AGOL", () => {
+describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
   const MOCK_ITEM_PROTOTYPE:IFullItem = {
     type: "",

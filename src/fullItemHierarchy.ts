@@ -32,7 +32,7 @@ export interface IItemHash {
 }
 
 /**
- * Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
+ * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
  *
  * ```typescript
  * import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";

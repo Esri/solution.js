@@ -34,7 +34,7 @@ import { TOMORROW } from "./lib/utils";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
-describe("converting an item into JSON", () => {
+describe("Module `fullItem`: fetches the item, data, and resources of an AGOL item", () => {
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
 
@@ -60,50 +60,54 @@ describe("converting an item into JSON", () => {
     fetchMock.restore();
   });
 
-  it("throws an error if the item to be created fails: missing id", done => {
-    fetchMock.mock("*", ItemFailResponse);
-    getFullItem(null, MOCK_USER_REQOPTS)
-    .then(
-      fail,
-      error => {
-        expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
-        done();
-      }
-    );
+  describe("catch bad input", () => {
+
+    it("throws an error if the item to be created fails: missing id", done => {
+      fetchMock.mock("*", ItemFailResponse);
+      getFullItem(null, MOCK_USER_REQOPTS)
+      .then(
+        fail,
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          done();
+        }
+      );
+    });
+
+    it("throws an error if the item to be created fails: inaccessible", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      getFullItem("fail1234567890", MOCK_USER_REQOPTS)
+      .then(
+        fail,
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+          done();
+        }
+      );
+    });
+
+    it("should return WMA details for a valid AGOL id", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItem("wma1234567890")
+      .then(
+        response => {
+          expect(response.type).toEqual("Web Mapping Application");
+          expect(response.item.title).toEqual("ROW Permit Public Comment");
+          expect(response.data.source).toEqual("template1234567890");
+          done();
+        },
+        done.fail
+      );
+    });
+
   });
 
-  it("throws an error if the item to be created fails: inaccessible", done => {
-    fetchMock
-    .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-    .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-    getFullItem("fail1234567890", MOCK_USER_REQOPTS)
-    .then(
-      fail,
-      error => {
-        expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
-        done();
-      }
-    );
-  });
-
-  it("should return WMA details for a valid AGOL id", done => {
-    fetchMock
-    .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-    .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-    .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {});
-    getFullItem("wma1234567890")
-    .then(
-      response => {
-        expect(response.type).toEqual("Web Mapping Application");
-        expect(response.item.title).toEqual("ROW Permit Public Comment");
-        expect(response.data.source).toEqual("template1234567890");
-        done();
-      },
-      done.fail
-    );
-  });
-
-  describe("for different item types", () => {
+  describe("fetch different item types", () => {
     [
       {
         id: "dash1234657890", type: "Dashboard", item: ItemSuccessResponseDashboard,
@@ -138,9 +142,7 @@ describe("converting an item into JSON", () => {
           expect(response.data).toEqual(jasmine.anything());
           done();
         })
-        .catch(e => {
-          fail(e);
-        });
+        .catch(e => fail(e));
       });
     });
 
@@ -171,9 +173,7 @@ describe("converting an item into JSON", () => {
         expect(response.data).toEqual(jasmine.anything());
         done();
       })
-      .catch(e => {
-        fail(e);
-      });
+      .catch(e => fail(e));
     });
 
   });

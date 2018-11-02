@@ -162,14 +162,10 @@ function getGroupDependencies (
     };
 
     // Fetch group items
-    getGroupContentsTranche (fullItem.item.id, pagingRequest)
+    getGroupContentsTranche(fullItem.item.id, pagingRequest)
     .then(
-      contents => {
-        resolve(contents);
-      },
-      error => {
-        reject(error);
-      }
+      contents => resolve(contents),
+      error => reject(error)
     );
   });
 }
@@ -337,11 +333,12 @@ function swizzleWebMappingApplicationDependencies (
  * Gets the ids of a group's contents.
  *
  * @param id Group id
- * @param pagingRequest Options for requesting group contents
+ * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
+ *                      be modified by this routine
  * @returns A promise that will resolve with a list of the ids of the group's contents
  * @protected
  */
-function getGroupContentsTranche (
+export function getGroupContentsTranche (
   id: string,
   pagingRequest: IPagingParamsRequestOptions
 ): Promise<string[]> {
@@ -409,7 +406,7 @@ function getWebmapLayerIds (
  * @returns Copy of array with duplicates removed
  * @protected
  */
-function removeDuplicates (
+export function removeDuplicates (
   arrayWithDups:string[]
 ): string[] {
   let uniqueStrings:{

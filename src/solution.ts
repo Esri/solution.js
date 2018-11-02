@@ -229,12 +229,9 @@ export function cloneSolution (
 
       // Clone item at top of list
       let itemId = cloneOrderChecklist.shift();
-      let itemType:string = (solution[itemId] as IFullItem).type;//???
-      console.log("Cloning item " + itemId + " (" + itemType + ")...");//???
       createItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
       .then(
         newItemId => {
-          console.log("...created item " + newItemId + " from " + itemId + " (" + itemType + ")");//???
           itemIdList.push(newItemId);
           runThroughChecklist();
         },

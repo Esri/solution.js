@@ -26,7 +26,7 @@ import { TOMORROW } from "./lib/utils";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
-describe("supporting solution item cloning", () => {
+describe("Module `solution`: generation, publication, and cloning of a solution item", () => {
 
   const MOCK_ITEM_PROTOTYPE:IFullItem = {
     type: "",
@@ -41,93 +41,97 @@ describe("supporting solution item cloning", () => {
     fetchMock.restore();
   });
 
-  it("sorts an item and its dependencies 1", () => {
-    let abc = {...MOCK_ITEM_PROTOTYPE};
-    let def = {...MOCK_ITEM_PROTOTYPE};
-    let ghi = {...MOCK_ITEM_PROTOTYPE};
+  describe("supporting routine: get cloning order", () => {
 
-    abc.dependencies = ["ghi", "def"];
+    it("sorts an item and its dependencies 1", () => {
+      let abc = {...MOCK_ITEM_PROTOTYPE};
+      let def = {...MOCK_ITEM_PROTOTYPE};
+      let ghi = {...MOCK_ITEM_PROTOTYPE};
 
-    let results:string[] = solution.topologicallySortItems({
-      "abc": abc,
-      "def": def,
-      "ghi": ghi,
-    });
-    expect(results.length).toEqual(3);
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
-  });
+      abc.dependencies = ["ghi", "def"];
 
-  it("sorts an item and its dependencies 2", () => {
-    let abc = {...MOCK_ITEM_PROTOTYPE};
-    let def = {...MOCK_ITEM_PROTOTYPE};
-    let ghi = {...MOCK_ITEM_PROTOTYPE};
-
-    abc.dependencies = ["ghi", "def"];
-    def.dependencies = ["ghi"];
-
-    let results:string[] = solution.topologicallySortItems({
-      "abc": abc,
-      "def": def,
-      "ghi": ghi,
-    });
-    expect(results.length).toEqual(3);
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "def"});
-  });
-
-  it("sorts an item and its dependencies 3", () => {
-    let abc = {...MOCK_ITEM_PROTOTYPE};
-    let def = {...MOCK_ITEM_PROTOTYPE};
-    let ghi = {...MOCK_ITEM_PROTOTYPE};
-
-    abc.dependencies = ["ghi"];
-    ghi.dependencies = ["def"];
-
-    let results:string[] = solution.topologicallySortItems({
-      "abc": abc,
-      "def": def,
-      "ghi": ghi,
-    });
-    expect(results.length).toEqual(3);
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
-    (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "ghi"});
-  });
-
-  it("reports a multi-item cyclic dependency graph", () => {
-    let abc = {...MOCK_ITEM_PROTOTYPE};
-    let def = {...MOCK_ITEM_PROTOTYPE};
-    let ghi = {...MOCK_ITEM_PROTOTYPE};
-
-    abc.dependencies = ["ghi"];
-    def.dependencies = ["ghi"];
-    ghi.dependencies = ["abc"];
-
-    expect(function () {
       let results:string[] = solution.topologicallySortItems({
         "abc": abc,
         "def": def,
         "ghi": ghi,
       });
-    }).toThrowError(Error, "Cyclical dependency graph detected");
-  });
+      expect(results.length).toEqual(3);
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+    });
 
-  it("reports a single-item cyclic dependency graph", () => {
-    let abc = {...MOCK_ITEM_PROTOTYPE};
-    let def = {...MOCK_ITEM_PROTOTYPE};
-    let ghi = {...MOCK_ITEM_PROTOTYPE};
+    it("sorts an item and its dependencies 2", () => {
+      let abc = {...MOCK_ITEM_PROTOTYPE};
+      let def = {...MOCK_ITEM_PROTOTYPE};
+      let ghi = {...MOCK_ITEM_PROTOTYPE};
 
-    def.dependencies = ["def"];
+      abc.dependencies = ["ghi", "def"];
+      def.dependencies = ["ghi"];
 
-    expect(function () {
       let results:string[] = solution.topologicallySortItems({
         "abc": abc,
         "def": def,
         "ghi": ghi,
       });
-    }).toThrowError(Error, "Cyclical dependency graph detected");
+      expect(results.length).toEqual(3);
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "def"});
+    });
+
+    it("sorts an item and its dependencies 3", () => {
+      let abc = {...MOCK_ITEM_PROTOTYPE};
+      let def = {...MOCK_ITEM_PROTOTYPE};
+      let ghi = {...MOCK_ITEM_PROTOTYPE};
+
+      abc.dependencies = ["ghi"];
+      ghi.dependencies = ["def"];
+
+      let results:string[] = solution.topologicallySortItems({
+        "abc": abc,
+        "def": def,
+        "ghi": ghi,
+      });
+      expect(results.length).toEqual(3);
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "ghi"});
+    });
+
+    it("reports a multi-item cyclic dependency graph", () => {
+      let abc = {...MOCK_ITEM_PROTOTYPE};
+      let def = {...MOCK_ITEM_PROTOTYPE};
+      let ghi = {...MOCK_ITEM_PROTOTYPE};
+
+      abc.dependencies = ["ghi"];
+      def.dependencies = ["ghi"];
+      ghi.dependencies = ["abc"];
+
+      expect(function () {
+        let results:string[] = solution.topologicallySortItems({
+          "abc": abc,
+          "def": def,
+          "ghi": ghi,
+        });
+      }).toThrowError(Error, "Cyclical dependency graph detected");
+    });
+
+    it("reports a single-item cyclic dependency graph", () => {
+      let abc = {...MOCK_ITEM_PROTOTYPE};
+      let def = {...MOCK_ITEM_PROTOTYPE};
+      let ghi = {...MOCK_ITEM_PROTOTYPE};
+
+      def.dependencies = ["def"];
+
+      expect(function () {
+        let results:string[] = solution.topologicallySortItems({
+          "abc": abc,
+          "def": def,
+          "ghi": ghi,
+        });
+      }).toThrowError(Error, "Cyclical dependency graph detected");
+    });
+
   });
 
 });
