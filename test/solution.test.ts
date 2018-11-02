@@ -26,7 +26,7 @@ import { TOMORROW } from "./lib/utils";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
-describe("supporting solution item", () => {
+describe("supporting solution item cloning", () => {
 
   const MOCK_ITEM_PROTOTYPE:IFullItem = {
     type: "",

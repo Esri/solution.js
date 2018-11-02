@@ -28,6 +28,8 @@ describe("supporting solution item display in AGOL", () => {
   };
 
   it("item without dependencies", () => {
+    // hierarchy:
+    // - abc
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
 
@@ -44,6 +46,8 @@ describe("supporting solution item display in AGOL", () => {
   });
 
   it("item with empty list of dependencies", () => {
+    // hierarchy:
+    // - abc
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
 
@@ -62,6 +66,9 @@ describe("supporting solution item display in AGOL", () => {
   });
 
   it("item with single dependency", () => {
+    // hierarchy:
+    // - abc
+    //   - def
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
     let def = {...MOCK_ITEM_PROTOTYPE};
@@ -86,6 +93,10 @@ describe("supporting solution item display in AGOL", () => {
   });
 
   it("item with two dependencies", () => {
+    // hierarchy:
+    // - abc
+    //   - def
+    //   - ghi
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
     let def = {...MOCK_ITEM_PROTOTYPE};
@@ -116,6 +127,10 @@ describe("supporting solution item display in AGOL", () => {
   });
 
   it("item with two-level dependencies", () => {
+    // hierarchy:
+    // - abc
+    //   - ghi
+    //     - def
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
     let def = {...MOCK_ITEM_PROTOTYPE};
@@ -147,21 +162,31 @@ describe("supporting solution item display in AGOL", () => {
   });
 
   it("two top-level items, one with two dependencies", () => {
+    // hierarchy:
+    // - abc
+    // - jkl
+    //   - ghi
+    //   - def
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
     let def = {...MOCK_ITEM_PROTOTYPE};
     def.item.id = "def";
     let ghi = {...MOCK_ITEM_PROTOTYPE};
     ghi.item.id = "ghi";
+    let jkl = {...MOCK_ITEM_PROTOTYPE};
+    jkl.item.id = "jkl";
 
-    ghi.dependencies = ["def"];
+    jkl.dependencies = ["ghi", "def"];
 
     let expected:viewing.IHierarchyEntry[] = [{
       id: "abc",
       dependencies: []
     }, {
-      id: "ghi",
+      id: "jkl",
       dependencies: [{
+        id: "ghi",
+        dependencies: []
+      }, {
         id: "def",
         dependencies: []
       }]
@@ -170,13 +195,21 @@ describe("supporting solution item display in AGOL", () => {
     let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
       "abc": abc,
       "def": def,
-      "ghi": ghi
+      "ghi": ghi,
+      "jkl": jkl
     });
 
     expect(results).toEqual(expected);
   });
 
   it("three top-level items, one with two dependencies, one with three-level dependencies", () => {
+    // hierarchy:
+    // - def
+    //   - mno
+    //     - abc
+    // - jkl
+    // - pqr
+    //   - ghi
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item.id = "abc";
     let def = {...MOCK_ITEM_PROTOTYPE};

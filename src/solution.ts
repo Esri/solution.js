@@ -270,11 +270,13 @@ export function cloneSolution (
 /**
  * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
  * name has to be acceptable to AGOL, otherwise it discards the URL.
+ * @protected
  */
 const aPlaceholderServerName:string = "https://arcgis.com";
 
 /**
  * Storage of a one-way relationship.
+ * @protected
  */
 interface IRelationship {
   /**
@@ -285,6 +287,7 @@ interface IRelationship {
 
 /**
  * A vertex used in the topological sort algorithm.
+ * @protected
  */
 interface ISortVertex {
   /**
@@ -295,6 +298,7 @@ interface ISortVertex {
 
 /**
  * A visit flag used in the topological sort algorithm.
+ * @protected
  */
 enum SortVisitColor {
   /** not yet visited */
@@ -312,6 +316,7 @@ enum SortVisitColor {
  * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve when fullItem has been updated
+ * @protected
  */
 function addFeatureServiceLayersAndTables (
   fullItem: IFullItemFeatureService,
@@ -385,6 +390,7 @@ function addFeatureServiceLayersAndTables (
  * @param swizzles Hash mapping Solution source id to id of its clone
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve when fullItem has been updated
+ * @protected
  */
 function addGroupMembers (
   fullItem: IFullItem,
@@ -432,6 +438,7 @@ function addGroupMembers (
  * @param swizzles Hash mapping Solution source id to id of its clone
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve with the id of the created item
+ * @protected
  */
 function createItem (
   fullItem: IFullItem,
@@ -563,6 +570,7 @@ function createItem (
  * @param fullItem Feature service item, data, dependencies definition to be modified
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve when fullItem has been updated
+ * @protected
  */
 function fleshOutFeatureService (
   fullItem: IFullItemFeatureService,
@@ -612,6 +620,7 @@ function fleshOutFeatureService (
  * Simplifies a web mapping application's app URL for cloning.
  *
  * @param fullItem Web mapping application definition to be modified
+ * @protected
  */
 function generalizeWebMappingApplicationURLs (
   fullItem: IFullItem
@@ -628,6 +637,7 @@ function generalizeWebMappingApplicationURLs (
  * Gets the name of the first layer in list of layers that has a name
  * @param layerList List of layers to use as a name source
  * @returns The name of the found layer or an empty string if no layers have a name
+ * @protected
  */
 function getFirstUsableName (
   layerList: any[]
@@ -650,6 +660,7 @@ function getFirstUsableName (
  * @param layerList List of layers at that service
  * @param requestOptions Options for the request
  * @returns A promise that will resolve with a list of the enhanced layers
+ * @protected
  */
 function getLayers (
   serviceUrl: string,
@@ -682,6 +693,7 @@ function getLayers (
  * Creates a timestamp string using the current date and time.
  *
  * @returns Timestamp
+ * @protected
  */
 function getTimestamp (): string {
   return (new Date()).getTime().toString();
@@ -692,6 +704,7 @@ function getTimestamp (): string {
  *
  * @param item The base section of an item
  * @returns Cloned copy of item without certain properties such as `created`, `modified`, `owner`,...
+ * @protected
  */
 function removeUncloneableItemProperties (
   item: any
@@ -722,7 +735,8 @@ function removeUncloneableItemProperties (
  * @returns List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
- * @private
+ * @protected
+ * @protected
  */
 export function topologicallySortItems (
   items: IItemHash
@@ -803,6 +817,7 @@ export function topologicallySortItems (
  * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve when the feature service has been updated
+ * @protected
  */
 function updateFeatureServiceDefinition(
   serviceItemId: string,
@@ -867,6 +882,7 @@ function updateFeatureServiceDefinition(
  * @param fullItem A web mapping application
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve when fullItem has been updated
+ * @protected
  */
 function updateWebMappingApplicationURL (
   fullItem: IFullItem,

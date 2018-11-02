@@ -88,6 +88,7 @@ export function swizzleDependencies (
 
 /**
  * The relevant elements of a Dashboard widget.
+ * @protected
  */
 interface IDashboardWidget {
   /**
@@ -102,6 +103,7 @@ interface IDashboardWidget {
 
 /**
  * A mapping between a keyword and a function.
+ * @protected
  */
 interface IFunctionLookup {
   /**
@@ -116,6 +118,7 @@ interface IFunctionLookup {
  * @param fullItem A dashboard item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve with list of dependent ids
+ * @protected
  */
 function getDashboardDependencies (
   fullItem: IFullItem,
@@ -143,6 +146,7 @@ function getDashboardDependencies (
  * @param fullItem A group whose contents are sought
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve with list of dependent ids
+ * @protected
  */
 function getGroupDependencies (
   fullItem: IFullItem,
@@ -176,6 +180,7 @@ function getGroupDependencies (
  * @param fullItem A webmap item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve with list of dependent ids
+ * @protected
  */
 function getWebMapDependencies (
   fullItem: IFullItem,
@@ -186,8 +191,8 @@ function getWebMapDependencies (
 
     if (fullItem.data) {
       dependencies = [
-        ...getWebMapLayerIds(fullItem.data.operationalLayers),
-        ...getWebMapLayerIds(fullItem.data.tables)
+        ...getWebmapLayerIds(fullItem.data.operationalLayers),
+        ...getWebmapLayerIds(fullItem.data.tables)
       ];
     }
 
@@ -201,6 +206,7 @@ function getWebMapDependencies (
  * @param fullItem A webapp item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
  * @returns A promise that will resolve with list of dependent ids
+ * @protected
  */
 function getWebMappingApplicationDependencies (
   fullItem: IFullItem,
@@ -228,6 +234,7 @@ function getWebMappingApplicationDependencies (
  *
  * @param fullItem A dashboard item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
  */
 function swizzleDashboardDependencies (
   fullItem: IFullItem,
@@ -249,6 +256,7 @@ function swizzleDashboardDependencies (
  *
  * @param fullItem A group whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
  */
 function swizzleGroupDependencies (
   fullItem: IFullItem,
@@ -269,6 +277,7 @@ function swizzleGroupDependencies (
  *
  * @param fullItem A webmap item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
  */
 function swizzleWebMapDependencies (
   fullItem: IFullItem,
@@ -305,6 +314,7 @@ function swizzleWebMapDependencies (
  *
  * @param fullItem A webapp item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
  */
 function swizzleWebMappingApplicationDependencies (
   fullItem: IFullItem,
@@ -329,6 +339,7 @@ function swizzleWebMappingApplicationDependencies (
  * @param id Group id
  * @param pagingRequest Options for requesting group contents
  * @returns A promise that will resolve with a list of the ids of the group's contents
+ * @protected
  */
 function getGroupContentsTranche (
   id: string,
@@ -372,8 +383,9 @@ function getGroupContentsTranche (
  *
  * @param layerList List of map layers or tables
  * @returns List of ids and/or URLs
+ * @protected
  */
-function getWebMapLayerIds (
+function getWebmapLayerIds (
   layerList: any
 ): string[] {
   let dependencies:string[] = [];
@@ -383,9 +395,6 @@ function getWebMapLayerIds (
       let itemId = layer.itemId as string;
       if (itemId) {
         dependencies.push(itemId);
-      } else {
-        let urlStr = layer.url as string;
-        dependencies.push(urlStr);
       }
     });
   }
@@ -398,6 +407,7 @@ function getWebMapLayerIds (
  *
  * @param arrayWithDups An array to be copied
  * @returns Copy of array with duplicates removed
+ * @protected
  */
 function removeDuplicates (
   arrayWithDups:string[]
