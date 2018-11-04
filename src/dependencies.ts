@@ -19,6 +19,7 @@ import * as groups from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IFullItem } from "./fullItem";
+import { resolve } from 'url';
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -62,6 +63,60 @@ export function getDependencies (
   });
 }
 
+// Get the depenedencies, in a functional style...
+export function getDependenciesFunctional (
+  fullItem: IFullItem,
+  requestOptions?: IUserRequestOptions
+): Promise<string[]> {
+  // get and execute a partially applied, type-specific function
+  return typeSpecificFn(fullItem.type, requestOptions)(fullItem);
+}
+
+// Given a type, return a partially applied function, that has the requestOptions
+// While not needed in this scenario, it's an example how to use partial application
+// and then have more chainable function to work with...
+export function typeSpecificFn (
+  type: string,
+  requestOptions?: IUserRequestOptions
+  ):any {
+    // return the type specific function, with the requestOptions partially-applied
+    return applyRequestOptions(getDepsFunction(type), requestOptions)
+}
+
+// Partial application of request options
+// Note! Completely non-generic, assumes two args, ro being the second.
+function applyRequestOptions (fn:Function, ro?: IUserRequestOptions) {
+  return (param:any) => fn(param, ro);
+}
+
+
+/**
+ * Return a function that can extract dependencies from an Item
+ * or a function that just resolves
+ * @param type item type
+ */
+export function getDepsFunction (
+  type:string
+  ): () => Promise<any> {
+  const fn =  typeLookup[type]; // typescript is hating on this line!
+  return fn
+    ? fn
+    : () => Promise.resolve([]);
+}
+
+/**
+ * Return a hash of functions accessible by the type name
+ */
+export function typeLookup ():IFunctionLookup {
+  return {
+    "Dashboard": getDashboardDependencies,
+    "Group": getGroupDependencies,
+    "Web Map": getWebMapDependencies,
+    "Web Mapping Application": getWebMappingApplicationDependencies
+  };
+}
+
+
 /**
  * Swizzles the dependencies of an AGOL item.
  *
@@ -82,6 +137,10 @@ export function swizzleDependencies (
   if (swizzleDependenciesByType[fullItem.type]) {
     swizzleDependenciesByType[fullItem.type](fullItem, swizzles)
   }
+}
+
+interface IDepFetchFn {
+  (item:IFullItem, opts: IUserRequestOptions): Promise<string[]>;
 }
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
