@@ -173,6 +173,18 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: timestamp", () => {
+
+    it("should return time 1541440408000", () => {
+      let expected = 1541440408000;
+      jasmine.clock().install();
+      jasmine.clock().mockDate(new Date(expected));
+      expect(solution.getTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+  });
+
   describe("supporting routine: update WMA URL", () => {
 
     let orgSession:solution.IOrgSession = {

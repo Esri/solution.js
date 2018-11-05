@@ -699,7 +699,7 @@ function getLayers (
  * @returns Timestamp
  * @protected
  */
-function getTimestamp (): string {
+export function getTimestamp (): string {
   return (new Date()).getTime().toString();
 }
 
