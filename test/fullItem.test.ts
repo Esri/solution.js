@@ -151,19 +151,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       fetchMock
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
 
       getFullItem("svc1234567890", MOCK_USER_REQOPTS)
       .then(response => {
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/data")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/resources")).toEqual(true);
-        //expect(fetchMock.called(baseSvcURL + "FeatureServer?f=json")).toEqual(true);
-        //expect(fetchMock.called(baseSvcURL + "FeatureServer/0?f=json")).toEqual(true);
-        //expect(fetchMock.called(baseSvcURL + "FeatureServer/1?f=json")).toEqual(true);
 
         expect(response.type).toEqual("Feature Service");
 
