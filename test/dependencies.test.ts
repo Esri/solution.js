@@ -246,6 +246,113 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
   describe("getDependencies", () => {
 
+    describe("dashboard", () => {
+
+      it("without map widget", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "listWidget"
+          }]
+        };
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("with map widget", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "mapWidget",
+            itemId: "def"
+          }, {
+            type: "listWidget"
+          }]
+        };
+        let expected:string[] = ["def"];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
+    describe("feature service", () => {
+
+      it("item type does not have dependencies", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Feature Service";
+
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
+    describe("group", () => {
+
+      it("group with no items", done => {
+        let groupUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?" +
+          "f=json&start=0&num=100&token=fake-token";
+        fetchMock
+        .mock(groupUrl,
+          '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}', {});
+        let expected:string[] = [];
+
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.item.id = "grp1234567890";
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("group with 6 items", done => {
+        let groupUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?" +
+          "f=json&start=0&num=100&token=fake-token";
+        fetchMock
+        .mock(groupUrl,
+          '{"total":6,"start":1,"num":6,"nextStart":-1,' +
+          '"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"},{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {});
+        let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
+
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.item.id = "grp1234567890";
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
     describe("webmap", () => {
 
       it("one operational layer", done => {
@@ -355,13 +462,111 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         id: "DEF",
         name: "'Def'",
         url: "http://services2/SVC67890"
-  },
+    },
       ghi: {
         id: "GHI",
         name: "'Ghi'",
         url: "http://services2/SVC67890"
       }
     };
+
+    describe("dashboard", () => {
+
+      it("without map widget", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "listWidget"
+          }]
+        };
+        let expected = {...MOCK_ITEM_PROTOTYPE};
+        expected.type = "Dashboard";
+        expected.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "listWidget"
+          }]
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles)
+        expect(abc).toEqual(expected);
+      });
+
+      it("with map widget", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "mapWidget",
+            itemId: "def"
+          }, {
+            type: "listWidget"
+          }]
+        };
+        let expected = {...MOCK_ITEM_PROTOTYPE};
+        expected.type = "Dashboard";
+        expected.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "mapWidget",
+            itemId: "DEF"
+          }, {
+            type: "listWidget"
+          }]
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles)
+        expect(abc).toEqual(expected);
+      });
+
+    });
+
+    describe("feature service", () => {
+
+      it("item type does not have dependencies", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Feature Service";
+
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+    });
+
+    describe("group", () => {
+
+      it("group with no items", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.dependencies = [];
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.dependencies).toEqual([]);
+      });
+
+      it("group with 2 items", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.dependencies = ["ghi", "def"];
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.dependencies[0]).toEqual("GHI");
+        expect(abc.dependencies[1]).toEqual("DEF");
+      });
+
+    });
 
     describe("webmap", () => {
 
@@ -379,6 +584,8 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         dependencies.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+        expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
+        expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
       });
 
       it("two operational layers", () => {
@@ -399,7 +606,12 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         dependencies.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+        expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
+        expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
+
         expect(abc.data.operationalLayers[1].itemId).toEqual("GHI");
+        expect(abc.data.operationalLayers[1].title).toEqual("'Ghi'");
+        expect(abc.data.operationalLayers[1].url).toEqual("http://services2/SVC67890/1");
       });
 
       it("one operational layer and a table", () => {
@@ -420,7 +632,12 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         dependencies.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
+        expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
+        expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
+
         expect(abc.data.tables[0].itemId).toEqual("GHI");
+        expect(abc.data.tables[0].title).toEqual("'Ghi'");
+        expect(abc.data.tables[0].url).toEqual("http://services2/SVC67890/1");
       });
 
     });
@@ -434,6 +651,15 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           values: {
             webmap: "def"
           }
+        };
+        let expected = {...MOCK_ITEM_PROTOTYPE};
+        expected.type = "Dashboard";
+        expected.data = {
+          widgets: [{
+            type: "indicatorWidget"
+          }, {
+            type: "listWidget"
+          }]
         };
 
         dependencies.swizzleDependencies(abc, swizzles);
