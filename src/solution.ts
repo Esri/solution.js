@@ -106,7 +106,7 @@ export function createSolution (
             let fullItem = (solution[key] as IFullItem);
 
             // 1. remove unwanted properties
-            fullItem.item = removeUncloneableItemProperties(fullItem.item);
+            fullItem.item = removeUndesirableItemProperties(fullItem.item);
 
             // 2. for web mapping apps,
             //    a. generalize app URL
@@ -241,23 +241,27 @@ export function cloneSolution (
       )
     }
 
-    // Use specified folder to hold the hydrated items to avoid name clashes
-    if (folderId) {
-      runThroughChecklist();
-    } else {
-      // Create a folder to hold the hydrated items to avoid name clashes
-      let folderName = solutionName + " (" + getTimestamp() + ")";
-      let options = {
-        title: folderName,
-        authentication: orgSession.authentication
-      };
-      items.createFolder(options)
-      .then(
-        createdFolderResponse => {
-          folderId = createdFolderResponse.folder.id;
-          runThroughChecklist();
-        }
-      );
+    try {
+      // Use specified folder to hold the hydrated items to avoid name clashes
+      if (folderId) {
+        runThroughChecklist();
+      } else {
+        // Create a folder to hold the hydrated items to avoid name clashes
+        let folderName = solutionName + " (" + getTimestamp() + ")";
+        let options = {
+          title: folderName,
+          authentication: orgSession.authentication
+        };
+        items.createFolder(options)
+        .then(
+          createdFolderResponse => {
+            folderId = createdFolderResponse.folder.id;
+            runThroughChecklist();
+          }
+        );
+      }
+    } catch (error) {
+      reject(error);
     }
   });
 }
@@ -269,7 +273,7 @@ export function cloneSolution (
  * name has to be acceptable to AGOL, otherwise it discards the URL.
  * @protected
  */
-const aPlaceholderServerName:string = "https://arcgis.com";
+export const aPlaceholderServerName:string = "https://arcgis.com";
 
 /**
  * Storage of a one-way relationship.
@@ -546,7 +550,10 @@ function createItem (
           if (fullItem.type === "Web Mapping Application") {
             updateWebMappingApplicationURL(fullItem, orgSession)
             .then(
-              () => resolve(fullItem.item.id)
+              () => resolve(fullItem.item.id),
+              error => {
+                reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
+              }
             );
           } else {
             resolve(fullItem.item.id)
@@ -700,17 +707,19 @@ function getTimestamp (): string {
  * Creates a copy of item base properties with properties irrelevant to cloning removed.
  *
  * @param item The base section of an item
- * @returns Cloned copy of item without certain properties such as `created`, `modified`, `owner`,...
+ * @returns Cloned copy of item without certain properties such as `created`, `modified`,
+ *        `owner`,...; note that is is a shallow copy
  * @protected
  */
-function removeUncloneableItemProperties (
+export function removeUndesirableItemProperties (
   item: any
-): void {
+): any {
   if (item) {
     let itemSectionClone = {...item};
     delete itemSectionClone.avgRating;
     delete itemSectionClone.created;
     delete itemSectionClone.guid;
+    delete itemSectionClone.lastModified;
     delete itemSectionClone.modified;
     delete itemSectionClone.numComments;
     delete itemSectionClone.numRatings;
@@ -881,10 +890,10 @@ function updateFeatureServiceDefinition(
  * @returns A promise that will resolve when fullItem has been updated
  * @protected
  */
-function updateWebMappingApplicationURL (
+export function updateWebMappingApplicationURL (
   fullItem: IFullItem,
   orgSession: IOrgSession
-): Promise<void> {
+): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL
     var options = {
@@ -896,14 +905,18 @@ function updateWebMappingApplicationURL (
       },
       authentication: orgSession.authentication
     };
-    items.updateItem(options)
-    .then(
-      updateResp => {
-        resolve(fullItem.item.id);
-      },
-      error => {
-        reject('Unable to update webmap');
-      }
-    );
+    try {
+      items.updateItem(options)
+      .then(
+        updateResp => {
+          resolve(fullItem.item.id);
+        },
+        error => {
+          reject('Unable to update web mapping app: ' + fullItem.item.id);
+        }
+      );
+    } catch (ignore) {
+      reject('Unable to update web mapping app: ' + fullItem.item.id);
+    }
   });
 }

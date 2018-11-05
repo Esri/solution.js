@@ -19,10 +19,10 @@ import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
 
 import * as solution from "../src/solution";
 import { IFullItem } from "../src/fullItem";
-import { IItemHash } from "../src/fullItemHierarchy";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
+import { ItemSuccessResponseWMA, ItemSuccessResponseWMAWithoutUndesirableProps } from "./mocks/fullItemQueries";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -32,6 +32,22 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     type: "",
     item: null
   };
+
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
+
+  // Set up a UserSession to use in all these tests
+  const MOCK_USER_SESSION = new UserSession({
+    clientId: "clientId",
+    redirectUri: "https://example-app.com/redirect-uri",
+    token: "fake-token",
+    tokenExpires: TOMORROW,
+    refreshToken: "refreshToken",
+    refreshTokenExpires: TOMORROW,
+    refreshTokenTTL: 1440,
+    username: "casey",
+    password: "123456",
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  });
 
   beforeEach(() => {
     jasmine.addMatchers(CustomMatchers);
@@ -130,6 +146,68 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           "ghi": ghi,
         });
       }).toThrowError(Error, "Cyclical dependency graph detected");
+    });
+
+  });
+
+  describe("supporting routine: remove undesirable properties", () => {
+
+    it("remove properties", () => {
+      let abc = {...ItemSuccessResponseWMA};
+
+      let abcCopy = solution.removeUndesirableItemProperties(abc);
+      expect(abc).toEqual(ItemSuccessResponseWMA);
+      expect(abcCopy).toEqual(ItemSuccessResponseWMAWithoutUndesirableProps);
+    });
+
+    it("shallow copy if properties already removed", () => {
+      let abc = {...ItemSuccessResponseWMAWithoutUndesirableProps};
+
+      let abcCopy = solution.removeUndesirableItemProperties(abc);
+      expect(abc).toEqual(ItemSuccessResponseWMAWithoutUndesirableProps);
+      expect(abcCopy).toEqual(ItemSuccessResponseWMAWithoutUndesirableProps);
+
+      abcCopy.id = "WMA123";
+      expect(abc.id).toEqual("wma1234567890");
+    });
+
+  });
+
+  describe("supporting routine: update WMA URL", () => {
+
+    let orgSession:solution.IOrgSession = {
+      orgUrl: "https://myOrg.maps.arcgis.com",
+      portalUrl: "https://www.arcgis.com",
+      authentication: MOCK_USER_SESSION
+    };
+
+    let abc = {...MOCK_ITEM_PROTOTYPE};
+    abc.item = {...ItemSuccessResponseWMA};
+    abc.item.url = solution.aPlaceholderServerName + "/apps/CrowdsourcePolling/index.html?appid=";
+
+    it("success", done => {
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
+      '{"success":true,"id":"wma1234567890"}');
+      solution.updateWebMappingApplicationURL(abc, orgSession)
+      .then(response => {
+        expect(response).toEqual("wma1234567890");
+        done();
+      });
+    });
+
+    it("failure", done => {
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
+      "Unable to update web mapping app: wma1234567890");
+      solution.updateWebMappingApplicationURL(abc, orgSession)
+      .then(
+        fail,
+        error => {
+          expect(error).toEqual("Unable to update web mapping app: wma1234567890");
+          done();
+        }
+      );
     });
 
   });

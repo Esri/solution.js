@@ -34,6 +34,39 @@ export const ItemResourcesSuccessResponseNone: any = {
   "resources": []
 };
 
+export const ItemSuccessResponseWMAWithoutUndesirableProps: any = {
+  "access": "public",
+  "accessInformation": "Esri., Inc.",
+  "appCategories": [],
+  "banner": null,
+  "categories": [],
+  "commentsEnabled": false,
+  "culture": "en-us",
+  "description": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitPublicComment/' target='_blank'>Learn more<\/a>",
+  "documentation": null,
+  "extent": [],
+  "groupDesignations": null,
+  "id": "wma1234567890",
+  "industries": [],
+  "item": "wma1234567890",
+  "languages": [],
+  "largeThumbnail": null,
+  "licenseInfo": null,
+  "listed": false,
+  "name": null,
+  "properties": null,
+  "proxyFilter": null,
+  "screenshots": [],
+  "snippet": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.",
+  "spatialReference": null,
+  "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+  "thumbnail": "thumbnail/ago_downloaded.png",
+  "title": "ROW Permit Public Comment",
+  "type": "Web Mapping Application",
+  "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "source-049f861ad61b4d2992de47e2d0375097", "Web Map"],
+  "url": "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21"
+};
+
 export const ItemSuccessResponseDashboard: any = {
   "id": "dsh1234567890",
   "item": "dsh1234567890",
