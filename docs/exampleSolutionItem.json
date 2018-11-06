@@ -1,173 +1,9 @@
 {
   "items": {
-    "6fc5992522d34f26b2210d17835eea21": {
-      "type": "Web Mapping Application",
-      "dependencies": ["164831217e154849a731573e1855cb1a"],
-      "itemSection": {
-        "id": "6fc5992522d34f26b2210d17835eea21",
-        "guid": null,
-        "name": null,
-        "title": "ROW Permit Public Comment",
-        "type": "Web Mapping Application",
-        "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "source-049f861ad61b4d2992de47e2d0375097", "Web Map"],
-        "description": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitPublicComment/' target='_blank'>Learn more</a>",
-        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
-        "snippet": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.",
-        "thumbnail": "thumbnail/ago_downloaded.png",
-        "documentation": null,
-        "extent": [],
-        "categories": [],
-        "spatialReference": null,
-        "accessInformation": "Esri., Inc.",
-        "licenseInfo": null,
-        "culture": "en-us",
-        "properties": null,
-        "url": "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21",
-        "proxyFilter": null,
-        "access": "public",
-        "appCategories": [],
-        "industries": [],
-        "languages": [],
-        "largeThumbnail": null,
-        "banner": null,
-        "screenshots": [],
-        "listed": false,
-        "commentsEnabled": false,
-        "groupDesignations": null
-      },
-      "dataSection": {
-        "source": "bb3fcf7c3d804271bfd7ac6f48290fcf",
-        "folderId": "6046cfcbf84840eea9d8d04958a13790",
-        "values": {
-          "webmap": "164831217e154849a731573e1855cb1a",
-          "title": "ROW Permit Public Comment",
-          "titleIcon": "images/banner.png",
-          "displayText": "<b>Welcome to ROW Permit Public Comment</b><p>ROW Permit Public Comment can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.</p><p>Search for a location or click an item in the list to get started.</p>",
-          "featureLayer": {
-            "id": "ROWPermitApplication_4605",
-            "fields": [{
-              "id": "sortField",
-              "fields": ["submitdt"]
-            }]
-          },
-          "ascendingSortOrder": "false",
-          "showListViewFirst": "true",
-          "showAllFeatures": "true",
-          "commentNameField": "",
-          "allowFacebook": false,
-          "facebookAppId": "",
-          "allowGoogle": false,
-          "googleplusClientId": "",
-          "allowTwitter": false,
-          "socialMediaDisclaimer": "Choose how you would like to sign in to this application. The name associated with your social media account will be added to any comments you post.",
-          "showDisplayTextAsSplashScreen": false,
-          "customUrlLayer": {
-            "id": "ROWPermitApplication_4605",
-            "fields": [{
-              "id": "urlField",
-              "fields": ["OBJECTID"]
-            }]
-          },
-          "customUrlParam": "id",
-          "color": "#004575",
-          "headerBackgroundColor": "#ffffff",
-          "bodyTextColor": "#474747",
-          "bodyBackgroundColor": "#ffffff",
-          "buttonTextColor": "#ffffff",
-          "buttonBackgroundColor": "#004575",
-          "commentPeriod": "Open",
-          "commentPeriodDialogTitle": "Comment period closed",
-          "commentPeriodDialogContent": "We are no longer accepting comments for this project.",
-          "submitMessage": "Thank you. Your comment has been submitted."
-        }
-      }
-    },
-    "8974dec44d794311a69f5562659587e6": {
-      "type": "Web Mapping Application",
-      "dependencies": ["3d07b604b87d4f60b6b50b2d58e0a824"],
-      "itemSection": {
-        "id": "8974dec44d794311a69f5562659587e6",
-        "guid": null,
-        "name": null,
-        "title": "ROW Permit Manager",
-        "type": "Web Mapping Application",
-        "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "source-ef24810c717b4bf189e870e248e02394", "Web Map"],
-        "description": "ROW Permit Manager is a configuration of the Crowdsource Manager that can be used by public works agencies to facilitate the right of way permit process and manage the status of a permit application.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitManager/' target='_blank'>Learn more</a>",
-        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
-        "snippet": "ROW Permit Manager is a configuration of the Crowdsource Manager that can be used by public works agencies to facilitate the right of way permit process and manage the status of a permit application.",
-        "thumbnail": "thumbnail/ago_downloaded.png",
-        "documentation": null,
-        "extent": [],
-        "categories": [],
-        "spatialReference": null,
-        "accessInformation": "Esri., Inc.",
-        "licenseInfo": null,
-        "culture": "en-us",
-        "properties": null,
-        "url": "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourceManager/index.html?appid=8974dec44d794311a69f5562659587e6",
-        "proxyFilter": null,
-        "access": "public",
-        "appCategories": [],
-        "industries": [],
-        "languages": [],
-        "largeThumbnail": null,
-        "banner": null,
-        "screenshots": [],
-        "listed": false,
-        "commentsEnabled": false,
-        "groupDesignations": null
-      },
-      "dataSection": {
-        "source": "43a4a0dbf9914f93bf0657f7839fa655",
-        "folderId": "6046cfcbf84840eea9d8d04958a13790",
-        "values": {
-          "group": "3d07b604b87d4f60b6b50b2d58e0a824",
-          "theme": "#004575",
-          "applicationName": "",
-          "applicationIcon": "",
-          "applicationFavicon": "/images/favicon.ico",
-          "zoomLevel": 12,
-          "basemapGroup": "",
-          "commentField": "COMMENTS",
-          "usePopupConfigurationForComment": true,
-          "webMapInfoDescription": false,
-          "webMapInfoSnippet": false,
-          "webMapInfoOwner": false,
-          "webMapInfoCreated": false,
-          "webMapInfoModified": false,
-          "webMapInfoLicenseInfo": false,
-          "webMapInfoAccessInformation": false,
-          "webMapInfoTags": false,
-          "webMapInfoNumViews": false,
-          "webMapInfoAvgRating": false,
-          "showNonEditableLayers": false,
-          "selectFeatureMessage": "Choose a permit from the table or map.",
-          "enableFilter": false,
-          "helpDialogTitle": "Help",
-          "helpDialogContent": "<p>Welcome to Crowdsource Manager! </p> <p>Use this application to review and update reports. To get started, choose a category and then choose a report from the table or map.</p> <p>The details of that report will load in the panel in the lower left corner of the screen. From this panel, you can also review images, charts, and other information associated with the selected report. Update the report details by clicking the pencil icon, or hold down the CTRL key while clicking multiple reports to open the batch editor.</p> <p>View the location of the report using the map in the lower right corner of the application.</p><p>Reports can be filtered by time or field values. If time filtering is enabled for your reports, a time slider will appear below the table. Drag the time slider handle(s) to show only reports from a specific time span in the map and table. If filtering based on field values is enabled for your reports, a filter icon will appear in the table header next to the name of the fields that can be used to filter the reports. Click the icon and specify which reports you'd like to see in the table and map.</p>",
-          "popupTabText": "Details",
-          "mediaTabText": "Attachments",
-          "commentsTabText": "Comments",
-          "showHelpIcon": false,
-          "commentFormAttachmentSectionLabel": "Attachments",
-          "headerTextColor": "#ffffff",
-          "bodyBackgroundColor": "#ffffff",
-          "bodyTextColor": "#474747",
-          "buttonBackgroundColor": "#ffffff",
-          "buttonTextColor": "#1a1a1a",
-          "defaultDetailsTab": "Info",
-          "showBaseMapGallery": false,
-          "showLegend": false,
-          "showPopupForNonEditableLayers": false
-        }
-      }
-    },
     "9bccd0fac5f3422c948e15c101c26934": {
       "type": "Dashboard",
-      "dependencies": ["1fb7fe5da4924b9aa608b08f865031e4"],
-      "itemSection": {
+      "item": {
         "id": "9bccd0fac5f3422c948e15c101c26934",
-        "guid": null,
         "name": null,
         "title": "ROW Permit Dashboard",
         "type": "Dashboard",
@@ -197,7 +33,8 @@
         "commentsEnabled": false,
         "groupDesignations": null
       },
-      "dataSection": {
+      "dependencies": ["1fb7fe5da4924b9aa608b08f865031e4"],
+      "data": {
         "version": 24,
         "layout": {
           "rootElement": {
@@ -1236,14 +1073,93 @@
           "maxPaginationRecords": 50000
         },
         "theme": "light"
-      }
+      },
+      "resources": null
+    },
+    "8974dec44d794311a69f5562659587e6": {
+      "type": "Web Mapping Application",
+      "item": {
+        "id": "8974dec44d794311a69f5562659587e6",
+        "name": null,
+        "title": "ROW Permit Manager",
+        "type": "Web Mapping Application",
+        "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "Web Map"],
+        "description": "ROW Permit Manager is a configuration of the Crowdsource Manager that can be used by public works agencies to facilitate the right of way permit process and manage the status of a permit application.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitManager/' target='_blank'>Learn more</a>",
+        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+        "snippet": "ROW Permit Manager is a configuration of the Crowdsource Manager that can be used by public works agencies to facilitate the right of way permit process and manage the status of a permit application.",
+        "thumbnail": "thumbnail/ago_downloaded.png",
+        "documentation": null,
+        "extent": [],
+        "categories": [],
+        "spatialReference": null,
+        "accessInformation": "Esri., Inc.",
+        "licenseInfo": null,
+        "culture": "en-us",
+        "properties": null,
+        "url": "https://arcgis.com/apps/CrowdsourceManager/index.html?appid=",
+        "proxyFilter": null,
+        "access": "public",
+        "appCategories": [],
+        "industries": [],
+        "languages": [],
+        "largeThumbnail": null,
+        "banner": null,
+        "screenshots": [],
+        "listed": false,
+        "commentsEnabled": false,
+        "groupDesignations": null
+      },
+      "dependencies": ["3d07b604b87d4f60b6b50b2d58e0a824"],
+      "data": {
+        "source": "43a4a0dbf9914f93bf0657f7839fa655",
+        "folderId": "6046cfcbf84840eea9d8d04958a13790",
+        "values": {
+          "group": "3d07b604b87d4f60b6b50b2d58e0a824",
+          "theme": "#004575",
+          "applicationName": "",
+          "applicationIcon": "",
+          "applicationFavicon": "/images/favicon.ico",
+          "zoomLevel": 12,
+          "basemapGroup": "",
+          "commentField": "COMMENTS",
+          "usePopupConfigurationForComment": true,
+          "webMapInfoDescription": false,
+          "webMapInfoSnippet": false,
+          "webMapInfoOwner": false,
+          "webMapInfoCreated": false,
+          "webMapInfoModified": false,
+          "webMapInfoLicenseInfo": false,
+          "webMapInfoAccessInformation": false,
+          "webMapInfoTags": false,
+          "webMapInfoNumViews": false,
+          "webMapInfoAvgRating": false,
+          "showNonEditableLayers": false,
+          "selectFeatureMessage": "Choose a permit from the table or map.",
+          "enableFilter": false,
+          "helpDialogTitle": "Help",
+          "helpDialogContent": "<p>Welcome to Crowdsource Manager! </p> <p>Use this application to review and update reports. To get started, choose a category and then choose a report from the table or map.</p> <p>The details of that report will load in the panel in the lower left corner of the screen. From this panel, you can also review images, charts, and other information associated with the selected report. Update the report details by clicking the pencil icon, or hold down the CTRL key while clicking multiple reports to open the batch editor.</p> <p>View the location of the report using the map in the lower right corner of the application.</p><p>Reports can be filtered by time or field values. If time filtering is enabled for your reports, a time slider will appear below the table. Drag the time slider handle(s) to show only reports from a specific time span in the map and table. If filtering based on field values is enabled for your reports, a filter icon will appear in the table header next to the name of the fields that can be used to filter the reports. Click the icon and specify which reports you'd like to see in the table and map.</p>",
+          "popupTabText": "Details",
+          "mediaTabText": "Attachments",
+          "commentsTabText": "Comments",
+          "showHelpIcon": false,
+          "commentFormAttachmentSectionLabel": "Attachments",
+          "headerTextColor": "#ffffff",
+          "bodyBackgroundColor": "#ffffff",
+          "bodyTextColor": "#474747",
+          "buttonBackgroundColor": "#ffffff",
+          "buttonTextColor": "#1a1a1a",
+          "defaultDetailsTab": "Info",
+          "showBaseMapGallery": false,
+          "showLegend": false,
+          "showPopupForNonEditableLayers": false
+        }
+      },
+      "resources": null
     },
     "164831217e154849a731573e1855cb1a": {
       "type": "Web Map",
-      "dependencies": ["dbca451a5e1546998137bb0a09d94240_0", "dbca451a5e1546998137bb0a09d94240_1"],
-      "itemSection": {
+      "item": {
         "id": "164831217e154849a731573e1855cb1a",
-        "guid": null,
         "name": null,
         "title": "ROW Permit Public Comment",
         "type": "Web Map",
@@ -1276,14 +1192,16 @@
         "commentsEnabled": false,
         "groupDesignations": null
       },
-      "dataSection": {
+      "dependencies": ["dbca451a5e1546998137bb0a09d94240"],
+      "data": {
         "operationalLayers": [{
           "id": "ROWPermitApplication_4605",
           "layerType": "ArcGISFeatureLayer",
+          "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
           "visibility": true,
           "opacity": 1,
           "title": "ROW Permits",
-          "itemId": "dbca451a5e1546998137bb0a09d94240_0",
+          "itemId": "dbca451a5e1546998137bb0a09d94240",
           "popupInfo": {
             "title": "{appname} - {type}",
             "fieldInfos": [{
@@ -1553,10 +1471,11 @@
         "authoringAppVersion": "5.4",
         "version": "2.11",
         "tables": [{
+          "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1",
           "id": "ROWPermitApplication_4404",
           "title": "ROW Permit Comment",
           "layerDefinition": {},
-          "itemId": "dbca451a5e1546998137bb0a09d94240_1",
+          "itemId": "dbca451a5e1546998137bb0a09d94240",
           "popupInfo": {
             "title": "{name}",
             "fieldInfos": [{
@@ -1821,45 +1740,95 @@
             }
           }
         }
-      }
-    },
-    "3d07b604b87d4f60b6b50b2d58e0a824": {
-      "dependencies": ["7e8ad479f67a4cad960f5ca2876e8972"],
-      "itemSection": {
-        "id": "3d07b604b87d4f60b6b50b2d58e0a824",
-        "title": "ROW Permit Manager",
-        "isInvitationOnly": true,
-        "description": null,
-        "snippet": "ROW",
-        "tags": ["ROW", "source-84453ddeff8841e9aa2c25d5e1253cd7"],
-        "phone": null,
-        "sortField": "title",
-        "sortOrder": "asc",
-        "isViewOnly": true,
-        "thumbnail": "ROWPermitManager.png",
-        "access": "public",
-        "capabilities": [],
-        "isFav": false,
-        "isReadOnly": false,
-        "protected": false,
-        "autoJoin": false,
-        "notificationsEnabled": false,
-        "provider": null,
-        "providerGroupName": null,
-        "userMembership": {
-          "username": "ArcGISTeamLocalGovOrg",
-          "memberType": "none"
-        },
-        "collaborationInfo": {}
       },
-      "type": "Group"
+      "resources": null
+    },
+    "6fc5992522d34f26b2210d17835eea21": {
+      "type": "Web Mapping Application",
+      "item": {
+        "id": "6fc5992522d34f26b2210d17835eea21",
+        "name": null,
+        "title": "ROW Permit Public Comment",
+        "type": "Web Mapping Application",
+        "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "source-049f861ad61b4d2992de47e2d0375097", "Web Map"],
+        "description": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitPublicComment/' target='_blank'>Learn more</a>",
+        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+        "snippet": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.",
+        "thumbnail": "thumbnail/ago_downloaded.png",
+        "documentation": null,
+        "extent": [],
+        "categories": [],
+        "spatialReference": null,
+        "accessInformation": "Esri., Inc.",
+        "licenseInfo": null,
+        "culture": "en-us",
+        "properties": null,
+        "url": "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid=",
+        "proxyFilter": null,
+        "access": "public",
+        "appCategories": [],
+        "industries": [],
+        "languages": [],
+        "largeThumbnail": null,
+        "banner": null,
+        "screenshots": [],
+        "listed": false,
+        "commentsEnabled": false,
+        "groupDesignations": null
+      },
+      "dependencies": ["164831217e154849a731573e1855cb1a"],
+      "data": {
+        "source": "bb3fcf7c3d804271bfd7ac6f48290fcf",
+        "folderId": "6046cfcbf84840eea9d8d04958a13790",
+        "values": {
+          "webmap": "164831217e154849a731573e1855cb1a",
+          "title": "ROW Permit Public Comment",
+          "titleIcon": "images/banner.png",
+          "displayText": "<b>Welcome to ROW Permit Public Comment</b><p>ROW Permit Public Comment can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.</p><p>Search for a location or click an item in the list to get started.</p>",
+          "featureLayer": {
+            "id": "ROWPermitApplication_4605",
+            "fields": [{
+              "id": "sortField",
+              "fields": ["submitdt"]
+            }]
+          },
+          "ascendingSortOrder": "false",
+          "showListViewFirst": "true",
+          "showAllFeatures": "true",
+          "commentNameField": "",
+          "allowFacebook": false,
+          "facebookAppId": "",
+          "allowGoogle": false,
+          "googleplusClientId": "",
+          "allowTwitter": false,
+          "socialMediaDisclaimer": "Choose how you would like to sign in to this application. The name associated with your social media account will be added to any comments you post.",
+          "showDisplayTextAsSplashScreen": false,
+          "customUrlLayer": {
+            "id": "ROWPermitApplication_4605",
+            "fields": [{
+              "id": "urlField",
+              "fields": ["OBJECTID"]
+            }]
+          },
+          "customUrlParam": "id",
+          "color": "#004575",
+          "headerBackgroundColor": "#ffffff",
+          "bodyTextColor": "#474747",
+          "bodyBackgroundColor": "#ffffff",
+          "buttonTextColor": "#ffffff",
+          "buttonBackgroundColor": "#004575",
+          "commentPeriod": "Open",
+          "commentPeriodDialogTitle": "Comment period closed",
+          "commentPeriodDialogContent": "We are no longer accepting comments for this project.",
+          "submitMessage": "Thank you. Your comment has been submitted."
+        }
+      },
+      "resources": null
     },
     "1fb7fe5da4924b9aa608b08f865031e4": {
       "type": "Web Map",
-      "dependencies": ["ba18dc5e55d14f5a9a9d2a5c411225a9_0"],
-      "itemSection": {
+      "item": {
         "id": "1fb7fe5da4924b9aa608b08f865031e4",
-        "guid": null,
         "name": null,
         "title": "ROW Permit Dashboard",
         "type": "Web Map",
@@ -1892,14 +1861,16 @@
         "commentsEnabled": false,
         "groupDesignations": null
       },
-      "dataSection": {
+      "dependencies": ["ba18dc5e55d14f5a9a9d2a5c411225a9"],
+      "data": {
         "operationalLayers": [{
           "id": "ROWPermitApplication_4605",
           "layerType": "ArcGISFeatureLayer",
+          "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_dashboard/FeatureServer/0",
           "visibility": true,
           "opacity": 1,
           "title": "ROW Permits",
-          "itemId": "ba18dc5e55d14f5a9a9d2a5c411225a9_0",
+          "itemId": "ba18dc5e55d14f5a9a9d2a5c411225a9",
           "popupInfo": {
             "title": "{type} - {submitdt}",
             "fieldInfos": [{
@@ -2332,14 +2303,44 @@
             }
           }
         }
-      }
+      },
+      "resources": null
+    },
+    "3d07b604b87d4f60b6b50b2d58e0a824": {
+      "type": "Group",
+      "item": {
+        "id": "3d07b604b87d4f60b6b50b2d58e0a824",
+        "title": "ROW Permit Manager",
+        "isInvitationOnly": true,
+        "description": null,
+        "snippet": "ROW",
+        "tags": ["ROW", "source-84453ddeff8841e9aa2c25d5e1253cd7"],
+        "phone": null,
+        "sortField": "title",
+        "sortOrder": "asc",
+        "isViewOnly": true,
+        "thumbnail": "ROWPermitManager.png",
+        "access": "public",
+        "capabilities": [],
+        "isFav": false,
+        "isReadOnly": false,
+        "protected": false,
+        "autoJoin": false,
+        "notificationsEnabled": false,
+        "provider": null,
+        "providerGroupName": null,
+        "userMembership": {
+          "username": "ArcGISTeamLocalGovOrg",
+          "memberType": "none"
+        },
+        "collaborationInfo": {}
+      },
+      "dependencies": ["7e8ad479f67a4cad960f5ca2876e8972"]
     },
     "dbca451a5e1546998137bb0a09d94240": {
       "type": "Feature Service",
-      "dependencies": [],
-      "itemSection": {
+      "item": {
         "id": "dbca451a5e1546998137bb0a09d94240",
-        "guid": null,
         "name": "ROWPermits_publiccomment",
         "title": "ROWPermits_publiccomment",
         "type": "Feature Service",
@@ -2372,7 +2373,371 @@
         "commentsEnabled": false,
         "groupDesignations": null
       },
-      "serviceSection": {
+      "dependencies": [],
+      "data": {
+        "tables": [{
+          "id": 1,
+          "popupInfo": {
+            "title": "{name}",
+            "mediaInfos": [],
+            "fieldInfos": [{
+              "fieldName": "OBJECTID",
+              "visible": true,
+              "isEditable": false,
+              "label": "OBJECTID"
+            }, {
+              "fieldName": "globalid",
+              "visible": true,
+              "isEditable": false,
+              "label": "GlobalID"
+            }, {
+              "fieldName": "name",
+              "visible": true,
+              "isEditable": true,
+              "label": "Name"
+            }, {
+              "fieldName": "address",
+              "visible": true,
+              "isEditable": true,
+              "label": "Address"
+            }, {
+              "fieldName": "organization",
+              "visible": true,
+              "isEditable": true,
+              "label": "Organization"
+            }, {
+              "fieldName": "comments",
+              "visible": true,
+              "isEditable": true,
+              "label": "Comments"
+            }, {
+              "fieldName": "instructions",
+              "visible": true,
+              "isEditable": true,
+              "label": "Any Instructions"
+            }, {
+              "fieldName": "actiontaken",
+              "visible": true,
+              "isEditable": true,
+              "label": "Action Taken"
+            }, {
+              "fieldName": "publicview",
+              "visible": true,
+              "isEditable": true,
+              "label": "Public View"
+            }, {
+              "fieldName": "submitdate",
+              "visible": true,
+              "isEditable": true,
+              "label": "Submission Date"
+            }, {
+              "fieldName": "parentglobalid",
+              "visible": true,
+              "isEditable": true,
+              "label": "ParentGlobalID"
+            }, {
+              "fieldName": "CreationDate",
+              "visible": true,
+              "isEditable": true,
+              "label": "CreationDate"
+            }, {
+              "fieldName": "Creator",
+              "visible": true,
+              "isEditable": true,
+              "label": "Creator"
+            }, {
+              "fieldName": "EditDate",
+              "visible": true,
+              "isEditable": true,
+              "label": "EditDate"
+            }, {
+              "fieldName": "Editor",
+              "visible": true,
+              "isEditable": true,
+              "label": "Editor"
+            }],
+            "popupElements": [{
+              "type": "fields"
+            }],
+            "expressionInfos": []
+          }
+        }],
+        "layers": [{
+          "id": 0,
+          "popupInfo": {
+            "title": "{appname} - {type}",
+            "fieldInfos": [{
+              "fieldName": "OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "fieldName": "globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "fieldName": "appname",
+              "label": "Applicant Name",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appaddr",
+              "label": "Applicant Address",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appcity",
+              "label": "Applicant City",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appstate",
+              "label": "Applicant State",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appzip",
+              "label": "Applicant Zip",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "sameapp",
+              "label": "Contractor Same as Applicant",
+              "isEditable": true,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contname",
+              "label": "Contractor Name",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contaddr",
+              "label": "Contractor Address",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contcity",
+              "label": "Contractor City",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contstate",
+              "label": "Contractor State",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contzip",
+              "label": "Contractor Zip",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "type",
+              "label": "Permit Type",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtype",
+              "label": "Permit Subtype",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtypeother",
+              "label": "Permit Subtype Other",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "description",
+              "label": "Description of Work",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "propstartdt",
+              "label": "Proposed Start Date",
+              "isEditable": true,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "propenddt",
+              "label": "Proposed Completion Date",
+              "isEditable": true,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "laneclosure",
+              "label": "Lane Closure Required",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "status",
+              "label": "Status",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "submitdt",
+              "label": "Submission Date",
+              "isEditable": true,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/name",
+              "label": "Name",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/address",
+              "label": "Address",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/organization",
+              "label": "Organization",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/comments",
+              "label": "Comments",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/instructions",
+              "label": "Any Instructions",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/actiontaken",
+              "label": "Action Taken",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/publicview",
+              "label": "Public View",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/submitdate",
+              "label": "Submission Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/parentglobalid",
+              "label": "ParentGlobalID",
+              "isEditable": false,
+              "visible": true
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }],
+            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br /></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}</span></td>\n  </tr>\n</tbody></table>",
+            "showAttachments": false,
+            "relatedRecordsInfo": {
+              "showRelatedRecords": false
+            },
+            "expressionInfos": [{
+              "name": "expr1",
+              "title": "Contractor Information",
+              "expression": "if ($feature.contname == \"\"  || $feature.contname == null) {\r\n    return \"No contractor provided\";\r\n}\r\nif ($feature.sameapp == \"Yes\") {\r\n    return \"Same as applicant\";\r\n}\r\nvar contractor_info = [$feature.contname, $feature.contaddr, $feature.contcity + \", \" + $feature.contstate + \" \" + $feature.contzip];\r\nreturn Concatenate(contractor_info, \"\\r\\n\");",
+              "returnType": "string"
+            }],
+            "mediaInfos": []
+          },
+          "layerDefinition": {
+            "defaultVisibility": true
+          }
+        }]
+      },
+      "resources": null,
+      "service": {
         "currentVersion": 10.61,
         "serviceItemId": "dbca451a5e1546998137bb0a09d94240",
         "isView": true,
@@ -2451,8 +2816,8 @@
           "minScale": 0,
           "maxScale": 0
         }],
-        "name": "ROWPermits_publiccomment",
-        "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback."
+        "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+        "name": "ROWPermits_publiccomment"
       },
       "layers": [{
         "currentVersion": 10.61,
@@ -2469,7 +2834,7 @@
         "defaultVisibility": true,
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -3788,7 +4153,7 @@
         },
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -4124,8 +4489,46 @@
         "capabilities": "Create,Query,Editing",
         "viewDefinitionQuery": "(organization = 'GeneralPublic') AND (publicview = 'Yes')",
         "definitionQuery": "(organization = 'GeneralPublic') AND (publicview = 'Yes')"
-      }],
-      "dataSection": {
+      }]
+    },
+    "ba18dc5e55d14f5a9a9d2a5c411225a9": {
+      "type": "Feature Service",
+      "item": {
+        "id": "ba18dc5e55d14f5a9a9d2a5c411225a9",
+        "name": "ROWPermits_dashboard",
+        "title": "ROWPermits_dashboard",
+        "type": "Feature Service",
+        "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Multilayer", "Service", "source-bc7122fd901d4f648c4f28fd0942b38a", "Hosted Service", "View Service"],
+        "description": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community.",
+        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+        "snippet": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community.",
+        "thumbnail": "thumbnail/ago_downloaded.png",
+        "documentation": null,
+        "extent": [
+          [-134.74729261783727, 23.560962423754177],
+          [-55.69554761537273, 50.309217030255674]
+        ],
+        "categories": [],
+        "spatialReference": null,
+        "accessInformation": "Esri., Inc.",
+        "licenseInfo": null,
+        "culture": "en-us",
+        "properties": null,
+        "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_dashboard/FeatureServer",
+        "proxyFilter": null,
+        "access": "public",
+        "appCategories": [],
+        "industries": [],
+        "languages": [],
+        "largeThumbnail": null,
+        "banner": null,
+        "screenshots": [],
+        "listed": false,
+        "commentsEnabled": false,
+        "groupDesignations": null
+      },
+      "dependencies": [],
+      "data": {
         "tables": [{
           "id": 1,
           "popupInfo": {
@@ -4216,13 +4619,8 @@
         "layers": [{
           "id": 0,
           "popupInfo": {
-            "title": "{appname} - {type}",
+            "title": "{type} - {submitdt}",
             "fieldInfos": [{
-              "fieldName": "OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }, {
               "fieldName": "globalid",
               "label": "GlobalID",
               "isEditable": false,
@@ -4258,10 +4656,21 @@
               "visible": true,
               "stringFieldOption": "textbox"
             }, {
+              "fieldName": "appphone",
+              "label": "Applicant Phone",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appemail",
+              "label": "Applicant Email",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
               "fieldName": "sameapp",
               "label": "Contractor Same as Applicant",
               "isEditable": true,
-              "tooltip": "",
               "visible": true,
               "stringFieldOption": "textbox"
             }, {
@@ -4291,6 +4700,30 @@
             }, {
               "fieldName": "contzip",
               "label": "Contractor Zip",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contphone",
+              "label": "Contractor Phone",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contemail",
+              "label": "Contractor Email",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contlicense",
+              "label": "Contractor License #",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "project",
+              "label": "Project",
               "isEditable": true,
               "visible": true,
               "stringFieldOption": "textbox"
@@ -4357,6 +4790,75 @@
                 "dateFormat": "shortDate",
                 "timezone": "utc"
               }
+            }, {
+              "fieldName": "actiondt",
+              "label": "Approved or Denied Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "apprstartdt",
+              "label": "Approved Start Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "apprenddt",
+              "label": "Approved Completion Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "moreinfo",
+              "label": "More Information Required",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "comments",
+              "label": "Comments",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/globalid",
@@ -4429,512 +4931,8 @@
               "isEditable": false,
               "visible": true
             }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }],
-            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br /></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}</span></td>\n  </tr>\n</tbody></table>",
-            "showAttachments": false,
-            "relatedRecordsInfo": {
-              "showRelatedRecords": false
-            },
-            "expressionInfos": [{
-              "name": "expr1",
-              "title": "Contractor Information",
-              "expression": "if ($feature.contname == \"\"  || $feature.contname == null) {\r\n    return \"No contractor provided\";\r\n}\r\nif ($feature.sameapp == \"Yes\") {\r\n    return \"Same as applicant\";\r\n}\r\nvar contractor_info = [$feature.contname, $feature.contaddr, $feature.contcity + \", \" + $feature.contstate + \" \" + $feature.contzip];\r\nreturn Concatenate(contractor_info, \"\\r\\n\");",
-              "returnType": "string"
-            }],
-            "mediaInfos": []
-          },
-          "layerDefinition": {
-            "defaultVisibility": true
-          }
-        }]
-      }
-    },
-    "7e8ad479f67a4cad960f5ca2876e8972": {
-      "type": "Web Map",
-      "dependencies": ["fe4372921b2847e38bfbaa99ed7bf052_0", "fe4372921b2847e38bfbaa99ed7bf052_1"],
-      "itemSection": {
-        "id": "7e8ad479f67a4cad960f5ca2876e8972",
-        "guid": null,
-        "name": null,
-        "title": "ROW Permit Manager",
-        "type": "Web Map",
-        "typeKeywords": ["ArcGIS Online", "Collector", "Data Editing", "Explorer Web Map", "Map", "Online Map", "source-463b5318f3e9479ab4899b24f618e118", "Web Map"],
-        "description": "A map used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
-        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
-        "snippet": "A map used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
-        "thumbnail": "thumbnail/ago_downloaded.png",
-        "documentation": null,
-        "extent": [
-          [-88.1975, 41.7443],
-          [-88.0903, 41.8043]
-        ],
-        "categories": [],
-        "spatialReference": null,
-        "accessInformation": "Esri., Inc.",
-        "licenseInfo": null,
-        "culture": "en-us",
-        "properties": null,
-        "url": null,
-        "proxyFilter": null,
-        "access": "public",
-        "appCategories": [],
-        "industries": [],
-        "languages": [],
-        "largeThumbnail": null,
-        "banner": null,
-        "screenshots": [],
-        "listed": false,
-        "commentsEnabled": false,
-        "groupDesignations": null
-      },
-      "dataSection": {
-        "operationalLayers": [{
-          "id": "ROWPermitApplication_4605",
-          "layerType": "ArcGISFeatureLayer",
-          "visibility": true,
-          "opacity": 1,
-          "title": "ROW Permits",
-          "itemId": "fe4372921b2847e38bfbaa99ed7bf052_0",
-          "layerDefinition": {
-            "definitionExpression": "(type = 'Alterations') AND (status = 'Submitted') AND (moreinfo = 'Yes') AND (appname = 'Joe Smith') AND (contname LIKE '%Joe Smith%')"
-          },
-          "definitionEditor": {
-            "inputs": [{
-              "hint": "Surface or Sub-surface Alterations",
-              "prompt": "Permit type is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "type",
-                "parameterId": 0,
-                "defaultValue": "Alterations"
-              }]
-            }, {
-              "hint": "Submitted",
-              "prompt": "Permit Status is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "status",
-                "parameterId": 1,
-                "defaultValue": "Submitted"
-              }]
-            }, {
-              "hint": "Yes",
-              "prompt": "More Information Required is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "moreinfo",
-                "parameterId": 2,
-                "defaultValue": "Yes"
-              }]
-            }, {
-              "hint": "Joe Smith",
-              "prompt": "Applicant Name contains",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "appname",
-                "parameterId": 3,
-                "defaultValue": "Joe Smith"
-              }]
-            }, {
-              "hint": "Joe Smith",
-              "prompt": "Contractor Name contains",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "contname",
-                "parameterId": 4,
-                "defaultValue": "Joe Smith"
-              }]
-            }],
-            "parameterizedExpression": "(type = N'{0}') AND (status = N'{1}') AND (moreinfo = N'{2}') AND (appname = N'{3}') AND (contname LIKE N'%{4}%')"
-          },
-          "popupInfo": {
-            "title": "{type} - {submitdt}",
-            "fieldInfos": [{
-              "fieldName": "globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "fieldName": "type",
-              "label": "Permit Type",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "status",
-              "label": "Status",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "submitdt",
-              "label": "Submission Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "appname",
-              "label": "Applicant Name",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contname",
-              "label": "Contractor Name",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "propstartdt",
-              "label": "Proposed Start Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "propenddt",
-              "label": "Proposed Completion Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "moreinfo",
-              "label": "More Information Required",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "comments",
-              "label": "Comments",
-              "isEditable": true,
-              "visible": false,
-              "stringFieldOption": "textarea"
-            }, {
-              "fieldName": "actiondt",
-              "label": "Approved/Denied Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "apprstartdt",
-              "label": "Approved Start Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "apprenddt",
-              "label": "Approved Completion Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "appaddr",
-              "label": "Applicant Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appcity",
-              "label": "Applicant City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appstate",
-              "label": "Applicant State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appzip",
-              "label": "Applicant Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appphone",
-              "label": "Applicant Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appemail",
-              "label": "Applicant Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "sameapp",
-              "label": "Contractor Same as Applicant",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contaddr",
-              "label": "Contractor Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contcity",
-              "label": "Contractor City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contstate",
-              "label": "Contractor State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contzip",
-              "label": "Contractor Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contphone",
-              "label": "Contractor Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contemail",
-              "label": "Contractor Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contlicense",
-              "label": "Contractor License #",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "project",
-              "label": "Project",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtype",
-              "label": "Permit Subtype",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtypeother",
-              "label": "Permit Subtype Other",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "description",
-              "label": "Description of Work",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textarea"
-            }, {
-              "fieldName": "laneclosure",
-              "label": "Lane Closure Required",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/name",
-              "label": "Name",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/address",
-              "label": "Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/organization",
-              "label": "Organization",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/comments",
-              "label": "Comments",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/instructions",
-              "label": "Any Instructions",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/actiontaken",
-              "label": "Action Taken",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/publicview",
-              "label": "Public View",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/submitdate",
-              "label": "Submission Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/parentglobalid",
-              "label": "ParentGlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
               "fieldName": "expression/expr2",
-              "visible": false
+              "visible": true
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/OBJECTID",
@@ -4946,9 +4944,24 @@
               "label": "OBJECTID",
               "isEditable": false,
               "visible": false
+            }, {
+              "fieldName": "expression/expr3",
+              "visible": true
+            }, {
+              "fieldName": "expression/expr4",
+              "visible": true
+            }, {
+              "fieldName": "expression/expr5",
+              "visible": true
+            }, {
+              "fieldName": "expression/expr6",
+              "visible": true
+            }, {
+              "fieldName": "expression/expr7",
+              "visible": true
             }],
-            "description": "<span style='font-weight: bold;'>Action Requested:</span> {description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 6px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
-            "showAttachments": false,
+            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 2px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
+            "showAttachments": true,
             "relatedRecordsInfo": {
               "showRelatedRecords": false
             },
@@ -4989,503 +5002,14 @@
               "returnType": "string"
             }],
             "mediaInfos": []
+          },
+          "layerDefinition": {
+            "defaultVisibility": true
           }
-        }],
-        "baseMap": {
-          "baseMapLayers": [{
-            "id": "World_Hillshade_3689",
-            "layerType": "ArcGISTiledMapServiceLayer",
-            "url": "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
-            "visibility": true,
-            "opacity": 1,
-            "title": "World Hillshade"
-          }, {
-            "id": "VectorTile_6451",
-            "type": "VectorTileLayer",
-            "layerType": "VectorTileLayer",
-            "title": "World Topographic Map",
-            "styleUrl": "https://www.arcgis.com/sharing/rest/content/items/7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
-            "itemId": "7dc6cea0b1764a1f9af2e679f642f0f5",
-            "visibility": true,
-            "opacity": 1
-          }],
-          "title": "Topographic"
-        },
-        "spatialReference": {
-          "wkid": 102100,
-          "latestWkid": 3857
-        },
-        "authoringApp": "WebMapViewer",
-        "authoringAppVersion": "5.4",
-        "version": "2.11",
-        "tables": [{
-          "id": "ROWPermitApplication_2169",
-          "title": "ROW Permit Comment",
-          "itemId": "fe4372921b2847e38bfbaa99ed7bf052_1",
-          "popupInfo": {
-            "title": "{organization}",
-            "fieldInfos": [{
-              "fieldName": "globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "organization",
-              "label": "Organization",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "name",
-              "label": "Name",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "address",
-              "label": "Address",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "comments",
-              "label": "Comments",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "instructions",
-              "label": "Any Instructions",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "actiontaken",
-              "label": "Action Taken",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "publicview",
-              "label": "Public View",
-              "isEditable": true,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "submitdate",
-              "label": "Submission Date",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": true,
-              "stringFieldOption": "textbox",
-              "format": {
-                "dateFormat": "shortDate"
-              }
-            }, {
-              "fieldName": "parentglobalid",
-              "label": "ParentGlobalID",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox",
-              "format": {
-                "dateFormat": "shortDateShortTime"
-              }
-            }, {
-              "fieldName": "Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox",
-              "format": {
-                "dateFormat": "shortDateShortTime"
-              }
-            }, {
-              "fieldName": "Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "tooltip": "",
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appname",
-              "label": "Applicant Name",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appaddr",
-              "label": "Applicant Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appcity",
-              "label": "Applicant City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appstate",
-              "label": "Applicant State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appzip",
-              "label": "Applicant Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appphone",
-              "label": "Applicant Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/sameapp",
-              "label": "Contractor Same as Applicant",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contname",
-              "label": "Contractor Name",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contaddr",
-              "label": "Contractor Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contcity",
-              "label": "Contractor City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contstate",
-              "label": "Contractor State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contzip",
-              "label": "Contractor Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contphone",
-              "label": "Contractor Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contemail",
-              "label": "Contractor Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/contlicense",
-              "label": "Contractor License #",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/project",
-              "label": "Project",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/type",
-              "label": "Permit Type",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/subtype",
-              "label": "Permit Subtype",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/subtypeother",
-              "label": "Permit Subtype Other",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/description",
-              "label": "Description of Work",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/laneclosure",
-              "label": "Lane Closure Required",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/submitdt",
-              "label": "Submission Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/status",
-              "label": "Status",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/appemail",
-              "label": "Applicant Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/actiondt",
-              "label": "Approved or Denied Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/apprstartdt",
-              "label": "Approved Start Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/apprenddt",
-              "label": "Approved Completion Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/moreinfo",
-              "label": "More Information Required",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/comments",
-              "label": "Comments",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/propenddt",
-              "label": "Proposed Completion Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/propstartdt",
-              "label": "Proposed Start Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }],
-            "description": null,
-            "showAttachments": true,
-            "relatedRecordsInfo": {
-              "showRelatedRecords": true
-            },
-            "mediaInfos": []
-          }
-        }],
-        "applicationProperties": {
-          "viewing": {
-            "routing": {
-              "enabled": false
-            },
-            "basemapGallery": {
-              "enabled": false
-            },
-            "measure": {
-              "enabled": false
-            },
-            "search": {
-              "enabled": true,
-              "disablePlaceFinder": false,
-              "hintText": "Place or Address",
-              "layers": []
-            }
-          }
-        }
-      }
-    },
-    "ba18dc5e55d14f5a9a9d2a5c411225a9": {
-      "type": "Feature Service",
-      "dependencies": [],
-      "itemSection": {
-        "id": "ba18dc5e55d14f5a9a9d2a5c411225a9",
-        "guid": null,
-        "name": "ROWPermits_dashboard",
-        "title": "ROWPermits_dashboard",
-        "type": "Feature Service",
-        "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Multilayer", "Service", "source-bc7122fd901d4f648c4f28fd0942b38a", "Hosted Service", "View Service"],
-        "description": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community.",
-        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
-        "snippet": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community.",
-        "thumbnail": "thumbnail/ago_downloaded.png",
-        "documentation": null,
-        "extent": [
-          [-134.74729261783727, 23.560962423754177],
-          [-55.69554761537273, 50.309217030255674]
-        ],
-        "categories": [],
-        "spatialReference": null,
-        "accessInformation": "Esri., Inc.",
-        "licenseInfo": null,
-        "culture": "en-us",
-        "properties": null,
-        "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_dashboard/FeatureServer",
-        "proxyFilter": null,
-        "access": "public",
-        "appCategories": [],
-        "industries": [],
-        "languages": [],
-        "largeThumbnail": null,
-        "banner": null,
-        "screenshots": [],
-        "listed": false,
-        "commentsEnabled": false,
-        "groupDesignations": null
+        }]
       },
-      "serviceSection": {
+      "resources": null,
+      "service": {
         "currentVersion": 10.61,
         "serviceItemId": "ba18dc5e55d14f5a9a9d2a5c411225a9",
         "isView": true,
@@ -5564,8 +5088,8 @@
           "minScale": 0,
           "maxScale": 0
         }],
-        "name": "ROWPermits_dashboard",
-        "snippet": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community."
+        "snippet": "A feature layer view used in the ROW Permit Dashboard to monitor the status of right of way permits in the community.",
+        "name": "ROWPermits_dashboard"
       },
       "layers": [{
         "currentVersion": 10.61,
@@ -5582,7 +5106,7 @@
         "defaultVisibility": true,
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -6899,7 +6423,7 @@
         },
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -7169,8 +6693,1007 @@
         "tileMaxRecordCount": 8000,
         "maxRecordCountFactor": 1,
         "capabilities": "Query"
-      }],
-      "dataSection": {
+      }]
+    },
+    "7e8ad479f67a4cad960f5ca2876e8972": {
+      "type": "Web Map",
+      "item": {
+        "id": "7e8ad479f67a4cad960f5ca2876e8972",
+        "name": null,
+        "title": "ROW Permit Manager",
+        "type": "Web Map",
+        "typeKeywords": ["ArcGIS Online", "Collector", "Data Editing", "Explorer Web Map", "Map", "Online Map", "source-463b5318f3e9479ab4899b24f618e118", "Web Map"],
+        "description": "A map used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
+        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+        "snippet": "A map used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
+        "thumbnail": "thumbnail/ago_downloaded.png",
+        "documentation": null,
+        "extent": [
+          [-88.1975, 41.7443],
+          [-88.0903, 41.8043]
+        ],
+        "categories": [],
+        "spatialReference": null,
+        "accessInformation": "Esri., Inc.",
+        "licenseInfo": null,
+        "culture": "en-us",
+        "properties": null,
+        "url": null,
+        "proxyFilter": null,
+        "access": "public",
+        "appCategories": [],
+        "industries": [],
+        "languages": [],
+        "largeThumbnail": null,
+        "banner": null,
+        "screenshots": [],
+        "listed": false,
+        "commentsEnabled": false,
+        "groupDesignations": null
+      },
+      "dependencies": ["fe4372921b2847e38bfbaa99ed7bf052"],
+      "data": {
+        "operationalLayers": [{
+          "id": "ROWPermitApplication_4605",
+          "layerType": "ArcGISFeatureLayer",
+          "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_manager/FeatureServer/0",
+          "visibility": true,
+          "opacity": 1,
+          "title": "ROW Permits",
+          "itemId": "fe4372921b2847e38bfbaa99ed7bf052",
+          "layerDefinition": {
+            "definitionExpression": "(type = 'Alterations') AND (status = 'Submitted') AND (moreinfo = 'Yes') AND (appname = 'Joe Smith') AND (contname LIKE '%Joe Smith%')"
+          },
+          "definitionEditor": {
+            "inputs": [{
+              "hint": "Surface or Sub-surface Alterations",
+              "prompt": "Permit type is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "type",
+                "parameterId": 0,
+                "defaultValue": "Alterations"
+              }]
+            }, {
+              "hint": "Submitted",
+              "prompt": "Permit Status is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "status",
+                "parameterId": 1,
+                "defaultValue": "Submitted"
+              }]
+            }, {
+              "hint": "Yes",
+              "prompt": "More Information Required is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "moreinfo",
+                "parameterId": 2,
+                "defaultValue": "Yes"
+              }]
+            }, {
+              "hint": "Joe Smith",
+              "prompt": "Applicant Name contains",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "appname",
+                "parameterId": 3,
+                "defaultValue": "Joe Smith"
+              }]
+            }, {
+              "hint": "Joe Smith",
+              "prompt": "Contractor Name contains",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "contname",
+                "parameterId": 4,
+                "defaultValue": "Joe Smith"
+              }]
+            }],
+            "parameterizedExpression": "(type = N'{0}') AND (status = N'{1}') AND (moreinfo = N'{2}') AND (appname = N'{3}') AND (contname LIKE N'%{4}%')"
+          },
+          "popupInfo": {
+            "title": "{type} - {submitdt}",
+            "fieldInfos": [{
+              "fieldName": "globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "fieldName": "type",
+              "label": "Permit Type",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "status",
+              "label": "Status",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "submitdt",
+              "label": "Submission Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "appname",
+              "label": "Applicant Name",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contname",
+              "label": "Contractor Name",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "propstartdt",
+              "label": "Proposed Start Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "propenddt",
+              "label": "Proposed Completion Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "moreinfo",
+              "label": "More Information Required",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "comments",
+              "label": "Comments",
+              "isEditable": true,
+              "visible": false,
+              "stringFieldOption": "textarea"
+            }, {
+              "fieldName": "actiondt",
+              "label": "Approved/Denied Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "apprstartdt",
+              "label": "Approved Start Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "apprenddt",
+              "label": "Approved Completion Date",
+              "isEditable": true,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "appaddr",
+              "label": "Applicant Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appcity",
+              "label": "Applicant City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appstate",
+              "label": "Applicant State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appzip",
+              "label": "Applicant Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appphone",
+              "label": "Applicant Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appemail",
+              "label": "Applicant Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "sameapp",
+              "label": "Contractor Same as Applicant",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contaddr",
+              "label": "Contractor Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contcity",
+              "label": "Contractor City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contstate",
+              "label": "Contractor State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contzip",
+              "label": "Contractor Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contphone",
+              "label": "Contractor Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contemail",
+              "label": "Contractor Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contlicense",
+              "label": "Contractor License #",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "project",
+              "label": "Project",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtype",
+              "label": "Permit Subtype",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtypeother",
+              "label": "Permit Subtype Other",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "description",
+              "label": "Description of Work",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textarea"
+            }, {
+              "fieldName": "laneclosure",
+              "label": "Lane Closure Required",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/name",
+              "label": "Name",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/address",
+              "label": "Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/organization",
+              "label": "Organization",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/comments",
+              "label": "Comments",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/instructions",
+              "label": "Any Instructions",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/actiontaken",
+              "label": "Action Taken",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/publicview",
+              "label": "Public View",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/submitdate",
+              "label": "Submission Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/parentglobalid",
+              "label": "ParentGlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "expression/expr2",
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "fieldName": "OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }],
+            "description": "<span style='font-weight: bold;'>Action Requested:</span> {description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 6px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
+            "showAttachments": false,
+            "relatedRecordsInfo": {
+              "showRelatedRecords": false
+            },
+            "expressionInfos": [{
+              "name": "expr1",
+              "title": "Contractor Information",
+              "expression": "if ($feature.contname == \"\"  || $feature.contname == null) {\r\n    return \"No contractor provided\";\r\n}\r\nif ($feature.sameapp == \"Yes\") {\r\n    return \"Same as applicant\\r\\nLicense #\" + $feature.contlicense;\r\n}\r\nvar contractor_info = [$feature.contname, \"License #\" + $feature.contlicense, $feature.contaddr, $feature.contcity + \", \" + $feature.contstate + \" \" + $feature.contzip, $feature.contphone];\r\nreturn Concatenate(contractor_info, \"\\r\\n\");",
+              "returnType": "string"
+            }, {
+              "name": "expr2",
+              "title": "Contractor Email",
+              "expression": "if ($feature.contname == \"\"  || $feature.contname == null || $feature.sameapp == \"Yes\") {\r\n    return null;\r\n}\r\nreturn Concatenate(\"\\r\\n\", $feature.contemail);",
+              "returnType": "string"
+            }, {
+              "name": "expr3",
+              "title": "Submitted",
+              "expression": "if ($feature.status == 'Submitted') {\n        return 'background-color:#E89D00'\n    }\nreturn 'background-color:#DDDDDD'",
+              "returnType": "string"
+            }, {
+              "name": "expr4",
+              "title": "Staff Review",
+              "expression": "if ($feature.status == 'StaffReview') {\n        return 'background-color:#58625B'\n    }\nreturn 'background-color:#DDDDDD'",
+              "returnType": "string"
+            }, {
+              "name": "expr5",
+              "title": "BoardReview",
+              "expression": "if ($feature.status == 'BoardReview') {\n        return 'background-color:#9C9C9C'\n    }\nreturn 'background-color:#DDDDDD'",
+              "returnType": "string"
+            }, {
+              "name": "expr6",
+              "title": "Approved/Denied",
+              "expression": "if ($feature.status == 'Approved') {\n        return 'background-color:#83C96E'\n    }\nif ($feature.status == 'Denied') {\n        return 'background-color:#C93100'\n    }\nreturn 'background-color:#DDDDDD'",
+              "returnType": "string"
+            }, {
+              "name": "expr7",
+              "title": "Approved/Denied Label",
+              "expression": "if ($feature.status == 'Denied') {\n        return 'Denied'\n    }\nreturn 'Approved'",
+              "returnType": "string"
+            }],
+            "mediaInfos": []
+          }
+        }],
+        "baseMap": {
+          "baseMapLayers": [{
+            "id": "World_Hillshade_3689",
+            "layerType": "ArcGISTiledMapServiceLayer",
+            "url": "http://services.arcgisonline.com/arcgis/rest/services/Elevation/World_Hillshade/MapServer",
+            "visibility": true,
+            "opacity": 1,
+            "title": "World Hillshade"
+          }, {
+            "id": "VectorTile_6451",
+            "type": "VectorTileLayer",
+            "layerType": "VectorTileLayer",
+            "title": "World Topographic Map",
+            "styleUrl": "https://www.arcgis.com/sharing/rest/content/items/7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
+            "itemId": "7dc6cea0b1764a1f9af2e679f642f0f5",
+            "visibility": true,
+            "opacity": 1
+          }],
+          "title": "Topographic"
+        },
+        "spatialReference": {
+          "wkid": 102100,
+          "latestWkid": 3857
+        },
+        "authoringApp": "WebMapViewer",
+        "authoringAppVersion": "5.4",
+        "version": "2.11",
+        "tables": [{
+          "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_manager/FeatureServer/1",
+          "id": "ROWPermitApplication_2169",
+          "title": "ROW Permit Comment",
+          "itemId": "fe4372921b2847e38bfbaa99ed7bf052",
+          "popupInfo": {
+            "title": "{organization}",
+            "fieldInfos": [{
+              "fieldName": "globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "organization",
+              "label": "Organization",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "name",
+              "label": "Name",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "address",
+              "label": "Address",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "comments",
+              "label": "Comments",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "instructions",
+              "label": "Any Instructions",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "actiontaken",
+              "label": "Action Taken",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "publicview",
+              "label": "Public View",
+              "isEditable": true,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "submitdate",
+              "label": "Submission Date",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": true,
+              "stringFieldOption": "textbox",
+              "format": {
+                "dateFormat": "shortDate"
+              }
+            }, {
+              "fieldName": "parentglobalid",
+              "label": "ParentGlobalID",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox",
+              "format": {
+                "dateFormat": "shortDateShortTime"
+              }
+            }, {
+              "fieldName": "Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox",
+              "format": {
+                "dateFormat": "shortDateShortTime"
+              }
+            }, {
+              "fieldName": "Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "tooltip": "",
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/globalid",
+              "label": "GlobalID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appname",
+              "label": "Applicant Name",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appaddr",
+              "label": "Applicant Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appcity",
+              "label": "Applicant City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appstate",
+              "label": "Applicant State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appzip",
+              "label": "Applicant Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appphone",
+              "label": "Applicant Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/sameapp",
+              "label": "Contractor Same as Applicant",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contname",
+              "label": "Contractor Name",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contaddr",
+              "label": "Contractor Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contcity",
+              "label": "Contractor City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contstate",
+              "label": "Contractor State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contzip",
+              "label": "Contractor Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contphone",
+              "label": "Contractor Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contemail",
+              "label": "Contractor Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/contlicense",
+              "label": "Contractor License #",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/project",
+              "label": "Project",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/type",
+              "label": "Permit Type",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/subtype",
+              "label": "Permit Subtype",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/subtypeother",
+              "label": "Permit Subtype Other",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/description",
+              "label": "Description of Work",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/laneclosure",
+              "label": "Lane Closure Required",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/submitdt",
+              "label": "Submission Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/status",
+              "label": "Status",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/appemail",
+              "label": "Applicant Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/actiondt",
+              "label": "Approved or Denied Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/apprstartdt",
+              "label": "Approved Start Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/apprenddt",
+              "label": "Approved Completion Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/moreinfo",
+              "label": "More Information Required",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/comments",
+              "label": "Comments",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/OBJECTID",
+              "label": "OBJECTID",
+              "isEditable": false,
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/propenddt",
+              "label": "Proposed Completion Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/propstartdt",
+              "label": "Proposed Start Date",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }],
+            "description": null,
+            "showAttachments": true,
+            "relatedRecordsInfo": {
+              "showRelatedRecords": true
+            },
+            "mediaInfos": []
+          }
+        }],
+        "applicationProperties": {
+          "viewing": {
+            "routing": {
+              "enabled": false
+            },
+            "basemapGallery": {
+              "enabled": false
+            },
+            "measure": {
+              "enabled": false
+            },
+            "search": {
+              "enabled": true,
+              "disablePlaceFinder": false,
+              "hintText": "Place or Address",
+              "layers": []
+            }
+          }
+        }
+      },
+      "resources": null
+    },
+    "fe4372921b2847e38bfbaa99ed7bf052": {
+      "type": "Feature Service",
+      "item": {
+        "id": "fe4372921b2847e38bfbaa99ed7bf052",
+        "name": "ROWPermits_manager",
+        "title": "ROWPermits_manager",
+        "type": "Feature Service",
+        "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Multilayer", "Service", "source-5f88c4368bf64b99b0dc16065b22a477", "Hosted Service", "View Service"],
+        "description": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
+        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+        "snippet": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
+        "thumbnail": "thumbnail/ago_downloaded.png",
+        "documentation": null,
+        "extent": [
+          [-134.74729261783727, 23.560962423754177],
+          [-55.69554761537273, 50.309217030255674]
+        ],
+        "categories": [],
+        "spatialReference": null,
+        "accessInformation": "Esri., Inc.",
+        "licenseInfo": null,
+        "culture": "en-us",
+        "properties": null,
+        "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_manager/FeatureServer",
+        "proxyFilter": null,
+        "access": "public",
+        "appCategories": [],
+        "industries": [],
+        "languages": [],
+        "largeThumbnail": null,
+        "banner": null,
+        "screenshots": [],
+        "listed": false,
+        "commentsEnabled": false,
+        "groupDesignations": null
+      },
+      "dependencies": [],
+      "data": {
         "tables": [{
           "id": 1,
           "popupInfo": {
@@ -7231,26 +7754,6 @@
               "visible": true,
               "isEditable": true,
               "label": "ParentGlobalID"
-            }, {
-              "fieldName": "CreationDate",
-              "visible": true,
-              "isEditable": true,
-              "label": "CreationDate"
-            }, {
-              "fieldName": "Creator",
-              "visible": true,
-              "isEditable": true,
-              "label": "Creator"
-            }, {
-              "fieldName": "EditDate",
-              "visible": true,
-              "isEditable": true,
-              "label": "EditDate"
-            }, {
-              "fieldName": "Editor",
-              "visible": true,
-              "isEditable": true,
-              "label": "Editor"
             }],
             "popupElements": [{
               "type": "fields"
@@ -7268,153 +7771,9 @@
               "isEditable": false,
               "visible": false
             }, {
-              "fieldName": "appname",
-              "label": "Applicant Name",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appaddr",
-              "label": "Applicant Address",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appcity",
-              "label": "Applicant City",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appstate",
-              "label": "Applicant State",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appzip",
-              "label": "Applicant Zip",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appphone",
-              "label": "Applicant Phone",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appemail",
-              "label": "Applicant Email",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "sameapp",
-              "label": "Contractor Same as Applicant",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contname",
-              "label": "Contractor Name",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contaddr",
-              "label": "Contractor Address",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contcity",
-              "label": "Contractor City",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contstate",
-              "label": "Contractor State",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contzip",
-              "label": "Contractor Zip",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contphone",
-              "label": "Contractor Phone",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contemail",
-              "label": "Contractor Email",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contlicense",
-              "label": "Contractor License #",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "project",
-              "label": "Project",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
               "fieldName": "type",
               "label": "Permit Type",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtype",
-              "label": "Permit Subtype",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtypeother",
-              "label": "Permit Subtype Other",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "description",
-              "label": "Description of Work",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "propstartdt",
-              "label": "Proposed Start Date",
-              "isEditable": true,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "propenddt",
-              "label": "Proposed Completion Date",
-              "isEditable": true,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "laneclosure",
-              "label": "Lane Closure Required",
-              "isEditable": true,
+              "isEditable": false,
               "visible": true,
               "stringFieldOption": "textbox"
             }, {
@@ -7426,15 +7785,57 @@
             }, {
               "fieldName": "submitdt",
               "label": "Submission Date",
-              "isEditable": true,
+              "isEditable": false,
               "visible": true,
               "format": {
                 "dateFormat": "shortDate",
                 "timezone": "utc"
               }
             }, {
+              "fieldName": "appname",
+              "label": "Applicant Name",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contname",
+              "label": "Contractor Name",
+              "isEditable": false,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "propstartdt",
+              "label": "Proposed Start Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "propenddt",
+              "label": "Proposed Completion Date",
+              "isEditable": false,
+              "visible": true,
+              "format": {
+                "dateFormat": "shortDate",
+                "timezone": "utc"
+              }
+            }, {
+              "fieldName": "moreinfo",
+              "label": "More Information Required",
+              "isEditable": true,
+              "visible": true,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "comments",
+              "label": "Comments",
+              "isEditable": true,
+              "visible": false,
+              "stringFieldOption": "textarea"
+            }, {
               "fieldName": "actiondt",
-              "label": "Approved or Denied Date",
+              "label": "Approved/Denied Date",
               "isEditable": true,
               "visible": false,
               "format": {
@@ -7460,22 +7861,124 @@
                 "timezone": "utc"
               }
             }, {
-              "fieldName": "moreinfo",
-              "label": "More Information Required",
-              "isEditable": true,
-              "visible": true,
+              "fieldName": "appaddr",
+              "label": "Applicant Address",
+              "isEditable": false,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
-              "fieldName": "comments",
-              "label": "Comments",
-              "isEditable": true,
-              "visible": true,
+              "fieldName": "appcity",
+              "label": "Applicant City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appstate",
+              "label": "Applicant State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appzip",
+              "label": "Applicant Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appphone",
+              "label": "Applicant Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "appemail",
+              "label": "Applicant Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "sameapp",
+              "label": "Contractor Same as Applicant",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contaddr",
+              "label": "Contractor Address",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contcity",
+              "label": "Contractor City",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contstate",
+              "label": "Contractor State",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contzip",
+              "label": "Contractor Zip",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contphone",
+              "label": "Contractor Phone",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contemail",
+              "label": "Contractor Email",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "contlicense",
+              "label": "Contractor License #",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "project",
+              "label": "Project",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtype",
+              "label": "Permit Subtype",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "subtypeother",
+              "label": "Permit Subtype Other",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "fieldName": "description",
+              "label": "Description of Work",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textarea"
+            }, {
+              "fieldName": "laneclosure",
+              "label": "Lane Closure Required",
+              "isEditable": false,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "fieldName": "CreationDate",
               "label": "CreationDate",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "format": {
                 "dateFormat": "shortDateShortTime",
                 "timezone": "utc"
@@ -7484,13 +7987,13 @@
               "fieldName": "Creator",
               "label": "Creator",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "fieldName": "EditDate",
               "label": "EditDate",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "format": {
                 "dateFormat": "shortDateShortTime",
                 "timezone": "utc"
@@ -7499,7 +8002,7 @@
               "fieldName": "Editor",
               "label": "Editor",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
@@ -7512,56 +8015,56 @@
               "fieldName": "relationships/0/name",
               "label": "Name",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/address",
               "label": "Address",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/organization",
               "label": "Organization",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/comments",
               "label": "Comments",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/instructions",
               "label": "Any Instructions",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/actiontaken",
               "label": "Action Taken",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/publicview",
               "label": "Public View",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "stringFieldOption": "textbox"
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/submitdate",
               "label": "Submission Date",
               "isEditable": false,
-              "visible": true,
+              "visible": false,
               "format": {
                 "dateFormat": "shortDateShortTime",
                 "timezone": "utc"
@@ -7571,10 +8074,44 @@
               "fieldName": "relationships/0/parentglobalid",
               "label": "ParentGlobalID",
               "isEditable": false,
-              "visible": true
+              "visible": false
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/CreationDate",
+              "label": "CreationDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Creator",
+              "label": "Creator",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/EditDate",
+              "label": "EditDate",
+              "isEditable": false,
+              "visible": false,
+              "format": {
+                "dateFormat": "shortDateShortTime",
+                "timezone": "utc"
+              }
+            }, {
+              "statisticType": "count",
+              "fieldName": "relationships/0/Editor",
+              "label": "Editor",
+              "isEditable": false,
+              "visible": false,
+              "stringFieldOption": "textbox"
             }, {
               "fieldName": "expression/expr2",
-              "visible": true
+              "visible": false
             }, {
               "statisticType": "count",
               "fieldName": "relationships/0/OBJECTID",
@@ -7586,24 +8123,9 @@
               "label": "OBJECTID",
               "isEditable": false,
               "visible": false
-            }, {
-              "fieldName": "expression/expr3",
-              "visible": true
-            }, {
-              "fieldName": "expression/expr4",
-              "visible": true
-            }, {
-              "fieldName": "expression/expr5",
-              "visible": true
-            }, {
-              "fieldName": "expression/expr6",
-              "visible": true
-            }, {
-              "fieldName": "expression/expr7",
-              "visible": true
             }],
-            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 2px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
-            "showAttachments": true,
+            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 6px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
+            "showAttachments": false,
             "relatedRecordsInfo": {
               "showRelatedRecords": false
             },
@@ -7646,50 +8168,62 @@
             "mediaInfos": []
           },
           "layerDefinition": {
+            "definitionExpression": "(type = 'Alterations') AND (status = 'Submitted') AND (moreinfo = 'Yes') AND (appname = 'Joe Smith') AND (contname LIKE '%Joe Smith%')",
             "defaultVisibility": true
+          },
+          "definitionEditor": {
+            "inputs": [{
+              "hint": "Surface or Sub-surface Alterations",
+              "prompt": "Permit type is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "type",
+                "parameterId": 0,
+                "defaultValue": "Alterations"
+              }]
+            }, {
+              "hint": "Submitted",
+              "prompt": "Permit Status is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "status",
+                "parameterId": 1,
+                "defaultValue": "Submitted"
+              }]
+            }, {
+              "hint": "Yes",
+              "prompt": "More Information Required is",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "moreinfo",
+                "parameterId": 2,
+                "defaultValue": "Yes"
+              }]
+            }, {
+              "hint": "Joe Smith",
+              "prompt": "Applicant Name contains",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "appname",
+                "parameterId": 3,
+                "defaultValue": "Joe Smith"
+              }]
+            }, {
+              "hint": "Joe Smith",
+              "prompt": "Contractor Name contains",
+              "parameters": [{
+                "type": "esriFieldTypeString",
+                "fieldName": "contname",
+                "parameterId": 4,
+                "defaultValue": "Joe Smith"
+              }]
+            }],
+            "parameterizedExpression": "(type = N'{0}') AND (status = N'{1}') AND (moreinfo = N'{2}') AND (appname = N'{3}') AND (contname LIKE N'%{4}%')"
           }
         }]
-      }
-    },
-    "fe4372921b2847e38bfbaa99ed7bf052": {
-      "type": "Feature Service",
-      "dependencies": [],
-      "itemSection": {
-        "id": "fe4372921b2847e38bfbaa99ed7bf052",
-        "guid": null,
-        "name": "ROWPermits_manager",
-        "title": "ROWPermits_manager",
-        "type": "Feature Service",
-        "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Multilayer", "Service", "source-5f88c4368bf64b99b0dc16065b22a477", "Hosted Service", "View Service"],
-        "description": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
-        "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
-        "snippet": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
-        "thumbnail": "thumbnail/ago_downloaded.png",
-        "documentation": null,
-        "extent": [
-          [-134.74729261783727, 23.560962423754177],
-          [-55.69554761537273, 50.309217030255674]
-        ],
-        "categories": [],
-        "spatialReference": null,
-        "accessInformation": "Esri., Inc.",
-        "licenseInfo": null,
-        "culture": "en-us",
-        "properties": null,
-        "url": "https://services6.arcgis.com/Pu6Fai10JE2L2xUd/arcgis/rest/services/ROWPermits_manager/FeatureServer",
-        "proxyFilter": null,
-        "access": "public",
-        "appCategories": [],
-        "industries": [],
-        "languages": [],
-        "largeThumbnail": null,
-        "banner": null,
-        "screenshots": [],
-        "listed": false,
-        "commentsEnabled": false,
-        "groupDesignations": null
       },
-      "serviceSection": {
+      "resources": null,
+      "service": {
         "currentVersion": 10.61,
         "serviceItemId": "fe4372921b2847e38bfbaa99ed7bf052",
         "isView": true,
@@ -7768,8 +8302,8 @@
           "minScale": 0,
           "maxScale": 0
         }],
-        "name": "ROWPermits_manager",
-        "snippet": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process."
+        "snippet": "A feature layer view used in the ROW Permit Manager application to review right of way permit applications and move them through the permitting process.",
+        "name": "ROWPermits_manager"
       },
       "layers": [{
         "currentVersion": 10.61,
@@ -7786,7 +8320,7 @@
         "defaultVisibility": true,
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -9098,7 +9632,7 @@
         },
         "editFieldsInfo": null,
         "editingInfo": {
-          "lastEditDate": 1538579807130
+          "lastEditDate": 1540934425742
         },
         "relationships": [{
           "id": 0,
@@ -9428,536 +9962,7 @@
         "tileMaxRecordCount": 8000,
         "maxRecordCountFactor": 1,
         "capabilities": "Create,Delete,Query,Update,Editing"
-      }],
-      "dataSection": {
-        "tables": [{
-          "id": 1,
-          "popupInfo": {
-            "title": "{name}",
-            "mediaInfos": [],
-            "fieldInfos": [{
-              "fieldName": "OBJECTID",
-              "visible": true,
-              "isEditable": false,
-              "label": "OBJECTID"
-            }, {
-              "fieldName": "globalid",
-              "visible": true,
-              "isEditable": false,
-              "label": "GlobalID"
-            }, {
-              "fieldName": "name",
-              "visible": true,
-              "isEditable": true,
-              "label": "Name"
-            }, {
-              "fieldName": "address",
-              "visible": true,
-              "isEditable": true,
-              "label": "Address"
-            }, {
-              "fieldName": "organization",
-              "visible": true,
-              "isEditable": true,
-              "label": "Organization"
-            }, {
-              "fieldName": "comments",
-              "visible": true,
-              "isEditable": true,
-              "label": "Comments"
-            }, {
-              "fieldName": "instructions",
-              "visible": true,
-              "isEditable": true,
-              "label": "Any Instructions"
-            }, {
-              "fieldName": "actiontaken",
-              "visible": true,
-              "isEditable": true,
-              "label": "Action Taken"
-            }, {
-              "fieldName": "publicview",
-              "visible": true,
-              "isEditable": true,
-              "label": "Public View"
-            }, {
-              "fieldName": "submitdate",
-              "visible": true,
-              "isEditable": true,
-              "label": "Submission Date"
-            }, {
-              "fieldName": "parentglobalid",
-              "visible": true,
-              "isEditable": true,
-              "label": "ParentGlobalID"
-            }],
-            "popupElements": [{
-              "type": "fields"
-            }],
-            "expressionInfos": []
-          }
-        }],
-        "layers": [{
-          "id": 0,
-          "popupInfo": {
-            "title": "{type} - {submitdt}",
-            "fieldInfos": [{
-              "fieldName": "globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "fieldName": "type",
-              "label": "Permit Type",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "status",
-              "label": "Status",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "submitdt",
-              "label": "Submission Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "appname",
-              "label": "Applicant Name",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contname",
-              "label": "Contractor Name",
-              "isEditable": false,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "propstartdt",
-              "label": "Proposed Start Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "propenddt",
-              "label": "Proposed Completion Date",
-              "isEditable": false,
-              "visible": true,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "moreinfo",
-              "label": "More Information Required",
-              "isEditable": true,
-              "visible": true,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "comments",
-              "label": "Comments",
-              "isEditable": true,
-              "visible": false,
-              "stringFieldOption": "textarea"
-            }, {
-              "fieldName": "actiondt",
-              "label": "Approved/Denied Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "apprstartdt",
-              "label": "Approved Start Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "apprenddt",
-              "label": "Approved Completion Date",
-              "isEditable": true,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDate",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "appaddr",
-              "label": "Applicant Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appcity",
-              "label": "Applicant City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appstate",
-              "label": "Applicant State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appzip",
-              "label": "Applicant Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appphone",
-              "label": "Applicant Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "appemail",
-              "label": "Applicant Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "sameapp",
-              "label": "Contractor Same as Applicant",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contaddr",
-              "label": "Contractor Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contcity",
-              "label": "Contractor City",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contstate",
-              "label": "Contractor State",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contzip",
-              "label": "Contractor Zip",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contphone",
-              "label": "Contractor Phone",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contemail",
-              "label": "Contractor Email",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "contlicense",
-              "label": "Contractor License #",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "project",
-              "label": "Project",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtype",
-              "label": "Permit Subtype",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "subtypeother",
-              "label": "Permit Subtype Other",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "description",
-              "label": "Description of Work",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textarea"
-            }, {
-              "fieldName": "laneclosure",
-              "label": "Lane Closure Required",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "fieldName": "Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/globalid",
-              "label": "GlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/name",
-              "label": "Name",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/address",
-              "label": "Address",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/organization",
-              "label": "Organization",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/comments",
-              "label": "Comments",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/instructions",
-              "label": "Any Instructions",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/actiontaken",
-              "label": "Action Taken",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/publicview",
-              "label": "Public View",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/submitdate",
-              "label": "Submission Date",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/parentglobalid",
-              "label": "ParentGlobalID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/CreationDate",
-              "label": "CreationDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Creator",
-              "label": "Creator",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/EditDate",
-              "label": "EditDate",
-              "isEditable": false,
-              "visible": false,
-              "format": {
-                "dateFormat": "shortDateShortTime",
-                "timezone": "utc"
-              }
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/Editor",
-              "label": "Editor",
-              "isEditable": false,
-              "visible": false,
-              "stringFieldOption": "textbox"
-            }, {
-              "fieldName": "expression/expr2",
-              "visible": false
-            }, {
-              "statisticType": "count",
-              "fieldName": "relationships/0/OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }, {
-              "fieldName": "OBJECTID",
-              "label": "OBJECTID",
-              "isEditable": false,
-              "visible": false
-            }],
-            "description": "{description}<br /><br />\n<span style='font-weight: bold;'>Permit Subtypes:</span> {subtype}<br /> <br />\n<span style='font-weight: bold;'>Requested Dates:</span> {propstartdt} - {propenddt}<br /> <br />\n<span style='font-weight: bold;'>Lane Closure Required?</span> {laneclosure}<br /><br />\n<table style=' border-collapse: separate; border-spacing: 0px 0px; width: 100%; table-layout: fixed;'>\n  <tbody><tr>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 2px 0px 0px; word-wrap: break-word;'><span style='font-weight: bold;'>Applicant</span><br />{appname}<br />{appaddr}<br />{appcity}, {appstate} {appzip}<br />{appphone}<br /><a href='mailto:{appemail}' target='_blank'>{appemail}</a></td>\n    <td style='text-align: left; vertical-align: top; width: 50%; font-weight: normal; padding: 0px 0px 0px 2px; word-wrap: break-word;'><span style='font-weight: bold;'>Contractor</span><br /><span style='white-space: pre-line;'>{expression/expr1}<a href='mailto:{expression/expr2}' target='_blank'>{expression/expr2}</a></span></td>\n  </tr>\n</tbody></table>\n<br />\n<span style='font-weight: bold;'>Status<br /></span><table style=' border-collapse: separate; border-spacing: 6px 4px; width: 100%; table-layout: fixed;'>\n  <tbody><tr height='16'>\n    <td style='{expression/expr3}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr4}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr5}; text-align: center; width: 25%'></td>\n    <td style='{expression/expr6}; text-align: center; width: 25%'></td>\n  </tr>\n  <tr height='24' style='text-align: center;'>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Submitted</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Staff Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>Board Review</font></td>\n\t<td style='text-align: center; width: 25%; font-weight: normal; padding-left: 0px; word-wrap: break-word;'><font size='2'>{expression/expr7}</font></td>\n  </tr>\n</tbody></table><br />\n<span style='font-weight: bold;'>Approved Dates:</span> {apprstartdt} - {apprenddt}<br /><br />\n<span style='font-weight: bold;'>More Information Required?</span> {moreinfo}<br />{comments}",
-            "showAttachments": false,
-            "relatedRecordsInfo": {
-              "showRelatedRecords": false
-            },
-            "expressionInfos": [{
-              "name": "expr1",
-              "title": "Contractor Information",
-              "expression": "if ($feature.contname == \"\"  || $feature.contname == null) {\r\n    return \"No contractor provided\";\r\n}\r\nif ($feature.sameapp == \"Yes\") {\r\n    return \"Same as applicant\\r\\nLicense #\" + $feature.contlicense;\r\n}\r\nvar contractor_info = [$feature.contname, \"License #\" + $feature.contlicense, $feature.contaddr, $feature.contcity + \", \" + $feature.contstate + \" \" + $feature.contzip, $feature.contphone];\r\nreturn Concatenate(contractor_info, \"\\r\\n\");",
-              "returnType": "string"
-            }, {
-              "name": "expr2",
-              "title": "Contractor Email",
-              "expression": "if ($feature.contname == \"\"  || $feature.contname == null || $feature.sameapp == \"Yes\") {\r\n    return null;\r\n}\r\nreturn Concatenate(\"\\r\\n\", $feature.contemail);",
-              "returnType": "string"
-            }, {
-              "name": "expr3",
-              "title": "Submitted",
-              "expression": "if ($feature.status == 'Submitted') {\n        return 'background-color:#E89D00'\n    }\nreturn 'background-color:#DDDDDD'",
-              "returnType": "string"
-            }, {
-              "name": "expr4",
-              "title": "Staff Review",
-              "expression": "if ($feature.status == 'StaffReview') {\n        return 'background-color:#58625B'\n    }\nreturn 'background-color:#DDDDDD'",
-              "returnType": "string"
-            }, {
-              "name": "expr5",
-              "title": "BoardReview",
-              "expression": "if ($feature.status == 'BoardReview') {\n        return 'background-color:#9C9C9C'\n    }\nreturn 'background-color:#DDDDDD'",
-              "returnType": "string"
-            }, {
-              "name": "expr6",
-              "title": "Approved/Denied",
-              "expression": "if ($feature.status == 'Approved') {\n        return 'background-color:#83C96E'\n    }\nif ($feature.status == 'Denied') {\n        return 'background-color:#C93100'\n    }\nreturn 'background-color:#DDDDDD'",
-              "returnType": "string"
-            }, {
-              "name": "expr7",
-              "title": "Approved/Denied Label",
-              "expression": "if ($feature.status == 'Denied') {\n        return 'Denied'\n    }\nreturn 'Approved'",
-              "returnType": "string"
-            }],
-            "mediaInfos": []
-          },
-          "layerDefinition": {
-            "definitionExpression": "(type = 'Alterations') AND (status = 'Submitted') AND (moreinfo = 'Yes') AND (appname = 'Joe Smith') AND (contname LIKE '%Joe Smith%')",
-            "defaultVisibility": true
-          },
-          "definitionEditor": {
-            "inputs": [{
-              "hint": "Surface or Sub-surface Alterations",
-              "prompt": "Permit type is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "type",
-                "parameterId": 0,
-                "defaultValue": "Alterations"
-              }]
-            }, {
-              "hint": "Submitted",
-              "prompt": "Permit Status is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "status",
-                "parameterId": 1,
-                "defaultValue": "Submitted"
-              }]
-            }, {
-              "hint": "Yes",
-              "prompt": "More Information Required is",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "moreinfo",
-                "parameterId": 2,
-                "defaultValue": "Yes"
-              }]
-            }, {
-              "hint": "Joe Smith",
-              "prompt": "Applicant Name contains",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "appname",
-                "parameterId": 3,
-                "defaultValue": "Joe Smith"
-              }]
-            }, {
-              "hint": "Joe Smith",
-              "prompt": "Contractor Name contains",
-              "parameters": [{
-                "type": "esriFieldTypeString",
-                "fieldName": "contname",
-                "parameterId": 4,
-                "defaultValue": "Joe Smith"
-              }]
-            }],
-            "parameterizedExpression": "(type = N'{0}') AND (status = N'{1}') AND (moreinfo = N'{2}') AND (appname = N'{3}') AND (contname LIKE N'%{4}%')"
-          }
-        }]
-      }
+      }]
     }
   }
 }

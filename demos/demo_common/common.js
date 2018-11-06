@@ -47,7 +47,7 @@ define([
     /**
      * Creates a display of the hierarchy involving in a set of AGOL items.
      * @param {object} solutionItems Hash containing items in solution
-     * @param {object} hierachy Hash contining, at each level, an item id, type, and array of dependencies
+     * @param {object} hierachy Hash contining, at each level, an item id and array of dependencies
      * @param {boolean} createLinks Indicates if a link to AGOL should be created for each item
      * @param {string} orgUrl URL to organization's home, e.g.,
      *        "https://arcgis4localgov2.maps.arcgis.com/home/"
@@ -65,25 +65,23 @@ define([
       };
 
       var display = '<ul class="solutionList">';
-      hierarchy.forEach(item => {
-        var itemSection = solutionItems[item.id].itemSection;
-        var itemLabel = (itemSection.title || itemSection.name || item.type);
-        if (item.type === 'Feature Service') {
-          itemLabel += ' (' + item.idPart + ')';
-        }
+      hierarchy.forEach(hierarchyItem => {
+        var fullItem = solutionItems[hierarchyItem.id];
+        var item = fullItem.item;
+        var itemLabel = (item.title || item.name || fullItem.type);
 
-        var webpage = item.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
+        var webpage = fullItem.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[fullItem.type] +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
-          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
             itemLabel + '</a>';
         } else {
           display += itemLabel;
         }
 
-        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += this.createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
+        if (Array.isArray(hierarchyItem.dependencies) && hierarchyItem.dependencies.length > 0) {
+          display += this.createHierarchyDisplay(solutionItems, hierarchyItem.dependencies, createLinks, orgUrl);
         }
 
         display += '</li>';
@@ -130,7 +128,7 @@ define([
             this.createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
-            this.createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+            this.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
         }
       )
       .finally(() => {

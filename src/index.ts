@@ -14,12 +14,8 @@
  | limitations under the License.
  */
 
-export * from "./agolItem";
-export * from "./dashboard";
-export * from "./featureService";
-export * from "./group";
-export * from "./item";
-export * from "./itemFactory";
+export * from "./dependencies";
+export * from "./fullItem";
+export * from "./fullItemHierarchy";
 export * from "./solution";
-export * from "./webmap";
-export * from "./webMappingApp";
+export * from "./viewing";
