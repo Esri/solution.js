@@ -12,18 +12,11 @@ module.exports = function(config) {
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine', 'karma-typescript'],
 
-
     // list of files / patterns to load in the browser
-    files: [
-      { pattern: '{src,test}/**/*.ts', included: false },
-      { pattern: '{src,test}/**/*.js', included: false }
-    ],
+    files: ["{src,test}/**/*.ts"],
 
-
-    // list of files / patterns to exclude
-    exclude: [
-    ],
-
+    // list of files to exclude
+    exclude: ["node_modules"],
 
     karmaTypescriptConfig: {
       reports: {
@@ -37,13 +30,11 @@ module.exports = function(config) {
       tsconfig: "./tsconfig.json"
     },
 
-
     // coveralls uses this one. still need to figure out how to DRY this up.
-    // coverageReporter: {
-    //   type: 'lcov',
-    //   dir: 'coverage/'
-    // },
-
+    /*coverageReporter: {
+      type: 'lcov',
+      dir: 'coverage/'
+    },*/
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -55,9 +46,10 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    //reporters: ['karma-typescript', 'coverage', 'coveralls'],
-    reporters: ['dots', 'karma-typescript', 'coverage'],
-
+    //reporters: ["karma-typescript", "coverage", "coveralls"],
+    //reporters: ["jasmine-diff", "dots", "karma-typescript", "coverage", "coveralls"],
+    //reporters: ["dots", "karma-typescript", "coverage", "jasmine-spec-reporter"],
+    reporters: ["dots", "karma-typescript", "coverage"],
 
     // web server port
     port: 9876,
@@ -87,7 +79,7 @@ module.exports = function(config) {
 
 
     // Concurrency level
-    // how many browser should be started simultaneous
+    // how many browsers should be started simultaneously
     concurrency: Infinity,
 
 
@@ -96,7 +88,6 @@ module.exports = function(config) {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox']
       }
-    }
-
-  })
-}
+    },
+  });
+};
