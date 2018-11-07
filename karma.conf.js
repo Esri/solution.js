@@ -31,10 +31,10 @@ module.exports = function(config) {
     },
 
     // coveralls uses this one. still need to figure out how to DRY this up.
-    /*coverageReporter: {
+    coverageReporter: {
       type: 'lcov',
       dir: 'coverage/'
-    },*/
+    },
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
@@ -49,7 +49,7 @@ module.exports = function(config) {
     //reporters: ["karma-typescript", "coverage", "coveralls"],
     //reporters: ["jasmine-diff", "dots", "karma-typescript", "coverage", "coveralls"],
     //reporters: ["dots", "karma-typescript", "coverage", "jasmine-spec-reporter"],
-    reporters: ["dots", "karma-typescript", "coverage"],
+    reporters: ["dots", "karma-typescript", "coverage", "coveralls"],
 
     // web server port
     port: 9876,
