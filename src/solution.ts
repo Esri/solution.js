@@ -867,11 +867,11 @@ function updateFeatureServiceDefinition(
 
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
-        response => {
+        () => {
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           .then(resolve);
         },
-        response => {
+        () => {
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           .then(resolve);
         }
