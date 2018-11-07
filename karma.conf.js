@@ -1,5 +1,12 @@
       // Karma configuration
 // Generated on Tue Oct 16 2018 14:43:15 GMT-0700 (Pacifique (heure d’été))
+const fs = require("fs");
+
+require('ts-node').register({
+  compilerOptions: {
+    module: 'commonjs'
+  }
+});
 
 module.exports = function(config) {
   config.set({
@@ -16,7 +23,7 @@ module.exports = function(config) {
     files: ["{src,test}/**/*.ts"],
 
     // list of files to exclude
-    exclude: ["node_modules"],
+    exclude: [],
 
     karmaTypescriptConfig: {
       reports: {
@@ -25,9 +32,30 @@ module.exports = function(config) {
         text: ""
       },
       compilerOptions: {
-        module: "umd"
+        module: "commonjs"
       },
-      tsconfig: "./tsconfig.json"
+      tsconfig: "./tsconfig.json",
+      bundlerOptions: {
+        transforms: [require("karma-typescript-es6-transform")()],
+        resolve: {
+          // karmas resolver can't figure out the symlinked deps from lerna
+          // so we need to manually alias each package here.
+          alias: fs
+            .readdirSync("node_modules/@esri")
+            .filter(p => p[0] !== ".")
+            .reduce((alias, p) => {
+              //if (p === "arcgis-rest-common-types") {
+              //  alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/types/index.d.ts`;
+              //} else {
+                alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
+              //}
+              if (p === 'arcgis-rest-sharing') {
+                console.warn(alias); //???
+              }
+              return alias;
+            }, {})
+        }
+      }
     },
 
     // coveralls uses this one. still need to figure out how to DRY this up.
@@ -39,16 +67,14 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "**/*.ts": ["karma-typescript"] // *.tsx for React Jsx
+      "src/**/*.ts": ["karma-typescript", "coverage"],
+      "test/**/*.ts": ["karma-typescript"]
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    //reporters: ["karma-typescript", "coverage", "coveralls"],
-    //reporters: ["jasmine-diff", "dots", "karma-typescript", "coverage", "coveralls"],
-    //reporters: ["dots", "karma-typescript", "coverage", "jasmine-spec-reporter"],
     reporters: ["dots", "karma-typescript", "coverage", "coveralls"],
 
     // web server port
