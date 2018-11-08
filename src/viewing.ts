@@ -50,9 +50,10 @@ export function getItemHierarchy (
   let topLevelNodes:string[] = Object.keys(items);
   Object.keys(items).forEach(function (id) {
     ((items[id] as IFullItem).dependencies || []).forEach(function (dependencyId) {
-      let iNode = topLevelNodes.indexOf(dependencyId.substr(0, 32));
+      let iNode = topLevelNodes.indexOf(dependencyId);
       if (iNode >= 0) {
         // Node is somebody's dependency, so remove the node from the list of top-level nodes
+        // If iNode == -1, then it's a shared dependency and it has already been removed
         topLevelNodes.splice(iNode, 1);
       }
     });

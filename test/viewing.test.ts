@@ -202,6 +202,56 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
     expect(results).toEqual(expected);
   });
 
+  it("two top-level items with the same two dependencies", () => {
+    // hierarchy:
+    // - abc
+    //   - def
+    //   - ghi
+    // - jkl
+    //   - ghi
+    //   - def
+    let abc = {...MOCK_ITEM_PROTOTYPE};
+    abc.item.id = "abc";
+    let def = {...MOCK_ITEM_PROTOTYPE};
+    def.item.id = "def";
+    let ghi = {...MOCK_ITEM_PROTOTYPE};
+    ghi.item.id = "ghi";
+    let jkl = {...MOCK_ITEM_PROTOTYPE};
+    jkl.item.id = "jkl";
+
+    abc.dependencies = ["def", "ghi"];
+    jkl.dependencies = ["ghi", "def"];
+
+    let expected:viewing.IHierarchyEntry[] = [{
+      id: "abc",
+      dependencies: [{
+        id: "def",
+        dependencies: []
+      }, {
+        id: "ghi",
+        dependencies: []
+      }]
+    }, {
+      id: "jkl",
+      dependencies: [{
+        id: "ghi",
+        dependencies: []
+      }, {
+        id: "def",
+        dependencies: []
+      }]
+    }];
+
+    let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      "abc": abc,
+      "def": def,
+      "ghi": ghi,
+      "jkl": jkl
+    });
+
+    expect(results).toEqual(expected);
+  });
+
   it("three top-level items, one with two dependencies, one with three-level dependencies", () => {
     // hierarchy:
     // - def
@@ -254,6 +304,45 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       "jkl": jkl,
       "mno": mno,
       "pqr": pqr
+    });
+
+    expect(results).toEqual(expected);
+  });
+
+  it("only top-level items--no dependencies", () => {
+    // hierarchy:
+    // - abc
+    // - jkl
+    // - ghi
+    // - def
+    let abc = {...MOCK_ITEM_PROTOTYPE};
+    abc.item.id = "abc";
+    let def = {...MOCK_ITEM_PROTOTYPE};
+    def.item.id = "def";
+    let ghi = {...MOCK_ITEM_PROTOTYPE};
+    ghi.item.id = "ghi";
+    let jkl = {...MOCK_ITEM_PROTOTYPE};
+    jkl.item.id = "jkl";
+
+    let expected:viewing.IHierarchyEntry[] = [{
+      id: "abc",
+      dependencies: []
+    }, {
+      id: "def",
+      dependencies: []
+    }, {
+      id: "ghi",
+      dependencies: []
+    }, {
+      id: "jkl",
+      dependencies: []
+    }];
+
+    let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      "abc": abc,
+      "def": def,
+      "ghi": ghi,
+      "jkl": jkl
     });
 
     expect(results).toEqual(expected);
