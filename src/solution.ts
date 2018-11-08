@@ -732,7 +732,7 @@ export function removeUndesirableItemProperties (
     delete itemSectionClone.uploaded;
     return itemSectionClone;
   }
-  return item;
+  return null;
 }
 
 /**
@@ -799,7 +799,6 @@ export function topologicallySortItems (
     // Visit dependents if not already visited
     var dependencies:string[] = (items[vertexId] as IFullItem).dependencies || [];
     dependencies.forEach(function (dependencyId) {
-      dependencyId = dependencyId.substr(0, 32);
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
       } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {  // visited, in progress

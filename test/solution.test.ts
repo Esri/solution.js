@@ -171,6 +171,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       expect(abc.id).toEqual("wma1234567890");
     });
 
+    it("checks for item before attempting to access its properties", () => {
+      let result = solution.removeUndesirableItemProperties(null);
+      expect(result).toBeNull();
+    });
+
   });
 
   describe("supporting routine: timestamp", () => {
