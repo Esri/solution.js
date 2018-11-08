@@ -4,8 +4,11 @@
   "description": "Transfer sets of ArcGIS Online items from one organization to another",
   "main": "index.js",
   "scripts": {
-    "test": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
-    "docs": "typedoc --out ./docs/src/ src/index.ts"
+    "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
+    "test": "karma start --single-run --browsers=Chrome",
+    "docs": "typedoc --out ./docs/src/ src/index.ts",
+    "build:esm": "tsc --module ES2015 --outDir ./dist/esm --declaration",
+    "build:cjs": "tsc --module CommonJS --outDir ./dist/cjs"
   },
   "repository": {
     "type": "git",
@@ -31,11 +34,22 @@
     "@types/isomorphic-fetch": "0.0.34",
     "@types/jasmine": "^2.8.9",
     "@types/node": "^10.11.7",
+    "coveralls": "^3.0.2",
     "fetch-mock": "^7.0.7",
     "jasmine": "^3.2.0",
     "jasmine-core": "^3.2.1",
     "jasmine-spec-reporter": "^4.2.1",
+    "karma": "^3.1.1",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coveralls": "^2.1.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-ie-launcher": "^1.0.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-requirejs": "^1.1.0",
+    "karma-typescript": "^3.0.13",
+    "karma-typescript-es6-transform": "^1.0.4",
     "node-fetch": "^2.2.0",
+    "requirejs": "^2.3.6",
     "ts-node": "^7.0.1",
     "typescript": "^3.1.2"
   },

@@ -36,7 +36,7 @@ import { TOMORROW } from "./lib/utils";
 
 describe("Module `fullItem`: fetches the item, data, and resources of an AGOL item", () => {
 
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
   // Set up a UserSession to use in all these tests
   const MOCK_USER_SESSION = new UserSession({

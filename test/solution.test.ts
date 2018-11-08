@@ -33,7 +33,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     item: null
   };
 
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
   // Set up a UserSession to use in all these tests
   const MOCK_USER_SESSION = new UserSession({

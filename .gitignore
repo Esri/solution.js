@@ -13,6 +13,7 @@ __*
 *.7z
 
 # Built files
-dist
+/coverage
+/dist
 .zip
 

@@ -92,7 +92,7 @@ export function createSolution (
   solutionRootIds: string | string[],
   requestOptions?: IUserRequestOptions
 ): Promise<IItemHash> {
-  return new Promise<IItemHash>(resolve => {
+  return new Promise<IItemHash>((resolve, reject) => {
 
     // Get the items forming the solution
     getFullItemHierarchy(solutionRootIds, requestOptions)
@@ -131,7 +131,8 @@ export function createSolution (
             () => resolve(solution)
           );
         }
-      }
+      },
+      reject
     );
   });
 }
