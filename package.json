@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "npm run test:node && npm run test:chrome",
-    "test:chrome": "karma start --single-run --browsers=Chrome",
+    "test:chrome": "karma start --single-run --browsers=ChromeHeadlessCI",
     "test:firefox": "karma start --single-run --browsers=Firefox",
     "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "docs": "typedoc --out ./docs/src/ src/index.ts",
