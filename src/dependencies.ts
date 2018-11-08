@@ -356,7 +356,7 @@ export function getGroupContentsTranche (
           pagingRequest.paging.start = contents.nextStart;
           getGroupContentsTranche(id, pagingRequest)
           .then(
-            function (allSubsequentTrancheIds:string[]) {
+            (allSubsequentTrancheIds:string[]) => {
               // Append all of the following tranches to this tranche and return it
               Array.prototype.push.apply(trancheIds, allSubsequentTrancheIds);
               resolve(trancheIds);

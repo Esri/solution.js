@@ -395,6 +395,31 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         );
       });
 
+      it("group with error in second tranche", done => {
+        let groupUrl = "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json";
+        let expected = "Group does not exist or is inaccessible.";
+        fetchMock
+        .mock("begin:" + groupUrl + "&start=0&num=100&token=fake-token",
+          '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+        .mock("begin:" + groupUrl + "&start=3&num=100&token=fake-token",
+          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.item.id = "grp1234567890";
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(
+          () => {
+            done.fail();
+          },
+          error => {
+            expect(error).toEqual(expected);
+            done();
+          }
+        );
+      });
+
     });
 
     describe ("webmap", () => {
