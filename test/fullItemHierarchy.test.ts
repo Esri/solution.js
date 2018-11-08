@@ -154,7 +154,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("throws an error if the hierarchy to be created fails: list of [valid, missing id]", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
       .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -164,10 +163,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
       getFullItemHierarchy(["wma1234567890", null], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -183,7 +179,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
   describe("successful fetches", () => {
 
     it("should return a list of WMA details for a valid AGOL id", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
       .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -193,10 +188,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
       getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -213,7 +205,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("should return a list of WMA details for a valid AGOL id in a list", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
       .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -223,10 +214,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
       getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -243,7 +231,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
       .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -270,7 +257,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("should handle repeat calls without re-fetching items", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
       .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
@@ -301,6 +287,30 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           );
         },
         done.fail
+      );
+    });
+
+    it("should handle case were a dependency fails", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/svc1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          console.warn('false success');//???
+          done.fail();
+        },
+        () => {
+          console.warn('true fail');//???
+          done();
+        }
       );
     });
 

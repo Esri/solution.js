@@ -361,9 +361,7 @@ export function getGroupContentsTranche (
               Array.prototype.push.apply(trancheIds, allSubsequentTrancheIds);
               resolve(trancheIds);
             },
-            () => {
-              resolve(trancheIds);
-            }
+            reject
           );
         } else {
           resolve(trancheIds);

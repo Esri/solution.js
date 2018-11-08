@@ -410,11 +410,11 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
-          () => {
+          response => {
             done.fail();
           },
           error => {
-            expect(error).toEqual(expected);
+            expect(error).toEqual("Group does not exist or is inaccessible.");
             done();
           }
         );
