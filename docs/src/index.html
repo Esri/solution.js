@@ -84,20 +84,6 @@
 					<li><a href="/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 					<li><a href="#license">License</a></li>
 				</ul>
-				<h3 id="example">Example</h3>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> { ItemFactory, AgolItem, Item } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/arcgis-clone-js"</span>;
-
-ItemFactory.itemToJSON(<span class="hljs-string">"6fc5992522d34f26b2210d17835eea21"</span>)
-.then(
-  <span class="hljs-function">(<span class="hljs-params">response:AgolItem</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(response.type);  <span class="hljs-comment">// =&gt; "Web Mapping Application"</span>
-    <span class="hljs-built_in">console</span>.log(response.itemSection.title);  <span class="hljs-comment">// =&gt; "ROW Permit Public Comment"</span>
-    <span class="hljs-built_in">console</span>.log((response <span class="hljs-keyword">as</span> Item).dataSection.source);  <span class="hljs-comment">// =&gt; "bb3fcf7c3d804271bfd7ac6f48290fcf"</span>
-  },
-  error =&gt; {
-    <span class="hljs-built_in">console</span>.log(error);
-  }
-);</code></pre>
 				<h3 id="api-reference">API Reference</h3>
 				<p>The documentation is published at <a href="https://arcgis.github.io/arcgis-clone-js/">https://arcgis.github.io/arcgis-clone-js/</a> (source code <a href="/docs/src">here</a>).</p>
 				<h3 id="instructions">Instructions</h3>

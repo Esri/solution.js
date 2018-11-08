@@ -28,24 +28,6 @@
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 - [License](#license)
 
-### Example
-
-```js
-import { ItemFactory, AgolItem, Item } from "@esri/arcgis-clone-js";
-
-ItemFactory.itemToJSON("6fc5992522d34f26b2210d17835eea21")
-.then(
-  (response:AgolItem) => {
-    console.log(response.type);  // => "Web Mapping Application"
-    console.log(response.itemSection.title);  // => "ROW Permit Public Comment"
-    console.log((response as Item).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
-  },
-  error => {
-    console.log(error);
-  }
-);
-```
-
 ### API Reference
 
 The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
