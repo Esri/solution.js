@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;item&quot; | arcgis-clone-js</title>
+	<title>&quot;fullItem&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_item_.html">&quot;item&quot;</a>
+					<a href="_fullitem_.html">&quot;fullItem&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;item&quot;</h1>
+			<h1>External module &quot;fullItem&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,12 +71,92 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Classes</h3>
+							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-is-external"><a href="../classes/_item_.item.html" class="tsd-kind-icon">Item</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-kind-icon">IFull<wbr>Item</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_fullitem_.html#createunavailableitemerror" class="tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_fullitem_.html#getfullitem" class="tsd-kind-icon">get<wbr>Full<wbr>Item</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="createunavailableitemerror" class="tsd-anchor"></a>
+					<h3>create<wbr>Unavailable<wbr>Item<wbr>Error</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArcGISRequestError</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/8230f45/src/fullItem.ts#L125">fullItem.ts:125</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates an error object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>AGOL item id that caused failure</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">ArcGISRequestError</span></h4>
+							<p>Error object with message &quot;Item or group does not exist or is inaccessible: <id>&quot;</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="getfullitem" class="tsd-anchor"></a>
+					<h3>get<wbr>Full<wbr>Item</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Full<wbr>Item<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, requestOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">IUserRequestOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/8230f45/src/fullItem.ts#L57">fullItem.ts:57</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Fetches the item, data, and resources of an AGOL item.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>id: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>AGOL item id</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> requestOptions: <span class="tsd-signature-type">IUserRequestOptions</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for requesting information from AGOL</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise that will resolve with an IFullItem; its dependencies section is not filled in</p>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -96,38 +176,32 @@
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_agolitem_.html">"agol<wbr>Item"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_dashboard_.html">"dashboard"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_featureservice_.html">"feature<wbr>Service"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_group_.html">"group"</a>
+						<a href="_dependencies_.html">"dependencies"</a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="_item_.html">"item"</a>
+						<a href="_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_itemfactory_.html">"item<wbr>Factory"</a>
+						<a href="_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_solution_.html">"solution"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_webmappingapp_.html">"web<wbr>Mapping<wbr>App"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_webmap_.html">"webmap"</a>
+						<a href="_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-is-external">
-						<a href="../classes/_item_.item.html" class="tsd-kind-icon">Item</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-kind-icon">IFull<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_fullitem_.html#createunavailableitemerror" class="tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_fullitem_.html#getfullitem" class="tsd-kind-icon">get<wbr>Full<wbr>Item</a>
 					</li>
 				</ul>
 			</nav>

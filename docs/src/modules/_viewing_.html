@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;itemFactory&quot; | arcgis-clone-js</title>
+	<title>&quot;viewing&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_itemfactory_.html">&quot;itemFactory&quot;</a>
+					<a href="_viewing_.html">&quot;viewing&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;itemFactory&quot;</h1>
+			<h1>External module &quot;viewing&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,18 +71,55 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Classes</h3>
+							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-is-external"><a href="../classes/_itemfactory_.itemfactory.html" class="tsd-kind-icon">Item<wbr>Factory</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
+							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_itemfactory_.iitemhash.html" class="tsd-kind-icon">IItem<wbr>Hash</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a></li>
 							</ul>
 						</section>
 					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="getitemhierarchy" class="tsd-anchor"></a>
+					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/8230f45/src/viewing.ts#L44">viewing.ts:44</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Extracts item hierarchy structure from a Solution&#39;s items list.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>items: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Hash of JSON descriptions of items</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></h4>
+							<p>JSON structure reflecting dependency hierarchy of items; shared dependencies are
+								repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
+							item&#39;s dependencies</p>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -102,41 +139,29 @@
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_agolitem_.html">"agol<wbr>Item"</a>
+						<a href="_dependencies_.html">"dependencies"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_dashboard_.html">"dashboard"</a>
+						<a href="_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_featureservice_.html">"feature<wbr>Service"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_group_.html">"group"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_item_.html">"item"</a>
-					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="_itemfactory_.html">"item<wbr>Factory"</a>
+						<a href="_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_solution_.html">"solution"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_webmappingapp_.html">"web<wbr>Mapping<wbr>App"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_webmap_.html">"webmap"</a>
+					<li class="current tsd-kind-external-module tsd-is-external">
+						<a href="_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-is-external">
-						<a href="../classes/_itemfactory_.itemfactory.html" class="tsd-kind-icon">Item<wbr>Factory</a>
-					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_itemfactory_.iitemhash.html" class="tsd-kind-icon">IItem<wbr>Hash</a>
+						<a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
 					</li>
 				</ul>
 			</nav>
