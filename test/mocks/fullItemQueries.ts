@@ -1526,3 +1526,34 @@ export const ItemDataSuccessResponseService: any = {
     }
   }]
 };
+
+export const ItemSuccessResponseGroup: any = {
+  "id": "grp1234567890",
+  "title": "ROW Permit Manager",
+  "isInvitationOnly": true,
+  "owner": "LocalGovTryItLive",
+  "description": null,
+  "snippet": "ROW",
+  "tags": ["ROW", "source-84453ddeff8841e9aa2c25d5e1253cd7"],
+  "phone": null,
+  "sortField": "title",
+  "sortOrder": "asc",
+  "isViewOnly": true,
+  "thumbnail": "ROWPermitManager.png",
+  "created": 1520967981000,
+  "modified": 1523544543000,
+  "access": "public",
+  "capabilities": [],
+  "isFav": false,
+  "isReadOnly": false,
+  "protected": false,
+  "autoJoin": false,
+  "notificationsEnabled": false,
+  "provider": null,
+  "providerGroupName": null,
+  "userMembership": {
+    "username": "ArcGISTeamLocalGovOrg",
+    "memberType": "none"
+  },
+  "collaborationInfo": {}
+};

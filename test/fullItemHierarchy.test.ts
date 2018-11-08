@@ -22,7 +22,8 @@ import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
 import { ItemFailResponse, ItemResourcesSuccessResponseNone,
   ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
   ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
-  ItemSuccessResponseService, ItemDataSuccessResponseService
+  ItemSuccessResponseService, ItemDataSuccessResponseService,
+  ItemSuccessResponseGroup
 } from "./mocks/fullItemQueries";
 import { FeatureServiceSuccessResponse,
   FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
@@ -98,6 +99,10 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       );
     });
 
+  });
+
+  describe("failed fetches", () => {
+    
     it("throws an error if the hierarchy to be created fails: inaccessible", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
@@ -169,6 +174,50 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
         fail,
         error => {
           expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          done();
+        }
+      );
+    });
+
+    it("throws an error if getting dependencies fails", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/grp1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/grp1234567890", ItemSuccessResponseGroup, {})
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=0&num=100&token=fake-token",
+        '{"error":{"code":400,"messageCode":"CONT_0006",' +
+        '"message":"Group does not exist or is inaccessible.","details":[]}}', {});
+      getFullItemHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          done.fail();
+        },
+        error => {
+          expect(error).toEqual("Group does not exist or is inaccessible.");
+          done();
+        }
+      );
+    });
+
+    it("throws an error if a dependency fails", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/svc1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          done.fail();
+        },
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: svc1234567890");
           done();
         }
       );
@@ -287,28 +336,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           );
         },
         done.fail
-      );
-    });
-
-    it("should handle case were a dependency fails", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/svc1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
-      .then(
-        () => {
-          done.fail();
-        },
-        () => {
-          done();
-        }
       );
     });
 
