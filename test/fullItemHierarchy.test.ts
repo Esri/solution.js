@@ -304,11 +304,9 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
-          console.warn('false success');//???
           done.fail();
         },
         () => {
-          console.warn('true fail');//???
           done();
         }
       );
