@@ -20,9 +20,24 @@ import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
 import * as solution from "../src/solution";
 import { IFullItem } from "../src/fullItem";
 
+
+import { ItemFailResponse, ItemDataOrResourceFailResponse,
+  ItemSuccessResponseWMAWithoutUndesirableProps,
+  ItemResourcesSuccessResponseNone, ItemResourcesSuccessResponseOne,
+  ItemSuccessResponseDashboard, ItemDataSuccessResponseDashboard,
+  ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
+  ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
+  ItemSuccessResponseService, ItemDataSuccessResponseService,
+  ItemSuccessResponseGroup
+} from "./mocks/fullItemQueries";
+import { FeatureServiceSuccessResponse,
+  FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
+} from "./mocks/featureService";
+import { SolutionWMA, SolutionEmptyGroup } from "./mocks/solutions";
+
 import { UserSession } from "@esri/arcgis-rest-auth";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { TOMORROW } from "./lib/utils";
-import { ItemSuccessResponseWMA, ItemSuccessResponseWMAWithoutUndesirableProps } from "./mocks/fullItemQueries";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -49,12 +64,76 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
 
+  const MOCK_USER_REQOPTS:IUserRequestOptions = {
+    authentication: MOCK_USER_SESSION
+  };
+
   beforeEach(() => {
     jasmine.addMatchers(CustomMatchers);
   });
 
   afterEach(() => {
     fetchMock.restore();
+  });
+
+  describe("create solution", () => {
+
+    it("for single item containing WMA & feature service", done => {
+      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
+      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse)
+      solution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual(SolutionWMA);
+          done();
+        },
+        error => {
+          done.fail(error);
+        }
+      );
+    });
+
+    it("for single item not containing WMA or feature service", done => {
+      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      fetchMock
+      .mock("path:/sharing/rest/content/items/grp1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/grp1234567890", ItemSuccessResponseGroup, {})
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=0&num=100&token=fake-token",
+        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}', {});
+      solution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual(SolutionEmptyGroup);
+          done();
+        },
+        error => {
+          done.fail(error);
+        }
+      );
+    });
+
+  });
+
+  describe("view solution", () => {
+
+  });
+
+  describe("publish solution", () => {
+
   });
 
   describe("supporting routine: get cloning order", () => {
