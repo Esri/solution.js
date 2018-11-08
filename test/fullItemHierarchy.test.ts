@@ -61,6 +61,122 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     fetchMock.restore();
   });
 
+  describe("successful fetches", () => {
+
+    it("should return a list of WMA details for a valid AGOL id", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
+      .then(
+        (response:IItemHash) => {
+          let keys = Object.keys(response);
+          expect(keys.length).toEqual(3);
+          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          expect(fullItem.type).toEqual("Web Mapping Application");
+          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
+          expect(fullItem.data.source).toEqual("template1234567890");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should return a list of WMA details for a valid AGOL id in a list", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
+      .then(
+        (response:IItemHash) => {
+          let keys = Object.keys(response);
+          expect(keys.length).toEqual(3);
+          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          expect(fullItem.type).toEqual("Web Mapping Application");
+          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
+          expect(fullItem.data.source).toEqual("template1234567890");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
+      .then(
+        (response:IItemHash) => {
+          let keys = Object.keys(response);
+          expect(keys.length).toEqual(3);
+          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          expect(fullItem.type).toEqual("Web Mapping Application");
+          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
+          expect(fullItem.data.source).toEqual("template1234567890");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle repeat calls without re-fetching items", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
+      .then(
+        (collection:IItemHash) => {
+          let keys = Object.keys(collection);
+          expect(keys.length).toEqual(3);
+          expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
+
+          getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
+          .then(
+            (collection2:IItemHash) => {
+              let keys = Object.keys(collection2);
+              expect(keys.length).toEqual(3);  // unchanged
+              expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
+              expect(collection2).toEqual(collection);
+              done();
+            },
+            done.fail
+          );
+        },
+        done.fail
+      );
+    });
+
+  });
+
   describe("catch bad input", () => {
 
     it("throws an error if the hierarchy to be created fails: missing id", done => {
@@ -102,7 +218,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
   });
 
   describe("failed fetches", () => {
-    
+
     it("throws an error if the hierarchy to be created fails: inaccessible", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
@@ -220,122 +336,6 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           expect(error.message).toEqual("Item or group does not exist or is inaccessible: svc1234567890");
           done();
         }
-      );
-    });
-
-  });
-
-  describe("successful fetches", () => {
-
-    it("should return a list of WMA details for a valid AGOL id", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
-      .then(
-        (response:IItemHash) => {
-          let keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
-          expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
-          done();
-        },
-        done.fail
-      );
-    });
-
-    it("should return a list of WMA details for a valid AGOL id in a list", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
-      .then(
-        (response:IItemHash) => {
-          let keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
-          expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
-          done();
-        },
-        done.fail
-      );
-    });
-
-    it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
-      .then(
-        (response:IItemHash) => {
-          let keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
-          expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
-          done();
-        },
-        done.fail
-      );
-    });
-
-    it("should handle repeat calls without re-fetching items", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
-      .then(
-        (collection:IItemHash) => {
-          let keys = Object.keys(collection);
-          expect(keys.length).toEqual(3);
-          expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
-
-          getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
-          .then(
-            (collection2:IItemHash) => {
-              let keys = Object.keys(collection2);
-              expect(keys.length).toEqual(3);  // unchanged
-              expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
-              expect(collection2).toEqual(collection);
-              done();
-            },
-            done.fail
-          );
-        },
-        done.fail
       );
     });
 

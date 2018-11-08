@@ -58,36 +58,6 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     fetchMock.restore();
   });
 
-  describe("catch bad input", () => {
-
-    it("throws an error if the item to be created fails: missing id", done => {
-      fetchMock.mock("*", ItemFailResponse);
-      getFullItem(null, MOCK_USER_REQOPTS)
-      .then(
-        fail,
-        error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
-          done();
-        }
-      );
-    });
-
-    it("throws an error if the item to be created fails: inaccessible", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
-      getFullItem("fail1234567890", MOCK_USER_REQOPTS)
-      .then(
-        fail,
-        error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
-          done();
-        }
-      );
-    });
-
-  });
-
   describe("fetch different item types", () => {
     [
       {
@@ -128,7 +98,6 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("should create a Feature Service based on the AGOL response", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
@@ -182,6 +151,36 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           done();
         },
         done.fail
+      );
+    });
+
+  });
+
+  describe("catch bad input", () => {
+
+    it("throws an error if the item to be created fails: missing id", done => {
+      fetchMock.mock("*", ItemFailResponse);
+      getFullItem(null, MOCK_USER_REQOPTS)
+      .then(
+        fail,
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          done();
+        }
+      );
+    });
+
+    it("throws an error if the item to be created fails: inaccessible", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
+      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      getFullItem("fail1234567890", MOCK_USER_REQOPTS)
+      .then(
+        fail,
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+          done();
+        }
       );
     });
 

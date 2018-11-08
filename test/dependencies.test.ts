@@ -56,270 +56,6 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
     fetchMock.restore();
   });
 
-  describe("supporting routine: removing duplicates", () => {
-
-    it("empty array", () => {
-      let sourceArray:string[] = [];
-      let expected:string[] = [];
-
-      let results = dependencies.removeDuplicates(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("no duplicates", () => {
-      let sourceArray = ["a", "b", "c", "d"];
-      let expected = ["a", "b", "c", "d"];
-
-      let results = dependencies.removeDuplicates(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("some duplicates", () => {
-      let sourceArray = ["c", "a", "b", "b", "c", "d"];
-      let expected = ["c", "a", "b", "d"];
-
-      let results = dependencies.removeDuplicates(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-  });
-
-  describe("supporting routine: fetching group contents", () => {
-    let firstGroupTrancheUrl =
-      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=0&num=3&token=fake-token";
-    let secondGroupTrancheUrl =
-      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=3&token=fake-token";
-    let thirdGroupTrancheUrl =
-      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=6&num=3&token=fake-token";
-
-    it("fewer items than fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}', {});
-      let expected = ["a1"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("same number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {});
-      let expected = ["a1", "a2", "a3"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("one more item than fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
-      .mock(secondGroupTrancheUrl,
-        '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}', {});
-      let expected = ["a1", "a2", "a3", "a4"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("twice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":6,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
-      .mock(secondGroupTrancheUrl,
-        '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {});
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("one more item than twice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":7,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
-      .mock(secondGroupTrancheUrl,
-        '{"total":7,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
-      .mock(thirdGroupTrancheUrl,
-        '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}', {});
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
-
-        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("thrice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"total":9,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
-      .mock(secondGroupTrancheUrl,
-        '{"total":9,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
-      .mock(thirdGroupTrancheUrl,
-        '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}', {});
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
-
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
-
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
-
-        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
-
-        done();
-      });
-    });
-
-    it("group with error", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      let expected = "Group does not exist or is inaccessible.";
-      fetchMock
-      .mock(firstGroupTrancheUrl,
-        '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
-
-      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(
-        () => {
-          done.fail();
-        },
-        errorMessage => {
-          expect(errorMessage).toEqual(expected);
-          done();
-        }
-      );
-    });
-
-  });
-
-  describe("supporting routine: extracting layer ids", () => {
-
-    it("no layer list", () => {
-      let sourceArray:any[] = null;
-      let expected:string[] = [];
-
-      let results = dependencies.getWebmapLayerIds(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("empty layer list", () => {
-      let sourceArray:any[] = [];
-      let expected:string[] = [];
-
-      let results = dependencies.getWebmapLayerIds(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("layer without itemId", () => {
-      let sourceArray:any[] = [{
-        id: "abc"
-      }];
-      let expected:string[] = [];
-
-      let results = dependencies.getWebmapLayerIds(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("layer with itemId", () => {
-      let sourceArray:any[] = [{
-        id: "abc",
-        itemId: "ABC"
-      }];
-      let expected:string[] = ["ABC"];
-
-      let results = dependencies.getWebmapLayerIds(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-    it("multiple layers, one without itemId", () => {
-      let sourceArray:any[] = [{
-        id: "abc",
-        itemId: "ABC"
-      }, {
-        id: "def"
-      }, {
-        id: "ghi",
-        itemId: "GHI"
-      }];
-      let expected:string[] = ["ABC", "GHI"];
-
-      let results = dependencies.getWebmapLayerIds(sourceArray);
-      expect(results).toEqual(expected);
-    });
-
-  });
-
   describe("getDependencies", () => {
 
     describe("dashboard", () => {
@@ -939,6 +675,270 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         expect(abc.data).toEqual(expected);
       });
 
+    });
+
+  });
+
+  describe("supporting routine: removing duplicates", () => {
+
+    it("empty array", () => {
+      let sourceArray:string[] = [];
+      let expected:string[] = [];
+
+      let results = dependencies.removeDuplicates(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("no duplicates", () => {
+      let sourceArray = ["a", "b", "c", "d"];
+      let expected = ["a", "b", "c", "d"];
+
+      let results = dependencies.removeDuplicates(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("some duplicates", () => {
+      let sourceArray = ["c", "a", "b", "b", "c", "d"];
+      let expected = ["c", "a", "b", "d"];
+
+      let results = dependencies.removeDuplicates(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+  });
+
+  describe("supporting routine: fetching group contents", () => {
+    let firstGroupTrancheUrl =
+      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=0&num=3&token=fake-token";
+    let secondGroupTrancheUrl =
+      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=3&token=fake-token";
+    let thirdGroupTrancheUrl =
+      "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=6&num=3&token=fake-token";
+
+    it("fewer items than fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}', {});
+      let expected = ["a1"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("same number of items as fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {});
+      let expected = ["a1", "a2", "a3"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("one more item than fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+      .mock(secondGroupTrancheUrl,
+        '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}', {});
+      let expected = ["a1", "a2", "a3", "a4"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("twice the number of items as fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":6,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+      .mock(secondGroupTrancheUrl,
+        '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {});
+      let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("one more item than twice the number of items as fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":7,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+      .mock(secondGroupTrancheUrl,
+        '{"total":7,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
+      .mock(thirdGroupTrancheUrl,
+        '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}', {});
+      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+
+        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("thrice the number of items as fetch batch size", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"total":9,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+      .mock(secondGroupTrancheUrl,
+        '{"total":9,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
+      .mock(thirdGroupTrancheUrl,
+        '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}', {});
+      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(response => {
+        expect(response).toEqual(expected);
+
+        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+
+        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+
+        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        expect(calls.length === 1);
+        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
+
+        done();
+      });
+    });
+
+    it("group with error", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      let expected = "Group does not exist or is inaccessible.";
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        () => {
+          done.fail();
+        },
+        errorMessage => {
+          expect(errorMessage).toEqual(expected);
+          done();
+        }
+      );
+    });
+
+  });
+
+  describe("supporting routine: extracting layer ids", () => {
+
+    it("no layer list", () => {
+      let sourceArray:any[] = null;
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("empty layer list", () => {
+      let sourceArray:any[] = [];
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("layer without itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc"
+      }];
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("layer with itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc",
+        itemId: "ABC"
+      }];
+      let expected:string[] = ["ABC"];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("multiple layers, one without itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc",
+        itemId: "ABC"
+      }, {
+        id: "def"
+      }, {
+        id: "ghi",
+        itemId: "GHI"
+      }];
+      let expected:string[] = ["ABC", "GHI"];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
     });
 
   });
