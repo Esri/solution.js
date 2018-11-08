@@ -114,10 +114,12 @@ export function getFullItemHierarchy (
                   .then(
                     () => {
                       resolve(collection);
-                    }
+                    },
+                    (error:ArcGISRequestError) => reject(error)
                   );
                 }
-              }
+              },
+              (error:ArcGISRequestError) => reject(error)
             );
           },
           (error:ArcGISRequestError) => reject(error)

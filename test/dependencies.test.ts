@@ -32,7 +32,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
     item: {}
   };
 
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
   // Set up a UserSession to use in all these tests
   const MOCK_USER_SESSION = new UserSession({
@@ -242,6 +242,25 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       });
     });
 
+    it("group with error", done => {
+      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      let expected = "Group does not exist or is inaccessible.";
+      fetchMock
+      .mock(firstGroupTrancheUrl,
+        '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+
+      dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        () => {
+          done.fail();
+        },
+        errorMessage => {
+          expect(errorMessage).toEqual(expected);
+          done();
+        }
+      );
+    });
+
   });
 
   describe("getDependencies", () => {
@@ -351,9 +370,34 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         });
       });
 
+      it("group with error", done => {
+        let groupUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+          "?f=json&start=0&num=100&token=fake-token";
+        let expected = "Group does not exist or is inaccessible.";
+        fetchMock
+        .mock("begin:" + groupUrl,
+          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Group";
+        abc.item.id = "grp1234567890";
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(
+          () => {
+            done.fail();
+          },
+          error => {
+            expect(error).toEqual(expected);
+            done();
+          }
+        );
+      });
+
     });
 
-    describe("webmap", () => {
+    describe ("webmap", () => {
 
       it("one operational layer", done => {
         let abc = {...MOCK_ITEM_PROTOTYPE};

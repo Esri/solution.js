@@ -43,7 +43,7 @@ export function getDependencies (
   fullItem: IFullItem,
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
-  return new Promise<string[]>(resolve => {
+  return new Promise<string[]>((resolve, reject) => {
     let getDependenciesByType:IFunctionLookup = {
       "Dashboard": getDashboardDependencies,
       "Group": getGroupDependencies,
@@ -54,7 +54,8 @@ export function getDependencies (
     if (getDependenciesByType[fullItem.type]) {
       getDependenciesByType[fullItem.type](fullItem, requestOptions)
       .then(
-        (dependencies:string[]) => resolve(removeDuplicates(dependencies))
+        (dependencies:string[]) => resolve(removeDuplicates(dependencies)),
+        reject
       );
     } else {
       resolve([]);
@@ -165,7 +166,7 @@ function getGroupDependencies (
     getGroupContentsTranche(fullItem.item.id, pagingRequest)
     .then(
       contents => resolve(contents),
-      error => reject(error)
+      reject
     );
   });
 }
@@ -369,7 +370,7 @@ export function getGroupContentsTranche (
         }
       },
       error => {
-        reject(error);
+        reject(error.originalMessage);
       }
     );
   });

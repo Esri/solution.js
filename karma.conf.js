@@ -44,14 +44,7 @@ module.exports = function(config) {
             .readdirSync("node_modules/@esri")
             .filter(p => p[0] !== ".")
             .reduce((alias, p) => {
-              //if (p === "arcgis-rest-common-types") {
-              //  alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/types/index.d.ts`;
-              //} else {
-                alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
-              //}
-              if (p === 'arcgis-rest-sharing') {
-                console.warn(alias); //???
-              }
+              alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
               return alias;
             }, {})
         }

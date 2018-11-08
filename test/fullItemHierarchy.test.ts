@@ -36,7 +36,7 @@ import { TOMORROW } from "./lib/utils";
 
 describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their dependencies", () => {
 
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;  // default is 5000 ms
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
   // Set up a UserSession to use in all these tests
   const MOCK_USER_SESSION = new UserSession({
@@ -253,10 +253,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
       .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
       .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse);
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
       getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -267,6 +264,41 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
           expect(fullItem.data.source).toEqual("template1234567890");
           done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle repeat calls without re-fetching items", done => {
+      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
+      .then(
+        (collection:IItemHash) => {
+          let keys = Object.keys(collection);
+          expect(keys.length).toEqual(3);
+          expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
+
+          getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
+          .then(
+            (collection2:IItemHash) => {
+              let keys = Object.keys(collection2);
+              expect(keys.length).toEqual(3);  // unchanged
+              expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
+              expect(collection2).toEqual(collection);
+              done();
+            },
+            done.fail
+          );
         },
         done.fail
       );
