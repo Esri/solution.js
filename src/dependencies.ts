@@ -128,8 +128,8 @@ function getDashboardDependencies (
   return new Promise(resolve => {
     let dependencies:string[] = [];
 
-    if (fullItem.data && fullItem.data.widgets) {
-      let widgets:IDashboardWidget[] = fullItem.data.widgets;
+    let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+    if (widgets) {
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
           dependencies.push(widget.itemId);
@@ -212,8 +212,8 @@ function getWebMappingApplicationDependencies (
   return new Promise(resolve => {
     let dependencies:string[] = [];
 
-    if (fullItem.data && fullItem.data.values) {
-      let values = fullItem.data.values;
+    let values = fullItem.data && fullItem.data.values;
+    if (values) {
       if (values.webmap) {
         dependencies.push(values.webmap);
       }
@@ -381,7 +381,7 @@ export function getGroupContentsTranche (
  * @returns List of ids and/or URLs
  * @protected
  */
-function getWebmapLayerIds (
+export function getWebmapLayerIds (
   layerList: any
 ): string[] {
   let dependencies:string[] = [];

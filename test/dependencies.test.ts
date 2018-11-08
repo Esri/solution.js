@@ -263,9 +263,79 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
   });
 
+  describe("supporting routine: extracting layer ids", () => {
+
+    it("no layer list", () => {
+      let sourceArray:any[] = null;
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("empty layer list", () => {
+      let sourceArray:any[] = [];
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("layer without itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc"
+      }];
+      let expected:string[] = [];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("layer with itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc",
+        itemId: "ABC"
+      }];
+      let expected:string[] = ["ABC"];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+    it("multiple layers, one without itemId", () => {
+      let sourceArray:any[] = [{
+        id: "abc",
+        itemId: "ABC"
+      }, {
+        id: "def"
+      }, {
+        id: "ghi",
+        itemId: "GHI"
+      }];
+      let expected:string[] = ["ABC", "GHI"];
+
+      let results = dependencies.getWebmapLayerIds(sourceArray);
+      expect(results).toEqual(expected);
+    });
+
+  });
+
   describe("getDependencies", () => {
 
     describe("dashboard", () => {
+
+      it("without widgets", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {};
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
 
       it("without map widget", done => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -424,6 +494,18 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
     describe ("webmap", () => {
 
+      it("no data", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
       it("one operational layer", done => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
@@ -486,6 +568,31 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
     describe("web mapping application", () => {
 
+      it("no data", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
+      it("no data values", done => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {};
+        let expected:string[] = [];
+
+        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
+        .then(response => {
+          expect(response).toEqual(expected);
+          done();
+        });
+      });
+
       it("based on webmap", done => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
@@ -540,6 +647,18 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
     };
 
     describe("dashboard", () => {
+
+      it("without widgets", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Dashboard";
+        abc.data = {};
+        let expected = {...MOCK_ITEM_PROTOTYPE};
+        expected.type = "Dashboard";
+        expected.data = {};
+
+        dependencies.swizzleDependencies(abc, swizzles)
+        expect(abc).toEqual(expected);
+      });
 
       it("without map widget", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -599,17 +718,13 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
     describe("feature service", () => {
 
-      it("item type does not have dependencies", done => {
+      it("item type does not have dependencies", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Feature Service";
+        abc.dependencies = [];
 
-        let expected:string[] = [];
-
-        dependencies.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        dependencies.swizzleDependencies(abc, swizzles)
+        expect(abc.dependencies).toEqual([]);
       });
 
     });
@@ -638,6 +753,24 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
     });
 
     describe("webmap", () => {
+
+      it("no data", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data).toBeUndefined();
+      });
+
+      it("no operational layer or table", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {};
+        let expected:any = {};
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data).toEqual(expected);
+      });
 
       it("one operational layer", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -709,9 +842,53 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         expect(abc.data.tables[0].url).toEqual("http://services2/SVC67890/1");
       });
 
+      it("one operational layer and a table, but neither has swizzles", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Map";
+        abc.data = {
+          operationalLayers: [{
+            itemId: "jkl",
+            title: "'jkl'",
+            url: "http://services1/svc12345/0"
+          }],
+          tables: [{
+            itemId: "mno",
+            title: "'mno'",
+            url: "http://services1/svc12345/1"
+          }]
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data.operationalLayers[0].itemId).toEqual("jkl");
+        expect(abc.data.operationalLayers[0].title).toEqual("'jkl'");
+        expect(abc.data.operationalLayers[0].url).toEqual("http://services1/svc12345/0");
+
+        expect(abc.data.tables[0].itemId).toEqual("mno");
+        expect(abc.data.tables[0].title).toEqual("'mno'");
+        expect(abc.data.tables[0].url).toEqual("http://services1/svc12345/1");
+      });
+
     });
 
     describe("web mapping application", () => {
+
+      it("no data", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data).toBeUndefined();
+      });
+
+      it("no data values", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {};
+        let expected:any = {};
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data).toEqual(expected);
+      });
 
       it("based on webmap", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -746,6 +923,20 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         dependencies.swizzleDependencies(abc, swizzles);
         expect(abc.data.values.group).toEqual("DEF");
+      });
+
+      it("no webmap or group", () => {
+        let abc = {...MOCK_ITEM_PROTOTYPE};
+        abc.type = "Web Mapping Application";
+        abc.data = {
+          values: {}
+        };
+        let expected:any = {
+          values: {}
+        };
+
+        dependencies.swizzleDependencies(abc, swizzles);
+        expect(abc.data).toEqual(expected);
       });
 
     });
