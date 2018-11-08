@@ -18,15 +18,13 @@ import * as fetchMock from "fetch-mock";
 
 import { IFullItem, getFullItem } from "../src/fullItem";
 
-import { ItemFailResponse, ItemResourcesSuccessResponseNone,
+import { ItemFailResponse, ItemDataOrResourceFailResponse,
+  ItemResourcesSuccessResponseNone, ItemResourcesSuccessResponseOne,
   ItemSuccessResponseDashboard, ItemDataSuccessResponseDashboard,
   ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
   ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
   ItemSuccessResponseService, ItemDataSuccessResponseService
 } from "./mocks/fullItemQueries";
-import { FeatureServiceSuccessResponse,
-  FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
-} from "./mocks/featureService";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
@@ -85,23 +83,6 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
           done();
         }
-      );
-    });
-
-    it("should return WMA details for a valid AGOL id", done => {
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {});
-      getFullItem("wma1234567890")
-      .then(
-        response => {
-          expect(response.type).toEqual("Web Mapping Application");
-          expect(response.item.title).toEqual("ROW Permit Public Comment");
-          expect(response.data.source).toEqual("template1234567890");
-          done();
-        },
-        done.fail
       );
     });
 
@@ -168,6 +149,40 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         done();
       })
       .catch(e => fail(e));
+    });
+
+    it("should return WMA details for a valid AGOL id", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseOne, {});
+      getFullItem("wma1234567890")
+      .then(
+        response => {
+          expect(response.type).toEqual("Web Mapping Application");
+          expect(response.item.title).toEqual("ROW Permit Public Comment");
+          expect(response.data.source).toEqual("template1234567890");
+          expect(response.resources).toEqual([{ "value": "abc"}]);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle an item without a data or a resource section", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataOrResourceFailResponse, {})
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemDataOrResourceFailResponse, {});
+      getFullItem("wma1234567890")
+      .then(
+        response => {
+          expect(response.type).toEqual("Web Mapping Application");
+          expect(response.item.title).toEqual("ROW Permit Public Comment");
+          done();
+        },
+        done.fail
+      );
     });
 
   });

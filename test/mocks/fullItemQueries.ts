@@ -26,12 +26,31 @@ export const ItemFailResponse: ArcGISRequestError = {
   "options": null
 };
 
+export const ItemDataOrResourceFailResponse: any = {
+  "error": {
+    "code": 400,
+    "messageCode": "CONT_0001",
+    "message": "Item does not exist or is inaccessible.",
+    "details": []
+  }
+};
+
 export const ItemResourcesSuccessResponseNone: any = {
   "total": 0,
   "start": 1,
   "num": 0,
   "nextStart": -1,
   "resources": []
+};
+
+export const ItemResourcesSuccessResponseOne: any = {
+  "total": 1,
+  "start": 1,
+  "num": 1,
+  "nextStart": -1,
+  "resources": [{
+    "value": "abc"
+  }]
 };
 
 export const ItemSuccessResponseWMAWithoutUndesirableProps: any = {

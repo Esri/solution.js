@@ -59,64 +59,60 @@ export function getFullItem (
   requestOptions?: IUserRequestOptions
 ): Promise<IFullItem> {
   return new Promise((resolve, reject) => {
-    try {
-      let fullItem:IFullItem;
+    let fullItem:IFullItem;
 
-      // Request item base section
-      items.getItem(id, requestOptions)
-      .then(
-        itemResponse => {
-          fullItem = {
-            type: itemResponse.type,
-            item: itemResponse,
-            dependencies: []
-          };
+    // Request item base section
+    items.getItem(id, requestOptions)
+    .then(
+      itemResponse => {
+        fullItem = {
+          type: itemResponse.type,
+          item: itemResponse,
+          dependencies: []
+        };
 
-          // Request item data section
-          let dataPromise = items.getItemData(id, requestOptions);
+        // Request item data section
+        let dataPromise = items.getItemData(id, requestOptions);
 
-          // Request item resources
-          let resourceRequestOptions = {
-            id: id,
-            ...requestOptions
-          };
-          let resourcePromise = items.getItemResources(resourceRequestOptions);
+        // Request item resources
+        let resourceRequestOptions = {
+          id: id,
+          ...requestOptions
+        };
+        let resourcePromise = items.getItemResources(resourceRequestOptions);
 
-          // Items without a data section return an error from the REST library, so we'll need to prevent it
-          // from killing off both promises
-          Promise.all([
-            dataPromise.catch(() => { return null }),
-            resourcePromise.catch(() => { return null })
-          ])
-          .then(
-            responses => {
-              fullItem.data = responses[0];
-              fullItem.resources = responses[1] && responses[1].total > 0 ? responses[1].resources : null;
-              resolve(fullItem);
-            }
-          );
-        },
-        () => {
-          // If item query fails, try URL for group base section
-          groups.getGroup(id, requestOptions)
-          .then(
-            itemResponse => {
-              fullItem = {
-                type: "Group",
-                item: itemResponse,
-                dependencies: []
-              };
-              resolve(fullItem);
-            },
-            () => {
-              reject(createUnavailableItemError(id));
-            }
-          );
-        }
-      );
-    } catch (notUsed) {
-      reject(createUnavailableItemError(id));
-    }
+        // Items without a data section return an error from the REST library, so we'll need to prevent it
+        // from killing off both promises
+        Promise.all([
+          dataPromise.catch(() => { return null }),
+          resourcePromise.catch(() => { return null })
+        ])
+        .then(
+          responses => {
+            fullItem.data = responses[0];
+            fullItem.resources = responses[1] && responses[1].total > 0 ? responses[1].resources : null;
+            resolve(fullItem);
+          }
+        );
+      },
+      () => {
+        // If item query fails, try URL for group base section
+        groups.getGroup(id, requestOptions)
+        .then(
+          itemResponse => {
+            fullItem = {
+              type: "Group",
+              item: itemResponse,
+              dependencies: []
+            };
+            resolve(fullItem);
+          },
+          () => {
+            reject(createUnavailableItemError(id));
+          }
+        );
+      }
+    );
   });
 }
 
