@@ -28,6 +28,32 @@
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 - [License](#license)
 
+### Supported ArcGIS Online Item Types
+
+Currently, the item types that can be dependents of a solution item are:
+
+* ArcGIS Pro Add In
+* Code Attachment
+* Code Sample
+* Dashboard
+* Desktop Add In
+* Desktop Application Template
+* Document Link
+* Feature Collection
+* Feature Service (Hosted only and Hosted Feature Layer Views)
+* Form
+* Geoprocessing Package
+* Geoprocessing Sample
+* Layer Package
+* Map Template
+* Operation View
+* Pro Map
+* Project Package
+* Project Template
+* Web Map
+* Web Mapping Application
+* Workforce Project
+
 ### API Reference
 
 The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
