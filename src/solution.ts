@@ -23,6 +23,7 @@ import { request } from "@esri/arcgis-rest-request";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
 import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
+import { rejects } from 'assert';
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -152,7 +153,7 @@ export function publishSolution (
   access: string,
   requestOptions?: IUserRequestOptions
 ): Promise<items.IItemUpdateResponse> {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     // Define the solution item
     let item = {
       title: title,
@@ -173,31 +174,38 @@ export function publishSolution (
       ...requestOptions
     };
     items.createItem(options)
-    .then(function (results) {
-      if (results.success) {
+    .then(
+      results => {
         let options = {
           id: results.id,
           data: data,
           ...requestOptions
         };
         items.addItemJsonData(options)
-        .then(function (results) {
-          // Set the access manually since the access value in createItem appears to be ignored
-          let options = {
-            id: results.id,
-            access: access,
-            ...requestOptions as sharing.ISetAccessRequestOptions
-          };
-          sharing.setItemAccess(options)
-          .then(function (results) {
-            resolve({
-              success: true,
-              id: results.itemId
-            })
-          });
-        });
-      }
-    });
+        .then(
+          results => {
+            // Set the access manually since the access value in createItem appears to be ignored
+            let options = {
+              id: results.id,
+              access: access,
+              ...requestOptions as sharing.ISetAccessRequestOptions
+            };
+            sharing.setItemAccess(options)
+            .then(
+              results => {
+                resolve({
+                  success: true,
+                  id: results.itemId
+                })
+              },
+              error => reject(error.originalMessage)
+            );
+          },
+          error => reject(error.originalMessage)
+        );
+      },
+      error => reject(error.originalMessage)
+    );
   });
 }
 

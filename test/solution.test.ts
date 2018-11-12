@@ -217,11 +217,82 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("view solution", () => {
+  describe("publish solution", () => {
+
+    it("for single item containing WMA & feature service", done => {
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
+        '{"notSharedWith":[],"itemId":"sln1234567890"}');
+      solution.publishSolution("My Solution", SolutionWMA, "public", MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual({
+            "success": true,
+            "id": "sln1234567890"
+          });
+          done();
+        },
+        error => {
+          done.fail(error);
+        }
+      );
+    });
+
+    it("for single item containing WMA & feature service, but item add fails", done => {
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
+      solution.publishSolution("My Solution", SolutionWMA, "public", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        errorMsg => {
+          expect(errorMsg).toEqual("Item type not valid.");
+          done();
+        }
+      );
+    });
+
+    it("for single item containing WMA & feature service, but data add fails", done => {
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
+      '{"error":{"code":400,"messageCode":"CONT_0001","message":"Item does not exist or is inaccessible.","details":[]}}');
+      solution.publishSolution("My Solution", SolutionWMA, "public", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        errorMsg => {
+          expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
+          done();
+        }
+      );
+    });
+
+    it("for single item containing WMA & feature service, but share fails", done => {
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
+        '{"error":{"code":400,"messageCode":"CONT_0001","message":"Item does not exist or is inaccessible.","details":[]}}');
+      solution.publishSolution("My Solution", SolutionWMA, "public", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        errorMsg => {
+          expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
+          done();
+        }
+      );
+    });
 
   });
 
-  describe("publish solution", () => {
+  describe("clone solution", () => {
 
   });
 
