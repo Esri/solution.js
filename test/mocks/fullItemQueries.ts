@@ -1532,6 +1532,54 @@ export const ItemSuccessResponseService: any = {
   "groupDesignations": null
 };
 
+export const ItemSuccessResponseServiceNoName: any = {
+  "id": "svc1234567890",
+  "item": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
+  "owner": "LocalGovTryItLive",
+  "orgId": "org1234567890",
+  "created": 1520968092000,
+  "modified": 1522178516000,
+  "guid": null,
+  "name": null,
+  "title": "ROWPermits_publiccomment",
+  "type": "Feature Service",
+  "typeKeywords": ["ArcGIS Server", "Data", "Feature Access", "Feature Service", "Multilayer", "Service", "source-14ffc9672de84fc6aea443854fa551b8", "Hosted Service", "View Service"],
+  "description": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+  "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+  "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+  "thumbnail": "thumbnail/ago_downloaded.png",
+  "documentation": null,
+  "extent": [
+    [-134.74729261783727, 23.560962423754177],
+    [-55.69554761537273, 50.309217030255674]
+  ],
+  "categories": [],
+  "lastModified": -1,
+  "spatialReference": null,
+  "accessInformation": "Esri., Inc.",
+  "licenseInfo": null,
+  "culture": "en-us",
+  "properties": null,
+  "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
+  "proxyFilter": null,
+  "access": "public",
+  "size": 0,
+  "appCategories": [],
+  "industries": [],
+  "languages": [],
+  "largeThumbnail": null,
+  "banner": null,
+  "screenshots": [],
+  "listed": false,
+  "commentsEnabled": false,
+  "numComments": 0,
+  "numRatings": 0,
+  "avgRating": 0,
+  "numViews": 644,
+  "scoreCompleteness": 76,
+  "groupDesignations": null
+};
+
 export const ItemDataSuccessResponseService: any = {
   "tables": [{
     "id": 1,

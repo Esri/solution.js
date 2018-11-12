@@ -27,10 +27,12 @@ import { ItemFailResponse, ItemDataOrResourceFailResponse,
   ItemSuccessResponseDashboard, ItemDataSuccessResponseDashboard,
   ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
   ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
-  ItemSuccessResponseService, ItemDataSuccessResponseService,
+  ItemSuccessResponseService, ItemDataSuccessResponseService, ItemSuccessResponseServiceNoName,
   ItemSuccessResponseGroup
 } from "./mocks/fullItemQueries";
 import { FeatureServiceSuccessResponse,
+  FeatureServiceSuccessResponseNoNames1, FeatureServiceSuccessResponseNoNames2,
+  FeatureServiceSuccessResponseNoLayers,
   FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
 } from "./mocks/featureService";
 import { SolutionWMA, SolutionEmptyGroup } from "./mocks/solutions";
@@ -106,7 +108,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("for single item not containing WMA or feature service", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", ItemFailResponse, {})
       .mock("path:/sharing/rest/community/groups/grp1234567890", ItemSuccessResponseGroup, {})
@@ -122,6 +123,94 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         },
         error => {
           done.fail(error);
+        }
+      );
+    });
+
+    it("gets a service name from a layer if a service needs a name", done => {
+      let fullItem:solution.IFullItemFeatureService = {
+        type: "Feature Service",
+        item: ItemSuccessResponseServiceNoName,
+        data: ItemDataSuccessResponseService,
+        service: null,
+        layers: null,
+        tables: null
+      };
+      fetchMock
+      .post(fullItem.item.url + "?f=json", FeatureServiceSuccessResponse)
+      .post(fullItem.item.url + "/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(fullItem.item.url + "/1?f=json", FeatureServiceLayer1SuccessResponse);
+      solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          expect(fullItem.service.name).toEqual(FeatureServiceSuccessResponse.layers[0].name);
+          done();
+        }
+      );
+    });
+
+    it("gets a service name from a table if a service needs a name--no layer", done => {
+      let fullItem:solution.IFullItemFeatureService = {
+        type: "Feature Service",
+        item: ItemSuccessResponseServiceNoName,
+        data: ItemDataSuccessResponseService,
+        service: null,
+        layers: null,
+        tables: null
+      };
+      fetchMock
+      .post(fullItem.item.url + "?f=json", FeatureServiceSuccessResponseNoLayers)
+      .post(fullItem.item.url + "/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(fullItem.item.url + "/1?f=json", FeatureServiceLayer1SuccessResponse);
+      solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          expect(fullItem.service.name).toEqual(FeatureServiceSuccessResponse.tables[0].name);
+          done();
+        }
+      );
+    });
+
+    it("gets a service name from a table if a service needs a name--nameless layer", done => {
+      let fullItem:solution.IFullItemFeatureService = {
+        type: "Feature Service",
+        item: ItemSuccessResponseServiceNoName,
+        data: ItemDataSuccessResponseService,
+        service: null,
+        layers: null,
+        tables: null
+      };
+      fetchMock
+      .post(fullItem.item.url + "?f=json", FeatureServiceSuccessResponseNoNames1)
+      .post(fullItem.item.url + "/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(fullItem.item.url + "/1?f=json", FeatureServiceLayer1SuccessResponse);
+      solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          expect(fullItem.service.name).toEqual(FeatureServiceSuccessResponse.tables[0].name);
+          done();
+        }
+      );
+    });
+
+    it("falls back to 'Feature Service' if a service needs a name", done => {
+      let fullItem:solution.IFullItemFeatureService = {
+        type: "Feature Service",
+        item: ItemSuccessResponseServiceNoName,
+        data: ItemDataSuccessResponseService,
+        service: null,
+        layers: null,
+        tables: null
+      };
+      fetchMock
+      .post(fullItem.item.url + "?f=json", FeatureServiceSuccessResponseNoNames2)
+      .post(fullItem.item.url + "/0?f=json", FeatureServiceLayer0SuccessResponse)
+      .post(fullItem.item.url + "/1?f=json", FeatureServiceLayer1SuccessResponse);
+      solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          expect(fullItem.service.name).toEqual("Feature Service");
+          done();
         }
       );
     });

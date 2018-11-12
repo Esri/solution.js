@@ -95,6 +95,240 @@ export const FeatureServiceSuccessResponse: any = {
   }]
 };
 
+export const FeatureServiceSuccessResponseNoNames1: any = {
+  "currentVersion": 10.61,
+  "serviceItemId": "svc1234567890",
+  "isView": true,
+  "isUpdatableView": true,
+  "sourceSchemaChangesAllowed": true,
+  "serviceDescription": "",
+  "hasVersionedData": false,
+  "supportsDisconnectedEditing": false,
+  "hasStaticData": false,
+  "maxRecordCount": 1000,
+  "supportedQueryFormats": "JSON",
+  "supportsVCSProjection": false,
+  "capabilities": "Create,Query,Editing",
+  "description": "",
+  "copyrightText": "",
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857
+  },
+  "initialExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "fullExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "allowGeometryUpdates": true,
+  "units": "esriMeters",
+  "supportsAppend": true,
+  "syncEnabled": false,
+  "supportsApplyEditsWithGlobalIds": true,
+  "editorTrackingInfo": {
+    "enableEditorTracking": true,
+    "enableOwnershipAccessControl": false,
+    "allowOthersToQuery": true,
+    "allowOthersToUpdate": true,
+    "allowOthersToDelete": true,
+    "allowAnonymousToQuery": true,
+    "allowAnonymousToUpdate": true,
+    "allowAnonymousToDelete": true
+  },
+  "xssPreventionInfo": {
+    "xssPreventionEnabled": true,
+    "xssPreventionRule": "InputOnly",
+    "xssInputRule": "rejectInvalid"
+  },
+  "layers": [{
+    "id": 0,
+    "name": "",
+    "parentLayerId": -1,
+    "defaultVisibility": true,
+    "subLayerIds": null,
+    "minScale": 0,
+    "maxScale": 0,
+    "geometryType": "esriGeometryPoint"
+  }],
+  "tables": [{
+    "id": 1,
+    "name": "ROW Permit Comment",
+    "parentLayerId": -1,
+    "defaultVisibility": true,
+    "subLayerIds": null,
+    "minScale": 0,
+    "maxScale": 0
+  }]
+};
+
+export const FeatureServiceSuccessResponseNoNames2: any = {
+  "currentVersion": 10.61,
+  "serviceItemId": "svc1234567890",
+  "isView": true,
+  "isUpdatableView": true,
+  "sourceSchemaChangesAllowed": true,
+  "serviceDescription": "",
+  "hasVersionedData": false,
+  "supportsDisconnectedEditing": false,
+  "hasStaticData": false,
+  "maxRecordCount": 1000,
+  "supportedQueryFormats": "JSON",
+  "supportsVCSProjection": false,
+  "capabilities": "Create,Query,Editing",
+  "description": "",
+  "copyrightText": "",
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857
+  },
+  "initialExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "fullExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "allowGeometryUpdates": true,
+  "units": "esriMeters",
+  "supportsAppend": true,
+  "syncEnabled": false,
+  "supportsApplyEditsWithGlobalIds": true,
+  "editorTrackingInfo": {
+    "enableEditorTracking": true,
+    "enableOwnershipAccessControl": false,
+    "allowOthersToQuery": true,
+    "allowOthersToUpdate": true,
+    "allowOthersToDelete": true,
+    "allowAnonymousToQuery": true,
+    "allowAnonymousToUpdate": true,
+    "allowAnonymousToDelete": true
+  },
+  "xssPreventionInfo": {
+    "xssPreventionEnabled": true,
+    "xssPreventionRule": "InputOnly",
+    "xssInputRule": "rejectInvalid"
+  },
+  "layers": [{
+    "id": 0,
+    "name": null,
+    "parentLayerId": -1,
+    "defaultVisibility": true,
+    "subLayerIds": null,
+    "minScale": 0,
+    "maxScale": 0,
+    "geometryType": "esriGeometryPoint"
+  }],
+  "tables": [{
+    "id": 1,
+    "name": null,
+    "parentLayerId": -1,
+    "defaultVisibility": true,
+    "subLayerIds": null,
+    "minScale": 0,
+    "maxScale": 0
+  }]
+};
+
+export const FeatureServiceSuccessResponseNoLayers: any = {
+  "currentVersion": 10.61,
+  "serviceItemId": "svc1234567890",
+  "isView": true,
+  "isUpdatableView": true,
+  "sourceSchemaChangesAllowed": true,
+  "serviceDescription": "",
+  "hasVersionedData": false,
+  "supportsDisconnectedEditing": false,
+  "hasStaticData": false,
+  "maxRecordCount": 1000,
+  "supportedQueryFormats": "JSON",
+  "supportsVCSProjection": false,
+  "capabilities": "Create,Query,Editing",
+  "description": "",
+  "copyrightText": "",
+  "spatialReference": {
+    "wkid": 102100,
+    "latestWkid": 3857
+  },
+  "initialExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "fullExtent": {
+    "xmin": -14999999.999989873,
+    "ymin": 2699999.9999980442,
+    "xmax": -6199999.9999958146,
+    "ymax": 6499999.99999407,
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    }
+  },
+  "allowGeometryUpdates": true,
+  "units": "esriMeters",
+  "supportsAppend": true,
+  "syncEnabled": false,
+  "supportsApplyEditsWithGlobalIds": true,
+  "editorTrackingInfo": {
+    "enableEditorTracking": true,
+    "enableOwnershipAccessControl": false,
+    "allowOthersToQuery": true,
+    "allowOthersToUpdate": true,
+    "allowOthersToDelete": true,
+    "allowAnonymousToQuery": true,
+    "allowAnonymousToUpdate": true,
+    "allowAnonymousToDelete": true
+  },
+  "xssPreventionInfo": {
+    "xssPreventionEnabled": true,
+    "xssPreventionRule": "InputOnly",
+    "xssInputRule": "rejectInvalid"
+  },
+  "layers": [],
+  "tables": [{
+    "id": 1,
+    "name": "ROW Permit Comment",
+    "parentLayerId": -1,
+    "defaultVisibility": true,
+    "subLayerIds": null,
+    "minScale": 0,
+    "maxScale": 0
+  }]
+};
+
 export const FeatureServiceLayer0SuccessResponse: any = {
   "currentVersion": 10.61,
   "id": 0,

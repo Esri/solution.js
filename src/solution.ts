@@ -577,7 +577,7 @@ function createItem (
  * @returns A promise that will resolve when fullItem has been updated
  * @protected
  */
-function fleshOutFeatureService (
+export function fleshOutFeatureService (
   fullItem: IFullItemFeatureService,
   requestOptions?: IUserRequestOptions
 ): Promise<void> {
@@ -647,15 +647,18 @@ function generalizeWebMappingApplicationURLs (
 function getFirstUsableName (
   layerList: any[]
 ): string {
+  let name = "";
   // Return the first layer name found
-  if (layerList !== null) {
-    layerList.forEach(layer => {
+  if (Array.isArray(layerList) && layerList.length > 0) {
+    layerList.some(layer => {
       if (layer["name"] !== "") {
-        return layer["name"];
+        name = layer["name"];
+        return true;
       }
+      return false;
     });
   }
-  return "";
+  return name;
 }
 
 /**
@@ -673,7 +676,7 @@ function getLayers (
   requestOptions?: IUserRequestOptions
 ): Promise<any[]> {
   return new Promise<any[]>(resolve => {
-    if (!Array.isArray(layerList)) {
+    if (!Array.isArray(layerList) || layerList.length === 0) {
       resolve([]);
     }
 
@@ -905,18 +908,15 @@ export function updateWebMappingApplicationURL (
       },
       authentication: orgSession.authentication
     };
-    try {
-      items.updateItem(options)
-      .then(
-        updateResp => {
-          resolve(fullItem.item.id);
-        },
-        error => {
-          reject('Unable to update web mapping app: ' + fullItem.item.id);
-        }
-      );
-    } catch (ignore) {
-      reject('Unable to update web mapping app: ' + fullItem.item.id);
-    }
+
+    items.updateItem(options)
+    .then(
+      updateResp => {
+        resolve(fullItem.item.id);
+      },
+      error => {
+        reject('Unable to update web mapping app: ' + fullItem.item.id);
+      }
+    );
   });
 }
