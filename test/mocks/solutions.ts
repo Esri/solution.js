@@ -16,7 +16,7 @@
 
 export const SolutionWMA: any = {
   "wma1234567890": {
-    "type": 'Web Mapping Application',
+    "type": "Web Mapping Application",
     "item": {
       "id": "wma1234567890",
       "item": "wma1234567890",
@@ -24,7 +24,7 @@ export const SolutionWMA: any = {
       "title": "ROW Permit Public Comment",
       "type": "Web Mapping Application",
       "typeKeywords": ["JavaScript", "Map", "Mapping Site", "Online Map", "source-049f861ad61b4d2992de47e2d0375097", "Web Map"],
-      "description": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitPublicComment/' target='_blank'>Learn more<\/a>",
+      "description": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermitPublicComment/' target='_blank'>Learn more</a>",
       "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
       "snippet": "ROW Permit Public Comment is a configuration of the Crowdsource Polling application that can be used by the general public and interested parties to review permit applications and comment on proposed construction activity.",
       "thumbnail": "thumbnail/ago_downloaded.png",
@@ -49,7 +49,7 @@ export const SolutionWMA: any = {
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    "dependencies": ['map1234567890'],
+    "dependencies": ["map1234567890"],
     "data": {
       "source": "template1234567890",
       "folderId": "folder1234567890",
@@ -99,7 +99,7 @@ export const SolutionWMA: any = {
     "resources": null
   },
   "map1234567890": {
-    "type": 'Web Map',
+    "type": "Web Map",
     "item": {
       "id": "map1234567890",
       "item": "map1234567890",
@@ -135,7 +135,7 @@ export const SolutionWMA: any = {
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    "dependencies": ['svc1234567890'],
+    "dependencies": ["svc1234567890"],
     "data": {
       "operationalLayers": [{
         "id": "ROWPermitApplication_4605",
@@ -206,7 +206,7 @@ export const SolutionWMA: any = {
     "resources": null
   },
   "svc1234567890": {
-    "type": 'Feature Service',
+    "type": "Feature Service",
     "item": {
       "id": "svc1234567890",
       "item": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
@@ -257,10 +257,7 @@ export const SolutionWMA: any = {
       }]
     },
     "resources": null,
-    service: {
-      "name": "ROWPermits_publiccomment",
-      "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
-      "description": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+    "service": {
       "currentVersion": 10.61,
       "serviceItemId": "svc1234567890",
       "isView": true,
@@ -274,6 +271,7 @@ export const SolutionWMA: any = {
       "supportedQueryFormats": "JSON",
       "supportsVCSProjection": false,
       "capabilities": "Create,Query,Editing",
+      "description": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
       "copyrightText": "",
       "spatialReference": {
         "wkid": 102100,
@@ -281,8 +279,8 @@ export const SolutionWMA: any = {
       },
       "initialExtent": {
         "xmin": -14999999.999989873,
-        "ymin": 2699999.9999980442,
-        "xmax": -6199999.9999958146,
+        "ymin": 2699999.999998044,
+        "xmax": -6199999.999995815,
         "ymax": 6499999.99999407,
         "spatialReference": {
           "wkid": 102100,
@@ -291,8 +289,8 @@ export const SolutionWMA: any = {
       },
       "fullExtent": {
         "xmin": -14999999.999989873,
-        "ymin": 2699999.9999980442,
-        "xmax": -6199999.9999958146,
+        "ymin": 2699999.999998044,
+        "xmax": -6199999.999995815,
         "ymax": 6499999.99999407,
         "spatialReference": {
           "wkid": 102100,
@@ -337,9 +335,11 @@ export const SolutionWMA: any = {
         "subLayerIds": null,
         "minScale": 0,
         "maxScale": 0
-      }]
+      }],
+      "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+      "name": "ROWPermits_publiccomment"
     },
-    layers: [{
+    "layers": [{
       "currentVersion": 10.61,
       "id": 0,
       "name": "ROW Permits",
@@ -1650,7 +1650,7 @@ export const SolutionWMA: any = {
       "viewDefinitionQuery": "status = 'BoardReview'",
       "definitionQuery": "status = 'BoardReview'"
     }],
-    tables: [{
+    "tables": [{
       "currentVersion": 10.61,
       "id": 1,
       "name": "ROW Permit Comment",
@@ -2015,7 +2015,7 @@ export const SolutionWMA: any = {
 
 export const SolutionEmptyGroup: any = {
   "grp1234567890": {
-    "type": 'Group',
+    "type": "Group",
     "item": {
       "id": "grp1234567890",
       "title": "ROW Permit Manager",
