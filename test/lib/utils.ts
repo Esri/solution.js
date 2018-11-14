@@ -55,3 +55,9 @@ export function createRuntimeMockUserSession (
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
 }
+
+export function roughClone (
+  obj: any
+) {
+  return JSON.parse(JSON.stringify(obj));
+}

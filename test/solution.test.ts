@@ -21,7 +21,6 @@ import * as solution from "../src/solution";
 import { IFullItem } from "../src/fullItem";
 import { ISwizzleHash } from "../src/dependencies";
 
-
 import { ItemFailResponse, ItemDataOrResourceFailResponse,
   ItemSuccessResponseWMAWithoutUndesirableProps,
   ItemResourcesSuccessResponseNone, ItemResourcesSuccessResponseOne,
@@ -40,7 +39,7 @@ import { SolutionWMA, SolutionEmptyGroup, SolutionDashboardNoMap, SolutionDashbo
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import { TOMORROW, setMockDateTime, createRuntimeMockUserSession } from "./lib/utils";
+import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, roughClone } from "./lib/utils";
 import { ISwizzle } from '../src';
 
 //--------------------------------------------------------------------------------------------------------------------//
@@ -295,10 +294,37 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("clone solution", () => {
+  xdescribe("clone solution", () => {
+
+    it("should create a Dashboard", done => {
+      let fullItem:IFullItem = roughClone(SolutionDashboardNoMap.dash1234567890);
+      let folderId:string = null;
+      let swizzles:ISwizzleHash = {};
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItemId => {
+          expect(createdItemId).toEqual("sln1234567890");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+  });
+
+  describe("supporting routine: create item", () => {
 
     it("should create a mapless Dashboard", done => {
-      let fullItem:IFullItem = SolutionDashboardNoMap.dash1234567890;
+      let fullItem:IFullItem = roughClone(SolutionDashboardNoMap.dash1234567890);
       let folderId:string = null;
       let swizzles:ISwizzleHash = {};
       let orgSession:solution.IOrgSession = {
@@ -321,7 +347,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a dataless Dashboard", done => {
-      let fullItem:IFullItem = SolutionDashboardNoData.dash1234567890;
+      let fullItem:IFullItem = roughClone(SolutionDashboardNoMap.dash1234567890);
       let folderId:string = null;
       let swizzles:ISwizzleHash = {};
       let orgSession:solution.IOrgSession = {
@@ -346,7 +372,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Feature Service", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let fullItem:IFullItem = SolutionWMA.svc1234567890;
+      let fullItem:IFullItem = roughClone(SolutionWMA.svc1234567890);
       let folderId:string = "fld1234567890";
       let swizzles:ISwizzleHash = {};
 
@@ -394,14 +420,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    /*
     it("should handle an error while trying to create a Feature Service", done => {
-      let fullItem:IFullItem = {
-        ...SolutionWMA.svc1234567890
-      };
-      fullItem.item.url = null;  //??? Breaks SolutionWMA.svc1234567890
+      let fullItem:IFullItem = roughClone(SolutionWMA.svc1234567890);
+      fullItem.item.url = null;
       expect(SolutionWMA.svc1234567890.item.url).toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
-
 
       let folderId:string = "fld1234567890";
       let swizzles:ISwizzleHash = {};
@@ -412,7 +434,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       let orgSession:solution.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
-        authentication: createRuntimeUserSession(setDateTime(now))
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       fetchMock
@@ -428,6 +450,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    /*
     xit("should create an empty Group", done => {});
 
     xit("should create a Group and add its members", done => {});

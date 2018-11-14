@@ -443,7 +443,7 @@ function addGroupMembers (
 /**
  * Creates an item in a specified folder (except for Group item type).
  *
- * @param fullItem Item to be created
+ * @param fullItem Item to be created; n.b.: this item is modified
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param swizzles Hash mapping Solution source id to id of its clone
