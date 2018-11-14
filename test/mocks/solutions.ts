@@ -15,9 +15,9 @@
  */
 
 export const SolutionWMA: any = {
-  wma1234567890: {
-    type: 'Web Mapping Application',
-    item: {
+  "wma1234567890": {
+    "type": 'Web Mapping Application',
+    "item": {
       "id": "wma1234567890",
       "item": "wma1234567890",
       "name": null,
@@ -49,8 +49,8 @@ export const SolutionWMA: any = {
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    dependencies: ['map1234567890'],
-    data: {
+    "dependencies": ['map1234567890'],
+    "data": {
       "source": "template1234567890",
       "folderId": "folder1234567890",
       "values": {
@@ -96,11 +96,11 @@ export const SolutionWMA: any = {
         "submitMessage": "Thank you. Your comment has been submitted."
       }
     },
-    resources: null
+    "resources": null
   },
-  map1234567890: {
-    type: 'Web Map',
-    item: {
+  "map1234567890": {
+    "type": 'Web Map',
+    "item": {
       "id": "map1234567890",
       "item": "map1234567890",
       "name": null,
@@ -135,8 +135,8 @@ export const SolutionWMA: any = {
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    dependencies: ['svc1234567890'],
-    data: {
+    "dependencies": ['svc1234567890'],
+    "data": {
       "operationalLayers": [{
         "id": "ROWPermitApplication_4605",
         "layerType": "ArcGISFeatureLayer",
@@ -203,11 +203,11 @@ export const SolutionWMA: any = {
         }
       }
     },
-    resources: null
+    "resources": null
   },
-  svc1234567890: {
-    type: 'Feature Service',
-    item: {
+  "svc1234567890": {
+    "type": 'Feature Service',
+    "item": {
       "id": "svc1234567890",
       "item": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
       "name": "ROWPermits_publiccomment",
@@ -242,8 +242,8 @@ export const SolutionWMA: any = {
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    dependencies: [],
-    data: {
+    "dependencies": [],
+    "data": {
       "tables": [{
         "id": 1,
         "popupInfo": {}
@@ -256,7 +256,7 @@ export const SolutionWMA: any = {
         }
       }]
     },
-    resources: null,
+    "resources": null,
     service: {
       "name": "ROWPermits_publiccomment",
       "snippet": "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
@@ -2014,9 +2014,9 @@ export const SolutionWMA: any = {
 };
 
 export const SolutionEmptyGroup: any = {
-  grp1234567890: {
-    type: 'Group',
-    item: {
+  "grp1234567890": {
+    "type": 'Group',
+    "item": {
       "id": "grp1234567890",
       "title": "ROW Permit Manager",
       "isInvitationOnly": true,
@@ -2043,6 +2043,1089 @@ export const SolutionEmptyGroup: any = {
       },
       "collaborationInfo": {}
     },
-    dependencies: []
+    "dependencies": []
   }
 };
+
+export const SolutionDashboardNoMap: any = {
+  "dash1234567890": {
+    "type": "Dashboard",
+    "item": {
+      "id": "dash1234567890",
+      "name": null,
+      "title": "ROW Permit Dashboard",
+      "type": "Dashboard",
+      "typeKeywords": ["Dashboard", "Operations Dashboard", "source-c3bea7d9491244d89a1ac33ce074084b"],
+      "description": "ROW Permit Dashboard is a configuration of Operations Dashboard for ArcGIS that can be used by public works executives to monitor the status of right of way permits in their community.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermit/' target='_blank'>Learn more</a>",
+      "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+      "snippet": "ROW Permit Dashboard is a configuration of Operations Dashboard for ArcGIS that can be used by public works executives to monitor the status of right of way permits in their community.",
+      "thumbnail": "thumbnail/ago_downloaded.png",
+      "documentation": null,
+      "extent": [],
+      "categories": [],
+      "spatialReference": null,
+      "accessInformation": "Esri., Inc.",
+      "licenseInfo": null,
+      "culture": "en-us",
+      "properties": null,
+      "url": null,
+      "proxyFilter": null,
+      "access": "public",
+      "appCategories": [],
+      "industries": [],
+      "languages": [],
+      "largeThumbnail": null,
+      "banner": null,
+      "screenshots": [],
+      "listed": false,
+      "commentsEnabled": false,
+      "groupDesignations": null
+    },
+    "dependencies": [],
+    "data": {
+      "version": 24,
+      "layout": {
+        "rootElement": {
+          "type": "stackLayoutElement",
+          "orientation": "col",
+          "elements": [{
+            "type": "stackLayoutElement",
+            "orientation": "row",
+            "elements": [{
+              "type": "itemLayoutElement",
+              "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517",
+              "width": 1,
+              "height": 0.7
+            }, {
+              "type": "tabsLayoutElement",
+              "elements": [{
+                "type": "itemLayoutElement",
+                "id": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4",
+                "width": 1,
+                "height": 1,
+                "tabName": "Permit Type"
+              }, {
+                "type": "itemLayoutElement",
+                "id": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14",
+                "width": 1,
+                "height": 1,
+                "tabName": "Submission Date"
+              }],
+              "width": 1,
+              "height": 0.3
+            }],
+            "width": 0.75,
+            "height": 1
+          }, {
+            "type": "groupLayoutElement",
+            "orientation": "row",
+            "elements": [{
+              "type": "itemLayoutElement",
+              "id": "3e796f16-722b-437f-89a4-e3787e105b24",
+              "width": 1,
+              "height": 0.25
+            }, {
+              "type": "itemLayoutElement",
+              "id": "0f994268-e553-4d11-b8d1-afecf0818841",
+              "width": 1,
+              "height": 0.75
+            }],
+            "width": 0.25,
+            "height": 1
+          }],
+          "width": 1,
+          "height": 1
+        }
+      },
+      "headerPanel": {
+        "showMargin": true,
+        "type": "headerPanel",
+        "titleTextColor": "#ffffff",
+        "backgroundColor": "#004575",
+        "size": "medium",
+        "backgroundImageSizing": "fit-height",
+        "normalBackgroundImagePlacement": "left",
+        "horizontalBackgroundImagePlacement": "top",
+        "showSignOutMenu": false,
+        "menuLinks": [],
+        "selectors": []
+      },
+      "leftPanel": {
+        "type": "leftPanel",
+        "title": "<p>ROW Permit Dashboard can be used by public works executives to monitor the status of right of way permits in their community.</p>\n\n<p>&nbsp;</p>\n\n<p>Adjust the filters or current map extent to refine the results.</p>\n",
+        "selectors": [{
+          "events": [{
+            "type": "selectionChanged",
+            "actions": [{
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "3e796f16-722b-437f-89a4-e3787e105b24#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "0f994268-e553-4d11-b8d1-afecf0818841#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14#main"
+            }]
+          }],
+          "datasets": [{
+            "statisticDefinitions": [{
+              "onStatisticField": "type",
+              "outStatisticFieldName": "count_result",
+              "statisticType": "count"
+            }],
+            "type": "serviceDataset",
+            "outFields": ["*"],
+            "groupByFields": ["type"],
+            "orderByFields": ["type asc"],
+            "dataSource": {
+              "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            },
+            "maxFeatures": 50,
+            "querySpatialRelationship": "esriSpatialRelIntersects",
+            "returnGeometry": false,
+            "clientSideStatistics": false,
+            "name": "main"
+          }],
+          "category": {
+            "type": "groupByValues",
+            "nullLabel": "Null",
+            "blankLabel": "Blank",
+            "labelOverrides": []
+          },
+          "selection": {
+            "type": "multiple",
+            "operator": "is_in"
+          },
+          "preferredDisplayType": "checkboxes",
+          "displayThreshold": 10,
+          "type": "categorySelectorWidget",
+          "id": "0e95ecaf-2027-4505-aee3-a2eba058a453",
+          "name": "Type",
+          "caption": "Type",
+          "showLastUpdate": true
+        }, {
+          "events": [{
+            "type": "selectionChanged",
+            "actions": [{
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "3e796f16-722b-437f-89a4-e3787e105b24#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "0f994268-e553-4d11-b8d1-afecf0818841#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14#main"
+            }]
+          }],
+          "datasets": [{
+            "statisticDefinitions": [{
+              "onStatisticField": "status",
+              "outStatisticFieldName": "count_result",
+              "statisticType": "count"
+            }],
+            "type": "serviceDataset",
+            "outFields": ["*"],
+            "groupByFields": ["status"],
+            "orderByFields": ["status desc"],
+            "dataSource": {
+              "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            },
+            "maxFeatures": 50,
+            "querySpatialRelationship": "esriSpatialRelIntersects",
+            "returnGeometry": false,
+            "clientSideStatistics": false,
+            "name": "main"
+          }],
+          "category": {
+            "type": "groupByValues",
+            "nullLabel": "Null",
+            "blankLabel": "Blank",
+            "labelOverrides": []
+          },
+          "selection": {
+            "type": "multiple",
+            "operator": "is_in"
+          },
+          "preferredDisplayType": "checkboxes",
+          "displayThreshold": 10,
+          "type": "categorySelectorWidget",
+          "id": "329bb4d1-ad54-4d52-9db7-9fd674c54d4e",
+          "name": "Status",
+          "caption": "Status",
+          "showLastUpdate": true
+        }, {
+          "events": [{
+            "type": "selectionChanged",
+            "actions": [{
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "3e796f16-722b-437f-89a4-e3787e105b24#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "0f994268-e553-4d11-b8d1-afecf0818841#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [],
+              "targetId": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14#main"
+            }]
+          }],
+          "datasets": [{
+            "statisticDefinitions": [{
+              "onStatisticField": "moreinfo",
+              "outStatisticFieldName": "count_result",
+              "statisticType": "count"
+            }],
+            "type": "serviceDataset",
+            "outFields": ["*"],
+            "groupByFields": ["moreinfo"],
+            "orderByFields": ["moreinfo asc"],
+            "dataSource": {
+              "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            },
+            "maxFeatures": 50,
+            "querySpatialRelationship": "esriSpatialRelIntersects",
+            "returnGeometry": false,
+            "clientSideStatistics": false,
+            "name": "main"
+          }],
+          "category": {
+            "type": "groupByValues",
+            "nullLabel": "Null",
+            "blankLabel": "Blank",
+            "labelOverrides": []
+          },
+          "selection": {
+            "type": "multiple",
+            "operator": "is_in"
+          },
+          "preferredDisplayType": "button_bar",
+          "displayThreshold": 10,
+          "type": "categorySelectorWidget",
+          "id": "fa6e8b0b-3912-4eb4-bf58-b17d1c7c7a3b",
+          "name": "More Information Required?",
+          "caption": "More Information Required?",
+          "showLastUpdate": true
+        }, {
+          "events": [{
+            "type": "selectionChanged",
+            "actions": [{
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "submitdt"
+              }],
+              "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "submitdt"
+              }],
+              "targetId": "3e796f16-722b-437f-89a4-e3787e105b24#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "submitdt"
+              }],
+              "targetId": "0f994268-e553-4d11-b8d1-afecf0818841#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "submitdt"
+              }],
+              "targetId": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "submitdt"
+              }],
+              "targetId": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14#main"
+            }]
+          }],
+          "type": "dateSelectorWidget",
+          "definedOptions": {
+            "type": "definedOptions",
+            "displayType": "dropdown",
+            "defaultSelection": "first",
+            "noneLabelPlacement": "first",
+            "noneLabel": "All",
+            "namedFilters": [{
+              "displayName": "Last 7 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "7"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Last 30 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "30"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Last 90 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "90"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Older than 30 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_before_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "30"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Older than 90 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_before_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "90"
+                    }
+                  }]
+                }]
+              }
+            }]
+          },
+          "datePickerOption": {
+            "type": "datePicker",
+            "selectionType": "range",
+            "operator": "between",
+            "minDefaultValue": {
+              "type": "date",
+              "includeTime": false,
+              "defaultToToday": false
+            },
+            "maxDefaultValue": {
+              "type": "date",
+              "includeTime": false,
+              "defaultToToday": true
+            }
+          },
+          "customLabel": "Between the dates",
+          "optionType": "advanced",
+          "id": "117c527b-96ef-4939-9751-d61feb96b62c",
+          "name": "Submission Date",
+          "caption": "Submission Date",
+          "showLastUpdate": true
+        }, {
+          "events": [{
+            "type": "selectionChanged",
+            "actions": [{
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "apprstartdt"
+              }],
+              "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "apprstartdt"
+              }],
+              "targetId": "3e796f16-722b-437f-89a4-e3787e105b24#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "apprstartdt"
+              }],
+              "targetId": "0f994268-e553-4d11-b8d1-afecf0818841#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "apprstartdt"
+              }],
+              "targetId": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4#main"
+            }, {
+              "type": "filter",
+              "by": "whereClause",
+              "fieldMap": [{
+                "sourceName": "filterField",
+                "targetName": "apprstartdt"
+              }],
+              "targetId": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14#main"
+            }]
+          }],
+          "type": "dateSelectorWidget",
+          "definedOptions": {
+            "type": "definedOptions",
+            "displayType": "dropdown",
+            "defaultSelection": "first",
+            "noneLabelPlacement": "first",
+            "noneLabel": "All",
+            "namedFilters": [{
+              "displayName": "Next 7 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_next",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "7"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Next 30 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_next",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "30"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Last 30 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "30"
+                    }
+                  }]
+                }]
+              }
+            }, {
+              "displayName": "Last 7 days",
+              "filter": {
+                "type": "filterGroup",
+                "condition": "OR",
+                "rules": [{
+                  "type": "filterGroup",
+                  "condition": "AND",
+                  "rules": [{
+                    "type": "filterRule",
+                    "field": {
+                      "name": "filterField",
+                      "type": "esriFieldTypeDate"
+                    },
+                    "operator": "is_within_last",
+                    "constraint": {
+                      "type": "relativeDate",
+                      "unit": "d",
+                      "value": "7"
+                    }
+                  }]
+                }]
+              }
+            }]
+          },
+          "datePickerOption": {
+            "type": "datePicker",
+            "selectionType": "range",
+            "operator": "between",
+            "minDefaultValue": {
+              "type": "date",
+              "includeTime": false,
+              "defaultToToday": false
+            },
+            "maxDefaultValue": {
+              "type": "date",
+              "includeTime": false,
+              "defaultToToday": false
+            }
+          },
+          "customLabel": "Between the dates",
+          "optionType": "advanced",
+          "id": "024b8abb-07c3-4505-bde7-b1994f69ac87",
+          "name": "Approved Start Date",
+          "caption": "Approved Start Date",
+          "showLastUpdate": true
+        }]
+      },
+      "widgets": [{
+        "valueFormat": {
+          "name": "value",
+          "type": "decimal",
+          "prefix": false
+        },
+        "datasets": [{
+          "statisticDefinitions": [{
+            "onStatisticField": "objectid",
+            "outStatisticFieldName": "value",
+            "statisticType": "count"
+          }],
+          "type": "serviceDataset",
+          "outFields": ["*"],
+          "groupByFields": [],
+          "orderByFields": [],
+          "dataSource": {
+            "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+          },
+          "querySpatialRelationship": "esriSpatialRelIntersects",
+          "returnGeometry": false,
+          "clientSideStatistics": false,
+          "name": "main"
+        }],
+        "defaultSettings": {
+          "backgroundColor": "#ffffff",
+          "caption": "<p><span style=\"font-size:18px\">Permits</span></p>\n",
+          "topSection": {
+            "fontSize": 80,
+            "textInfo": {}
+          },
+          "middleSection": {
+            "fontSize": 160,
+            "textInfo": {
+              "text": "{value}",
+              "fillColor": "#004575"
+            },
+            "iconInfo": {
+              "fillColor": "#004575",
+              "align": "left",
+              "icon": "<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" viewBox=\"-16 -16 96 96\" id=\"ember5200\" class=\"icon ember-view\">\n\t<path d=\"M39,44h20v1.9725L41.48045,64H39V44z M59,0v39H34v25H5V0H59z M25,44H15v10h10V44z M25,24H15v10h10V24z M44,5 H15v10h29V5z\"></path>\n</svg>"
+            }
+          },
+          "bottomSection": {
+            "fontSize": 80,
+            "textInfo": {}
+          }
+        },
+        "comparison": "none",
+        "type": "indicatorWidget",
+        "percentageFormat": {
+          "name": "percentage",
+          "type": "decimal",
+          "prefix": false
+        },
+        "ratioFormat": {
+          "name": "ratio",
+          "type": "decimal",
+          "prefix": false
+        },
+        "id": "3e796f16-722b-437f-89a4-e3787e105b24",
+        "name": "ROW Permit Count",
+        "showLastUpdate": false
+      }, {
+        "datasets": [{
+          "statisticDefinitions": [],
+          "type": "serviceDataset",
+          "outFields": ["*"],
+          "groupByFields": [],
+          "orderByFields": ["submitdt desc"],
+          "dataSource": {
+            "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+          },
+          "maxFeatures": 100,
+          "querySpatialRelationship": "esriSpatialRelIntersects",
+          "returnGeometry": false,
+          "clientSideStatistics": false,
+          "name": "main"
+        }],
+        "type": "listWidget",
+        "iconType": "symbol",
+        "text": "<p><span style=\"font-size:16px\">{appname}</span></p>\n\n<p><span style=\"font-size:12px\">{type} </span></p>\n\n<p><span style=\"font-size:12px\">{status}</span></p>\n",
+        "selectionMode": "single",
+        "events": [{
+          "type": "selectionChanged",
+          "actions": [{
+            "type": "flashGeometry",
+            "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517"
+          }, {
+            "type": "pan",
+            "targetId": "1200f3f1-8f72-4ea6-af16-14f19e9a4517"
+          }]
+        }],
+        "backgroundColor": "#ffffff",
+        "id": "0f994268-e553-4d11-b8d1-afecf0818841",
+        "name": "ROW Permit List",
+        "showLastUpdate": false
+      }, {
+        "guides": [],
+        "type": "serialChartWidget",
+        "fontSize": 11,
+        "valueFormat": {
+          "name": "value",
+          "type": "decimal",
+          "prefix": true,
+          "pattern": "#,###"
+        },
+        "labelFormat": {
+          "name": "label",
+          "type": "decimal",
+          "prefix": true,
+          "pattern": "#,###"
+        },
+        "datePeriodPatterns": [{
+          "period": "ss",
+          "pattern": "HH:mm:ss"
+        }, {
+          "period": "mm",
+          "pattern": "HH:mm"
+        }, {
+          "period": "hh",
+          "pattern": "HH:mm"
+        }, {
+          "period": "DD",
+          "pattern": "MMM d"
+        }, {
+          "period": "MM",
+          "pattern": "MMM"
+        }, {
+          "period": "YYYY",
+          "pattern": "yyyy"
+        }],
+        "chartScrollbar": {
+          "enabled": false,
+          "dragIcon": "dragIconRoundSmall",
+          "dragIconHeight": 20,
+          "dragIconWidth": 20,
+          "scrollbarHeight": 15
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridThickness": 1,
+          "gridAlpha": 0,
+          "axisThickness": 1,
+          "axisAlpha": 0,
+          "labelsEnabled": true,
+          "parseDates": false,
+          "minPeriod": "DD"
+        },
+        "valueAxis": {
+          "gridThickness": 1,
+          "gridAlpha": 0,
+          "axisThickness": 1,
+          "axisAlpha": 0,
+          "stackType": "none",
+          "labelsEnabled": false,
+          "integersOnly": false
+        },
+        "legend": {
+          "enabled": false,
+          "position": "bottom",
+          "markerSize": 15,
+          "markerType": "circle",
+          "align": "center",
+          "labelWidth": 100,
+          "valueWidth": 0
+        },
+        "graphs": [{
+          "bullet": "none",
+          "valueField": "value",
+          "lineColor": "#004575",
+          "type": "column",
+          "fillAlphas": 1,
+          "lineAlpha": 1,
+          "lineThickness": 1,
+          "bulletAlpha": 1,
+          "bulletBorderAlpha": 0,
+          "bulletBorderThickness": 2,
+          "bulletSize": 8,
+          "showBalloon": true
+        }],
+        "category": {
+          "fieldName": "type",
+          "labelOverrides": [],
+          "labelsPlacement": "wrapped",
+          "labelRotation": 30,
+          "byCategoryColors": false,
+          "nullLabel": "Null",
+          "blankLabel": "Blank",
+          "defaultColor": "#d6d6d6",
+          "nullColor": "#d6d6d6",
+          "blankColor": "#d6d6d6"
+        },
+        "splitBy": {
+          "defaultColor": "#d6d6d6",
+          "seriesProperties": []
+        },
+        "rotate": true,
+        "commonGraphProperties": {
+          "bulletAlpha": 1,
+          "type": "column",
+          "lineAlpha": 1,
+          "lineThickness": 1,
+          "bullet": "none",
+          "fillAlphas": 1,
+          "bulletBorderAlpha": 0,
+          "bulletBorderThickness": 2,
+          "bulletSize": 8,
+          "labelText": "[[value]]",
+          "showBalloon": false
+        },
+        "categoryType": "groupByValues",
+        "datasets": [{
+          "statisticDefinitions": [{
+            "onStatisticField": "objectid",
+            "outStatisticFieldName": "value",
+            "statisticType": "count"
+          }],
+          "type": "serviceDataset",
+          "outFields": ["*"],
+          "groupByFields": ["type"],
+          "dataSource": {
+            "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+          },
+          "querySpatialRelationship": "esriSpatialRelIntersects",
+          "returnGeometry": false,
+          "clientSideStatistics": false,
+          "name": "main"
+        }],
+        "id": "ff698ea5-2812-4ba5-a0ba-d89fc302f8f4",
+        "name": "Permit Type",
+        "caption": "",
+        "showLastUpdate": false
+      }, {
+        "guides": [],
+        "type": "serialChartWidget",
+        "fontSize": 11,
+        "valueFormat": {
+          "name": "value",
+          "type": "decimal",
+          "prefix": true,
+          "pattern": "#,###.#"
+        },
+        "labelFormat": {
+          "name": "label",
+          "type": "decimal",
+          "prefix": true,
+          "pattern": "#,###.#"
+        },
+        "datePeriodPatterns": [{
+          "period": "ss",
+          "pattern": "HH:mm:ss"
+        }, {
+          "period": "mm",
+          "pattern": "HH:mm"
+        }, {
+          "period": "hh",
+          "pattern": "HH:mm"
+        }, {
+          "period": "DD",
+          "pattern": "MMM d"
+        }, {
+          "period": "MM",
+          "pattern": "MMM"
+        }, {
+          "period": "YYYY",
+          "pattern": "yyyy"
+        }],
+        "chartScrollbar": {
+          "enabled": false,
+          "dragIcon": "dragIconRoundSmall",
+          "dragIconHeight": 20,
+          "dragIconWidth": 20,
+          "scrollbarHeight": 15
+        },
+        "categoryAxis": {
+          "gridPosition": "start",
+          "gridThickness": 1,
+          "gridAlpha": 0,
+          "axisThickness": 1,
+          "axisAlpha": 0.2,
+          "labelsEnabled": true,
+          "parseDates": true,
+          "minPeriod": "MM"
+        },
+        "valueAxis": {
+          "gridThickness": 1,
+          "gridAlpha": 0,
+          "axisThickness": 1,
+          "axisAlpha": 0.2,
+          "stackType": "none",
+          "labelsEnabled": true,
+          "integersOnly": true
+        },
+        "legend": {
+          "enabled": false,
+          "position": "bottom",
+          "markerSize": 15,
+          "markerType": "circle",
+          "align": "center",
+          "labelWidth": 100,
+          "valueWidth": 0
+        },
+        "graphs": [{
+          "bullet": "none",
+          "valueField": "value",
+          "lineColor": "#004575",
+          "type": "column",
+          "fillAlphas": 1,
+          "lineAlpha": 1,
+          "lineThickness": 1,
+          "bulletAlpha": 1,
+          "bulletBorderAlpha": 0,
+          "bulletBorderThickness": 2,
+          "bulletSize": 8,
+          "showBalloon": true
+        }],
+        "category": {
+          "fieldName": "submitdt",
+          "labelOverrides": [],
+          "labelsPlacement": "default",
+          "labelRotation": 0,
+          "byCategoryColors": false,
+          "nullLabel": "Null",
+          "blankLabel": "Blank",
+          "defaultColor": "#d6d6d6",
+          "nullColor": "#d6d6d6",
+          "blankColor": "#d6d6d6"
+        },
+        "splitBy": {
+          "defaultColor": "#d6d6d6",
+          "seriesProperties": []
+        },
+        "rotate": false,
+        "commonGraphProperties": {
+          "bulletAlpha": 1,
+          "type": "column",
+          "lineAlpha": 1,
+          "lineThickness": 1,
+          "bullet": "none",
+          "fillAlphas": 1,
+          "bulletBorderAlpha": 0,
+          "bulletBorderThickness": 2,
+          "bulletSize": 8,
+          "showBalloon": false
+        },
+        "categoryType": "groupByValues",
+        "datasets": [{
+          "statisticDefinitions": [{
+            "onStatisticField": "OBJECTID",
+            "outStatisticFieldName": "value",
+            "statisticType": "count"
+          }],
+          "type": "serviceDataset",
+          "outFields": ["*"],
+          "groupByFields": ["submitdt"],
+          "orderByFields": ["submitdt asc"],
+          "dataSource": {
+            "id": "1200f3f1-8f72-4ea6-af16-14f19e9a4517#ROWPermitApplication_4605"
+          },
+          "querySpatialRelationship": "esriSpatialRelIntersects",
+          "returnGeometry": false,
+          "clientSideStatistics": true,
+          "name": "main"
+        }],
+        "id": "d2e11f43-8d61-422c-b7fe-00dc8a9c2b14",
+        "name": "Submission Date",
+        "caption": "",
+        "showLastUpdate": false
+      }],
+      "settings": {
+        "maxPaginationRecords": 50000
+      },
+      "theme": "light"
+    },
+    "resources": null
+  }
+};
+
+export const SolutionDashboardNoData: any = {
+  "dash1234567890": {
+    "type": "Dashboard",
+    "item": {
+      "id": "dash1234567890",
+      "name": null,
+      "title": "ROW Permit Dashboard",
+      "type": "Dashboard",
+      "typeKeywords": ["Dashboard", "Operations Dashboard", "source-c3bea7d9491244d89a1ac33ce074084b"],
+      "description": "ROW Permit Dashboard is a configuration of Operations Dashboard for ArcGIS that can be used by public works executives to monitor the status of right of way permits in their community.<br /><br /><a href='http://links.esri.com/localgovernment/help/ROWPermit/' target='_blank'>Learn more</a>",
+      "tags": ["ROW", "Public Works", "Local Government", "ArcGIS for Local Government", "Permit", "Right of Way"],
+      "snippet": "ROW Permit Dashboard is a configuration of Operations Dashboard for ArcGIS that can be used by public works executives to monitor the status of right of way permits in their community.",
+      "thumbnail": "thumbnail/ago_downloaded.png",
+      "documentation": null,
+      "extent": [],
+      "categories": [],
+      "spatialReference": null,
+      "accessInformation": "Esri., Inc.",
+      "licenseInfo": null,
+      "culture": "en-us",
+      "properties": null,
+      "url": null,
+      "proxyFilter": null,
+      "access": "public",
+      "appCategories": [],
+      "industries": [],
+      "languages": [],
+      "largeThumbnail": null,
+      "banner": null,
+      "screenshots": [],
+      "listed": false,
+      "commentsEnabled": false,
+      "groupDesignations": null
+    },
+    "dependencies": [],
+    "data": null,
+    "resources": null
+  }
+};
+

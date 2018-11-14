@@ -441,16 +441,17 @@ function addGroupMembers (
 }
 
 /**
- * Creates an item in a specified folder.
+ * Creates an item in a specified folder (except for Group item type).
  *
- * @param fullItem Group
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root folder
+ * @param fullItem Item to be created
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
  * @param swizzles Hash mapping Solution source id to id of its clone
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @returns A promise that will resolve with the id of the created item
  * @protected
  */
-function createItem (
+export function createItem (
   fullItem: IFullItem,
   folderId: string,
   swizzles: ISwizzleHash,

@@ -19,6 +19,7 @@ import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
 
 import * as solution from "../src/solution";
 import { IFullItem } from "../src/fullItem";
+import { ISwizzleHash } from "../src/dependencies";
 
 
 import { ItemFailResponse, ItemDataOrResourceFailResponse,
@@ -35,11 +36,12 @@ import { FeatureServiceSuccessResponse,
   FeatureServiceSuccessResponseNoLayers,
   FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
 } from "./mocks/featureService";
-import { SolutionWMA, SolutionEmptyGroup } from "./mocks/solutions";
+import { SolutionWMA, SolutionEmptyGroup, SolutionDashboardNoMap, SolutionDashboardNoData } from "./mocks/solutions";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import { TOMORROW } from "./lib/utils";
+import { TOMORROW, setMockDateTime, createRuntimeMockUserSession } from "./lib/utils";
+import { ISwizzle } from '../src';
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -76,6 +78,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   afterEach(() => {
     fetchMock.restore();
+    jasmine.clock().uninstall();
   });
 
   describe("create solution", () => {
@@ -294,6 +297,150 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("clone solution", () => {
 
+    it("should create a mapless Dashboard", done => {
+      let fullItem:IFullItem = SolutionDashboardNoMap.dash1234567890;
+      let folderId:string = null;
+      let swizzles:ISwizzleHash = {};
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItemId => {
+          expect(createdItemId).toEqual("sln1234567890");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should create a dataless Dashboard", done => {
+      let fullItem:IFullItem = SolutionDashboardNoData.dash1234567890;
+      let folderId:string = null;
+      let swizzles:ISwizzleHash = {};
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"dash1234567890","folder":null}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItemId => {
+          expect(createdItemId).toEqual("dash1234567890");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should create a Feature Service", done => {
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      let fullItem:IFullItem = SolutionWMA.svc1234567890;
+      let folderId:string = "fld1234567890";
+      let swizzles:ISwizzleHash = {};
+
+      let now = 1555555555555;
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      let layerNumUpdater = (function () {
+          var layerNum = 0;
+          return () => layerNum++;
+      })();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
+        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
+        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
+        '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+        now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
+        '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/addToDefinition", layerNumUpdater)
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/0/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/1/addToDefinition", '{"success":true}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItemId => {
+          // Check that we're appending a timestamp to the service name
+          let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
+          let createServiceCallBody = createServiceCall[0][1].body as string;
+          expect(createServiceCallBody.indexOf("name%22%3A%22ROWPermits_publiccomment_1555555555555%22%2C"))
+            .toBeGreaterThan(0);
+
+          expect(createdItemId).toEqual("svc1234567890");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    /*
+    it("should handle an error while trying to create a Feature Service", done => {
+      let fullItem:IFullItem = {
+        ...SolutionWMA.svc1234567890
+      };
+      fullItem.item.url = null;  //??? Breaks SolutionWMA.svc1234567890
+      expect(SolutionWMA.svc1234567890.item.url).toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
+
+
+      let folderId:string = "fld1234567890";
+      let swizzles:ISwizzleHash = {};
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      let now = 1555555555555;
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        authentication: createRuntimeUserSession(setDateTime(now))
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"success":false}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        () => done.fail(),
+        errorMsg => {
+          expect(errorMsg).toEqual('Unable to create Feature Service: {"success":false}');
+          done();
+        }
+      );
+    });
+
+    xit("should create an empty Group", done => {});
+
+    xit("should create a Group and add its members", done => {});
+
+    xit("should handle a member-add failure whie tryign to create a Group", done => {});
+
+    xit("should create a Web Mapping Application", done => {});
+
+    xit("should handle an item creation failure while trying to create a Web Mapping Application", done => {});
+
+    xit("should handle a URL update failure while trying to create a Web Mapping Application", done => {});
+    */
+
   });
 
   describe("supporting routine: get cloning order", () => {
@@ -434,7 +581,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     let orgSession:solution.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
-      authentication: MOCK_USER_SESSION
+      ...MOCK_USER_REQOPTS
     };
 
     let abc = {...MOCK_ITEM_PROTOTYPE};
