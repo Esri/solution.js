@@ -45,12 +45,11 @@ module.exports = function(config) {
             .reduce((alias, p) => {
               if (p !== "arcgis-rest-common-types") {
                 alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
-                return alias;
               } else {
                 // the built lib for common-types doesnt contain any JS
                 alias[`@esri/${p}`] = `node_modules/@esri/${p}/src/index.ts`;
-                return alias;
               }
+              return alias;
             }, {})
         }
       }
