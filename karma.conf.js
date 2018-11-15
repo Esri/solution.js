@@ -48,7 +48,7 @@ module.exports = function(config) {
                 return alias;
               } else {
                 // the built lib for common-types doesnt contain any JS
-                alias[`@esri/${p}`] = `node_modules/@esri/arcgis-rest-request/dist/node/index.js`;
+                alias[`@esri/${p}`] = `node_modules/@esri/${p}/src/index.ts`;
                 return alias;
               }
             }, {})
