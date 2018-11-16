@@ -14,14 +14,15 @@
  | limitations under the License.
  */
 
-import * as fetchMock from "fetch-mock";
 import * as dependencies from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
+
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
 import { TOMORROW } from "./lib/utils";
-import { doesNotReject } from 'assert';
+import * as fetchMock from "fetch-mock";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
