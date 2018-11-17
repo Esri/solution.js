@@ -56,9 +56,10 @@ export function getItemSolutionPart (
       break;
 
     case "Feature Service":
-      solutionPart = getItemSolutionFundamentals(type, "svc",
-        url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
-      solutionPart.item.url = url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      solutionPart = getItemSolutionFundamentals(type, "svc", url ||
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
+      solutionPart.item.url = url ||
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       solutionPart.item.name = "ROWPermits_publiccomment";
 
       let layer0:any = mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
@@ -69,8 +70,8 @@ export function getItemSolutionPart (
       );
       solutionPart.service = {
         name: "ROWPermits_publiccomment",
-        snippet: "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
-        description: "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+        snippet: "A feature service snippet",
+        description: "A feature service description",
         ...mockServices.getService([layer0], [table1])
       };
       solutionPart.layers = [layer0];

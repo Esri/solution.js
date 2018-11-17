@@ -71,15 +71,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("for single item containing WMA & feature service", done => {
       let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"), {})
-      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"), {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"), {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"), {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"), {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"), {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"), {})
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
       .post(baseSvcURL + "FeatureServer?f=json", mockServices.getService(
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -104,12 +104,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("for single item not containing WMA or feature service", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem(), {})
-      .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup(), {})
+      .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=0&num=100&token=fake-token",
-        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}', {});
+        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
       solution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
@@ -257,7 +257,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), "public", MOCK_USER_REQOPTS)
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
+        "public", MOCK_USER_REQOPTS)
       .then(
         response => {
           expect(response).toEqual({
@@ -276,7 +277,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), "public", MOCK_USER_REQOPTS)
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
+        "public", MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -291,8 +293,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"sln1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-      '{"error":{"code":400,"messageCode":"CONT_0001","message":"Item does not exist or is inaccessible.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), "public", MOCK_USER_REQOPTS)
+        '{"error":{"code":400,"messageCode":"CONT_0001",' +
+        '"message":"Item does not exist or is inaccessible.","details":[]}}');
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
+        "public", MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -309,8 +313,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
         '{"success":true,"id":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
-        '{"error":{"code":400,"messageCode":"CONT_0001","message":"Item does not exist or is inaccessible.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), "public", MOCK_USER_REQOPTS)
+        '{"error":{"code":400,"messageCode":"CONT_0001",' +
+        '"message":"Item does not exist or is inaccessible.","details":[]}}');
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
+        "public", MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -432,7 +438,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle an error while trying to create a Feature Service", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.item.url = null;
-      expect(mockSolutions.getItemSolutionPart("Feature Service").item.url).toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
+      expect(mockSolutions.getItemSolutionPart("Feature Service").item.url)
+        .toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/" +
+        "ROWPermits_publiccomment/FeatureServer");
 
       let folderId:string = "fld1234567890";
       let swizzles:ISwizzleHash = {};

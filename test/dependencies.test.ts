@@ -142,7 +142,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           "f=json&start=0&num=100&token=fake-token";
         fetchMock
         .mock(groupUrl,
-          '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}', {});
+          '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
         let expected:string[] = [];
 
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -163,7 +163,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         fetchMock
         .mock(groupUrl,
           '{"total":6,"start":1,"num":6,"nextStart":-1,' +
-          '"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"},{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {});
+          '"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"},{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
         let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
         let abc = {...MOCK_ITEM_PROTOTYPE};
@@ -184,7 +184,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         let expected = "Group does not exist or is inaccessible.";
         fetchMock
         .mock("begin:" + groupUrl,
-          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
@@ -207,9 +207,9 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         let expected = "Group does not exist or is inaccessible.";
         fetchMock
         .mock("begin:" + groupUrl + "&start=0&num=100&token=fake-token",
-          '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+          '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
         .mock("begin:" + groupUrl + "&start=3&num=100&token=fake-token",
-          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+          '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
@@ -720,7 +720,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}', {});
+        '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}');
       let expected = ["a1"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -739,7 +739,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {});
+        '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}');
       let expected = ["a1", "a2", "a3"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -758,9 +758,9 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+        '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
-        '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}', {});
+        '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}');
       let expected = ["a1", "a2", "a3", "a4"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -783,9 +783,9 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":6,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+        '{"total":6,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
-        '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {});
+        '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -808,11 +808,11 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":7,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+        '{"total":7,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
-        '{"total":7,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
+        '{"total":7,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}')
       .mock(thirdGroupTrancheUrl,
-        '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}', {});
+        '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -839,11 +839,11 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"total":9,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}', {})
+        '{"total":9,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
-        '{"total":9,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}', {})
+        '{"total":9,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}')
       .mock(thirdGroupTrancheUrl,
-        '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}', {});
+        '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
@@ -871,7 +871,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let expected = "Group does not exist or is inaccessible.";
       fetchMock
       .mock(firstGroupTrancheUrl,
-        '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}', {});
+        '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
       dependencies.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(

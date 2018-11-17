@@ -59,9 +59,10 @@ export function getAGOLItem (
       break;
 
     case "Feature Service":
-      item = getAGOLItemFundamentals(type, "svc",
-        url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
-      item.item = url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      item = getAGOLItemFundamentals(type, "svc", url ||
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
+      item.item = url ||
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       break;
 
     case "Form":
@@ -282,7 +283,8 @@ export function getAGOLItemData (
         "operationalLayers": [{
           "id": "ROWPermitApplication_4605",
           "layerType": "ArcGISFeatureLayer",
-          "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
+          "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/" +
+            "ROWPermits_publiccomment/FeatureServer/0",
           "title": "ROW Permits",
           "itemId": "svc1234567890",
           "popupInfo": {},
@@ -299,7 +301,8 @@ export function getAGOLItemData (
             "type": "VectorTileLayer",
             "layerType": "VectorTileLayer",
             "title": "World Topographic Map",
-            "styleUrl": "https://www.arcgis.com/sharing/rest/content/items/7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
+            "styleUrl": "https://www.arcgis.com/sharing/rest/content/items/" +
+              "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
             "itemId": "7dc6cea0b1764a1f9af2e679f642f0f5"
           }],
           "title": "Topographic"
@@ -309,7 +312,8 @@ export function getAGOLItemData (
           "latestWkid": 3857
         },
         "tables": [{
-          "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/1",
+          "url": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/" +
+            "ROWPermits_publiccomment/FeatureServer/1",
           "id": "ROWPermitApplication_4404",
           "title": "ROW Permit Comment",
           "layerDefinition": {},

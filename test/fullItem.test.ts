@@ -68,9 +68,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     ].forEach(({id, type, item, data, resources}) => {
       it("should create a " + type + " based on the AGOL response", done => {
         fetchMock
-        .mock("path:/sharing/rest/content/items/" + id, item, {})
-        .mock("path:/sharing/rest/content/items/" + id + "/data", data, {})
-        .mock("path:/sharing/rest/content/items/" + id + "/resources", resources, {});
+        .mock("path:/sharing/rest/content/items/" + id, item)
+        .mock("path:/sharing/rest/content/items/" + id + "/data", data)
+        .mock("path:/sharing/rest/content/items/" + id + "/resources", resources);
 
         getFullItem(id, MOCK_USER_REQOPTS)
         .then(response => {
@@ -92,9 +92,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should create a Feature Service based on the AGOL response", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"), {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"), {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"), {});
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
 
       getFullItem("svc1234567890", MOCK_USER_REQOPTS)
       .then(response => {
@@ -115,9 +115,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should return WMA details for a valid AGOL id", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"), {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"));
       getFullItem("wma1234567890")
       .then(
         response => {
@@ -133,9 +133,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should handle an item without a data or a resource section", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData(), {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources(), {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData())
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
       getFullItem("wma1234567890")
       .then(
         response => {
@@ -165,8 +165,8 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("throws an error if the item to be created fails: inaccessible", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem(), {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem(), {});
+      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
       getFullItem("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
