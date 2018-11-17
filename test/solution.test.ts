@@ -378,13 +378,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("should create a Feature Service", done => {
+    it("should create a Feature Service", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       let folderId:string = "fld1234567890";
       let swizzles:ISwizzleHash = {};
-      console.warn(JSON.stringify(fullItem, null, 4));//???
 
       let now = 1555555555555;
       let orgSession:solution.IOrgSession = {
@@ -430,11 +429,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("should handle an error while trying to create a Feature Service", done => {
+    it("should handle an error while trying to create a Feature Service", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
-      console.warn(JSON.stringify(fullItem, null, 4));//???
       fullItem.item.url = null;
-      console.warn(JSON.stringify(fullItem, null, 4));//???
       expect(mockSolutions.getItemSolutionPart("Feature Service").item.url).toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
 
       let folderId:string = "fld1234567890";

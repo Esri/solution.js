@@ -15,6 +15,7 @@
  */
 
 import * as mockItems from "./items";
+import * as mockServices from "./featureServices";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -58,6 +59,22 @@ export function getItemSolutionPart (
       solutionPart = getItemSolutionFundamentals(type, "svc",
         url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
       solutionPart.item.url = url || "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      solutionPart.item.name = "ROWPermits_publiccomment";
+
+      let layer0:any = mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+      );
+      let table1:any = mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+      );
+      solutionPart.service = {
+        name: "ROWPermits_publiccomment",
+        snippet: "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+        description: "A public feature layer view used in the ROW Permit Public Comment application to review right of way permit applications and submit feedback.",
+        ...mockServices.getService([layer0], [table1])
+      };
+      solutionPart.layers = [layer0];
+      solutionPart.tables = [table1];
       break;
 
     case "Form":
