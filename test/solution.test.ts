@@ -66,7 +66,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     jasmine.clock().uninstall();
   });
 
-  xdescribe("create solution", () => {
+  describe("create solution", () => {
 
     it("for single item containing WMA & feature service", done => {
       let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
@@ -102,7 +102,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("for single item not containing WMA or feature service", done => {
+    xit("for single item not containing WMA or feature service", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
@@ -122,7 +122,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("gets a service name from a layer if a service needs a name", done => {
+    xit("gets a service name from a layer if a service needs a name", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -154,7 +154,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("gets a service name from a table if a service needs a name--no layer", done => {
+    xit("gets a service name from a table if a service needs a name--no layer", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -185,7 +185,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("gets a service name from a table if a service needs a name--nameless layer", done => {
+    xit("gets a service name from a table if a service needs a name--nameless layer", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -216,7 +216,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("falls back to 'Feature Service' if a service needs a name", done => {
+    xit("falls back to 'Feature Service' if a service needs a name", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -247,7 +247,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("publish solution", () => {
+  describe("publish solution", () => {
 
     it("for single item containing WMA & feature service", done => {
       fetchMock
@@ -425,7 +425,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
-          expect(createServiceCallBody.indexOf("name%22%3A%22ROWPermits_publiccomment_1555555555555%22%2C"))
+          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
           expect(createdItemId).toEqual("svc1234567890");

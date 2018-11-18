@@ -39,8 +39,9 @@ export function getItemSolutionPart (
       break;
 
     case "Dashboard":
-      solutionPart = getItemSolutionFundamentals(type, "dsh");
-      solutionPart.data = mockItems.getAGOLItemData("Dashboard");
+      solutionPart = getItemSolutionFundamentals(type, "dsh", dependencies);
+      solutionPart.data = mockItems.getAGOLItemData(type);
+      solutionPart.resources = null;
       break;
 
     case "Desktop Add In":
@@ -56,24 +57,26 @@ export function getItemSolutionPart (
       break;
 
     case "Feature Service":
-      solutionPart = getItemSolutionFundamentals(type, "svc", url ||
+      solutionPart = getItemSolutionFundamentals(type, "svc", dependencies, url ||
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
       solutionPart.item.url = url ||
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      solutionPart.item.name = "ROWPermits_publiccomment";
+      solutionPart.data = mockItems.getAGOLItemData(type);
+      solutionPart.resources = null;
 
-      let layer0:any = mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      let layer0:any = mockServices.removeEditFieldsInfoField(
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
-      );
-      let table1:any = mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      ));
+      let table1:any = mockServices.removeEditFieldsInfoField(
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         mockServices.getRelationship(0, 0, "esriRelRoleDestination")
-      );
-      solutionPart.service = {
-        name: "ROWPermits_publiccomment",
-        snippet: "A feature service snippet",
-        description: "A feature service description",
-        ...mockServices.getService([layer0], [table1])
-      };
+      ));
+      solutionPart.service = mockServices.getService([layer0], [table1]);
+      solutionPart.service.name = solutionPart.item.name;
+      solutionPart.service.snippet = solutionPart.item.snippet;
+      solutionPart.service.description = solutionPart.item.description;
+
       solutionPart.layers = [layer0];
       solutionPart.tables = [table1];
       break;
@@ -106,12 +109,16 @@ export function getItemSolutionPart (
       break;
 
     case "Web Map":
-      solutionPart = getItemSolutionFundamentals(type, "map");
+      solutionPart = getItemSolutionFundamentals(type, "map", dependencies);
+      solutionPart.data = mockItems.getAGOLItemData(type);
+      solutionPart.resources = null;
       break;
 
     case "Web Mapping Application":
-      solutionPart = getItemSolutionFundamentals(type, "wma",
+      solutionPart = getItemSolutionFundamentals(type, "wma", dependencies,
         url || "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
+      solutionPart.data = mockItems.getAGOLItemData(type);
+      solutionPart.resources = null;
       break;
 
     case "Workforce Project":
@@ -171,7 +178,8 @@ export function getGroupSolutionPart (
 export function getWebMappingApplicationSolution (
 ): any {
   let solution:any = {
-    "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"]),
+    "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"],
+      "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"),
     "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"]),
     "svc1234567890": getItemSolutionPart("Feature Service", [])
   };
@@ -179,20 +187,29 @@ export function getWebMappingApplicationSolution (
   return solution;
 }
 
+// delete editFieldsInfo
+// response
+//   "item": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
+//   "name": null,
+// expected
+//   "item": "svc1234567890",
+//   "name": "ROWPermits_publiccomment",
+
+
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
 function getItemSolutionFundamentals (
   type: string,
   typePrefix: string,
-  url = "",
-  dependencies = [] as string[]
+  dependencies = [] as string[],
+  url = ""
 ): any {
   return {
     "type": type,
     "item": {
       "id": typePrefix + "1234567890",
       "item": typePrefix + "1234567890",
-      "name": null,
+      "name": "Name of an AGOL item",
       "title": "An AGOL item",
       "type": type,
       "typeKeywords": ["JavaScript"],

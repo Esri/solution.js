@@ -184,6 +184,13 @@ export function removeNameField (
   return layerOrTable;
 }
 
+export function removeEditFieldsInfoField (
+  layerOrTable: any
+): any {
+  layerOrTable.editFieldsInfo = null;
+  return layerOrTable;
+}
+
 export function getRelationship (
   id: number,
   relatedTableId: number,

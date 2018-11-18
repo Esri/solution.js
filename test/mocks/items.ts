@@ -61,8 +61,6 @@ export function getAGOLItem (
     case "Feature Service":
       item = getAGOLItemFundamentals(type, "svc", url ||
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer");
-      item.item = url ||
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       break;
 
     case "Form":
@@ -467,7 +465,7 @@ function getAGOLItemFundamentals (
     "created": 1520968147000,
     "modified": 1522178539000,
     "guid": null,
-    "name": null,
+    "name": "Name of an AGOL item",
     "title": "An AGOL item",
     "type": type,
     "typeKeywords": ["JavaScript"],

@@ -606,12 +606,12 @@ export function fleshOutFeatureService (
       serviceData => {
         // Fill in some missing parts
         // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["snippet"] = fullItem.item["snippet"];
-        serviceData["description"] = fullItem.item["description"];
         serviceData["name"] = fullItem.item["name"] ||
           getFirstUsableName(serviceData["layers"]) ||
           getFirstUsableName(serviceData["tables"]) ||
           "Feature Service";
+        serviceData["snippet"] = fullItem.item["snippet"];
+        serviceData["description"] = fullItem.item["description"];
 
         fullItem.service = serviceData;
 
