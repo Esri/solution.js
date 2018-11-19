@@ -401,9 +401,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (function () {
+      let layerNumUpdater = (() => {
           var layerNum = 0;
-          return () => layerNum++;
+          return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
       fetchMock

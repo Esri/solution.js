@@ -846,7 +846,7 @@ function updateFeatureServiceDefinition(
   requestOptions?: IUserRequestOptions
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (listToAdd.length > 0) {
       var toAdd = listToAdd.shift();
 
@@ -883,10 +883,7 @@ function updateFeatureServiceDefinition(
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           .then(resolve);
         },
-        () => {
-          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
-          .then(resolve);
-        }
+        reject
       );
     } else {
       resolve();
