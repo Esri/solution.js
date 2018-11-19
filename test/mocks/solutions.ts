@@ -39,7 +39,7 @@ export function getItemSolutionPart (
       break;
 
     case "Dashboard":
-      solutionPart = getItemSolutionFundamentals(type, "dsh", dependencies);
+      solutionPart = getItemSolutionFundamentals(type, "dsh", dependencies, url);
       solutionPart.data = mockItems.getAGOLItemData(type);
       solutionPart.resources = null;
       break;
@@ -109,7 +109,7 @@ export function getItemSolutionPart (
       break;
 
     case "Web Map":
-      solutionPart = getItemSolutionFundamentals(type, "map", dependencies);
+      solutionPart = getItemSolutionFundamentals(type, "map", dependencies, url);
       solutionPart.data = mockItems.getAGOLItemData(type);
       solutionPart.resources = null;
       break;
@@ -186,15 +186,6 @@ export function getWebMappingApplicationSolution (
 
   return solution;
 }
-
-// delete editFieldsInfo
-// response
-//   "item": "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
-//   "name": null,
-// expected
-//   "item": "svc1234567890",
-//   "name": "ROWPermits_publiccomment",
-
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
 

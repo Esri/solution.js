@@ -102,7 +102,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("for single item not containing WMA or feature service", done => {
+    it("for single item not containing WMA or feature service", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
@@ -113,7 +113,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       solution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
-          expect(response).toEqual(mockSolutions.getGroupSolutionPart());
+          expect(response).toEqual({
+            "grp1234567890": mockSolutions.getGroupSolutionPart()
+          });
           done();
         },
         error => {
@@ -122,7 +124,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("gets a service name from a layer if a service needs a name", done => {
+    it("gets a service name from a layer if a service needs a name", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -154,7 +156,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("gets a service name from a table if a service needs a name--no layer", done => {
+    it("gets a service name from a table if a service needs a name--no layer", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -185,7 +187,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("gets a service name from a table if a service needs a name--nameless layer", done => {
+    it("gets a service name from a table if a service needs a name--nameless layer", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -196,10 +198,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
-        mockServices.removeNameField([mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")]),
+        mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
         mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
       ))
       .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
@@ -216,7 +218,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    xit("falls back to 'Feature Service' if a service needs a name", done => {
+    it("falls back to 'Feature Service' if a service needs a name", done => {
       let fullItem:solution.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
@@ -227,13 +229,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
-        mockServices.removeNameField([mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")]),
-        mockServices.removeNameField([mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")])
+        mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
+        mockServices.removeNameField([mockServices.getLayerOrTable(1, "", "Table")])
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
         mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "", "Table",
         mockServices.getRelationship(0, 0, "esriRelRoleDestination")
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -468,17 +470,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     /*
-    xit("should create an empty Group", done => {});
+    it("should create an empty Group", done => {});
 
-    xit("should create a Group and add its members", done => {});
+    it("should create a Group and add its members", done => {});
 
-    xit("should handle a member-add failure while trying to create a Group", done => {});
+    it("should handle a member-add failure while trying to create a Group", done => {});
 
-    xit("should create a Web Mapping Application", done => {});
+    it("should create a Web Mapping Application", done => {});
 
-    xit("should handle an item creation failure while trying to create a Web Mapping Application", done => {});
+    it("should handle an item creation failure while trying to create a Web Mapping Application", done => {});
 
-    xit("should handle a URL update failure while trying to create a Web Mapping Application", done => {});
+    it("should handle a URL update failure while trying to create a Web Mapping Application", done => {});
     */
 
   });

@@ -131,6 +131,7 @@ export function getNoNameFeatureServiceItem (
 ): any {
   let item = getAGOLItem("Feature Service");
   item.name = null;
+  return item;
 }
 
 export function getAGOLItemData (
