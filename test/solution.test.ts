@@ -85,10 +85,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
       .post(baseSvcURL + "FeatureServer/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(baseSvcURL + "FeatureServer/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ))
       solution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
       .then(
@@ -139,10 +139,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
       .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
@@ -171,16 +171,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
       .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
           expect(fullItem.service.name).toEqual(mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-            mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+            [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
         }
@@ -202,16 +202,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
       .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
           expect(fullItem.service.name).toEqual(mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-            mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+            [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
         }
@@ -233,10 +233,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockServices.removeNameField([mockServices.getLayerOrTable(1, "", "Table")])
       ))
       .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
@@ -390,6 +390,57 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
+      let folderId:string = "fld1234567890";
+      let swizzles:ISwizzleHash = {};
+
+      let now = 1555555555555;
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      let layerNumUpdater = (() => {
+          var layerNum = 0;
+          return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
+      })();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
+        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
+        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
+        '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+        now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
+        '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/addToDefinition", layerNumUpdater)
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/0/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/1/addToDefinition", '{"success":true}');
+      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItemId => {
+          // Check that we're appending a timestamp to the service name
+          let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
+          let createServiceCallBody = createServiceCall[0][1].body as string;
+          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
+            .toBeGreaterThan(0);
+
+          expect(createdItemId).toEqual("svc1234567890");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should create a Feature Service without relationships", done => {
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      let fullItem:IFullItem = mockSolutions.getFeatureServiceSolutionPartNoRelationships();
       let folderId:string = "fld1234567890";
       let swizzles:ISwizzleHash = {};
 

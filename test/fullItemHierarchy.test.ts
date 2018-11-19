@@ -256,10 +256,10 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
       .post(baseSvcURL + "FeatureServer/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
       .post(baseSvcURL + "FeatureServer/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ))
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());

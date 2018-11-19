@@ -66,11 +66,11 @@ export function getItemSolutionPart (
 
       let layer0:any = mockServices.removeEditFieldsInfoField(
         mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
-        mockServices.getRelationship(0, 1, "esriRelRoleOrigin")
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ));
       let table1:any = mockServices.removeEditFieldsInfoField(
         mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
-        mockServices.getRelationship(0, 0, "esriRelRoleDestination")
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solutionPart.service = mockServices.getService([layer0], [table1]);
       solutionPart.service.name = solutionPart.item.name;
@@ -136,6 +136,14 @@ export function getDashboardSolutionPartNoWidgets (
 ): any {
   let solutionPart:any = getItemSolutionPart("Dashboard");
   solutionPart.data.widgets = [];
+  return solutionPart;
+}
+
+export function getFeatureServiceSolutionPartNoRelationships (
+): any {
+  let solutionPart:any = getItemSolutionPart("Feature Service");
+  solutionPart.layers[0].relationships = [];
+  solutionPart.tables[0].relationships = [];
   return solutionPart;
 }
 
