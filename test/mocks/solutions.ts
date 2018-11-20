@@ -139,6 +139,13 @@ export function getDashboardSolutionPartNoWidgets (
   return solutionPart;
 }
 
+export function getDashboardSolutionPartNoData (
+): any {
+  let solutionPart:any = getItemSolutionPart("Dashboard");
+  solutionPart.data = null;
+  return solutionPart;
+}
+
 export function getFeatureServiceSolutionPartNoRelationships (
 ): any {
   let solutionPart:any = getItemSolutionPart("Feature Service");
