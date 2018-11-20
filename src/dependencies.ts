@@ -239,7 +239,7 @@ function swizzleDashboardDependencies (
 ): void {
   // Swizzle its webmap(s)
   let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
-  if (widgets) {
+  if (Array.isArray(widgets)) {
     widgets.forEach(widget => {
       if (widget.type === "mapWidget") {
         widget.itemId = swizzles[widget.itemId].id;

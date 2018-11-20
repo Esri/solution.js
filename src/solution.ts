@@ -212,20 +212,27 @@ export function publishSolution (
 /**
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
  *
- * @param itemJson A hash of item descriptions to convert
+ * @param solution A hash of item descriptions to convert
+ * @param orgSession
  * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created; folder name
  *     is a combination of the solution name and a timestamp for uniqueness, e.g., "Dashboard (1540841846958)"
+ * @param solutionName
  * @returns A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
-  solutionName: string,
   solution: IItemHash,
-  folderId: string,
-  orgSession: IOrgSession
+  orgSession: IOrgSession,
+  folderId?: string,
+  solutionName?: string
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let itemIdList:string[] = [];
     let swizzles:ISwizzleHash = {};
+
+    // Don't bother creating folder if there are no items in solution
+    if (!solution || Object.keys(solution).length === 0) {
+      resolve(itemIdList);
+    }
 
     // Run through the list of item ids in clone order
     let cloneOrderChecklist:string[] = topologicallySortItems(solution);
@@ -250,27 +257,26 @@ export function cloneSolution (
       )
     }
 
-    try {
-      // Use specified folder to hold the hydrated items to avoid name clashes
-      if (folderId) {
-        runThroughChecklist();
-      } else {
-        // Create a folder to hold the hydrated items to avoid name clashes
-        let folderName = solutionName + " (" + getTimestamp() + ")";
-        let options = {
-          title: folderName,
-          authentication: orgSession.authentication
-        };
-        items.createFolder(options)
-        .then(
-          createdFolderResponse => {
-            folderId = createdFolderResponse.folder.id;
-            runThroughChecklist();
-          }
-        );
-      }
-    } catch (error) {
-      reject(error);
+    // Use specified folder to hold the hydrated items to avoid name clashes
+    if (folderId) {
+      runThroughChecklist();
+    } else {
+      // Create a folder to hold the hydrated items to avoid name clashes
+      let folderName = (solutionName || "Solution") + " (" + getTimestamp() + ")";
+      let options = {
+        title: folderName,
+        authentication: orgSession.authentication
+      };
+      items.createFolder(options)
+      .then(
+        createdFolderResponse => {
+          folderId = createdFolderResponse.folder.id;
+          runThroughChecklist();
+        },
+        error => {
+          reject(error.response.error.message)
+        }
+      );
     }
   });
 }
@@ -328,7 +334,7 @@ enum SortVisitColor {
  * @returns A promise that will resolve when fullItem has been updated
  * @protected
  */
-function addFeatureServiceLayersAndTables (
+export function addFeatureServiceLayersAndTables (
   fullItem: IFullItemFeatureService,
   swizzles: ISwizzleHash,
   orgSession: IOrgSession
@@ -356,40 +362,44 @@ function addFeatureServiceLayersAndTables (
     let relationships:IRelationship = {};
 
     // Add the service's layers and tables to it
-    updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
-      swizzles, relationships, orgSession)
-    .then(
-      () => {
-        // Restore relationships for all layers and tables in the service
-        let awaitRelationshipUpdates:Promise<void>[] = [];
-        Object.keys(relationships).forEach(
-          id => {
-            awaitRelationshipUpdates.push(new Promise(resolve => {
-              var options = {
-                params: {
-                  updateFeatureServiceDefinition: {
-                    relationships: relationships[id]
-                  }
-                },
-                ...orgSession
-              };
-              featureServiceAdmin.addToServiceDefinition(fullItem.item.url + "/" + id, options)
-              .then(
-                () => {
-                  resolve();
-                },
-                resolve);
-            }));
-          }
-        );
-        Promise.all(awaitRelationshipUpdates)
-        .then(
-          () => {
-            resolve();
-          }
-        );
-      }
-    );
+    if (layersAndTables.length > 0) {
+      updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
+        swizzles, relationships, orgSession)
+      .then(
+        () => {
+          // Restore relationships for all layers and tables in the service
+          let awaitRelationshipUpdates:Promise<void>[] = [];
+          Object.keys(relationships).forEach(
+            id => {
+              awaitRelationshipUpdates.push(new Promise(resolve => {
+                var options = {
+                  params: {
+                    updateFeatureServiceDefinition: {
+                      relationships: relationships[id]
+                    }
+                  },
+                  ...orgSession
+                };
+                featureServiceAdmin.addToServiceDefinition(fullItem.item.url + "/" + id, options)
+                .then(
+                  () => {
+                    resolve();
+                  },
+                  resolve);
+              }));
+            }
+          );
+          Promise.all(awaitRelationshipUpdates)
+          .then(
+            () => {
+              resolve();
+            }
+          );
+        }
+      );
+    } else {
+      resolve();
+    }
   });
 }
 
@@ -402,12 +412,12 @@ function addFeatureServiceLayersAndTables (
  * @returns A promise that will resolve when fullItem has been updated
  * @protected
  */
-function addGroupMembers (
+export function addGroupMembers (
   fullItem: IFullItem,
   swizzles: ISwizzleHash,
   orgSession: IOrgSession
 ):Promise<void> {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
     if (fullItem.dependencies.length > 0) {
       var awaitGroupAdds:Promise<null>[] = [];
@@ -422,9 +432,7 @@ function addGroupMembers (
             () => {
               resolve();
             },
-            error => {
-              console.log("Unable to share group's items with it: " + JSON.stringify(error));
-            }
+            error => reject(error.response.error.message)
           );
         }));
       });
@@ -443,7 +451,7 @@ function addGroupMembers (
 /**
  * Creates an item in a specified folder (except for Group item type).
  *
- * @param fullItem Item to be created
+ * @param fullItem Item to be created; n.b.: this item is modified
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param swizzles Hash mapping Solution source id to id of its clone
@@ -499,9 +507,7 @@ export function createItem (
             () => resolve(fullItem.item.id)
           );
         },
-        error => {
-          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
-        }
+        reject
       );
 
     // Groups
@@ -530,9 +536,7 @@ export function createItem (
             () => resolve(fullItem.item.id)
           );
         },
-        error => {
-          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
-        }
+        error => reject(error.response.error.message)
       );
 
     // All other types
@@ -561,17 +565,13 @@ export function createItem (
             updateWebMappingApplicationURL(fullItem, orgSession)
             .then(
               () => resolve(fullItem.item.id),
-              error => {
-                reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
-              }
+              error => reject(error.response.error.message)
             );
           } else {
             resolve(fullItem.item.id)
           }
         },
-        error => {
-          reject("Unable to create " + fullItem.type + ": " + JSON.stringify(error));
-        }
+        error => reject(error.response.error.message)
       );
     }
 
@@ -606,12 +606,12 @@ export function fleshOutFeatureService (
       serviceData => {
         // Fill in some missing parts
         // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["snippet"] = fullItem.item["snippet"];
-        serviceData["description"] = fullItem.item["description"];
         serviceData["name"] = fullItem.item["name"] ||
           getFirstUsableName(serviceData["layers"]) ||
           getFirstUsableName(serviceData["tables"]) ||
           "Feature Service";
+        serviceData["snippet"] = fullItem.item["snippet"];
+        serviceData["description"] = fullItem.item["description"];
 
         fullItem.service = serviceData;
 
@@ -846,7 +846,7 @@ function updateFeatureServiceDefinition(
   requestOptions?: IUserRequestOptions
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     if (listToAdd.length > 0) {
       var toAdd = listToAdd.shift();
 
@@ -883,10 +883,7 @@ function updateFeatureServiceDefinition(
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           .then(resolve);
         },
-        () => {
-          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
-          .then(resolve);
-        }
+        reject
       );
     } else {
       resolve();
@@ -923,9 +920,7 @@ export function updateWebMappingApplicationURL (
       updateResp => {
         resolve(fullItem.item.id);
       },
-      error => {
-        reject('Unable to update web mapping app: ' + fullItem.item.id);
-      }
+      reject
     );
   });
 }

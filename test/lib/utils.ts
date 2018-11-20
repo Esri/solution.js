@@ -16,6 +16,8 @@
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 
+import { ISwizzle, ISwizzleHash } from "../../src/dependencies";
+
 //--------------------------------------------------------------------------------------------------------------------//
 
 export const TOMORROW = (function() {
@@ -54,4 +56,20 @@ export function createRuntimeMockUserSession (
     password: "123456",
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
+}
+
+export function createMockSwizzle (
+  itemId: string,
+  swizzles = {} as ISwizzleHash
+): ISwizzleHash {
+  let swizzleKey = itemId;
+  let swizzleValue = swizzleKey.toUpperCase();
+  swizzles[swizzleKey] = {id: swizzleValue};
+  return swizzles;
+}
+
+export function jsonClone (
+  obj: any
+) {
+  return JSON.parse(JSON.stringify(obj));
 }

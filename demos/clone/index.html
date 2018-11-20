@@ -148,7 +148,7 @@
             publishedSolution => {
               currentSolutionItems = publishedSolution.items;
 
-              clone.cloneSolution(currentSolutionName, currentSolutionItems, null, orgSession)
+              clone.cloneSolution(currentSolutionItems, orgSession, null, currentSolutionName)
               .then(
                 createResponse => {
                   document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';

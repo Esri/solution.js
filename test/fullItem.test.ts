@@ -14,21 +14,14 @@
  | limitations under the License.
  */
 
-import * as fetchMock from "fetch-mock";
-
-import { IFullItem, getFullItem } from "../src/fullItem";
-
-import { ItemFailResponse, ItemDataOrResourceFailResponse,
-  ItemResourcesSuccessResponseNone, ItemResourcesSuccessResponseOne,
-  ItemSuccessResponseDashboard, ItemDataSuccessResponseDashboard,
-  ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
-  ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
-  ItemSuccessResponseService, ItemDataSuccessResponseService
-} from "./mocks/fullItemQueries";
+import { getFullItem } from "../src/fullItem";
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
 import { TOMORROW } from "./lib/utils";
+import * as fetchMock from "fetch-mock";
+import * as mockItems from "./mocks/items";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -61,23 +54,23 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
   describe("fetch different item types", () => {
     [
       {
-        id: "dash1234657890", type: "Dashboard", item: ItemSuccessResponseDashboard,
-        data: ItemDataSuccessResponseDashboard, resources: ItemResourcesSuccessResponseNone
+        id: "dash1234657890", type: "Dashboard", item: mockItems.getAGOLItem("Dashboard"),
+        data: mockItems.getAGOLItemData("Dashboard"), resources: mockItems.getAGOLItemResources("none")
       },
       {
-        id: "map1234657890", type: "Web Map", item: ItemSuccessResponseWebmap,
-        data: ItemDataSuccessResponseWebmap, resources: ItemResourcesSuccessResponseNone
+        id: "map1234657890", type: "Web Map", item: mockItems.getAGOLItem("Web Map"),
+        data: mockItems.getAGOLItemData("Web Map"), resources: mockItems.getAGOLItemResources("none")
       },
       {
-        id: "wma1234657890", type: "Web Mapping Application", item: ItemSuccessResponseWMA,
-        data: ItemDataSuccessResponseWMA, resources: ItemResourcesSuccessResponseNone
+        id: "wma1234657890", type: "Web Mapping Application", item: mockItems.getAGOLItem("Web Mapping Application"),
+        data: mockItems.getAGOLItemData("Web Mapping Application"), resources: mockItems.getAGOLItemResources("none")
       }
     ].forEach(({id, type, item, data, resources}) => {
       it("should create a " + type + " based on the AGOL response", done => {
         fetchMock
-        .mock("path:/sharing/rest/content/items/" + id, item, {})
-        .mock("path:/sharing/rest/content/items/" + id + "/data", data, {})
-        .mock("path:/sharing/rest/content/items/" + id + "/resources", resources, {});
+        .mock("path:/sharing/rest/content/items/" + id, item)
+        .mock("path:/sharing/rest/content/items/" + id + "/data", data)
+        .mock("path:/sharing/rest/content/items/" + id + "/resources", resources);
 
         getFullItem(id, MOCK_USER_REQOPTS)
         .then(response => {
@@ -99,9 +92,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should create a Feature Service based on the AGOL response", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
 
       getFullItem("svc1234567890", MOCK_USER_REQOPTS)
       .then(response => {
@@ -122,15 +115,15 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should return WMA details for a valid AGOL id", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseOne, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"));
       getFullItem("wma1234567890")
       .then(
         response => {
           expect(response.type).toEqual("Web Mapping Application");
-          expect(response.item.title).toEqual("ROW Permit Public Comment");
-          expect(response.data.source).toEqual("template1234567890");
+          expect(response.item.title).toEqual("An AGOL item");
+          expect(response.data.source).toEqual("tpl1234567890");
           expect(response.resources).toEqual([{ "value": "abc"}]);
           done();
         },
@@ -140,14 +133,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("should handle an item without a data or a resource section", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataOrResourceFailResponse, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemDataOrResourceFailResponse, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData())
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
       getFullItem("wma1234567890")
       .then(
         response => {
           expect(response.type).toEqual("Web Mapping Application");
-          expect(response.item.title).toEqual("ROW Permit Public Comment");
+          expect(response.item.title).toEqual("An AGOL item");
           done();
         },
         done.fail
@@ -159,7 +152,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
   describe("catch bad input", () => {
 
     it("throws an error if the item to be created fails: missing id", done => {
-      fetchMock.mock("*", ItemFailResponse);
+      fetchMock.mock("*", mockItems.getAGOLItem());
       getFullItem(null, MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -172,8 +165,8 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("throws an error if the item to be created fails: inaccessible", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
       getFullItem("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,

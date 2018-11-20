@@ -14,24 +14,16 @@
  | limitations under the License.
  */
 
-import * as fetchMock from "fetch-mock";
-
 import { IFullItem } from "../src/fullItem";
 import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
 
-import { ItemFailResponse, ItemResourcesSuccessResponseNone,
-  ItemSuccessResponseWMA, ItemDataSuccessResponseWMA,
-  ItemSuccessResponseWebmap, ItemDataSuccessResponseWebmap,
-  ItemSuccessResponseService, ItemDataSuccessResponseService,
-  ItemSuccessResponseGroup
-} from "./mocks/fullItemQueries";
-import { FeatureServiceSuccessResponse,
-  FeatureServiceLayer0SuccessResponse, FeatureServiceLayer1SuccessResponse
-} from "./mocks/featureService";
-
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
 import { TOMORROW } from "./lib/utils";
+import * as fetchMock from "fetch-mock";
+import * as mockItems from "./mocks/items";
+import * as mockServices from "./mocks/featureServices";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -65,15 +57,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("should return a list of WMA details for a valid AGOL id", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -81,8 +73,8 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           expect(keys.length).toEqual(3);
           let fullItem:IFullItem = response[keys[0]] as IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
+          expect(fullItem.item.title).toEqual("An AGOL item");
+          expect(fullItem.data.source).toEqual("tpl1234567890");
           done();
         },
         done.fail
@@ -91,15 +83,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("should return a list of WMA details for a valid AGOL id in a list", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -107,8 +99,8 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           expect(keys.length).toEqual(3);
           let fullItem:IFullItem = response[keys[0]] as IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
+          expect(fullItem.item.title).toEqual("An AGOL item");
+          expect(fullItem.data.source).toEqual("tpl1234567890");
           done();
         },
         done.fail
@@ -117,15 +109,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:IItemHash) => {
@@ -133,8 +125,8 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           expect(keys.length).toEqual(3);
           let fullItem:IFullItem = response[keys[0]] as IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
-          expect(fullItem.item.title).toEqual("ROW Permit Public Comment");
-          expect(fullItem.data.source).toEqual("template1234567890");
+          expect(fullItem.item.title).toEqual("An AGOL item");
+          expect(fullItem.data.source).toEqual("tpl1234567890");
           done();
         },
         done.fail
@@ -143,15 +135,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("should handle repeat calls without re-fetching items", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (collection:IItemHash) => {
@@ -180,7 +172,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
   describe("catch bad input", () => {
 
     it("throws an error if the hierarchy to be created fails: missing id", done => {
-      fetchMock.once("*", ItemFailResponse);
+      fetchMock.once("*", mockItems.getAGOLItem());
       getFullItemHierarchy(null, MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -192,7 +184,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("throws an error if the hierarchy to be created fails: empty id list", done => {
-      fetchMock.once("*", ItemFailResponse);
+      fetchMock.once("*", mockItems.getAGOLItem());
       getFullItemHierarchy([], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -204,7 +196,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     });
 
     it("throws an error if the hierarchy to be created fails: missing id in list", done => {
-      fetchMock.once("*", ItemFailResponse);
+      fetchMock.once("*", mockItems.getAGOLItem());
       getFullItemHierarchy([null], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -221,8 +213,8 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: inaccessible", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
       getFullItemHierarchy("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -235,8 +227,8 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: inaccessible in a list", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
       getFullItemHierarchy(["fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -250,20 +242,27 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
     it("throws an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
       let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .post(baseSvcURL + "FeatureServer?f=json", FeatureServiceSuccessResponse)
-      .post(baseSvcURL + "FeatureServer/0?f=json", FeatureServiceLayer0SuccessResponse)
-      .post(baseSvcURL + "FeatureServer/1?f=json", FeatureServiceLayer1SuccessResponse)
-      .mock("path:/sharing/rest/content/items/fail1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/fail1234567890", ItemFailResponse, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post(baseSvcURL + "FeatureServer?f=json", mockServices.getService(
+        [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
+        [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
+      ))
+      .post(baseSvcURL + "FeatureServer/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+        [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
+      ))
+      .post(baseSvcURL + "FeatureServer/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+        [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
+      ))
+      .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
       getFullItemHierarchy(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -276,15 +275,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: list of [valid, missing id]", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", ItemDataSuccessResponseService, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy(["wma1234567890", null], MOCK_USER_REQOPTS)
       .then(
         fail,
@@ -297,13 +296,13 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if getting dependencies fails", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/grp1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/grp1234567890", ItemSuccessResponseGroup, {})
+      .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=0&num=100&token=fake-token",
         '{"error":{"code":400,"messageCode":"CONT_0006",' +
-        '"message":"Group does not exist or is inaccessible.","details":[]}}', {});
+        '"message":"Group does not exist or is inaccessible.","details":[]}}');
       getFullItemHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
@@ -318,15 +317,15 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if a dependency fails", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", ItemSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", ItemDataSuccessResponseWMA, {})
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/map1234567890", ItemSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/data", ItemDataSuccessResponseWebmap, {})
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", ItemResourcesSuccessResponseNone, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/community/groups/svc1234567890", ItemFailResponse, {})
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", ItemResourcesSuccessResponseNone, {});
+      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/svc1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
