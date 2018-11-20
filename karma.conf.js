@@ -14,7 +14,6 @@ module.exports = function(config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
-
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
     frameworks: ['jasmine', 'karma-typescript'],
@@ -44,7 +43,12 @@ module.exports = function(config) {
             .readdirSync("node_modules/@esri")
             .filter(p => p[0] !== ".")
             .reduce((alias, p) => {
-              alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
+              if (p !== "arcgis-rest-common-types") {
+                alias[`@esri/${p}`] = `node_modules/@esri/${p}/dist/node/index.js`;
+              } else {
+                // the built lib for common-types doesnt contain any JS
+                alias[`@esri/${p}`] = `node_modules/@esri/${p}/src/index.ts`;
+              }
               return alias;
             }, {})
         }
