@@ -70,7 +70,10 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
-* `npm test` runs _all_ the tests and confirms the API is functioning as expected.
+* `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
+* `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
+* `npm run test:firefox` runs karma in the Firefox browser
+* `npm run test:node` runs ts-node and jasmine
 
 ### Frequently Asked Questions
 

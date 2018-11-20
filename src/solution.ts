@@ -213,10 +213,11 @@ export function publishSolution (
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
  *
  * @param solution A hash of item descriptions to convert
- * @param orgSession
- * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created; folder name
- *     is a combination of the solution name and a timestamp for uniqueness, e.g., "Dashboard (1540841846958)"
- * @param solutionName
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created;
+ *     if created, folder name is a combination of the solution name and a timestamp for uniqueness,
+ *     e.g., "Dashboard (1540841846958)"
+ * @param solutionName Name root to use if folder is to be created
  * @returns A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (

@@ -84,6 +84,31 @@
 					<li><a href="/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 					<li><a href="#license">License</a></li>
 				</ul>
+				<h3 id="supported-arcgis-online-item-types">Supported ArcGIS Online Item Types</h3>
+				<p>Currently, the item types that can be dependents of a solution item are:</p>
+				<ul>
+					<li>ArcGIS Pro Add In</li>
+					<li>Code Attachment</li>
+					<li>Code Sample</li>
+					<li>Dashboard</li>
+					<li>Desktop Add In</li>
+					<li>Desktop Application Template</li>
+					<li>Document Link</li>
+					<li>Feature Collection</li>
+					<li>Feature Service (Hosted only and Hosted Feature Layer Views)</li>
+					<li>Form</li>
+					<li>Geoprocessing Package</li>
+					<li>Geoprocessing Sample</li>
+					<li>Layer Package</li>
+					<li>Map Template</li>
+					<li>Operation View</li>
+					<li>Pro Map</li>
+					<li>Project Package</li>
+					<li>Project Template</li>
+					<li>Web Map</li>
+					<li>Web Mapping Application</li>
+					<li>Workforce Project</li>
+				</ul>
 				<h3 id="api-reference">API Reference</h3>
 				<p>The documentation is published at <a href="https://arcgis.github.io/arcgis-clone-js/">https://arcgis.github.io/arcgis-clone-js/</a> (source code <a href="/docs/src">here</a>).</p>
 				<h3 id="instructions">Instructions</h3>
@@ -92,7 +117,10 @@
 				<p>Afterward, for a list of all available commands run <code>npm run</code>.</p>
 				<p>Some useful commands include:</p>
 				<ul>
-					<li><code>npm test</code> runs <em>all</em> the tests and confirms the API is functioning as expected.</li>
+					<li><code>npm test</code> runs tests test:node and test:chrome to confirm that the API is functioning as expected.</li>
+					<li><code>npm run test:chrome</code> runs karma in the ChromeHeadlessCI browser</li>
+					<li><code>npm run test:firefox</code> runs karma in the Firefox browser</li>
+					<li><code>npm run test:node</code> runs ts-node and jasmine</li>
 				</ul>
 				<h3 id="frequently-asked-questions">Frequently Asked Questions</h3>
 				<ul>
