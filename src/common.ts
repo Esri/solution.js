@@ -41,7 +41,7 @@ import { rejects } from 'assert';
 export function createItemWithData (
   item: any,
   data: any,
-  requestOptions?: IUserRequestOptions,
+  requestOptions: IUserRequestOptions,
   folderId = "",
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
@@ -99,7 +99,7 @@ export function createItemWithData (
 export function updateItemURL (
   id: string,
   url: string,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL

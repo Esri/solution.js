@@ -41,7 +41,7 @@ export interface ISwizzleHash {
  */
 export function getDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     let getDependenciesByType:IFunctionLookup = {
@@ -123,7 +123,7 @@ interface IFunctionLookup {
  */
 function getDashboardDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
@@ -151,7 +151,7 @@ function getDashboardDependencies (
  */
 function getGroupDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let pagingRequest:IPagingParamsRequestOptions = {
@@ -181,7 +181,7 @@ function getGroupDependencies (
  */
 function getWebmapDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
@@ -207,7 +207,7 @@ function getWebmapDependencies (
  */
 function getWebMappingApplicationDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];

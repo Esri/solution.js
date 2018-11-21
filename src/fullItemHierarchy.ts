@@ -63,7 +63,7 @@ export interface IItemHash {
  */
 export function getFullItemHierarchy (
   rootIds: string | string[],
-  requestOptions?: IUserRequestOptions,
+  requestOptions: IUserRequestOptions,
   collection?: IItemHash
 ): Promise<IItemHash> {
   if (!collection) {

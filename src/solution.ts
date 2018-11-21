@@ -93,7 +93,7 @@ export interface IOrgSession {
  */
 export function createSolution (
   solutionRootIds: string | string[],
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<IItemHash> {
   return new Promise<IItemHash>((resolve, reject) => {
 
@@ -154,7 +154,7 @@ export function createSolution (
 export function publishSolution (
   title: string,
   solution: IItemHash,
-  requestOptions?: IUserRequestOptions,
+  requestOptions: IUserRequestOptions,
   folderId = "",
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
@@ -179,17 +179,19 @@ export function publishSolution (
  *
  * @param solution A hash of item descriptions to convert
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param solutionName Name root to use if folder is to be created
  * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created;
  *     if created, folder name is a combination of the solution name and a timestamp for uniqueness,
  *     e.g., "Dashboard (1540841846958)"
- * @param solutionName Name root to use if folder is to be created
+ * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
   solution: IItemHash,
   orgSession: IOrgSession,
+  solutionName = "",
   folderId = "",
-  solutionName?: string
+  access = "private"
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let itemIdList:string[] = [];
@@ -564,7 +566,7 @@ export function createSwizzledItem (
  */
 export function fleshOutFeatureService (
   fullItem: IFullItemFeatureService,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<void> {
   return new Promise<void>(resolve => {
     fullItem.service = {};
@@ -658,7 +660,7 @@ function getFirstUsableName (
 function getLayers (
   serviceUrl: string,
   layerList: any[],
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<any[]> {
   return new Promise<any[]>(resolve => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
@@ -819,7 +821,7 @@ function updateFeatureServiceDefinition(
   listToAdd: any[],
   swizzles: ISwizzleHash,
   relationships: IRelationship,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve, reject) => {

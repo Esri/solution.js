@@ -19,9 +19,9 @@ import * as common from "../src/common";
 import { ISwizzleHash } from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
+import { publishSolutionStorymap } from "../src/solutionStorymap";
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import * as items from "@esri/arcgis-rest-items";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSwizzle } from "./lib/utils";
 import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
@@ -453,7 +453,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"wma1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      solution.cloneSolution(solutionItem, orgSession, folderId, "My Solution")
+      solution.cloneSolution(solutionItem, orgSession, "My Solution", folderId)
       .then(
         response => {
           expect(response.length).toEqual(4);
@@ -507,7 +507,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/" + folderId + "/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}');
-      solution.cloneSolution(solutionItem, orgSession, folderId)
+      solution.cloneSolution(solutionItem, orgSession, undefined, folderId, "org")
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -521,7 +521,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "FLD1234567890";
+      let folderId = "fld1234567890";
 
       fetchMock
       .post(
@@ -530,11 +530,20 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       )
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"success":false}');
-      solution.cloneSolution(solutionItem, orgSession, folderId)
+      solution.cloneSolution(solutionItem, orgSession, undefined, folderId)
       .then(
         () => done.fail,
         done
       );
+    });
+
+    it("should handle an undefined folder id when publishing a solution storymap", done => {
+
+
+      publishSolutionStorymap (mockSolutions.getItemSolutionPart("Dashboard"), MOCK_USER_REQOPTS, undefined, "org")
+      .then(done, done);
+
+
     });
 
   });

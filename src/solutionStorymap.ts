@@ -64,7 +64,7 @@ export function createSolutionStorymap (
  */
 export function publishSolutionStorymap (
   solutionStorymap: IFullItem,
-  requestOptions?: IUserRequestOptions,
+  requestOptions: IUserRequestOptions,
   folderId = "",
   access = "private"
 ): Promise<string> {
