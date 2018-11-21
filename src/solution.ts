@@ -20,10 +20,12 @@ import * as groups from "@esri/arcgis-rest-groups";
 import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
+
+import * as common from "./common";
+import { ISwizzleHash, swizzleDependencies } from "./dependencies";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
-import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
-import { rejects } from 'assert';
+import { createSolutionStorymap, publishSolutionStorymap } from "./solutionStorymap";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -143,70 +145,33 @@ export function createSolution (
  *
  * @param title Title for Solution item to create
  * @param solution Hash of JSON descriptions of items to publish into Solution
- * @param access Access to set for item: 'public', 'org', 'private'
  * @param requestOptions Options for the request
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with an object reporting success and the Solution id
  */
 export function publishSolution (
   title: string,
   solution: IItemHash,
-  access: string,
-  requestOptions?: IUserRequestOptions
+  requestOptions?: IUserRequestOptions,
+  folderId = "",
+  access = "private"
 ): Promise<items.IItemUpdateResponse> {
-  return new Promise((resolve, reject) => {
-    // Define the solution item
-    let item = {
-      title: title,
-      type: "Solution",
-      itemType: "text",
-      access: access,
-      listed: false,
-      commentsEnabled: false
-    };
-    let data = {
-      items: solution
-    };
+  // Define the solution item
+  let item = {
+    title: title,
+    type: "Solution",
+    itemType: "text",
+    access: access,
+    listed: false,
+    commentsEnabled: false
+  };
+  let data = {
+    items: solution
+  };
 
-    // Create it and add its data section
-    let options = {
-      title: title,
-      item: item,
-      ...requestOptions
-    };
-    items.createItem(options)
-    .then(
-      results => {
-        let options = {
-          id: results.id,
-          data: data,
-          ...requestOptions
-        };
-        items.addItemJsonData(options)
-        .then(
-          results => {
-            // Set the access manually since the access value in createItem appears to be ignored
-            let options = {
-              id: results.id,
-              access: access,
-              ...requestOptions as sharing.ISetAccessRequestOptions
-            };
-            sharing.setItemAccess(options)
-            .then(
-              results => {
-                resolve({
-                  success: true,
-                  id: results.itemId
-                })
-              },
-              error => reject(error.originalMessage)
-            );
-          },
-          error => reject(error.originalMessage)
-        );
-      },
-      error => reject(error.originalMessage)
-    );
-  });
+  return common.createItemWithData(item, data, requestOptions, folderId, access);
 }
 
 /**
@@ -223,7 +188,7 @@ export function publishSolution (
 export function cloneSolution (
   solution: IItemHash,
   orgSession: IOrgSession,
-  folderId?: string,
+  folderId = "",
   solutionName?: string
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
@@ -240,13 +205,23 @@ export function cloneSolution (
 
     function runThroughChecklist () {
       if (cloneOrderChecklist.length === 0) {
-        resolve(itemIdList);
+        let solutionStorymapTitle = (solutionName ? solutionName + " " : "") + "Solution Storymap";
+        publishSolutionStorymap(
+          createSolutionStorymap(solutionStorymapTitle, folderId, orgSession.orgUrl, solution),
+          orgSession, folderId)
+        .then(
+          storymapId  => {
+            itemIdList.unshift(storymapId);
+            resolve(itemIdList);
+          },
+          () => resolve(itemIdList)
+        );
         return;
       }
 
       // Clone item at top of list
       let itemId = cloneOrderChecklist.shift();
-      createItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
+      createSwizzledItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
       .then(
         newItemId => {
           itemIdList.push(newItemId);
@@ -460,7 +435,7 @@ export function addGroupMembers (
  * @returns A promise that will resolve with the id of the created item
  * @protected
  */
-export function createItem (
+export function createSwizzledItem (
   fullItem: IFullItem,
   folderId: string,
   swizzles: ISwizzleHash,
@@ -904,24 +879,8 @@ export function updateWebMappingApplicationURL (
   fullItem: IFullItem,
   orgSession: IOrgSession
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Update its URL
-    var options = {
-      item: {
-        'id': fullItem.item.id,
-        'url': orgSession.orgUrl +
-          (fullItem.item.url.substr(aPlaceholderServerName.length)) +  // remove placeholder server name
-          fullItem.item.id
-      },
-      authentication: orgSession.authentication
-    };
-
-    items.updateItem(options)
-    .then(
-      updateResp => {
-        resolve(fullItem.item.id);
-      },
-      reject
-    );
-  });
+  let url = orgSession.orgUrl +
+        (fullItem.item.url.substr(aPlaceholderServerName.length)) +  // remove placeholder server name
+        fullItem.item.id;
+  return common.updateItemURL(fullItem.item.id, url, orgSession as IUserRequestOptions)
 }
