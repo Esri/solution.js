@@ -19,7 +19,7 @@ import * as common from "../src/common";
 import { ISwizzleHash } from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
-import { publishSolutionStorymap } from "../src/solutionStorymap";
+import { publishSolutionStorymapItem } from "../src/solutionStorymap";
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -540,7 +540,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle an undefined folder id when publishing a solution storymap", done => {
 
 
-      publishSolutionStorymap (mockSolutions.getItemSolutionPart("Dashboard"), MOCK_USER_REQOPTS, undefined, "org")
+      publishSolutionStorymapItem (mockSolutions.getItemSolutionPart("Dashboard"), MOCK_USER_REQOPTS, undefined, "org")
       .then(done, done);
 
 

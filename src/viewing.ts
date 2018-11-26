@@ -33,6 +33,24 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
+export function getTopLevelItemIds (
+  items: IItemHash
+): string[] {
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  let topLevelItemCandidateIds:string[] = Object.keys(items);
+  Object.keys(items).forEach(function (id) {
+    ((items[id] as IFullItem).dependencies || []).forEach(function (dependencyId) {
+      let iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+      if (iNode >= 0) {
+        // Node is somebody's dependency, so remove the node from the list of top-level nodes
+        // If iNode == -1, then it's a shared dependency and it has already been removed
+        topLevelItemCandidateIds.splice(iNode, 1);
+      }
+    });
+  });
+  return topLevelItemCandidateIds;
+}
+
 /**
  * Extracts item hierarchy structure from a Solution's items list.
  *
@@ -42,22 +60,12 @@ export interface IHierarchyEntry {
  * item's dependencies
  */
 export function getItemHierarchy (
-  items:IItemHash
+  items: IItemHash
 ): IHierarchyEntry[] {
   let hierarchy:IHierarchyEntry[] = [];
 
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  let topLevelNodes:string[] = Object.keys(items);
-  Object.keys(items).forEach(function (id) {
-    ((items[id] as IFullItem).dependencies || []).forEach(function (dependencyId) {
-      let iNode = topLevelNodes.indexOf(dependencyId);
-      if (iNode >= 0) {
-        // Node is somebody's dependency, so remove the node from the list of top-level nodes
-        // If iNode == -1, then it's a shared dependency and it has already been removed
-        topLevelNodes.splice(iNode, 1);
-      }
-    });
-  });
+  let topLevelItemIds = getTopLevelItemIds(items);
 
   // Hierarchically list the children of specified nodes
   function itemChildren(children:string[], hierarchy:IHierarchyEntry[]): void {
@@ -78,6 +86,6 @@ export function getItemHierarchy (
     });
   }
 
-  itemChildren(topLevelNodes, hierarchy);
+  itemChildren(topLevelItemIds, hierarchy);
   return hierarchy;
 }

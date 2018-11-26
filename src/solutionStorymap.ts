@@ -20,28 +20,36 @@ import * as items from "@esri/arcgis-rest-items";
 import * as common from "./common";
 import { IFullItem } from "./fullItem";
 import { IItemHash } from "./fullItemHierarchy";
-import { getItemHierarchy } from "./viewing";
+import { IOrgSession } from "./solution";
+import { getTopLevelItemIds } from "./viewing";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
-export function createSolutionStorymap (
-  solutionTitle: string,
-  solutionFolderId: string,
+export interface IStorymap {
+  id: string,
+  url: string
+}
+
+export function createSolutionStorymapItem (
+  title: string,
+  solution: IItemHash,
   orgUrl: string,
-  solution: IItemHash
+  folderId = ""
 ): IFullItem {
   // Prepare the storymap item
-  let item = getStorymapItemFundamentals(solutionTitle, orgUrl);
-  let data = getStorymapItemDataFundamentals(solutionTitle, solutionFolderId);
+  let item = getStorymapItemFundamentals(title, orgUrl);
+  let data = getStorymapItemDataFundamentals(title, folderId);
 
   // Create a story for each top-level item
-  let hierarchy = getItemHierarchy(solution);
+  let topLevelItemIds:string[] = getTopLevelItemIds(solution);
   let stories = data.values.story.entries;
-  hierarchy.forEach(
-    topLevelItem => {
-      let solutionItem = solution[topLevelItem.id] as IFullItem;
-      let itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
-      stories.push(itsStory);
+  topLevelItemIds.forEach(
+    topLevelItemId => {
+      let solutionItem = solution[topLevelItemId] as IFullItem;
+      if (solutionItem.item.url) {
+        let itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
+        stories.push(itsStory);
+      }
     }
   );
 
@@ -56,29 +64,31 @@ export function createSolutionStorymap (
  * Creates a Storymap item describing the top-level webpages forming the solution.
  *
  * @param solutionStorymap Storymap AGOL item
- * @param requestOptions Options for the request
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with an object reporting the Storymap id
  */
-export function publishSolutionStorymap (
+export function publishSolutionStorymapItem (
   solutionStorymap: IFullItem,
-  requestOptions: IUserRequestOptions,
+  orgSession: IOrgSession,
   folderId = "",
   access = "private"
-): Promise<string> {
+): Promise<IStorymap> {
   return new Promise((resolve, reject) => {
-    common.createItemWithData(solutionStorymap.item, solutionStorymap.data, requestOptions, folderId, access)
+    common.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
     .then(
       createResponse => {
         // Update its app URL
         let solutionStorymapId = createResponse.id;
-        let solutionStorymapUrl =
-          "http://arcgis4localgov2.maps.arcgis.com/apps/MapSeries/index.html?appid=" + solutionStorymapId;
-        common.updateItemURL(solutionStorymapId, solutionStorymapUrl, requestOptions)
+        let solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
+        common.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
         .then(
-          () => resolve(solutionStorymapId),
+          () => resolve({
+            id: solutionStorymapId,
+            url: solutionStorymapUrl
+          }),
           reject
         );
 

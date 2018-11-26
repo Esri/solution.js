@@ -146,18 +146,25 @@
           items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              currentSolutionItems = publishedSolution.items;
-
-              clone.cloneSolution(currentSolutionItems, orgSession, currentSolutionName, null)
+              clone.cloneSolution(publishedSolution.items, orgSession, currentSolutionName, null)
               .then(
-                createResponse => {
-                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
-                  document.getElementById('creating').style.display = 'none';
-                  document.getElementById('createResults').style.display = 'block';
-                  //progress.hide();
+                clonedSolution => {
+                  var solutionStorymapTitle = 'Storymap about your solution';
+                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, orgSession)
+                  .then(
+                    storymap  => {
+                      document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                      document.getElementById('creating').style.display = 'none';
+                      document.getElementById('createResults').style.display = 'block';
+                      //progress.hide();
 
-                  document.getElementById('createDisplay').innerHTML =
-                    JSON.stringify(createResponse).replace(/,/g, ', ');
+                      document.getElementById('createDisplay').innerHTML =
+                        '<ul class="solutionList"><li><a href="' + storymap.url + '" target="_blank">' +
+                        solutionStorymapTitle + '</a></li></ul><br>' +
+                        demoCommon.createHierarchyDisplay(clonedSolution, clone.getItemHierarchy(clonedSolution),
+                          true, orgSession.orgUrl + '/home/');
+                    }
+                  );
                 }
               );
             }

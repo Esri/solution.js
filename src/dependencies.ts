@@ -75,7 +75,6 @@ export function swizzleDependencies (
 ): void {
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
-    "Group": swizzleGroupDependencies,
     "Web Map": swizzleWebmapDependencies,
     "Web Mapping Application": swizzleWebMappingApplicationDependencies
   };
@@ -83,6 +82,7 @@ export function swizzleDependencies (
   if (swizzleDependenciesByType[fullItem.type]) {
     swizzleDependenciesByType[fullItem.type](fullItem, swizzles)
   }
+  swizzleCommonDependencies(fullItem, swizzles)
 }
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
@@ -249,27 +249,6 @@ function swizzleDashboardDependencies (
 }
 
 /**
- * Swizzles the ids of the dependencies of an AGOL group.
- *
- * @param fullItem A group whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-function swizzleGroupDependencies (
-  fullItem: IFullItem,
-  swizzles: ISwizzleHash
-): void {
-  if (fullItem.dependencies.length > 0) {
-    // Swizzle the id of each of the group's items to it
-    let updatedDependencies:string[] = [];
-    fullItem.dependencies.forEach(depId => {
-      updatedDependencies.push(swizzles[depId].id);
-    });
-    fullItem.dependencies = updatedDependencies;
-  }
-}
-
-/**
  * Swizzles the ids of the dependencies of an AGOL webmap item.
  *
  * @param fullItem A webmap item whose dependencies are to be swizzled
@@ -325,6 +304,27 @@ function swizzleWebMappingApplicationDependencies (
     } else if (values.group) {
       values.group = swizzles[values.group].id;
     }
+  }
+}
+
+/**
+ * Swizzles the ids of the dependencies of an IFullItem.
+ *
+ * @param fullItem Item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
+ */
+function swizzleCommonDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  if (fullItem.dependencies.length > 0) {
+    // Swizzle the id of each of the items in the dependencies array
+    let updatedDependencies:string[] = [];
+    fullItem.dependencies.forEach(depId => {
+      updatedDependencies.push(swizzles[depId].id);
+    });
+    fullItem.dependencies = updatedDependencies;
   }
 }
 
