@@ -213,22 +213,6 @@ export function cloneSolution (
 
     function runThroughChecklist () {
       if (cloneOrderChecklist.length === 0) {
-
-        console.warn("sources:");//???
-        Object.keys(solution).forEach(//???
-          id => console.warn("  " + id + ": " + JSON.stringify((solution[id] as IFullItem).dependencies))//???
-        );//???
-        //solution = swizzleSolutionHierarchy(solution, swizzles);
-        console.warn("sources unchanged?:");//???
-        Object.keys(solution).forEach(//???
-          id => console.warn("  " + id + ": " + JSON.stringify((solution[id] as IFullItem).dependencies))//???
-        );//???
-        console.warn("cloned solution:");//???
-        Object.keys(clonedSolution).forEach(//???
-          id => console.warn("  " + id + ": " + JSON.stringify((clonedSolution[id] as IFullItem).dependencies))//???
-        );//???
-        console.warn("swizzles: " + JSON.stringify(swizzles, null, 4));//???
-
         resolve(clonedSolution);
         return;
       }
@@ -238,7 +222,6 @@ export function cloneSolution (
       createSwizzledItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
       .then(
         clone => {
-          console.warn("created " + clone.item.id + " (" + (solution[itemId] as IFullItem).type + ") from " + itemId);//???
           clonedSolution[clone.item.id] = clone;
           runThroughChecklist();
         },
@@ -283,42 +266,11 @@ export function createSolutionStorymap (
       orgSession, folderId, access)
     .then(
       storymap  => {
-        console.warn("story map id: " + storymap.id);//???
         resolve(storymap);
       },
       reject
     );
   });
-}
-
-export function swizzleSolutionHierarchy (
-  solution: IItemHash,
-  swizzles: ISwizzleHash
-): IItemHash {
-  let updatedSolution = {} as IItemHash;
-
-  Object.keys(solution).forEach(
-    originalId => {
-      let swizzledId = swizzles[originalId].id;
-      updatedSolution[swizzledId] = solution[originalId];
-      console.warn("copy solution[" + originalId + "] to updatedSolution[" + swizzledId + "]");//???
-      console.warn("  deps of solution[" + originalId + "]: " + (solution[originalId] as IFullItem).dependencies);//???
-
-      let updatedDependencies = [] as string[];
-      (solution[originalId] as IFullItem).dependencies.forEach(
-        depId => {
-          console.warn("  swizzle dep " + depId + " to " + swizzles[depId]);//???
-          //if (!swizzles[depId]) {//???
-          //  console.warn(depId + ": " + solution[originalId]);//???
-          //}//???
-          //updatedDependencies.push(swizzles[depId].id);
-        }
-      );
-      (updatedSolution[swizzledId] as IFullItem).dependencies = updatedDependencies;
-    }
-  );
-
-  return updatedSolution;
 }
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
@@ -476,12 +428,10 @@ export function addGroupMembers (
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
-    console.warn("addGroupMembers group " + fullItem.item.id + " contains [" + fullItem.dependencies + "]");//???
     if (fullItem.dependencies.length > 0) {
       var awaitGroupAdds:Promise<null>[] = [];
       fullItem.dependencies.forEach(depId => {
         awaitGroupAdds.push(new Promise(resolve => {
-          console.warn("Share " + depId + " with group " + fullItem.item.id);//???
           sharing.shareItemWithGroup({
             id: depId,
             groupId: fullItem.item.id,
@@ -498,11 +448,7 @@ export function addGroupMembers (
       // After all items have been added to the group
       Promise.all(awaitGroupAdds)
       .then(
-        () => { //???
-          console.warn("addGroupMembers end " + fullItem.item.id + " contains [" + fullItem.dependencies + "]");//???
-          resolve();//???
-        }//???
-        //???() => resolve()
+        () => resolve()
       );
     } else {
       // No items in this group
@@ -616,11 +562,9 @@ export function createSwizzledItem (
       }
 
       // Create the item
-      //console.warn("createItemInFolder " + clonedItem.item.id + " [" + clonedItem.dependencies + "]...");//???
       items.createItemInFolder(options)
       .then(
         createResponse => {
-          //console.warn("  ...createItemInFolder [" + clonedItem.dependencies + "]-->" + createResponse.id);//???
           // Add the new item to the swizzle list
           swizzles[clonedItem.item.id] = {
             id: createResponse.id

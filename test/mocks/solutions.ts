@@ -194,8 +194,9 @@ export function getWebMappingApplicationSolution (
 ): any {
   let solution:any = {
     "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"],
-      "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"),
-    "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"]),
+      "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid="),
+    "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"],
+      "https://arcgis.com/home/webmap/viewer.html?webmap="),
     "svc1234567890": getItemSolutionPart("Feature Service", [])
   };
 

@@ -267,7 +267,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           });
           done();
         },
-        error => done.fail(error)
+        done.fail
       );
     });
 
@@ -395,15 +395,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
       solution.cloneSolution(solutionItem, orgSession)
       .then(
         response => {
-          expect(response.length).toEqual(4);
+          expect(Object.keys(response).length).toEqual(3);
           done();
         },
-        error => done.fail()
+        done.fail
       );
     });
 
@@ -451,12 +453,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/" + folderId + "/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
       solution.cloneSolution(solutionItem, orgSession, "My Solution", folderId)
       .then(
         response => {
-          expect(response.length).toEqual(4);
+          expect(Object.keys(response).length).toEqual(3);
           done();
         },
         error => done.fail()
@@ -505,12 +509,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/org1234567890/arcgis/rest/admin/services/" + folderId +
         "/FeatureServer/1/addToDefinition", '{"success":true}')
       .post("path:/sharing/rest/content/users/casey/" + folderId + "/addItem", addItemUpdater)
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}');
       solution.cloneSolution(solutionItem, orgSession, undefined, folderId, "org")
       .then(
         response => {
-          expect(response.length).toEqual(3);
+          expect(Object.keys(response).length).toEqual(3);
           done();
         },
         error => done.fail()
@@ -539,8 +545,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle an undefined folder id when publishing a solution storymap", done => {
 
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
 
-      publishSolutionStorymapItem (mockSolutions.getItemSolutionPart("Dashboard"), MOCK_USER_REQOPTS, undefined, "org")
+      publishSolutionStorymapItem (mockSolutions.getItemSolutionPart("Dashboard"), orgSession, undefined, "org")
       .then(done, done);
 
 
@@ -562,11 +573,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"DSH1234567890","folder":null}');
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"wma1234567890"}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("DSH1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -585,11 +598,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
-        '{"success":true,"id":"DSH1234567890","folder":"fld1234567890"}');
+        '{"success":true,"id":"DSH1234567890","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"dsh1234567890"}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("DSH1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -608,11 +623,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"dsh1234567890","folder":null}');
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"DSH1234567890"}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("dsh1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -631,11 +648,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"dsh1234567890","folder":null}');
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"DSH1234567890"}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("dsh1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -702,14 +721,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/1/addToDefinition", '{"success":true}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -754,14 +773,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/1/addToDefinition", '{"success":true}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -805,14 +824,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/1/addToDefinition", '{"success":true}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -940,8 +959,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"WMA1234567890"}');
       solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("WMA1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("WMA1234567890");
           done();
         },
         error => done.fail(error)
@@ -1141,10 +1160,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: remove undesirable properties", () => {
 
     it("remove properties", () => {
-      let abc = mockItems.getAGOLItem("Web Mapping Application");
+      let abc = mockItems.getAGOLItem("Web Mapping Application",
+        "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
 
       let abcCopy = solution.removeUndesirableItemProperties(abc);
-      expect(abc).toEqual(mockItems.getAGOLItem("Web Mapping Application"));
+      expect(abc).toEqual(mockItems.getAGOLItem("Web Mapping Application",
+        "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"));
       expect(abcCopy).toEqual(mockItems.getTrimmedAGOLItem());
     });
 
@@ -1261,13 +1282,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item = mockItems.getAGOLItem("Web Mapping Application");
-    abc.item.url = solution.aPlaceholderServerName + "/apps/CrowdsourcePolling/index.html?appid=";
+    abc.item.url = solution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
 
     it("success", done => {
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
       '{"success":true,"id":"wma1234567890"}');
-      solution.updateWebMappingApplicationURL(abc, orgSession)
+      solution.updateApplicationURL(abc, orgSession)
       .then(response => {
         expect(response).toEqual("wma1234567890");
         done();
@@ -1279,7 +1300,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-        solution.updateWebMappingApplicationURL(abc, orgSession)
+        solution.updateApplicationURL(abc, orgSession)
         .then(
         () => done.fail(),
         errorMsg => {

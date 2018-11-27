@@ -71,7 +71,7 @@ export function getDependencies (
  */
 export function swizzleDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles = {} as ISwizzleHash
 ): void {
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
@@ -318,7 +318,7 @@ function swizzleCommonDependencies (
   fullItem: IFullItem,
   swizzles: ISwizzleHash
 ): void {
-  if (fullItem.dependencies.length > 0) {
+  if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
     // Swizzle the id of each of the items in the dependencies array
     let updatedDependencies:string[] = [];
     fullItem.dependencies.forEach(depId => {
