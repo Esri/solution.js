@@ -25,11 +25,6 @@ import { getTopLevelItemIds } from "./viewing";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
-export interface IStorymap {
-  id: string,
-  url: string
-}
-
 export function createSolutionStorymapItem (
   title: string,
   solution: IItemHash,
@@ -62,19 +57,20 @@ export function createSolutionStorymapItem (
 /**
  * Creates a Storymap item describing the top-level webpages forming the solution.
  *
- * @param solutionStorymap Storymap AGOL item
+ * @param solutionStorymap Storymap AGOL item; item is modified
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder
+ * folder
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with an object reporting the Storymap id
+ * @returns A promise that will resolve with an updated solutionStorymap reporting the Storymap id
+ * and URL
  */
 export function publishSolutionStorymapItem (
   solutionStorymap: IFullItem,
   orgSession: IOrgSession,
   folderId = null as string,
   access = "private"
-): Promise<IStorymap> {
+): Promise<IFullItem> {
   return new Promise((resolve, reject) => {
     common.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
     .then(
@@ -84,10 +80,11 @@ export function publishSolutionStorymapItem (
         let solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
         common.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
         .then(
-          () => resolve({
-            id: solutionStorymapId,
-            url: solutionStorymapUrl
-          }),
+          () => {
+            solutionStorymap.item.id = solutionStorymapId;
+            solutionStorymap.item.url = solutionStorymapUrl;
+            resolve(solutionStorymap);
+          },
           reject
         );
 

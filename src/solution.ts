@@ -25,7 +25,7 @@ import * as common from "./common";
 import { ISwizzleHash, swizzleDependencies } from "./dependencies";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
-import { createSolutionStorymapItem, publishSolutionStorymapItem, IStorymap } from "./solutionStorymap";
+import { createSolutionStorymapItem, publishSolutionStorymapItem } from "./solutionStorymap";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -259,13 +259,11 @@ export function createSolutionStorymap (
   orgSession: IOrgSession,
   folderId = null as string,
   access = "private"
-): Promise<IStorymap> {
+): Promise<IFullItem> {
   return new Promise((resolve, reject) => {
     publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
     .then(
-      storymap  => {
-        resolve(storymap);
-      },
+      storymap  => resolve(storymap),
       reject
     );
   });
