@@ -14,12 +14,12 @@
  | limitations under the License.
  */
 
-import * as solution from "../src/solution";
 import * as common from "../src/common";
 import { ISwizzleHash } from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
-import { publishSolutionStorymapItem } from "../src/solutionStorymap";
+import * as solution from "../src/solution";
+import * as solutionStorymap from "../src/solutionStorymap";
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -87,10 +87,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(baseSvcURL + "FeatureServer/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(baseSvcURL + "FeatureServer/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(baseSvcURL + "FeatureServer/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(baseSvcURL + "FeatureServer/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ))
       solution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
@@ -137,10 +139,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -169,16 +173,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         undefined,
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual(mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+          expect(fullItem.service.name).toEqual(
+            mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
@@ -200,10 +207,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -231,10 +240,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
         mockServices.removeNameField([mockServices.getLayerOrTable(1, "", "Table")])
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -285,7 +296,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("for single item containing WMA & feature service, but share fails", done => {
+    it("for single item containing WMA & feature service, but share as public fails", done => {
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"sln1234567890","folder":null}')
@@ -336,13 +347,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}'
-      );
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}');
       solution.cloneSolution(solutionItem, orgSession)
       .then(
-        () => done.fail,
+        () => done.fail(),
         done
       )
     });
@@ -376,7 +385,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post('https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
@@ -432,10 +441,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}'
-      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
         folderId + '/FeatureServer","itemId":"svc1234567890",' +
@@ -490,10 +497,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}'
-      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
         folderId + '/FeatureServer","itemId":"svc1234567890",' +
@@ -530,31 +535,62 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       let folderId = "fld1234567890";
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}'
-      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"success":false}');
       solution.cloneSolution(solutionItem, orgSession, undefined, folderId)
       .then(
-        () => done.fail,
+        () => done.fail(),
         done
       );
     });
 
-    it("should handle an undefined folder id when publishing a solution storymap", done => {
+  });
 
-      let orgSession:solution.IOrgSession = {
-        orgUrl: "https://myOrg.maps.arcgis.com",
-        portalUrl: "https://www.arcgis.com",
-        ...MOCK_USER_REQOPTS
-      };
+  describe("create solution storymap", () => {
 
-      publishSolutionStorymapItem (mockSolutions.getItemSolutionPart("Dashboard"), orgSession, undefined, "org")
-      .then(done, done);
+    let orgSession:solution.IOrgSession = {
+      orgUrl: "https://myOrg.maps.arcgis.com",
+      portalUrl: "https://www.arcgis.com",
+      ...MOCK_USER_REQOPTS
+    };
 
+    it("should create a storymap using a specified folder and public access", done => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let folderId = "fld1234567890";
 
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem",
+        '{"success":true,"id":"sto1234567890","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/share",
+        '{"notSharedWith":[],"itemId":"sto1234567890"}');
+      solution.createSolutionStorymap(title, solutionItem, orgSession, folderId, "public")
+      .then(
+        storymap => {
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle the failure to publish a storymap", done => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
+      solution.createSolutionStorymap(title, solutionItem, orgSession)
+      .then(
+        () => done.fail(),
+        done
+      );
     });
 
   });
@@ -905,8 +941,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
-        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}'
-      );
+        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}');
       solution.createSwizzledItem(group, null, swizzles, orgSession)
       .then(
         () => done(),
@@ -1062,6 +1097,32 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    it("should create an item that's not a Dashboard, Feature Service, Group, Web Map, or Web Mapping Application",
+      done => {
+      let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Map Template");
+      let folderId:string = null;
+      let swizzles:ISwizzleHash = {};
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"MTP1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/MTP1234567890/update",
+        '{"success":true,"id":"MTP1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItem => {
+          expect(createdItem.item.id).toEqual("MTP1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
   });
 
   describe("supporting routine: get cloning order", () => {
@@ -1187,6 +1248,63 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: solution storymap", () => {
+
+    it("should handle defaults to create a storymap", () => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+    });
+
+    it("should handle defaults to publish a storymap", done => {
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sto1234567890","folder":null}')
+
+      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups/map1234567890?f=json&token=fake-token",
+        '{"id":"map1234567890","title":"ROW Permit Manager_1543341045131","isInvitationOnly":true,"owner":"ArcGISTeamLocalGovOrg","description":null,"snippet":"ROW","tags":["ROW","source-84453ddeff8841e9aa2c25d5e1253cd7"],"phone":null,"sortField":"title","sortOrder":"asc","isViewOnly":true,"thumbnail":null,"created":1543341045000,"modified":1543341045000,"access":"public","capabilities":[],"isFav":false,"isReadOnly":false,"protected":false,"autoJoin":false,"notificationsEnabled":false,"provider":null,"providerGroupName":null,"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},"collaborationInfo":{}}')
+      .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890?f=json&start=0&num=100&token=fake-token",
+        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
+
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}');
+      solutionStorymap.publishSolutionStorymapItem(storymapItem, orgSession)
+      .then(
+        () => done(),
+        done.fail
+      );
+    });
+
+    it("should handle solution items without a URL when creating a storymap", () => {
+      let title = "Solution storymap";
+      let solution:any = {
+        "wma1234567890": mockSolutions.getItemSolutionPart("Dashboard")
+      };
+
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solution);
+      expect(storymapItem.type).toEqual("Web Mapping Application");
+      expect(storymapItem.item).toBeDefined();
+      expect(storymapItem.data).toBeDefined();
+    });
+
+    it("should get an untitled storymap item base", () => {
+      let storymapItemBase = solutionStorymap.getStorymapItemFundamentals();
+      expect(storymapItemBase.title).toEqual("");
+    });
+
+  });
+
   describe("supporting routine: timestamp", () => {
 
     it("should return time 1541440408000", () => {
@@ -1223,20 +1341,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
-        '{"username":"casey","id":"9e227333ba7a"}'
-      )
+        '{"username":"casey","id":"9e227333ba7a"}')
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
-        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}'
-      )
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
-        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}'
-       )
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}'
-      );
+        '"message":"Item does not exist or is inaccessible.","details":[]}}');
       solution.addGroupMembers(group, swizzles, orgSession)
       .then(
         () => done.fail(),
@@ -1254,15 +1368,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       )
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
-        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}'
-      )
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
-        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}'
-       )
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
-        '{"notSharedWith":[],"itemId":"map1234567890"}'
-      );
+        '{"notSharedWith":[],"itemId":"map1234567890"}');
       solution.addGroupMembers(group, swizzles, orgSession)
       .then(
         () => done(),
@@ -1272,7 +1383,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("supporting routine: update WMA URL", () => {
+  describe("supporting routine: update application URL", () => {
 
     let orgSession:solution.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
@@ -1300,8 +1411,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-        solution.updateApplicationURL(abc, orgSession)
-        .then(
+      solution.updateApplicationURL(abc, orgSession)
+      .then(
         () => done.fail(),
         errorMsg => {
           let expectedError = new ArcGISRequestError("Item does not exist or is inaccessible.", "CONT_0001");
@@ -1309,6 +1420,45 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done();
         }
       );
+    });
+
+    it("should create a placeholder URL for a Dashboard item", () => {
+      let initialUrl =
+        "http://arcgis4localgov2.maps.arcgis.com/apps/opsdashboard/index.html#/d74b0cb7afc84cc9af0357ccdf113a71";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Dashboard",
+        item: mockItems.getAGOLItem("Dashboard", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(solution.PLACEHOLDER_SERVER_NAME + solution.OPS_DASHBOARD_APP_URL_PART);
+    });
+
+    it("should create a placeholder URL for a Web Map item", () => {
+      let initialUrl =
+        "http://arcgis4localgov2.maps.arcgis.com/home/webmap/viewer.html?webmap=72c09ca3b79e429ab8c9c9665fbe42dc";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Map",
+        item: mockItems.getAGOLItem("Web Map", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(solution.PLACEHOLDER_SERVER_NAME + solution.WEBMAP_APP_URL_PART);
+    });
+
+    it("should leave the application URL alone for an item that is neither a Dashboard nor a Web Map", () => {
+      let initialUrl = "https://arcgis4localgov2.maps.arcgis.com/apps/CrowdsourcePolling/index.html?" +
+        "appid=ed883ee75afe49319d136b46f7e5a86c";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Mapping Application",
+        item: mockItems.getAGOLItem("Web Mapping Application", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(initialUrl);
     });
 
   });

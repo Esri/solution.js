@@ -42,7 +42,7 @@ export function createItemWithData (
   item: any,
   data: any,
   requestOptions: IUserRequestOptions,
-  folderId = "",
+  folderId = null as string,
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
   return new Promise((resolve, reject) => {
@@ -91,9 +91,10 @@ export function createItemWithData (
 /**
  * Updates the URL of an item.
  *
- * @param fullItem A web mapping application
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve when fullItem has been updated
+ * @param id AGOL id of item to update
+ * @param url URL to assign to item's base section
+ * @param requestOptions Options for the request
+ * @returns A promise that will resolve when the item has been updated
  * @protected
  */
 export function updateItemURL (

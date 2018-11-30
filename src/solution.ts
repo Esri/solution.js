@@ -160,7 +160,7 @@ export function publishSolution (
   title: string,
   solution: IItemHash,
   requestOptions: IUserRequestOptions,
-  folderId = "",
+  folderId = null as string,
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
   // Define the solution item
@@ -196,7 +196,7 @@ export function cloneSolution (
   solution: IItemHash,
   orgSession: IOrgSession,
   solutionName = "",
-  folderId = "",
+  folderId = null as string,
   access = "private"
 ): Promise<IItemHash> {
   return new Promise<IItemHash>((resolve, reject) => {
@@ -257,13 +257,11 @@ export function createSolutionStorymap (
   title: string,
   solution: IItemHash,
   orgSession: IOrgSession,
-  folderId = "",
+  folderId = null as string,
   access = "private"
 ): Promise<IStorymap> {
   return new Promise((resolve, reject) => {
-    publishSolutionStorymapItem(
-      createSolutionStorymapItem(title, solution, orgSession.orgUrl, folderId),
-      orgSession, folderId, access)
+    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
     .then(
       storymap  => {
         resolve(storymap);

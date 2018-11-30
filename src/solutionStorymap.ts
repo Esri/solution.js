@@ -33,11 +33,10 @@ export interface IStorymap {
 export function createSolutionStorymapItem (
   title: string,
   solution: IItemHash,
-  orgUrl: string,
-  folderId = ""
+  folderId = null as string
 ): IFullItem {
   // Prepare the storymap item
-  let item = getStorymapItemFundamentals(title, orgUrl);
+  let item = getStorymapItemFundamentals(title);
   let data = getStorymapItemDataFundamentals(title, folderId);
 
   // Create a story for each top-level item
@@ -66,14 +65,14 @@ export function createSolutionStorymapItem (
  * @param solutionStorymap Storymap AGOL item
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder; ignored for Group item type
+ *                 folder
  * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with an object reporting the Storymap id
  */
 export function publishSolutionStorymapItem (
   solutionStorymap: IFullItem,
   orgSession: IOrgSession,
-  folderId = "",
+  folderId = null as string,
   access = "private"
 ): Promise<IStorymap> {
   return new Promise((resolve, reject) => {
@@ -98,11 +97,8 @@ export function publishSolutionStorymapItem (
   });
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
-
-function getStorymapItemFundamentals (
-  title: string,
-  orgUrl: string
+export function getStorymapItemFundamentals (
+  title = ""
 ): any {
   return {
     "itemType": "text",
@@ -115,6 +111,8 @@ function getStorymapItemFundamentals (
     "commentsEnabled": false
   };
 }
+
+//-- Internals -------------------------------------------------------------------------------------------------------//
 
 function getStorymapItemDataFundamentals (
   title: string,

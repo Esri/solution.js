@@ -93,7 +93,9 @@ export function getItemSolutionPart (
     case "Layer Package":
       break;
 
-    case "Map Template":
+    case "Map Template":  //??? temporary definition
+      solutionPart = getItemSolutionFundamentals(type, "mtp", dependencies, url);
+      solutionPart.resources = null;
       break;
 
     case "Operation View":
