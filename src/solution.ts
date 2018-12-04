@@ -20,10 +20,12 @@ import * as groups from "@esri/arcgis-rest-groups";
 import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
+
+import * as common from "./common";
+import { ISwizzleHash, swizzleDependencies } from "./dependencies";
 import { IFullItem } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
-import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
-import { rejects } from 'assert';
+import { createSolutionStorymapItem, publishSolutionStorymapItem } from "./solutionStorymap";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -91,7 +93,7 @@ export interface IOrgSession {
  */
 export function createSolution (
   solutionRootIds: string | string[],
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<IItemHash> {
   return new Promise<IItemHash>((resolve, reject) => {
 
@@ -112,9 +114,14 @@ export function createSolution (
             // 2. for web mapping apps,
             //    a. generalize app URL
             if (fullItem.type === "Web Mapping Application") {
-              generalizeWebMappingApplicationURLs(fullItem);
+              generalizeWebMappingApplicationURL(fullItem);
 
-            // 3. for feature services,
+            // 3. for items missing their application URLs,
+            //    a. fill in URL
+            } else if (fullItem.type === "Dashboard" || fullItem.type === "Web Map") {
+              addGeneralizedApplicationURL(fullItem);
+
+            // 4. for feature services,
             //    a. fill in missing data
             //    b. get layer & table details
             //    c. generalize layer & table URLs
@@ -143,96 +150,62 @@ export function createSolution (
  *
  * @param title Title for Solution item to create
  * @param solution Hash of JSON descriptions of items to publish into Solution
- * @param access Access to set for item: 'public', 'org', 'private'
  * @param requestOptions Options for the request
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with an object reporting success and the Solution id
  */
 export function publishSolution (
   title: string,
   solution: IItemHash,
-  access: string,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  folderId = null as string,
+  access = "private"
 ): Promise<items.IItemUpdateResponse> {
-  return new Promise((resolve, reject) => {
-    // Define the solution item
-    let item = {
-      title: title,
-      type: "Solution",
-      itemType: "text",
-      access: access,
-      listed: false,
-      commentsEnabled: false
-    };
-    let data = {
-      items: solution
-    };
+  // Define the solution item
+  let item = {
+    title: title,
+    type: "Solution",
+    itemType: "text",
+    access: access,
+    listed: false,
+    commentsEnabled: false
+  };
+  let data = {
+    items: solution
+  };
 
-    // Create it and add its data section
-    let options = {
-      title: title,
-      item: item,
-      ...requestOptions
-    };
-    items.createItem(options)
-    .then(
-      results => {
-        let options = {
-          id: results.id,
-          data: data,
-          ...requestOptions
-        };
-        items.addItemJsonData(options)
-        .then(
-          results => {
-            // Set the access manually since the access value in createItem appears to be ignored
-            let options = {
-              id: results.id,
-              access: access,
-              ...requestOptions as sharing.ISetAccessRequestOptions
-            };
-            sharing.setItemAccess(options)
-            .then(
-              results => {
-                resolve({
-                  success: true,
-                  id: results.itemId
-                })
-              },
-              error => reject(error.originalMessage)
-            );
-          },
-          error => reject(error.originalMessage)
-        );
-      },
-      error => reject(error.originalMessage)
-    );
-  });
+  return common.createItemWithData(item, data, requestOptions, folderId, access);
 }
 
 /**
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
  *
- * @param solution A hash of item descriptions to convert
+ * @param solution A hash of item descriptions to convert; note that the item ids are updated
+ *     to their cloned versions
  * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param solutionName Name root to use if folder is to be created
  * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created;
  *     if created, folder name is a combination of the solution name and a timestamp for uniqueness,
  *     e.g., "Dashboard (1540841846958)"
- * @param solutionName Name root to use if folder is to be created
+ * @param access Access to set for item: 'public', 'org', 'private'
  * @returns A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
   solution: IItemHash,
   orgSession: IOrgSession,
-  folderId?: string,
-  solutionName?: string
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    let itemIdList:string[] = [];
+  solutionName = "",
+  folderId = null as string,
+  access = "private"
+): Promise<IItemHash> {
+  return new Promise<IItemHash>((resolve, reject) => {
     let swizzles:ISwizzleHash = {};
+    let clonedSolution:IItemHash = {};
 
     // Don't bother creating folder if there are no items in solution
     if (!solution || Object.keys(solution).length === 0) {
-      resolve(itemIdList);
+      resolve(clonedSolution);
     }
 
     // Run through the list of item ids in clone order
@@ -240,21 +213,19 @@ export function cloneSolution (
 
     function runThroughChecklist () {
       if (cloneOrderChecklist.length === 0) {
-        resolve(itemIdList);
+        resolve(clonedSolution);
         return;
       }
 
       // Clone item at top of list
       let itemId = cloneOrderChecklist.shift();
-      createItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
+      createSwizzledItem((solution[itemId] as IFullItem), folderId, swizzles, orgSession)
       .then(
-        newItemId => {
-          itemIdList.push(newItemId);
+        clone => {
+          clonedSolution[clone.item.id] = clone;
           runThroughChecklist();
         },
-        error => {
-          reject(error)
-        }
+        reject
       )
     }
 
@@ -282,6 +253,22 @@ export function cloneSolution (
   });
 }
 
+export function createSolutionStorymap (
+  title: string,
+  solution: IItemHash,
+  orgSession: IOrgSession,
+  folderId = null as string,
+  access = "private"
+): Promise<IFullItem> {
+  return new Promise((resolve, reject) => {
+    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
+    .then(
+      storymap  => resolve(storymap),
+      reject
+    );
+  });
+}
+
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
@@ -289,7 +276,11 @@ export function cloneSolution (
  * name has to be acceptable to AGOL, otherwise it discards the URL.
  * @protected
  */
-export const aPlaceholderServerName:string = "https://arcgis.com";
+export const PLACEHOLDER_SERVER_NAME:string = "https://arcgis.com";
+
+export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
+
+export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
 
 /**
  * Storage of a one-way relationship.
@@ -324,6 +315,19 @@ enum SortVisitColor {
   Gray,
   /** finished */
   Black
+}
+
+export function addGeneralizedApplicationURL (
+  fullItem: IFullItem
+): void {
+  // Create URL with a placeholder server name because otherwise AGOL makes URL null; don't include item id; e.g.,
+  // Dashboard: https://<PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
+  // Web Map: https://<PLACEHOLDER_SERVER_NAME>/home/webmap/viewer.html?webmap=
+  if (fullItem.type === "Dashboard") {
+    fullItem.item.url = PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
+  } else if (fullItem.type === "Web Map") {
+    fullItem.item.url = PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART;
+  }
 }
 
 /**
@@ -460,26 +464,28 @@ export function addGroupMembers (
  * @returns A promise that will resolve with the id of the created item
  * @protected
  */
-export function createItem (
+export function createSwizzledItem (
   fullItem: IFullItem,
   folderId: string,
   swizzles: ISwizzleHash,
   orgSession: IOrgSession
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
+): Promise<IFullItem> {
+  return new Promise<IFullItem>((resolve, reject) => {
+
+    let clonedItem = JSON.parse(JSON.stringify(fullItem)) as IFullItem;
 
     // Swizzle item's dependencies
-    swizzleDependencies(fullItem, swizzles);
+    swizzleDependencies(clonedItem, swizzles);
 
     // Feature Services
-    if (fullItem.type === "Feature Service") {
+    if (clonedItem.type === "Feature Service") {
       let options = {
-        item: fullItem.item,
+        item: clonedItem.item,
         folderId: folderId,
         ...orgSession
       }
-      if (fullItem.data) {
-        options.item.text = fullItem.data;
+      if (clonedItem.data) {
+        options.item.text = clonedItem.data;
       }
 
       // Make the item name unique
@@ -495,26 +501,26 @@ export function createItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[fullItem.item.id] = {
+          swizzles[clonedItem.item.id] = {
             id: createResponse.serviceItemId,
             url: createResponse.serviceurl
           };
-          fullItem.item.id = createResponse.serviceItemId;
-          fullItem.item.url = createResponse.serviceurl;
+          clonedItem.item.id = createResponse.serviceItemId;
+          clonedItem.item.url = createResponse.serviceurl;
 
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables((fullItem as IFullItemFeatureService), swizzles, orgSession)
+          addFeatureServiceLayersAndTables((clonedItem as IFullItemFeatureService), swizzles, orgSession)
           .then(
-            () => resolve(fullItem.item.id)
+            () => resolve(clonedItem)
           );
         },
         reject
       );
 
     // Groups
-    } else if (fullItem.type === "Group") {
+    } else if (clonedItem.type === "Group") {
       let options = {
-        group: fullItem.item,
+        group: clonedItem.item,
         ...orgSession
       }
 
@@ -526,15 +532,15 @@ export function createItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[fullItem.item.id] = {
+          swizzles[clonedItem.item.id] = {
             id: createResponse.group.id
           };
-          fullItem.item.id = createResponse.group.id;
+          clonedItem.item.id = createResponse.group.id;
 
           // Add the group's items to it
-          addGroupMembers(fullItem, swizzles, orgSession)
+          addGroupMembers(clonedItem, swizzles, orgSession)
           .then(
-            () => resolve(fullItem.item.id)
+            () => resolve(clonedItem)
           );
         },
         error => reject(error.response.error.message)
@@ -543,12 +549,12 @@ export function createItem (
     // All other types
     } else {
       let options:items.IItemAddRequestOptions = {
-        item: fullItem.item,
+        item: clonedItem.item,
         folder: folderId,
         ...orgSession
       };
-      if (fullItem.data) {
-        options.item.text = fullItem.data;
+      if (clonedItem.data) {
+        options.item.text = clonedItem.data;
       }
 
       // Create the item
@@ -556,20 +562,22 @@ export function createItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[fullItem.item.id] = {
+          swizzles[clonedItem.item.id] = {
             id: createResponse.id
           };
-          fullItem.item.id = createResponse.id;
+          clonedItem.item.id = createResponse.id;
 
-          // For a web mapping app, update its app URL
-          if (fullItem.type === "Web Mapping Application") {
-            updateWebMappingApplicationURL(fullItem, orgSession)
+          // Update the app URL of a dashboard, webmap, or web mapping app
+          if (clonedItem.type === "Dashboard" ||
+              clonedItem.type === "Web Map" ||
+              clonedItem.type === "Web Mapping Application") {
+            updateApplicationURL(clonedItem, orgSession)
             .then(
-              () => resolve(fullItem.item.id),
+              () => resolve(clonedItem),
               error => reject(error.response.error.message)
             );
           } else {
-            resolve(fullItem.item.id)
+            resolve(clonedItem)
           }
         },
         error => reject(error.response.error.message)
@@ -589,7 +597,7 @@ export function createItem (
  */
 export function fleshOutFeatureService (
   fullItem: IFullItemFeatureService,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<void> {
   return new Promise<void>(resolve => {
     fullItem.service = {};
@@ -637,14 +645,17 @@ export function fleshOutFeatureService (
  * @param fullItem Web mapping application definition to be modified
  * @protected
  */
-function generalizeWebMappingApplicationURLs (
+function generalizeWebMappingApplicationURL (
   fullItem: IFullItem
 ): void {
-  // Remove org base URL and app id
+  // Remove org base URL and app id, e.g.,
+  //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
+  // to
+  //   http://<PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
   // Need to add placeholder server name because otherwise AGOL makes URL null
   let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
   let iSep = orgUrl.indexOf("//");
-  fullItem.item.url = aPlaceholderServerName +  // add placeholder server name
+  fullItem.item.url = PLACEHOLDER_SERVER_NAME +  // add placeholder server name
     orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
 }
 
@@ -683,7 +694,7 @@ function getFirstUsableName (
 function getLayers (
   serviceUrl: string,
   layerList: any[],
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<any[]> {
   return new Promise<any[]>(resolve => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
@@ -791,7 +802,8 @@ export function topologicallySortItems (
   // 2 as each vertex is finished, insert it onto front of a linked list
   // 3 return the linked list of vertices
 
-  let buildList:string[] = [];  // list of ordered vertices--don't need linked list because we just want relative ordering
+  let buildList:string[] = [];  // list of ordered vertices--don't need linked list because
+                                // we just want relative ordering
 
   let verticesToVisit:ISortVertex = {};
   Object.keys(items).forEach(function(vertexId) {
@@ -827,6 +839,30 @@ export function topologicallySortItems (
 }
 
 /**
+ * Updates the URL of an application to one usable for running the app.
+ *
+ * @param fullItem An item that has an application URL, e.g., a dashboard, webmap, or web mapping
+ *                 application
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @returns A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function updateApplicationURL (
+  fullItem: IFullItem,
+  orgSession: IOrgSession
+): Promise<string> {
+  let url = orgSession.orgUrl +
+        (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
+        fullItem.item.id;
+
+  // Update local copy
+  fullItem.item.url = url;
+
+  // Update AGOL copy
+  return common.updateItemURL(fullItem.item.id, url, orgSession as IUserRequestOptions)
+}
+
+/**
  * Updates a feature service with a list of layers and/or tables.
  *
  * @param serviceItemId AGOL id of feature service
@@ -844,7 +880,7 @@ function updateFeatureServiceDefinition(
   listToAdd: any[],
   swizzles: ISwizzleHash,
   relationships: IRelationship,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve, reject) => {
@@ -889,39 +925,5 @@ function updateFeatureServiceDefinition(
     } else {
       resolve();
     }
-  });
-}
-
-/**
- * Updates the URL of a web mapping application to one usable for running the app.
- *
- * @param fullItem A web mapping application
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function updateWebMappingApplicationURL (
-  fullItem: IFullItem,
-  orgSession: IOrgSession
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Update its URL
-    var options = {
-      item: {
-        'id': fullItem.item.id,
-        'url': orgSession.orgUrl +
-          (fullItem.item.url.substr(aPlaceholderServerName.length)) +  // remove placeholder server name
-          fullItem.item.id
-      },
-      authentication: orgSession.authentication
-    };
-
-    items.updateItem(options)
-    .then(
-      updateResp => {
-        resolve(fullItem.item.id);
-      },
-      reject
-    );
   });
 }

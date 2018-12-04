@@ -185,7 +185,7 @@
 
       // Publish the Solution
       var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.publishSolution(solutionName, solution, 'public', requestOptions)
+      clone.publishSolution(solutionName, solution, requestOptions, null, 'public')
       .then(function (publishResponse) {
         var publishedSolutionId = publishResponse.id;
 
@@ -195,7 +195,8 @@
             document.getElementById('detailsDisplay').innerHTML =
               demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
               '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
+              demoCommon.createHierarchyDisplay(publishedSolution.items,
+                clone.getItemHierarchy(publishedSolution.items));
           }
         );
       }, function (error) {

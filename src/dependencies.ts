@@ -41,7 +41,7 @@ export interface ISwizzleHash {
  */
 export function getDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     let getDependenciesByType:IFunctionLookup = {
@@ -71,11 +71,10 @@ export function getDependencies (
  */
 export function swizzleDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles = {} as ISwizzleHash
 ): void {
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
-    "Group": swizzleGroupDependencies,
     "Web Map": swizzleWebmapDependencies,
     "Web Mapping Application": swizzleWebMappingApplicationDependencies
   };
@@ -83,6 +82,7 @@ export function swizzleDependencies (
   if (swizzleDependenciesByType[fullItem.type]) {
     swizzleDependenciesByType[fullItem.type](fullItem, swizzles)
   }
+  swizzleCommonDependencies(fullItem, swizzles)
 }
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
@@ -123,7 +123,7 @@ interface IFunctionLookup {
  */
 function getDashboardDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
@@ -151,7 +151,7 @@ function getDashboardDependencies (
  */
 function getGroupDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     let pagingRequest:IPagingParamsRequestOptions = {
@@ -181,7 +181,7 @@ function getGroupDependencies (
  */
 function getWebmapDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
@@ -207,7 +207,7 @@ function getWebmapDependencies (
  */
 function getWebMappingApplicationDependencies (
   fullItem: IFullItem,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
@@ -245,27 +245,6 @@ function swizzleDashboardDependencies (
         widget.itemId = swizzles[widget.itemId].id;
       }
     });
-  }
-}
-
-/**
- * Swizzles the ids of the dependencies of an AGOL group.
- *
- * @param fullItem A group whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-function swizzleGroupDependencies (
-  fullItem: IFullItem,
-  swizzles: ISwizzleHash
-): void {
-  if (fullItem.dependencies.length > 0) {
-    // Swizzle the id of each of the group's items to it
-    let updatedDependencies:string[] = [];
-    fullItem.dependencies.forEach(depId => {
-      updatedDependencies.push(swizzles[depId].id);
-    });
-    fullItem.dependencies = updatedDependencies;
   }
 }
 
@@ -325,6 +304,27 @@ function swizzleWebMappingApplicationDependencies (
     } else if (values.group) {
       values.group = swizzles[values.group].id;
     }
+  }
+}
+
+/**
+ * Swizzles the ids of the dependencies of an IFullItem.
+ *
+ * @param fullItem Item whose dependencies are to be swizzled
+ * @param swizzles Hash mapping original ids to replacement ids
+ * @protected
+ */
+function swizzleCommonDependencies (
+  fullItem: IFullItem,
+  swizzles: ISwizzleHash
+): void {
+  if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
+    // Swizzle the id of each of the items in the dependencies array
+    let updatedDependencies:string[] = [];
+    fullItem.dependencies.forEach(depId => {
+      updatedDependencies.push(swizzles[depId].id);
+    });
+    fullItem.dependencies = updatedDependencies;
   }
 }
 

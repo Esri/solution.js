@@ -385,7 +385,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
     describe("dashboard", () => {
 
-      it("without widgets", () => {
+      it("without widgets or swizzles", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {};
@@ -393,7 +393,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         expected.type = "Dashboard";
         expected.data = {};
 
-        dependencies.swizzleDependencies(abc, swizzles)
+        dependencies.swizzleDependencies(abc)
         expect(abc).toEqual(expected);
       });
 

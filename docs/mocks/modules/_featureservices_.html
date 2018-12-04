@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;viewing&quot; | arcgis-clone-js</title>
+	<title>&quot;featureServices&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_viewing_.html">&quot;viewing&quot;</a>
+					<a href="_featureservices_.html">&quot;featureServices&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;viewing&quot;</h1>
+			<h1>External module &quot;featureServices&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,16 +71,13 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_featureservices_.html#getlayerortable" class="tsd-kind-icon">get<wbr>Layer<wbr>OrTable</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_featureservices_.html#getrelationship" class="tsd-kind-icon">get<wbr>Relationship</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_featureservices_.html#getservice" class="tsd-kind-icon">get<wbr>Service</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_featureservices_.html#removeeditfieldsinfofield" class="tsd-kind-icon">remove<wbr>Edit<wbr>Fields<wbr>Info<wbr>Field</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_featureservices_.html#removenamefield" class="tsd-kind-icon">remove<wbr>Name<wbr>Field</a></li>
 							</ul>
 						</section>
 					</div>
@@ -89,59 +86,135 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="getitemhierarchy" class="tsd-anchor"></a>
-					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<a name="getlayerortable" class="tsd-anchor"></a>
+					<h3>get<wbr>Layer<wbr>OrTable</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Layer<wbr>OrTable<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, relationships<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/viewing.ts#L62">viewing.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/159c5de/test/mocks/featureServices.ts#L110">featureServices.ts:110</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Extracts item hierarchy structure from a Solution&#39;s items list.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Hash of JSON descriptions of items</p>
-									</div>
+									<h5>id: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>name: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>type: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> relationships: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;[] as any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></h4>
-							<p>JSON structure reflecting dependency hierarchy of items; shared dependencies are
-								repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
-							item&#39;s dependencies</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="gettoplevelitemids" class="tsd-anchor"></a>
-					<h3>get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</h3>
+					<a name="getrelationship" class="tsd-anchor"></a>
+					<h3>get<wbr>Relationship</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Relationship<span class="tsd-signature-symbol">(</span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, relatedTableId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, role<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/viewing.ts#L36">viewing.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/159c5de/test/mocks/featureServices.ts#L194">featureServices.ts:194</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<h5>id: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>relatedTableId: <span class="tsd-signature-type">number</span></h5>
+								</li>
+								<li>
+									<h5>role: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="getservice" class="tsd-anchor"></a>
+					<h3>get<wbr>Service</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Service<span class="tsd-signature-symbol">(</span>layers<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span>, tables<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/159c5de/test/mocks/featureServices.ts#L19">featureServices.ts:19</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> layers: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;[] as any</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> tables: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;[] as any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="removeeditfieldsinfofield" class="tsd-anchor"></a>
+					<h3>remove<wbr>Edit<wbr>Fields<wbr>Info<wbr>Field</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Edit<wbr>Fields<wbr>Info<wbr>Field<span class="tsd-signature-symbol">(</span>layerOrTable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/159c5de/test/mocks/featureServices.ts#L187">featureServices.ts:187</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>layerOrTable: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="removenamefield" class="tsd-anchor"></a>
+					<h3>remove<wbr>Name<wbr>Field</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Name<wbr>Field<span class="tsd-signature-symbol">(</span>layerOrTable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/159c5de/test/mocks/featureServices.ts#L180">featureServices.ts:180</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>layerOrTable: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -162,39 +235,33 @@
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_common_.html">"common"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_dependencies_.html">"dependencies"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_fullitem_.html">"full<wbr>Item"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_solution_.html">"solution"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_solutionstorymap_.html">"solution<wbr>Storymap"</a>
-					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="_viewing_.html">"viewing"</a>
+						<a href="_featureservices_.html">"feature<wbr>Services"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_items_.html">"items"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_solutions_.html">"solutions"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_featureservices_.html#getlayerortable" class="tsd-kind-icon">get<wbr>Layer<wbr>OrTable</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+						<a href="_featureservices_.html#getrelationship" class="tsd-kind-icon">get<wbr>Relationship</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+						<a href="_featureservices_.html#getservice" class="tsd-kind-icon">get<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_featureservices_.html#removeeditfieldsinfofield" class="tsd-kind-icon">remove<wbr>Edit<wbr>Fields<wbr>Info<wbr>Field</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_featureservices_.html#removenamefield" class="tsd-kind-icon">remove<wbr>Name<wbr>Field</a>
 					</li>
 				</ul>
 			</nav>

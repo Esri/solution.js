@@ -14,13 +14,14 @@
  | limitations under the License.
  */
 
-import * as solution from "../src/solution";
+import * as common from "../src/common";
 import { ISwizzleHash } from "../src/dependencies";
 import { IFullItem } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
+import * as solution from "../src/solution";
+import * as solutionStorymap from "../src/solutionStorymap";
 
-import { UserSession } from "@esri/arcgis-rest-auth";
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSwizzle } from "./lib/utils";
 import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
@@ -86,10 +87,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(baseSvcURL + "FeatureServer/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(baseSvcURL + "FeatureServer/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(baseSvcURL + "FeatureServer/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(baseSvcURL + "FeatureServer/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ))
       solution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
@@ -136,10 +139,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -168,16 +173,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         undefined,
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual(mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+          expect(fullItem.service.name).toEqual(
+            mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
@@ -199,10 +207,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
         [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -230,10 +240,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
         mockServices.removeNameField([mockServices.getLayerOrTable(1, "", "Table")])
       ))
-      .post(fullItem.item.url + "/0?f=json", mockServices.getLayerOrTable(0, "", "Feature Layer",
+      .post(fullItem.item.url + "/0?f=json",
+        mockServices.getLayerOrTable(0, "", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ))
-      .post(fullItem.item.url + "/1?f=json", mockServices.getLayerOrTable(1, "", "Table",
+      .post(fullItem.item.url + "/1?f=json",
+        mockServices.getLayerOrTable(1, "", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
       solution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
@@ -257,8 +269,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
-        "public", MOCK_USER_REQOPTS)
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), MOCK_USER_REQOPTS)
       .then(
         response => {
           expect(response).toEqual({
@@ -267,7 +278,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           });
           done();
         },
-        error => done.fail(error)
+        done.fail
       );
     });
 
@@ -275,8 +286,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
-        "public", MOCK_USER_REQOPTS)
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -286,35 +296,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("for single item containing WMA & feature service, but data add fails", done => {
+    it("for single item containing WMA & feature service, but share as public fails", done => {
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"sln1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
-        "public", MOCK_USER_REQOPTS)
-      .then(
-        () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
-          done();
-        }
-      );
-    });
-
-    it("for single item containing WMA & feature service, but share fails", done => {
-      fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"sln1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"success":true,"id":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(),
-        "public", MOCK_USER_REQOPTS)
+      solution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationSolution(), MOCK_USER_REQOPTS,
+        null, "public")
       .then(
         () => done.fail(),
         errorMsg => {
@@ -357,13 +347,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}'
-      );
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}');
       solution.cloneSolution(solutionItem, orgSession)
       .then(
-        () => done.fail,
+        () => done.fail(),
         done
       )
     });
@@ -389,13 +377,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Provide different results for same route upon subsequent call
       let addItemUpdater = (() => {
           var stepNum = 0;
-          return () => stepNum++ === 0 ?
-            '{"success":true,"id":"map1234567890","folder":"fld1234567890"}' :
-            '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}' ;
+          return () => [
+            '{"success":true,"id":"map1234567890","folder":"fld1234567890"}',
+            '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}',
+            '{"success":true,"id":"sto1234567890","folder":"fld1234567890"}'
+          ][stepNum++];
       })();
 
       fetchMock
-      .post('https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
@@ -413,18 +403,22 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/1/addToDefinition", '{"success":true}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
-        '{"success":true,"id":"wma1234567890"}');
+        '{"success":true,"id":"wma1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}');
       solution.cloneSolution(solutionItem, orgSession)
       .then(
         response => {
-          expect(response.length).toEqual(3);
+          expect(Object.keys(response).length).toEqual(3);
           done();
         },
-        error => done.fail()
+        done.fail
       );
     });
 
-    it("should clone a solution using a supplied folder", done => {
+    it("should clone a solution using a supplied folder and supplied solution name", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
@@ -439,16 +433,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Provide different results for same route upon subsequent call
       let addItemUpdater = (() => {
           var stepNum = 0;
-          return () => stepNum++ === 0 ?
-            '{"success":true,"id":"map1234567890","folder":"' + folderId + '"}' :
-            '{"success":true,"id":"wma1234567890","folder":"' + folderId + '"}' ;
+          return () => [
+            '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
+            '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
+            '{"success":true,"id":"sto1234567890","folder":"FLD1234567890"}'
+          ][stepNum++];
       })();
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}'
-      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
         folderId + '/FeatureServer","itemId":"svc1234567890",' +
@@ -465,11 +459,69 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/1/addToDefinition", '{"success":true}')
       .post("path:/sharing/rest/content/users/casey/" + folderId + "/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
-        '{"success":true,"id":"wma1234567890"}');
-      solution.cloneSolution(solutionItem, orgSession, folderId)
+        '{"success":true,"id":"wma1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}');
+      solution.cloneSolution(solutionItem, orgSession, "My Solution", folderId)
       .then(
         response => {
-          expect(response.length).toEqual(3);
+          expect(Object.keys(response).length).toEqual(3);
+          done();
+        },
+        error => done.fail()
+      );
+    });
+
+    it("should clone a solution using a supplied folder, but handle failed storymap", done => {
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let folderId = "FLD1234567890";
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      let layerNumUpdater = (() => {
+          var layerNum = 0;
+          return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
+      })();
+
+      // Provide different results for same route upon subsequent call
+      let addItemUpdater = (() => {
+          var stepNum = 0;
+          return () => [
+            '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
+            '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
+            '{"success":false"}'
+          ][stepNum++];
+      })();
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
+        folderId + '/FeatureServer","itemId":"svc1234567890",' +
+        '"name":"' + folderId + '","serviceItemId":"svc1234567890",' +
+        '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' + folderId +
+        '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
+        '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"' + folderId + '"}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/" + folderId +
+        "/FeatureServer/addToDefinition", layerNumUpdater)
+      .post("path:/org1234567890/arcgis/rest/admin/services/" + folderId +
+        "/FeatureServer/0/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/" + folderId +
+        "/FeatureServer/1/addToDefinition", '{"success":true}')
+      .post("path:/sharing/rest/content/users/casey/" + folderId + "/addItem", addItemUpdater)
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
+        '{"success":true,"id":"wma1234567890"}');
+      solution.cloneSolution(solutionItem, orgSession, undefined, folderId, "org")
+      .then(
+        response => {
+          expect(Object.keys(response).length).toEqual(3);
           done();
         },
         error => done.fail()
@@ -480,18 +532,63 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "FLD1234567890";
+      let folderId = "fld1234567890";
 
       fetchMock
-      .post(
-        'https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder',
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}'
-      )
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"success":false}');
-      solution.cloneSolution(solutionItem, orgSession, folderId)
+      solution.cloneSolution(solutionItem, orgSession, undefined, folderId)
       .then(
-        () => done.fail,
+        () => done.fail(),
+        done
+      );
+    });
+
+  });
+
+  describe("create solution storymap", () => {
+
+    let orgSession:solution.IOrgSession = {
+      orgUrl: "https://myOrg.maps.arcgis.com",
+      portalUrl: "https://www.arcgis.com",
+      ...MOCK_USER_REQOPTS
+    };
+
+    it("should create a storymap using a specified folder and public access", done => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let folderId = "fld1234567890";
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem",
+        '{"success":true,"id":"sto1234567890","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/share",
+        '{"notSharedWith":[],"itemId":"sto1234567890"}');
+      solution.createSolutionStorymap(title, solutionItem, orgSession, folderId, "public")
+      .then(
+        storymap => {
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle the failure to publish a storymap", done => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
+      solution.createSolutionStorymap(title, solutionItem, orgSession)
+      .then(
+        () => done.fail(),
         done
       );
     });
@@ -512,11 +609,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"DSH1234567890","folder":null}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"wma1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("DSH1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -535,11 +634,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
-        '{"success":true,"id":"DSH1234567890","folder":"fld1234567890"}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+        '{"success":true,"id":"DSH1234567890","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"dsh1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("DSH1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -558,11 +659,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"dsh1234567890","folder":null}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"DSH1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("dsh1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -581,11 +684,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"dsh1234567890","folder":null}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
+        '{"success":true,"id":"DSH1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("dsh1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -605,7 +710,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"error":{"code":400,"messageCode":"CONT_0004","message":"User folder does not exist.","details":[]}}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -650,16 +755,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -702,16 +807,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -753,16 +858,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
+        createdItem => {
           // Check that we're appending a timestamp to the service name
           let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           let createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItemId).toEqual("svc1234567890");
+          expect(createdItem.item.id).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -791,7 +896,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"success":false}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -836,9 +941,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
-        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}'
-      );
-      solution.createItem(group, null, swizzles, orgSession)
+        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}');
+      solution.createSwizzledItem(group, null, swizzles, orgSession)
       .then(
         () => done(),
         error => done.fail(error)
@@ -863,7 +967,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"error":{"code":403,"messageCode":"GWM_0003",' +
         '"message":"You do not have permissions to access this resource or perform this operation.","details":[]}}'
       );
-      solution.createItem(group, null, swizzles, orgSession)
+      solution.createSwizzledItem(group, null, swizzles, orgSession)
       .then(
         () => done.fail(),
         errorMsg => {
@@ -888,10 +992,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"WMA1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
         '{"success":true,"id":"WMA1234567890"}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
-        createdItemId => {
-          expect(createdItemId).toEqual("WMA1234567890");
+        createdItem => {
+          expect(createdItem.item.id).toEqual("WMA1234567890");
           done();
         },
         error => done.fail(error)
@@ -914,13 +1018,108 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-      solution.createItem(fullItem, folderId, swizzles, orgSession)
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
       .then(
         () => done.fail(),
         errorMsg => {
           expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
           done();
         }
+      );
+    });
+
+    it("should create an unswizzled public Dashboard in a specified folder", done => {
+      let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"dsh1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/dsh1234567890/share",
+        '{"notSharedWith":[],"itemId":"dsh1234567890"}');
+      common.createItemWithData(fullItem.item, fullItem.data, orgSession, null, "public")
+      .then(
+        createdItemUpdateResponse => {
+          expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should create an unswizzled dataless public Dashboard in a specified folder", done => {
+      let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoData();
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"dsh1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/dsh1234567890/share",
+        '{"notSharedWith":[],"itemId":"dsh1234567890"}');
+      common.createItemWithData(fullItem.item, fullItem.data, orgSession, null, "public")
+      .then(
+        createdItemUpdateResponse => {
+          expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should create an unswizzled dataless public Dashboard with both folder and access undefined", done => {
+      let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoData();
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"dsh1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/dsh1234567890/share",
+        '{"notSharedWith":[],"itemId":"dsh1234567890"}');
+      common.createItemWithData(fullItem.item, fullItem.data, orgSession, undefined, undefined)
+      .then(
+        createdItemUpdateResponse => {
+          expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should create an item that's not a Dashboard, Feature Service, Group, Web Map, or Web Mapping Application",
+      done => {
+      let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Map Template");
+      let folderId:string = null;
+      let swizzles:ISwizzleHash = {};
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"MTP1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/MTP1234567890/update",
+        '{"success":true,"id":"MTP1234567890"}');
+      solution.createSwizzledItem(fullItem, folderId, swizzles, orgSession)
+      .then(
+        createdItem => {
+          expect(createdItem.item.id).toEqual("MTP1234567890");
+          done();
+        },
+        error => done.fail(error)
       );
     });
 
@@ -1022,10 +1221,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: remove undesirable properties", () => {
 
     it("remove properties", () => {
-      let abc = mockItems.getAGOLItem("Web Mapping Application");
+      let abc = mockItems.getAGOLItem("Web Mapping Application",
+        "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
 
       let abcCopy = solution.removeUndesirableItemProperties(abc);
-      expect(abc).toEqual(mockItems.getAGOLItem("Web Mapping Application"));
+      expect(abc).toEqual(mockItems.getAGOLItem("Web Mapping Application",
+        "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"));
       expect(abcCopy).toEqual(mockItems.getTrimmedAGOLItem());
     });
 
@@ -1043,6 +1244,63 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("checks for item before attempting to access its properties", () => {
       let result = solution.removeUndesirableItemProperties(null);
       expect(result).toBeNull();
+    });
+
+  });
+
+  describe("supporting routine: solution storymap", () => {
+
+    it("should handle defaults to create a storymap", () => {
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+    });
+
+    it("should handle defaults to publish a storymap", done => {
+      let orgSession:solution.IOrgSession = {
+        orgUrl: "https://myOrg.maps.arcgis.com",
+        portalUrl: "https://www.arcgis.com",
+        ...MOCK_USER_REQOPTS
+      };
+
+      let title = "Solution storymap";
+      let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sto1234567890","folder":null}')
+
+      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups/map1234567890?f=json&token=fake-token",
+        '{"id":"map1234567890","title":"ROW Permit Manager_1543341045131","isInvitationOnly":true,"owner":"ArcGISTeamLocalGovOrg","description":null,"snippet":"ROW","tags":["ROW","source-84453ddeff8841e9aa2c25d5e1253cd7"],"phone":null,"sortField":"title","sortOrder":"asc","isViewOnly":true,"thumbnail":null,"created":1543341045000,"modified":1543341045000,"access":"public","capabilities":[],"isFav":false,"isReadOnly":false,"protected":false,"autoJoin":false,"notificationsEnabled":false,"provider":null,"providerGroupName":null,"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},"collaborationInfo":{}}')
+      .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890?f=json&start=0&num=100&token=fake-token",
+        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
+
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
+        '{"success":true,"id":"sto1234567890"}');
+      solutionStorymap.publishSolutionStorymapItem(storymapItem, orgSession)
+      .then(
+        () => done(),
+        done.fail
+      );
+    });
+
+    it("should handle solution items without a URL when creating a storymap", () => {
+      let title = "Solution storymap";
+      let solution:any = {
+        "wma1234567890": mockSolutions.getItemSolutionPart("Dashboard")
+      };
+
+      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solution);
+      expect(storymapItem.type).toEqual("Web Mapping Application");
+      expect(storymapItem.item).toBeDefined();
+      expect(storymapItem.data).toBeDefined();
+    });
+
+    it("should get an untitled storymap item base", () => {
+      let storymapItemBase = solutionStorymap.getStorymapItemFundamentals();
+      expect(storymapItemBase.title).toEqual("");
     });
 
   });
@@ -1083,20 +1341,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
-        '{"username":"casey","id":"9e227333ba7a"}'
-      )
+        '{"username":"casey","id":"9e227333ba7a"}')
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
-        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}'
-      )
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
-        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}'
-       )
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}'
-      );
+        '"message":"Item does not exist or is inaccessible.","details":[]}}');
       solution.addGroupMembers(group, swizzles, orgSession)
       .then(
         () => done.fail(),
@@ -1114,15 +1368,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       )
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
-        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}'
-      )
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
-        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}'
-       )
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
-        '{"notSharedWith":[],"itemId":"map1234567890"}'
-      );
+        '{"notSharedWith":[],"itemId":"map1234567890"}');
       solution.addGroupMembers(group, swizzles, orgSession)
       .then(
         () => done(),
@@ -1132,7 +1383,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("supporting routine: update WMA URL", () => {
+  describe("supporting routine: update application URL", () => {
 
     let orgSession:solution.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
@@ -1142,13 +1393,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     let abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item = mockItems.getAGOLItem("Web Mapping Application");
-    abc.item.url = solution.aPlaceholderServerName + "/apps/CrowdsourcePolling/index.html?appid=";
+    abc.item.url = solution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
 
     it("success", done => {
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
       '{"success":true,"id":"wma1234567890"}');
-      solution.updateWebMappingApplicationURL(abc, orgSession)
+      solution.updateApplicationURL(abc, orgSession)
       .then(response => {
         expect(response).toEqual("wma1234567890");
         done();
@@ -1160,8 +1411,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-        solution.updateWebMappingApplicationURL(abc, orgSession)
-        .then(
+      solution.updateApplicationURL(abc, orgSession)
+      .then(
         () => done.fail(),
         errorMsg => {
           let expectedError = new ArcGISRequestError("Item does not exist or is inaccessible.", "CONT_0001");
@@ -1169,6 +1420,45 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done();
         }
       );
+    });
+
+    it("should create a placeholder URL for a Dashboard item", () => {
+      let initialUrl =
+        "http://arcgis4localgov2.maps.arcgis.com/apps/opsdashboard/index.html#/d74b0cb7afc84cc9af0357ccdf113a71";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Dashboard",
+        item: mockItems.getAGOLItem("Dashboard", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(solution.PLACEHOLDER_SERVER_NAME + solution.OPS_DASHBOARD_APP_URL_PART);
+    });
+
+    it("should create a placeholder URL for a Web Map item", () => {
+      let initialUrl =
+        "http://arcgis4localgov2.maps.arcgis.com/home/webmap/viewer.html?webmap=72c09ca3b79e429ab8c9c9665fbe42dc";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Map",
+        item: mockItems.getAGOLItem("Web Map", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(solution.PLACEHOLDER_SERVER_NAME + solution.WEBMAP_APP_URL_PART);
+    });
+
+    it("should leave the application URL alone for an item that is neither a Dashboard nor a Web Map", () => {
+      let initialUrl = "https://arcgis4localgov2.maps.arcgis.com/apps/CrowdsourcePolling/index.html?" +
+        "appid=ed883ee75afe49319d136b46f7e5a86c";
+      let abc:IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Mapping Application",
+        item: mockItems.getAGOLItem("Web Mapping Application", initialUrl)
+      };
+
+      solution.addGeneralizedApplicationURL(abc);
+      expect(abc.item.url).toEqual(initialUrl);
     });
 
   });

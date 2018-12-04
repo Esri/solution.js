@@ -43,7 +43,8 @@ export function getAGOLItem (
       break;
 
     case "Dashboard":
-      item = getAGOLItemFundamentals(type, "dsh");
+      item = getAGOLItemFundamentals(type, "dsh",
+        url || "https://arcgis.com/apps/opsdashboard/index.html#/");
       break;
 
     case "Desktop Add In":
@@ -91,12 +92,13 @@ export function getAGOLItem (
       break;
 
     case "Web Map":
-      item = getAGOLItemFundamentals(type, "map");
+      item = getAGOLItemFundamentals(type, "map",
+        url || "https://arcgis.com/home/webmap/viewer.html?webmap=");
       break;
 
     case "Web Mapping Application":
       item = getAGOLItemFundamentals(type, "wma",
-        url || "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
+        url || "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid=");
       break;
 
     case "Workforce Project":
