@@ -25,7 +25,6 @@ import * as common from "./common";
 import { swizzleDependencies } from "./dependencies";
 import { IFullItem, IFullItemFeatureService } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
-import { createSolutionStorymapItem, publishSolutionStorymapItem } from "./solutionStorymap";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -217,22 +216,6 @@ export function cloneSolution (
         }
       );
     }
-  });
-}
-
-export function createSolutionStorymap (
-  title: string,
-  solution: IItemHash,
-  orgSession: common.IOrgSession,
-  folderId = null as string,
-  access = "private"
-): Promise<IFullItem> {
-  return new Promise((resolve, reject) => {
-    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
-    .then(
-      storymap  => resolve(storymap),
-      reject
-    );
   });
 }
 

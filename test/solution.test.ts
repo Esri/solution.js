@@ -18,7 +18,7 @@ import * as common from "../src/common";
 import { IFullItem, IFullItemFeatureService } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
 import * as solution from "../src/solution";
-import * as solutionStorymap from "../src/solutionStorymap";
+import * as viewing from "../src/viewing";
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -569,7 +569,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sto1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/share",
         '{"notSharedWith":[],"itemId":"sto1234567890"}');
-      solution.createSolutionStorymap(title, solutionItem, orgSession, folderId, "public")
+      viewing.createSolutionStorymap(title, solutionItem, orgSession, folderId, "public")
       .then(
         storymap => {
           done();
@@ -585,7 +585,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
         '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
-      solution.createSolutionStorymap(title, solutionItem, orgSession)
+      viewing.createSolutionStorymap(title, solutionItem, orgSession)
       .then(
         () => done.fail(),
         done
@@ -1253,7 +1253,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       let title = "Solution storymap";
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
 
-      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+      let storymapItem = viewing.createSolutionStorymapItem(title, solutionItem);
     });
 
     it("should handle defaults to publish a storymap", done => {
@@ -1265,7 +1265,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       let title = "Solution storymap";
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solutionItem);
+      let storymapItem = viewing.createSolutionStorymapItem(title, solutionItem);
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -1278,7 +1278,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      solutionStorymap.publishSolutionStorymapItem(storymapItem, orgSession)
+      viewing.publishSolutionStorymapItem(storymapItem, orgSession)
       .then(
         () => done(),
         done.fail
@@ -1291,14 +1291,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "wma1234567890": mockSolutions.getItemSolutionPart("Dashboard")
       };
 
-      let storymapItem = solutionStorymap.createSolutionStorymapItem(title, solution);
+      let storymapItem = viewing.createSolutionStorymapItem(title, solution);
       expect(storymapItem.type).toEqual("Web Mapping Application");
       expect(storymapItem.item).toBeDefined();
       expect(storymapItem.data).toBeDefined();
     });
 
     it("should get an untitled storymap item base", () => {
-      let storymapItemBase = solutionStorymap.getStorymapItemFundamentals();
+      let storymapItemBase = viewing.getStorymapItemFundamentals();
       expect(storymapItemBase.title).toEqual("");
     });
 
