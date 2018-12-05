@@ -14,8 +14,8 @@
  | limitations under the License.
  */
 
-import { IItemHash } from "./fullItemHierarchy";
 import { IFullItem } from "./fullItem";
+import { IItemHash } from "./fullItemHierarchy";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 

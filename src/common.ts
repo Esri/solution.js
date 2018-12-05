@@ -16,16 +16,34 @@
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
-import * as groups from "@esri/arcgis-rest-groups";
-import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as sharing from "@esri/arcgis-rest-sharing";
-import { request } from "@esri/arcgis-rest-request";
-import { IFullItem } from "./fullItem";
-import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
-import { ISwizzle, ISwizzleHash, swizzleDependencies } from "./dependencies";
-import { rejects } from 'assert';
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
+
+export interface IOrgSession {
+  /**
+   * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+   */
+  orgUrl: string;
+  /**
+   * The base URL for the portal, e.g., https://www.arcgis.com
+   */
+  portalUrl: string;
+  /**
+   * A session representing a logged-in user
+   */
+  authentication: UserSession;
+}
+
+export interface ISwizzle {
+  id: string;
+  name?: string;
+  url?: string;
+}
+
+export interface ISwizzleHash {
+  [id:string]: ISwizzle;
+}
 
 /**
  * Publishes an item and its data as an AGOL item.

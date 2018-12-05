@@ -14,13 +14,9 @@
  | limitations under the License.
  */
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-import * as items from "@esri/arcgis-rest-items";
-
 import * as common from "./common";
 import { IFullItem } from "./fullItem";
 import { IItemHash } from "./fullItemHierarchy";
-import { IOrgSession } from "./solution";
 import { getTopLevelItemIds } from "./viewing";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
@@ -67,7 +63,7 @@ export function createSolutionStorymapItem (
  */
 export function publishSolutionStorymapItem (
   solutionStorymap: IFullItem,
-  orgSession: IOrgSession,
+  orgSession: common.IOrgSession,
   folderId = null as string,
   access = "private"
 ): Promise<IFullItem> {

@@ -14,12 +14,13 @@
  | limitations under the License.
  */
 
-import * as dependencies from "../src/dependencies";
-import { IFullItem } from "../src/fullItem";
-
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
+import * as common from "../src/common";
+import * as dependencies from "../src/dependencies";
+import { IFullItem } from "../src/fullItem";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
@@ -370,7 +371,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
   describe("swizzleDependencies", () => {
 
-    let swizzles:dependencies.ISwizzleHash = {
+    let swizzles:common.ISwizzleHash = {
       def: {
         id: "DEF",
         name: "'Def'",

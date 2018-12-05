@@ -48,6 +48,24 @@ export interface IFullItem {
 }
 
 /**
+ * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
+ */
+export interface IFullItemFeatureService extends IFullItem {
+  /**
+   * Service description
+   */
+  service: any;
+  /**
+   * Description for each layer
+   */
+  layers: any[];
+  /**
+   * Description for each table
+   */
+  tables: any[];
+}
+
+/**
  * Fetches the item, data, and resources of an AGOL item.
  *
  * @param id AGOL item id

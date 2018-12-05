@@ -22,45 +22,12 @@ import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
 
 import * as common from "./common";
-import { ISwizzleHash, swizzleDependencies } from "./dependencies";
-import { IFullItem } from "./fullItem";
+import { swizzleDependencies } from "./dependencies";
+import { IFullItem, IFullItemFeatureService } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
 import { createSolutionStorymapItem, publishSolutionStorymapItem } from "./solutionStorymap";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
-
-/**
- * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
- */
-export interface IFullItemFeatureService extends IFullItem {
-  /**
-   * Service description
-   */
-  service: any;
-  /**
-   * Description for each layer
-   */
-  layers: any[];
-  /**
-   * Description for each table
-   */
-  tables: any[];
-}
-
-export interface IOrgSession {
-  /**
-   * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
-   */
-  orgUrl: string;
-  /**
-   * The base URL for the portal, e.g., https://www.arcgis.com
-   */
-  portalUrl: string;
-  /**
-   * A session representing a logged-in user
-   */
-  authentication: UserSession;
-}
 
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
@@ -194,13 +161,13 @@ export function publishSolution (
  */
 export function cloneSolution (
   solution: IItemHash,
-  orgSession: IOrgSession,
+  orgSession: common.IOrgSession,
   solutionName = "",
   folderId = null as string,
   access = "private"
 ): Promise<IItemHash> {
   return new Promise<IItemHash>((resolve, reject) => {
-    let swizzles:ISwizzleHash = {};
+    let swizzles:common.ISwizzleHash = {};
     let clonedSolution:IItemHash = {};
 
     // Don't bother creating folder if there are no items in solution
@@ -256,7 +223,7 @@ export function cloneSolution (
 export function createSolutionStorymap (
   title: string,
   solution: IItemHash,
-  orgSession: IOrgSession,
+  orgSession: common.IOrgSession,
   folderId = null as string,
   access = "private"
 ): Promise<IFullItem> {
@@ -341,8 +308,8 @@ export function addGeneralizedApplicationURL (
  */
 export function addFeatureServiceLayersAndTables (
   fullItem: IFullItemFeatureService,
-  swizzles: ISwizzleHash,
-  orgSession: IOrgSession
+  swizzles: common.ISwizzleHash,
+  orgSession: common.IOrgSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
 
@@ -419,8 +386,8 @@ export function addFeatureServiceLayersAndTables (
  */
 export function addGroupMembers (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash,
-  orgSession: IOrgSession
+  swizzles: common.ISwizzleHash,
+  orgSession: common.IOrgSession
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
@@ -467,8 +434,8 @@ export function addGroupMembers (
 export function createSwizzledItem (
   fullItem: IFullItem,
   folderId: string,
-  swizzles: ISwizzleHash,
-  orgSession: IOrgSession
+  swizzles: common.ISwizzleHash,
+  orgSession: common.IOrgSession
 ): Promise<IFullItem> {
   return new Promise<IFullItem>((resolve, reject) => {
 
@@ -849,7 +816,7 @@ export function topologicallySortItems (
  */
 export function updateApplicationURL (
   fullItem: IFullItem,
-  orgSession: IOrgSession
+  orgSession: common.IOrgSession
 ): Promise<string> {
   let url = orgSession.orgUrl +
         (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
@@ -878,7 +845,7 @@ function updateFeatureServiceDefinition(
   serviceItemId: string,
   serviceUrl: string,
   listToAdd: any[],
-  swizzles: ISwizzleHash,
+  swizzles: common.ISwizzleHash,
   relationships: IRelationship,
   requestOptions: IUserRequestOptions
 ): Promise<void> {

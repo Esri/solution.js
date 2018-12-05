@@ -18,19 +18,11 @@ import { ILayer } from "@esri/arcgis-rest-common-types";
 import * as groups from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
+
+import * as common from "./common";
 import { IFullItem } from "./fullItem";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
-
-export interface ISwizzle {
-  id: string;
-  name?: string;
-  url?: string;
-}
-
-export interface ISwizzleHash {
-  [id:string]: ISwizzle;
-}
 
 /**
  * Gets the ids of the dependencies of an AGOL item.
@@ -71,7 +63,7 @@ export function getDependencies (
  */
 export function swizzleDependencies (
   fullItem: IFullItem,
-  swizzles = {} as ISwizzleHash
+  swizzles = {} as common.ISwizzleHash
 ): void {
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
@@ -235,7 +227,7 @@ function getWebMappingApplicationDependencies (
  */
 function swizzleDashboardDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles: common.ISwizzleHash
 ): void {
   // Swizzle its webmap(s)
   let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
@@ -257,7 +249,7 @@ function swizzleDashboardDependencies (
  */
 function swizzleWebmapDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles: common.ISwizzleHash
 ): void {
   if (fullItem.data) {
     // Swizzle its map layers
@@ -294,7 +286,7 @@ function swizzleWebmapDependencies (
  */
 function swizzleWebMappingApplicationDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles: common.ISwizzleHash
 ): void {
   // Swizzle its webmap or group
   let values = fullItem.data && fullItem.data.values;
@@ -316,7 +308,7 @@ function swizzleWebMappingApplicationDependencies (
  */
 function swizzleCommonDependencies (
   fullItem: IFullItem,
-  swizzles: ISwizzleHash
+  swizzles: common.ISwizzleHash
 ): void {
   if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
     // Swizzle the id of each of the items in the dependencies array

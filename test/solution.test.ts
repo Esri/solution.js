@@ -15,8 +15,7 @@
  */
 
 import * as common from "../src/common";
-import { ISwizzleHash } from "../src/dependencies";
-import { IFullItem } from "../src/fullItem";
+import { IFullItem, IFullItemFeatureService } from "../src/fullItem";
 import { IItemHash } from "../src/fullItemHierarchy";
 import * as solution from "../src/solution";
 import * as solutionStorymap from "../src/solutionStorymap";
@@ -126,7 +125,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a layer if a service needs a name", done => {
-      let fullItem:solution.IFullItemFeatureService = {
+      let fullItem:IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -160,7 +159,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--no layer", done => {
-      let fullItem:solution.IFullItemFeatureService = {
+      let fullItem:IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -194,7 +193,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--nameless layer", done => {
-      let fullItem:solution.IFullItemFeatureService = {
+      let fullItem:IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -227,7 +226,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("falls back to 'Feature Service' if a service needs a name", done => {
-      let fullItem:solution.IFullItemFeatureService = {
+      let fullItem:IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -318,7 +317,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("clone solution", () => {
 
-    let orgSession:solution.IOrgSession = {
+    let orgSession:common.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
@@ -340,7 +339,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       let solutionItem:IItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -362,7 +361,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -550,7 +549,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("create solution storymap", () => {
 
-    let orgSession:solution.IOrgSession = {
+    let orgSession:common.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
@@ -600,8 +599,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Dashboard in the root folder", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
       let folderId:string = null;
-      let swizzles:ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -625,8 +624,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Dashboard in a specified folder", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
       let folderId:string = "fld1234567890";
-      let swizzles:ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -650,8 +649,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a mapless Dashboard", done => {
       let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
       let folderId:string = null;
-      let swizzles:ISwizzleHash = {};
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = {};
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -675,8 +674,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a dataless Dashboard", done => {
       let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoData();
       let folderId:string = null;
-      let swizzles:ISwizzleHash = {};
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = {};
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -700,8 +699,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle failure to create a Dashboard", done => {
       let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
       let folderId:string = null;
-      let swizzles:ISwizzleHash = {};
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = {};
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -725,10 +724,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // with known results
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       let folderId:string = "fld1234567890";
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -777,10 +776,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.data = null;
       let folderId:string = "fld1234567890";
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -828,10 +827,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // with known results
       let fullItem:IFullItem = mockSolutions.getFeatureServiceSolutionPartNoRelationships();
       let folderId:string = "fld1234567890";
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -882,12 +881,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "ROWPermits_publiccomment/FeatureServer");
 
       let folderId:string = "fld1234567890";
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -907,13 +906,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle service without any layers or tables", done => {
-      let fullItem:solution.IFullItemFeatureService = mockSolutions.getItemSolutionPart("Feature Service");
+      let fullItem:IFullItemFeatureService = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.service.layers = null;
       fullItem.service.tables = null;
       fullItem.layers = null;
       fullItem.tables = null;
 
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -928,12 +927,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create an empty group", done => {
       let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -951,12 +950,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle the failure to create an empty group", done => {
       let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       let now = 1555555555555;
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -980,8 +979,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Web Mapping Application in the root folder", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
       let folderId:string = null;
-      let swizzles:ISwizzleHash = createMockSwizzle("map1234567890");
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = createMockSwizzle("map1234567890");
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1005,8 +1004,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle the failure to update the URL of a Web Mapping Application being created", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
       let folderId:string = null;
-      let swizzles:ISwizzleHash = createMockSwizzle("map1234567890");
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = createMockSwizzle("map1234567890");
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1030,7 +1029,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create an unswizzled public Dashboard in a specified folder", done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1053,7 +1052,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create an unswizzled dataless public Dashboard in a specified folder", done => {
       let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoData();
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1076,7 +1075,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create an unswizzled dataless public Dashboard with both folder and access undefined", done => {
       let fullItem:IFullItem = mockSolutions.getDashboardSolutionPartNoData();
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1101,8 +1100,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       done => {
       let fullItem:IFullItem = mockSolutions.getItemSolutionPart("Map Template");
       let folderId:string = null;
-      let swizzles:ISwizzleHash = {};
-      let orgSession:solution.IOrgSession = {
+      let swizzles:common.ISwizzleHash = {};
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1258,7 +1257,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle defaults to publish a storymap", done => {
-      let orgSession:solution.IOrgSession = {
+      let orgSession:common.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1319,7 +1318,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: add members to cloned group", () => {
 
-    let orgSession:solution.IOrgSession = {
+    let orgSession:common.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
@@ -1327,7 +1326,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle empty group", done => {
       let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
       solution.addGroupMembers(group, swizzles, orgSession)
       .then(
         () => done(),
@@ -1337,7 +1336,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle failure to add to group", done => {
       let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
@@ -1360,7 +1359,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should add an item to a group", done => {
       let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
-      let swizzles:ISwizzleHash = {};
+      let swizzles:common.ISwizzleHash = {};
 
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
@@ -1385,7 +1384,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: update application URL", () => {
 
-    let orgSession:solution.IOrgSession = {
+    let orgSession:common.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
