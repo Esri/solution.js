@@ -238,8 +238,16 @@ export function cloneSolution (
  */
 export const PLACEHOLDER_SERVER_NAME:string = "https://arcgis.com";
 
+/**
+ * The portion of a Dashboard app URL between the server and the app id.
+ * @protected
+ */
 export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
 
+/**
+ * The portion of a Webmap URL between the server and the map id.
+ * @protected
+ */
 export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
 
 /**
@@ -277,6 +285,12 @@ enum SortVisitColor {
   Black
 }
 
+/**
+ * Replaces the application URL with a generalized form that omits the source server name and id
+ * values in the URL query.
+ * @param fullItem Item to update
+ * @protected
+ */
 export function addGeneralizedApplicationURL (
   fullItem: mFullItem.IFullItem
 ): void {
@@ -919,6 +933,7 @@ function updateFeatureServiceDefinition(
  * @returns A promise that will resolve with a hash by id of IFullItems;
  * if any id is inaccessible, a single error response will be produced for the set
  * of ids
+ * @protected
  */
 export function getFullItemHierarchy (
   rootIds: string | string[],

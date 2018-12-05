@@ -91,6 +91,16 @@ export function getItemHierarchy (
   return hierarchy;
 }
 
+/**
+ * Creates a Storymap from the Web Mapping Applications in a Solution.
+ *
+ * @param title Title of Storymap
+ * @param solution Solution to examine for content
+ * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root folder
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return Storymap item that was published into AGOL
+ */
 export function createSolutionStorymap (
   title: string,
   solution: mSolution.IItemHash,
@@ -109,6 +119,15 @@ export function createSolutionStorymap (
 
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
+/**
+ * Creates a Storymap AGOL item.
+ *
+ * @param title Title of Storymap
+ * @param solution Solution to examine for content
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root folder
+ * @return Storymap AGOL item
+ * @protected
+ */
 export function createSolutionStorymapItem (
   title: string,
   solution: mSolution.IItemHash,
@@ -138,6 +157,14 @@ export function createSolutionStorymapItem (
   };
 }
 
+/**
+ * Generates the data section of a Storymap AGOL item.
+ *
+ * @param title Title of Storymap
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root folder
+ * @return Storymap AGOL item's data section
+ * @protected
+ */
 function getStorymapItemDataFundamentals (
   title: string,
   folderId: string
@@ -205,6 +232,13 @@ function getStorymapItemDataFundamentals (
   };
 }
 
+/**
+ * Generates the base section of a Storymap AGOL item.
+ *
+ * @param title Title of Storymap
+ * @return Storymap AGOL item's base section
+ * @protected
+ */
 export function getStorymapItemFundamentals (
   title = ""
 ): any {
@@ -220,6 +254,15 @@ export function getStorymapItemFundamentals (
   };
 }
 
+/**
+ * Generates a Storymap page.
+ *
+ * @param title Title of Storymap page
+ * @param description Body text of Storymap page
+ * @param url URL to web page to embed in the Storymap page
+ * @return Storymap page JSON
+ * @protected
+ */
 function getWebpageStory (
   title: string,
   description: string,

@@ -162,7 +162,6 @@ export function getFullItem (
  *
  * @param fullItem An item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
- * @protected
  */
 export function swizzleDependencies (
   fullItem: IFullItem,
@@ -197,6 +196,32 @@ export function createUnavailableItemError (
 //-- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
+ * The relevant elements of a Dashboard widget.
+ * @protected
+ */
+interface IDashboardWidget {
+  /**
+   * AGOL item id for some widget types
+   */
+  itemId: string;
+  /**
+   * Dashboard widget type
+   */
+  type: string;
+}
+
+/**
+ * A mapping between a keyword and a function.
+ * @protected
+ */
+interface IFunctionLookup {
+  /**
+   * Keyword lookup of a function
+   */
+  [name:string]: Function
+}
+
+/**
  * Gets the ids of the dependencies of an AGOL item.
  *
  * @param fullItem An item whose dependencies are sought
@@ -226,32 +251,6 @@ export function getDependencies (
       resolve([]);
     }
   });
-}
-
-/**
- * The relevant elements of a Dashboard widget.
- * @protected
- */
-interface IDashboardWidget {
-  /**
-   * AGOL item id for some widget types
-   */
-  itemId: string;
-  /**
-   * Dashboard widget type
-   */
-  type: string;
-}
-
-/**
- * A mapping between a keyword and a function.
- * @protected
- */
-interface IFunctionLookup {
-  /**
-   * Keyword lookup of a function
-   */
-  [name:string]: Function
 }
 
 /**

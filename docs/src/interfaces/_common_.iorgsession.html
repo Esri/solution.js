@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IDashboardWidget | arcgis-clone-js</title>
+	<title>IOrgSession | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,31 +56,24 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_dependencies_.html">&quot;dependencies&quot;</a>
+					<a href="../modules/_common_.html">&quot;common&quot;</a>
 				</li>
 				<li>
-					<a href="_dependencies_.idashboardwidget.html">IDashboardWidget</a>
+					<a href="_common_.iorgsession.html">IOrgSession</a>
 				</li>
 			</ul>
-			<h1>Interface IDashboardWidget</h1>
+			<h1>Interface IOrgSession</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>The relevant elements of a Dashboard widget.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IDashboardWidget</span>
+						<span class="target">IOrgSession</span>
 					</li>
 				</ul>
 			</section>
@@ -88,45 +81,61 @@
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external tsd-is-not-exported">
+						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_dependencies_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_dependencies_.idashboardwidget.html#type" class="tsd-kind-icon">type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_common_.iorgsession.html#authentication" class="tsd-kind-icon">authentication</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_common_.iorgsession.html#orgurl" class="tsd-kind-icon">org<wbr>Url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_common_.iorgsession.html#portalurl" class="tsd-kind-icon">portal<wbr>Url</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external tsd-is-not-exported">
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-					<a name="itemid" class="tsd-anchor"></a>
-					<h3>item<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">item<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="authentication" class="tsd-anchor"></a>
+					<h3>authentication</h3>
+					<div class="tsd-signature tsd-kind-icon">authentication<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">UserSession</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/dependencies.ts#L98">dependencies.ts:98</a></li>
+							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/common.ts#L35">common.ts:35</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>AGOL item id for some widget types</p>
+							<p>A session representing a logged-in user</p>
 						</div>
 					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-					<a name="type" class="tsd-anchor"></a>
-					<h3>type</h3>
-					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="orgurl" class="tsd-anchor"></a>
+					<h3>org<wbr>Url</h3>
+					<div class="tsd-signature tsd-kind-icon">org<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/dependencies.ts#L102">dependencies.ts:102</a></li>
+							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/common.ts#L27">common.ts:27</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Dashboard widget type</p>
+							<p>The base URL for the AGOL organization, e.g., <a href="https://myOrg.maps.arcgis.com">https://myOrg.maps.arcgis.com</a></p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="portalurl" class="tsd-anchor"></a>
+					<h3>portal<wbr>Url</h3>
+					<div class="tsd-signature tsd-kind-icon">portal<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/common.ts#L31">common.ts:31</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The base URL for the portal, e.g., <a href="https://www.arcgis.com">https://www.arcgis.com</a></p>
 						</div>
 					</div>
 				</section>
@@ -147,23 +156,14 @@
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_common_.html">"common"</a>
-					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_dependencies_.html">"dependencies"</a>
+						<a href="../modules/_common_.html">"common"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_solution_.html">"solution"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_solutionstorymap_.html">"solution<wbr>Storymap"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
@@ -174,66 +174,33 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="_dependencies_.idashboardwidget.html" class="tsd-kind-icon">IDashboard<wbr>Widget</a>
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_common_.iorgsession.html" class="tsd-kind-icon">IOrg<wbr>Session</a>
 						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-								<a href="_dependencies_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_common_.iorgsession.html#authentication" class="tsd-kind-icon">authentication</a>
 							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-								<a href="_dependencies_.idashboardwidget.html#type" class="tsd-kind-icon">type</a>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_common_.iorgsession.html#orgurl" class="tsd-kind-icon">org<wbr>Url</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_common_.iorgsession.html#portalurl" class="tsd-kind-icon">portal<wbr>Url</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="_dependencies_.ifunctionlookup.html" class="tsd-kind-icon">IFunction<wbr>Lookup</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_common_.iswizzle.html" class="tsd-kind-icon">ISwizzle</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_dependencies_.iswizzle.html" class="tsd-kind-icon">ISwizzle</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_dependencies_.iswizzlehash.html" class="tsd-kind-icon">ISwizzle<wbr>Hash</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#getdashboarddependencies" class="tsd-kind-icon">get<wbr>Dashboard<wbr>Dependencies</a>
+						<a href="_common_.iswizzlehash.html" class="tsd-kind-icon">ISwizzle<wbr>Hash</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_dependencies_.html#getdependencies" class="tsd-kind-icon">get<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_dependencies_.html#getgroupcontentstranche" class="tsd-kind-icon">get<wbr>Group<wbr>Contents<wbr>Tranche</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#getgroupdependencies" class="tsd-kind-icon">get<wbr>Group<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#getwebmappingapplicationdependencies" class="tsd-kind-icon">get<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#getwebmapdependencies" class="tsd-kind-icon">get<wbr>Webmap<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_dependencies_.html#getwebmaplayerids" class="tsd-kind-icon">get<wbr>Webmap<wbr>Layer<wbr>Ids</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_dependencies_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#swizzlecommondependencies" class="tsd-kind-icon">swizzle<wbr>Common<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#swizzledashboarddependencies" class="tsd-kind-icon">swizzle<wbr>Dashboard<wbr>Dependencies</a>
+						<a href="../modules/_common_.html#createitemwithdata" class="tsd-kind-icon">create<wbr>Item<wbr>With<wbr>Data</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_dependencies_.html#swizzledependencies" class="tsd-kind-icon">swizzle<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#swizzlewebmappingapplicationdependencies" class="tsd-kind-icon">swizzle<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_dependencies_.html#swizzlewebmapdependencies" class="tsd-kind-icon">swizzle<wbr>Webmap<wbr>Dependencies</a>
+						<a href="../modules/_common_.html#updateitemurl" class="tsd-kind-icon">update<wbr>ItemURL</a>
 					</li>
 				</ul>
 			</nav>

@@ -113,7 +113,6 @@ export function createItemWithData (
  * @param url URL to assign to item's base section
  * @param requestOptions Options for the request
  * @returns A promise that will resolve when the item has been updated
- * @protected
  */
 export function updateItemURL (
   id: string,
