@@ -18,6 +18,7 @@ import * as items from "@esri/arcgis-rest-items";
 import * as groups from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+import { getDependencies } from "./dependencies";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -109,7 +110,15 @@ export function getFullItem (
           responses => {
             fullItem.data = responses[0];
             fullItem.resources = responses[1] && responses[1].total > 0 ? responses[1].resources : null;
-            resolve(fullItem);
+
+            // Get ids of item dependencies
+            getDependencies(fullItem, requestOptions)
+            .then(
+              dependencies => {
+                fullItem.dependencies = dependencies;
+                resolve(fullItem);
+              }
+            );
           }
         );
       },
@@ -123,7 +132,18 @@ export function getFullItem (
               item: itemResponse,
               dependencies: []
             };
-            resolve(fullItem);
+
+            // Get ids of item dependencies
+            getDependencies(fullItem, requestOptions)
+            .then(
+              dependencies => {
+                fullItem.dependencies = dependencies;
+                resolve(fullItem);
+              },
+              () => {
+                reject(createUnavailableItemError(id));
+              }
+            );
           },
           () => {
             reject(createUnavailableItemError(id));

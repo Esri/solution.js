@@ -149,6 +149,31 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
   });
 
+  describe("catch inability to get dependents", () => {
+
+    it("throws an error if getting group dependencies fails", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=0&num=100&token=fake-token",
+        '{"error":{"code":400,"messageCode":"CONT_0006",' +
+        '"message":"Group does not exist or is inaccessible.","details":[]}}');
+      getFullItem("grp1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => {
+          done.fail();
+        },
+        error => {
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: grp1234567890");
+          done();
+        }
+      );
+    });
+
+  });
+
   describe("catch bad input", () => {
 
     it("throws an error if the item to be created fails: missing id", done => {

@@ -294,7 +294,11 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       );
     });
 
-    it("throws an error if getting dependencies fails", done => {
+  });
+
+  describe("catch inability to get dependents", () => {
+
+    it("throws an error if getting group dependencies fails", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
@@ -309,13 +313,13 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
           done.fail();
         },
         error => {
-          expect(error).toEqual("Group does not exist or is inaccessible.");
+          expect(error.message).toEqual("Item or group does not exist or is inaccessible: grp1234567890");
           done();
         }
       );
     });
 
-    it("throws an error if a dependency fails", done => {
+    it("throws an error if a non-group dependency fails", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))

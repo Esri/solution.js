@@ -16,8 +16,8 @@
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+
 import { IFullItem, getFullItem, createUnavailableItemError } from "./fullItem";
-import { getDependencies } from "./dependencies";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -92,35 +92,29 @@ export function getFullItemHierarchy (
             // Set the value keyed by the id
             collection[rootId] = fullItem;
 
-            getDependencies(fullItem, requestOptions)
-            .then(
-              dependencies => {
-                fullItem.dependencies = dependencies;
-                if (dependencies.length === 0) {
-                  resolve(collection);
+            // Trace item dependencies
+            if (fullItem.dependencies.length === 0) {
+              resolve(collection);
 
-                } else {
-                  // Get its dependents, asking each to get its dependents via
-                  // recursive calls to this function
-                  let dependentDfds:Promise<IItemHash>[] = [];
-                  dependencies.forEach(
-                    dependentId => {
-                      if (!collection[dependentId]) {
-                        dependentDfds.push(getFullItemHierarchy(dependentId, requestOptions, collection));
-                      }
-                    }
-                  );
-                  Promise.all(dependentDfds)
-                  .then(
-                    () => {
-                      resolve(collection);
-                    },
-                    (error:ArcGISRequestError) => reject(error)
-                  );
+            } else {
+              // Get its dependents, asking each to get its dependents via
+              // recursive calls to this function
+              let dependentDfds:Promise<IItemHash>[] = [];
+              fullItem.dependencies.forEach(
+                dependentId => {
+                  if (!collection[dependentId]) {
+                    dependentDfds.push(getFullItemHierarchy(dependentId, requestOptions, collection));
+                  }
                 }
-              },
-              (error:ArcGISRequestError) => reject(error)
-            );
+              );
+              Promise.all(dependentDfds)
+              .then(
+                () => {
+                  resolve(collection);
+                },
+                (error:ArcGISRequestError) => reject(error)
+              );
+            }
           },
           (error:ArcGISRequestError) => reject(error)
         );
