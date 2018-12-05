@@ -8,8 +8,8 @@
     "test:chrome": "karma start --single-run --browsers=ChromeHeadlessCI",
     "test:firefox": "karma start --single-run --browsers=Firefox",
     "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
-    "docs": "typedoc --out ./docs/src/ src/index.ts",
-    "docs:mocks": "typedoc --out ./docs/mocks/ test/mocks/index.ts",
+    "docs": "typedoc --target ES5 --out ./docs/src/ src/index.ts",
+    "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts",
     "build:esm": "tsc --module ES2015 --outDir ./dist/esm --declaration",
     "build:cjs": "tsc --module CommonJS --outDir ./dist/cjs"
   },
