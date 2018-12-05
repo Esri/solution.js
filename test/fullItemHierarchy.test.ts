@@ -14,11 +14,11 @@
  | limitations under the License.
  */
 
-import { IFullItem } from "../src/fullItem";
-import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
-
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/arcgis-rest-auth";
+
+import * as mFullItem from "../src/fullItem";
+import * as mSolution from "../src/solution";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
@@ -66,12 +66,12 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (response:IItemHash) => {
+        (response:mSolution.IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -92,12 +92,12 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:IItemHash) => {
+        (response:mSolution.IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -118,12 +118,12 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:IItemHash) => {
+        (response:mSolution.IItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:IFullItem = response[keys[0]] as IFullItem;
+          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -144,16 +144,16 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (collection:IItemHash) => {
+        (collection:mSolution.IItemHash) => {
           let keys = Object.keys(collection);
           expect(keys.length).toEqual(3);
           expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
 
-          getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
+          mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
           .then(
-            (collection2:IItemHash) => {
+            (collection2:mSolution.IItemHash) => {
               let keys = Object.keys(collection2);
               expect(keys.length).toEqual(3);  // unchanged
               expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
@@ -173,7 +173,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      getFullItemHierarchy(null, MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(null, MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -185,7 +185,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: empty id list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      getFullItemHierarchy([], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy([], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -197,7 +197,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
 
     it("throws an error if the hierarchy to be created fails: missing id in list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      getFullItemHierarchy([null], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy([null], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -215,7 +215,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      getFullItemHierarchy("fail1234567890", MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -229,7 +229,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      getFullItemHierarchy(["fail1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -263,7 +263,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       ))
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      getFullItemHierarchy(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -284,7 +284,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy(["wma1234567890", null], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["wma1234567890", null], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -307,7 +307,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
         "?f=json&start=0&num=100&token=fake-token",
         '{"error":{"code":400,"messageCode":"CONT_0006",' +
         '"message":"Group does not exist or is inaccessible.","details":[]}}');
-      getFullItemHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail();
@@ -330,7 +330,7 @@ describe("Module `fullItemHierarchy`: fetches one or more AGOL items and their d
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/svc1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
+      mSolution.getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail();

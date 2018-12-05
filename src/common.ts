@@ -14,9 +14,9 @@
  | limitations under the License.
  */
 
-import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
+import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 

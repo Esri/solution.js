@@ -14,9 +14,9 @@
  | limitations under the License.
  */
 
-import * as common from "./common";
-import { IFullItem } from "./fullItem";
-import { IItemHash } from "./fullItemHierarchy";
+import * as mCommon from "./common";
+import * as mFullItem from "./fullItem";
+import * as mSolution from "./solution";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -35,12 +35,12 @@ export interface IHierarchyEntry {
 }
 
 export function getTopLevelItemIds (
-  items: IItemHash
+  items: mSolution.IItemHash
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
   let topLevelItemCandidateIds:string[] = Object.keys(items);
   Object.keys(items).forEach(function (id) {
-    ((items[id] as IFullItem).dependencies || []).forEach(function (dependencyId) {
+    ((items[id] as mFullItem.IFullItem).dependencies || []).forEach(function (dependencyId) {
       let iNode = topLevelItemCandidateIds.indexOf(dependencyId);
       if (iNode >= 0) {
         // Node is somebody's dependency, so remove the node from the list of top-level nodes
@@ -61,7 +61,7 @@ export function getTopLevelItemIds (
  * item's dependencies
  */
 export function getItemHierarchy (
-  items: IItemHash
+  items: mSolution.IItemHash
 ): IHierarchyEntry[] {
   let hierarchy:IHierarchyEntry[] = [];
 
@@ -78,7 +78,7 @@ export function getItemHierarchy (
       };
 
       // Fill in the child's dependencies array with any of its children
-      let dependencyIds = (items[id] as IFullItem).dependencies;
+      let dependencyIds = (items[id] as mFullItem.IFullItem).dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
@@ -93,11 +93,11 @@ export function getItemHierarchy (
 
 export function createSolutionStorymap (
   title: string,
-  solution: IItemHash,
-  orgSession: common.IOrgSession,
+  solution: mSolution.IItemHash,
+  orgSession: mCommon.IOrgSession,
   folderId = null as string,
   access = "private"
-): Promise<IFullItem> {
+): Promise<mFullItem.IFullItem> {
   return new Promise((resolve, reject) => {
     publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
     .then(
@@ -111,9 +111,9 @@ export function createSolutionStorymap (
 
 export function createSolutionStorymapItem (
   title: string,
-  solution: IItemHash,
+  solution: mSolution.IItemHash,
   folderId = null as string
-): IFullItem {
+): mFullItem.IFullItem {
   // Prepare the storymap item
   let item = getStorymapItemFundamentals(title);
   let data = getStorymapItemDataFundamentals(title, folderId);
@@ -123,7 +123,7 @@ export function createSolutionStorymapItem (
   let stories = data.values.story.entries;
   topLevelItemIds.forEach(
     topLevelItemId => {
-      let solutionItem = solution[topLevelItemId] as IFullItem;
+      let solutionItem = solution[topLevelItemId] as mFullItem.IFullItem;
       if (solutionItem.item.url) {
         let itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
         stories.push(itsStory);
@@ -257,19 +257,19 @@ function getWebpageStory (
  * @protected
  */
 export function publishSolutionStorymapItem (
-  solutionStorymap: IFullItem,
-  orgSession: common.IOrgSession,
+  solutionStorymap: mFullItem.IFullItem,
+  orgSession: mCommon.IOrgSession,
   folderId = null as string,
   access = "private"
-): Promise<IFullItem> {
+): Promise<mFullItem.IFullItem> {
   return new Promise((resolve, reject) => {
-    common.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
+    mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
     .then(
       createResponse => {
         // Update its app URL
         let solutionStorymapId = createResponse.id;
         let solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
-        common.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
+        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
         .then(
           () => {
             solutionStorymap.item.id = solutionStorymapId;

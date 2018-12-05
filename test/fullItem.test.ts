@@ -14,10 +14,10 @@
  | limitations under the License.
  */
 
-import { getFullItem } from "../src/fullItem";
-
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/arcgis-rest-auth";
+
+import * as mFullItem from "../src/fullItem";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
@@ -72,7 +72,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         .mock("path:/sharing/rest/content/items/" + id + "/data", data)
         .mock("path:/sharing/rest/content/items/" + id + "/resources", resources);
 
-        getFullItem(id, MOCK_USER_REQOPTS)
+        mFullItem.getFullItem(id, MOCK_USER_REQOPTS)
         .then(response => {
           expect(fetchMock.called("path:/sharing/rest/content/items/" + id)).toEqual(true);
           expect(fetchMock.called("path:/sharing/rest/content/items/" + id + "/data")).toEqual(true);
@@ -96,7 +96,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
 
-      getFullItem("svc1234567890", MOCK_USER_REQOPTS)
+      mFullItem.getFullItem("svc1234567890", MOCK_USER_REQOPTS)
       .then(response => {
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890")).toEqual(true);
         expect(fetchMock.called("path:/sharing/rest/content/items/svc1234567890/data")).toEqual(true);
@@ -118,7 +118,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"));
-      getFullItem("wma1234567890")
+      mFullItem.getFullItem("wma1234567890")
       .then(
         response => {
           expect(response.type).toEqual("Web Mapping Application");
@@ -136,7 +136,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData())
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
-      getFullItem("wma1234567890")
+      mFullItem.getFullItem("wma1234567890")
       .then(
         response => {
           expect(response.type).toEqual("Web Mapping Application");
@@ -160,7 +160,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         "?f=json&start=0&num=100&token=fake-token",
         '{"error":{"code":400,"messageCode":"CONT_0006",' +
         '"message":"Group does not exist or is inaccessible.","details":[]}}');
-      getFullItem("grp1234567890", MOCK_USER_REQOPTS)
+      mFullItem.getFullItem("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         () => {
           done.fail();
@@ -178,7 +178,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
     it("throws an error if the item to be created fails: missing id", done => {
       fetchMock.mock("*", mockItems.getAGOLItem());
-      getFullItem(null, MOCK_USER_REQOPTS)
+      mFullItem.getFullItem(null, MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -192,7 +192,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      getFullItem("fail1234567890", MOCK_USER_REQOPTS)
+      mFullItem.getFullItem("fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {

@@ -14,11 +14,11 @@
  | limitations under the License.
  */
 
-import MatchersUtil = jasmine.MatchersUtil;
-import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CustomEqualityTester = jasmine.CustomEqualityTester;
 import CustomMatcher = jasmine.CustomMatcher;
+import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CustomMatcherResult = jasmine.CustomMatcherResult;
+import MatchersUtil = jasmine.MatchersUtil;
 
 //--------------------------------------------------------------------------------------------------------------------//
 

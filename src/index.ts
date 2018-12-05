@@ -15,6 +15,5 @@
  */
 
 export * from "./fullItem";
-export * from "./fullItemHierarchy";
 export * from "./solution";
 export * from "./viewing";

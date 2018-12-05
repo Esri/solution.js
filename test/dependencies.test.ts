@@ -15,12 +15,11 @@
  */
 
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/arcgis-rest-auth";
 
-import * as common from "../src/common";
-import * as fullItem from "../src/fullItem";
-import { IFullItem } from "../src/fullItem";
+import * as mCommon from "../src/common";
+import * as mFullItem from "../src/fullItem";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
@@ -29,7 +28,7 @@ import * as fetchMock from "fetch-mock";
 
 describe("Module `dependencies`: managing dependencies of an item", () => {
 
-  const MOCK_ITEM_PROTOTYPE:IFullItem = {
+  const MOCK_ITEM_PROTOTYPE:mFullItem.IFullItem = {
     type: "",
     item: {}
   };
@@ -68,7 +67,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.data = {};
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -87,7 +86,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -109,7 +108,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -126,7 +125,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -150,7 +149,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -171,7 +170,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -191,7 +190,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
           () => {
             done.fail();
@@ -216,7 +215,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
           response => {
             done.fail();
@@ -237,7 +236,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Web Map";
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -255,7 +254,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -275,7 +274,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def", "ghi"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -295,7 +294,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def", "ghi"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -311,7 +310,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Web Mapping Application";
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -324,7 +323,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.data = {};
         let expected:string[] = [];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -341,7 +340,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -358,7 +357,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         };
         let expected:string[] = ["def"];
 
-        fullItem.getDependencies(abc, MOCK_USER_REQOPTS)
+        mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
           expect(response).toEqual(expected);
           done();
@@ -371,7 +370,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
 
   describe("swizzleDependencies", () => {
 
-    let swizzles:common.ISwizzleHash = {
+    let swizzles:mCommon.ISwizzleHash = {
       def: {
         id: "DEF",
         name: "'Def'",
@@ -394,7 +393,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         expected.type = "Dashboard";
         expected.data = {};
 
-        fullItem.swizzleDependencies(abc)
+        mFullItem.swizzleDependencies(abc)
         expect(abc).toEqual(expected);
       });
 
@@ -418,7 +417,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }]
         };
 
-        fullItem.swizzleDependencies(abc, swizzles)
+        mFullItem.swizzleDependencies(abc, swizzles)
         expect(abc).toEqual(expected);
       });
 
@@ -448,7 +447,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }]
         };
 
-        fullItem.swizzleDependencies(abc, swizzles)
+        mFullItem.swizzleDependencies(abc, swizzles)
         expect(abc).toEqual(expected);
       });
 
@@ -461,7 +460,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Feature Service";
         abc.dependencies = [];
 
-        fullItem.swizzleDependencies(abc, swizzles)
+        mFullItem.swizzleDependencies(abc, swizzles)
         expect(abc.dependencies).toEqual([]);
       });
 
@@ -474,7 +473,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.dependencies = [];
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.dependencies).toEqual([]);
       });
 
@@ -483,7 +482,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.type = "Group";
         abc.dependencies = ["ghi", "def"];
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.dependencies[0]).toEqual("GHI");
         expect(abc.dependencies[1]).toEqual("DEF");
       });
@@ -496,7 +495,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toBeUndefined();
       });
 
@@ -506,7 +505,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.data = {};
         let expected:any = {};
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toEqual(expected);
       });
 
@@ -522,7 +521,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           tables: []
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
         expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
         expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
@@ -544,7 +543,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           tables: []
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
         expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
         expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
@@ -570,7 +569,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }]
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
         expect(abc.data.operationalLayers[0].title).toEqual("'Def'");
         expect(abc.data.operationalLayers[0].url).toEqual("http://services2/SVC67890/0");
@@ -596,7 +595,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }]
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("jkl");
         expect(abc.data.operationalLayers[0].title).toEqual("'jkl'");
         expect(abc.data.operationalLayers[0].url).toEqual("http://services1/svc12345/0");
@@ -614,7 +613,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         let abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toBeUndefined();
       });
 
@@ -624,7 +623,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         abc.data = {};
         let expected:any = {};
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toEqual(expected);
       });
 
@@ -646,7 +645,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }]
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.values.webmap).toEqual("DEF");
       });
 
@@ -659,7 +658,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           }
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.values.group).toEqual("DEF");
       });
 
@@ -673,7 +672,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
           values: {}
         };
 
-        fullItem.swizzleDependencies(abc, swizzles);
+        mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toEqual(expected);
       });
 
@@ -687,7 +686,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let sourceArray:string[] = [];
       let expected:string[] = [];
 
-      let results = fullItem.removeDuplicates(sourceArray);
+      let results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -695,7 +694,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let sourceArray = ["a", "b", "c", "d"];
       let expected = ["a", "b", "c", "d"];
 
-      let results = fullItem.removeDuplicates(sourceArray);
+      let results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -703,7 +702,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let sourceArray = ["c", "a", "b", "b", "c", "d"];
       let expected = ["c", "a", "b", "d"];
 
-      let results = fullItem.removeDuplicates(sourceArray);
+      let results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -724,7 +723,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}');
       let expected = ["a1"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -743,7 +742,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}');
       let expected = ["a1", "a2", "a3"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -764,7 +763,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}');
       let expected = ["a1", "a2", "a3", "a4"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -789,7 +788,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -816,7 +815,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -847,7 +846,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
         '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}');
       let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
@@ -874,7 +873,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       .mock(firstGroupTrancheUrl,
         '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
-      fullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         () => {
           done.fail();
@@ -894,7 +893,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let sourceArray:any[] = null;
       let expected:string[] = [];
 
-      let results = fullItem.getWebmapLayerIds(sourceArray);
+      let results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -902,7 +901,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       let sourceArray:any[] = [];
       let expected:string[] = [];
 
-      let results = fullItem.getWebmapLayerIds(sourceArray);
+      let results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -912,7 +911,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       }];
       let expected:string[] = [];
 
-      let results = fullItem.getWebmapLayerIds(sourceArray);
+      let results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -923,7 +922,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       }];
       let expected:string[] = ["ABC"];
 
-      let results = fullItem.getWebmapLayerIds(sourceArray);
+      let results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -939,7 +938,7 @@ describe("Module `dependencies`: managing dependencies of an item", () => {
       }];
       let expected:string[] = ["ABC", "GHI"];
 
-      let results = fullItem.getWebmapLayerIds(sourceArray);
+      let results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 

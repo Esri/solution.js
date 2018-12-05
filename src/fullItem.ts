@@ -14,14 +14,14 @@
  | limitations under the License.
  */
 
-import * as items from "@esri/arcgis-rest-items";
 import * as groups from "@esri/arcgis-rest-groups";
+import * as items from "@esri/arcgis-rest-items";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as common from "./common";
+import * as mCommon from "./common";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
@@ -166,7 +166,7 @@ export function getFullItem (
  */
 export function swizzleDependencies (
   fullItem: IFullItem,
-  swizzles = {} as common.ISwizzleHash
+  swizzles = {} as mCommon.ISwizzleHash
 ): void {
   let swizzleDependenciesByType:IFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
@@ -376,7 +376,7 @@ function getWebMappingApplicationDependencies (
  */
 function swizzleDashboardDependencies (
   fullItem: IFullItem,
-  swizzles: common.ISwizzleHash
+  swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap(s)
   let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
@@ -398,7 +398,7 @@ function swizzleDashboardDependencies (
  */
 function swizzleWebmapDependencies (
   fullItem: IFullItem,
-  swizzles: common.ISwizzleHash
+  swizzles: mCommon.ISwizzleHash
 ): void {
   if (fullItem.data) {
     // Swizzle its map layers
@@ -435,7 +435,7 @@ function swizzleWebmapDependencies (
  */
 function swizzleWebMappingApplicationDependencies (
   fullItem: IFullItem,
-  swizzles: common.ISwizzleHash
+  swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap or group
   let values = fullItem.data && fullItem.data.values;
@@ -457,7 +457,7 @@ function swizzleWebMappingApplicationDependencies (
  */
 function swizzleCommonDependencies (
   fullItem: IFullItem,
-  swizzles: common.ISwizzleHash
+  swizzles: mCommon.ISwizzleHash
 ): void {
   if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
     // Swizzle the id of each of the items in the dependencies array
