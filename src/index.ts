@@ -14,7 +14,6 @@
  | limitations under the License.
  */
 
-export * from "./dependencies";
 export * from "./fullItem";
 export * from "./fullItemHierarchy";
 export * from "./solution";

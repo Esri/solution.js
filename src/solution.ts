@@ -22,8 +22,7 @@ import * as sharing from "@esri/arcgis-rest-sharing";
 import { request } from "@esri/arcgis-rest-request";
 
 import * as common from "./common";
-import { swizzleDependencies } from "./dependencies";
-import { IFullItem, IFullItemFeatureService } from "./fullItem";
+import { IFullItem, IFullItemFeatureService, swizzleDependencies } from "./fullItem";
 import { IItemHash, getFullItemHierarchy } from "./fullItemHierarchy";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
