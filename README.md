@@ -56,7 +56,7 @@ Currently, the item types that can be dependents of a solution item are:
 
 ### API Reference
 
-The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
+The documentation is published at https://esri.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
 
 The API contains two primary modules:
 
