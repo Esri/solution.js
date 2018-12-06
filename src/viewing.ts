@@ -34,6 +34,12 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
+/**
+ * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
+ * 
+ * @param items Solution to explore
+ * @return List of ids of top-level items in Solution
+ */
 export function getTopLevelItemIds (
   items: mSolution.IItemHash
 ): string[] {

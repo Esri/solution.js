@@ -20,7 +20,10 @@ import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 //-- Exports ---------------------------------------------------------------------------------------------------------//
 
-export interface IOrgSession {
+/**
+ * An extension of a IUserRequestOptions that includes the organization and portal URLs.
+ */
+export interface IOrgSession extends IUserRequestOptions {
   /**
    * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
    */
@@ -35,13 +38,31 @@ export interface IOrgSession {
   authentication: UserSession;
 }
 
+/**
+ * The replacement information for an AGOL item id in a cloned solution.
+ */
 export interface ISwizzle {
+  /**
+   * The replacement AGOL id
+   */
   id: string;
+  /**
+   * For a feature layer, the updated layer name
+   */
   name?: string;
+  /**
+   * For a feature layer, the updated layer URL
+   */
   url?: string;
 }
 
+/**
+ * The collection of mappings from original AGOL item ids to cloned values.
+ */
 export interface ISwizzleHash {
+  /**
+   * A mapping from an original AGOL item id to its cloned value.
+   */
   [id:string]: ISwizzle;
 }
 

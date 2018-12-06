@@ -111,6 +111,16 @@
 				</ul>
 				<h3 id="api-reference">API Reference</h3>
 				<p>The documentation is published at <a href="https://arcgis.github.io/arcgis-clone-js/">https://arcgis.github.io/arcgis-clone-js/</a> (source code <a href="/docs/src">here</a>).</p>
+				<p>The API contains two primary modules:</p>
+				<ul>
+					<li><code>fullItem</code>, which represents all parts of an AGOL item: its base information, its data, its resources, and the list of AGOL items that it depends upon</li>
+					<li><code>solution</code>, which represents a collection of one or more AGOL items that work together, including all dependency items</li>
+				</ul>
+				<p>To support these modules, there are two secondary modules:</p>
+				<ul>
+					<li><code>viewing</code>, which contains functions for extracting a representation of a solution&#39;s hierarchy and for creating a Storymap about the solution&#39;s web applications</li>
+					<li><code>common</code>, which contains shared utility functions</li>
+				</ul>
 				<h3 id="instructions">Instructions</h3>
 				<p>You can install dependencies by cloning the repository and running:</p>
 				<pre><code class="language-bash">npm install</code></pre>
@@ -121,6 +131,8 @@
 					<li><code>npm run test:chrome</code> runs karma in the ChromeHeadlessCI browser</li>
 					<li><code>npm run test:firefox</code> runs karma in the Firefox browser</li>
 					<li><code>npm run test:node</code> runs ts-node and jasmine</li>
+					<li><code>npm run docs</code> creates documentation about the API and its internal functions</li>
+					<li><code>npm run docs:mocks</code> creates documentation about the mock items used in unit testing</li>
 				</ul>
 				<h3 id="frequently-asked-questions">Frequently Asked Questions</h3>
 				<ul>
