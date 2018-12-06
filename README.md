@@ -58,6 +58,16 @@ Currently, the item types that can be dependents of a solution item are:
 
 The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
 
+The API contains two primary modules:
+
+* `fullItem`, which represents all parts of an AGOL item: its base information, its data, its resources, and the list of AGOL items that it depends upon
+* `solution`, which represents a collection of one or more AGOL items that work together, including all dependency items
+
+To support these modules, there are two secondary modules:
+
+* `viewing`, which contains functions for extracting a representation of a solution's hierarchy and for creating a Storymap about the solution's web applications
+* `common`, which contains shared utility functions
+
 ### Instructions
 
 You can install dependencies by cloning the repository and running:
@@ -74,6 +84,8 @@ Some useful commands include:
 * `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
 * `npm run test:firefox` runs karma in the Firefox browser
 * `npm run test:node` runs ts-node and jasmine
+* `npm run docs` creates documentation about the API and its internal functions
+* `npm run docs:mocks` creates documentation about the mock items used in unit testing
 
 ### Frequently Asked Questions
 
