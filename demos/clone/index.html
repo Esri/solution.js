@@ -26,8 +26,8 @@
 
     <div class="section">
       <div class="section-title">Credentials in destination organization</div>
-      <label for="username">Username:</label> <input type="text" id="username"></input>
-      <label for="password">Password:</label> <input type="password" id="password"></input>
+      <label for="username">Username:</label> <input type="text" id="username">
+      <label for="password">Password:</label> <input type="password" id="password">
     </div>
 
     <div id="availableSolutions" class="section">
@@ -44,8 +44,8 @@
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
         <br>
-        <button id="createBtn" onclick="createSolutionFcn()">Create solution in your organization</button>
-        using name <input type="text" id="solutionNameField"></input>
+        <button id="createBtn" onclick="cloneSolutionFcn()">Create solution in your organization</button>
+        using name <input type="text" id="solutionNameField">
       </div>
     </div>
 
@@ -62,7 +62,7 @@
 
   <script src="../demo_common/require_2.3.6.min.js"></script>
   <script>
-  var showSolutionFcn = createSolutionFcn = null;
+  var showSolutionFcn = cloneSolutionFcn = null;
   var currentSolutionId, currentSolutionName, currentSolutionItems;
 
   /**
@@ -86,20 +86,19 @@
       // for the benefit of arcgis-clone-js
       'tslib': '../demo_common/tslib',
       // for the benefit of called libraries that use arcgis-rest-auth
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
+      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.14.0/dist/umd/auth.umd',
       '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.11.1/dist/umd/sharing.umd'
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.14.0/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.14.0/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.14.0/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.14.0/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.14.0/dist/umd/sharing.umd'
     }
   });
   requirejs([
     '../../dist/src/index',
     '../demo_common/common',
     '../demo_common/progress',
-    'cloneJS',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request'
@@ -107,13 +106,12 @@
     clone,
     demoCommon,
     progress,
-    cloneJS,
     auth,
     items,
     request
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    createSolutionFcn = createSolution;
+    cloneSolutionFcn = cloneSolution;
 
     document.getElementById('page').style.display = 'block';
 
@@ -125,52 +123,48 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function createSolution() {
+    function cloneSolution() {
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
 
-      progress.init('progressBarContainer', 'progressBar');
-      progress.show();
+      //progress.init('progressBarContainer', 'progressBar');
+      //progress.show();
 
       // Prepare credentials for library
-      requestOptions = demoCommon.getRequestOptions('username', 'password');
+      var orgSession = demoCommon.getRequestOptions('username', 'password');
 
       // Get the destination organization URL for creating links to source items
-      request.getPortal(null, requestOptions)
+      request.getPortal(null, orgSession)
       .then(
         portalResponse => {
-          orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl + '/home/';
-          portal = 'https://' + portalResponse.portalHostname + '/';
+          orgSession.orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;
+          orgSession.portalUrl = 'https://' + portalResponse.portalHostname;
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
 
           // Get the solution contents
           items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              currentSolutionItems = publishedSolution.items;
-
-              // Clone the contents into the destination org
-              cloneJS.createItemHierachyFromJSON(orgUrl, portal, currentSolutionName, currentSolutionItems,
-                progress.set.bind(progress), requestOptions.authentication)
+              clone.cloneSolution(publishedSolution.items, orgSession, currentSolutionName, null)
               .then(
-                createResponse => {
-                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                clonedSolution => {
+                  var solutionStorymapTitle = 'Storymap about your solution';
+                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, orgSession)
+                  .then(
+                    storymap  => {
+                      document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                      document.getElementById('creating').style.display = 'none';
+                      document.getElementById('createResults').style.display = 'block';
+                      //progress.hide();
 
-                  // List the created items in the solution folder
-                  // There appears to be a lag between when the service says that the items are added and when
-                  // they show up in response to a search. Wait a couple of seconds before searching
-                  setTimeout(
-                    () => {
-                      progress.hide();
-                      demoCommon.showCreatedItems(portalResponse, createResponse);
-                    },
-                    2000
+                      document.getElementById('createDisplay').innerHTML =
+                        '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
+                        solutionStorymapTitle + '</a></li></ul><br>' +
+                        demoCommon.createHierarchyDisplay(clonedSolution, clone.getItemHierarchy(clonedSolution),
+                          true, orgSession.orgUrl + '/home/');
+                    }
                   );
-                },
-                () => {
-                  document.getElementById('create').style.display = 'none';
-                  alert('Please refresh page and provide credentials');
                 }
               );
             }

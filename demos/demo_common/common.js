@@ -47,7 +47,7 @@ define([
     /**
      * Creates a display of the hierarchy involving in a set of AGOL items.
      * @param {object} solutionItems Hash containing items in solution
-     * @param {object} hierachy Hash contining, at each level, an item id, type, and array of dependencies
+     * @param {object} hierachy Hash contining, at each level, an item id and array of dependencies
      * @param {boolean} createLinks Indicates if a link to AGOL should be created for each item
      * @param {string} orgUrl URL to organization's home, e.g.,
      *        "https://arcgis4localgov2.maps.arcgis.com/home/"
@@ -57,33 +57,49 @@ define([
     createHierarchyDisplay: function (solutionItems, hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
       var icons = {
+        'ArcGIS Pro Add In': '../demo_common/images/loading.gif',  //???
+        'Code Attachment': '../demo_common/images/loading.gif',  //???
+        'Code Sample': '../demo_common/images/loading.gif',  //???
         'Dashboard': '../demo_common/images/dashboard16.svg',
+        'Desktop Add In': '../demo_common/images/loading.gif',  //???
+        'Desktop Application Template': '../demo_common/images/loading.gif',  //???
+        'Document Link': '../demo_common/images/loading.gif',  //???
+        'Feature Collection': '../demo_common/images/loading.gif',  //???
         'Feature Service': '../demo_common/images/features16.svg',
+        'Form': '../demo_common/images/loading.gif',  //???
+        'Geoprocessing Package': '../demo_common/images/loading.gif',  //???
+        'Geoprocessing Sample': '../demo_common/images/loading.gif',  //???
         'Group': '../demo_common/images/group.svg',
+        'Layer Package': '../demo_common/images/loading.gif',  //???
+        'Map Template': '../demo_common/images/loading.gif',  //???
+        'Operation View': '../demo_common/images/loading.gif',  //???
+        'Pro Map': '../demo_common/images/loading.gif',  //???
+        'Project Package': '../demo_common/images/loading.gif',  //???
+        'Project Template': '../demo_common/images/loading.gif',  //???
+        'Service Definition': '../demo_common/images/datafiles16.svg',
         'Web Map': '../demo_common/images/maps16.svg',
-        'Web Mapping Application': '../demo_common/images/apps16.svg'
+        'Web Mapping Application': '../demo_common/images/apps16.svg',
+        'Workforce Project': '../demo_common/images/loading.gif'  //???
       };
 
       var display = '<ul class="solutionList">';
-      hierarchy.forEach(item => {
-        var itemSection = solutionItems[item.id].itemSection;
-        var itemLabel = (itemSection.title || itemSection.name || item.type);
-        if (item.type === 'Feature Service') {
-          itemLabel += ' (' + item.idPart + ')';
-        }
+      hierarchy.forEach(hierarchyItem => {
+        var fullItem = solutionItems[hierarchyItem.id];
+        var item = fullItem.item;
+        var itemLabel = (item.title || item.name || fullItem.type);
 
-        var webpage = item.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[item.type] +
+        var webpage = fullItem.type === 'Group' ? 'group' : 'item';
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[fullItem.type] +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
-          display += '<a href="' + orgUrl + webpage + '.html?id=' + item.id + '" target="_blank">' +
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
             itemLabel + '</a>';
         } else {
           display += itemLabel;
         }
 
-        if (Array.isArray(item.dependencies) && item.dependencies.length > 0) {
-          display += this.createHierarchyDisplay(solutionItems, item.dependencies, createLinks, orgUrl);
+        if (Array.isArray(hierarchyItem.dependencies) && hierarchyItem.dependencies.length > 0) {
+          display += this.createHierarchyDisplay(solutionItems, hierarchyItem.dependencies, createLinks, orgUrl);
         }
 
         display += '</li>';
@@ -130,7 +146,7 @@ define([
             this.createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
-            this.createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+            this.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
         }
       )
       .finally(() => {

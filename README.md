@@ -28,27 +28,45 @@
 - [Code of Conduct](/CODE_OF_CONDUCT.md)
 - [License](#license)
 
-### Example
+### Supported ArcGIS Online Item Types
 
-```js
-import { ItemFactory, AgolItem, Item } from "@esri/arcgis-clone-js";
+Currently, the item types that can be dependents of a solution item are:
 
-ItemFactory.itemToJSON("6fc5992522d34f26b2210d17835eea21")
-.then(
-  (response:AgolItem) => {
-    console.log(response.type);  // => "Web Mapping Application"
-    console.log(response.itemSection.title);  // => "ROW Permit Public Comment"
-    console.log((response as Item).dataSection.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
-  },
-  error => {
-    console.log(error);
-  }
-);
-```
+* ArcGIS Pro Add In
+* Code Attachment
+* Code Sample
+* Dashboard
+* Desktop Add In
+* Desktop Application Template
+* Document Link
+* Feature Collection
+* Feature Service (Hosted only and Hosted Feature Layer Views)
+* Form
+* Geoprocessing Package
+* Geoprocessing Sample
+* Layer Package
+* Map Template
+* Operation View
+* Pro Map
+* Project Package
+* Project Template
+* Web Map
+* Web Mapping Application
+* Workforce Project
 
 ### API Reference
 
 The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
+
+The API contains two primary modules:
+
+* `fullItem`, which represents all parts of an AGOL item: its base information, its data, its resources, and the list of AGOL items that it depends upon
+* `solution`, which represents a collection of one or more AGOL items that work together, including all dependency items
+
+To support these modules, there are two secondary modules:
+
+* `viewing`, which contains functions for extracting a representation of a solution's hierarchy and for creating a Storymap about the solution's web applications
+* `common`, which contains shared utility functions
 
 ### Instructions
 
@@ -62,7 +80,12 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
-* `npm test` runs _all_ the tests and confirms the API is functioning as expected.
+* `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
+* `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
+* `npm run test:firefox` runs karma in the Firefox browser
+* `npm run test:node` runs ts-node and jasmine
+* `npm run docs` creates documentation about the API and its internal functions
+* `npm run docs:mocks` creates documentation about the mock items used in unit testing
 
 ### Frequently Asked Questions
 

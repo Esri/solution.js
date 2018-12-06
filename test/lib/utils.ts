@@ -14,6 +14,12 @@
  | limitations under the License.
  */
 
+import { UserSession } from "@esri/arcgis-rest-auth";
+
+import * as common from "../../src/common";
+
+//--------------------------------------------------------------------------------------------------------------------//
+
 export const TOMORROW = (function() {
   const now = new Date();
   now.setDate(now.getDate() + 1);
@@ -25,3 +31,45 @@ export const YESTERDAY = (function() {
   now.setDate(now.getDate() - 1);
   return now;
 })();
+
+export function setMockDateTime (
+  now: number
+): number {
+  jasmine.clock().install();
+  jasmine.clock().mockDate(new Date(now));
+  return now;
+}
+
+export function createRuntimeMockUserSession (
+  now: number
+): UserSession {
+  let tomorrow = new Date(now + 86400000);
+  return new UserSession({
+    clientId: "clientId",
+    redirectUri: "https://example-app.com/redirect-uri",
+    token: "fake-token",
+    tokenExpires: tomorrow,
+    refreshToken: "refreshToken",
+    refreshTokenExpires: tomorrow,
+    refreshTokenTTL: 1440,
+    username: "casey",
+    password: "123456",
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  });
+}
+
+export function createMockSwizzle (
+  itemId: string,
+  swizzles = {} as common.ISwizzleHash
+): common.ISwizzleHash {
+  let swizzleKey = itemId;
+  let swizzleValue = swizzleKey.toUpperCase();
+  swizzles[swizzleKey] = {id: swizzleValue};
+  return swizzles;
+}
+
+export function jsonClone (
+  obj: any
+) {
+  return JSON.parse(JSON.stringify(obj));
+}

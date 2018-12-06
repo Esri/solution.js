@@ -26,20 +26,22 @@
 
     <div class="section">
       <div class="section-title">Credentials in publishing organization</div>
-      <label for="username">Username:</label> <input type="text" id="username"></input>
-      <label for="password">Password:</label> <input type="password" id="password"></input>
+      <label for="username">Username:</label> <input type="text" id="username">
+      <label for="password">Password:</label> <input type="password" id="password">
     </div>
 
     <div class="section">
       <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934"></input>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934">
         <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6"></input>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6">
         <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="164831217e154849a731573e1855cb1a"></input>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="164831217e154849a731573e1855cb1a">
         <label for="164831217e154849a731573e1855cb1a">ROW Permit Public Comment (Web Map)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21"></input>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21">
         <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
+      <input type="checkbox" onclick="onCheckboxClicked()" name="3ee671cf05594744864afe6c368d4a1a">
+        <label for="3ee671cf05594744864afe6c368d4a1a">PointFilterableComments (Service Definition)</label> <br>
       <br>
       <button id="createBtn" onclick="createSolutionFcn()" disabled="disabled">Create solution</button>
     </div>
@@ -50,7 +52,7 @@
       <div id="createResults" style="display:none">
         <div id="createDisplay"></div>
         <br>
-        <label for="username">Name for published Solution</label> <input type="text" id="solutionName"></input><br>
+        <label for="username">Name for published Solution</label> <input type="text" id="solutionName"><br>
         <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
       </div>
     </div>
@@ -95,13 +97,13 @@
       // for the benefit of arcgis-clone-js
       'tslib': '../demo_common/tslib',
       // for the benefit of called libraries that use arcgis-rest-auth
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
+      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.14.0/dist/umd/auth.umd',
       '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.11.1/dist/umd/sharing.umd'
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.14.0/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.14.0/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.14.0/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.14.0/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.14.0/dist/umd/sharing.umd'
     }
   });
   requirejs([
@@ -142,22 +144,30 @@
           orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
           portalUrl = 'https://' + response.portalHostname + '/';
 
-          // Get the items to include in the solution
+          // Get the items to include in the solution, then generate the solution
           var solutionRootIds = getCheckedItems();
 
-          // Prepare the Solution
-          clone.ItemFactory.itemHierarchyToJSON(solutionRootIds, requestOptions)
-          .then(function (solutionResponse) {
-            solution = solutionResponse;
-            document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-              demoCommon.createHierarchyDisplay(solution, clone.Solution.getItemHierarchy(solution), true, orgUrl);
-          }, function (error) {
+          // Get the items forming the solution
+          clone.createSolution(solutionRootIds, requestOptions)
+          .then(
+            createdSolution => {
+              solution = createdSolution;
+
+              // Display the Solution
+              document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
+                demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
+            },
+            error => {
              document.getElementById('createDisplay').innerHTML = error.toString();
-          })
-          .finally(() => {
-            document.getElementById('creating').style.display = 'none';
-            document.getElementById('createResults').style.display = 'block';
-          });
+            }
+          )
+          .finally(
+            () => {
+              document.getElementById('creating').style.display = 'none';
+              document.getElementById('createResults').style.display = 'block';
+            }
+          );
+
         },
         function () {
           document.getElementById('create').style.display = 'none';
@@ -175,7 +185,7 @@
 
       // Publish the Solution
       var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.Solution.publishItemJSON(solutionName, solution, 'public', requestOptions)
+      clone.publishSolution(solutionName, solution, requestOptions, null, 'public')
       .then(function (publishResponse) {
         var publishedSolutionId = publishResponse.id;
 
@@ -185,7 +195,8 @@
             document.getElementById('detailsDisplay').innerHTML =
               demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
               '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.items, clone.Solution.getItemHierarchy(publishedSolution.items));
+              demoCommon.createHierarchyDisplay(publishedSolution.items,
+                clone.getItemHierarchy(publishedSolution.items));
           }
         );
       }, function (error) {

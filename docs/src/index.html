@@ -84,29 +84,55 @@
 					<li><a href="/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
 					<li><a href="#license">License</a></li>
 				</ul>
-				<h3 id="example">Example</h3>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> { ItemFactory, AgolItem, Item } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/arcgis-clone-js"</span>;
-
-ItemFactory.itemToJSON(<span class="hljs-string">"6fc5992522d34f26b2210d17835eea21"</span>)
-.then(
-  <span class="hljs-function">(<span class="hljs-params">response:AgolItem</span>) =&gt;</span> {
-    <span class="hljs-built_in">console</span>.log(response.type);  <span class="hljs-comment">// =&gt; "Web Mapping Application"</span>
-    <span class="hljs-built_in">console</span>.log(response.itemSection.title);  <span class="hljs-comment">// =&gt; "ROW Permit Public Comment"</span>
-    <span class="hljs-built_in">console</span>.log((response <span class="hljs-keyword">as</span> Item).dataSection.source);  <span class="hljs-comment">// =&gt; "bb3fcf7c3d804271bfd7ac6f48290fcf"</span>
-  },
-  error =&gt; {
-    <span class="hljs-built_in">console</span>.log(error);
-  }
-);</code></pre>
+				<h3 id="supported-arcgis-online-item-types">Supported ArcGIS Online Item Types</h3>
+				<p>Currently, the item types that can be dependents of a solution item are:</p>
+				<ul>
+					<li>ArcGIS Pro Add In</li>
+					<li>Code Attachment</li>
+					<li>Code Sample</li>
+					<li>Dashboard</li>
+					<li>Desktop Add In</li>
+					<li>Desktop Application Template</li>
+					<li>Document Link</li>
+					<li>Feature Collection</li>
+					<li>Feature Service (Hosted only and Hosted Feature Layer Views)</li>
+					<li>Form</li>
+					<li>Geoprocessing Package</li>
+					<li>Geoprocessing Sample</li>
+					<li>Layer Package</li>
+					<li>Map Template</li>
+					<li>Operation View</li>
+					<li>Pro Map</li>
+					<li>Project Package</li>
+					<li>Project Template</li>
+					<li>Web Map</li>
+					<li>Web Mapping Application</li>
+					<li>Workforce Project</li>
+				</ul>
 				<h3 id="api-reference">API Reference</h3>
 				<p>The documentation is published at <a href="https://arcgis.github.io/arcgis-clone-js/">https://arcgis.github.io/arcgis-clone-js/</a> (source code <a href="/docs/src">here</a>).</p>
+				<p>The API contains two primary modules:</p>
+				<ul>
+					<li><code>fullItem</code>, which represents all parts of an AGOL item: its base information, its data, its resources, and the list of AGOL items that it depends upon</li>
+					<li><code>solution</code>, which represents a collection of one or more AGOL items that work together, including all dependency items</li>
+				</ul>
+				<p>To support these modules, there are two secondary modules:</p>
+				<ul>
+					<li><code>viewing</code>, which contains functions for extracting a representation of a solution&#39;s hierarchy and for creating a Storymap about the solution&#39;s web applications</li>
+					<li><code>common</code>, which contains shared utility functions</li>
+				</ul>
 				<h3 id="instructions">Instructions</h3>
 				<p>You can install dependencies by cloning the repository and running:</p>
 				<pre><code class="language-bash">npm install</code></pre>
 				<p>Afterward, for a list of all available commands run <code>npm run</code>.</p>
 				<p>Some useful commands include:</p>
 				<ul>
-					<li><code>npm test</code> runs <em>all</em> the tests and confirms the API is functioning as expected.</li>
+					<li><code>npm test</code> runs tests test:node and test:chrome to confirm that the API is functioning as expected.</li>
+					<li><code>npm run test:chrome</code> runs karma in the ChromeHeadlessCI browser</li>
+					<li><code>npm run test:firefox</code> runs karma in the Firefox browser</li>
+					<li><code>npm run test:node</code> runs ts-node and jasmine</li>
+					<li><code>npm run docs</code> creates documentation about the API and its internal functions</li>
+					<li><code>npm run docs:mocks</code> creates documentation about the mock items used in unit testing</li>
 				</ul>
 				<h3 id="frequently-asked-questions">Frequently Asked Questions</h3>
 				<ul>
@@ -155,31 +181,16 @@ ItemFactory.itemToJSON(<span class="hljs-string">"6fc5992522d34f26b2210d17835eea
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_agolitem_.html">"agol<wbr>Item"</a>
+						<a href="modules/_common_.html">"common"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_dashboard_.html">"dashboard"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_featureservice_.html">"feature<wbr>Service"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_group_.html">"group"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_item_.html">"item"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_itemfactory_.html">"item<wbr>Factory"</a>
+						<a href="modules/_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="modules/_solution_.html">"solution"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_webmappingapp_.html">"web<wbr>Mapping<wbr>App"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="modules/_webmap_.html">"webmap"</a>
+						<a href="modules/_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
