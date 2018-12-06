@@ -20,7 +20,7 @@ import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { request } from "@esri/arcgis-rest-request";
-import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
@@ -30,7 +30,7 @@ import * as mFullItem from "./fullItem";
 /**
  * A collection of AGOL items for serializing.
  */
-export interface IItemHash {
+export interface IFullItemHash {
   /**
    * An AGOL item description
    */
@@ -69,8 +69,8 @@ export interface IItemHash {
 export function createSolution (
   solutionRootIds: string | string[],
   requestOptions: IUserRequestOptions
-): Promise<IItemHash> {
-  return new Promise<IItemHash>((resolve, reject) => {
+): Promise<IFullItemHash> {
+  return new Promise<IFullItemHash>((resolve, reject) => {
 
     // Get the items forming the solution
     getFullItemHierarchy(solutionRootIds, requestOptions)
@@ -134,7 +134,7 @@ export function createSolution (
  */
 export function publishSolution (
   title: string,
-  solution: IItemHash,
+  solution: IFullItemHash,
   requestOptions: IUserRequestOptions,
   folderId = null as string,
   access = "private"
@@ -169,15 +169,15 @@ export function publishSolution (
  * @returns A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
-  solution: IItemHash,
+  solution: IFullItemHash,
   orgSession: mCommon.IOrgSession,
   solutionName = "",
   folderId = null as string,
   access = "private"
-): Promise<IItemHash> {
-  return new Promise<IItemHash>((resolve, reject) => {
+): Promise<IFullItemHash> {
+  return new Promise<IFullItemHash>((resolve, reject) => {
     let swizzles:mCommon.ISwizzleHash = {};
-    let clonedSolution:IItemHash = {};
+    let clonedSolution:IFullItemHash = {};
 
     // Don't bother creating folder if there are no items in solution
     if (!solution || Object.keys(solution).length === 0) {
@@ -744,7 +744,7 @@ export function removeUndesirableItemProperties (
  * @protected
  */
 export function topologicallySortItems (
-  items: IItemHash
+  items: IFullItemHash
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -938,8 +938,8 @@ function updateFeatureServiceDefinition(
 export function getFullItemHierarchy (
   rootIds: string | string[],
   requestOptions: IUserRequestOptions,
-  collection?: IItemHash
-): Promise<IItemHash> {
+  collection?: IFullItemHash
+): Promise<IFullItemHash> {
   if (!collection) {
     collection = {};
   }
@@ -973,7 +973,7 @@ export function getFullItemHierarchy (
             } else {
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
-              let dependentDfds:Promise<IItemHash>[] = [];
+              let dependentDfds:Promise<IFullItemHash>[] = [];
               fullItem.dependencies.forEach(
                 dependentId => {
                   if (!collection[dependentId]) {
@@ -997,7 +997,7 @@ export function getFullItemHierarchy (
     } else {
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
-      let getHierarchyPromise:Promise<IItemHash>[] = [];
+      let getHierarchyPromise:Promise<IFullItemHash>[] = [];
       rootIds.forEach(rootId => {
         getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, collection));
       });

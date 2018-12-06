@@ -328,14 +328,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle an empty, nameless solution", done => {
-      mSolution.cloneSolution({} as mSolution.IItemHash, orgSession)
+      mSolution.cloneSolution({} as mSolution.IFullItemHash, orgSession)
       .then(done, done.fail);
     });
 
     it("should handle failure to create solution's folder", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       let now = 1555555555555;
       let orgSession:mCommon.IOrgSession = {
@@ -355,7 +355,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a generated folder", done => {
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
@@ -419,7 +419,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder and supplied solution name", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
       let folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
@@ -475,7 +475,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder, but handle failed storymap", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
       let folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
@@ -529,7 +529,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle failure to create a contained item", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
       let folderId = "fld1234567890";
 
       fetchMock
@@ -556,7 +556,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create a storymap using a specified folder and public access", done => {
       let title = "Solution storymap";
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
       let folderId = "fld1234567890";
 
       fetchMock
@@ -579,7 +579,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle the failure to publish a storymap", done => {
       let title = "Solution storymap";
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -1250,7 +1250,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle defaults to create a storymap", () => {
       let title = "Solution storymap";
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       let storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
     });
@@ -1263,7 +1263,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       let title = "Solution storymap";
-      let solutionItem:mSolution.IItemHash = mockSolutions.getWebMappingApplicationSolution();
+      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
       let storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
 
       fetchMock
@@ -1484,7 +1484,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.IItemHash) => {
+        (response:mSolution.IFullItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
           let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
@@ -1510,7 +1510,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.IItemHash) => {
+        (response:mSolution.IFullItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
           let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
@@ -1536,7 +1536,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.IItemHash) => {
+        (response:mSolution.IFullItemHash) => {
           let keys = Object.keys(response);
           expect(keys.length).toEqual(3);
           let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
@@ -1562,14 +1562,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (collection:mSolution.IItemHash) => {
+        (collection:mSolution.IFullItemHash) => {
           let keys = Object.keys(collection);
           expect(keys.length).toEqual(3);
           expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
 
           mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
           .then(
-            (collection2:mSolution.IItemHash) => {
+            (collection2:mSolution.IFullItemHash) => {
               let keys = Object.keys(collection2);
               expect(keys.length).toEqual(3);  // unchanged
               expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);

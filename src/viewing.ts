@@ -41,7 +41,7 @@ export interface IHierarchyEntry {
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
-  items: mSolution.IItemHash
+  items: mSolution.IFullItemHash
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
   let topLevelItemCandidateIds:string[] = Object.keys(items);
@@ -67,7 +67,7 @@ export function getTopLevelItemIds (
  * item's dependencies
  */
 export function getItemHierarchy (
-  items: mSolution.IItemHash
+  items: mSolution.IFullItemHash
 ): IHierarchyEntry[] {
   let hierarchy:IHierarchyEntry[] = [];
 
@@ -109,7 +109,7 @@ export function getItemHierarchy (
  */
 export function createSolutionStorymap (
   title: string,
-  solution: mSolution.IItemHash,
+  solution: mSolution.IFullItemHash,
   orgSession: mCommon.IOrgSession,
   folderId = null as string,
   access = "private"
@@ -136,7 +136,7 @@ export function createSolutionStorymap (
  */
 export function createSolutionStorymapItem (
   title: string,
-  solution: mSolution.IItemHash,
+  solution: mSolution.IFullItemHash,
   folderId = null as string
 ): mFullItem.IFullItem {
   // Prepare the storymap item
