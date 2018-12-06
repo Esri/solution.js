@@ -87,9 +87,10 @@ define([
         var fullItem = solutionItems[hierarchyItem.id];
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
+        var itemIcon = icons[fullItem.type] || '../demo_common/images/maps16.svg';
 
         var webpage = fullItem.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[fullItem.type] +
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + itemIcon +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
           display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
