@@ -79,8 +79,14 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#createsolutionstorymap" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_viewing_.html#createsolutionstorymapitem" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap<wbr>Item</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported"><a href="_viewing_.html#getstorymapitemdatafundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Data<wbr>Fundamentals</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_viewing_.html#getstorymapitemfundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Fundamentals</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported"><a href="_viewing_.html#getwebpagestory" class="tsd-kind-icon">get<wbr>Webpage<wbr>Story</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_viewing_.html#publishsolutionstorymapitem" class="tsd-kind-icon">publish<wbr>Solution<wbr>Storymap<wbr>Item</a></li>
 							</ul>
 						</section>
 					</div>
@@ -89,16 +95,116 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="getitemhierarchy" class="tsd-anchor"></a>
-					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<a name="createsolutionstorymap" class="tsd-anchor"></a>
+					<h3>create<wbr>Solution<wbr>Storymap</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Solution<wbr>Storymap<span class="tsd-signature-symbol">(</span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, solution<span class="tsd-signature-symbol">: </span><a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a>, orgSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/_common_.iorgsession.html" class="tsd-signature-type">IOrgSession</a>, folderId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, access<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/viewing.ts#L62">viewing.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L104">viewing.ts:104</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a Storymap from the Web Mapping Applications in a Solution.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>title: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Title of Storymap</p>
+									</div>
+								</li>
+								<li>
+									<h5>solution: <a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Solution to examine for content</p>
+									</div>
+								</li>
+								<li>
+									<h5>orgSession: <a href="../interfaces/_common_.iorgsession.html" class="tsd-signature-type">IOrgSession</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for requesting information from AGOL, including org and portal URLs</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> folderId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;null as string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Id of folder to receive item; null/empty indicates that the item goes into the root folder</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> access: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;private&quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Access to set for item: &#39;public&#39;, &#39;org&#39;, &#39;private&#39;</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>Storymap item that was published into AGOL</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+					<a name="createsolutionstorymapitem" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> create<wbr>Solution<wbr>Storymap<wbr>Item</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Solution<wbr>Storymap<wbr>Item<span class="tsd-signature-symbol">(</span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, solution<span class="tsd-signature-symbol">: </span><a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a>, folderId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L131">viewing.ts:131</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a Storymap AGOL item.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>title: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Title of Storymap</p>
+									</div>
+								</li>
+								<li>
+									<h5>solution: <a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Solution to examine for content</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> folderId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;null as string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Id of folder to receive item; null/empty indicates that the item goes into the root folder</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a></h4>
+							<p>Storymap AGOL item</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="getitemhierarchy" class="tsd-anchor"></a>
+					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L63">viewing.ts:63</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -109,7 +215,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<h5>items: <a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Hash of JSON descriptions of items</p>
 									</div>
@@ -122,26 +228,192 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="gettoplevelitemids" class="tsd-anchor"></a>
-					<h3>get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+					<a name="getstorymapitemdatafundamentals" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Storymap<wbr>Item<wbr>Data<wbr>Fundamentals</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Data<wbr>Fundamentals<span class="tsd-signature-symbol">(</span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, folderId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/viewing.ts#L36">viewing.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L168">viewing.ts:168</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates the data section of a Storymap AGOL item.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>title: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Title of Storymap</p>
+									</div>
+								</li>
+								<li>
+									<h5>folderId: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Id of folder to receive item; null/empty indicates that the item goes into the root folder</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>Storymap AGOL item&#39;s data section</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+					<a name="getstorymapitemfundamentals" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Storymap<wbr>Item<wbr>Fundamentals</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Fundamentals<span class="tsd-signature-symbol">(</span>title<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L242">viewing.ts:242</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates the base section of a Storymap AGOL item.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> title: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Title of Storymap</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>Storymap AGOL item&#39;s base section</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="gettoplevelitemids" class="tsd-anchor"></a>
+					<h3>get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids<span class="tsd-signature-symbol">(</span>items<span class="tsd-signature-symbol">: </span><a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L37">viewing.ts:37</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>items: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
+									<h5>items: <a href="../interfaces/_solution_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+					<a name="getwebpagestory" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> get<wbr>Webpage<wbr>Story</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Webpage<wbr>Story<span class="tsd-signature-symbol">(</span>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, description<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L266">viewing.ts:266</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generates a Storymap page.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>title: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Title of Storymap page</p>
+									</div>
+								</li>
+								<li>
+									<h5>description: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Body text of Storymap page</p>
+									</div>
+								</li>
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>URL to web page to embed in the Storymap page</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+							<p>Storymap page JSON</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+					<a name="publishsolutionstorymapitem" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> publish<wbr>Solution<wbr>Storymap<wbr>Item</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">publish<wbr>Solution<wbr>Storymap<wbr>Item<span class="tsd-signature-symbol">(</span>solutionStorymap<span class="tsd-signature-symbol">: </span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a>, orgSession<span class="tsd-signature-symbol">: </span><a href="../interfaces/_common_.iorgsession.html" class="tsd-signature-type">IOrgSession</a>, folderId<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, access<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/viewing.ts#L302">viewing.ts:302</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates a Storymap item describing the top-level webpages forming the solution.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>solutionStorymap: <a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Storymap AGOL item; item is modified</p>
+									</div>
+								</li>
+								<li>
+									<h5>orgSession: <a href="../interfaces/_common_.iorgsession.html" class="tsd-signature-type">IOrgSession</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for requesting information from AGOL, including org and portal URLs</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> folderId: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;null as string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Id of folder to receive item; null indicates that the item goes into the root
+										folder</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> access: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;private&quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Access to set for item: &#39;public&#39;, &#39;org&#39;, &#39;private&#39;</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise that will resolve with an updated solutionStorymap reporting the Storymap id
+							and URL</p>
 						</li>
 					</ul>
 				</section>
@@ -166,19 +438,10 @@
 						<a href="_common_.html">"common"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_dependencies_.html">"dependencies"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_solution_.html">"solution"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_solutionstorymap_.html">"solution<wbr>Storymap"</a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_viewing_.html">"viewing"</a>
@@ -191,10 +454,28 @@
 						<a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_viewing_.html#createsolutionstorymap" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="_viewing_.html#createsolutionstorymapitem" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_viewing_.html#getstorymapitemdatafundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Data<wbr>Fundamentals</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="_viewing_.html#getstorymapitemfundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Fundamentals</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_viewing_.html#getwebpagestory" class="tsd-kind-icon">get<wbr>Webpage<wbr>Story</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="_viewing_.html#publishsolutionstorymapitem" class="tsd-kind-icon">publish<wbr>Solution<wbr>Storymap<wbr>Item</a>
 					</li>
 				</ul>
 			</nav>

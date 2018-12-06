@@ -16,7 +16,7 @@
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 
-import { ISwizzle, ISwizzleHash } from "../../src/dependencies";
+import * as common from "../../src/common";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -60,8 +60,8 @@ export function createRuntimeMockUserSession (
 
 export function createMockSwizzle (
   itemId: string,
-  swizzles = {} as ISwizzleHash
-): ISwizzleHash {
+  swizzles = {} as common.ISwizzleHash
+): common.ISwizzleHash {
   let swizzleKey = itemId;
   let swizzleValue = swizzleKey.toUpperCase();
   swizzles[swizzleKey] = {id: swizzleValue};

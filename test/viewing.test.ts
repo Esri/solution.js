@@ -14,9 +14,8 @@
  | limitations under the License.
  */
 
-import * as viewing from "../src/viewing";
-import { IFullItem } from "../src/fullItem";
-import { IItemHash } from "../src/fullItemHierarchy";
+import * as mFullItem from "../src/fullItem";
+import * as mViewing from "../src/viewing";
 
 //--------------------------------------------------------------------------------------------------------------------//
 
@@ -24,7 +23,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
   describe("get item hierarchies", () => {
 
-    const MOCK_ITEM_PROTOTYPE:IFullItem = {
+    const MOCK_ITEM_PROTOTYPE:mFullItem.IFullItem = {
       type: "",
       item: {}
     };
@@ -35,12 +34,12 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       let abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc
       });
 
@@ -55,12 +54,12 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
       abc.dependencies = [];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc
       });
 
@@ -78,7 +77,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
       abc.dependencies = ["def"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -86,7 +85,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def
       });
@@ -108,7 +107,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
       abc.dependencies = ["def", "ghi"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -119,7 +118,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi
@@ -143,7 +142,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       abc.dependencies = ["ghi"];
       ghi.dependencies = ["def"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "ghi",
@@ -154,7 +153,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi
@@ -180,7 +179,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
       jkl.dependencies = ["ghi", "def"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -194,7 +193,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -224,7 +223,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       abc.dependencies = ["def", "ghi"];
       jkl.dependencies = ["ghi", "def"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -244,7 +243,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -279,7 +278,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       mno.dependencies = ["abc"];
       def.dependencies = ["mno"];
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "def",
         dependencies: [{
           id: "mno",
@@ -299,7 +298,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -326,7 +325,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       let jkl = {...MOCK_ITEM_PROTOTYPE};
       jkl.item.id = "jkl";
 
-      let expected:viewing.IHierarchyEntry[] = [{
+      let expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -340,7 +339,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         dependencies: []
       }];
 
-      let results:viewing.IHierarchyEntry[] = viewing.getItemHierarchy({
+      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;fullItemHierarchy&quot; | arcgis-clone-js</title>
+	<title>IDashboardWidget | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,99 +56,79 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_fullitemhierarchy_.html">&quot;fullItemHierarchy&quot;</a>
+					<a href="../modules/_fullitem_.html">&quot;fullItem&quot;</a>
+				</li>
+				<li>
+					<a href="_fullitem_.idashboardwidget.html">IDashboardWidget</a>
 				</li>
 			</ul>
-			<h1>External module &quot;fullItemHierarchy&quot;</h1>
+			<h1>Interface IDashboardWidget</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The relevant elements of a Dashboard widget.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">IDashboardWidget</span>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
+						<section class="tsd-index-section tsd-is-external tsd-is-not-exported">
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-kind-icon">IItem<wbr>Hash</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Functions</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_fullitemhierarchy_.html#getfullitemhierarchy" class="tsd-kind-icon">get<wbr>Full<wbr>Item<wbr>Hierarchy</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_fullitem_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_fullitem_.idashboardwidget.html#type" class="tsd-kind-icon">type</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Functions</h2>
-				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="getfullitemhierarchy" class="tsd-anchor"></a>
-					<h3>get<wbr>Full<wbr>Item<wbr>Hierarchy</h3>
-					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Full<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>rootIds<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, requestOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IUserRequestOptions</span>, collection<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/fec8377/src/fullItemHierarchy.ts#L64">fullItemHierarchy.ts:64</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Fetches the item, data, and resources of one or more AGOL items and their dependencies.</p>
-								</div>
-								<pre><code class="language-typescript"><span class="hljs-keyword">import</span> { IItemHash, getFullItemHierarchy } <span class="hljs-keyword">from</span> <span class="hljs-string">"../src/fullItemHierarchy"</span>;
-
-getFullItemHierarchy([<span class="hljs-string">"6fc5992522d34f26b2210d17835eea21"</span>, <span class="hljs-string">"9bccd0fac5f3422c948e15c101c26934"</span>])
-.then(
-  <span class="hljs-function">(<span class="hljs-params">response:IItemHash</span>) =&gt;</span> {
-    <span class="hljs-keyword">let</span> keys = <span class="hljs-built_in">Object</span>.keys(response);
-    <span class="hljs-built_in">console</span>.log(keys.length);  <span class="hljs-comment">// =&gt; "6"</span>
-    <span class="hljs-built_in">console</span>.log((response[keys[<span class="hljs-number">0</span>]] <span class="hljs-keyword">as</span> IFullItem).type);  <span class="hljs-comment">// =&gt; "Web Mapping Application"</span>
-    <span class="hljs-built_in">console</span>.log((response[keys[<span class="hljs-number">0</span>]] <span class="hljs-keyword">as</span> IFullItem).item.title);  <span class="hljs-comment">// =&gt; "ROW Permit Public Comment"</span>
-    <span class="hljs-built_in">console</span>.log((response[keys[<span class="hljs-number">0</span>]] <span class="hljs-keyword">as</span> IFullItem).text.source);  <span class="hljs-comment">// =&gt; "bb3fcf7c3d804271bfd7ac6f48290fcf"</span>
-  },
-  <span class="hljs-function"><span class="hljs-params">error</span> =&gt;</span> {
-    <span class="hljs-comment">// (should not see this as long as both of the above ids--real ones--stay available)</span>
-    <span class="hljs-built_in">console</span>.log(error); <span class="hljs-comment">// =&gt; "Item or group does not exist or is inaccessible: " + the problem id number</span>
-  }
-);</code></pre>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>rootIds: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>AGOL id string or list of AGOL id strings</p>
-									</div>
-								</li>
-								<li>
-									<h5>requestOptions: <span class="tsd-signature-type">IUserRequestOptions</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Options for requesting information from AGOL</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> collection: <a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A hash of items already converted useful for avoiding duplicate conversions and
-										hierarchy tracing</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-signature-type">IItemHash</a><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>A promise that will resolve with a hash by id of IFullItems;
-								if any id is inaccessible, a single error response will be produced for the set
-							of ids</p>
-						</li>
-					</ul>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external tsd-is-not-exported">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
+					<a name="itemid" class="tsd-anchor"></a>
+					<h3>item<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">item<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/fullItem.ts#L206">fullItem.ts:206</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>AGOL item id for some widget types</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
+					<a name="type" class="tsd-anchor"></a>
+					<h3>type</h3>
+					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/21e8ee8/src/fullItem.ts#L210">fullItem.ts:210</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Dashboard widget type</p>
+						</div>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -162,41 +142,95 @@ getFullItemHierarchy([<span class="hljs-string">"6fc5992522d34f26b2210d17835eea2
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="_index_.html">"index"</a>
+						<a href="../modules/_index_.html">"index"</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_common_.html">"common"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_dependencies_.html">"dependencies"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_fullitem_.html">"full<wbr>Item"</a>
+						<a href="../modules/_common_.html">"common"</a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="_fullitemhierarchy_.html">"full<wbr>Item<wbr>Hierarchy"</a>
+						<a href="../modules/_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_solution_.html">"solution"</a>
+						<a href="../modules/_solution_.html">"solution"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_solutionstorymap_.html">"solution<wbr>Storymap"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="_viewing_.html">"viewing"</a>
+						<a href="../modules/_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_fullitem_.idashboardwidget.html" class="tsd-kind-icon">IDashboard<wbr>Widget</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
+								<a href="_fullitem_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
+								<a href="_fullitem_.idashboardwidget.html#type" class="tsd-kind-icon">type</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_fullitemhierarchy_.iitemhash.html" class="tsd-kind-icon">IItem<wbr>Hash</a>
+						<a href="_fullitem_.ifullitem.html" class="tsd-kind-icon">IFull<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_fullitem_.ifullitemfeatureservice.html" class="tsd-kind-icon">IFull<wbr>Item<wbr>Feature<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_fullitem_.ifunctionlookup.html" class="tsd-kind-icon">IFunction<wbr>Lookup</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_fullitemhierarchy_.html#getfullitemhierarchy" class="tsd-kind-icon">get<wbr>Full<wbr>Item<wbr>Hierarchy</a>
+						<a href="../modules/_fullitem_.html#createunavailableitemerror" class="tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getdashboarddependencies" class="tsd-kind-icon">get<wbr>Dashboard<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#getdependencies" class="tsd-kind-icon">get<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_fullitem_.html#getfullitem" class="tsd-kind-icon">get<wbr>Full<wbr>Item</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#getgroupcontentstranche" class="tsd-kind-icon">get<wbr>Group<wbr>Contents<wbr>Tranche</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getgroupdependencies" class="tsd-kind-icon">get<wbr>Group<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getwebmappingapplicationdependencies" class="tsd-kind-icon">get<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getwebmapdependencies" class="tsd-kind-icon">get<wbr>Webmap<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#getwebmaplayerids" class="tsd-kind-icon">get<wbr>Webmap<wbr>Layer<wbr>Ids</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlecommondependencies" class="tsd-kind-icon">swizzle<wbr>Common<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzledashboarddependencies" class="tsd-kind-icon">swizzle<wbr>Dashboard<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_fullitem_.html#swizzledependencies" class="tsd-kind-icon">swizzle<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlewebmappingapplicationdependencies" class="tsd-kind-icon">swizzle<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlewebmapdependencies" class="tsd-kind-icon">swizzle<wbr>Webmap<wbr>Dependencies</a>
 					</li>
 				</ul>
 			</nav>
