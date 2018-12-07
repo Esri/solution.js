@@ -16,11 +16,13 @@
 
 define([
   '../../dist/src/index',
+  '../../dist/demos/demo_common/icon',
   '@esri/arcgis-rest-auth',
   '@esri/arcgis-rest-groups',
   '@esri/arcgis-rest-items',
 ], function (
   clone,
+  icon,
   auth,
   groups,
   items
@@ -56,40 +58,15 @@ define([
      */
     createHierarchyDisplay: function (solutionItems, hierarchy, createLinks, orgUrl) {
       // Show solution contents as they'd be in the solution's AGOL item
-      var icons = {
-        'ArcGIS Pro Add In': '../demo_common/images/loading.gif',  //???
-        'Code Attachment': '../demo_common/images/loading.gif',  //???
-        'Code Sample': '../demo_common/images/loading.gif',  //???
-        'Dashboard': '../demo_common/images/dashboard16.svg',
-        'Desktop Add In': '../demo_common/images/loading.gif',  //???
-        'Desktop Application Template': '../demo_common/images/loading.gif',  //???
-        'Document Link': '../demo_common/images/loading.gif',  //???
-        'Feature Collection': '../demo_common/images/loading.gif',  //???
-        'Feature Service': '../demo_common/images/features16.svg',
-        'Form': '../demo_common/images/loading.gif',  //???
-        'Geoprocessing Package': '../demo_common/images/loading.gif',  //???
-        'Geoprocessing Sample': '../demo_common/images/loading.gif',  //???
-        'Group': '../demo_common/images/group.svg',
-        'Layer Package': '../demo_common/images/loading.gif',  //???
-        'Map Template': '../demo_common/images/loading.gif',  //???
-        'Operation View': '../demo_common/images/loading.gif',  //???
-        'Pro Map': '../demo_common/images/loading.gif',  //???
-        'Project Package': '../demo_common/images/loading.gif',  //???
-        'Project Template': '../demo_common/images/loading.gif',  //???
-        'Service Definition': '../demo_common/images/datafiles16.svg',
-        'Web Map': '../demo_common/images/maps16.svg',
-        'Web Mapping Application': '../demo_common/images/apps16.svg',
-        'Workforce Project': '../demo_common/images/loading.gif'  //???
-      };
-
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
         var fullItem = solutionItems[hierarchyItem.id];
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
+        var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
 
         var webpage = fullItem.type === 'Group' ? 'group' : 'item';
-        display += '<li><img class="item-type-icon margin-right-quarter" src="' + icons[fullItem.type] +
+        display += '<li><img class="item-type-icon margin-right-quarter" src="' + itemIcon +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
           display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +

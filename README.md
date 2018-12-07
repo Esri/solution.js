@@ -3,10 +3,6 @@
 [![Coverage Status][coverage-img]][coverage-url]
 [![apache 2.0 licensed][license-img]][license-url]
 
-[npm-img]: https://img.shields.io/npm/v/@esri/arcgis-clone-js.svg?style=flat-square
-[npm-url]: https://www.npmjs.com/package/@esri/arcgis-clone-js
-[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/master.svg?style=flat-square
-[travis-url]: https://travis-ci.org/Esri/arcgis-clone-js
 [coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-orange.svg?style=flat-square
@@ -56,7 +52,7 @@ Currently, the item types that can be dependents of a solution item are:
 
 ### API Reference
 
-The documentation is published at https://arcgis.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
+The documentation is published at https://esri.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
 
 The API contains two primary modules:
 
@@ -89,9 +85,9 @@ Some useful commands include:
 
 ### Frequently Asked Questions
 
-* [Is this a _supported_ Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
-* [How does this project compare with the ArcGIS API for JavaScript?](docs/FAQ.md#comparison-with-the-arcgis-api-for-javascript)
-* [Is this similar to the ArcGIS API for Python?](docs/FAQ.md#comparison-with-the-arcgis-api-for-python)
+* [Is this a _supported_ Esri product?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#is-this-a-supported-esri-product)
+* [How does this project compare with the ArcGIS API for JavaScript?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#comparison-with-the-arcgis-api-for-javascript)
+* [Is this similar to the ArcGIS API for Python?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#comparison-with-the-arcgis-api-for-python)
 * [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
 
 ### Issues

@@ -74,7 +74,7 @@ export interface IFullItemFeatureService extends IFullItem {
  *
  * @param id AGOL item id
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with an IFullItem; its dependencies section is not filled in
+ * @returns A promise that will resolve with an IFullItem
  */
 export function getFullItem (
   id: string,
