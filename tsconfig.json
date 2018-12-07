@@ -65,6 +65,7 @@
   "include": [
     "./node_modules/@types",
     "src",
-    "test"
+    "test",
+    "demos/demo_common"
   ]
 }
