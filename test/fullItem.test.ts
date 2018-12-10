@@ -25,7 +25,7 @@ import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "./mocks/items";
 
-//--------------------------------------------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `fullItem`: fetches the item, data, and resources of an AGOL item", () => {
 
@@ -216,10 +216,10 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("dashboard", () => {
 
       it("without widgets", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {};
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -229,7 +229,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("without map widget", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {
           widgets: [{
@@ -238,7 +238,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
             type: "listWidget"
           }]
         };
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -248,7 +248,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("with map widget", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {
           widgets: [{
@@ -260,7 +260,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
             type: "listWidget"
           }]
         };
-        let expected:string[] = ["def"];
+        const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -274,10 +274,10 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("feature service", () => {
 
       it("item type does not have dependencies", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Feature Service";
 
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -291,15 +291,15 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("group", () => {
 
       it("group with no items", done => {
-        let groupUrl =
+        const groupUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?" +
           "f=json&start=0&num=100&token=fake-token";
         fetchMock
         .mock(groupUrl,
           '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
-        let expected:string[] = [];
+        const expected:string[] = [];
 
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
@@ -311,16 +311,16 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("group with 6 items", done => {
-        let groupUrl =
+        const groupUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?" +
           "f=json&start=0&num=100&token=fake-token";
         fetchMock
         .mock(groupUrl,
           '{"total":6,"start":1,"num":6,"nextStart":-1,' +
           '"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"},{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
-        let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
+        const expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
@@ -332,15 +332,15 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("group with error", done => {
-        let groupUrl =
+        const groupUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
           "?f=json&start=0&num=100&token=fake-token";
-        let expected = "Group does not exist or is inaccessible.";
+        const expected = "Group does not exist or is inaccessible.";
         fetchMock
         .mock("begin:" + groupUrl,
           '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
@@ -357,15 +357,15 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("group with error in second tranche", done => {
-        let groupUrl = "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json";
-        let expected = "Group does not exist or is inaccessible.";
+        const groupUrl = "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json";
+        const expected = "Group does not exist or is inaccessible.";
         fetchMock
         .mock("begin:" + groupUrl + "&start=0&num=100&token=fake-token",
           '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
         .mock("begin:" + groupUrl + "&start=3&num=100&token=fake-token",
           '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.item.id = "grp1234567890";
 
@@ -386,9 +386,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe ("webmap", () => {
 
       it("no data", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -398,7 +398,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -406,7 +406,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           }],
           tables: []
         };
-        let expected:string[] = ["def"];
+        const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -416,7 +416,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("two operational layers", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -426,7 +426,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           }],
           tables: []
         };
-        let expected:string[] = ["def", "ghi"];
+        const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -436,7 +436,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -446,7 +446,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
             itemId: "ghi"
           }]
         };
-        let expected:string[] = ["def", "ghi"];
+        const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -460,9 +460,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("web mapping application", () => {
 
       it("no data", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -472,10 +472,10 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("no data values", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {};
-        let expected:string[] = [];
+        const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -485,14 +485,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on webmap", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {
           values: {
             webmap: "def"
           }
         };
-        let expected:string[] = ["def"];
+        const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -502,14 +502,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on group", done => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {
           values: {
             group: "def"
           }
         };
-        let expected:string[] = ["def"];
+        const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(response => {
@@ -524,7 +524,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
   describe("swizzleDependencies", () => {
 
-    let swizzles:mCommon.ISwizzleHash = {
+    const swizzles:mCommon.ISwizzleHash = {
       def: {
         id: "DEF",
         name: "'Def'",
@@ -540,10 +540,10 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("dashboard", () => {
 
       it("without widgets or swizzles", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {};
-        let expected = {...MOCK_ITEM_PROTOTYPE};
+        const expected = {...MOCK_ITEM_PROTOTYPE};
         expected.type = "Dashboard";
         expected.data = {};
 
@@ -552,7 +552,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("without map widget", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {
           widgets: [{
@@ -561,7 +561,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
             type: "listWidget"
           }]
         };
-        let expected = {...MOCK_ITEM_PROTOTYPE};
+        const expected = {...MOCK_ITEM_PROTOTYPE};
         expected.type = "Dashboard";
         expected.data = {
           widgets: [{
@@ -576,7 +576,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("with map widget", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Dashboard";
         abc.data = {
           widgets: [{
@@ -588,7 +588,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
             type: "listWidget"
           }]
         };
-        let expected = {...MOCK_ITEM_PROTOTYPE};
+        const expected = {...MOCK_ITEM_PROTOTYPE};
         expected.type = "Dashboard";
         expected.data = {
           widgets: [{
@@ -610,7 +610,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("feature service", () => {
 
       it("item type does not have dependencies", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Feature Service";
         abc.dependencies = [];
 
@@ -623,7 +623,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("group", () => {
 
       it("group with no items", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.dependencies = [];
 
@@ -632,7 +632,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("group with 2 items", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
         abc.dependencies = ["ghi", "def"];
 
@@ -646,7 +646,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("webmap", () => {
 
       it("no data", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
 
         mFullItem.swizzleDependencies(abc, swizzles);
@@ -654,17 +654,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("no operational layer or table", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {};
-        let expected:any = {};
+        const expected:any = {};
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toEqual(expected);
       });
 
       it("one operational layer", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -682,7 +682,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("two operational layers", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -708,7 +708,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -734,7 +734,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table, but neither has swizzles", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Map";
         abc.data = {
           operationalLayers: [{
@@ -764,7 +764,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("web mapping application", () => {
 
       it("no data", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
 
         mFullItem.swizzleDependencies(abc, swizzles);
@@ -772,24 +772,24 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("no data values", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {};
-        let expected:any = {};
+        const expected:any = {};
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toEqual(expected);
       });
 
       it("based on webmap", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {
           values: {
             webmap: "def"
           }
         };
-        let expected = {...MOCK_ITEM_PROTOTYPE};
+        const expected = {...MOCK_ITEM_PROTOTYPE};
         expected.type = "Dashboard";
         expected.data = {
           widgets: [{
@@ -804,7 +804,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on group", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {
           values: {
@@ -817,12 +817,12 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("no webmap or group", () => {
-        let abc = {...MOCK_ITEM_PROTOTYPE};
+        const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Web Mapping Application";
         abc.data = {
           values: {}
         };
-        let expected:any = {
+        const expected:any = {
           values: {}
         };
 
@@ -837,51 +837,51 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
   describe("supporting routine: removing duplicates", () => {
 
     it("empty array", () => {
-      let sourceArray:string[] = [];
-      let expected:string[] = [];
+      const sourceArray:string[] = [];
+      const expected:string[] = [];
 
-      let results = mFullItem.removeDuplicates(sourceArray);
+      const results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("no duplicates", () => {
-      let sourceArray = ["a", "b", "c", "d"];
-      let expected = ["a", "b", "c", "d"];
+      const sourceArray = ["a", "b", "c", "d"];
+      const expected = ["a", "b", "c", "d"];
 
-      let results = mFullItem.removeDuplicates(sourceArray);
+      const results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("some duplicates", () => {
-      let sourceArray = ["c", "a", "b", "b", "c", "d"];
-      let expected = ["c", "a", "b", "d"];
+      const sourceArray = ["c", "a", "b", "b", "c", "d"];
+      const expected = ["c", "a", "b", "d"];
 
-      let results = mFullItem.removeDuplicates(sourceArray);
+      const results = mFullItem.removeDuplicates(sourceArray);
       expect(results).toEqual(expected);
     });
 
   });
 
   describe("supporting routine: fetching group contents", () => {
-    let firstGroupTrancheUrl =
+    const firstGroupTrancheUrl =
       "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=0&num=3&token=fake-token";
-    let secondGroupTrancheUrl =
+    const secondGroupTrancheUrl =
       "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=3&token=fake-token";
-    let thirdGroupTrancheUrl =
+    const thirdGroupTrancheUrl =
       "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=6&num=3&token=fake-token";
 
     it("fewer items than fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}');
-      let expected = ["a1"];
+      const expected = ["a1"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
         expect(calls.length === 1);
         expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
@@ -890,17 +890,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("same number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}');
-      let expected = ["a1", "a2", "a3"];
+      const expected = ["a1", "a2", "a3"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
         expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+        const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
         expect(calls.length === 1);
         expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
@@ -909,13 +909,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("one more item than fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
         '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}');
-      let expected = ["a1", "a2", "a3", "a4"];
+      const expected = ["a1", "a2", "a3", "a4"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
@@ -934,13 +934,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("twice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":6,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
       .mock(secondGroupTrancheUrl,
         '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
+      const expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
@@ -959,7 +959,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("one more item than twice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":7,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
@@ -967,7 +967,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":7,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}')
       .mock(thirdGroupTrancheUrl,
         '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}');
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
+      const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
@@ -990,7 +990,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("thrice the number of items as fetch batch size", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"total":9,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
@@ -998,7 +998,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":9,"start":3,"num":3,"nextStart":6,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}')
       .mock(thirdGroupTrancheUrl,
         '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}');
-      let expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
+      const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(response => {
@@ -1021,8 +1021,8 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     });
 
     it("group with error", done => {
-      let pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
-      let expected = "Group does not exist or is inaccessible.";
+      const pagingRequest:IPagingParamsRequestOptions = { paging: { start: 0, num: 3 }, ...MOCK_USER_REQOPTS };
+      const expected = "Group does not exist or is inaccessible.";
       fetchMock
       .mock(firstGroupTrancheUrl,
         '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
@@ -1044,44 +1044,44 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
   describe("supporting routine: extracting layer ids", () => {
 
     it("no layer list", () => {
-      let sourceArray:any[] = null;
-      let expected:string[] = [];
+      const sourceArray:any[] = null;
+      const expected:string[] = [];
 
-      let results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("empty layer list", () => {
-      let sourceArray:any[] = [];
-      let expected:string[] = [];
+      const sourceArray:any[] = [];
+      const expected:string[] = [];
 
-      let results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("layer without itemId", () => {
-      let sourceArray:any[] = [{
+      const sourceArray:any[] = [{
         id: "abc"
       }];
-      let expected:string[] = [];
+      const expected:string[] = [];
 
-      let results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("layer with itemId", () => {
-      let sourceArray:any[] = [{
+      const sourceArray:any[] = [{
         id: "abc",
         itemId: "ABC"
       }];
-      let expected:string[] = ["ABC"];
+      const expected:string[] = ["ABC"];
 
-      let results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
     it("multiple layers, one without itemId", () => {
-      let sourceArray:any[] = [{
+      const sourceArray:any[] = [{
         id: "abc",
         itemId: "ABC"
       }, {
@@ -1090,9 +1090,9 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         id: "ghi",
         itemId: "GHI"
       }];
-      let expected:string[] = ["ABC", "GHI"];
+      const expected:string[] = ["ABC", "GHI"];
 
-      let results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mFullItem.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 

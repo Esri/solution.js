@@ -29,7 +29,7 @@ import * as mockItems from "./mocks/items";
 import * as mockServices from "./mocks/featureServices";
 import * as mockSolutions from "./mocks/solutions";
 
-//--------------------------------------------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `solution`: generation, publication, and cloning of a solution item", () => {
 
@@ -70,7 +70,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("create solution", () => {
 
     it("for single item containing WMA & feature service", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
@@ -124,7 +124,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a layer if a service needs a name", done => {
-      let fullItem:mFullItem.IFullItemFeatureService = {
+      const fullItem:mFullItem.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -158,7 +158,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--no layer", done => {
-      let fullItem:mFullItem.IFullItemFeatureService = {
+      const fullItem:mFullItem.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -192,7 +192,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--nameless layer", done => {
-      let fullItem:mFullItem.IFullItemFeatureService = {
+      const fullItem:mFullItem.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -225,7 +225,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("falls back to 'Feature Service' if a service needs a name", done => {
-      let fullItem:mFullItem.IFullItemFeatureService = {
+      const fullItem:mFullItem.IFullItemFeatureService = {
         type: "Feature Service",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
@@ -316,7 +316,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("clone solution", () => {
 
-    let orgSession:mCommon.IOrgSession = {
+    const orgSession:mCommon.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
@@ -335,10 +335,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle failure to create solution's folder", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -355,26 +355,26 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a generated folder", done => {
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
       // Provide different results for same route upon subsequent call
-      let addItemUpdater = (() => {
-          var stepNum = 0;
+      const addItemUpdater = (() => {
+          let stepNum = 0;
           return () => [
             '{"success":true,"id":"map1234567890","folder":"fld1234567890"}',
             '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}',
@@ -419,18 +419,18 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder and supplied solution name", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "FLD1234567890";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
       // Provide different results for same route upon subsequent call
-      let addItemUpdater = (() => {
-          var stepNum = 0;
+      const addItemUpdater = (() => {
+          let stepNum = 0;
           return () => [
             '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
             '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
@@ -475,18 +475,18 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder, but handle failed storymap", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "FLD1234567890";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
       // Provide different results for same route upon subsequent call
-      let addItemUpdater = (() => {
-          var stepNum = 0;
+      const addItemUpdater = (() => {
+          let stepNum = 0;
           return () => [
             '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
             '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
@@ -529,8 +529,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle failure to create a contained item", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "fld1234567890";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const folderId = "fld1234567890";
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
@@ -548,16 +548,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("create solution storymap", () => {
 
-    let orgSession:mCommon.IOrgSession = {
+    const orgSession:mCommon.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
     };
 
     it("should create a storymap using a specified folder and public access", done => {
-      let title = "Solution storymap";
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let folderId = "fld1234567890";
+      const title = "Solution storymap";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const folderId = "fld1234567890";
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
@@ -578,8 +578,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle the failure to publish a storymap", done => {
-      let title = "Solution storymap";
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const title = "Solution storymap";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -596,10 +596,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: create item", () => {
 
     it("should create a Dashboard in the root folder", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -621,10 +621,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a Dashboard in a specified folder", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
-      let folderId:string = "fld1234567890";
-      let swizzles:mCommon.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
+      const folderId:string = "fld1234567890";
+      const swizzles:mCommon.ISwizzleHash = createMockSwizzle(fullItem.data.widgets[0].itemId);
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -646,10 +646,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a mapless Dashboard", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = {};
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = {};
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -671,10 +671,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a dataless Dashboard", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = {};
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = {};
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -696,10 +696,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle failure to create a Dashboard", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = {};
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoWidgets();
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = {};
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -721,20 +721,20 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Feature Service", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
-      let folderId:string = "fld1234567890";
-      let swizzles:mCommon.ISwizzleHash = {};
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
+      const folderId:string = "fld1234567890";
+      const swizzles:mCommon.ISwizzleHash = {};
 
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
@@ -757,8 +757,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
-          let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
-          let createServiceCallBody = createServiceCall[0][1].body as string;
+          const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
+          const createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
@@ -772,21 +772,21 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Feature Service without a data section", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.data = null;
-      let folderId:string = "fld1234567890";
-      let swizzles:mCommon.ISwizzleHash = {};
+      const folderId:string = "fld1234567890";
+      const swizzles:mCommon.ISwizzleHash = {};
 
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
@@ -809,8 +809,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
-          let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
-          let createServiceCallBody = createServiceCall[0][1].body as string;
+          const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
+          const createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
@@ -824,20 +824,20 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create a Feature Service without relationships", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let fullItem:mFullItem.IFullItem = mockSolutions.getFeatureServiceSolutionPartNoRelationships();
-      let folderId:string = "fld1234567890";
-      let swizzles:mCommon.ISwizzleHash = {};
+      const fullItem:mFullItem.IFullItem = mockSolutions.getFeatureServiceSolutionPartNoRelationships();
+      const folderId:string = "fld1234567890";
+      const swizzles:mCommon.ISwizzleHash = {};
 
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
-      let layerNumUpdater = (() => {
-          var layerNum = 0;
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
@@ -860,8 +860,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
-          let createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
-          let createServiceCallBody = createServiceCall[0][1].body as string;
+          const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
+          const createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
@@ -873,19 +873,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle an error while trying to create a Feature Service", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.item.url = null;
       expect(mockSolutions.getItemSolutionPart("Feature Service").item.url)
         .toEqual("https://services123.arcgis.com/org1234567890/arcgis/rest/services/" +
         "ROWPermits_publiccomment/FeatureServer");
 
-      let folderId:string = "fld1234567890";
-      let swizzles:mCommon.ISwizzleHash = {};
+      const folderId:string = "fld1234567890";
+      const swizzles:mCommon.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -905,13 +905,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle service without any layers or tables", done => {
-      let fullItem:mFullItem.IFullItemFeatureService = mockSolutions.getItemSolutionPart("Feature Service");
+      const fullItem:mFullItem.IFullItemFeatureService = mockSolutions.getItemSolutionPart("Feature Service");
       fullItem.service.layers = null;
       fullItem.service.tables = null;
       fullItem.layers = null;
       fullItem.tables = null;
 
-      let orgSession:mCommon.IOrgSession = {
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -925,13 +925,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create an empty group", done => {
-      let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:mCommon.ISwizzleHash = {};
+      const group = mockSolutions.getGroupSolutionPart();
+      const swizzles:mCommon.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -948,13 +948,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle the failure to create an empty group", done => {
-      let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:mCommon.ISwizzleHash = {};
+      const group = mockSolutions.getGroupSolutionPart();
+      const swizzles:mCommon.ISwizzleHash = {};
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      let now = 1555555555555;
-      let orgSession:mCommon.IOrgSession = {
+      const now = 1555555555555;
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -976,10 +976,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a Web Mapping Application in the root folder", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = createMockSwizzle("map1234567890");
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = createMockSwizzle("map1234567890");
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1001,10 +1001,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle the failure to update the URL of a Web Mapping Application being created", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = createMockSwizzle("map1234567890");
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Web Mapping Application");
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = createMockSwizzle("map1234567890");
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1027,8 +1027,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create an unswizzled public Dashboard in a specified folder", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Dashboard");
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1050,8 +1050,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create an unswizzled dataless public Dashboard in a specified folder", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1073,8 +1073,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create an unswizzled dataless public Dashboard with both folder and access undefined", done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getDashboardSolutionPartNoData();
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1097,10 +1097,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create an item that's not a Dashboard, Feature Service, Group, Web Map, or Web Mapping Application",
       done => {
-      let fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Map Template");
-      let folderId:string = null;
-      let swizzles:mCommon.ISwizzleHash = {};
-      let orgSession:mCommon.IOrgSession = {
+      const fullItem:mFullItem.IFullItem = mockSolutions.getItemSolutionPart("Map Template");
+      const folderId:string = null;
+      const swizzles:mCommon.ISwizzleHash = {};
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
@@ -1126,13 +1126,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: get cloning order", () => {
 
     it("sorts an item and its dependencies 1", () => {
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
 
       abc.dependencies = ["ghi", "def"];
 
-      let results:string[] = mSolution.topologicallySortItems({
+      const results:string[] = mSolution.topologicallySortItems({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -1143,14 +1143,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("sorts an item and its dependencies 2", () => {
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
 
       abc.dependencies = ["ghi", "def"];
       def.dependencies = ["ghi"];
 
-      let results:string[] = mSolution.topologicallySortItems({
+      const results:string[] = mSolution.topologicallySortItems({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -1162,14 +1162,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("sorts an item and its dependencies 3", () => {
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
 
       abc.dependencies = ["ghi"];
       ghi.dependencies = ["def"];
 
-      let results:string[] = mSolution.topologicallySortItems({
+      const results:string[] = mSolution.topologicallySortItems({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -1181,16 +1181,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("reports a multi-item cyclic dependency graph", () => {
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
 
       abc.dependencies = ["ghi"];
       def.dependencies = ["ghi"];
       ghi.dependencies = ["abc"];
 
       expect(function () {
-        let results:string[] = mSolution.topologicallySortItems({
+        const results:string[] = mSolution.topologicallySortItems({
           "abc": abc,
           "def": def,
           "ghi": ghi,
@@ -1199,14 +1199,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("reports a single-item cyclic dependency graph", () => {
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
 
       def.dependencies = ["def"];
 
       expect(function () {
-        let results:string[] = mSolution.topologicallySortItems({
+        const results:string[] = mSolution.topologicallySortItems({
           "abc": abc,
           "def": def,
           "ghi": ghi,
@@ -1219,19 +1219,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: remove undesirable properties", () => {
 
     it("remove properties", () => {
-      let abc = mockItems.getAGOLItem("Web Mapping Application",
+      const abc = mockItems.getAGOLItem("Web Mapping Application",
         "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
 
-      let abcCopy = mSolution.removeUndesirableItemProperties(abc);
+      const abcCopy = mSolution.removeUndesirableItemProperties(abc);
       expect(abc).toEqual(mockItems.getAGOLItem("Web Mapping Application",
         "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"));
       expect(abcCopy).toEqual(mockItems.getTrimmedAGOLItem());
     });
 
     it("shallow copy if properties already removed", () => {
-      let abc = mockItems.getTrimmedAGOLItem();
+      const abc = mockItems.getTrimmedAGOLItem();
 
-      let abcCopy = mSolution.removeUndesirableItemProperties(abc);
+      const abcCopy = mSolution.removeUndesirableItemProperties(abc);
       expect(abc).toEqual(mockItems.getTrimmedAGOLItem());
       expect(abcCopy).toEqual(mockItems.getTrimmedAGOLItem());
 
@@ -1240,7 +1240,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("checks for item before attempting to access its properties", () => {
-      let result = mSolution.removeUndesirableItemProperties(null);
+      const result = mSolution.removeUndesirableItemProperties(null);
       expect(result).toBeNull();
     });
 
@@ -1249,22 +1249,22 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: solution storymap", () => {
 
     it("should handle defaults to create a storymap", () => {
-      let title = "Solution storymap";
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const title = "Solution storymap";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
-      let storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
+      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
     });
 
     it("should handle defaults to publish a storymap", done => {
-      let orgSession:mCommon.IOrgSession = {
+      const orgSession:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         ...MOCK_USER_REQOPTS
       };
 
-      let title = "Solution storymap";
-      let solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
-      let storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
+      const title = "Solution storymap";
+      const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
+      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -1293,19 +1293,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle solution items without a URL when creating a storymap", () => {
-      let title = "Solution storymap";
-      let solution:any = {
+      const title = "Solution storymap";
+      const solution:any = {
         "wma1234567890": mockSolutions.getItemSolutionPart("Dashboard")
       };
 
-      let storymapItem = mViewing.createSolutionStorymapItem(title, solution);
+      const storymapItem = mViewing.createSolutionStorymapItem(title, solution);
       expect(storymapItem.type).toEqual("Web Mapping Application");
       expect(storymapItem.item).toBeDefined();
       expect(storymapItem.data).toBeDefined();
     });
 
     it("should get an untitled storymap item base", () => {
-      let storymapItemBase = mViewing.getStorymapItemFundamentals();
+      const storymapItemBase = mViewing.getStorymapItemFundamentals();
       expect(storymapItemBase.title).toEqual("");
     });
 
@@ -1314,7 +1314,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: timestamp", () => {
 
     it("should return time 1541440408000", () => {
-      let expected = 1541440408000;
+      const expected = 1541440408000;
       jasmine.clock().install();
       jasmine.clock().mockDate(new Date(expected));
       expect(mSolution.getTimestamp()).toEqual(expected.toString());
@@ -1325,14 +1325,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: add members to cloned group", () => {
 
-    let orgSession:mCommon.IOrgSession = {
+    const orgSession:mCommon.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
     };
 
     it("should handle empty group", done => {
-      let group = mockSolutions.getGroupSolutionPart();
+      const group = mockSolutions.getGroupSolutionPart();
       mSolution.addGroupMembers(group, orgSession)
       .then(
         () => done(),
@@ -1341,7 +1341,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle failure to add to group", done => {
-      let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
+      const group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
         '{"username":"casey","id":"9e227333ba7a"}')
@@ -1362,7 +1362,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should add an item to a group", done => {
-      let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
+      const group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
         '{"username":"casey","id":"9e227333ba7a"}'
@@ -1386,13 +1386,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: update application URL", () => {
 
-    let orgSession:mCommon.IOrgSession = {
+    const orgSession:mCommon.IOrgSession = {
       orgUrl: "https://myOrg.maps.arcgis.com",
       portalUrl: "https://www.arcgis.com",
       ...MOCK_USER_REQOPTS
     };
 
-    let abc = {...MOCK_ITEM_PROTOTYPE};
+    const abc = {...MOCK_ITEM_PROTOTYPE};
     abc.item = mockItems.getAGOLItem("Web Mapping Application");
     abc.item.url = mSolution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
 
@@ -1416,7 +1416,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         errorMsg => {
-          let expectedError = new ArcGISRequestError("Item does not exist or is inaccessible.", "CONT_0001");
+          const expectedError = new ArcGISRequestError("Item does not exist or is inaccessible.", "CONT_0001");
           expect(errorMsg).toEqual(expectedError);
           done();
         }
@@ -1424,9 +1424,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a placeholder URL for a Dashboard item", () => {
-      let initialUrl =
+      const initialUrl =
         "http://arcgis4localgov2.maps.arcgis.com/apps/opsdashboard/index.html#/d74b0cb7afc84cc9af0357ccdf113a71";
-      let abc:mFullItem.IFullItem = {
+      const abc:mFullItem.IFullItem = {
         ...MOCK_ITEM_PROTOTYPE,
         type: "Dashboard",
         item: mockItems.getAGOLItem("Dashboard", initialUrl)
@@ -1437,9 +1437,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a placeholder URL for a Web Map item", () => {
-      let initialUrl =
+      const initialUrl =
         "http://arcgis4localgov2.maps.arcgis.com/home/webmap/viewer.html?webmap=72c09ca3b79e429ab8c9c9665fbe42dc";
-      let abc:mFullItem.IFullItem = {
+      const abc:mFullItem.IFullItem = {
         ...MOCK_ITEM_PROTOTYPE,
         type: "Web Map",
         item: mockItems.getAGOLItem("Web Map", initialUrl)
@@ -1450,9 +1450,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should leave the application URL alone for an item that is neither a Dashboard nor a Web Map", () => {
-      let initialUrl = "https://arcgis4localgov2.maps.arcgis.com/apps/CrowdsourcePolling/index.html?" +
+      const initialUrl = "https://arcgis4localgov2.maps.arcgis.com/apps/CrowdsourcePolling/index.html?" +
         "appid=ed883ee75afe49319d136b46f7e5a86c";
-      let abc:mFullItem.IFullItem = {
+      const abc:mFullItem.IFullItem = {
         ...MOCK_ITEM_PROTOTYPE,
         type: "Web Mapping Application",
         item: mockItems.getAGOLItem("Web Mapping Application", initialUrl)
@@ -1480,9 +1480,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mSolution.IFullItemHash) => {
-          let keys = Object.keys(response);
+          const keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
+          const fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1506,9 +1506,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:mSolution.IFullItemHash) => {
-          let keys = Object.keys(response);
+          const keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
+          const fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1532,9 +1532,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:mSolution.IFullItemHash) => {
-          let keys = Object.keys(response);
+          const keys = Object.keys(response);
           expect(keys.length).toEqual(3);
-          let fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
+          const fullItem:mFullItem.IFullItem = response[keys[0]] as mFullItem.IFullItem;
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1558,14 +1558,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (collection:mSolution.IFullItemHash) => {
-          let keys = Object.keys(collection);
+          const keys = Object.keys(collection);
           expect(keys.length).toEqual(3);
           expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
 
           mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
           .then(
             (collection2:mSolution.IFullItemHash) => {
-              let keys = Object.keys(collection2);
+              const keys = Object.keys(collection2);
               expect(keys.length).toEqual(3);  // unchanged
               expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
               expect(collection2).toEqual(collection);
@@ -1651,7 +1651,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("throws an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
-      let baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))

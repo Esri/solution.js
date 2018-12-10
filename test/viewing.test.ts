@@ -17,7 +17,7 @@
 import * as mFullItem from "../src/fullItem";
 import * as mViewing from "../src/viewing";
 
-//--------------------------------------------------------------------------------------------------------------------//
+// --------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
@@ -31,15 +31,15 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
     it("item without dependencies", () => {
       // hierarchy:
       // - abc
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc
       });
 
@@ -49,17 +49,17 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
     it("item with empty list of dependencies", () => {
       // hierarchy:
       // - abc
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
 
       abc.dependencies = [];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc
       });
 
@@ -70,14 +70,14 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // hierarchy:
       // - abc
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
 
       abc.dependencies = ["def"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -85,7 +85,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def
       });
@@ -98,16 +98,16 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - abc
       //   - def
       //   - ghi
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
 
       abc.dependencies = ["def", "ghi"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -118,7 +118,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi
@@ -132,17 +132,17 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - abc
       //   - ghi
       //     - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
 
       abc.dependencies = ["ghi"];
       ghi.dependencies = ["def"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "ghi",
@@ -153,7 +153,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi
@@ -168,18 +168,18 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       //   - ghi
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
+      const jkl = {...MOCK_ITEM_PROTOTYPE};
       jkl.item.id = "jkl";
 
       jkl.dependencies = ["ghi", "def"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -193,7 +193,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -211,19 +211,19 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       //   - ghi
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
+      const jkl = {...MOCK_ITEM_PROTOTYPE};
       jkl.item.id = "jkl";
 
       abc.dependencies = ["def", "ghi"];
       jkl.dependencies = ["ghi", "def"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -243,7 +243,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -261,24 +261,24 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       // - pqr
       //   - ghi
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
+      const jkl = {...MOCK_ITEM_PROTOTYPE};
       jkl.item.id = "jkl";
-      let mno = {...MOCK_ITEM_PROTOTYPE};
+      const mno = {...MOCK_ITEM_PROTOTYPE};
       mno.item.id = "mno";
-      let pqr = {...MOCK_ITEM_PROTOTYPE};
+      const pqr = {...MOCK_ITEM_PROTOTYPE};
       pqr.item.id = "pqr";
 
       pqr.dependencies = ["ghi"];
       mno.dependencies = ["abc"];
       def.dependencies = ["mno"];
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "def",
         dependencies: [{
           id: "mno",
@@ -298,7 +298,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,
@@ -316,16 +316,16 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       // - ghi
       // - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE};
       abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
+      const def = {...MOCK_ITEM_PROTOTYPE};
       def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
+      const ghi = {...MOCK_ITEM_PROTOTYPE};
       ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
+      const jkl = {...MOCK_ITEM_PROTOTYPE};
       jkl.item.id = "jkl";
 
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -339,7 +339,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
         "abc": abc,
         "def": def,
         "ghi": ghi,

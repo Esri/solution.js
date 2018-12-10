@@ -77,7 +77,18 @@ export default {
   context: "window",
   external: packageNames,
   plugins: [
-    typescript(),
+    // the tsconfig.json file has module: 'commonjs' to jasmin will work
+    // but to allow rollup to create the UMD bundle for us, we need an es2015
+    // output - thus the override 
+    typescript(
+      {
+        tsconfigOverride: {
+          compilerOptions: {
+            module: 'es2015'
+          }
+        }
+      }
+    ),
     json(),
     resolve(),
     commonjs()

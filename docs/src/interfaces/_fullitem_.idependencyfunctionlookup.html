@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHierarchyEntry | arcgis-clone-js</title>
+	<title>IDependencyFunctionLookup | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_viewing_.html">&quot;viewing&quot;</a>
+					<a href="../modules/_fullitem_.html">&quot;fullItem&quot;</a>
 				</li>
 				<li>
-					<a href="_viewing_.ihierarchyentry.html">IHierarchyEntry</a>
+					<a href="_fullitem_.idependencyfunctionlookup.html">IDependencyFunctionLookup</a>
 				</li>
 			</ul>
-			<h1>Interface IHierarchyEntry</h1>
+			<h1>Interface IDependencyFunctionLookup</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A recursive structure describing the hierarchy of a collection of AGOL items.</p>
+						<p>A mapping between a keyword and a dependency-gathering function.</p>
 					</div>
 				</div>
 			</section>
@@ -80,56 +80,39 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IHierarchyEntry</span>
+						<span class="target">IDependencyFunctionLookup</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a></li>
-							</ul>
-						</section>
+			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>name: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">function</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Keyword lookup of a function</p>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="dependencies" class="tsd-anchor"></a>
-					<h3>dependencies</h3>
-					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <a href="_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/2696007/src/viewing.ts#L34">viewing.ts:34</a></li>
+				</div>
+				<ul class="tsd-parameters">
+					<li class="tsd-parameter-siganture">
+						<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+							<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>fullItem<span class="tsd-signature-symbol">: </span><a href="_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a>, requestOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IUserRequestOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Item&#39;s dependencies</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="id" class="tsd-anchor"></a>
-					<h3>id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/2696007/src/viewing.ts#L30">viewing.ts:30</a></li>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>fullItem: <a href="_fullitem_.ifullitem.html" class="tsd-signature-type">IFullItem</a></h5>
+									</li>
+									<li>
+										<h5>requestOptions: <span class="tsd-signature-type">IUserRequestOptions</span></h5>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							</li>
 						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>AGOL item id</p>
-						</div>
-					</div>
-				</section>
+					</li>
+				</ul>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -150,57 +133,82 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_common_.html">"common"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_fullitem_.html">"full<wbr>Item"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_solution_.html">"solution"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_fullitem_.idashboardwidget.html" class="tsd-kind-icon">IDashboard<wbr>Widget</a>
+					</li>
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a>
-							</li>
-						</ul>
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_fullitem_.idependencyfunctionlookup.html" class="tsd-kind-icon">IDependency<wbr>Function<wbr>Lookup</a>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#createsolutionstorymap" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_fullitem_.ifullitem.html" class="tsd-kind-icon">IFull<wbr>Item</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_viewing_.html#createsolutionstorymapitem" class="tsd-kind-icon">create<wbr>Solution<wbr>Storymap<wbr>Item</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_fullitem_.ifullitemfeatureservice.html" class="tsd-kind-icon">IFull<wbr>Item<wbr>Feature<wbr>Service</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="_fullitem_.iswizzlefunctionlookup.html" class="tsd-kind-icon">ISwizzle<wbr>Function<wbr>Lookup</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+						<a href="../modules/_fullitem_.html#createunavailableitemerror" class="tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_viewing_.html#getstorymapitemdatafundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Data<wbr>Fundamentals</a>
+						<a href="../modules/_fullitem_.html#getdashboarddependencies" class="tsd-kind-icon">get<wbr>Dashboard<wbr>Dependencies</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_viewing_.html#getstorymapitemfundamentals" class="tsd-kind-icon">get<wbr>Storymap<wbr>Item<wbr>Fundamentals</a>
+						<a href="../modules/_fullitem_.html#getdependencies" class="tsd-kind-icon">get<wbr>Dependencies</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_viewing_.html#getwebpagestory" class="tsd-kind-icon">get<wbr>Webpage<wbr>Story</a>
+						<a href="../modules/_fullitem_.html#getfullitem" class="tsd-kind-icon">get<wbr>Full<wbr>Item</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_viewing_.html#publishsolutionstorymapitem" class="tsd-kind-icon">publish<wbr>Solution<wbr>Storymap<wbr>Item</a>
+						<a href="../modules/_fullitem_.html#getgroupcontentstranche" class="tsd-kind-icon">get<wbr>Group<wbr>Contents<wbr>Tranche</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getgroupdependencies" class="tsd-kind-icon">get<wbr>Group<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getwebmappingapplicationdependencies" class="tsd-kind-icon">get<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#getwebmapdependencies" class="tsd-kind-icon">get<wbr>Webmap<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#getwebmaplayerids" class="tsd-kind-icon">get<wbr>Webmap<wbr>Layer<wbr>Ids</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_fullitem_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlecommondependencies" class="tsd-kind-icon">swizzle<wbr>Common<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzledashboarddependencies" class="tsd-kind-icon">swizzle<wbr>Dashboard<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_fullitem_.html#swizzledependencies" class="tsd-kind-icon">swizzle<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlewebmappingapplicationdependencies" class="tsd-kind-icon">swizzle<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_fullitem_.html#swizzlewebmapdependencies" class="tsd-kind-icon">swizzle<wbr>Webmap<wbr>Dependencies</a>
 					</li>
 				</ul>
 			</nav>
