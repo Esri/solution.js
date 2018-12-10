@@ -25,7 +25,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports ---------------------------------------------------------------------------------------------------------//
 
 /**
  * A collection of AGOL items for serializing.
@@ -76,12 +76,12 @@ export function createSolution (
     getFullItemHierarchy(solutionRootIds, requestOptions)
     .then(
       solution => {
-        let adjustmentPromises:Promise<void>[] = [];
+        const adjustmentPromises:Array<Promise<void>> = [];
 
         // Prepare the Solution by adjusting its items
         Object.keys(solution).forEach(
           key => {
-            let fullItem = (solution[key] as mFullItem.IFullItem);
+            const fullItem = (solution[key] as mFullItem.IFullItem);
 
             // 1. remove unwanted properties
             fullItem.item = removeUndesirableItemProperties(fullItem.item);
@@ -140,15 +140,15 @@ export function publishSolution (
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
   // Define the solution item
-  let item = {
-    title: title,
+  const item = {
+    title,
     type: "Solution",
     itemType: "text",
-    access: access,
+    access,
     listed: false,
     commentsEnabled: false
   };
-  let data = {
+  const data = {
     items: solution
   };
 
@@ -179,13 +179,14 @@ export function cloneSolution (
     let swizzles:mCommon.ISwizzleHash = {};
     let clonedSolution:IFullItemHash = {};
 
+
     // Don't bother creating folder if there are no items in solution
     if (!solution || Object.keys(solution).length === 0) {
       resolve(clonedSolution);
     }
 
     // Run through the list of item ids in clone order
-    let cloneOrderChecklist:string[] = topologicallySortItems(solution);
+    const cloneOrderChecklist:string[] = topologicallySortItems(solution);
 
     function runThroughChecklist () {
       if (cloneOrderChecklist.length === 0) {
@@ -194,7 +195,7 @@ export function cloneSolution (
       }
 
       // Clone item at top of list
-      let itemId = cloneOrderChecklist.shift();
+      const itemId = cloneOrderChecklist.shift();
       createSwizzledItem((solution[itemId] as mFullItem.IFullItem), folderId, swizzles, orgSession)
       .then(
         clone => {
@@ -210,8 +211,8 @@ export function cloneSolution (
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      let folderName = (solutionName || "Solution") + " (" + getTimestamp() + ")";
-      let options = {
+      const folderName = (solutionName || "Solution") + " (" + getTimestamp() + ")";
+      const options = {
         title: folderName,
         authentication: orgSession.authentication
       };
@@ -229,7 +230,7 @@ export function cloneSolution (
   });
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
  * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
@@ -321,7 +322,7 @@ export function addFeatureServiceLayersAndTables (
   return new Promise((resolve, reject) => {
 
     // Sort layers and tables by id so that they're added with the same ids
-    let layersAndTables:any[] = [];
+    const layersAndTables:any[] = [];
 
     (fullItem.layers || []).forEach(function (layer) {
       layersAndTables[layer.id] = {
@@ -338,7 +339,7 @@ export function addFeatureServiceLayersAndTables (
     });
 
     // Hold a hash of relationships
-    let relationships:IRelationship = {};
+    const relationships:IRelationship = {};
 
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
@@ -347,11 +348,11 @@ export function addFeatureServiceLayersAndTables (
       .then(
         () => {
           // Restore relationships for all layers and tables in the service
-          let awaitRelationshipUpdates:Promise<void>[] = [];
+          const awaitRelationshipUpdates:Array<Promise<void>> = [];
           Object.keys(relationships).forEach(
             id => {
-              awaitRelationshipUpdates.push(new Promise(resolve => {
-                var options = {
+              awaitRelationshipUpdates.push(new Promise(resolveFn => {
+                const options = {
                   params: {
                     updateFeatureServiceDefinition: {
                       relationships: relationships[id]
@@ -364,7 +365,7 @@ export function addFeatureServiceLayersAndTables (
                   () => {
                     resolve();
                   },
-                  resolve);
+                  resolveFn);
               }));
             }
           );
@@ -399,7 +400,7 @@ export function addGroupMembers (
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
     if (fullItem.dependencies.length > 0) {
-      var awaitGroupAdds:Promise<null>[] = [];
+      const awaitGroupAdds:Array<Promise<null>> = [];
       fullItem.dependencies.forEach(depId => {
         awaitGroupAdds.push(new Promise(resolve => {
           sharing.shareItemWithGroup({
@@ -446,16 +447,16 @@ export function createSwizzledItem (
 ): Promise<mFullItem.IFullItem> {
   return new Promise<mFullItem.IFullItem>((resolve, reject) => {
 
-    let clonedItem = JSON.parse(JSON.stringify(fullItem)) as mFullItem.IFullItem;
+    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mFullItem.IFullItem;
 
     // Swizzle item's dependencies
     mFullItem.swizzleDependencies(clonedItem, swizzles);
 
     // Feature Services
     if (clonedItem.type === "Feature Service") {
-      let options = {
+      const options = {
         item: clonedItem.item,
-        folderId: folderId,
+        folderId,
         ...orgSession
       }
       if (clonedItem.data) {
@@ -493,7 +494,7 @@ export function createSwizzledItem (
 
     // Groups
     } else if (clonedItem.type === "Group") {
-      let options = {
+      const options = {
         group: clonedItem.item,
         ...orgSession
       }
@@ -522,7 +523,7 @@ export function createSwizzledItem (
 
     // All other types
     } else {
-      let options:items.IItemAddRequestOptions = {
+      const options:items.IItemAddRequestOptions = {
         item: clonedItem.item,
         folder: folderId,
         ...orgSession
@@ -583,7 +584,7 @@ export function fleshOutFeatureService (
     // full tables
 
     // Get the service description
-    let serviceUrl = fullItem.item.url;
+    const serviceUrl = fullItem.item.url;
     request(serviceUrl + "?f=json", requestOptions)
     .then(
       serviceData => {
@@ -627,8 +628,8 @@ function generalizeWebMappingApplicationURL (
   // to
   //   http://<PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
   // Need to add placeholder server name because otherwise AGOL makes URL null
-  let orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
-  let iSep = orgUrl.indexOf("//");
+  const orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
+  const iSep = orgUrl.indexOf("//");
   fullItem.item.url = PLACEHOLDER_SERVER_NAME +  // add placeholder server name
     orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
 }
@@ -675,7 +676,7 @@ function getLayers (
       resolve([]);
     }
 
-    let requestsDfd:Promise<any>[] = [];
+    const requestsDfd:Array<Promise<any>> = [];
     layerList.forEach(layer => {
       requestsDfd.push(request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions));
     });
@@ -714,7 +715,7 @@ export function removeUndesirableItemProperties (
   item: any
 ): any {
   if (item) {
-    let itemSectionClone = {...item};
+    const itemSectionClone = {...item};
     delete itemSectionClone.avgRating;
     delete itemSectionClone.created;
     delete itemSectionClone.guid;
@@ -776,10 +777,10 @@ export function topologicallySortItems (
   // 2 as each vertex is finished, insert it onto front of a linked list
   // 3 return the linked list of vertices
 
-  let buildList:string[] = [];  // list of ordered vertices--don't need linked list because
+  const buildList:string[] = [];  // list of ordered vertices--don't need linked list because
                                 // we just want relative ordering
 
-  let verticesToVisit:ISortVertex = {};
+  const verticesToVisit:ISortVertex = {};
   Object.keys(items).forEach(function(vertexId) {
     verticesToVisit[vertexId] = SortVisitColor.White;  // not yet visited
   });
@@ -796,7 +797,7 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    var dependencies:string[] = (items[vertexId] as mFullItem.IFullItem).dependencies || [];
+    const dependencies:string[] = (items[vertexId] as mFullItem.IFullItem).dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
@@ -825,7 +826,7 @@ export function updateApplicationURL (
   fullItem: mFullItem.IFullItem,
   orgSession: mCommon.IOrgSession
 ): Promise<string> {
-  let url = orgSession.orgUrl +
+  const url = orgSession.orgUrl +
         (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
         fullItem.item.id;
 
@@ -859,10 +860,10 @@ function updateFeatureServiceDefinition(
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve, reject) => {
     if (listToAdd.length > 0) {
-      var toAdd = listToAdd.shift();
+      const toAdd = listToAdd.shift();
 
-      var item = toAdd.item;
-      var originalId = item.id;
+      const item = toAdd.item;
+      const originalId = item.id;
       delete item.serviceItemId;  // Updated by updateFeatureServiceDefinition
 
       // Need to remove relationships and add them back individually after all layers and tables
@@ -872,12 +873,12 @@ function updateFeatureServiceDefinition(
         item.relationships = [];
       }
 
-      let options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
+      const options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
         ...requestOptions
       };
 
       if (toAdd.type === "layer") {
-        item.adminLayerInfo = {  //???
+        item.adminLayerInfo = {  // ???
           "geometryField": {
             "name": "Shape",
             "srid": 102100
@@ -902,7 +903,7 @@ function updateFeatureServiceDefinition(
   });
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals -------------------------------------------------------------------------------------------------------//
 
 /**
  * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
@@ -950,13 +951,13 @@ export function getFullItemHierarchy (
 
     } else if (typeof rootIds === "string") {
       // Handle a single AGOL id
-      let rootId = rootIds;
+      const rootId = rootIds;
       if (collection[rootId]) {
         resolve(collection);  // Item and its dependents are already in list or are queued
 
       } else {
         // Add the id as a placeholder to show that it will be fetched
-        let getItemPromise = mFullItem.getFullItem(rootId, requestOptions);
+        const getItemPromise = mFullItem.getFullItem(rootId, requestOptions);
         collection[rootId] = getItemPromise;
 
         // Get the specified item
@@ -974,6 +975,7 @@ export function getFullItemHierarchy (
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
               let dependentDfds:Promise<IFullItemHash>[] = [];
+
               fullItem.dependencies.forEach(
                 dependentId => {
                   if (!collection[dependentId]) {
@@ -998,6 +1000,7 @@ export function getFullItemHierarchy (
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
       let getHierarchyPromise:Promise<IFullItemHash>[] = [];
+
       rootIds.forEach(rootId => {
         getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, collection));
       });

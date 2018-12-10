@@ -8,6 +8,7 @@ node_modules/
 # Tools, notes, outputs
 __*.*
 __*
+.rpt2_cache/
 
 # Snap backups
 *.7z

@@ -18,7 +18,7 @@ import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports ---------------------------------------------------------------------------------------------------------//
 
 /**
  * An extension of a IUserRequestOptions that includes the organization and portal URLs.
@@ -85,8 +85,8 @@ export function createItemWithData (
   access = "private"
 ): Promise<items.IItemUpdateResponse> {
   return new Promise((resolve, reject) => {
-    let options:items.IItemAddRequestOptions = {
-      item: item,
+    const options:items.IItemAddRequestOptions = {
+      item,
       folder: folderId,
       ...requestOptions
     };
@@ -100,9 +100,9 @@ export function createItemWithData (
       results => {
         if (access !== "private") {  // set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
-          let options = {
+          const options = {
             id: results.id,
-            access: access,
+            access,
             ...requestOptions as sharing.ISetAccessRequestOptions
           };
           sharing.setItemAccess(options)
@@ -142,7 +142,7 @@ export function updateItemURL (
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL
-    var options = {
+    const options = {
       item: {
         'id': id,
         'url': url
