@@ -176,8 +176,8 @@ export function cloneSolution (
   access = "private"
 ): Promise<IFullItemHash> {
   return new Promise<IFullItemHash>((resolve, reject) => {
-    let swizzles:mCommon.ISwizzleHash = {};
-    let clonedSolution:IFullItemHash = {};
+    const swizzles:mCommon.ISwizzleHash = {};
+    const clonedSolution:IFullItemHash = {};
 
 
     // Don't bother creating folder if there are no items in solution
@@ -974,7 +974,7 @@ export function getFullItemHierarchy (
             } else {
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
-              let dependentDfds:Promise<IFullItemHash>[] = [];
+              const dependentDfds:Array<Promise<IFullItemHash>> = [];
 
               fullItem.dependencies.forEach(
                 dependentId => {
@@ -999,7 +999,7 @@ export function getFullItemHierarchy (
     } else {
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
-      let getHierarchyPromise:Promise<IFullItemHash>[] = [];
+      const getHierarchyPromise:Array<Promise<IFullItemHash>> = [];
 
       rootIds.forEach(rootId => {
         getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, collection));
