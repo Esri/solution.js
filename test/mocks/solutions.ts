@@ -17,7 +17,7 @@
 import * as mockItems from "./items";
 import * as mockServices from "./featureServices";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 export function getItemSolutionPart (
   type: string,
@@ -205,7 +205,7 @@ export function getWebMappingApplicationSolution (
   return solution;
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 function getItemSolutionFundamentals (
   type: string,

@@ -25,7 +25,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
 
-// -- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * A collection of AGOL items for serializing.
@@ -112,7 +112,8 @@ export function createSolution (
         } else {
           Promise.all(adjustmentPromises)
           .then(
-            () => resolve(solution)
+            () => resolve(solution),
+            reject
           );
         }
       },
@@ -230,7 +231,7 @@ export function cloneSolution (
   });
 }
 
-// -- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
@@ -373,9 +374,11 @@ export function addFeatureServiceLayersAndTables (
           .then(
             () => {
               resolve();
-            }
+            },
+            reject
           );
-        }
+        },
+        reject
       );
     } else {
       resolve();
@@ -394,7 +397,6 @@ export function addFeatureServiceLayersAndTables (
  */
 export function addGroupMembers (
   fullItem: mFullItem.IFullItem,
-  swizzles: mCommon.ISwizzleHash,
   orgSession: mCommon.IOrgSession
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -402,7 +404,7 @@ export function addGroupMembers (
     if (fullItem.dependencies.length > 0) {
       const awaitGroupAdds:Array<Promise<null>> = [];
       fullItem.dependencies.forEach(depId => {
-        awaitGroupAdds.push(new Promise(resolve => {
+        awaitGroupAdds.push(new Promise((resolve2, reject2) => {
           sharing.shareItemWithGroup({
             id: depId,
             groupId: fullItem.item.id,
@@ -410,16 +412,17 @@ export function addGroupMembers (
           })
           .then(
             () => {
-              resolve();
+              resolve2();
             },
-            error => reject(error.response.error.message)
+            error => reject2(error.response.error.message)
           );
         }));
       });
       // After all items have been added to the group
       Promise.all(awaitGroupAdds)
       .then(
-        () => resolve()
+        () => resolve(),
+        reject
       );
     } else {
       // No items in this group
@@ -486,7 +489,8 @@ export function createSwizzledItem (
           // Add the feature service's layers and tables to it
           addFeatureServiceLayersAndTables((clonedItem as mFullItem.IFullItemFeatureService), swizzles, orgSession)
           .then(
-            () => resolve(clonedItem)
+            () => resolve(clonedItem),
+            reject
           );
         },
         reject
@@ -513,9 +517,10 @@ export function createSwizzledItem (
           clonedItem.item.id = createResponse.group.id;
 
           // Add the group's items to it
-          addGroupMembers(clonedItem, swizzles, orgSession)
+          addGroupMembers(clonedItem, orgSession)
           .then(
-            () => resolve(clonedItem)
+            () => resolve(clonedItem),
+            reject
           );
         },
         error => reject(error.response.error.message)
@@ -574,7 +579,7 @@ export function fleshOutFeatureService (
   fullItem: mFullItem.IFullItemFeatureService,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
-  return new Promise<void>(resolve => {
+  return new Promise<void>((resolve, reject) => {
     fullItem.service = {};
     fullItem.layers = [];
     fullItem.tables = [];
@@ -604,11 +609,14 @@ export function fleshOutFeatureService (
           getLayers(serviceUrl, serviceData["layers"], requestOptions),
           getLayers(serviceUrl, serviceData["tables"], requestOptions)
         ])
-        .then(results => {
-          fullItem.layers = results[0];
-          fullItem.tables = results[1];
-          resolve();
-        });
+        .then(
+          results => {
+            fullItem.layers = results[0];
+            fullItem.tables = results[1];
+            resolve();
+          },
+          reject
+        );
       }
     );
   });
@@ -671,7 +679,7 @@ function getLayers (
   layerList: any[],
   requestOptions: IUserRequestOptions
 ): Promise<any[]> {
-  return new Promise<any[]>(resolve => {
+  return new Promise<any[]>((resolve, reject) => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
       resolve([]);
     }
@@ -683,13 +691,16 @@ function getLayers (
 
     // Wait until all layers are heard from
     Promise.all(requestsDfd)
-    .then(layers => {
-      // Remove the editFieldsInfo because it references fields that may not be in the layer/table
-      layers.forEach(layer => {
-        layer["editFieldsInfo"] = null;
-      });
-      resolve(layers);
-    });
+    .then(
+      layers => {
+        // Remove the editFieldsInfo because it references fields that may not be in the layer/table
+        layers.forEach(layer => {
+          layer["editFieldsInfo"] = null;
+        });
+        resolve(layers);
+      },
+      reject
+    );
   });
 }
 
@@ -745,7 +756,7 @@ export function removeUndesirableItemProperties (
  * @protected
  */
 export function topologicallySortItems (
-  items: IFullItemHash
+  fullItems: IFullItemHash
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -781,7 +792,7 @@ export function topologicallySortItems (
                                 // we just want relative ordering
 
   const verticesToVisit:ISortVertex = {};
-  Object.keys(items).forEach(function(vertexId) {
+  Object.keys(fullItems).forEach(function(vertexId) {
     verticesToVisit[vertexId] = SortVisitColor.White;  // not yet visited
   });
 
@@ -797,7 +808,7 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    const dependencies:string[] = (items[vertexId] as mFullItem.IFullItem).dependencies || [];
+    const dependencies:string[] = (fullItems[vertexId] as mFullItem.IFullItem).dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
@@ -893,7 +904,10 @@ function updateFeatureServiceDefinition(
       .then(
         () => {
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
-          .then(resolve);
+          .then(
+            () => resolve(),
+            reject
+          );
         },
         reject
       );
@@ -903,7 +917,7 @@ function updateFeatureServiceDefinition(
   });
 }
 
-// -- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Fetches the item, data, and resources of one or more AGOL items and their dependencies.

@@ -18,7 +18,7 @@ import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
 import * as mSolution from "./solution";
 
-// -- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * A recursive structure describing the hierarchy of a collection of AGOL items.
@@ -36,7 +36,7 @@ export interface IHierarchyEntry {
 
 /**
  * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
- * 
+ *
  * @param items Solution to explore
  * @return List of ids of top-level items in Solution
  */
@@ -75,7 +75,7 @@ export function getItemHierarchy (
   const topLevelItemIds = getTopLevelItemIds(items);
 
   // Hierarchically list the children of specified nodes
-  function itemChildren(children:string[], hierarchy:IHierarchyEntry[]): void {
+  function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
     // Visit each child
     children.forEach(function (id) {
       const child:IHierarchyEntry = {
@@ -89,7 +89,7 @@ export function getItemHierarchy (
         itemChildren(dependencyIds, child.dependencies);
       }
 
-      hierarchy.push(child);
+      accumulatedHierarchy.push(child);
     });
   }
 
@@ -123,7 +123,7 @@ export function createSolutionStorymap (
   });
 }
 
-// -- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Creates a Storymap AGOL item.

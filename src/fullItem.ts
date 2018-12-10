@@ -23,7 +23,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
 
-// -- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * An AGOL item for serializing.
@@ -120,9 +120,11 @@ export function getFullItem (
               dependencies => {
                 fullItem.dependencies = dependencies;
                 resolve(fullItem);
-              }
+              },
+              reject
             );
-          }
+          },
+          reject
         );
       },
       () => {
@@ -167,7 +169,7 @@ export function swizzleDependencies (
   fullItem: IFullItem,
   swizzles = {} as mCommon.ISwizzleHash
 ): void {
-  const swizzleDependenciesByType:IFunctionLookup = {
+  const swizzleDependenciesByType:ISwizzleFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
     "Web Map": swizzleWebmapDependencies,
     "Web Mapping Application": swizzleWebMappingApplicationDependencies
@@ -193,7 +195,7 @@ export function createUnavailableItemError (
   );
 }
 
-// -- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * The relevant elements of a Dashboard widget.
@@ -211,14 +213,25 @@ interface IDashboardWidget {
 }
 
 /**
- * A mapping between a keyword and a function.
+ * A mapping between a keyword and a dependency-gathering function.
  * @protected
  */
-interface IFunctionLookup {
+interface IDependencyFunctionLookup {
   /**
    * Keyword lookup of a function
    */
-  [name:string]: Function
+  [name:string]: (fullItem:IFullItem, requestOptions:IUserRequestOptions) => Promise<string[]>
+}
+
+/**
+ * A mapping between a keyword and a swizzling function.
+ * @protected
+ */
+interface ISwizzleFunctionLookup {
+  /**
+   * Keyword lookup of a function
+   */
+  [name:string]: (fullItem:IFullItem, swizzles: mCommon.ISwizzleHash) => void
 }
 
 /**
@@ -234,7 +247,7 @@ export function getDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
-    const getDependenciesByType:IFunctionLookup = {
+    const getDependenciesByType:IDependencyFunctionLookup = {
       "Dashboard": getDashboardDependencies,
       "Group": getGroupDependencies,
       "Web Map": getWebmapDependencies,
@@ -468,7 +481,7 @@ function swizzleCommonDependencies (
   }
 }
 
-// -- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Gets the ids of a group's contents.

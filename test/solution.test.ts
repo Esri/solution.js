@@ -1333,8 +1333,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle empty group", done => {
       let group = mockSolutions.getGroupSolutionPart();
-      let swizzles:mCommon.ISwizzleHash = {};
-      mSolution.addGroupMembers(group, swizzles, orgSession)
+      mSolution.addGroupMembers(group, orgSession)
       .then(
         () => done(),
         error => done.fail(error)
@@ -1343,8 +1342,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle failure to add to group", done => {
       let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
-      let swizzles:mCommon.ISwizzleHash = {};
-
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
         '{"username":"casey","id":"9e227333ba7a"}')
@@ -1357,7 +1354,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
         '"message":"Item does not exist or is inaccessible.","details":[]}}');
-      mSolution.addGroupMembers(group, swizzles, orgSession)
+      mSolution.addGroupMembers(group, orgSession)
       .then(
         () => done.fail(),
         done
@@ -1366,8 +1363,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should add an item to a group", done => {
       let group = mockSolutions.getGroupSolutionPart(["map1234567890"]);
-      let swizzles:mCommon.ISwizzleHash = {};
-
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
         '{"username":"casey","id":"9e227333ba7a"}'
@@ -1380,7 +1375,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
         '{"notSharedWith":[],"itemId":"map1234567890"}');
-      mSolution.addGroupMembers(group, swizzles, orgSession)
+      mSolution.addGroupMembers(group, orgSession)
       .then(
         () => done(),
         error => done.fail(error)

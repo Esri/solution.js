@@ -18,7 +18,7 @@ import * as items from "@esri/arcgis-rest-items";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-// -- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * An extension of a IUserRequestOptions that includes the organization and portal URLs.
