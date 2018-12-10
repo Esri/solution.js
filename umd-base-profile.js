@@ -24,7 +24,7 @@ const { name } = pkg;
 
 const copyright = `/* @preserve
 * ${pkg.name} - v${pkg.version} - ${pkg.license}
-* Copyright (c) 2017-${new Date().getFullYear()} Esri, Inc.
+* Copyright (c) 2018-${new Date().getFullYear()} Esri, Inc.
 * ${new Date().toString()}
 */`;
 
@@ -35,11 +35,11 @@ const copyright = `/* @preserve
  */
 const moduleName = "arcgisClone";
 
+// FOR MONOREPO LIKE ARCGIS-REST-JS...
 /**
  * Now we need to discover all the `@esri/arcgis-rest-*` package names so we can create
  * the `globals` and `externals` to pass to Rollup.
  */
-// FOR MONOREPO...
 // const packageNames = fs
 //   .readdirSync(path.join(__dirname, "packages"))
 //   .filter(p => p[0] !== ".")

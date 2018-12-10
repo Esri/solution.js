@@ -7,11 +7,11 @@
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "scripts": {
-    "wtf": "npm run build",
     "build": "npm run build:node && npm run build:umd && npm run build:esm",
     "build:esm": "tsc --module es2015 --outDir ./dist/esm --declaration",
     "build:umd": "rollup -c ./umd-base-profile.js && rollup -c ./umd-production-profile.js",
     "build:node": "tsc --module commonjs --outDir ./dist/node",
+    "build:tsumd": "tsc --module umd --outDir ./dist/tsumd",
     "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ./umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
@@ -20,6 +20,7 @@
     "test:firefox": "karma start --single-run --browsers=Firefox",
     "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "docs": "typedoc --target ES5 --out ./docs/src/ src/index.ts",
+    "ver": "tsc -v",
     "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts"
   },
   "repository": {
@@ -67,12 +68,13 @@
     "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.3",
-    "rollup-plugin-typescript2": "^0.4.6",
+    "rollup-plugin-typescript2": "^0.18.0",
     "rollup-plugin-uglify": "^3.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^6.0.1",
+    "typedoc": "^0.13.0",
     "typescript": "^3.1.2"
   },
   "dependencies": {

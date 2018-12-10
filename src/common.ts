@@ -100,17 +100,17 @@ export function createItemWithData (
       results => {
         if (access !== "private") {  // set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
-          const options = {
+          const options1 = {
             id: results.id,
             access,
             ...requestOptions as sharing.ISetAccessRequestOptions
           };
-          sharing.setItemAccess(options)
+          sharing.setItemAccess(options1)
           .then(
-            results => {
+            results2 => {
               resolve({
                 success: true,
-                id: results.itemId
+                id: results2.itemId
               })
             },
             error => reject(error.originalMessage)
