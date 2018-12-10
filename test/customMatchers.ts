@@ -20,14 +20,14 @@ import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CustomMatcherResult = jasmine.CustomMatcherResult;
 import MatchersUtil = jasmine.MatchersUtil;
 
-// --------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 export interface IToHaveOrder {
   predecessor:string,
   successor:string
 }
 
-export interface CustomArrayLikeMatchers extends jasmine.ArrayLikeMatchers<string> {
+export interface ICustomArrayLikeMatchers extends jasmine.ArrayLikeMatchers<string> {
   toHaveOrder(expected:any, expectationFailOutput?:any): boolean;
 }
 

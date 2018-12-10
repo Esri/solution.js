@@ -20,7 +20,7 @@ export function getService (
   layers = [] as any,
   tables = [] as any
 ): any {
-  let service:any = {
+  const service:any = {
     "currentVersion": 10.61,
     "serviceItemId": "svc1234567890",
     "isView": true,
@@ -84,8 +84,8 @@ export function getService (
     "tables": []
   };
 
-  function addCondensedFormOfLayer (layers: any[], serviceLayerList: any[]) {
-    layers.forEach(
+  function addCondensedFormOfLayer (layersOrTables: any[], serviceLayerList: any[]) {
+    layersOrTables.forEach(
       layer => {
         serviceLayerList.push({
           "id": layer.id,
@@ -196,7 +196,7 @@ export function getRelationship (
   relatedTableId: number,
   role: string
 ): any {
-  let relationship:any = {
+  const relationship:any = {
     "id": id,
     "name": "",
     "relatedTableId": relatedTableId,

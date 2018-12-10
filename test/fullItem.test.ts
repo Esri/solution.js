@@ -25,7 +25,7 @@ import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "./mocks/items";
 
-// --------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `fullItem`: fetches the item, data, and resources of an AGOL item", () => {
 
@@ -222,10 +222,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("without map widget", done => {
@@ -241,10 +244,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("with map widget", done => {
@@ -263,10 +269,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
     });
@@ -280,10 +289,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
     });
@@ -304,10 +316,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         abc.item.id = "grp1234567890";
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("group with 6 items", done => {
@@ -325,10 +340,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         abc.item.id = "grp1234567890";
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("group with error", done => {
@@ -391,10 +409,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("one operational layer", done => {
@@ -409,10 +430,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("two operational layers", done => {
@@ -429,10 +453,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("one operational layer and a table", done => {
@@ -449,10 +476,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
     });
@@ -465,10 +495,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("no data values", done => {
@@ -478,10 +511,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("based on webmap", done => {
@@ -495,10 +531,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
       it("based on group", done => {
@@ -512,10 +551,13 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
-        .then(response => {
-          expect(response).toEqual(expected);
-          done();
-        });
+        .then(
+          response => {
+            expect(response).toEqual(expected);
+            done();
+          },
+          done.fail
+        );
       });
 
     });
@@ -878,15 +920,18 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("same number of items as fetch batch size", done => {
@@ -897,15 +942,18 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1", "a2", "a3"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          const calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("one more item than fetch batch size", done => {
@@ -918,19 +966,22 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1", "a2", "a3", "a4"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+          calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("twice the number of items as fetch batch size", done => {
@@ -943,19 +994,22 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+          calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("one more item than twice the number of items as fetch batch size", done => {
@@ -970,23 +1024,26 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+          calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
 
-        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
+          calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("thrice the number of items as fetch batch size", done => {
@@ -1001,23 +1058,26 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
 
       mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
-      .then(response => {
-        expect(response).toEqual(expected);
+      .then(
+        response => {
+          expect(response).toEqual(expected);
 
-        let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
+          let calls = fetchMock.calls(firstGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(firstGroupTrancheUrl);
 
-        calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
+          calls = fetchMock.calls(secondGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(secondGroupTrancheUrl);
 
-        calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
-        expect(calls.length === 1);
-        expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
+          calls = fetchMock.calls(thirdGroupTrancheUrl);  // => [string, fetchMock.MockRequest][]
+          expect(calls.length === 1);
+          expect(calls[0][0]).toEqual(thirdGroupTrancheUrl);
 
-        done();
-      });
+          done();
+        },
+        done.fail
+      );
     });
 
     it("group with error", done => {

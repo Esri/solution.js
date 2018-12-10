@@ -23,13 +23,13 @@ import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSwizzle } from "./lib/utils";
-import { CustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
+import { ICustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "./mocks/items";
 import * as mockServices from "./mocks/featureServices";
 import * as mockSolutions from "./mocks/solutions";
 
-// --------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `solution`: generation, publication, and cloning of a solution item", () => {
 
@@ -153,7 +153,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
             [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
           ).layers[0].name);
           done();
-        }
+        },
+        done.fail
       );
     });
 
@@ -187,7 +188,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
-        }
+        },
+        done.fail
       );
     });
 
@@ -220,7 +222,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
-        }
+        },
+        done.fail
       );
     });
 
@@ -251,7 +254,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         () => {
           expect(fullItem.service.name).toEqual("Feature Service");
           done();
-        }
+        },
+        done.fail
       );
     });
 
@@ -338,7 +342,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       const now = 1555555555555;
-      const orgSession:mCommon.IOrgSession = {
+      const orgSessionWithMockedTime:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -347,7 +351,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}');
-      mSolution.cloneSolution(solutionItem, orgSession)
+      mSolution.cloneSolution(solutionItem, orgSessionWithMockedTime)
       .then(
         () => done.fail(),
         done
@@ -360,7 +364,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
       const now = 1555555555555;
-      const orgSession:mCommon.IOrgSession = {
+      const orgSessionWithMockedTime:mCommon.IOrgSession = {
         orgUrl: "https://myOrg.maps.arcgis.com",
         portalUrl: "https://www.arcgis.com",
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
@@ -406,7 +410,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      mSolution.cloneSolution(solutionItem, orgSession)
+      mSolution.cloneSolution(solutionItem, orgSessionWithMockedTime)
       .then(
         response => {
           expect(Object.keys(response).length).toEqual(3);
@@ -1138,8 +1142,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "ghi": ghi,
       });
       expect(results.length).toEqual(3);
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
     });
 
     it("sorts an item and its dependencies 2", () => {
@@ -1156,9 +1160,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "ghi": ghi,
       });
       expect(results.length).toEqual(3);
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "def"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "def"});
     });
 
     it("sorts an item and its dependencies 3", () => {
@@ -1175,9 +1179,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "ghi": ghi,
       });
       expect(results.length).toEqual(3);
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
-      (expect(results) as CustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "ghi"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
+      (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "ghi"});
     });
 
     it("reports a multi-item cyclic dependency graph", () => {
@@ -1190,7 +1194,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       ghi.dependencies = ["abc"];
 
       expect(function () {
-        const results:string[] = mSolution.topologicallySortItems({
+        mSolution.topologicallySortItems({
           "abc": abc,
           "def": def,
           "ghi": ghi,
@@ -1206,7 +1210,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       def.dependencies = ["def"];
 
       expect(function () {
-        const results:string[] = mSolution.topologicallySortItems({
+        mSolution.topologicallySortItems({
           "abc": abc,
           "def": def,
           "ghi": ghi,
@@ -1253,6 +1257,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const solutionItem:mSolution.IFullItemHash = mockSolutions.getWebMappingApplicationSolution();
 
       const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
+      expect(storymapItem).toBeDefined();
     });
 
     it("should handle defaults to publish a storymap", done => {
@@ -1392,22 +1397,35 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       ...MOCK_USER_REQOPTS
     };
 
-    const abc = {...MOCK_ITEM_PROTOTYPE};
-    abc.item = mockItems.getAGOLItem("Web Mapping Application");
-    abc.item.url = mSolution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
-
     it("success", done => {
+      const initialUrl = mSolution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
+      const abc:mFullItem.IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Mapping Application",
+        item: mockItems.getAGOLItem("Web Mapping Application", initialUrl)
+      };
+
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
       '{"success":true,"id":"wma1234567890"}');
       mSolution.updateApplicationURL(abc, orgSession)
-      .then(response => {
-        expect(response).toEqual("wma1234567890");
-        done();
-      });
+      .then(
+        response => {
+          expect(response).toEqual("wma1234567890");
+          done();
+        },
+        done.fail
+      );
     });
 
     it("failure", done => {
+      const initialUrl = mSolution.PLACEHOLDER_SERVER_NAME + "/apps/CrowdsourcePolling/index.html?appid=";
+      const abc:mFullItem.IFullItem = {
+        ...MOCK_ITEM_PROTOTYPE,
+        type: "Web Mapping Application",
+        item: mockItems.getAGOLItem("Web Mapping Application", initialUrl)
+      };
+
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"error":{"code":400,"messageCode":"CONT_0001",' +
@@ -1565,8 +1583,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
           .then(
             (collection2:mSolution.IFullItemHash) => {
-              const keys = Object.keys(collection2);
-              expect(keys.length).toEqual(3);  // unchanged
+              const keys2 = Object.keys(collection2);
+              expect(keys2.length).toEqual(3);  // unchanged
               expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
               expect(collection2).toEqual(collection);
               done();
