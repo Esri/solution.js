@@ -25,15 +25,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ArcGIS/arcgis-clone-js.git"
+    "url": "git+https://github.com/Esri/arcgis-clone-js.git"
   },
   "keywords": [],
   "author": "Esri",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ArcGIS/arcgis-clone-js/issues"
+    "url": "https://github.com/Esri/arcgis-clone-js/issues"
   },
-  "homepage": "https://github.com/ArcGIS/arcgis-clone-js#readme",
+  "homepage": "https://github.com/Esri/arcgis-clone-js#readme",
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^1.14.3",
     "@esri/arcgis-rest-common-types": "^1.14.3",
