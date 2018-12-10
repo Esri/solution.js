@@ -18,7 +18,7 @@ import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
 import * as mSolution from "./solution";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * A recursive structure describing the hierarchy of a collection of AGOL items.
@@ -36,7 +36,7 @@ export interface IHierarchyEntry {
 
 /**
  * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
- * 
+ *
  * @param items Solution to explore
  * @return List of ids of top-level items in Solution
  */
@@ -44,10 +44,10 @@ export function getTopLevelItemIds (
   items: mSolution.IFullItemHash
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  let topLevelItemCandidateIds:string[] = Object.keys(items);
+  const topLevelItemCandidateIds:string[] = Object.keys(items);
   Object.keys(items).forEach(function (id) {
     ((items[id] as mFullItem.IFullItem).dependencies || []).forEach(function (dependencyId) {
-      let iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+      const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
       if (iNode >= 0) {
         // Node is somebody's dependency, so remove the node from the list of top-level nodes
         // If iNode == -1, then it's a shared dependency and it has already been removed
@@ -69,27 +69,27 @@ export function getTopLevelItemIds (
 export function getItemHierarchy (
   items: mSolution.IFullItemHash
 ): IHierarchyEntry[] {
-  let hierarchy:IHierarchyEntry[] = [];
+  const hierarchy:IHierarchyEntry[] = [];
 
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  let topLevelItemIds = getTopLevelItemIds(items);
+  const topLevelItemIds = getTopLevelItemIds(items);
 
   // Hierarchically list the children of specified nodes
-  function itemChildren(children:string[], hierarchy:IHierarchyEntry[]): void {
+  function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
     // Visit each child
     children.forEach(function (id) {
-      let child:IHierarchyEntry = {
-        id: id,
+      const child:IHierarchyEntry = {
+        id,
         dependencies: []
       };
 
       // Fill in the child's dependencies array with any of its children
-      let dependencyIds = (items[id] as mFullItem.IFullItem).dependencies;
+      const dependencyIds = (items[id] as mFullItem.IFullItem).dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
 
-      hierarchy.push(child);
+      accumulatedHierarchy.push(child);
     });
   }
 
@@ -123,7 +123,7 @@ export function createSolutionStorymap (
   });
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Creates a Storymap AGOL item.
@@ -140,17 +140,17 @@ export function createSolutionStorymapItem (
   folderId = null as string
 ): mFullItem.IFullItem {
   // Prepare the storymap item
-  let item = getStorymapItemFundamentals(title);
-  let data = getStorymapItemDataFundamentals(title, folderId);
+  const item = getStorymapItemFundamentals(title);
+  const data = getStorymapItemDataFundamentals(title, folderId);
 
   // Create a story for each top-level item
-  let topLevelItemIds:string[] = getTopLevelItemIds(solution);
-  let stories = data.values.story.entries;
+  const topLevelItemIds:string[] = getTopLevelItemIds(solution);
+  const stories = data.values.story.entries;
   topLevelItemIds.forEach(
     topLevelItemId => {
-      let solutionItem = solution[topLevelItemId] as mFullItem.IFullItem;
+      const solutionItem = solution[topLevelItemId] as mFullItem.IFullItem;
       if (solutionItem.item.url) {
-        let itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
+        const itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
         stories.push(itsStory);
       }
     }
@@ -158,8 +158,8 @@ export function createSolutionStorymapItem (
 
   return {
     type: item.type,
-    item: item,
-    data: data
+    item,
+    data
   };
 }
 
@@ -316,8 +316,8 @@ export function publishSolutionStorymapItem (
     .then(
       createResponse => {
         // Update its app URL
-        let solutionStorymapId = createResponse.id;
-        let solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
+        const solutionStorymapId = createResponse.id;
+        const solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
         mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
         .then(
           () => {

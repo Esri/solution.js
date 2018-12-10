@@ -20,23 +20,23 @@ import CustomMatcherFactories = jasmine.CustomMatcherFactories;
 import CustomMatcherResult = jasmine.CustomMatcherResult;
 import MatchersUtil = jasmine.MatchersUtil;
 
-//--------------------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 export interface IToHaveOrder {
   predecessor:string,
   successor:string
 }
 
-export interface CustomArrayLikeMatchers extends jasmine.ArrayLikeMatchers<string> {
+export interface ICustomArrayLikeMatchers extends jasmine.ArrayLikeMatchers<string> {
   toHaveOrder(expected:any, expectationFailOutput?:any): boolean;
 }
 
 export const CustomMatchers:CustomMatcherFactories = {
-  toHaveOrder: function (util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher {
+  toHaveOrder (util: MatchersUtil, customEqualityTester: CustomEqualityTester[]): CustomMatcher {
     return {
-      compare: function (actual:any, expected:IToHaveOrder): CustomMatcherResult {
-        let iPredecessor = actual.indexOf(expected.predecessor);
-        let iSuccessor = actual.indexOf(expected.successor);
+      compare (actual:any, expected:IToHaveOrder): CustomMatcherResult {
+        const iPredecessor = actual.indexOf(expected.predecessor);
+        const iSuccessor = actual.indexOf(expected.successor);
 
         if (0 <= iPredecessor && iPredecessor < iSuccessor) {
           return {

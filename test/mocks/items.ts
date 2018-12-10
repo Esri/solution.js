@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 export function getAGOLItem (
   type?: string,
@@ -111,7 +111,7 @@ export function getAGOLItem (
 
 export function getTrimmedAGOLItem (
 ): any {
-  let item = getAGOLItemFundamentals("Web Mapping Application", "wma",
+  const item = getAGOLItemFundamentals("Web Mapping Application", "wma",
     "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
   delete item.avgRating;
   delete item.created;
@@ -131,7 +131,7 @@ export function getTrimmedAGOLItem (
 
 export function getNoNameFeatureServiceItem (
 ): any {
-  let item = getAGOLItem("Feature Service");
+  const item = getAGOLItem("Feature Service");
   item.name = null;
   return item;
 }
@@ -440,7 +440,7 @@ export function getAGOLGroup (
 export function getAGOLGroupContentsList (
   numToPutIntoGroup: number
 ): any {
-  let group = {
+  const group = {
     "total": 0,
     "start": 1,
     "num": 0,
@@ -453,7 +453,7 @@ export function getAGOLGroupContentsList (
   return group;
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 function getAGOLItemFundamentals (
   type: string,

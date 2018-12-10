@@ -23,7 +23,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
  * An AGOL item for serializing.
@@ -94,20 +94,20 @@ export function getFullItem (
         };
 
         // Request item data section
-        let dataPromise = items.getItemData(id, requestOptions);
+        const dataPromise = items.getItemData(id, requestOptions);
 
         // Request item resources
-        let resourceRequestOptions = {
-          id: id,
+        const resourceRequestOptions = {
+          id,
           ...requestOptions
         };
-        let resourcePromise = items.getItemResources(resourceRequestOptions);
+        const resourcePromise = items.getItemResources(resourceRequestOptions);
 
         // Items without a data section return an error from the REST library, so we'll need to prevent it
         // from killing off both promises
         Promise.all([
-          dataPromise.catch(() => { return null }),
-          resourcePromise.catch(() => { return null })
+          dataPromise.catch(() => null),
+          resourcePromise.catch(() => null)
         ])
         .then(
           responses => {
@@ -120,9 +120,11 @@ export function getFullItem (
               dependencies => {
                 fullItem.dependencies = dependencies;
                 resolve(fullItem);
-              }
+              },
+              reject
             );
-          }
+          },
+          reject
         );
       },
       () => {
@@ -167,7 +169,7 @@ export function swizzleDependencies (
   fullItem: IFullItem,
   swizzles = {} as mCommon.ISwizzleHash
 ): void {
-  let swizzleDependenciesByType:IFunctionLookup = {
+  const swizzleDependenciesByType:ISwizzleFunctionLookup = {
     "Dashboard": swizzleDashboardDependencies,
     "Web Map": swizzleWebmapDependencies,
     "Web Mapping Application": swizzleWebMappingApplicationDependencies
@@ -193,7 +195,7 @@ export function createUnavailableItemError (
   );
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * The relevant elements of a Dashboard widget.
@@ -211,14 +213,25 @@ interface IDashboardWidget {
 }
 
 /**
- * A mapping between a keyword and a function.
+ * A mapping between a keyword and a dependency-gathering function.
  * @protected
  */
-interface IFunctionLookup {
+interface IDependencyFunctionLookup {
   /**
    * Keyword lookup of a function
    */
-  [name:string]: Function
+  [name:string]: (fullItem:IFullItem, requestOptions:IUserRequestOptions) => Promise<string[]>
+}
+
+/**
+ * A mapping between a keyword and a swizzling function.
+ * @protected
+ */
+interface ISwizzleFunctionLookup {
+  /**
+   * Keyword lookup of a function
+   */
+  [name:string]: (fullItem:IFullItem, swizzles: mCommon.ISwizzleHash) => void
 }
 
 /**
@@ -234,7 +247,7 @@ export function getDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
-    let getDependenciesByType:IFunctionLookup = {
+    const getDependenciesByType:IDependencyFunctionLookup = {
       "Dashboard": getDashboardDependencies,
       "Group": getGroupDependencies,
       "Web Map": getWebmapDependencies,
@@ -266,9 +279,9 @@ function getDashboardDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
-    let dependencies:string[] = [];
+    const dependencies:string[] = [];
 
-    let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+    const widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
     if (widgets) {
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
@@ -294,7 +307,7 @@ function getGroupDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    let pagingRequest:IPagingParamsRequestOptions = {
+    const pagingRequest:IPagingParamsRequestOptions = {
       paging: {
         start: 0,
         num: 100
@@ -350,9 +363,9 @@ function getWebMappingApplicationDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
-    let dependencies:string[] = [];
+    const dependencies:string[] = [];
 
-    let values = fullItem.data && fullItem.data.values;
+    const values = fullItem.data && fullItem.data.values;
     if (values) {
       if (values.webmap) {
         dependencies.push(values.webmap);
@@ -378,7 +391,7 @@ function swizzleDashboardDependencies (
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap(s)
-  let widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+  const widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
   if (Array.isArray(widgets)) {
     widgets.forEach(widget => {
       if (widget.type === "mapWidget") {
@@ -403,7 +416,7 @@ function swizzleWebmapDependencies (
     // Swizzle its map layers
     if (Array.isArray(fullItem.data.operationalLayers)) {
       fullItem.data.operationalLayers.forEach((layer:ILayer) => {
-        var itsSwizzle = swizzles[layer.itemId];
+        const itsSwizzle = swizzles[layer.itemId];
         if (itsSwizzle) {
           layer.title = itsSwizzle.name;
           layer.itemId = itsSwizzle.id;
@@ -414,7 +427,7 @@ function swizzleWebmapDependencies (
     // Swizzle its tables
     if (Array.isArray(fullItem.data.tables)) {
       fullItem.data.tables.forEach((layer:ILayer) => {
-        var itsSwizzle = swizzles[layer.itemId];
+        const itsSwizzle = swizzles[layer.itemId];
         if (itsSwizzle) {
           layer.title = itsSwizzle.name;
           layer.itemId = itsSwizzle.id;
@@ -437,7 +450,7 @@ function swizzleWebMappingApplicationDependencies (
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap or group
-  let values = fullItem.data && fullItem.data.values;
+  const values = fullItem.data && fullItem.data.values;
   if (values) {
     if (values.webmap) {
       values.webmap = swizzles[values.webmap].id;
@@ -460,7 +473,7 @@ function swizzleCommonDependencies (
 ): void {
   if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
     // Swizzle the id of each of the items in the dependencies array
-    let updatedDependencies:string[] = [];
+    const updatedDependencies:string[] = [];
     fullItem.dependencies.forEach(depId => {
       updatedDependencies.push(swizzles[depId].id);
     });
@@ -468,7 +481,7 @@ function swizzleCommonDependencies (
   }
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Gets the ids of a group's contents.
@@ -489,7 +502,7 @@ export function getGroupContentsTranche (
     .then(
       contents => {
         // Extract the list of content ids from the JSON returned
-        let trancheIds:string[] = contents.items.map((item:any) => item.id);
+        const trancheIds:string[] = contents.items.map((item:any) => item.id);
 
         // Are there more contents to fetch?
         if (contents.nextStart > 0) {
@@ -524,11 +537,11 @@ export function getGroupContentsTranche (
 export function getWebmapLayerIds (
   layerList: any
 ): string[] {
-  let dependencies:string[] = [];
+  const dependencies:string[] = [];
 
   if (Array.isArray(layerList)) {
     layerList.forEach((layer:any) => {
-      let itemId = layer.itemId as string;
+      const itemId = layer.itemId as string;
       if (itemId) {
         dependencies.push(itemId);
       }
@@ -548,7 +561,7 @@ export function getWebmapLayerIds (
 export function removeDuplicates (
   arrayWithDups:string[]
 ): string[] {
-  let uniqueStrings:{
+  const uniqueStrings:{
     [value:string]: boolean;
   } = {};
   arrayWithDups.forEach((arrayElem:string) => uniqueStrings[arrayElem] = true);

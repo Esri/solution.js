@@ -17,7 +17,7 @@
 import * as mockItems from "./items";
 import * as mockServices from "./featureServices";
 
-//-- Exports ---------------------------------------------------------------------------------------------------------//
+// -- Exports -------------------------------------------------------------------------------------------------------//
 
 export function getItemSolutionPart (
   type: string,
@@ -64,11 +64,11 @@ export function getItemSolutionPart (
       solutionPart.data = mockItems.getAGOLItemData(type);
       solutionPart.resources = null;
 
-      let layer0:any = mockServices.removeEditFieldsInfoField(
+      const layer0:any = mockServices.removeEditFieldsInfoField(
         mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer",
         [mockServices.getRelationship(0, 1, "esriRelRoleOrigin")]
       ));
-      let table1:any = mockServices.removeEditFieldsInfoField(
+      const table1:any = mockServices.removeEditFieldsInfoField(
         mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
@@ -93,7 +93,7 @@ export function getItemSolutionPart (
     case "Layer Package":
       break;
 
-    case "Map Template":  //??? temporary definition
+    case "Map Template":  // //??? temporary definition
       solutionPart = getItemSolutionFundamentals(type, "mtp", dependencies, url);
       solutionPart.resources = null;
       break;
@@ -136,21 +136,21 @@ export function getItemSolutionPart (
 
 export function getDashboardSolutionPartNoWidgets (
 ): any {
-  let solutionPart:any = getItemSolutionPart("Dashboard");
+  const solutionPart:any = getItemSolutionPart("Dashboard");
   solutionPart.data.widgets = [];
   return solutionPart;
 }
 
 export function getDashboardSolutionPartNoData (
 ): any {
-  let solutionPart:any = getItemSolutionPart("Dashboard");
+  const solutionPart:any = getItemSolutionPart("Dashboard");
   solutionPart.data = null;
   return solutionPart;
 }
 
 export function getFeatureServiceSolutionPartNoRelationships (
 ): any {
-  let solutionPart:any = getItemSolutionPart("Feature Service");
+  const solutionPart:any = getItemSolutionPart("Feature Service");
   solutionPart.layers[0].relationships = [];
   solutionPart.tables[0].relationships = [];
   return solutionPart;
@@ -194,7 +194,7 @@ export function getGroupSolutionPart (
 
 export function getWebMappingApplicationSolution (
 ): any {
-  let solution:any = {
+  const solution:any = {
     "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"],
       "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid="),
     "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"],
@@ -205,7 +205,7 @@ export function getWebMappingApplicationSolution (
   return solution;
 }
 
-//-- Internals -------------------------------------------------------------------------------------------------------//
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 function getItemSolutionFundamentals (
   type: string,

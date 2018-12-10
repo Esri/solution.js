@@ -15,8 +15,8 @@
  */
 
 define([
-  '../../dist/src/index',
-  '../../dist/demos/demo_common/icon',
+  '../../dist/tsumd/src/index',
+  '../../dist/tsumd/demos/demo_common/icon',
   '@esri/arcgis-rest-auth',
   '@esri/arcgis-rest-groups',
   '@esri/arcgis-rest-items',
