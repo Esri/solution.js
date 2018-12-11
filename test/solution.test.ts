@@ -472,7 +472,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(Object.keys(response).length).toEqual(3);
           done();
         },
-        error => done.fail()
+        done.fail
       );
     });
 
@@ -526,7 +526,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(Object.keys(response).length).toEqual(3);
           done();
         },
-        error => done.fail()
+        done.fail
       );
     });
 
