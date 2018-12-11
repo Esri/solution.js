@@ -1,5 +1,4 @@
-[![npm version][npm-img]][npm-url]
-[![build status][travis-img]][travis-url]
+![build status](https://travis-ci.org/Esri/arcgis-clone-js.svg?branch=develop)
 [![Coverage Status][coverage-img]][coverage-url]
 [![apache 2.0 licensed][license-img]][license-url]
 
