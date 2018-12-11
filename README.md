@@ -82,6 +82,8 @@ Some useful commands include:
 * `npm run test:node` runs ts-node and jasmine
 * `npm run docs` creates documentation about the API and its internal functions
 * `npm run docs:mocks` creates documentation about the mock items used in unit testing
+* `npm run lint` lints the project
+* `npm run ver` reports the version of TypeScript
 
 ### Frequently Asked Questions
 
