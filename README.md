@@ -5,7 +5,7 @@
 
 [npm-img]: https://img.shields.io/npm/v/@esri/arcgis-clone-js.svg?style=flat-square
 [npm-url]: https://www.npmjs.com/package/@esri/arcgis-clone-js
-[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/master.svg?style=flat-square
+[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/develop.svg?style=flat-square
 [travis-url]: https://travis-ci.org/Esri/arcgis-clone-js
 [coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
