@@ -14,15 +14,6 @@
  | limitations under the License.
  */
 
-import * as groups from "@esri/arcgis-rest-groups";
-import * as items from "@esri/arcgis-rest-items";
-import { ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { ILayer } from "@esri/arcgis-rest-common-types";
-import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-
-import * as mCommon from "./common";
-
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
