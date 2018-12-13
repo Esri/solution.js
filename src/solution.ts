@@ -618,7 +618,8 @@ export function fleshOutFeatureService (
           },
           reject
         );
-      }
+      },
+      reject
     );
   });
 }
