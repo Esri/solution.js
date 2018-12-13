@@ -20,6 +20,9 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "../src/common";
 import * as mFullItem from "../src/fullItem";
+import * as mInterfaces from "../src/interfaces";
+import * as mGroupItemType from "../src/itemTypes/group";
+import * as mWebmapItemType from "../src/itemTypes/webmap";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
@@ -31,7 +34,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
-  const MOCK_ITEM_PROTOTYPE:mFullItem.IFullItem = {
+  const MOCK_ITEM_PROTOTYPE:mInterfaces.IFullItem = {
     type: "",
     item: {}
   };
@@ -919,7 +922,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":1,"start":1,"num":1,"nextStart":-1,"items":[{"id":"a1"}]}');
       const expected = ["a1"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -941,7 +944,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":3,"start":1,"num":3,"nextStart":-1,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}');
       const expected = ["a1", "a2", "a3"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -965,7 +968,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":4,"start":3,"num":1,"nextStart":-1,"items":[{"id":"a4"}]}');
       const expected = ["a1", "a2", "a3", "a4"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -993,7 +996,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":6,"start":3,"num":3,"nextStart":-1,"items":[{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -1023,7 +1026,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":7,"start":6,"num":1,"nextStart":-1,"items":[{"id":"a7"}]}');
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -1057,7 +1060,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         '{"total":9,"start":6,"num":3,"nextStart":-1,"items":[{"id":"a7"},{"id":"a8"},{"id":"a9"}]}');
       const expected = ["a1", "a2", "a3", "a4", "a5", "a6", "a7", "a8", "a9"];
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         response => {
           expect(response).toEqual(expected);
@@ -1087,7 +1090,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       .mock(firstGroupTrancheUrl,
         '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
 
-      mFullItem.getGroupContentsTranche("grp1234567890", pagingRequest)
+      mGroupItemType.getGroupContentsTranche("grp1234567890", pagingRequest)
       .then(
         () => {
           done.fail();
@@ -1107,7 +1110,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const sourceArray:any[] = null;
       const expected:string[] = [];
 
-      const results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -1115,7 +1118,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       const sourceArray:any[] = [];
       const expected:string[] = [];
 
-      const results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -1125,7 +1128,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       }];
       const expected:string[] = [];
 
-      const results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -1136,7 +1139,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       }];
       const expected:string[] = ["ABC"];
 
-      const results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 
@@ -1152,7 +1155,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       }];
       const expected:string[] = ["ABC", "GHI"];
 
-      const results = mFullItem.getWebmapLayerIds(sourceArray);
+      const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
     });
 

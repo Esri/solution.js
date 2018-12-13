@@ -24,6 +24,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
 import * as mFullItem from "./fullItem";
+import * as mInterfaces from "../src/interfaces";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -34,7 +35,7 @@ export interface IFullItemHash {
   /**
    * An AGOL item description
    */
-  [id:string]: mFullItem.IFullItem | Promise<mFullItem.IFullItem>;
+  [id:string]: mInterfaces.IFullItem | Promise<mInterfaces.IFullItem>;
 }
 
 /**
@@ -81,7 +82,7 @@ export function createSolution (
         // Prepare the Solution by adjusting its items
         Object.keys(solution).forEach(
           key => {
-            const fullItem = (solution[key] as mFullItem.IFullItem);
+            const fullItem = (solution[key] as mInterfaces.IFullItem);
 
             // 1. remove unwanted properties
             fullItem.item = removeUndesirableItemProperties(fullItem.item);
@@ -102,7 +103,7 @@ export function createSolution (
             //    c. generalize layer & table URLs
             } else if (fullItem.type === "Feature Service") {
               adjustmentPromises.push(
-                fleshOutFeatureService(fullItem as mFullItem.IFullItemFeatureService, requestOptions));
+                fleshOutFeatureService(fullItem as mInterfaces.IFullItemFeatureService, requestOptions));
             }
           }
         );
@@ -197,7 +198,7 @@ export function cloneSolution (
 
       // Clone item at top of list
       const itemId = cloneOrderChecklist.shift();
-      createSwizzledItem((solution[itemId] as mFullItem.IFullItem), folderId, swizzles, orgSession)
+      createSwizzledItem((solution[itemId] as mInterfaces.IFullItem), folderId, swizzles, orgSession)
       .then(
         clone => {
           clonedSolution[clone.item.id] = clone;
@@ -294,7 +295,7 @@ enum SortVisitColor {
  * @protected
  */
 export function addGeneralizedApplicationURL (
-  fullItem: mFullItem.IFullItem
+  fullItem: mInterfaces.IFullItem
 ): void {
   // Create URL with a placeholder server name because otherwise AGOL makes URL null; don't include item id; e.g.,
   // Dashboard: https://<PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
@@ -316,7 +317,7 @@ export function addGeneralizedApplicationURL (
  * @protected
  */
 export function addFeatureServiceLayersAndTables (
-  fullItem: mFullItem.IFullItemFeatureService,
+  fullItem: mInterfaces.IFullItemFeatureService,
   swizzles: mCommon.ISwizzleHash,
   orgSession: mCommon.IOrgSession
 ): Promise<void> {
@@ -396,7 +397,7 @@ export function addFeatureServiceLayersAndTables (
  * @protected
  */
 export function addGroupMembers (
-  fullItem: mFullItem.IFullItem,
+  fullItem: mInterfaces.IFullItem,
   orgSession: mCommon.IOrgSession
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -443,14 +444,14 @@ export function addGroupMembers (
  * @protected
  */
 export function createSwizzledItem (
-  fullItem: mFullItem.IFullItem,
+  fullItem: mInterfaces.IFullItem,
   folderId: string,
   swizzles: mCommon.ISwizzleHash,
   orgSession: mCommon.IOrgSession
-): Promise<mFullItem.IFullItem> {
-  return new Promise<mFullItem.IFullItem>((resolve, reject) => {
+): Promise<mInterfaces.IFullItem> {
+  return new Promise<mInterfaces.IFullItem>((resolve, reject) => {
 
-    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mFullItem.IFullItem;
+    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.IFullItem;
 
     // Swizzle item's dependencies
     mFullItem.swizzleDependencies(clonedItem, swizzles);
@@ -487,7 +488,7 @@ export function createSwizzledItem (
           clonedItem.item.url = createResponse.serviceurl;
 
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables((clonedItem as mFullItem.IFullItemFeatureService), swizzles, orgSession)
+          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.IFullItemFeatureService), swizzles, orgSession)
           .then(
             () => resolve(clonedItem),
             reject
@@ -576,7 +577,7 @@ export function createSwizzledItem (
  * @protected
  */
 export function fleshOutFeatureService (
-  fullItem: mFullItem.IFullItemFeatureService,
+  fullItem: mInterfaces.IFullItemFeatureService,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -629,7 +630,7 @@ export function fleshOutFeatureService (
  * @protected
  */
 function generalizeWebMappingApplicationURL (
-  fullItem: mFullItem.IFullItem
+  fullItem: mInterfaces.IFullItem
 ): void {
   // Remove org base URL and app id, e.g.,
   //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
@@ -808,7 +809,7 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    const dependencies:string[] = (fullItems[vertexId] as mFullItem.IFullItem).dependencies || [];
+    const dependencies:string[] = (fullItems[vertexId] as mInterfaces.IFullItem).dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
@@ -834,7 +835,7 @@ export function topologicallySortItems (
  * @protected
  */
 export function updateApplicationURL (
-  fullItem: mFullItem.IFullItem,
+  fullItem: mInterfaces.IFullItem,
   orgSession: mCommon.IOrgSession
 ): Promise<string> {
   const url = orgSession.orgUrl +

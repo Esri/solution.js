@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
-import * as mFullItem from "../src/fullItem";
+import * as mInterfaces from "../src/interfaces";
 import * as mViewing from "../src/viewing";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -23,7 +23,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
   describe("get item hierarchies", () => {
 
-    const MOCK_ITEM_PROTOTYPE:mFullItem.IFullItem = {
+    const MOCK_ITEM_PROTOTYPE:mInterfaces.IFullItem = {
       type: "",
       item: {}
     };
