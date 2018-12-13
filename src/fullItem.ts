@@ -70,8 +70,9 @@ export function getFullItem (
         ])
         .then(
           responses => {
-            fullItem.data = responses[0];
-            fullItem.resources = responses[1] && responses[1].total > 0 ? responses[1].resources : null;
+            const [dataResponse, resourceResponse] = responses;
+            fullItem.data = dataResponse;
+            fullItem.resources = resourceResponse && resourceResponse.total > 0 ? resourceResponse.resources : null;
 
             // Get ids of item dependencies
             getDependencies(fullItem, requestOptions)
