@@ -33,7 +33,7 @@ import * as mWebMappingApplication from "./itemTypes/webmappingapplication";
  *
  * @param id AGOL item id
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with an IFullItem
+ * @return A promise that will resolve with an IFullItem
  */
 export function getFullItem (
   id: string,
@@ -145,7 +145,7 @@ export function swizzleDependencies (
  * Creates an error object.
  *
  * @param id AGOL item id that caused failure
- * @returns Error object with message "Item or group does not exist or is inaccessible: <id>"
+ * @return Error object with message "Item or group does not exist or is inaccessible: <id>"
  */
 export function createUnavailableItemError (
   id: string
@@ -184,7 +184,7 @@ interface ISwizzleFunctionLookup {
  *
  * @param fullItem An item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with list of dependent ids
+ * @return A promise that will resolve with list of dependent ids
  * @protected
  */
 export function getDependencies (
@@ -215,7 +215,7 @@ export function getDependencies (
  * Removes duplicates from an array of strings.
  *
  * @param arrayWithDups An array to be copied
- * @returns Copy of array with duplicates removed
+ * @return Copy of array with duplicates removed
  * @protected
  */
 export function removeDuplicates (

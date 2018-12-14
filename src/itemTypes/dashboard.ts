@@ -41,7 +41,7 @@ interface IDashboardWidget {
  *
  * @param fullItem A dashboard item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with list of dependent ids
+ * @return A promise that will resolve with list of dependent ids
  * @protected
  */
 export function getDependencies (

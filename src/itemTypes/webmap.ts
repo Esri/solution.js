@@ -27,7 +27,7 @@ import { IFullItem } from "../interfaces";
  *
  * @param fullItem A webmap item whose dependencies are sought
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with list of dependent ids
+ * @return A promise that will resolve with list of dependent ids
  * @protected
  */
 export function getDependencies (
@@ -91,7 +91,7 @@ export function swizzleDependencies (
  * Extracts the AGOL id or URL for each layer or table object in a list.
  *
  * @param layerList List of map layers or tables
- * @returns List of ids and/or URLs
+ * @return List of ids and/or URLs
  * @protected
  */
 export function getWebmapLayerIds (

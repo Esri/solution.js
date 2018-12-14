@@ -27,7 +27,7 @@ import { IFullItem } from "../interfaces";
  *
  * @param fullItem A group whose contents are sought
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with list of dependent ids
+ * @return A promise that will resolve with list of dependent ids
  * @protected
  */
 export function getDependencies (
@@ -60,7 +60,7 @@ export function getDependencies (
  * @param id Group id
  * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
  *                      be modified by this routine
- * @returns A promise that will resolve with a list of the ids of the group's contents
+ * @return A promise that will resolve with a list of the ids of the group's contents
  * @protected
  */
 export function getGroupContentsTranche (
