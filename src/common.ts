@@ -21,24 +21,6 @@ import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
- * An extension of a IUserRequestOptions that includes the organization and portal URLs.
- */
-export interface IOrgSession extends IUserRequestOptions {
-  /**
-   * The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
-   */
-  orgUrl: string;
-  /**
-   * The base URL for the portal, e.g., https://www.arcgis.com
-   */
-  portalUrl: string;
-  /**
-   * A session representing a logged-in user
-   */
-  authentication: UserSession;
-}
-
-/**
  * The replacement information for an AGOL item id in a cloned solution.
  */
 export interface ISwizzle {
@@ -75,7 +57,7 @@ export interface ISwizzleHash {
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with an object reporting success and the Solution id
+ * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createItemWithData (
   item: any,
@@ -133,7 +115,7 @@ export function createItemWithData (
  * @param id AGOL id of item to update
  * @param url URL to assign to item's base section
  * @param requestOptions Options for the request
- * @returns A promise that will resolve when the item has been updated
+ * @return A promise that will resolve when the item has been updated
  */
 export function updateItemURL (
   id: string,

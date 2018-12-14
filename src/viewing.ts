@@ -17,6 +17,7 @@
 import * as mCommon from "./common";
 import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "./solution";
+import { IUserRequestOptions } from '@esri/arcgis-rest-auth';
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -62,7 +63,7 @@ export function getTopLevelItemIds (
  * Extracts item hierarchy structure from a Solution's items list.
  *
  * @param items Hash of JSON descriptions of items
- * @returns JSON structure reflecting dependency hierarchy of items; shared dependencies are
+ * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
  * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
  * item's dependencies
  */
@@ -102,7 +103,8 @@ export function getItemHierarchy (
  *
  * @param title Title of Storymap
  * @param solution Solution to examine for content
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param requestOptions Options for requesting information from AGOL
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root folder
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return Storymap item that was published into AGOL
@@ -110,12 +112,14 @@ export function getItemHierarchy (
 export function createSolutionStorymap (
   title: string,
   solution: mSolution.IFullItemHash,
-  orgSession: mCommon.IOrgSession,
+  requestOptions: IUserRequestOptions,
+  orgUrl: string,
   folderId = null as string,
   access = "private"
 ): Promise<mInterfaces.IFullItem> {
   return new Promise((resolve, reject) => {
-    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
+    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), requestOptions, orgUrl,
+    folderId, access)
     .then(
       storymap  => resolve(storymap),
       reject
@@ -297,28 +301,30 @@ function getWebpageStory (
  * Creates a Storymap item describing the top-level webpages forming the solution.
  *
  * @param solutionStorymap Storymap AGOL item; item is modified
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param requestOptions Options for requesting information from AGOL
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  * folder
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with an updated solutionStorymap reporting the Storymap id
+ * @return A promise that will resolve with an updated solutionStorymap reporting the Storymap id
  * and URL
  * @protected
  */
 export function publishSolutionStorymapItem (
   solutionStorymap: mInterfaces.IFullItem,
-  orgSession: mCommon.IOrgSession,
+  requestOptions: IUserRequestOptions,
+  orgUrl: string,
   folderId = null as string,
   access = "private"
 ): Promise<mInterfaces.IFullItem> {
   return new Promise((resolve, reject) => {
-    mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
+    mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, requestOptions, folderId, access)
     .then(
       createResponse => {
         // Update its app URL
         const solutionStorymapId = createResponse.id;
-        const solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
-        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
+        const solutionStorymapUrl = orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
+        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, requestOptions)
         .then(
           () => {
             solutionStorymap.item.id = solutionStorymapId;

@@ -63,7 +63,7 @@ export interface IFullItemHash {
  *
  * @param solutionRootIds AGOL id string or list of AGOL id strings
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve with a hash by id of IFullItems;
+ * @return A promise that will resolve with a hash by id of IFullItems;
  * if any id is inaccessible, a single error response will be produced for the set
  * of ids
  */
@@ -132,7 +132,7 @@ export function createSolution (
  * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with an object reporting success and the Solution id
+ * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function publishSolution (
   title: string,
@@ -162,17 +162,21 @@ export function publishSolution (
  *
  * @param solution A hash of item descriptions to convert; note that the item ids are updated
  *     to their cloned versions
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param requestOptions Options for the request
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+ * @param portalUrl The base URL for the portal, e.g., https://www.arcgis.com
  * @param solutionName Name root to use if folder is to be created
  * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created;
  *     if created, folder name is a combination of the solution name and a timestamp for uniqueness,
  *     e.g., "Dashboard (1540841846958)"
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with a list of the ids of items created in AGOL
+ * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
   solution: IFullItemHash,
-  orgSession: mCommon.IOrgSession,
+  requestOptions: IUserRequestOptions,
+  orgUrl: string,
+  portalUrl: string,
   solutionName = "",
   folderId = null as string,
   access = "private"
@@ -198,7 +202,7 @@ export function cloneSolution (
 
       // Clone item at top of list
       const itemId = cloneOrderChecklist.shift();
-      createSwizzledItem((solution[itemId] as mInterfaces.IFullItem), folderId, swizzles, orgSession)
+      createSwizzledItem((solution[itemId] as mInterfaces.IFullItem), folderId, swizzles, requestOptions, orgUrl)
       .then(
         clone => {
           clonedSolution[clone.item.id] = clone;
@@ -216,7 +220,7 @@ export function cloneSolution (
       const folderName = (solutionName || "Solution") + " (" + getTimestamp() + ")";
       const options = {
         title: folderName,
-        authentication: orgSession.authentication
+        authentication: requestOptions.authentication
       };
       items.createFolder(options)
       .then(
@@ -312,14 +316,14 @@ export function addGeneralizedApplicationURL (
  *
  * @param fullItem Feature service
  * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve when fullItem has been updated
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function addFeatureServiceLayersAndTables (
   fullItem: mInterfaces.IFullItemFeatureService,
   swizzles: mCommon.ISwizzleHash,
-  orgSession: mCommon.IOrgSession
+  requestOptions: IUserRequestOptions,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
 
@@ -346,7 +350,7 @@ export function addFeatureServiceLayersAndTables (
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
-        swizzles, relationships, orgSession)
+        swizzles, relationships, requestOptions)
       .then(
         () => {
           // Restore relationships for all layers and tables in the service
@@ -360,7 +364,7 @@ export function addFeatureServiceLayersAndTables (
                       relationships: relationships[id]
                     }
                   },
-                  ...orgSession
+                  ...requestOptions
                 };
                 featureServiceAdmin.addToServiceDefinition(fullItem.item.url + "/" + id, options)
                 .then(
@@ -392,13 +396,13 @@ export function addFeatureServiceLayersAndTables (
  *
  * @param fullItem Group
  * @param swizzles Hash mapping Solution source id to id of its clone
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve when fullItem has been updated
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function addGroupMembers (
   fullItem: mInterfaces.IFullItem,
-  orgSession: mCommon.IOrgSession
+  requestOptions: IUserRequestOptions
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
@@ -409,7 +413,7 @@ export function addGroupMembers (
           sharing.shareItemWithGroup({
             id: depId,
             groupId: fullItem.item.id,
-            ...orgSession
+            ...requestOptions
           })
           .then(
             () => {
@@ -439,15 +443,17 @@ export function addGroupMembers (
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param swizzles Hash mapping Solution source id to id of its clone
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve with the id of the created item
+ * @param requestOptions Options for the request
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+ * @return A promise that will resolve with the id of the created item
  * @protected
  */
 export function createSwizzledItem (
   fullItem: mInterfaces.IFullItem,
   folderId: string,
   swizzles: mCommon.ISwizzleHash,
-  orgSession: mCommon.IOrgSession
+  requestOptions: IUserRequestOptions,
+  orgUrl: string
 ): Promise<mInterfaces.IFullItem> {
   return new Promise<mInterfaces.IFullItem>((resolve, reject) => {
 
@@ -461,7 +467,7 @@ export function createSwizzledItem (
       const options = {
         item: clonedItem.item,
         folderId,
-        ...orgSession
+        ...requestOptions
       }
       if (clonedItem.data) {
         options.item.text = clonedItem.data;
@@ -488,7 +494,8 @@ export function createSwizzledItem (
           clonedItem.item.url = createResponse.serviceurl;
 
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.IFullItemFeatureService), swizzles, orgSession)
+          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.IFullItemFeatureService),
+            swizzles, requestOptions)
           .then(
             () => resolve(clonedItem),
             reject
@@ -501,7 +508,7 @@ export function createSwizzledItem (
     } else if (clonedItem.type === "Group") {
       const options = {
         group: clonedItem.item,
-        ...orgSession
+        ...requestOptions
       }
 
       // Make the item title unique
@@ -518,7 +525,7 @@ export function createSwizzledItem (
           clonedItem.item.id = createResponse.group.id;
 
           // Add the group's items to it
-          addGroupMembers(clonedItem, orgSession)
+          addGroupMembers(clonedItem, requestOptions)
           .then(
             () => resolve(clonedItem),
             reject
@@ -532,7 +539,7 @@ export function createSwizzledItem (
       const options:items.IItemAddRequestOptions = {
         item: clonedItem.item,
         folder: folderId,
-        ...orgSession
+        ...requestOptions
       };
       if (clonedItem.data) {
         options.item.text = clonedItem.data;
@@ -552,7 +559,7 @@ export function createSwizzledItem (
           if (clonedItem.type === "Dashboard" ||
               clonedItem.type === "Web Map" ||
               clonedItem.type === "Web Mapping Application") {
-            updateApplicationURL(clonedItem, orgSession)
+            updateApplicationURL(clonedItem, requestOptions, orgUrl)
             .then(
               () => resolve(clonedItem),
               error => reject(error.response.error.message)
@@ -573,7 +580,7 @@ export function createSwizzledItem (
  *
  * @param fullItem Feature service item, data, dependencies definition to be modified
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve when fullItem has been updated
+ * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function fleshOutFeatureService (
@@ -647,7 +654,7 @@ function generalizeWebMappingApplicationURL (
 /**
  * Gets the name of the first layer in list of layers that has a name
  * @param layerList List of layers to use as a name source
- * @returns The name of the found layer or an empty string if no layers have a name
+ * @return The name of the found layer or an empty string if no layers have a name
  * @protected
  */
 function getFirstUsableName (
@@ -673,7 +680,7 @@ function getFirstUsableName (
  * @param serviceUrl URL to hosted service
  * @param layerList List of layers at that service
  * @param requestOptions Options for the request
- * @returns A promise that will resolve with a list of the enhanced layers
+ * @return A promise that will resolve with a list of the enhanced layers
  * @protected
  */
 function getLayers (
@@ -709,7 +716,7 @@ function getLayers (
 /**
  * Creates a timestamp string using the current date and time.
  *
- * @returns Timestamp
+ * @return Timestamp
  * @protected
  */
 export function getTimestamp (): string {
@@ -720,7 +727,7 @@ export function getTimestamp (): string {
  * Creates a copy of item base properties with properties irrelevant to cloning removed.
  *
  * @param item The base section of an item
- * @returns Cloned copy of item without certain properties such as `created`, `modified`,
+ * @return Cloned copy of item without certain properties such as `created`, `modified`,
  *        `owner`,...; note that is is a shallow copy
  * @protected
  */
@@ -751,7 +758,7 @@ export function removeUndesirableItemProperties (
  * Topologically sort a Solution's items into a build list.
  *
  * @param items Hash of JSON descriptions of items
- * @returns List of ids of items in the order in which they need to be built so that dependencies
+ * @return List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
  * @protected
@@ -831,15 +838,17 @@ export function topologicallySortItems (
  *
  * @param fullItem An item that has an application URL, e.g., a dashboard, webmap, or web mapping
  *                 application
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
- * @returns A promise that will resolve when fullItem has been updated
+ * @param requestOptions Options for the request
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+ * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function updateApplicationURL (
   fullItem: mInterfaces.IFullItem,
-  orgSession: mCommon.IOrgSession
+  requestOptions: IUserRequestOptions,
+  orgUrl: string
 ): Promise<string> {
-  const url = orgSession.orgUrl +
+  const url = orgUrl +
         (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
         fullItem.item.id;
 
@@ -847,7 +856,7 @@ export function updateApplicationURL (
   fullItem.item.url = url;
 
   // Update AGOL copy
-  return mCommon.updateItemURL(fullItem.item.id, url, orgSession as IUserRequestOptions)
+  return mCommon.updateItemURL(fullItem.item.id, url, requestOptions)
 }
 
 /**
@@ -859,7 +868,7 @@ export function updateApplicationURL (
  * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
  * @param requestOptions Options for requesting information from AGOL
- * @returns A promise that will resolve when the feature service has been updated
+ * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
 function updateFeatureServiceDefinition(
@@ -947,7 +956,7 @@ function updateFeatureServiceDefinition(
  * @param requestOptions Options for requesting information from AGOL
  * @param collection A hash of items already converted useful for avoiding duplicate conversions and
  * hierarchy tracing
- * @returns A promise that will resolve with a hash by id of IFullItems;
+ * @return A promise that will resolve with a hash by id of IFullItems;
  * if any id is inaccessible, a single error response will be produced for the set
  * of ids
  * @protected
