@@ -23,7 +23,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
   describe("get item hierarchies", () => {
 
-    const MOCK_ITEM_PROTOTYPE:mInterfaces.IFullItem = {
+    const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
       type: "",
       item: {}
     };

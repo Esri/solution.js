@@ -31,28 +31,28 @@ import * as mInterfaces from "../src/interfaces";
 /**
  * A collection of AGOL items for serializing.
  */
-export interface IFullItemHash {
+export interface ITemplateHash {
   /**
    * An AGOL item description
    */
-  [id:string]: mInterfaces.IFullItem | Promise<mInterfaces.IFullItem>;
+  [id:string]: mInterfaces.ITemplate | Promise<mInterfaces.ITemplate>;
 }
 
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *
  * ```typescript
- * import { IItemHash } from "../src/fullItemHierarchy";
+ * import { ITemplateHash } from "../src/fullItemHierarchy";
  * import { createSolution } from "../src/solution";
  *
  * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
  * .then(
- *   (response:IItemHash) => {
+ *   (response:ITemplateHash) => {
  *     let keys = Object.keys(response);
  *     console.log(keys.length);  // => "6"
- *     console.log((response[keys[0]] as IFullItem).type);  // => "Web Mapping Application"
- *     console.log((response[keys[0]] as IFullItem).item.title);  // => "ROW Permit Public Comment"
- *     console.log((response[keys[0]] as IFullItem).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+ *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
+ *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
+ *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
  *   },
  *   error => {
  *     // (should not see this as long as both of the above ids--real ones--stay available)
@@ -70,8 +70,8 @@ export interface IFullItemHash {
 export function createSolution (
   solutionRootIds: string | string[],
   requestOptions: IUserRequestOptions
-): Promise<IFullItemHash> {
-  return new Promise<IFullItemHash>((resolve, reject) => {
+): Promise<ITemplateHash> {
+  return new Promise<ITemplateHash>((resolve, reject) => {
 
     // Get the items forming the solution
     getFullItemHierarchy(solutionRootIds, requestOptions)
@@ -82,7 +82,7 @@ export function createSolution (
         // Prepare the Solution by adjusting its items
         Object.keys(solution).forEach(
           key => {
-            const fullItem = (solution[key] as mInterfaces.IFullItem);
+            const fullItem = (solution[key] as mInterfaces.ITemplate);
 
             // 1. remove unwanted properties
             fullItem.item = removeUndesirableItemProperties(fullItem.item);
@@ -103,7 +103,7 @@ export function createSolution (
             //    c. generalize layer & table URLs
             } else if (fullItem.type === "Feature Service") {
               adjustmentPromises.push(
-                fleshOutFeatureService(fullItem as mInterfaces.IFullItemFeatureService, requestOptions));
+                fleshOutFeatureService(fullItem as mInterfaces.ITemplateFeatureService, requestOptions));
             }
           }
         );
@@ -136,7 +136,7 @@ export function createSolution (
  */
 export function publishSolution (
   title: string,
-  solution: IFullItemHash,
+  solution: ITemplateHash,
   requestOptions: IUserRequestOptions,
   folderId = null as string,
   access = "private"
@@ -173,17 +173,17 @@ export function publishSolution (
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
-  solution: IFullItemHash,
+  solution: ITemplateHash,
   requestOptions: IUserRequestOptions,
   orgUrl: string,
   portalUrl: string,
   solutionName = "",
   folderId = null as string,
   access = "private"
-): Promise<IFullItemHash> {
-  return new Promise<IFullItemHash>((resolve, reject) => {
+): Promise<ITemplateHash> {
+  return new Promise<ITemplateHash>((resolve, reject) => {
     const swizzles:mCommon.ISwizzleHash = {};
-    const clonedSolution:IFullItemHash = {};
+    const clonedSolution:ITemplateHash = {};
 
 
     // Don't bother creating folder if there are no items in solution
@@ -202,7 +202,7 @@ export function cloneSolution (
 
       // Clone item at top of list
       const itemId = cloneOrderChecklist.shift();
-      createSwizzledItem((solution[itemId] as mInterfaces.IFullItem), folderId, swizzles, requestOptions, orgUrl)
+      createSwizzledItem((solution[itemId] as mInterfaces.ITemplate), folderId, swizzles, requestOptions, orgUrl)
       .then(
         clone => {
           clonedSolution[clone.item.id] = clone;
@@ -299,7 +299,7 @@ enum SortVisitColor {
  * @protected
  */
 export function addGeneralizedApplicationURL (
-  fullItem: mInterfaces.IFullItem
+  fullItem: mInterfaces.ITemplate
 ): void {
   // Create URL with a placeholder server name because otherwise AGOL makes URL null; don't include item id; e.g.,
   // Dashboard: https://<PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
@@ -321,7 +321,7 @@ export function addGeneralizedApplicationURL (
  * @protected
  */
 export function addFeatureServiceLayersAndTables (
-  fullItem: mInterfaces.IFullItemFeatureService,
+  fullItem: mInterfaces.ITemplateFeatureService,
   swizzles: mCommon.ISwizzleHash,
   requestOptions: IUserRequestOptions,
 ): Promise<void> {
@@ -401,7 +401,7 @@ export function addFeatureServiceLayersAndTables (
  * @protected
  */
 export function addGroupMembers (
-  fullItem: mInterfaces.IFullItem,
+  fullItem: mInterfaces.ITemplate,
   requestOptions: IUserRequestOptions
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -449,15 +449,15 @@ export function addGroupMembers (
  * @protected
  */
 export function createSwizzledItem (
-  fullItem: mInterfaces.IFullItem,
+  fullItem: mInterfaces.ITemplate,
   folderId: string,
   swizzles: mCommon.ISwizzleHash,
   requestOptions: IUserRequestOptions,
   orgUrl: string
-): Promise<mInterfaces.IFullItem> {
-  return new Promise<mInterfaces.IFullItem>((resolve, reject) => {
+): Promise<mInterfaces.ITemplate> {
+  return new Promise<mInterfaces.ITemplate>((resolve, reject) => {
 
-    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.IFullItem;
+    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.ITemplate;
 
     // Swizzle item's dependencies
     mFullItem.swizzleDependencies(clonedItem, swizzles);
@@ -494,7 +494,7 @@ export function createSwizzledItem (
           clonedItem.item.url = createResponse.serviceurl;
 
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.IFullItemFeatureService),
+          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.ITemplateFeatureService),
             swizzles, requestOptions)
           .then(
             () => resolve(clonedItem),
@@ -584,7 +584,7 @@ export function createSwizzledItem (
  * @protected
  */
 export function fleshOutFeatureService (
-  fullItem: mInterfaces.IFullItemFeatureService,
+  fullItem: mInterfaces.ITemplateFeatureService,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -638,7 +638,7 @@ export function fleshOutFeatureService (
  * @protected
  */
 function generalizeWebMappingApplicationURL (
-  fullItem: mInterfaces.IFullItem
+  fullItem: mInterfaces.ITemplate
 ): void {
   // Remove org base URL and app id, e.g.,
   //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
@@ -765,7 +765,7 @@ export function removeUndesirableItemProperties (
  * @protected
  */
 export function topologicallySortItems (
-  fullItems: IFullItemHash
+  fullItems: ITemplateHash
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -817,7 +817,7 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    const dependencies:string[] = (fullItems[vertexId] as mInterfaces.IFullItem).dependencies || [];
+    const dependencies:string[] = (fullItems[vertexId] as mInterfaces.ITemplate).dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
@@ -844,7 +844,7 @@ export function topologicallySortItems (
  * @protected
  */
 export function updateApplicationURL (
-  fullItem: mInterfaces.IFullItem,
+  fullItem: mInterfaces.ITemplate,
   requestOptions: IUserRequestOptions,
   orgUrl: string
 ): Promise<string> {
@@ -934,16 +934,16 @@ function updateFeatureServiceDefinition(
  * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
  *
  * ```typescript
- * import { IItemHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
+ * import { ITemplateHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
  *
  * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
  * .then(
- *   (response:IItemHash) => {
+ *   (response:ITemplateHash) => {
  *     let keys = Object.keys(response);
  *     console.log(keys.length);  // => "6"
- *     console.log((response[keys[0]] as IFullItem).type);  // => "Web Mapping Application"
- *     console.log((response[keys[0]] as IFullItem).item.title);  // => "ROW Permit Public Comment"
- *     console.log((response[keys[0]] as IFullItem).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+ *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
+ *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
+ *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
  *   },
  *   error => {
  *     // (should not see this as long as both of the above ids--real ones--stay available)
@@ -964,8 +964,8 @@ function updateFeatureServiceDefinition(
 export function getFullItemHierarchy (
   rootIds: string | string[],
   requestOptions: IUserRequestOptions,
-  collection?: IFullItemHash
-): Promise<IFullItemHash> {
+  collection?: ITemplateHash
+): Promise<ITemplateHash> {
   if (!collection) {
     collection = {};
   }
@@ -999,7 +999,7 @@ export function getFullItemHierarchy (
             } else {
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
-              const dependentDfds:Array<Promise<IFullItemHash>> = [];
+              const dependentDfds:Array<Promise<ITemplateHash>> = [];
 
               fullItem.dependencies.forEach(
                 dependentId => {
@@ -1024,7 +1024,7 @@ export function getFullItemHierarchy (
     } else {
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
-      const getHierarchyPromise:Array<Promise<IFullItemHash>> = [];
+      const getHierarchyPromise:Array<Promise<ITemplateHash>> = [];
 
       rootIds.forEach(rootId => {
         getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, collection));

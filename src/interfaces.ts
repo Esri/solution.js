@@ -19,7 +19,7 @@
 /**
  * An AGOL item for serializing.
  */
-export interface IFullItem {
+export interface ITemplate {
   /**
    * AGOL item type name
    */
@@ -45,7 +45,7 @@ export interface IFullItem {
 /**
  * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
  */
-export interface IFullItemFeatureService extends IFullItem {
+export interface ITemplateFeatureService extends ITemplate {
   /**
    * Service description
    */

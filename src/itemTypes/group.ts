@@ -18,7 +18,7 @@ import * as groups from "@esri/arcgis-rest-groups";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import { IFullItem } from "../interfaces";
+import { ITemplate } from "../interfaces";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -31,7 +31,7 @@ import { IFullItem } from "../interfaces";
  * @protected
  */
 export function getDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {

@@ -17,7 +17,7 @@
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "../common";
-import { IFullItem } from "../interfaces";
+import { ITemplate } from "../interfaces";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -45,7 +45,7 @@ interface IDashboardWidget {
  * @protected
  */
 export function getDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
@@ -72,7 +72,7 @@ export function getDependencies (
  * @protected
  */
 export function swizzleDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap(s)

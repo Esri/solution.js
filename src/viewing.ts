@@ -42,12 +42,12 @@ export interface IHierarchyEntry {
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
-  items: mSolution.IFullItemHash
+  items: mSolution.ITemplateHash
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
   const topLevelItemCandidateIds:string[] = Object.keys(items);
   Object.keys(items).forEach(function (id) {
-    ((items[id] as mInterfaces.IFullItem).dependencies || []).forEach(function (dependencyId) {
+    ((items[id] as mInterfaces.ITemplate).dependencies || []).forEach(function (dependencyId) {
       const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
       if (iNode >= 0) {
         // Node is somebody's dependency, so remove the node from the list of top-level nodes
@@ -68,7 +68,7 @@ export function getTopLevelItemIds (
  * item's dependencies
  */
 export function getItemHierarchy (
-  items: mSolution.IFullItemHash
+  items: mSolution.ITemplateHash
 ): IHierarchyEntry[] {
   const hierarchy:IHierarchyEntry[] = [];
 
@@ -85,7 +85,7 @@ export function getItemHierarchy (
       };
 
       // Fill in the child's dependencies array with any of its children
-      const dependencyIds = (items[id] as mInterfaces.IFullItem).dependencies;
+      const dependencyIds = (items[id] as mInterfaces.ITemplate).dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
@@ -111,12 +111,12 @@ export function getItemHierarchy (
  */
 export function createSolutionStorymap (
   title: string,
-  solution: mSolution.IFullItemHash,
+  solution: mSolution.ITemplateHash,
   requestOptions: IUserRequestOptions,
   orgUrl: string,
   folderId = null as string,
   access = "private"
-): Promise<mInterfaces.IFullItem> {
+): Promise<mInterfaces.ITemplate> {
   return new Promise((resolve, reject) => {
     publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), requestOptions, orgUrl,
     folderId, access)
@@ -140,9 +140,9 @@ export function createSolutionStorymap (
  */
 export function createSolutionStorymapItem (
   title: string,
-  solution: mSolution.IFullItemHash,
+  solution: mSolution.ITemplateHash,
   folderId = null as string
-): mInterfaces.IFullItem {
+): mInterfaces.ITemplate {
   // Prepare the storymap item
   const item = getStorymapItemFundamentals(title);
   const data = getStorymapItemDataFundamentals(title, folderId);
@@ -152,7 +152,7 @@ export function createSolutionStorymapItem (
   const stories = data.values.story.entries;
   topLevelItemIds.forEach(
     topLevelItemId => {
-      const solutionItem = solution[topLevelItemId] as mInterfaces.IFullItem;
+      const solutionItem = solution[topLevelItemId] as mInterfaces.ITemplate;
       if (solutionItem.item.url) {
         const itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
         stories.push(itsStory);
@@ -311,12 +311,12 @@ function getWebpageStory (
  * @protected
  */
 export function publishSolutionStorymapItem (
-  solutionStorymap: mInterfaces.IFullItem,
+  solutionStorymap: mInterfaces.ITemplate,
   requestOptions: IUserRequestOptions,
   orgUrl: string,
   folderId = null as string,
   access = "private"
-): Promise<mInterfaces.IFullItem> {
+): Promise<mInterfaces.ITemplate> {
   return new Promise((resolve, reject) => {
     mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, requestOptions, folderId, access)
     .then(

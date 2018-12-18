@@ -18,7 +18,7 @@ import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "../common";
-import { IFullItem } from "../interfaces";
+import { ITemplate } from "../interfaces";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -31,7 +31,7 @@ import { IFullItem } from "../interfaces";
  * @protected
  */
 export function getDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
@@ -56,7 +56,7 @@ export function getDependencies (
  * @protected
  */
 export function swizzleDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   swizzles: mCommon.ISwizzleHash
 ): void {
   if (fullItem.data) {

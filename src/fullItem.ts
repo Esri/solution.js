@@ -20,7 +20,7 @@ import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
-import { IFullItem } from "./interfaces";
+import { ITemplate } from "./interfaces";
 import * as mDashboard from "./itemTypes/dashboard";
 import * as mGroup from "./itemTypes/group";
 import * as mWebmap from "./itemTypes/webmap";
@@ -33,14 +33,14 @@ import * as mWebMappingApplication from "./itemTypes/webmappingapplication";
  *
  * @param id AGOL item id
  * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with an IFullItem
+ * @return A promise that will resolve with an ITemplate
  */
 export function getFullItem (
   id: string,
   requestOptions?: IUserRequestOptions
-): Promise<IFullItem> {
+): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
-    let fullItem:IFullItem;
+    let fullItem:ITemplate;
 
     // Request item base section
     items.getItem(id, requestOptions)
@@ -126,7 +126,7 @@ export function getFullItem (
  * @param swizzles Hash mapping original ids to replacement ids
  */
 export function swizzleDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   swizzles = {} as mCommon.ISwizzleHash
 ): void {
   const swizzleDependenciesByType:ISwizzleFunctionLookup = {
@@ -165,7 +165,7 @@ interface IDependencyFunctionLookup {
   /**
    * Keyword lookup of a function
    */
-  [name:string]: (fullItem:IFullItem, requestOptions:IUserRequestOptions) => Promise<string[]>
+  [name:string]: (fullItem:ITemplate, requestOptions:IUserRequestOptions) => Promise<string[]>
 }
 
 /**
@@ -176,7 +176,7 @@ interface ISwizzleFunctionLookup {
   /**
    * Keyword lookup of a function
    */
-  [name:string]: (fullItem:IFullItem, swizzles: mCommon.ISwizzleHash) => void
+  [name:string]: (fullItem:ITemplate, swizzles: mCommon.ISwizzleHash) => void
 }
 
 /**
@@ -188,7 +188,7 @@ interface ISwizzleFunctionLookup {
  * @protected
  */
 export function getDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
@@ -229,14 +229,14 @@ export function removeDuplicates (
 }
 
 /**
- * Swizzles the ids of the dependencies of an IFullItem.
+ * Swizzles the ids of the dependencies of an ITemplate.
  *
  * @param fullItem Item whose dependencies are to be swizzled
  * @param swizzles Hash mapping original ids to replacement ids
  * @protected
  */
 function swizzleCommonDependencies (
-  fullItem: IFullItem,
+  fullItem: ITemplate,
   swizzles: mCommon.ISwizzleHash
 ): void {
   if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {

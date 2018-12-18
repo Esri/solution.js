@@ -34,7 +34,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
-  const MOCK_ITEM_PROTOTYPE:mInterfaces.IFullItem = {
+  const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
     type: "",
     item: {}
   };
