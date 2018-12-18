@@ -151,7 +151,7 @@ export function publishSolution (
     commentsEnabled: false
   };
   const data = {
-    items: solution
+    templates: solution
   };
 
   return mCommon.createItemWithData(item, data, requestOptions, folderId, access);

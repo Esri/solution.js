@@ -42,12 +42,12 @@ export interface IHierarchyEntry {
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
-  items: mSolution.ITemplateHash
+  templates: mSolution.ITemplateHash
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds:string[] = Object.keys(items);
-  Object.keys(items).forEach(function (id) {
-    ((items[id] as mInterfaces.ITemplate).dependencies || []).forEach(function (dependencyId) {
+  const topLevelItemCandidateIds:string[] = Object.keys(templates);
+  Object.keys(templates).forEach(function (id) {
+    ((templates[id] as mInterfaces.ITemplate).dependencies || []).forEach(function (dependencyId) {
       const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
       if (iNode >= 0) {
         // Node is somebody's dependency, so remove the node from the list of top-level nodes
@@ -68,12 +68,12 @@ export function getTopLevelItemIds (
  * item's dependencies
  */
 export function getItemHierarchy (
-  items: mSolution.ITemplateHash
+  templates: mSolution.ITemplateHash
 ): IHierarchyEntry[] {
   const hierarchy:IHierarchyEntry[] = [];
 
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemIds = getTopLevelItemIds(items);
+  const topLevelItemIds = getTopLevelItemIds(templates);
 
   // Hierarchically list the children of specified nodes
   function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
@@ -85,7 +85,7 @@ export function getItemHierarchy (
       };
 
       // Fill in the child's dependencies array with any of its children
-      const dependencyIds = (items[id] as mInterfaces.ITemplate).dependencies;
+      const dependencyIds = (templates[id] as mInterfaces.ITemplate).dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
