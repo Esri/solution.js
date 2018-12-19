@@ -28,7 +28,7 @@ export interface ITemplate {
    * AGOL item type name
    */
   type: string;
-  /** 
+  /**
    * Camelized form of item title used as an identifier
    */
   key: string;
@@ -48,22 +48,8 @@ export interface ITemplate {
    * List of ids of AGOL items needed by this item
    */
   dependencies?: string[];
-}
-
-/**
- * An AGOL item for serializing, expanded to handle the extra information needed by feature services.
- */
-export interface ITemplateFeatureService extends ITemplate {
   /**
-   * Service description
+   * Miscellaneous item-specific properties
    */
-  service: any;
-  /**
-   * Description for each layer
-   */
-  layers: any[];
-  /**
-   * Description for each table
-   */
-  tables: any[];
+  properties?: any;
 }

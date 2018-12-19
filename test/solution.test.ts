@@ -129,15 +129,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a layer if a service needs a name", done => {
-      const fullItem:mInterfaces.ITemplateFeatureService = {
+      const fullItem:mInterfaces.ITemplate = {
         itemId: "",
         type: "Feature Service",
         key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
-        service: null,
-        layers: null,
-        tables: null
+        properties: {
+          service: null,
+          layers: null,
+          tables: null
+        }
       };
       fullItem.itemId = fullItem.item.id;
 
@@ -157,7 +159,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual(mockServices.getService(
+          expect(fullItem.properties.service.name).toEqual(mockServices.getService(
             [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
             [mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table")]
           ).layers[0].name);
@@ -168,15 +170,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--no layer", done => {
-      const fullItem:mInterfaces.ITemplateFeatureService = {
+      const fullItem:mInterfaces.ITemplate = {
         itemId: "",
         type: "Feature Service",
         key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
-        service: null,
-        layers: null,
-        tables: null
+        properties: {
+          service: null,
+          layers: null,
+          tables: null
+        }
       };
       fullItem.itemId = fullItem.item.id;
 
@@ -196,7 +200,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual(
+          expect(fullItem.properties.service.name).toEqual(
             mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
@@ -207,15 +211,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("gets a service name from a table if a service needs a name--nameless layer", done => {
-      const fullItem:mInterfaces.ITemplateFeatureService = {
+      const fullItem:mInterfaces.ITemplate = {
         itemId: "",
         type: "Feature Service",
         key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
-        service: null,
-        layers: null,
-        tables: null
+        properties: {
+          service: null,
+          layers: null,
+          tables: null
+        }
       };
       fullItem.itemId = fullItem.item.id;
 
@@ -235,7 +241,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual(mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
+          expect(fullItem.properties.service.name).toEqual(
+            mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
             [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
           ).name);
           done();
@@ -245,15 +252,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("falls back to 'Feature Service' if a service needs a name", done => {
-      const fullItem:mInterfaces.ITemplateFeatureService = {
+      const fullItem:mInterfaces.ITemplate = {
         itemId: "",
         type: "Feature Service",
         key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
-        service: null,
-        layers: null,
-        tables: null
+        properties: {
+          service: null,
+          layers: null,
+          tables: null
+        }
       };
       fullItem.itemId = fullItem.item.id;
 
@@ -273,7 +282,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.fleshOutFeatureService(fullItem, MOCK_USER_REQOPTS)
       .then(
         () => {
-          expect(fullItem.service.name).toEqual("Feature Service");
+          expect(fullItem.properties.service.name).toEqual("Feature Service");
           done();
         },
         done.fail
@@ -881,11 +890,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle service without any layers or tables", done => {
-      const fullItem:mInterfaces.ITemplateFeatureService = mockSolutions.getItemSolutionPart("Feature Service");
-      fullItem.service.layers = null;
-      fullItem.service.tables = null;
-      fullItem.layers = null;
-      fullItem.tables = null;
+      const fullItem:mInterfaces.ITemplate = mockSolutions.getItemSolutionPart("Feature Service");
+      fullItem.properties.service.layers = null;
+      fullItem.properties.service.tables = null;
+      fullItem.properties.layers = null;
+      fullItem.properties.tables = null;
 
       mSolution.addFeatureServiceLayersAndTables(fullItem, {}, MOCK_USER_REQOPTS)
       .then(

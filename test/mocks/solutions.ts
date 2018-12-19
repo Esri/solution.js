@@ -15,6 +15,7 @@
  */
 
 import * as mInterfaces from "../../src/interfaces";
+import * as mSolutions from "../../src/solution";
 import * as mockItems from "./items";
 import * as mockServices from "./featureServices";
 
@@ -73,13 +74,17 @@ export function getItemSolutionPart (
         mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      solutionPart.service = mockServices.getService([layer0], [table1]);
-      solutionPart.service.name = solutionPart.item.name;
-      solutionPart.service.snippet = solutionPart.item.snippet;
-      solutionPart.service.description = solutionPart.item.description;
 
-      solutionPart.layers = [layer0];
-      solutionPart.tables = [table1];
+      const properties:mSolutions.IFeatureServiceProperties = {
+        service: mockServices.getService([layer0], [table1]),
+        layers: [layer0],
+        tables: [table1]
+      };
+      properties.service.name = solutionPart.item.name;
+      properties.service.snippet = solutionPart.item.snippet;
+      properties.service.description = solutionPart.item.description;
+
+      solutionPart.properties = properties;
       break;
 
     case "Form":
@@ -152,8 +157,8 @@ export function getDashboardSolutionPartNoData (
 export function getFeatureServiceSolutionPartNoRelationships (
 ): any {
   const solutionPart:any = getItemSolutionPart("Feature Service");
-  solutionPart.layers[0].relationships = [];
-  solutionPart.tables[0].relationships = [];
+  solutionPart.properties.layers[0].relationships = [];
+  solutionPart.properties.tables[0].relationships = [];
   return solutionPart;
 }
 

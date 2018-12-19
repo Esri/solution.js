@@ -29,6 +29,24 @@ import * as mInterfaces from "../src/interfaces";
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
+ * Holds the extra information needed by feature services.
+ */
+export interface IFeatureServiceProperties {
+  /**
+   * Service description
+   */
+  service: any;
+  /**
+   * Description for each layer
+   */
+  layers: any[];
+  /**
+   * Description for each table
+   */
+  tables: any[];
+}
+
+/**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *
  * ```typescript
@@ -91,8 +109,7 @@ export function createSolution (
             //    b. get layer & table details
             //    c. generalize layer & table URLs
             } else if (template.type === "Feature Service") {
-              adjustmentPromises.push(
-                fleshOutFeatureService(template as mInterfaces.ITemplateFeatureService, requestOptions));
+              adjustmentPromises.push(fleshOutFeatureService(template, requestOptions));
             }
           }
         );
@@ -173,7 +190,6 @@ export function cloneSolution (
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
     const swizzles:mCommon.ISwizzleHash = {};
     const clonedSolution:mInterfaces.ITemplate[] = [];
-
 
     // Don't bother creating folder if there are no items in solution
     if (!solution || Object.keys(solution).length === 0) {
@@ -326,23 +342,24 @@ export function addGeneralizedApplicationURL (
  * @protected
  */
 export function addFeatureServiceLayersAndTables (
-  fullItem: mInterfaces.ITemplateFeatureService,
+  fullItem: mInterfaces.ITemplate,
   swizzles: mCommon.ISwizzleHash,
   requestOptions: IUserRequestOptions,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
 
     // Sort layers and tables by id so that they're added with the same ids
+    const properties = fullItem.properties as IFeatureServiceProperties;
     const layersAndTables:any[] = [];
 
-    (fullItem.layers || []).forEach(function (layer) {
+    (properties.layers || []).forEach(function (layer) {
       layersAndTables[layer.id] = {
         item: layer,
         type: "layer"
       };
     });
 
-    (fullItem.tables || []).forEach(function (table) {
+    (properties.tables || []).forEach(function (table) {
       layersAndTables[table.id] = {
         item: table,
         type: "table"
@@ -499,11 +516,6 @@ export function createSwizzledItem (
       // Make the item name unique
       options.item.name += "_" + getTimestamp();
 
-      // Remove the layers and tables from the create request because while they aren't added when
-      // the service is added, their presence prevents them from being added later via updateFeatureServiceDefinition
-      options.item.layers = [];
-      options.item.tables = [];
-
       // Create the item
       featureServiceAdmin.createFeatureService(options)
       .then(
@@ -513,12 +525,11 @@ export function createSwizzledItem (
             id: createResponse.serviceItemId,
             url: createResponse.serviceurl
           };
-          clonedItem.item.id = createResponse.serviceItemId;
+          clonedItem.itemId = clonedItem.item.id = createResponse.serviceItemId;
           clonedItem.item.url = createResponse.serviceurl;
 
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables((clonedItem as mInterfaces.ITemplateFeatureService),
-            swizzles, requestOptions)
+          addFeatureServiceLayersAndTables(clonedItem, swizzles, requestOptions)
           .then(
             () => resolve(clonedItem),
             reject
@@ -532,7 +543,7 @@ export function createSwizzledItem (
       const options = {
         group: clonedItem.item,
         ...requestOptions
-      }
+      };
 
       // Make the item title unique
       options.group.title += "_" + getTimestamp();
@@ -545,7 +556,7 @@ export function createSwizzledItem (
           swizzles[clonedItem.item.id] = {
             id: createResponse.group.id
           };
-          clonedItem.item.id = createResponse.group.id;
+          clonedItem.itemId = clonedItem.item.id = createResponse.group.id;
 
           // Add the group's items to it
           addGroupMembers(clonedItem, requestOptions)
@@ -576,7 +587,7 @@ export function createSwizzledItem (
           swizzles[clonedItem.item.id] = {
             id: createResponse.id
           };
-          clonedItem.item.id = createResponse.id;
+          clonedItem.itemId = clonedItem.item.id = createResponse.id;
 
           // Update the app URL of a dashboard, webmap, or web mapping app
           if (clonedItem.type === "Dashboard" ||
@@ -607,13 +618,15 @@ export function createSwizzledItem (
  * @protected
  */
 export function fleshOutFeatureService (
-  fullItem: mInterfaces.ITemplateFeatureService,
+  fullItem: mInterfaces.ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
   return new Promise<void>((resolve, reject) => {
-    fullItem.service = {};
-    fullItem.layers = [];
-    fullItem.tables = [];
+    const properties:IFeatureServiceProperties = {
+      service: {},
+      layers: [],
+      tables: []
+    };
 
     // To have enough information for reconstructing the service, we'll supplement
     // the item and data sections with sections for the service, full layers, and
@@ -633,7 +646,7 @@ export function fleshOutFeatureService (
         serviceData["snippet"] = fullItem.item["snippet"];
         serviceData["description"] = fullItem.item["description"];
 
-        fullItem.service = serviceData;
+        properties.service = serviceData;
 
         // Get the affiliated layer and table items
         Promise.all([
@@ -642,8 +655,9 @@ export function fleshOutFeatureService (
         ])
         .then(
           results => {
-            fullItem.layers = results[0];
-            fullItem.tables = results[1];
+            properties.layers = results[0];
+            properties.tables = results[1];
+            fullItem.properties = properties;
             resolve();
           },
           reject

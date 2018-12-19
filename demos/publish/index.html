@@ -111,13 +111,12 @@
   requirejs([
     '../../dist/tsumd/src/index',
     '../demo_common/common',
-    '../demo_common/polyfills',
     '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request'
+    '@esri/arcgis-rest-request',
+    '../demo_common/polyfills'
   ], function (
     clone,
     demoCommon,
-    auth,
     items,
     request
   ) {

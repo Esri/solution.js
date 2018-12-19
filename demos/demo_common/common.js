@@ -60,7 +60,7 @@ define([
       // Show solution contents as they'd be in the solution's AGOL item
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var fullItem = solutionItems[hierarchyItem.id];
+        var fullItem = clone.getTemplateInSolution(solutionItems, hierarchyItem.id);
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
         var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
@@ -123,7 +123,8 @@ define([
             this.createItemLinksDisplay(publishedSolutionId,
               'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
-            this.createHierarchyDisplay(publishedSolution.items, clone.getItemHierarchy(publishedSolution.items));
+            this.createHierarchyDisplay(publishedSolution.templates,
+              clone.getItemHierarchy(publishedSolution.templates));
         }
       )
       .finally(() => {

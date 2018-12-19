@@ -97,11 +97,11 @@
   requirejs([
     '../../dist/tsumd/src/index',
     '../demo_common/common',
-    '../demo_common/polyfills',
     '../demo_common/progress',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request'
+    '@esri/arcgis-rest-request',
+    '../demo_common/polyfills'
   ], function (
     clone,
     demoCommon,
@@ -151,7 +151,8 @@
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
-                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, requestOptions)
+                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, requestOptions,
+                    orgUrl, null, "public")
                   .then(
                     storymap  => {
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -163,7 +164,7 @@
                         '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
                         solutionStorymapTitle + '</a></li></ul><br>' +
                         demoCommon.createHierarchyDisplay(clonedSolution, clone.getItemHierarchy(clonedSolution),
-                          true, requestOptions.orgUrl + '/home/');
+                          true, orgUrl + '/home/');
                     }
                   );
                 }
