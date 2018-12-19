@@ -47,7 +47,9 @@ export function getFullItem (
     .then(
       itemResponse => {
         fullItem = {
+          itemId: itemResponse.id,
           type: itemResponse.type,
+          key: camelize(itemResponse.title),
           item: itemResponse,
           dependencies: []
         };
@@ -93,7 +95,9 @@ export function getFullItem (
         .then(
           itemResponse => {
             fullItem = {
+              itemId: itemResponse.id,
               type: "Group",
+              key: camelize(itemResponse.title),
               item: itemResponse,
               dependencies: []
             };
@@ -177,6 +181,36 @@ interface ISwizzleFunctionLookup {
    * Keyword lookup of a function
    */
   [name:string]: (fullItem:ITemplate, swizzles: mCommon.ISwizzleHash) => void
+}
+
+/**
+ * Removes spaces from a string and converts the first letter of each word to uppercase.
+ * @param aString String to be modified
+ * @return Modified string
+ * @protected
+ */
+export function camelize(
+  aString: string
+): string {
+  if (!aString) {
+    return "";
+  }
+
+  const stringParts = aString.split(/\s/);
+  if (stringParts.length === 1) {
+    return aString;
+  }
+
+  return stringParts
+    .map(
+      (part, i) => {
+        if (i > 0) {
+          part = part[0].toUpperCase() + (part.length > 1 ? part.substr(1) : "")
+        }
+        return part;
+      }
+    )
+    .join("");
 }
 
 /**

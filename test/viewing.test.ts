@@ -24,24 +24,24 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
   describe("get item hierarchies", () => {
 
     const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
+      itemId: "",
       type: "",
-      item: {}
+      key: "",
+      item: null
     };
 
     it("item without dependencies", () => {
       // hierarchy:
       // - abc
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
 
       const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc]);
 
       expect(results).toEqual(expected);
     });
@@ -50,7 +50,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // hierarchy:
       // - abc
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
 
       abc.dependencies = [];
 
@@ -59,9 +59,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         dependencies: []
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc]);
 
       expect(results).toEqual(expected);
     });
@@ -71,9 +69,9 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - abc
       //   - def
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
 
       abc.dependencies = ["def"];
 
@@ -85,11 +83,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def
-      });
-
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def]);
       expect(results).toEqual(expected);
     });
 
@@ -99,11 +93,11 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       //   - def
       //   - ghi
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
 
       abc.dependencies = ["def", "ghi"];
 
@@ -118,11 +112,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi]);
 
       expect(results).toEqual(expected);
     });
@@ -133,11 +123,11 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       //   - ghi
       //     - def
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
 
       abc.dependencies = ["ghi"];
       ghi.dependencies = ["def"];
@@ -153,11 +143,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi]);
 
       expect(results).toEqual(expected);
     });
@@ -169,13 +155,13 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       //   - ghi
       //   - def
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
       const jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
+      jkl.itemId = "jkl";
 
       jkl.dependencies = ["ghi", "def"];
 
@@ -193,12 +179,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });
@@ -212,13 +193,13 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       //   - ghi
       //   - def
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
       const jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
+      jkl.itemId = "jkl";
 
       abc.dependencies = ["def", "ghi"];
       jkl.dependencies = ["ghi", "def"];
@@ -243,12 +224,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });
@@ -262,17 +238,17 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - pqr
       //   - ghi
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
       const jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
+      jkl.itemId = "jkl";
       const mno = {...MOCK_ITEM_PROTOTYPE};
-      mno.item.id = "mno";
+      mno.itemId = "mno";
       const pqr = {...MOCK_ITEM_PROTOTYPE};
-      pqr.item.id = "pqr";
+      pqr.itemId = "pqr";
 
       pqr.dependencies = ["ghi"];
       mno.dependencies = ["abc"];
@@ -298,14 +274,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl,
-        "mno": mno,
-        "pqr": pqr
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl, mno, pqr]);
 
       expect(results).toEqual(expected);
     });
@@ -317,13 +286,13 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - ghi
       // - def
       const abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
+      abc.itemId = "abc";
       const def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
+      def.itemId = "def";
       const ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
+      ghi.itemId = "ghi";
       const jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
+      jkl.itemId = "jkl";
 
       const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
@@ -339,12 +308,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         dependencies: []
       }];
 
-      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });

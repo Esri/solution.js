@@ -29,25 +29,15 @@ import * as mInterfaces from "../src/interfaces";
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
 /**
- * A collection of AGOL items for serializing.
- */
-export interface ITemplateHash {
-  /**
-   * An AGOL item description
-   */
-  [id:string]: mInterfaces.ITemplate | Promise<mInterfaces.ITemplate>;
-}
-
-/**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *
  * ```typescript
- * import { ITemplateHash } from "../src/fullItemHierarchy";
+ * import { ITemplate[] } from "../src/fullItemHierarchy";
  * import { createSolution } from "../src/solution";
  *
  * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
  * .then(
- *   (response:ITemplateHash) => {
+ *   (response:ITemplate[]) => {
  *     let keys = Object.keys(response);
  *     console.log(keys.length);  // => "6"
  *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
@@ -70,8 +60,8 @@ export interface ITemplateHash {
 export function createSolution (
   solutionRootIds: string | string[],
   requestOptions: IUserRequestOptions
-): Promise<ITemplateHash> {
-  return new Promise<ITemplateHash>((resolve, reject) => {
+): Promise<mInterfaces.ITemplate[]> {
+  return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
 
     // Get the items forming the solution
     getFullItemHierarchy(solutionRootIds, requestOptions)
@@ -80,30 +70,29 @@ export function createSolution (
         const adjustmentPromises:Array<Promise<void>> = [];
 
         // Prepare the Solution by adjusting its items
-        Object.keys(solution).forEach(
-          key => {
-            const fullItem = (solution[key] as mInterfaces.ITemplate);
+        solution.forEach(
+          template => {
 
             // 1. remove unwanted properties
-            fullItem.item = removeUndesirableItemProperties(fullItem.item);
+            template.item = removeUndesirableItemProperties(template.item);
 
             // 2. for web mapping apps,
             //    a. generalize app URL
-            if (fullItem.type === "Web Mapping Application") {
-              generalizeWebMappingApplicationURL(fullItem);
+            if (template.type === "Web Mapping Application") {
+              generalizeWebMappingApplicationURL(template);
 
             // 3. for items missing their application URLs,
             //    a. fill in URL
-            } else if (fullItem.type === "Dashboard" || fullItem.type === "Web Map") {
-              addGeneralizedApplicationURL(fullItem);
+            } else if (template.type === "Dashboard" || template.type === "Web Map") {
+              addGeneralizedApplicationURL(template);
 
             // 4. for feature services,
             //    a. fill in missing data
             //    b. get layer & table details
             //    c. generalize layer & table URLs
-            } else if (fullItem.type === "Feature Service") {
+            } else if (template.type === "Feature Service") {
               adjustmentPromises.push(
-                fleshOutFeatureService(fullItem as mInterfaces.ITemplateFeatureService, requestOptions));
+                fleshOutFeatureService(template as mInterfaces.ITemplateFeatureService, requestOptions));
             }
           }
         );
@@ -136,7 +125,7 @@ export function createSolution (
  */
 export function publishSolution (
   title: string,
-  solution: ITemplateHash,
+  solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   folderId = null as string,
   access = "private"
@@ -173,17 +162,17 @@ export function publishSolution (
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
 export function cloneSolution (
-  solution: ITemplateHash,
+  solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   orgUrl: string,
   portalUrl: string,
   solutionName = "",
   folderId = null as string,
   access = "private"
-): Promise<ITemplateHash> {
-  return new Promise<ITemplateHash>((resolve, reject) => {
+): Promise<mInterfaces.ITemplate[]> {
+  return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
     const swizzles:mCommon.ISwizzleHash = {};
-    const clonedSolution:ITemplateHash = {};
+    const clonedSolution:mInterfaces.ITemplate[] = [];
 
 
     // Don't bother creating folder if there are no items in solution
@@ -202,10 +191,11 @@ export function cloneSolution (
 
       // Clone item at top of list
       const itemId = cloneOrderChecklist.shift();
-      createSwizzledItem((solution[itemId] as mInterfaces.ITemplate), folderId, swizzles, requestOptions, orgUrl)
+      const template = getTemplateInSolution(solution, itemId);
+      createSwizzledItem(template, folderId, swizzles, requestOptions, orgUrl)
       .then(
         clone => {
-          clonedSolution[clone.item.id] = clone;
+          clonedSolution.push(clone);
           runThroughChecklist();
         },
         reject
@@ -234,6 +224,21 @@ export function cloneSolution (
       );
     }
   });
+}
+
+/**
+ * Finds template by id in a list of templates.
+ *
+ * @param templates List of templates to search
+ * @param id AGOL id of template to find
+ * @return Matching template or null
+ */
+export function getTemplateInSolution (
+  templates: mInterfaces.ITemplate[],
+  id: string
+): mInterfaces.ITemplate {
+  const childId = getTemplateIndexInSolution(templates, id);
+  return childId >= 0 ? templates[childId] : null;
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
@@ -434,6 +439,24 @@ export function addGroupMembers (
       resolve();
     }
   });
+}
+
+/**
+ * Creates an empty template.
+ *
+ * @param id AGOL id of item
+ * @return Empty item containing supplied id
+ * @protected
+ */
+function createPlaceholderTemplate (
+  id: string
+): mInterfaces.ITemplate {
+  return {
+    itemId: id,
+    type: "",
+    key: "",
+    item: null
+  };
 }
 
 /**
@@ -675,6 +698,116 @@ function getFirstUsableName (
 }
 
 /**
+ * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
+ *
+ * ```typescript
+ * import { ITemplate[], getFullItemHierarchy } from "../src/fullItemHierarchy";
+ *
+ * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
+ * .then(
+ *   (response:ITemplate[]) => {
+ *     let keys = Object.keys(response);
+ *     console.log(keys.length);  // => "6"
+ *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
+ *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
+ *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
+ *   },
+ *   error => {
+ *     // (should not see this as long as both of the above ids--real ones--stay available)
+ *     console.log(error); // => "Item or group does not exist or is inaccessible: " + the problem id number
+ *   }
+ * );
+ * ```
+ *
+ * @param rootIds AGOL id string or list of AGOL id strings
+ * @param requestOptions Options for requesting information from AGOL
+ * @param templates A hash of items already converted useful for avoiding duplicate conversions and
+ * hierarchy tracing
+ * @return A promise that will resolve with a hash by id of IFullItems;
+ * if any id is inaccessible, a single error response will be produced for the set
+ * of ids
+ * @protected
+ */
+export function getFullItemHierarchy (
+  rootIds: string | string[],
+  requestOptions: IUserRequestOptions,
+  templates?: mInterfaces.ITemplate[]
+): Promise<mInterfaces.ITemplate[]> {
+  if (!templates) {
+    templates = [];
+  }
+
+  return new Promise((resolve, reject) => {
+    if (!rootIds || (Array.isArray(rootIds) && rootIds.length === 0)) {
+      reject(mFullItem.createUnavailableItemError(null));
+
+    } else if (typeof rootIds === "string") {
+      // Handle a single AGOL id
+      const rootId = rootIds;
+      if (getTemplateInSolution(templates, rootId)) {
+        resolve(templates);  // Item and its dependents are already in list or are queued
+
+      } else {
+        // Add the id as a placeholder to show that it will be fetched
+        const getItemPromise = mFullItem.getFullItem(rootId, requestOptions);
+        templates.push(createPlaceholderTemplate(rootId));
+
+        // Get the specified item
+        getItemPromise
+        .then(
+          fullItem => {
+            // Set the value keyed by the id
+            replaceTemplate(templates, fullItem.itemId, fullItem);
+
+            // Trace item dependencies
+            if (fullItem.dependencies.length === 0) {
+              resolve(templates);
+
+            } else {
+              // Get its dependents, asking each to get its dependents via
+              // recursive calls to this function
+              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+              fullItem.dependencies.forEach(
+                dependentId => {
+                  if (!getTemplateInSolution(templates, dependentId)) {
+                    dependentDfds.push(getFullItemHierarchy(dependentId, requestOptions, templates));
+                  }
+                }
+              );
+              Promise.all(dependentDfds)
+              .then(
+                () => {
+                  resolve(templates);
+                },
+                (error:ArcGISRequestError) => reject(error)
+              );
+            }
+          },
+          (error:ArcGISRequestError) => reject(error)
+        );
+      }
+
+    } else {
+      // Handle a list of one or more AGOL ids by stepping through the list
+      // and calling this function recursively
+      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+      rootIds.forEach(rootId => {
+        getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, templates));
+      });
+      Promise.all(getHierarchyPromise)
+      .then(
+        () => {
+          resolve(templates);
+        },
+        (error:ArcGISRequestError) => reject(error)
+      );
+    }
+  });
+}
+
+/**
  * Gets the full definitions of the layers affiliated with a hosted service.
  *
  * @param serviceUrl URL to hosted service
@@ -711,6 +844,25 @@ function getLayers (
       reject
     );
   });
+}
+
+/**
+ * Finds index of template by id in a list of templates.
+ *
+ * @param templates List of templates to search
+ * @param id AGOL id of template to find
+ * @return Id of matching template or -1 if not found
+ * @protected
+ */
+function getTemplateIndexInSolution (
+  templates: mInterfaces.ITemplate[],
+  id: string
+): number {
+  return templates.findIndex(
+    template => {
+      return id === template.itemId;
+    }
+  );
 }
 
 /**
@@ -755,6 +907,28 @@ export function removeUndesirableItemProperties (
 }
 
 /**
+ * Replaces a template entry in a list of templates
+ *
+ * @param templates Templates list
+ * @param id Id of item in templates list to find; if not found, no replacement is done
+ * @param template Replacement template
+ * @return True if replacement was made
+ * @protected
+ */
+export function replaceTemplate (
+  templates: mInterfaces.ITemplate[],
+  id: string,
+  template: mInterfaces.ITemplate
+): boolean {
+  const i = getTemplateIndexInSolution(templates, id);
+  if (i >=  0) {
+    templates[i] = template;
+    return true;
+  }
+  return false;
+}
+
+/**
  * Topologically sort a Solution's items into a build list.
  *
  * @param items Hash of JSON descriptions of items
@@ -762,10 +936,9 @@ export function removeUndesirableItemProperties (
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
  * @protected
- * @protected
  */
 export function topologicallySortItems (
-  fullItems: ITemplateHash
+  fullItems: mInterfaces.ITemplate[]
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -801,14 +974,14 @@ export function topologicallySortItems (
                                 // we just want relative ordering
 
   const verticesToVisit:ISortVertex = {};
-  Object.keys(fullItems).forEach(function(vertexId) {
-    verticesToVisit[vertexId] = SortVisitColor.White;  // not yet visited
+  fullItems.forEach(function(template) {
+    verticesToVisit[template.itemId] = SortVisitColor.White;  // not yet visited
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  Object.keys(verticesToVisit).forEach(function(vertexId) {
-    if (verticesToVisit[vertexId] === SortVisitColor.White) {  // if not yet visited
-      visit(vertexId);
+  fullItems.forEach(function(template) {
+    if (verticesToVisit[template.itemId] === SortVisitColor.White) {  // if not yet visited
+      visit(template.itemId);
     }
   });
 
@@ -817,7 +990,8 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    const dependencies:string[] = (fullItems[vertexId] as mInterfaces.ITemplate).dependencies || [];
+    const template = getTemplateInSolution(fullItems, vertexId);
+    const dependencies:string[] = template.dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
         visit(dependencyId);
@@ -924,118 +1098,6 @@ function updateFeatureServiceDefinition(
       );
     } else {
       resolve();
-    }
-  });
-}
-
-// -- Internals ------------------------------------------------------------------------------------------------------//
-
-/**
- * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
- *
- * ```typescript
- * import { ITemplateHash, getFullItemHierarchy } from "../src/fullItemHierarchy";
- *
- * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
- * .then(
- *   (response:ITemplateHash) => {
- *     let keys = Object.keys(response);
- *     console.log(keys.length);  // => "6"
- *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
- *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
- *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
- *   },
- *   error => {
- *     // (should not see this as long as both of the above ids--real ones--stay available)
- *     console.log(error); // => "Item or group does not exist or is inaccessible: " + the problem id number
- *   }
- * );
- * ```
- *
- * @param rootIds AGOL id string or list of AGOL id strings
- * @param requestOptions Options for requesting information from AGOL
- * @param collection A hash of items already converted useful for avoiding duplicate conversions and
- * hierarchy tracing
- * @return A promise that will resolve with a hash by id of IFullItems;
- * if any id is inaccessible, a single error response will be produced for the set
- * of ids
- * @protected
- */
-export function getFullItemHierarchy (
-  rootIds: string | string[],
-  requestOptions: IUserRequestOptions,
-  collection?: ITemplateHash
-): Promise<ITemplateHash> {
-  if (!collection) {
-    collection = {};
-  }
-
-  return new Promise((resolve, reject) => {
-    if (!rootIds || (Array.isArray(rootIds) && rootIds.length === 0)) {
-      reject(mFullItem.createUnavailableItemError(null));
-
-    } else if (typeof rootIds === "string") {
-      // Handle a single AGOL id
-      const rootId = rootIds;
-      if (collection[rootId]) {
-        resolve(collection);  // Item and its dependents are already in list or are queued
-
-      } else {
-        // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mFullItem.getFullItem(rootId, requestOptions);
-        collection[rootId] = getItemPromise;
-
-        // Get the specified item
-        getItemPromise
-        .then(
-          fullItem => {
-            // Set the value keyed by the id
-            collection[rootId] = fullItem;
-
-            // Trace item dependencies
-            if (fullItem.dependencies.length === 0) {
-              resolve(collection);
-
-            } else {
-              // Get its dependents, asking each to get its dependents via
-              // recursive calls to this function
-              const dependentDfds:Array<Promise<ITemplateHash>> = [];
-
-              fullItem.dependencies.forEach(
-                dependentId => {
-                  if (!collection[dependentId]) {
-                    dependentDfds.push(getFullItemHierarchy(dependentId, requestOptions, collection));
-                  }
-                }
-              );
-              Promise.all(dependentDfds)
-              .then(
-                () => {
-                  resolve(collection);
-                },
-                (error:ArcGISRequestError) => reject(error)
-              );
-            }
-          },
-          (error:ArcGISRequestError) => reject(error)
-        );
-      }
-
-    } else {
-      // Handle a list of one or more AGOL ids by stepping through the list
-      // and calling this function recursively
-      const getHierarchyPromise:Array<Promise<ITemplateHash>> = [];
-
-      rootIds.forEach(rootId => {
-        getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, collection));
-      });
-      Promise.all(getHierarchyPromise)
-      .then(
-        () => {
-          resolve(collection);
-        },
-        (error:ArcGISRequestError) => reject(error)
-      );
     }
   });
 }

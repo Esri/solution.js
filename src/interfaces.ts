@@ -21,9 +21,17 @@
  */
 export interface ITemplate {
   /**
+   * Item's AGOL id
+   */
+  itemId: string;
+  /**
    * AGOL item type name
    */
   type: string;
+  /** 
+   * Camelized form of item title used as an identifier
+   */
+  key: string;
   /**
    * Item base section JSON
    */

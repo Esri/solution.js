@@ -42,20 +42,27 @@ export interface IHierarchyEntry {
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
-  templates: mSolution.ITemplateHash
+  templates: mInterfaces.ITemplate[]
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds:string[] = Object.keys(templates);
-  Object.keys(templates).forEach(function (id) {
-    ((templates[id] as mInterfaces.ITemplate).dependencies || []).forEach(function (dependencyId) {
-      const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
-      if (iNode >= 0) {
-        // Node is somebody's dependency, so remove the node from the list of top-level nodes
-        // If iNode == -1, then it's a shared dependency and it has already been removed
-        topLevelItemCandidateIds.splice(iNode, 1);
+  const topLevelItemCandidateIds:string[] =
+    templates.map(
+      template => {
+        return template.itemId;
       }
-    });
-  });
+    );
+  templates.forEach(
+    template => {
+      (template.dependencies || []).forEach(function (dependencyId) {
+        const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+        if (iNode >= 0) {
+          // Node is somebody's dependency, so remove the node from the list of top-level nodes
+          // If iNode == -1, then it's a shared dependency and it has already been removed
+          topLevelItemCandidateIds.splice(iNode, 1);
+        }
+      });
+    }
+  );
   return topLevelItemCandidateIds;
 }
 
@@ -68,7 +75,7 @@ export function getTopLevelItemIds (
  * item's dependencies
  */
 export function getItemHierarchy (
-  templates: mSolution.ITemplateHash
+  templates: mInterfaces.ITemplate[]
 ): IHierarchyEntry[] {
   const hierarchy:IHierarchyEntry[] = [];
 
@@ -84,8 +91,9 @@ export function getItemHierarchy (
         dependencies: []
       };
 
-      // Fill in the child's dependencies array with any of its children
-      const dependencyIds = (templates[id] as mInterfaces.ITemplate).dependencies;
+      // Fill in the child's dependencies array with its children
+      const template = mSolution.getTemplateInSolution(templates, id);
+      const dependencyIds = template.dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
@@ -111,7 +119,7 @@ export function getItemHierarchy (
  */
 export function createSolutionStorymap (
   title: string,
-  solution: mSolution.ITemplateHash,
+  solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   orgUrl: string,
   folderId = null as string,
@@ -140,7 +148,7 @@ export function createSolutionStorymap (
  */
 export function createSolutionStorymapItem (
   title: string,
-  solution: mSolution.ITemplateHash,
+  solution: mInterfaces.ITemplate[],
   folderId = null as string
 ): mInterfaces.ITemplate {
   // Prepare the storymap item
@@ -152,8 +160,8 @@ export function createSolutionStorymapItem (
   const stories = data.values.story.entries;
   topLevelItemIds.forEach(
     topLevelItemId => {
-      const solutionItem = solution[topLevelItemId] as mInterfaces.ITemplate;
-      if (solutionItem.item.url) {
+      const solutionItem = mSolution.getTemplateInSolution(solution, topLevelItemId);
+            if (solutionItem.item.url) {
         const itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
         stories.push(itsStory);
       }
@@ -161,7 +169,9 @@ export function createSolutionStorymapItem (
   );
 
   return {
+    itemId: "",
     type: item.type,
+    key: "",
     item,
     data
   };

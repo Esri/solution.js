@@ -14,6 +14,7 @@
  | limitations under the License.
  */
 
+import * as mInterfaces from "../../src/interfaces";
 import * as mockItems from "./items";
 import * as mockServices from "./featureServices";
 
@@ -160,7 +161,9 @@ export function getGroupSolutionPart (
   dependencies = [] as string[]
 ): any {
   return {
+    "itemId": "grp1234567890",
     "type": "Group",
+    "key": "AnAGOLGroup",
     "item": {
       "id": "grp1234567890",
       "title": "An AGOL group",
@@ -193,14 +196,14 @@ export function getGroupSolutionPart (
 }
 
 export function getWebMappingApplicationSolution (
-): any {
-  const solution:any = {
-    "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"],
+): mInterfaces.ITemplate[] {
+  const solution:mInterfaces.ITemplate[] = [
+    getItemSolutionPart("Web Mapping Application", ["map1234567890"],
       "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid="),
-    "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"],
+    getItemSolutionPart("Web Map", ["svc1234567890"],
       "https://arcgis.com/home/webmap/viewer.html?webmap="),
-    "svc1234567890": getItemSolutionPart("Feature Service", [])
-  };
+    getItemSolutionPart("Feature Service", [])
+  ];
 
   return solution;
 }
@@ -214,7 +217,9 @@ function getItemSolutionFundamentals (
   url = ""
 ): any {
   return {
+    "itemId": typePrefix + "1234567890",
     "type": type,
+    "key": "AnAGOLItem",
     "item": {
       "id": typePrefix + "1234567890",
       "item": typePrefix + "1234567890",

@@ -34,7 +34,9 @@ import * as mockSolutions from "./mocks/solutions";
 describe("Module `solution`: generation, publication, and cloning of a solution item", () => {
 
   const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
+    itemId: "",
     type: "",
+    key: "",
     item: null
   };
 
@@ -117,9 +119,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
-          expect(response).toEqual({
-            "grp1234567890": mockSolutions.getGroupSolutionPart()
-          });
+          expect(response).toEqual([
+            mockSolutions.getGroupSolutionPart()
+          ]);
           done();
         },
         error => done.fail(error)
@@ -128,13 +130,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("gets a service name from a layer if a service needs a name", done => {
       const fullItem:mInterfaces.ITemplateFeatureService = {
+        itemId: "",
         type: "Feature Service",
+        key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
         service: null,
         layers: null,
         tables: null
       };
+      fullItem.itemId = fullItem.item.id;
+
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
         [mockServices.getLayerOrTable(0, "ROW Permits", "Feature Layer")],
@@ -163,13 +169,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("gets a service name from a table if a service needs a name--no layer", done => {
       const fullItem:mInterfaces.ITemplateFeatureService = {
+        itemId: "",
         type: "Feature Service",
+        key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
         service: null,
         layers: null,
         tables: null
       };
+      fullItem.itemId = fullItem.item.id;
+
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
         undefined,
@@ -198,13 +208,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("gets a service name from a table if a service needs a name--nameless layer", done => {
       const fullItem:mInterfaces.ITemplateFeatureService = {
+        itemId: "",
         type: "Feature Service",
+        key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
         service: null,
         layers: null,
         tables: null
       };
+      fullItem.itemId = fullItem.item.id;
+
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
@@ -232,13 +246,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("falls back to 'Feature Service' if a service needs a name", done => {
       const fullItem:mInterfaces.ITemplateFeatureService = {
+        itemId: "",
         type: "Feature Service",
+        key: "",
         item: mockItems.getNoNameFeatureServiceItem(),
         data: mockItems.getAGOLItemData("Feature Service"),
         service: null,
         layers: null,
         tables: null
       };
+      fullItem.itemId = fullItem.item.id;
+
       fetchMock
       .post(fullItem.item.url + "?f=json", mockServices.getService(
         mockServices.removeNameField([mockServices.getLayerOrTable(0, "", "Feature Layer")]),
@@ -329,14 +347,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle an empty, nameless solution", done => {
-      mSolution.cloneSolution({} as mSolution.ITemplateHash, MOCK_USER_REQOPTS, orgUrl, portalUrl)
+      mSolution.cloneSolution({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, orgUrl, portalUrl)
       .then(done, done.fail);
     });
 
     it("should handle failure to create solution's folder", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
 
       const now = 1555555555555;
       const sessionWithMockedTime:IUserRequestOptions = {
@@ -354,7 +372,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a generated folder", done => {
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
@@ -406,7 +424,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.cloneSolution(solutionItem, sessionWithMockedTime, orgUrl, portalUrl)
       .then(
         response => {
-          expect(Object.keys(response).length).toEqual(3);
+          expect(response.length).toEqual(3);
           done();
         },
         done.fail
@@ -416,7 +434,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder and supplied solution name", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
       const folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
@@ -462,7 +480,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, orgUrl, portalUrl, "My Solution", folderId)
       .then(
         response => {
-          expect(Object.keys(response).length).toEqual(3);
+        expect(response.length).toEqual(3);
           done();
         },
         done.fail
@@ -472,7 +490,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should clone a solution using a supplied folder, but handle failed storymap", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
       const folderId = "FLD1234567890";
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
@@ -516,7 +534,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, orgUrl, portalUrl, undefined, folderId, "org")
       .then(
         response => {
-          expect(Object.keys(response).length).toEqual(3);
+        expect(response.length).toEqual(3);
           done();
         },
         done.fail
@@ -526,7 +544,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should handle failure to create a contained item", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
       const folderId = "fld1234567890";
 
       fetchMock
@@ -547,7 +565,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should create a storymap using a specified folder and public access", done => {
       const title = "Solution storymap";
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
       const folderId = "fld1234567890";
 
       fetchMock
@@ -570,7 +588,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle the failure to publish a storymap", done => {
       const title = "Solution storymap";
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -1044,35 +1062,27 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: get cloning order", () => {
 
     it("sorts an item and its dependencies 1", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE};
-      const def = {...MOCK_ITEM_PROTOTYPE};
-      const ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
+      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
+      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
 
       abc.dependencies = ["ghi", "def"];
 
-      const results:string[] = mSolution.topologicallySortItems({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-      });
+      const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
     });
 
     it("sorts an item and its dependencies 2", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE};
-      const def = {...MOCK_ITEM_PROTOTYPE};
-      const ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
+      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
+      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
 
       abc.dependencies = ["ghi", "def"];
       def.dependencies = ["ghi"];
 
-      const results:string[] = mSolution.topologicallySortItems({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-      });
+      const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
@@ -1080,18 +1090,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("sorts an item and its dependencies 3", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE};
-      const def = {...MOCK_ITEM_PROTOTYPE};
-      const ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
+      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
+      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
 
       abc.dependencies = ["ghi"];
       ghi.dependencies = ["def"];
 
-      const results:string[] = mSolution.topologicallySortItems({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-      });
+      const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "ghi", successor: "abc"});
       (expect(results) as ICustomArrayLikeMatchers).toHaveOrder({predecessor: "def", successor: "abc"});
@@ -1099,36 +1105,28 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("reports a multi-item cyclic dependency graph", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE};
-      const def = {...MOCK_ITEM_PROTOTYPE};
-      const ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
+      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
+      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
 
       abc.dependencies = ["ghi"];
       def.dependencies = ["ghi"];
       ghi.dependencies = ["abc"];
 
       expect(function () {
-        mSolution.topologicallySortItems({
-          "abc": abc,
-          "def": def,
-          "ghi": ghi,
-        });
+        mSolution.topologicallySortItems([abc, def, ghi]);
       }).toThrowError(Error, "Cyclical dependency graph detected");
     });
 
     it("reports a single-item cyclic dependency graph", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE};
-      const def = {...MOCK_ITEM_PROTOTYPE};
-      const ghi = {...MOCK_ITEM_PROTOTYPE};
+      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
+      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
+      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
 
       def.dependencies = ["def"];
 
       expect(function () {
-        mSolution.topologicallySortItems({
-          "abc": abc,
-          "def": def,
-          "ghi": ghi,
-        });
+        mSolution.topologicallySortItems([abc, def, ghi]);
       }).toThrowError(Error, "Cyclical dependency graph detected");
     });
 
@@ -1168,7 +1166,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle defaults to create a storymap", () => {
       const title = "Solution storymap";
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
 
       const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
       expect(storymapItem).toBeDefined();
@@ -1176,7 +1174,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle defaults to publish a storymap", done => {
       const title = "Solution storymap";
-      const solutionItem:mSolution.ITemplateHash = mockSolutions.getWebMappingApplicationSolution();
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationSolution();
       const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
 
       fetchMock
@@ -1207,9 +1205,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle solution items without a URL when creating a storymap", () => {
       const title = "Solution storymap";
-      const solution:any = {
-        "wma1234567890": mockSolutions.getItemSolutionPart("Dashboard")
-      };
+      const solution:mInterfaces.ITemplate[] = [
+        mockSolutions.getItemSolutionPart("Dashboard")
+      ];
 
       const storymapItem = mViewing.createSolutionStorymapItem(title, solution);
       expect(storymapItem.type).toEqual("Web Mapping Application");
@@ -1393,10 +1391,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.ITemplateHash) => {
-          const keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          const fullItem:mInterfaces.ITemplate = response[keys[0]] as mInterfaces.ITemplate;
+        (response:mInterfaces.ITemplate[]) => {
+          expect(response.length).toEqual(3);
+          const fullItem:mInterfaces.ITemplate = response[0];
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1419,10 +1416,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy(["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.ITemplateHash) => {
-          const keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          const fullItem:mInterfaces.ITemplate = response[keys[0]] as mInterfaces.ITemplate;
+        (response:mInterfaces.ITemplate[]) => {
+          expect(response.length).toEqual(3);
+          const fullItem:mInterfaces.ITemplate = response[0];
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1445,10 +1441,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mSolution.ITemplateHash) => {
-          const keys = Object.keys(response);
-          expect(keys.length).toEqual(3);
-          const fullItem:mInterfaces.ITemplate = response[keys[0]] as mInterfaces.ITemplate;
+        (response:mInterfaces.ITemplate[]) => {
+          expect(response.length).toEqual(3);
+          const fullItem:mInterfaces.ITemplate = response[0];
           expect(fullItem.type).toEqual("Web Mapping Application");
           expect(fullItem.item.title).toEqual("An AGOL item");
           expect(fullItem.data.source).toEqual("tpl1234567890");
@@ -1471,18 +1466,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
       mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (collection:mSolution.ITemplateHash) => {
-          const keys = Object.keys(collection);
-          expect(keys.length).toEqual(3);
+        (response:mInterfaces.ITemplate[]) => {
+          expect(response.length).toEqual(3);
           expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
 
-          mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, collection)
+          mSolution.getFullItemHierarchy("wma1234567890", MOCK_USER_REQOPTS, response)
           .then(
-            (collection2:mSolution.ITemplateHash) => {
-              const keys2 = Object.keys(collection2);
-              expect(keys2.length).toEqual(3);  // unchanged
+            (response2:mInterfaces.ITemplate[]) => {
+              expect(response2.length).toEqual(3);  // unchanged
               expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
-              expect(collection2).toEqual(collection);
+              expect(response2).toEqual(response);
               done();
             },
             done.fail
@@ -1665,6 +1658,56 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done();
         }
       );
+    });
+
+  });
+
+  describe("supporting routine: get template from template bundle", () => {
+
+    it("empty bundle", () => {
+      const bundle:mInterfaces.ITemplate[] = [];
+      const idToFind = "abc123";
+      const replacementTemplate = {
+        ...MOCK_ITEM_PROTOTYPE
+      };
+      replacementTemplate.itemId = "ghi456";
+
+      expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeFalsy();
+      expect(bundle.length).toEqual(0);
+    });
+
+    it("item not in bundle", () => {
+      const placeholderTemplate = {
+        ...MOCK_ITEM_PROTOTYPE
+      };
+      placeholderTemplate.itemId = "xyz098";
+      const bundle:mInterfaces.ITemplate[] = [placeholderTemplate];
+      const idToFind = "abc123";
+      const replacementTemplate = {
+        ...MOCK_ITEM_PROTOTYPE
+      };
+      replacementTemplate.itemId = "ghi456";
+
+      expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeFalsy();
+      expect(bundle.length).toEqual(1);
+      expect(bundle[0].itemId).toEqual(placeholderTemplate.itemId);
+    });
+
+    it("item in bundle", () => {
+      const placeholderTemplate = {
+        ...MOCK_ITEM_PROTOTYPE
+      };
+      placeholderTemplate.itemId = "xyz098";
+      const bundle:mInterfaces.ITemplate[] = [placeholderTemplate];
+      const idToFind = "xyz098";
+      const replacementTemplate = {
+        ...MOCK_ITEM_PROTOTYPE
+      };
+      replacementTemplate.itemId = "ghi456";
+
+      expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeTruthy();
+      expect(bundle.length).toEqual(1);
+      expect(bundle[0].itemId).toEqual(replacementTemplate.itemId);
     });
 
   });

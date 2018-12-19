@@ -35,8 +35,10 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
 
   const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
+    itemId: "",
     type: "",
-    item: {}
+    key: "",
+    item: null
   };
 
   // Set up a UserSession to use in all these tests
@@ -316,7 +318,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
         const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
-        abc.item.id = "grp1234567890";
+        abc.item = {id: "grp1234567890"};
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -340,7 +342,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
         const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
-        abc.item.id = "grp1234567890";
+        abc.item = {id: "grp1234567890"};
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -363,7 +365,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
         const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
-        abc.item.id = "grp1234567890";
+        abc.item = {id: "grp1234567890"};
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -388,7 +390,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
         const abc = {...MOCK_ITEM_PROTOTYPE};
         abc.type = "Group";
-        abc.item.id = "grp1234567890";
+        abc.item = {id: "grp1234567890"};
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -1157,6 +1159,30 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
 
       const results = mWebmapItemType.getWebmapLayerIds(sourceArray);
       expect(results).toEqual(expected);
+    });
+
+  });
+
+  describe("supporting routine: camelize", () => {
+
+    it("empty string", () => {
+      const result = mFullItem.camelize("");
+      expect(result).toEqual("");
+    });
+
+    it("no spaces", () => {
+      const result = mFullItem.camelize("thishasnospaces");
+      expect(result).toEqual("thishasnospaces");
+    });
+
+    it("this is a title", () => {
+      const result = mFullItem.camelize("this is a title");
+      expect(result).toEqual("thisIsATitle");
+    });
+
+    it("this has LOTS OF CAPS", () => {
+      const result = mFullItem.camelize("this has LOTS OF CAPS");
+      expect(result).toEqual("thisHasLOTSOFCAPS");
     });
 
   });
