@@ -91,22 +91,21 @@ export function swizzleDependencies (
  * Extracts the AGOL id or URL for each layer or table object in a list.
  *
  * @param layerList List of map layers or tables
- * @return List of ids and/or URLs
+ * @return List containing id of each layer or table that has an itemId
  * @protected
  */
 export function getWebmapLayerIds (
   layerList: any
 ): string[] {
-  const dependencies:string[] = [];
-
-  if (Array.isArray(layerList)) {
-    layerList.forEach((layer:any) => {
+  return !Array.isArray(layerList) ? [] :
+  layerList.reduce(
+    (ids:string[], layer:any) => {
       const itemId = layer.itemId as string;
       if (itemId) {
-        dependencies.push(itemId);
+        ids.push(itemId);
       }
-    });
-  }
-
-  return dependencies;
+      return ids;
+    },
+    [] as string[]
+  );
 }
