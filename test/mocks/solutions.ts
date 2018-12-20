@@ -14,6 +14,8 @@
  | limitations under the License.
  */
 
+import * as mInterfaces from "../../src/interfaces";
+import * as mSolutions from "../../src/solution";
 import * as mockItems from "./items";
 import * as mockServices from "./featureServices";
 
@@ -72,13 +74,17 @@ export function getItemSolutionPart (
         mockServices.getLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockServices.getRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      solutionPart.service = mockServices.getService([layer0], [table1]);
-      solutionPart.service.name = solutionPart.item.name;
-      solutionPart.service.snippet = solutionPart.item.snippet;
-      solutionPart.service.description = solutionPart.item.description;
 
-      solutionPart.layers = [layer0];
-      solutionPart.tables = [table1];
+      const properties:mSolutions.IFeatureServiceProperties = {
+        service: mockServices.getService([layer0], [table1]),
+        layers: [layer0],
+        tables: [table1]
+      };
+      properties.service.name = solutionPart.item.name;
+      properties.service.snippet = solutionPart.item.snippet;
+      properties.service.description = solutionPart.item.description;
+
+      solutionPart.properties = properties;
       break;
 
     case "Form":
@@ -151,8 +157,8 @@ export function getDashboardSolutionPartNoData (
 export function getFeatureServiceSolutionPartNoRelationships (
 ): any {
   const solutionPart:any = getItemSolutionPart("Feature Service");
-  solutionPart.layers[0].relationships = [];
-  solutionPart.tables[0].relationships = [];
+  solutionPart.properties.layers[0].relationships = [];
+  solutionPart.properties.tables[0].relationships = [];
   return solutionPart;
 }
 
@@ -160,7 +166,9 @@ export function getGroupSolutionPart (
   dependencies = [] as string[]
 ): any {
   return {
+    "itemId": "grp1234567890",
     "type": "Group",
+    "key": "AnAGOLGroup",
     "item": {
       "id": "grp1234567890",
       "title": "An AGOL group",
@@ -193,14 +201,14 @@ export function getGroupSolutionPart (
 }
 
 export function getWebMappingApplicationSolution (
-): any {
-  const solution:any = {
-    "wma1234567890": getItemSolutionPart("Web Mapping Application", ["map1234567890"],
+): mInterfaces.ITemplate[] {
+  const solution:mInterfaces.ITemplate[] = [
+    getItemSolutionPart("Web Mapping Application", ["map1234567890"],
       "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid="),
-    "map1234567890": getItemSolutionPart("Web Map", ["svc1234567890"],
+    getItemSolutionPart("Web Map", ["svc1234567890"],
       "https://arcgis.com/home/webmap/viewer.html?webmap="),
-    "svc1234567890": getItemSolutionPart("Feature Service", [])
-  };
+    getItemSolutionPart("Feature Service", [])
+  ];
 
   return solution;
 }
@@ -214,7 +222,9 @@ function getItemSolutionFundamentals (
   url = ""
 ): any {
   return {
+    "itemId": typePrefix + "1234567890",
     "type": type,
+    "key": "AnAGOLItem",
     "item": {
       "id": typePrefix + "1234567890",
       "item": typePrefix + "1234567890",

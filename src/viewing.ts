@@ -15,8 +15,9 @@
  */
 
 import * as mCommon from "./common";
-import * as mFullItem from "./fullItem";
+import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "./solution";
+import { IUserRequestOptions } from '@esri/arcgis-rest-auth';
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -41,20 +42,27 @@ export interface IHierarchyEntry {
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
-  items: mSolution.IFullItemHash
+  templates: mInterfaces.ITemplate[]
 ): string[] {
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds:string[] = Object.keys(items);
-  Object.keys(items).forEach(function (id) {
-    ((items[id] as mFullItem.IFullItem).dependencies || []).forEach(function (dependencyId) {
-      const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
-      if (iNode >= 0) {
-        // Node is somebody's dependency, so remove the node from the list of top-level nodes
-        // If iNode == -1, then it's a shared dependency and it has already been removed
-        topLevelItemCandidateIds.splice(iNode, 1);
+  const topLevelItemCandidateIds:string[] =
+    templates.map(
+      template => {
+        return template.itemId;
       }
-    });
-  });
+    );
+  templates.forEach(
+    template => {
+      (template.dependencies || []).forEach(function (dependencyId) {
+        const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+        if (iNode >= 0) {
+          // Node is somebody's dependency, so remove the node from the list of top-level nodes
+          // If iNode == -1, then it's a shared dependency and it has already been removed
+          topLevelItemCandidateIds.splice(iNode, 1);
+        }
+      });
+    }
+  );
   return topLevelItemCandidateIds;
 }
 
@@ -62,17 +70,17 @@ export function getTopLevelItemIds (
  * Extracts item hierarchy structure from a Solution's items list.
  *
  * @param items Hash of JSON descriptions of items
- * @returns JSON structure reflecting dependency hierarchy of items; shared dependencies are
+ * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
  * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
  * item's dependencies
  */
 export function getItemHierarchy (
-  items: mSolution.IFullItemHash
+  templates: mInterfaces.ITemplate[]
 ): IHierarchyEntry[] {
   const hierarchy:IHierarchyEntry[] = [];
 
   // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemIds = getTopLevelItemIds(items);
+  const topLevelItemIds = getTopLevelItemIds(templates);
 
   // Hierarchically list the children of specified nodes
   function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
@@ -83,8 +91,9 @@ export function getItemHierarchy (
         dependencies: []
       };
 
-      // Fill in the child's dependencies array with any of its children
-      const dependencyIds = (items[id] as mFullItem.IFullItem).dependencies;
+      // Fill in the child's dependencies array with its children
+      const template = mSolution.getTemplateInSolution(templates, id);
+      const dependencyIds = template.dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
       }
@@ -102,20 +111,23 @@ export function getItemHierarchy (
  *
  * @param title Title of Storymap
  * @param solution Solution to examine for content
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param requestOptions Options for requesting information from AGOL
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root folder
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return Storymap item that was published into AGOL
  */
 export function createSolutionStorymap (
   title: string,
-  solution: mSolution.IFullItemHash,
-  orgSession: mCommon.IOrgSession,
+  solution: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  orgUrl: string,
   folderId = null as string,
   access = "private"
-): Promise<mFullItem.IFullItem> {
+): Promise<mInterfaces.ITemplate> {
   return new Promise((resolve, reject) => {
-    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), orgSession, folderId, access)
+    publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), requestOptions, orgUrl,
+    folderId, access)
     .then(
       storymap  => resolve(storymap),
       reject
@@ -136,9 +148,9 @@ export function createSolutionStorymap (
  */
 export function createSolutionStorymapItem (
   title: string,
-  solution: mSolution.IFullItemHash,
+  solution: mInterfaces.ITemplate[],
   folderId = null as string
-): mFullItem.IFullItem {
+): mInterfaces.ITemplate {
   // Prepare the storymap item
   const item = getStorymapItemFundamentals(title);
   const data = getStorymapItemDataFundamentals(title, folderId);
@@ -148,8 +160,8 @@ export function createSolutionStorymapItem (
   const stories = data.values.story.entries;
   topLevelItemIds.forEach(
     topLevelItemId => {
-      const solutionItem = solution[topLevelItemId] as mFullItem.IFullItem;
-      if (solutionItem.item.url) {
+      const solutionItem = mSolution.getTemplateInSolution(solution, topLevelItemId);
+            if (solutionItem.item.url) {
         const itsStory = getWebpageStory(solutionItem.item.title, solutionItem.item.description, solutionItem.item.url);
         stories.push(itsStory);
       }
@@ -157,7 +169,9 @@ export function createSolutionStorymapItem (
   );
 
   return {
+    itemId: "",
     type: item.type,
+    key: "",
     item,
     data
   };
@@ -297,28 +311,30 @@ function getWebpageStory (
  * Creates a Storymap item describing the top-level webpages forming the solution.
  *
  * @param solutionStorymap Storymap AGOL item; item is modified
- * @param orgSession Options for requesting information from AGOL, including org and portal URLs
+ * @param requestOptions Options for requesting information from AGOL
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  * folder
  * @param access Access to set for item: 'public', 'org', 'private'
- * @returns A promise that will resolve with an updated solutionStorymap reporting the Storymap id
+ * @return A promise that will resolve with an updated solutionStorymap reporting the Storymap id
  * and URL
  * @protected
  */
 export function publishSolutionStorymapItem (
-  solutionStorymap: mFullItem.IFullItem,
-  orgSession: mCommon.IOrgSession,
+  solutionStorymap: mInterfaces.ITemplate,
+  requestOptions: IUserRequestOptions,
+  orgUrl: string,
   folderId = null as string,
   access = "private"
-): Promise<mFullItem.IFullItem> {
+): Promise<mInterfaces.ITemplate> {
   return new Promise((resolve, reject) => {
-    mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, orgSession, folderId, access)
+    mCommon.createItemWithData(solutionStorymap.item, solutionStorymap.data, requestOptions, folderId, access)
     .then(
       createResponse => {
         // Update its app URL
         const solutionStorymapId = createResponse.id;
-        const solutionStorymapUrl = orgSession.orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
-        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, orgSession)
+        const solutionStorymapUrl = orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
+        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, requestOptions)
         .then(
           () => {
             solutionStorymap.item.id = solutionStorymapId;

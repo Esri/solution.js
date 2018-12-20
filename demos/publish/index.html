@@ -111,13 +111,12 @@
   requirejs([
     '../../dist/tsumd/src/index',
     '../demo_common/common',
-    '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request'
+    '@esri/arcgis-rest-request',
+    '../demo_common/polyfills'
   ], function (
     clone,
     demoCommon,
-    auth,
     items,
     request
   ) {
@@ -197,8 +196,8 @@
             document.getElementById('detailsDisplay').innerHTML =
               demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
               '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.items,
-                clone.getItemHierarchy(publishedSolution.items));
+              demoCommon.createHierarchyDisplay(publishedSolution.templates,
+                clone.getItemHierarchy(publishedSolution.templates));
           }
         );
       }, function (error) {

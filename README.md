@@ -4,7 +4,7 @@
 
 [coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
-[license-img]: https://img.shields.io/badge/license-Apache%202.0-orange.svg?style=flat-square
+[license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat-square
 [license-url]: #license
 
 # @esri/arcgis-clone-js

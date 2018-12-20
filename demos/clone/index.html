@@ -100,7 +100,8 @@
     '../demo_common/progress',
     '@esri/arcgis-rest-auth',
     '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request'
+    '@esri/arcgis-rest-request',
+    '../demo_common/polyfills'
   ], function (
     clone,
     demoCommon,
@@ -131,25 +132,27 @@
       //progress.show();
 
       // Prepare credentials for library
-      var orgSession = demoCommon.getRequestOptions('username', 'password');
+      var requestOptions = demoCommon.getRequestOptions('username', 'password');
 
       // Get the destination organization URL for creating links to source items
-      request.getPortal(null, orgSession)
+      request.getPortal(null, requestOptions)
       .then(
         portalResponse => {
-          orgSession.orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;
-          orgSession.portalUrl = 'https://' + portalResponse.portalHostname;
+          const orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;
+          const portalUrl = 'https://' + portalResponse.portalHostname;
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
 
           // Get the solution contents
           items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              clone.cloneSolution(publishedSolution.items, orgSession, currentSolutionName, null)
+              clone.cloneSolution(publishedSolution.templates,
+                requestOptions, orgUrl, portalUrl, currentSolutionName, null)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
-                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, orgSession)
+                  clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, requestOptions,
+                    orgUrl, null, "public")
                   .then(
                     storymap  => {
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -161,7 +164,7 @@
                         '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
                         solutionStorymapTitle + '</a></li></ul><br>' +
                         demoCommon.createHierarchyDisplay(clonedSolution, clone.getItemHierarchy(clonedSolution),
-                          true, orgSession.orgUrl + '/home/');
+                          true, orgUrl + '/home/');
                     }
                   );
                 }
