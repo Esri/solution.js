@@ -51,7 +51,7 @@ export function getDependencies (
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+    const widgets:IDashboardWidget[] = mCommon.getProp(fullItem, "data.widgets");
     if (widgets) {
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
@@ -76,7 +76,7 @@ export function swizzleDependencies (
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap(s)
-  const widgets:IDashboardWidget[] = fullItem.data && fullItem.data.widgets;
+  const widgets:IDashboardWidget[] = mCommon.getProp(fullItem, "data.widgets");
   if (Array.isArray(widgets)) {
     widgets.forEach(widget => {
       if (widget.type === "mapWidget") {
