@@ -204,9 +204,9 @@ export function getWebMappingApplicationSolution (
 ): mInterfaces.ITemplate[] {
   const solution:mInterfaces.ITemplate[] = [
     getItemSolutionPart("Web Mapping Application", ["map1234567890"],
-      "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid="),
+      "https://{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid="),
     getItemSolutionPart("Web Map", ["svc1234567890"],
-      "https://arcgis.com/home/webmap/viewer.html?webmap="),
+      "https://{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap="),
     getItemSolutionPart("Feature Service", [])
   ];
 
@@ -237,7 +237,7 @@ function getItemSolutionFundamentals (
       "snippet": "Snippet of an AGOL item",
       "thumbnail": "thumbnail/ago_downloaded.png",
       "documentation": null,
-      "extent": [],
+      "extent": "{{initiative.extent}}",
       "categories": [],
       "spatialReference": null,
       "accessInformation": "Esri, Inc.",

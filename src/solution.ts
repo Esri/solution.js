@@ -94,17 +94,20 @@ export function createSolution (
             // 1. remove unwanted properties
             template.item = removeUndesirableItemProperties(template.item);
 
-            // 2. for web mapping apps,
+            // 2. convert some properties to placeholders
+            createPropertyPlaceholders(template.item);
+
+            // 3. for web mapping apps,
             //    a. generalize app URL
             if (template.type === "Web Mapping Application") {
               generalizeWebMappingApplicationURL(template);
 
-            // 3. for items missing their application URLs,
+            // 4. for items missing their application URLs,
             //    a. fill in URL
             } else if (template.type === "Dashboard" || template.type === "Web Map") {
               addGeneralizedApplicationURL(template);
 
-            // 4. for feature services,
+            // 5. for feature services,
             //    a. fill in missing data
             //    b. get layer & table details
             //    c. generalize layer & table URLs
@@ -260,11 +263,12 @@ export function getTemplateInSolution (
 // -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
- * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
- * name has to be acceptable to AGOL, otherwise it discards the URL.
+ * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
+ * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
+ * made before attempting to create the item.
  * @protected
  */
-export const PLACEHOLDER_SERVER_NAME:string = "https://arcgis.com";
+export const PLACEHOLDER_SERVER_NAME:string = "https://{{organization.portalBaseUrl}}";
 
 /**
  * The portion of a Dashboard app URL between the server and the app id.
@@ -477,6 +481,18 @@ function createPlaceholderTemplate (
 }
 
 /**
+ * Replaces some template item properties with adlib-style placeholders.
+ * @param templateItemProperty The `item` property of a template
+ */
+function createPropertyPlaceholders (
+  templateItemProperty: any
+): void {
+  if (templateItemProperty.extent !== undefined && templateItemProperty.extent !== null) {
+    templateItemProperty.extent = "{{initiative.extent}}";
+  }
+}
+
+/**
  * Creates an item in a specified folder (except for Group item type).
  *
  * @param fullItem Item to be created; n.b.: this item is modified
@@ -680,7 +696,7 @@ function generalizeWebMappingApplicationURL (
   // Remove org base URL and app id, e.g.,
   //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
   // to
-  //   http://<PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
+  //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
   // Need to add placeholder server name because otherwise AGOL makes URL null
   const orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
   const iSep = orgUrl.indexOf("//");
@@ -1036,9 +1052,9 @@ export function updateApplicationURL (
   requestOptions: IUserRequestOptions,
   orgUrl: string
 ): Promise<string> {
-  const url = orgUrl +
-        (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
-        fullItem.item.id;
+  const url =
+    (fullItem.item.url.replace(PLACEHOLDER_SERVER_NAME, orgUrl)) +  // replace placeholder server name
+    fullItem.item.id;
 
   // Update local copy
   fullItem.item.url = url;
