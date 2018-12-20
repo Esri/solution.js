@@ -237,15 +237,16 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("without map widget", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Dashboard";
-        abc.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "listWidget"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -259,18 +260,19 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("with map widget", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Dashboard";
-        abc.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "mapWidget",
-            itemId: "def"
-          }, {
-            type: "listWidget"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "mapWidget",
+              itemId: "def"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -288,9 +290,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("feature service", () => {
 
       it("item type does not have dependencies", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Feature Service";
-
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Feature Service"});
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -315,10 +315,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         .mock(groupUrl,
           '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
         const expected:string[] = [];
-
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.item = {id: "grp1234567890"};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Group", item: {id: 'grp1234567890'}});
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -339,10 +336,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           '{"total":6,"start":1,"num":6,"nextStart":-1,' +
           '"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"},{"id":"a4"},{"id":"a5"},{"id":"a6"}]}');
         const expected = ["a1", "a2", "a3", "a4", "a5", "a6"];
-
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.item = {id: "grp1234567890"};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Group", item: {id: 'grp1234567890'}});
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -362,10 +356,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
         fetchMock
         .mock("begin:" + groupUrl,
           '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
-
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.item = {id: "grp1234567890"};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Group", item: {id: 'grp1234567890'}});
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -387,10 +378,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
           '{"total":4,"start":1,"num":3,"nextStart":3,"items":[{"id":"a1"},{"id":"a2"},{"id":"a3"}]}')
         .mock("begin:" + groupUrl + "&start=3&num=100&token=fake-token",
           '{"error":{"code":400,"messageCode":"CONT_0006","message":"' + expected + '","details":[]}}');
-
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.item = {id: "grp1234567890"};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Group", item: {id: 'grp1234567890'}});
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
         .then(
@@ -409,8 +397,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe ("webmap", () => {
 
       it("no data", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Map"});
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -424,14 +411,15 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def"
-          }],
-          tables: []
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def"
+            }],
+            tables: []
+          }
+        });
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -445,16 +433,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("two operational layers", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def"
-          }, {
-            itemId: "ghi"
-          }],
-          tables: []
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def"
+            }, {
+              itemId: "ghi"
+            }],
+            tables: []
+          }
+        });
         const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -468,16 +457,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def"
-          }],
-          tables: [{
-            itemId: "ghi"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def"
+            }],
+            tables: [{
+              itemId: "ghi"
+            }]
+          }
+        });
         const expected:string[] = ["def", "ghi"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -495,8 +485,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("web mapping application", () => {
 
       it("no data", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Mapping Application"});
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -510,9 +499,7 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("no data values", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Mapping Application", data: {}});
         const expected:string[] = [];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -526,13 +513,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on webmap", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {
-          values: {
-            webmap: "def"
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Mapping Application",
+          data: {
+            values: {
+              webmap: "def"
+            }
           }
-        };
+        });
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -546,13 +534,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on group", done => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {
-          values: {
-            group: "def"
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Mapping Application",
+          data: {
+            values: {
+              group: "def"
+            }
           }
-        };
+        });
         const expected:string[] = ["def"];
 
         mFullItem.getDependencies(abc, MOCK_USER_REQOPTS)
@@ -587,66 +576,66 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("dashboard", () => {
 
       it("without widgets or swizzles", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Dashboard";
-        abc.data = {};
-        const expected = {...MOCK_ITEM_PROTOTYPE};
-        expected.type = "Dashboard";
-        expected.data = {};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Dashboard", data: {}});
+        const expected = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Dashboard", data: {}});
 
         mFullItem.swizzleDependencies(abc)
         expect(abc).toEqual(expected);
       });
 
       it("without map widget", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Dashboard";
-        abc.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "listWidget"
-          }]
-        };
-        const expected = {...MOCK_ITEM_PROTOTYPE};
-        expected.type = "Dashboard";
-        expected.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "listWidget"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
+        const expected = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles)
         expect(abc).toEqual(expected);
       });
 
       it("with map widget", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Dashboard";
-        abc.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "mapWidget",
-            itemId: "def"
-          }, {
-            type: "listWidget"
-          }]
-        };
-        const expected = {...MOCK_ITEM_PROTOTYPE};
-        expected.type = "Dashboard";
-        expected.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "mapWidget",
-            itemId: "DEF"
-          }, {
-            type: "listWidget"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "mapWidget",
+              itemId: "def"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
+        const expected = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Dashboard",
+          data: {
+            widgets: [{
+              type: "indicatorWidget"
+            }, {
+              type: "mapWidget",
+              itemId: "DEF"
+            }, {
+              type: "listWidget"
+            }]
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles)
         expect(abc).toEqual(expected);
@@ -670,18 +659,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("group", () => {
 
       it("group with no items", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.dependencies = [];
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Group", dependencies: []});
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.dependencies).toEqual([]);
       });
 
       it("group with 2 items", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Group";
-        abc.dependencies = ["ghi", "def"];
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Group",
+          dependencies: ["ghi", "def"]
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.dependencies[0]).toEqual("GHI");
@@ -693,17 +681,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("webmap", () => {
 
       it("no data", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Map"});
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toBeUndefined();
       });
 
       it("no operational layer or table", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Map", data: {}});
         const expected:any = {};
 
         mFullItem.swizzleDependencies(abc, swizzles);
@@ -711,16 +696,17 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def",
-            title: "'def'",
-            url: "http://services1/svc12345/0"
-          }],
-          tables: []
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def",
+              title: "'def'",
+              url: "http://services1/svc12345/0"
+            }],
+            tables: []
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
@@ -729,20 +715,21 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("two operational layers", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def",
-            title: "'def'",
-            url: "http://services1/svc12345/0"
-          }, {
-            itemId: "ghi",
-            title: "'ghi'",
-            url: "http://services1/svc12345/1"
-          }],
-          tables: []
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def",
+              title: "'def'",
+              url: "http://services1/svc12345/0"
+            }, {
+              itemId: "ghi",
+              title: "'ghi'",
+              url: "http://services1/svc12345/1"
+            }],
+            tables: []
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
@@ -755,20 +742,21 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "def",
-            title: "'def'",
-            url: "http://services1/svc12345/0"
-          }],
-          tables: [{
-            itemId: "ghi",
-            title: "'ghi'",
-            url: "http://services1/svc12345/1"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "def",
+              title: "'def'",
+              url: "http://services1/svc12345/0"
+            }],
+            tables: [{
+              itemId: "ghi",
+              title: "'ghi'",
+              url: "http://services1/svc12345/1"
+            }]
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("DEF");
@@ -781,20 +769,21 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("one operational layer and a table, but neither has swizzles", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Map";
-        abc.data = {
-          operationalLayers: [{
-            itemId: "jkl",
-            title: "'jkl'",
-            url: "http://services1/svc12345/0"
-          }],
-          tables: [{
-            itemId: "mno",
-            title: "'mno'",
-            url: "http://services1/svc12345/1"
-          }]
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Map",
+          data: {
+            operationalLayers: [{
+              itemId: "jkl",
+              title: "'jkl'",
+              url: "http://services1/svc12345/0"
+            }],
+            tables: [{
+              itemId: "mno",
+              title: "'mno'",
+              url: "http://services1/svc12345/1"
+            }]
+          }
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.operationalLayers[0].itemId).toEqual("jkl");
@@ -811,17 +800,14 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
     describe("web mapping application", () => {
 
       it("no data", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Mapping Application"});
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data).toBeUndefined();
       });
 
       it("no data values", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {};
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {type: "Web Mapping Application", data: {}});
         const expected:any = {};
 
         mFullItem.swizzleDependencies(abc, swizzles);
@@ -829,46 +815,40 @@ describe("Module `fullItem`: fetches the item, data, and resources of an AGOL it
       });
 
       it("based on webmap", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {
-          values: {
-            webmap: "def"
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Mapping Application",
+          data: {
+            values: {
+              webmap: "def"
+            }
           }
-        };
-        const expected = {...MOCK_ITEM_PROTOTYPE};
-        expected.type = "Dashboard";
-        expected.data = {
-          widgets: [{
-            type: "indicatorWidget"
-          }, {
-            type: "listWidget"
-          }]
-        };
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.values.webmap).toEqual("DEF");
       });
 
       it("based on group", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {
-          values: {
-            group: "def"
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Mapping Application",
+          data: {
+            values: {
+              group: "def"
+            }
           }
-        };
+        });
 
         mFullItem.swizzleDependencies(abc, swizzles);
         expect(abc.data.values.group).toEqual("DEF");
       });
 
       it("no webmap or group", () => {
-        const abc = {...MOCK_ITEM_PROTOTYPE};
-        abc.type = "Web Mapping Application";
-        abc.data = {
-          values: {}
-        };
+        const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {
+          type: "Web Mapping Application",
+          data: {
+            values: {}
+          }
+        });
         const expected:any = {
           values: {}
         };

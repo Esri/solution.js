@@ -1071,11 +1071,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: get cloning order", () => {
 
     it("sorts an item and its dependencies 1", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
-      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
-      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
-
-      abc.dependencies = ["ghi", "def"];
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi", "def"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
 
       const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
@@ -1084,12 +1082,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("sorts an item and its dependencies 2", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
-      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
-      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
-
-      abc.dependencies = ["ghi", "def"];
-      def.dependencies = ["ghi"];
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi", "def"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def", dependencies: ["ghi"]});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
 
       const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
@@ -1099,12 +1094,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("sorts an item and its dependencies 3", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
-      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
-      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
-
-      abc.dependencies = ["ghi"];
-      ghi.dependencies = ["def"];
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi", dependencies: ["def"]});
 
       const results:string[] = mSolution.topologicallySortItems([abc, def, ghi]);
       expect(results.length).toEqual(3);
@@ -1114,13 +1106,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("reports a multi-item cyclic dependency graph", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
-      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
-      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
-
-      abc.dependencies = ["ghi"];
-      def.dependencies = ["ghi"];
-      ghi.dependencies = ["abc"];
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def", dependencies: ["ghi"]});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi", dependencies: ["abc"]});
 
       expect(function () {
         mSolution.topologicallySortItems([abc, def, ghi]);
@@ -1128,11 +1116,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("reports a single-item cyclic dependency graph", () => {
-      const abc = {...MOCK_ITEM_PROTOTYPE, itemId: "abc"};
-      const def = {...MOCK_ITEM_PROTOTYPE, itemId: "def"};
-      const ghi = {...MOCK_ITEM_PROTOTYPE, itemId: "ghi"};
-
-      def.dependencies = ["def"];
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc"});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def", dependencies: ["def"]});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
 
       expect(function () {
         mSolution.topologicallySortItems([abc, def, ghi]);
@@ -1676,26 +1662,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("empty bundle", () => {
       const bundle:mInterfaces.ITemplate[] = [];
       const idToFind = "abc123";
-      const replacementTemplate = {
-        ...MOCK_ITEM_PROTOTYPE
-      };
-      replacementTemplate.itemId = "ghi456";
+      const replacementTemplate = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi456"});
 
       expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeFalsy();
       expect(bundle.length).toEqual(0);
     });
 
     it("item not in bundle", () => {
-      const placeholderTemplate = {
-        ...MOCK_ITEM_PROTOTYPE
-      };
-      placeholderTemplate.itemId = "xyz098";
+      const placeholderTemplate = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "xyz098"});
       const bundle:mInterfaces.ITemplate[] = [placeholderTemplate];
       const idToFind = "abc123";
-      const replacementTemplate = {
-        ...MOCK_ITEM_PROTOTYPE
-      };
-      replacementTemplate.itemId = "ghi456";
+      const replacementTemplate = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi456"});
 
       expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeFalsy();
       expect(bundle.length).toEqual(1);
@@ -1703,16 +1680,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("item in bundle", () => {
-      const placeholderTemplate = {
-        ...MOCK_ITEM_PROTOTYPE
-      };
-      placeholderTemplate.itemId = "xyz098";
+      const placeholderTemplate = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "xyz098"});
       const bundle:mInterfaces.ITemplate[] = [placeholderTemplate];
       const idToFind = "xyz098";
-      const replacementTemplate = {
-        ...MOCK_ITEM_PROTOTYPE
-      };
-      replacementTemplate.itemId = "ghi456";
+      const replacementTemplate = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi456"});
 
       expect(mSolution.replaceTemplate(bundle, idToFind, replacementTemplate)).toBeTruthy();
       expect(bundle.length).toEqual(1);
