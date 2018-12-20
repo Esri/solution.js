@@ -82,8 +82,7 @@ export function getGroupContentsTranche (
           .then(
             (allSubsequentTrancheIds:string[]) => {
               // Append all of the following tranches to this tranche and return it
-              Array.prototype.push.apply(trancheIds, allSubsequentTrancheIds);
-              resolve(trancheIds);
+              resolve(trancheIds.concat(allSubsequentTrancheIds));
             },
             reject
           );

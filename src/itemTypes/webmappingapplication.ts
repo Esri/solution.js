@@ -14,8 +14,6 @@
  | limitations under the License.
  */
 
-import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
-
 import * as mCommon from "../common";
 import { ITemplate } from "../interfaces";
 
@@ -25,18 +23,16 @@ import { ITemplate } from "../interfaces";
  * Gets the ids of the dependencies of an AGOL webapp item.
  *
  * @param fullItem A webapp item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
  * @return A promise that will resolve with list of dependent ids
  * @protected
  */
 export function getDependencies (
-  fullItem: ITemplate,
-  requestOptions: IUserRequestOptions
+  fullItem: ITemplate
 ): Promise<string[]> {
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const values = fullItem.data && fullItem.data.values;
+    const values = mCommon.getProp(fullItem, "data.values");
     if (values) {
       if (values.webmap) {
         dependencies.push(values.webmap);
@@ -62,7 +58,7 @@ export function swizzleDependencies (
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap or group
-  const values = fullItem.data && fullItem.data.values;
+  const values = mCommon.getProp(fullItem, "data.values");
   if (values) {
     if (values.webmap) {
       values.webmap = swizzles[values.webmap].id;
