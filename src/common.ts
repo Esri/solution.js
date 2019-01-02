@@ -127,6 +127,57 @@ export function getProp (
   }, obj);
 }
 
+
+/**
+ * Return an array of values from an object, based on an array of property paths
+ * 
+ * @param obj object to retrive values from
+ * @param props Array of paths into the object e.g., "data.values.webmap", where "data" is a top-level property
+ * 
+ * @return Array of the values plucked from the object
+ */
+export function getProps (
+  obj: any,
+  props:string[]
+): any {
+  return props.reduce((a, p) => {
+    const v = getProp(obj, p);
+    if (v) {
+      a.push(v);
+    }
+    return a;
+  }, []);
+}
+
+/**
+ * ```js
+ * import { cloneObject } from "@esri/hub-common";
+ * const original = { foo: "bar" }
+ * const copy = cloneObject(original)
+ * copy.foo // "bar"
+ * copy === original // false
+ * ```
+ * Make a deep clone, including arrays. Does not handle functions!
+ */
+export function cloneObject(obj: { [index: string]: any }) {
+  let clone: { [index: string]: any } = {};
+  // first check array
+  if (Array.isArray(obj)) {
+    clone = obj.map(cloneObject);
+  } else if (typeof obj === "object") {
+    for (const i in obj) {
+      if (obj[i] != null && typeof obj[i] === "object") {
+        clone[i] = cloneObject(obj[i]);
+      } else {
+        clone[i] = obj[i];
+      }
+    }
+  } else {
+    clone = obj;
+  }
+  return clone;
+}
+
 /**
  * Updates the URL of an item.
  *
