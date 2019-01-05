@@ -16,49 +16,31 @@
 
 import { listDependencies } from "adlib";
 
-import * as items from "@esri/arcgis-rest-items";
+import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import * as sharing from "@esri/arcgis-rest-sharing";
+import * as items from "@esri/arcgis-rest-items";
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-// -- Externals ------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 /**
- * The replacement information for an AGOL item id in a cloned solution.
+ * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
+ * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
+ * made before attempting to create the item.
+ * @protected
  */
-export interface ISwizzle {
-  /**
-   * The replacement AGOL id
-   */
-  id: string;
-  /**
-   * For a feature layer, the updated layer name
-   */
-  name?: string;
-  /**
-   * For a feature layer, the updated layer URL
-   */
-  url?: string;
-}
+export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 
-/**
- * The collection of mappings from original AGOL item ids to cloned values.
- */
-export interface ISwizzleHash {
-  /**
-   * A mapping from an original AGOL item id to its cloned value.
-   */
-  [id:string]: ISwizzle;
-}
-
-export function templatizeDependenciesList (
+export function doCommonTemplatizations (
   itemTemplate: any
 ): void {
-  // Templatize the list of dependency ids
-  itemTemplate.dependencies = itemTemplate.dependencies.map(
-    (id:string) => {
-      return "{{" + id + ".id}}";
-    }
-  );
+  // Use the initiative's extent
+  if (itemTemplate.item.extent !== undefined && itemTemplate.item.extent !== null) {
+    itemTemplate.item.extent = "{{initiative.extent:optional}}";
+  }
+
+  // Templatize the item's id
+  itemTemplate.item.id = "{{" + itemTemplate.itemId + ".id}}";
 
   const propertyTags:string[] = listDependencies(itemTemplate);  // //???
   console.log("item " + itemTemplate.key + " has props " + propertyTags);  // //???
@@ -123,6 +105,39 @@ export function createItemWithData (
       error => reject(error.originalMessage)
     );
   });
+}
+
+/**
+ * Creates an error object.
+ *
+ * @param itemId AGOL item id that caused failure
+ * @return Error object with message "Item or group does not exist or is inaccessible: <id>"
+ */
+export function createUnavailableItemError (
+  itemId: string
+): ArcGISRequestError {
+  return new ArcGISRequestError(
+    "Item or group does not exist or is inaccessible: " + itemId
+  );
+}
+
+/**
+ * Get a property out of a deeply nested object
+ * Does not handle anything but nested object graph
+ *
+ * @param obj Object to retrieve value from
+ * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
+ *             in obj
+ * @return Value at end of path
+ */
+export function getProp (
+  obj: { [index: string]: any },
+  path: string
+): any {
+  return path.split(".").reduce(function(prev, curr) {
+    /* istanbul ignore next no need to test undefined scenario */
+    return prev ? prev[curr] : undefined;
+  }, obj);
 }
 
 /**

@@ -16,17 +16,17 @@
 
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
-import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "./common";
+import * as mCommon from "./itemTypes/common";
+import * as mCommonTemp from "./common";
 import { ITemplate } from "./interfaces";
 import * as mDashboard from "./itemTypes/dashboard";
 import * as mGroup from "./itemTypes/group";
 import * as mWebmap from "./itemTypes/webmap";
 import * as mWebMappingApplication from "./itemTypes/webmappingapplication";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -- Externals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Fetches the item, data, and resources of an AGOL item.
@@ -110,12 +110,12 @@ export function getFullItem (
                 resolve(fullItem);
               },
               () => {
-                reject(createUnavailableItemError(id));
+                reject(mCommon.createUnavailableItemError(id));
               }
             );
           },
           () => {
-            reject(createUnavailableItemError(id));
+            reject(mCommon.createUnavailableItemError(id));
           }
         );
       }
@@ -131,8 +131,10 @@ export function getFullItem (
  */
 export function swizzleDependencies (
   fullItem: ITemplate,
-  swizzles = {} as mCommon.ISwizzleHash
+  swizzles = {} as mCommonTemp.ISwizzleHash
 ): void {
+  // //???
+  /*
   const swizzleDependenciesByType:ISwizzleFunctionLookup = {
     "Dashboard": mDashboard.swizzleDependencies,
     "Web Map": mWebmap.swizzleDependencies,
@@ -143,23 +145,11 @@ export function swizzleDependencies (
     swizzleDependenciesByType[fullItem.type](fullItem, swizzles)
   }
   swizzleCommonDependencies(fullItem, swizzles)
-}
-
-/**
- * Creates an error object.
- *
- * @param id AGOL item id that caused failure
- * @return Error object with message "Item or group does not exist or is inaccessible: <id>"
- */
-export function createUnavailableItemError (
-  id: string
-): ArcGISRequestError {
-  return new ArcGISRequestError(
-    "Item or group does not exist or is inaccessible: " + id
-  );
+  */
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
  * A mapping between a keyword and a dependency-gathering function.
@@ -180,11 +170,12 @@ interface ISwizzleFunctionLookup {
   /**
    * Keyword lookup of a function
    */
-  [name:string]: (fullItem:ITemplate, swizzles: mCommon.ISwizzleHash) => void
+  [name:string]: (fullItem:ITemplate, swizzles: mCommonTemp.ISwizzleHash) => void
 }
 
 /**
  * Removes spaces from a string and converts the first letter of each word to uppercase.
+ *
  * @param aString String to be modified
  * @return Modified string
  * @protected
@@ -226,7 +217,8 @@ export function getDependencies (
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
-    const getDependenciesByType:IDependencyFunctionLookup = {
+    // //???
+    /*const getDependenciesByType:IDependencyFunctionLookup = {
       "Dashboard": mDashboard.getDependencies,
       "Group": mGroup.getDependencies,
       "Web Map": mWebmap.getDependencies,
@@ -239,9 +231,9 @@ export function getDependencies (
         (dependencies:string[]) => resolve(removeDuplicates(dependencies)),
         reject
       );
-    } else {
+    } else {*/
       resolve([]);
-    }
+    // }
   });
 }
 
@@ -271,7 +263,7 @@ export function removeDuplicates (
  */
 function swizzleCommonDependencies (
   fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
+  swizzles: mCommonTemp.ISwizzleHash
 ): void {
   if (Array.isArray(fullItem.dependencies) && fullItem.dependencies.length > 0) {
     // Swizzle the id of each of the items in the dependencies array

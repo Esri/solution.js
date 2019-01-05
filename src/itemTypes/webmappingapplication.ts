@@ -14,25 +14,32 @@
  | limitations under the License.
  */
 
-import * as mCommon from "../common";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
+import * as mCommon from "./common";
 import { ITemplate } from "../interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -- Externals ------------------------------------------------------------------------------------------------------//
 
-/**
- * Gets the ids of the dependencies of an AGOL webapp item.
- *
- * @param fullItem A webapp item whose dependencies are sought
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function getDependencies (
-  fullItem: ITemplate
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    resolve(itemTemplate);
+  });
+}
+
+export function getDependencyIds (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const values = mCommon.getProp(fullItem, "data.values");
+    const values = mCommon.getProp(itemTemplate, "data.values");
     if (values) {
       if (values.webmap) {
         dependencies.push(values.webmap);
@@ -41,29 +48,63 @@ export function getDependencies (
         dependencies.push(values.group);
       }
     }
-
     resolve(dependencies);
   });
 }
 
-/**
- * Swizzles the ids of the dependencies of an AGOL webapp item.
- *
- * @param fullItem A webapp item whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-export function swizzleDependencies (
-  fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
-): void {
-  // Swizzle its webmap or group
-  const values = mCommon.getProp(fullItem, "data.values");
-  if (values) {
-    if (values.webmap) {
-      values.webmap = swizzles[values.webmap].id;
-    } else if (values.group) {
-      values.group = swizzles[values.group].id;
-    }
-  }
+export function convertToTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<void> {
+  return new Promise(resolve => {
+    // Remove org base URL and app id, e.g.,
+    //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
+    // to
+    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
+    // Need to add placeholder server name because otherwise AGOL makes URL null
+    const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, "");
+    const iSep = orgUrl.indexOf("//");
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
+      orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    resolve();
+  });
+}
+
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function interpolateTemplate (
+  itemTemplate: ITemplate,
+  replacements: any
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePrecreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function createItem (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePostcreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
 }

@@ -14,6 +14,7 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
 import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
@@ -22,29 +23,13 @@ import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "./common";
+import * as mCommon from "./itemTypes/common";
+import * as mCommonTemp from "./common";
+import * as mClassifier from "./itemTypes/classifier";
 import * as mFullItem from "./fullItem";
-import * as mInterfaces from "../src/interfaces";
+import * as mInterfaces from "./interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
-
-/**
- * Holds the extra information needed by feature services.
- */
-export interface IFeatureServiceProperties {
-  /**
-   * Service description
-   */
-  service: any;
-  /**
-   * Description for each layer
-   */
-  layers: any[];
-  /**
-   * Description for each table
-   */
-  tables: any[];
-}
+// -- Externals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
@@ -82,53 +67,104 @@ export function createSolution (
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
 
     // Get the items forming the solution
-    getFullItemHierarchy(solutionRootIds, requestOptions)
+    getItemTemplateHierarchy(solutionRootIds, requestOptions)
     .then(
       solution => {
-        const adjustmentPromises:Array<Promise<void>> = [];
-
-        // Prepare the Solution by adjusting its items
+        // Prepare the solution by converting its items into templates
+        const conversionPromises:Array<Promise<void>> = [];
         solution.forEach(
-          template => {
-
-            // 1. remove unwanted properties
-            template.item = removeUndesirableItemProperties(template.item);
-
-            // 2. convert some properties to placeholders
-            createPropertyPlaceholders(template.item);
-
-            // 3. for web mapping apps,
-            //    a. generalize app URL
-            if (template.type === "Web Mapping Application") {
-              generalizeWebMappingApplicationURL(template);
-
-            // 4. for items missing their application URLs,
-            //    a. fill in URL
-            } else if (template.type === "Dashboard" || template.type === "Web Map") {
-              addGeneralizedApplicationURL(template);
-
-            // 5. for feature services,
-            //    a. fill in missing data
-            //    b. get layer & table details
-            //    c. generalize layer & table URLs
-            } else if (template.type === "Feature Service") {
-              adjustmentPromises.push(fleshOutFeatureService(template, requestOptions));
-            }
+          itemTemplate => {
+            conversionPromises.push(itemTemplate.fcns.convertToTemplate(itemTemplate, requestOptions));
           }
         );
 
-        if (adjustmentPromises.length === 0) {
-          resolve(solution);
-        } else {
-          Promise.all(adjustmentPromises)
-          .then(
-            () => resolve(solution),
-            reject
-          );
-        }
+        Promise.all(conversionPromises)
+        .then(
+          () => resolve(solution),
+          reject
+        );
       },
       reject
     );
+  });
+}
+
+export function getItemTemplateHierarchy (
+  rootIds: string | string[],
+  requestOptions: IUserRequestOptions,
+  templates?: mInterfaces.ITemplate[]
+): Promise<mInterfaces.ITemplate[]> {
+  if (!templates) {
+    templates = [];
+  }
+
+  return new Promise((resolve, reject) => {
+    if (typeof rootIds === "string") {
+      // Handle a single AGOL id
+      const rootId = rootIds;
+      if (getTemplateInSolution(templates, rootId)) {
+        resolve(templates);  // Item and its dependents are already in list or are queued
+
+      } else {
+        // Add the id as a placeholder to show that it will be fetched
+        const getItemPromise = mClassifier.initItemTemplateFromId(rootId, requestOptions);
+        templates.push(createPlaceholderTemplate(rootId));
+
+        // Get the specified item
+        getItemPromise
+        .then(
+          itemTemplate => {
+            // Set the value keyed by the id
+            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
+
+            // Trace item dependencies
+            if (itemTemplate.dependencies.length === 0) {
+              resolve(templates);
+
+            } else {
+              // Get its dependents, asking each to get its dependents via
+              // recursive calls to this function
+              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+              itemTemplate.dependencies.forEach(
+                dependentId => {
+                  if (!getTemplateInSolution(templates, dependentId)) {
+                    dependentDfds.push(getItemTemplateHierarchy(dependentId, requestOptions, templates));
+                  }
+                }
+              );
+              Promise.all(dependentDfds)
+              .then(
+                () => {
+                  resolve(templates);
+                },
+                (error:ArcGISRequestError) => reject(error)
+              );
+            }
+          },
+          (error:ArcGISRequestError) => reject(error)
+        );
+      }
+
+    } else if (Array.isArray(rootIds) && rootIds.length > 0) {
+      // Handle a list of one or more AGOL ids by stepping through the list
+      // and calling this function recursively
+      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+      rootIds.forEach(rootId => {
+        getHierarchyPromise.push(getItemTemplateHierarchy(rootId, requestOptions, templates));
+      });
+      Promise.all(getHierarchyPromise)
+      .then(
+        () => {
+          resolve(templates);
+        },
+        (error:ArcGISRequestError) => reject(error)
+      );
+
+    } else {
+      reject(mCommon.createUnavailableItemError(null));
+    }
   });
 }
 
@@ -191,7 +227,15 @@ export function cloneSolution (
   access = "private"
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const swizzles:mCommon.ISwizzleHash = {};
+    // const swizzles:mCommonTemp.ISwizzleHash = {};
+    const settings:any = {
+      /*initiative: {
+        extent: null
+      },*/
+      organization: {
+        portalBaseUrl: portalUrl
+      }
+    };
     const clonedSolution:mInterfaces.ITemplate[] = [];
 
     // Don't bother creating folder if there are no items in solution
@@ -210,8 +254,16 @@ export function cloneSolution (
 
       // Clone item at top of list
       const itemId = cloneOrderChecklist.shift();
-      const template = getTemplateInSolution(solution, itemId);
-      createSwizzledItem(template, folderId, swizzles, requestOptions, orgUrl)
+      let template = getTemplateInSolution(solution, itemId);
+
+      // Interpolate template
+      mCommonTemp.templatizeDependenciesList(template);
+      const propertyTags:string[] = adlib.listDependencies(template);  // //???
+      console.log("item " + template.key + " has props " + propertyTags);  // //???
+      template = adlib.adlib(template, settings);
+
+      // reateSwizzledItem(template, folderId, swizzles, requestOptions, orgUrl)
+      createSwizzledItem(template, folderId, settings, requestOptions, orgUrl)
       .then(
         clone => {
           clonedSolution.push(clone);
@@ -261,6 +313,7 @@ export function getTemplateInSolution (
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
  * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
@@ -268,19 +321,19 @@ export function getTemplateInSolution (
  * made before attempting to create the item.
  * @protected
  */
-export const PLACEHOLDER_SERVER_NAME:string = "https://{{organization.portalBaseUrl}}";
+export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 
 /**
  * The portion of a Dashboard app URL between the server and the app id.
  * @protected
  */
-export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
+export const OPS_DASHBOARD_APP_URL_PATH:string = "/apps/opsdashboard/index.html#/";
 
 /**
  * The portion of a Webmap URL between the server and the map id.
  * @protected
  */
-export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
+export const WEBMAP_APP_URL_PATH:string = "/home/webmap/viewer.html?webmap=";
 
 /**
  * Storage of a one-way relationship.
@@ -327,12 +380,12 @@ export function addGeneralizedApplicationURL (
   fullItem: mInterfaces.ITemplate
 ): void {
   // Create URL with a placeholder server name because otherwise AGOL makes URL null; don't include item id; e.g.,
-  // Dashboard: https://<PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
-  // Web Map: https://<PLACEHOLDER_SERVER_NAME>/home/webmap/viewer.html?webmap=
+  // Dashboard: <PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
+  // Web Map: <PLACEHOLDER_SERVER_NAME>/home/webmap/viewer.html?webmap=
   if (fullItem.type === "Dashboard") {
-    fullItem.item.url = PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
+    fullItem.item.url = PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PATH;
   } else if (fullItem.type === "Web Map") {
-    fullItem.item.url = PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART;
+    fullItem.item.url = PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PATH;
   }
 }
 
@@ -345,15 +398,17 @@ export function addGeneralizedApplicationURL (
  * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
+/*
 export function addFeatureServiceLayersAndTables (
   fullItem: mInterfaces.ITemplate,
-  swizzles: mCommon.ISwizzleHash,
+  //swizzles: mCommonTemp.ISwizzleHash,
+  settings: any,
   requestOptions: IUserRequestOptions,
 ): Promise<void> {
   return new Promise((resolve, reject) => {
 
     // Sort layers and tables by id so that they're added with the same ids
-    const properties = fullItem.properties as IFeatureServiceProperties;
+    const properties:any = null; // //??? fullItem.properties as IFeatureServiceProperties;
     const layersAndTables:any[] = [];
 
     (properties.layers || []).forEach(function (layer) {
@@ -376,7 +431,8 @@ export function addFeatureServiceLayersAndTables (
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
-        swizzles, relationships, requestOptions)
+        settings, relationships, requestOptions)
+        //swizzles, relationships, requestOptions)
       .then(
         () => {
           // Restore relationships for all layers and tables in the service
@@ -416,6 +472,7 @@ export function addFeatureServiceLayersAndTables (
     }
   });
 }
+*/
 
 /**
  * Adds the members of a group to it.
@@ -481,18 +538,6 @@ function createPlaceholderTemplate (
 }
 
 /**
- * Replaces some template item properties with adlib-style placeholders.
- * @param templateItemProperty The `item` property of a template
- */
-function createPropertyPlaceholders (
-  templateItemProperty: any
-): void {
-  if (templateItemProperty.extent !== undefined && templateItemProperty.extent !== null) {
-    templateItemProperty.extent = "{{initiative.extent}}";
-  }
-}
-
-/**
  * Creates an item in a specified folder (except for Group item type).
  *
  * @param fullItem Item to be created; n.b.: this item is modified
@@ -507,16 +552,17 @@ function createPropertyPlaceholders (
 export function createSwizzledItem (
   fullItem: mInterfaces.ITemplate,
   folderId: string,
-  swizzles: mCommon.ISwizzleHash,
+  // swizzles: mCommonTemp.ISwizzleHash,
+  settings: any,
   requestOptions: IUserRequestOptions,
   orgUrl: string
 ): Promise<mInterfaces.ITemplate> {
   return new Promise<mInterfaces.ITemplate>((resolve, reject) => {
 
-    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.ITemplate;
+    let clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.ITemplate;
 
     // Swizzle item's dependencies
-    mFullItem.swizzleDependencies(clonedItem, swizzles);
+    // //???mFullItem.swizzleDependencies(clonedItem, swizzles);
 
     // Feature Services
     if (clonedItem.type === "Feature Service") {
@@ -537,19 +583,28 @@ export function createSwizzledItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
+          // swizzles[clonedItem.item.id] = {
+          settings[clonedItem.itemId] = {
             id: createResponse.serviceItemId,
             url: createResponse.serviceurl
           };
-          clonedItem.itemId = clonedItem.item.id = createResponse.serviceItemId;
+          clonedItem.itemId = createResponse.serviceItemId;
+          clonedItem = adlib.adlib(clonedItem, settings);
+          const propertyTags = adlib.listDependencies(clonedItem);  // //???
+          if (propertyTags.length !== 0) {
+            console.error("item " + clonedItem.key + " has unadlibbed props " + propertyTags);  // //???
+          }
           clonedItem.item.url = createResponse.serviceurl;
 
+          // //???
+          /*
           // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables(clonedItem, swizzles, requestOptions)
+          //addFeatureServiceLayersAndTables(clonedItem, swizzles, requestOptions)
+          addFeatureServiceLayersAndTables(clonedItem, settings, requestOptions)
           .then(
-            () => resolve(clonedItem),
+            () =>*/ resolve(clonedItem) /*,
             reject
-          );
+          );*/
         },
         reject
       );
@@ -569,10 +624,16 @@ export function createSwizzledItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
+          // swizzles[clonedItem.item.id] = {
+          settings[clonedItem.itemId] = {
             id: createResponse.group.id
           };
-          clonedItem.itemId = clonedItem.item.id = createResponse.group.id;
+          clonedItem.itemId = createResponse.id;
+          clonedItem = adlib.adlib(clonedItem, settings);
+          const propertyTags = adlib.listDependencies(clonedItem);  // //???
+          if (propertyTags.length !== 0) {
+            console.error("item " + clonedItem.key + " has unadlibbed props " + propertyTags);  // //???
+          }
 
           // Add the group's items to it
           addGroupMembers(clonedItem, requestOptions)
@@ -600,16 +661,22 @@ export function createSwizzledItem (
       .then(
         createResponse => {
           // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
+          // swizzles[clonedItem.item.id] = {
+          settings[clonedItem.itemId] = {
             id: createResponse.id
           };
-          clonedItem.itemId = clonedItem.item.id = createResponse.id;
+          clonedItem.itemId = createResponse.id;
+          clonedItem = adlib.adlib(clonedItem, settings);
+          const propertyTags = adlib.listDependencies(clonedItem);  // //???
+          if (propertyTags.length !== 0) {
+            console.error("item " + clonedItem.key + " has unadlibbed props " + propertyTags);  // //???
+          }
 
           // Update the app URL of a dashboard, webmap, or web mapping app
           if (clonedItem.type === "Dashboard" ||
               clonedItem.type === "Web Map" ||
               clonedItem.type === "Web Mapping Application") {
-            updateApplicationURL(clonedItem, requestOptions, orgUrl)
+            mCommon.updateItemURL(clonedItem.item.id, clonedItem.item.url, requestOptions)
             .then(
               () => resolve(clonedItem),
               error => reject(error.response.error.message)
@@ -622,65 +689,6 @@ export function createSwizzledItem (
       );
     }
 
-  });
-}
-
-/**
- * Fills in missing data, including full layer and table definitions, in a feature services' definition.
- *
- * @param fullItem Feature service item, data, dependencies definition to be modified
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function fleshOutFeatureService (
-  fullItem: mInterfaces.ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const properties:IFeatureServiceProperties = {
-      service: {},
-      layers: [],
-      tables: []
-    };
-
-    // To have enough information for reconstructing the service, we'll supplement
-    // the item and data sections with sections for the service, full layers, and
-    // full tables
-
-    // Get the service description
-    const serviceUrl = fullItem.item.url;
-    request(serviceUrl + "?f=json", requestOptions)
-    .then(
-      serviceData => {
-        // Fill in some missing parts
-        // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["name"] = fullItem.item["name"] ||
-          getFirstUsableName(serviceData["layers"]) ||
-          getFirstUsableName(serviceData["tables"]) ||
-          "Feature Service";
-        serviceData["snippet"] = fullItem.item["snippet"];
-        serviceData["description"] = fullItem.item["description"];
-
-        properties.service = serviceData;
-
-        // Get the affiliated layer and table items
-        Promise.all([
-          getLayers(serviceUrl, serviceData["layers"], requestOptions),
-          getLayers(serviceUrl, serviceData["tables"], requestOptions)
-        ])
-        .then(
-          results => {
-            properties.layers = results[0];
-            properties.tables = results[1];
-            fullItem.properties = properties;
-            resolve();
-          },
-          reject
-        );
-      },
-      reject
-    );
   });
 }
 
@@ -702,29 +710,6 @@ function generalizeWebMappingApplicationURL (
   const iSep = orgUrl.indexOf("//");
   fullItem.item.url = PLACEHOLDER_SERVER_NAME +  // add placeholder server name
     orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
-}
-
-/**
- * Gets the name of the first layer in list of layers that has a name
- * @param layerList List of layers to use as a name source
- * @return The name of the found layer or an empty string if no layers have a name
- * @protected
- */
-function getFirstUsableName (
-  layerList: any[]
-): string {
-  let name = "";
-  // Return the first layer name found
-  if (Array.isArray(layerList) && layerList.length > 0) {
-    layerList.some(layer => {
-      if (layer["name"] !== "") {
-        name = layer["name"];
-        return true;
-      }
-      return false;
-    });
-  }
-  return name;
 }
 
 /**
@@ -768,10 +753,7 @@ export function getFullItemHierarchy (
   }
 
   return new Promise((resolve, reject) => {
-    if (!rootIds || (Array.isArray(rootIds) && rootIds.length === 0)) {
-      reject(mFullItem.createUnavailableItemError(null));
-
-    } else if (typeof rootIds === "string") {
+    if (typeof rootIds === "string") {
       // Handle a single AGOL id
       const rootId = rootIds;
       if (getTemplateInSolution(templates, rootId)) {
@@ -818,7 +800,7 @@ export function getFullItemHierarchy (
         );
       }
 
-    } else {
+    } else if (Array.isArray(rootIds) && rootIds.length > 0) {
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
@@ -833,46 +815,10 @@ export function getFullItemHierarchy (
         },
         (error:ArcGISRequestError) => reject(error)
       );
+
+    } else {
+      reject(mCommon.createUnavailableItemError(null));
     }
-  });
-}
-
-/**
- * Gets the full definitions of the layers affiliated with a hosted service.
- *
- * @param serviceUrl URL to hosted service
- * @param layerList List of layers at that service
- * @param requestOptions Options for the request
- * @return A promise that will resolve with a list of the enhanced layers
- * @protected
- */
-function getLayers (
-  serviceUrl: string,
-  layerList: any[],
-  requestOptions: IUserRequestOptions
-): Promise<any[]> {
-  return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
-      resolve([]);
-    }
-
-    const requestsDfd:Array<Promise<any>> = [];
-    layerList.forEach(layer => {
-      requestsDfd.push(request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions));
-    });
-
-    // Wait until all layers are heard from
-    Promise.all(requestsDfd)
-    .then(
-      layers => {
-        // Remove the editFieldsInfo because it references fields that may not be in the layer/table
-        layers.forEach(layer => {
-          layer["editFieldsInfo"] = null;
-        });
-        resolve(layers);
-      },
-      reject
-    );
   });
 }
 
@@ -1079,7 +1025,8 @@ function updateFeatureServiceDefinition(
   serviceItemId: string,
   serviceUrl: string,
   listToAdd: any[],
-  swizzles: mCommon.ISwizzleHash,
+  // swizzles: mCommonTemp.ISwizzleHash,
+  settings: any,
   relationships: IRelationship,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
@@ -1118,7 +1065,8 @@ function updateFeatureServiceDefinition(
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
         () => {
-          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+          // updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships, requestOptions)
           .then(
             () => resolve(),
             reject

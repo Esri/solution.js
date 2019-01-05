@@ -17,30 +17,41 @@
 import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "../common";
+import * as mCommon from "./common";
 import { ITemplate } from "../interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -------------------------------------------------------------------------------------------------------------------//
 
 /**
- * Gets the ids of the dependencies of an AGOL webmap item.
- *
- * @param fullItem A webmap item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
+ * The portion of a Webmap URL between the server and the map id.
  * @protected
  */
-export function getDependencies (
-  fullItem: ITemplate,
-  requestOptions: IUserRequestOptions
+const WEBMAP_APP_URL_PATH:string = "/home/webmap/viewer.html?webmap=";
+
+// -- Externals ------------------------------------------------------------------------------------------------------//
+
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    resolve(itemTemplate);
+  });
+}
+
+export function getDependencyIds (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];
 
-    if (fullItem.data) {
+    if (itemTemplate.data) {
       dependencies = [
-        ...getWebmapLayerIds(fullItem.data.operationalLayers),
-        ...getWebmapLayerIds(fullItem.data.tables)
+        ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
+        ...getWebmapLayerIds(itemTemplate.data.tables)
       ];
     }
 
@@ -48,44 +59,58 @@ export function getDependencies (
   });
 }
 
-/**
- * Swizzles the ids of the dependencies of an AGOL webmap item.
- *
- * @param fullItem A webmap item whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-export function swizzleDependencies (
-  fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
-): void {
-  if (fullItem.data) {
-    // Swizzle its map layers
-    if (Array.isArray(fullItem.data.operationalLayers)) {
-      fullItem.data.operationalLayers.forEach((layer:ILayer) => {
-        const itsSwizzle = swizzles[layer.itemId];
-        if (itsSwizzle) {
-          layer.title = itsSwizzle.name;
-          layer.itemId = itsSwizzle.id;
-          layer.url = itsSwizzle.url + layer.url.substr(layer.url.lastIndexOf("/"));
-        }
-      });
-    }
-    // Swizzle its tables
-    if (Array.isArray(fullItem.data.tables)) {
-      fullItem.data.tables.forEach((layer:ILayer) => {
-        const itsSwizzle = swizzles[layer.itemId];
-        if (itsSwizzle) {
-          layer.title = itsSwizzle.name;
-          layer.itemId = itsSwizzle.id;
-          layer.url = itsSwizzle.url + layer.url.substr(layer.url.lastIndexOf("/"));
-        }
-      });
-    }
-  }
+export function convertToTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<void> {
+  return new Promise(resolve => {
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    // Templatize the app URL
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PATH + itemTemplate.item.id;
+
+    resolve();
+  });
+}
+
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function interpolateTemplate (
+  itemTemplate: ITemplate,
+  replacements: any
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePrecreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function createItem (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePostcreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
  * Extracts the AGOL id or URL for each layer or table object in a list.
@@ -98,14 +123,14 @@ export function getWebmapLayerIds (
   layerList: any
 ): string[] {
   return !Array.isArray(layerList) ? [] :
-  layerList.reduce(
-    (ids:string[], layer:any) => {
-      const itemId = layer.itemId as string;
-      if (itemId) {
-        ids.push(itemId);
-      }
-      return ids;
-    },
-    [] as string[]
-  );
+    layerList.reduce(
+      (ids:string[], layer:any) => {
+        const itemId = layer.itemId as string;
+        if (itemId) {
+          ids.push(itemId);
+        }
+        return ids;
+      },
+      [] as string[]
+    );
 }

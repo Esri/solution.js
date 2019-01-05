@@ -19,7 +19,7 @@ import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "./solution";
 import { IUserRequestOptions } from '@esri/arcgis-rest-auth';
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -- Externals ------------------------------------------------------------------------------------------------------//
 
 /**
  * A recursive structure describing the hierarchy of a collection of AGOL items.
@@ -136,6 +136,7 @@ export function createSolutionStorymap (
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
  * Creates a Storymap AGOL item.

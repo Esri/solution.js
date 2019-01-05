@@ -16,10 +16,100 @@
 
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "../common";
+import * as mCommon from "./common";
 import { ITemplate } from "../interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+/**
+ * The portion of a Dashboard app URL between the server and the app id.
+ * @protected
+ */
+export const OPS_DASHBOARD_APP_URL_PATH:string = "/apps/opsdashboard/index.html#/";
+
+// -- Externals ------------------------------------------------------------------------------------------------------//
+
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    resolve(itemTemplate);
+  });
+}
+
+export function getDependencyIds (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<string[]> {
+  return new Promise(resolve => {
+    const dependencies:string[] = [];
+
+    const widgets:IDashboardWidget[] = mCommon.getProp(itemTemplate, "data.widgets");
+    if (widgets) {
+      widgets.forEach((widget:any) => {
+        if (widget.type === "mapWidget") {
+          dependencies.push(widget.itemId);
+        }
+      })
+    }
+
+    resolve(dependencies);
+  });
+}
+
+export function convertToTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<void> {
+  return new Promise(resolve => {
+    // Templatize the app URL
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PATH;
+
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    resolve();
+  });
+}
+
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function interpolateTemplate (
+  itemTemplate: ITemplate,
+  replacements: any
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePrecreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function createItem (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+export function handlePostcreateLogic (
+  itemTemplate: ITemplate
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);// //???
+  });
+}
+
+// -- Internals ------------------------------------------------------------------------------------------------------//
 
 /**
  * The relevant elements of a Dashboard widget.
@@ -34,54 +124,4 @@ interface IDashboardWidget {
    * Dashboard widget type
    */
   type: string;
-}
-
-/**
- * Gets the ids of the dependencies of an AGOL dashboard item.
- *
- * @param fullItem A dashboard item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function getDependencies (
-  fullItem: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    const dependencies:string[] = [];
-
-    const widgets:IDashboardWidget[] = mCommon.getProp(fullItem, "data.widgets");
-    if (widgets) {
-      widgets.forEach((widget:any) => {
-        if (widget.type === "mapWidget") {
-          dependencies.push(widget.itemId);
-        }
-      })
-    }
-
-    resolve(dependencies);
-  });
-}
-
-/**
- * Swizzles the ids of the dependencies of an AGOL dashboard item.
- *
- * @param fullItem A dashboard item whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-export function swizzleDependencies (
-  fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
-): void {
-  // Swizzle its webmap(s)
-  const widgets:IDashboardWidget[] = mCommon.getProp(fullItem, "data.widgets");
-  if (Array.isArray(widgets)) {
-    widgets.forEach(widget => {
-      if (widget.type === "mapWidget") {
-        widget.itemId = swizzles[widget.itemId].id;
-      }
-    });
-  }
 }

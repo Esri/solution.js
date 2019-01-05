@@ -14,8 +14,6 @@
  | limitations under the License.
  */
 
-import * as groups from "@esri/arcgis-rest-groups";
-import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -38,30 +36,18 @@ export function getDependencyIds (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const pagingRequest:IPagingParamsRequestOptions = {
-      paging: {
-        start: 0,
-        num: 100
-      },
-      ...requestOptions
-    };
-
-    // Fetch group items
-    getGroupContentsTranche(itemTemplate.item.id, pagingRequest)
-    .then(
-      contents => resolve(contents),
-      reject
-    );
+  return new Promise(resolve => {
+    resolve([]);
   });
 }
 
 export function convertToTemplate (
-  itemTemplate: ITemplate
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
 ): Promise<void> {
   return new Promise(resolve => {
 
-    // Common templatizations: item id, item dependency ids
+    // Common templatizations: extent, item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
     resolve();
@@ -103,48 +89,3 @@ export function handlePostcreateLogic (
   });
 }
 
-// -- Internals ------------------------------------------------------------------------------------------------------//
-// (export decoration is for unit testing)
-
-/**
- * Gets the ids of a group's contents.
- *
- * @param id Group id
- * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
- *                      be modified by this routine
- * @return A promise that will resolve with a list of the ids of the group's contents
- * @protected
- */
-export function getGroupContentsTranche (
-  id: string,
-  pagingRequest: IPagingParamsRequestOptions
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    // Fetch group items
-    groups.getGroupContent(id, pagingRequest)
-    .then(
-      contents => {
-        // Extract the list of content ids from the JSON returned
-        const trancheIds:string[] = contents.items.map((item:any) => item.id);
-
-        // Are there more contents to fetch?
-        if (contents.nextStart > 0) {
-          pagingRequest.paging.start = contents.nextStart;
-          getGroupContentsTranche(id, pagingRequest)
-          .then(
-            (allSubsequentTrancheIds:string[]) => {
-              // Append all of the following tranches to this tranche and return it
-              resolve(trancheIds.concat(allSubsequentTrancheIds));
-            },
-            reject
-          );
-        } else {
-          resolve(trancheIds);
-        }
-      },
-      error => {
-        reject(error.originalMessage);
-      }
-    );
-  });
-}
