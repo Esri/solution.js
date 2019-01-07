@@ -14,7 +14,9 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
 import * as groups from "@esri/arcgis-rest-groups";
+import * as sharing from "@esri/arcgis-rest-sharing";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -30,6 +32,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Common templatizations: item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
     resolve(itemTemplate);
   });
 }
@@ -56,19 +61,49 @@ export function getDependencyIds (
   });
 }
 
-export function convertToTemplate (
-  itemTemplate: ITemplate
-): Promise<void> {
-  return new Promise(resolve => {
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-    // Common templatizations: item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
+export function deployItem (
+  itemTemplate: ITemplate,
+  folderId: string,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    const options = {
+      group: itemTemplate.item,
+      ...requestOptions
+    };
 
-    resolve();
+    // Make the item title unique
+    options.group.title += "_" + mCommon.getTimestamp();
+
+    // Create the item
+    groups.createGroup(options)
+    .then(
+      createResponse => {
+        // Add the new item to the swizzle list
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.group.id
+        };
+        itemTemplate.itemId = createResponse.id;
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
+        if (propertyTags.length !== 0) {
+          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
+        }
+
+        // Add the group's items to it
+        addGroupMembers(itemTemplate, requestOptions)  // //???
+        .then(
+          () => resolve(itemTemplate),
+          reject
+        );
+      },
+      error => reject(error.response.error.message)
+    );
   });
 }
-
-// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function interpolateTemplate (
   itemTemplate: ITemplate,
@@ -105,6 +140,51 @@ export function handlePostcreateLogic (
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 // (export decoration is for unit testing)
+
+/**
+ * Adds the members of a group to it.
+ *
+ * @param fullItem Group
+ * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function addGroupMembers (
+  fullItem: ITemplate,
+  requestOptions: IUserRequestOptions
+):Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    // Add each of the group's items to it
+    if (fullItem.dependencies.length > 0) {
+      const awaitGroupAdds:Array<Promise<null>> = [];
+      fullItem.dependencies.forEach(depId => {
+        awaitGroupAdds.push(new Promise((resolve2, reject2) => {
+          sharing.shareItemWithGroup({
+            id: depId,
+            groupId: fullItem.item.id,
+            ...requestOptions
+          })
+          .then(
+            () => {
+              resolve2();
+            },
+            error => reject2(error.response.error.message)
+          );
+        }));
+      });
+      // After all items have been added to the group
+      Promise.all(awaitGroupAdds)
+      .then(
+        () => resolve(),
+        reject
+      );
+    } else {
+      // No items in this group
+      resolve();
+    }
+  });
+}
 
 /**
  * Gets the ids of a group's contents.

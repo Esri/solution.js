@@ -40,7 +40,7 @@ export function doCommonTemplatizations (
   }
 
   // Templatize the item's id
-  itemTemplate.item.id = "{{" + itemTemplate.itemId + ".id}}";
+  itemTemplate.itemId = itemTemplate.item.id = templatize(itemTemplate.item.id);
 
   const propertyTags:string[] = listDependencies(itemTemplate);  // //???
   console.log("item " + itemTemplate.key + " has props " + propertyTags);  // //???
@@ -138,6 +138,49 @@ export function getProp (
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
   }, obj);
+}
+
+export function deTemplatize (
+  id: string
+): string {
+  if (id.startsWith("{{")) {
+    return id.substring(2, id.indexOf("."));
+  } else {
+    return id;
+  }
+}
+
+/**
+ * Creates a timestamp string using the current date and time.
+ *
+ * @return Timestamp
+ * @protected
+ */
+export function getTimestamp (
+): string {
+  return (new Date()).getTime().toString();
+}
+
+export function templatize (
+  id: string,
+  param = "id"
+): string {
+  if (id.startsWith("{{")) {
+    return id;
+  } else {
+    return "{{" + id + "." + param + "}}";
+  }
+}
+
+export function templatizeList (
+  ids: string[],
+  param = "id"
+): string[] {
+  return ids.map(
+    (id:string) => {
+      return templatize(id, param);
+    }
+  );
 }
 
 /**

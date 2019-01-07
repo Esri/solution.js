@@ -14,6 +14,8 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
+import * as items from "@esri/arcgis-rest-items";
 import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -37,6 +39,18 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    // Templatize the app URL
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PATH + itemTemplate.item.id;
+
+    // Templatize the map layer ids
+    if (itemTemplate.data) {
+      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
+      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
+    }
+
     resolve(itemTemplate);
   });
 }
@@ -59,22 +73,50 @@ export function getDependencyIds (
   });
 }
 
-export function convertToTemplate (
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function deployItem (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<void> {
-  return new Promise(resolve => {
-    // Common templatizations: extent, item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
+  folderId: string,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    const options:items.IItemAddRequestOptions = {
+      item: itemTemplate.item,
+      folder: folderId,
+      ...requestOptions
+    };
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
+    }
 
-    // Templatize the app URL
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PATH + itemTemplate.item.id;
+    // Create the item
+    items.createItemInFolder(options)
+    .then(
+      createResponse => {
+        // Add the new item to the settings
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.id
+        };
+          itemTemplate.itemId = createResponse.id;
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
+        if (propertyTags.length !== 0) {
+          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
+        }
 
-    resolve();
+        // Update the app URL of a dashboard, webmap, or web mapping app
+          mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            error => reject(error.response.error.message)
+          );
+      },
+      error => reject(error.response.error.message)
+    );
   });
 }
-
-// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function interpolateTemplate (
   itemTemplate: ITemplate,
@@ -133,4 +175,16 @@ export function getWebmapLayerIds (
       },
       [] as string[]
     );
+}
+
+export function templatizeWebmapLayerIdsAndUrls (
+  layerList: any
+): void {
+  layerList.forEach(
+    (layer:any) => {
+      const layerId = layer.url.substr((layer.url as string).lastIndexOf("/"));
+      layer.itemId = mCommon.templatize(layer.itemId);
+      layer.url = mCommon.templatize(mCommon.deTemplatize(layer.itemId), "url") + layerId;
+    }
+  );
 }

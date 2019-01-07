@@ -28,6 +28,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
     resolve(itemTemplate);
   });
 }
@@ -41,20 +44,18 @@ export function getDependencyIds (
   });
 }
 
-export function convertToTemplate (
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function deployItem (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<void> {
-  return new Promise(resolve => {
-
-    // Common templatizations: extent, item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
-
-    resolve();
+  folderId: string,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    resolve(itemTemplate);
   });
 }
-
-// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function interpolateTemplate (
   itemTemplate: ITemplate,

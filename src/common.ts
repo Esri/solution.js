@@ -50,20 +50,6 @@ export interface ISwizzleHash {
   [id:string]: ISwizzle;
 }
 
-export function templatizeDependenciesList (
-  itemTemplate: any
-): void {
-  // Templatize the list of dependency ids
-  itemTemplate.dependencies = itemTemplate.dependencies.map(
-    (id:string) => {
-      return "{{" + id + ".id}}";
-    }
-  );
-
-  const propertyTags:string[] = listDependencies(itemTemplate);  // //???
-  console.log("item " + itemTemplate.key + " has props " + propertyTags);  // //???
-}
-
 /**
  * Publishes an item and its data as an AGOL item.
  *

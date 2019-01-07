@@ -14,6 +14,8 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
+import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -28,6 +30,19 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    // Remove org base URL and app id, e.g.,
+    //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
+    // to
+    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
+    // Need to add placeholder server name because otherwise AGOL makes URL null
+    const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, mCommon.templatize(itemTemplate.item.id));
+    const iSep = orgUrl.indexOf("//");
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
+      orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+
     resolve(itemTemplate);
   });
 }
@@ -52,29 +67,50 @@ export function getDependencyIds (
   });
 }
 
-export function convertToTemplate (
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function deployItem (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<void> {
-  return new Promise(resolve => {
-    // Remove org base URL and app id, e.g.,
-    //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
-    // to
-    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
-    // Need to add placeholder server name because otherwise AGOL makes URL null
-    const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, "");
-    const iSep = orgUrl.indexOf("//");
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
-      orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+  folderId: string,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    const options:items.IItemAddRequestOptions = {
+      item: itemTemplate.item,
+      folder: folderId,
+      ...requestOptions
+    };
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
+    }
 
-    // Common templatizations: extent, item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
+    // Create the item
+    items.createItemInFolder(options)
+    .then(
+      createResponse => {
+        // Add the new item to the settings
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.id
+        };
+        itemTemplate.itemId = createResponse.id;
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
+        if (propertyTags.length !== 0) {
+          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
+        }
 
-    resolve();
+        // Update the app URL of a dashboard, webmap, or web mapping app
+          mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            error => reject(error.response.error.message)
+          );
+      },
+      error => reject(error.response.error.message)
+    );
   });
 }
-
-// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function interpolateTemplate (
   itemTemplate: ITemplate,

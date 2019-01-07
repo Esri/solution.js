@@ -69,8 +69,8 @@ define([
         display += '<li><img class="item-type-icon margin-right-quarter" src="' + itemIcon +
           '" width="16" height="16" alt="">&nbsp;&nbsp;';
         if (createLinks) {
-          display += '<a href="' + orgUrl + webpage + '.html?id=' + hierarchyItem.id + '" target="_blank">' +
-            itemLabel + '</a>';
+          display += '<a href="' + orgUrl + webpage + '.html?id=' + this.deTemplatizeId(hierarchyItem.id) + 
+            '" target="_blank">' + itemLabel + '</a>';
         } else {
           display += itemLabel;
         }
@@ -106,6 +106,14 @@ define([
       return display;
     },
 
+    deTemplatizeId: function (id) {
+      if (id.startsWith("{{")) {
+        return id.substring(2, id.indexOf("."));
+      } else {
+        return id;
+      }
+    },
+    
     /**
      * Creates a display of solution item, its JSON, and the hierarchy of items that it contains.
      * @param {string} publishedSolutionId

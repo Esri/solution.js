@@ -63,7 +63,9 @@ export interface ITemplate {
 export interface IItemTypeModule {
   completeItemTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
   getDependencyIds(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
-  convertToTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<void>;
+
+  deployItem(itemTemplate:ITemplate, folderId:string, settings:any, requestOptions:IUserRequestOptions):
+    Promise<ITemplate>;
 
   interpolateTemplate(itemTemplate:ITemplate, replacements:any): Promise<ITemplate>;
   handlePrecreateLogic(itemTemplate:ITemplate): Promise<ITemplate>;

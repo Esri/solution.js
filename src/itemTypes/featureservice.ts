@@ -14,6 +14,8 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
+import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -29,6 +31,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
     fleshOutFeatureService(itemTemplate, requestOptions)
     .then(
       () => resolve(itemTemplate),
@@ -46,20 +51,66 @@ export function getDependencyIds (
   });
 }
 
-export function convertToTemplate (
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+/**
+ * Creates an item in a specified folder (except for Group item type).
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param requestOptions Options for the request
+ * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
+ * @return A promise that will resolve with the id of the created item
+ * @protected
+ */
+export function deployItem (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<void> {
-  return new Promise(resolve => {
+  folderId: string,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise((resolve, reject) => {
+    const options = {
+      item: itemTemplate.item,
+      folderId,
+      ...requestOptions
+    }
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
+    }
 
-    // Common templatizations: extent, item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
+    // Make the item name unique
+    options.item.name += "_" + mCommon.getTimestamp();
 
-    resolve();
+    // Create the item
+    featureServiceAdmin.createFeatureService(options)
+    .then(
+      createResponse => {
+        // Add the new item to the settings list
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.serviceItemId,
+          url: createResponse.serviceurl
+        };
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
+        if (propertyTags.length !== 0) {
+          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
+        }
+        itemTemplate.item.url = createResponse.serviceurl;
+
+        // Add the feature service's layers and tables to it
+        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+        .then(
+          () => resolve(itemTemplate),
+          reject
+        );
+      },
+      reject
+    );
   });
 }
-
-// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function interpolateTemplate (
   itemTemplate: ITemplate,
@@ -115,6 +166,98 @@ interface IFeatureServiceProperties {
 }
 
 /**
+ * Storage of a one-way relationship.
+ * @protected
+ */
+interface IRelationship {
+  /**
+   * Relationship id and the ids of the items that it is related to.
+   */
+  [id:string]: string[];
+}
+
+/**
+ * Adds the layers and tables of a feature service to it and restores their relationships.
+ *
+ * @param itemTemplate Feature service
+ * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function addFeatureServiceLayersAndTables (
+  itemTemplate: ITemplate,
+  settings: any,
+  requestOptions: IUserRequestOptions,
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+
+    // Sort layers and tables by id so that they're added with the same ids
+    const properties:any = itemTemplate.properties as IFeatureServiceProperties;
+    const layersAndTables:any[] = [];
+
+    (properties.layers || []).forEach(function (layer:any) {
+      layersAndTables[layer.id] = {
+        item: layer,
+        type: "layer"
+      };
+    });
+
+    (properties.tables || []).forEach(function (table:any) {
+      layersAndTables[table.id] = {
+        item: table,
+        type: "table"
+      };
+    });
+
+    // Hold a hash of relationships
+    const relationships:IRelationship = {};
+
+    // Add the service's layers and tables to it
+    if (layersAndTables.length > 0) {
+      updateFeatureServiceDefinition(itemTemplate.item.id, itemTemplate.item.url, layersAndTables,
+        settings, relationships, requestOptions)
+      .then(
+        () => {
+          // Restore relationships for all layers and tables in the service
+          const awaitRelationshipUpdates:Array<Promise<void>> = [];
+          Object.keys(relationships).forEach(
+            id => {
+              awaitRelationshipUpdates.push(new Promise(resolveFn => {
+                const options = {
+                  params: {
+                    updateFeatureServiceDefinition: {
+                      relationships: relationships[id]
+                    }
+                  },
+                  ...requestOptions
+                };
+                featureServiceAdmin.addToServiceDefinition(itemTemplate.item.url + "/" + id, options)
+                .then(
+                  () => {
+                    resolve();
+                  },
+                  resolveFn);
+              }));
+            }
+          );
+          Promise.all(awaitRelationshipUpdates)
+          .then(
+            () => {
+              resolve();
+            },
+            reject
+          );
+        },
+        reject
+      );
+    } else {
+      resolve();
+    }
+  });
+}
+
+/**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
  * @param itemTemplate Feature service item, data, dependencies definition to be modified
@@ -139,6 +282,7 @@ function fleshOutFeatureService (
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
+    itemTemplate.item.url = mCommon.templatize(itemTemplate.itemId, "url");
     request(serviceUrl + "?f=json", requestOptions)
     .then(
       serviceData => {
@@ -224,13 +368,86 @@ function getLayers (
     Promise.all(requestsDfd)
     .then(
       layers => {
-        // Remove the editFieldsInfo because it references fields that may not be in the layer/table
+        // Remove the editFieldsInfo because it references fields that may not be in the layer/table;
+        // templatize the layer's serviceItemId
         layers.forEach(layer => {
           layer["editFieldsInfo"] = null;
+          layer["serviceItemId"] = mCommon.templatize(layer["serviceItemId"]);
         });
         resolve(layers);
       },
       reject
     );
+  });
+}
+
+/**
+ * Updates a feature service with a list of layers and/or tables.
+ *
+ * @param serviceItemId AGOL id of feature service
+ * @param serviceUrl URL of feature service
+ * @param listToAdd List of layers and/or tables to add
+ * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve when the feature service has been updated
+ * @protected
+ */
+function updateFeatureServiceDefinition(
+  serviceItemId: string,
+  serviceUrl: string,
+  listToAdd: any[],
+  // swizzles: mCommonTemp.ISwizzleHash,
+  settings: any,
+  relationships: IRelationship,
+  requestOptions: IUserRequestOptions
+): Promise<void> {
+  // Launch the adds serially because server doesn't support parallel adds
+  return new Promise((resolve, reject) => {
+    if (listToAdd.length > 0) {
+      const toAdd = listToAdd.shift();
+
+      const item = toAdd.item;
+      const originalId = item.id;
+      delete item.serviceItemId;  // Updated by updateFeatureServiceDefinition
+
+      // Need to remove relationships and add them back individually after all layers and tables
+      // have been added to the definition
+      if (Array.isArray(item.relationships) && item.relationships.length > 0) {
+        relationships[originalId] = item.relationships;
+        item.relationships = [];
+      }
+
+      const options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
+        ...requestOptions
+      };
+
+      if (toAdd.type === "layer") {
+        item.adminLayerInfo = {  // ???
+          "geometryField": {
+            "name": "Shape",
+            "srid": 102100
+          }
+        };
+        options.layers = [item];
+      } else {
+        options.tables = [item];
+      }
+
+      featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
+      .then(
+        () => {
+          // updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
+          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships, requestOptions)
+          .then(
+            () => resolve(),
+            reject
+          );
+        },
+        reject
+      );
+    } else {
+      resolve();
+    }
   });
 }

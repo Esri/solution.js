@@ -57,6 +57,7 @@ export function initItemTemplateFromId (
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     let itemTemplate:ITemplate;
+    itemId = mCommon.deTemplatize(itemId);
 
     // Request item base section
     items.getItem(itemId, requestOptions)
@@ -107,7 +108,7 @@ export function initItemTemplateFromId (
               responses2 => {
                 const [completionResponse, dependenciesResponse] = responses2;
                 itemTemplate = completionResponse;
-                itemTemplate.dependencies = removeDuplicates(dependenciesResponse);
+                itemTemplate.dependencies = mCommon.templatizeList(removeDuplicates(dependenciesResponse));
                 resolve(itemTemplate);
               },
               reject
@@ -153,8 +154,9 @@ export function initItemTemplateFromId (
 
 export function initItemTemplateFromJSON (
   itemTemplate:ITemplate
-): void {
+): ITemplate {
   itemTemplate.fcns = moduleMap[itemTemplate.type.toLowerCase()] || GenericModule;
+  return itemTemplate;
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
