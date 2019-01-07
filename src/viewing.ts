@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
-import * as mCommon from "./common";
+import * as mCommon from "./itemTypes/common";
 import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "./solution";
 import { IUserRequestOptions } from '@esri/arcgis-rest-auth';

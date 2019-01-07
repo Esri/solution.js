@@ -15,17 +15,12 @@
  */
 
 import * as adlib from "adlib";
-import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
-import * as sharing from "@esri/arcgis-rest-sharing";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./itemTypes/common";
-import * as mCommonTemp from "./common";
 import * as mClassifier from "./itemTypes/classifier";
-import * as mFullItem from "./fullItem";
 import * as mInterfaces from "./interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
@@ -163,10 +158,9 @@ export function cloneSolution (
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
       // Interpolate template
-      const propertyTags:string[] = adlib.listDependencies(itemTemplate);  // //???
-      console.log("item " + itemTemplate.key + " has props " + propertyTags);  // //???
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
+      // Deploy it
       itemTemplate.fcns.deployItem(itemTemplate, folderId, settings, requestOptions)
       .then(
         itemClone => {
@@ -446,7 +440,7 @@ export function topologicallySortItems (
   // 3 return the linked list of vertices
 
   const buildList:string[] = [];  // list of ordered vertices--don't need linked list because
-                                // we just want relative ordering
+                                  // we just want relative ordering
 
   const verticesToVisit:ISortVertex = {};
   fullItems.forEach(function(template) {

@@ -19,7 +19,7 @@ import { listDependencies } from "adlib";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import * as items from "@esri/arcgis-rest-items";
-import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -41,9 +41,6 @@ export function doCommonTemplatizations (
 
   // Templatize the item's id
   itemTemplate.itemId = itemTemplate.item.id = templatize(itemTemplate.item.id);
-
-  const propertyTags:string[] = listDependencies(itemTemplate);  // //???
-  console.log("item " + itemTemplate.key + " has props " + propertyTags);  // //???
 }
 
 /**

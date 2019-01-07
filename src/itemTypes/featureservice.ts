@@ -59,7 +59,7 @@ export function getDependencyIds (
  * @param itemTemplate Item to be created; n.b.: this item is modified
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
- * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param settings Hash mapping Solution source id to id of its clone
  * @param requestOptions Options for the request
  * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @return A promise that will resolve with the id of the created item
@@ -180,7 +180,8 @@ interface IRelationship {
  * Adds the layers and tables of a feature service to it and restores their relationships.
  *
  * @param itemTemplate Feature service
- * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param settings Hash mapping Solution source id to id of its clone (and name & URL for feature
+ *            service)
  * @param requestOptions Options for the request
  * @return A promise that will resolve when fullItem has been updated
  * @protected
@@ -387,7 +388,8 @@ function getLayers (
  * @param serviceItemId AGOL id of feature service
  * @param serviceUrl URL of feature service
  * @param listToAdd List of layers and/or tables to add
- * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param settings Hash mapping Solution source id to id of its clone (and name & URL for feature
+ *            service)
  * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
  * @param requestOptions Options for requesting information from AGOL
  * @return A promise that will resolve when the feature service has been updated
@@ -397,7 +399,6 @@ function updateFeatureServiceDefinition(
   serviceItemId: string,
   serviceUrl: string,
   listToAdd: any[],
-  // swizzles: mCommonTemp.ISwizzleHash,
   settings: any,
   relationships: IRelationship,
   requestOptions: IUserRequestOptions
@@ -437,7 +438,6 @@ function updateFeatureServiceDefinition(
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
         () => {
-          // updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships, requestOptions)
           .then(
             () => resolve(),
