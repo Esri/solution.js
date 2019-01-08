@@ -36,12 +36,24 @@ export function completeItemTemplate (
     // Remove org base URL and app id, e.g.,
     //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
     // to
-    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
+    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
     // Need to add placeholder server name because otherwise AGOL makes URL null
     const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, mCommon.templatize(itemTemplate.item.id));
     const iSep = orgUrl.indexOf("//");
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
       orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+
+    // Set the folder
+    if (mCommon.getProp(itemTemplate, "data.folderId")) {
+      itemTemplate.data.folderId = "{{folderId}}";
+    }
+
+    // Set the map or group
+    if (mCommon.getProp(itemTemplate, "data.values.webmap")) {
+      itemTemplate.data.values.webmap = mCommon.templatize(itemTemplate.data.values.webmap);
+    } else if (mCommon.getProp(itemTemplate, "data.values.group")) {
+      itemTemplate.data.values.group = mCommon.templatize(itemTemplate.data.values.group);
+    }
 
     resolve(itemTemplate);
   });
@@ -97,11 +109,11 @@ export function deployItem (
         itemTemplate = adlib.adlib(itemTemplate, settings);
 
         // Update the app URL
-          mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
-          .then(
-            () => resolve(itemTemplate),
-            error => reject(error.response.error.message)
-          );
+        mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
+        .then(
+          () => resolve(itemTemplate),
+          error => reject(error.response.error.message)
+        );
       },
       error => reject(error.response.error.message)
     );

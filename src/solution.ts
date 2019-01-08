@@ -172,6 +172,7 @@ export function cloneSolution (
 
     // Use specified folder to hold the hydrated items to avoid name clashes
     if (folderId) {
+      settings.folderId = folderId;
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
@@ -184,6 +185,7 @@ export function cloneSolution (
       .then(
         createdFolderResponse => {
           folderId = createdFolderResponse.folder.id;
+          settings.folderId = folderId;
           runThroughChecklist();
         },
         error => {
