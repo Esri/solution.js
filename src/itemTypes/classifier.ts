@@ -66,7 +66,7 @@ export function initItemTemplateFromId (
         itemTemplate = {
           itemId: itemResponse.id,
           type: itemResponse.type,
-          key: camelize(itemResponse.title),
+          key: mCommon.camelize(itemResponse.title),
           item: removeUndesirableItemProperties(itemResponse),
           dependencies: [],
           fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule
@@ -125,7 +125,7 @@ export function initItemTemplateFromId (
             itemTemplate = {
               itemId: itemResponse.id,
               type: "Group",
-              key: camelize(itemResponse.title),
+              key: mCommon.camelize(itemResponse.title),
               item: itemResponse,
               dependencies: [],
               fcns: moduleMap["group"]
@@ -161,40 +161,6 @@ export function initItemTemplateFromJSON (
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 // (export decoration is for unit testing)
-
-/**
- * Removes spaces from a string and converts the first letter of each word to uppercase.
- *
- * @param aString String to be modified
- * @return Modified string
- * @protected
- */
-export function camelize(
-  aString: string
-): string {
-  // Nothing provided
-  if (!aString) {
-    return "";
-  }
-
-  // Single-word string
-  const stringParts = aString.split(/\s/);
-  if (stringParts.length === 1) {
-    return aString;
-  }
-
-  // Multi-word string
-  return stringParts
-    .map(
-      (part, i) => {
-        if (i > 0) {
-          part = part[0].toUpperCase() + (part.length > 1 ? part.substr(1) : "")
-        }
-        return part;
-      }
-    )
-    .join("");
-}
 
 /**
  * Removes duplicates from an array of strings.

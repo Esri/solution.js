@@ -31,6 +31,32 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
  */
 export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 
+/**
+ * Convert a string to camelCase
+ *
+ * @export
+ * @param {string} value
+ * @returns {string} camelCased string
+ */
+export function camelize(value: string): string {
+  // lower case the whole thing to start...
+  value = value.toLowerCase();
+  // strip out any/all special chars...
+  value = value.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, " ");
+  // Hoisted from EmberJS (MIT License)
+  // https://github.com/emberjs/ember.js/blob/v2.0.1/packages/ember-runtime/lib/system/string.js#L23-L27
+  const STRING_CAMELIZE_REGEXP_1 = /(\-|\_|\.|\s)+(.)?/g;
+  const STRING_CAMELIZE_REGEXP_2 = /(^|\/)([A-Z])/g;
+
+  return value
+    .replace(STRING_CAMELIZE_REGEXP_1, function(match, separator, chr) {
+      return chr ? chr.toUpperCase() : "";
+    })
+    .replace(STRING_CAMELIZE_REGEXP_2, function(match, separator, chr) {
+      return match.toLowerCase();
+    });
+}
+
 export function doCommonTemplatizations (
   itemTemplate: any
 ): void {
