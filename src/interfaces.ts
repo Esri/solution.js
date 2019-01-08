@@ -66,9 +66,4 @@ export interface IItemTypeModule {
 
   deployItem(itemTemplate:ITemplate, folderId:string, settings:any, requestOptions:IUserRequestOptions):
     Promise<ITemplate>;
-
-  interpolateTemplate(itemTemplate:ITemplate, replacements:any): Promise<ITemplate>;
-  handlePrecreateLogic(itemTemplate:ITemplate): Promise<ITemplate>;
-  createItem(itemTemplate:ITemplate): Promise<ITemplate>;
-  handlePostcreateLogic(itemTemplate:ITemplate): Promise<ITemplate>;
 }

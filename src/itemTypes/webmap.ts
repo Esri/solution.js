@@ -100,12 +100,8 @@ export function deployItem (
         };
           itemTemplate.itemId = createResponse.id;
         itemTemplate = adlib.adlib(itemTemplate, settings);
-        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
-        if (propertyTags.length !== 0) {
-          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
-        }
 
-        // Update the app URL of a dashboard, webmap, or web mapping app
+        // Update the app URL
           mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
           .then(
             () => resolve(itemTemplate),
@@ -114,39 +110,6 @@ export function deployItem (
       },
       error => reject(error.response.error.message)
     );
-  });
-}
-
-export function interpolateTemplate (
-  itemTemplate: ITemplate,
-  replacements: any
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePrecreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function createItem (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePostcreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
   });
 }
 

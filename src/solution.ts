@@ -121,21 +121,12 @@ export function publishSolution (
 export function cloneSolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
-  orgUrl: string,
-  portalUrl: string,
+  settings: any,
   solutionName = "",
   folderId = null as string,
   access = "private"
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const settings:any = {
-      /*initiative: {
-        extent: null
-      },*/
-      organization: {
-        portalBaseUrl: portalUrl
-      }
-    };
     const clonedSolution:mInterfaces.ITemplate[] = [];
 
     // Don't bother creating folder if there are no items in solution
@@ -164,6 +155,13 @@ export function cloneSolution (
       itemTemplate.fcns.deployItem(itemTemplate, folderId, settings, requestOptions)
       .then(
         itemClone => {
+
+          // //??? debug check for missed property replacements                                // //???
+          const propertyTags = adlib.listDependencies(itemClone);                              // //???
+          if (propertyTags.length !== 0) {                                                     // //???
+            console.error("item " + itemClone.key + " has unadlibbed props " + propertyTags);  // //???
+          }                                                                                    // //???
+
           clonedSolution.push(itemClone);
           runThroughChecklist();
         },

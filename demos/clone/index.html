@@ -146,8 +146,16 @@
           items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              clone.cloneSolution(publishedSolution.templates,
-                requestOptions, orgUrl, portalUrl, currentSolutionName, null)
+              const settings = {
+                initiative: {
+                  extent: null //???
+                },
+                organization: {
+                  portalBaseUrl: portalUrl
+                }
+              };
+              clone.cloneSolution(publishedSolution.templates, requestOptions, 
+                settings, currentSolutionName, null)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';

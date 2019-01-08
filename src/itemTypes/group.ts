@@ -88,13 +88,9 @@ export function deployItem (
         };
         itemTemplate.itemId = createResponse.id;
         itemTemplate = adlib.adlib(itemTemplate, settings);
-        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
-        if (propertyTags.length !== 0) {
-          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
-        }
 
         // Add the group's items to it
-        addGroupMembers(itemTemplate, requestOptions)  // //???
+        addGroupMembers(itemTemplate, requestOptions)
         .then(
           () => resolve(itemTemplate),
           reject
@@ -102,39 +98,6 @@ export function deployItem (
       },
       error => reject(error.response.error.message)
     );
-  });
-}
-
-export function interpolateTemplate (
-  itemTemplate: ITemplate,
-  replacements: any
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePrecreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function createItem (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePostcreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
   });
 }
 

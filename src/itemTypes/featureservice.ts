@@ -94,10 +94,6 @@ export function deployItem (
           url: createResponse.serviceurl
         };
         itemTemplate = adlib.adlib(itemTemplate, settings);
-        const propertyTags = adlib.listDependencies(itemTemplate);  // //???
-        if (propertyTags.length !== 0) {
-          console.error("item " + itemTemplate.key + " has unadlibbed props " + propertyTags);  // //???
-        }
         itemTemplate.item.url = createResponse.serviceurl;
 
         // Add the feature service's layers and tables to it
@@ -109,39 +105,6 @@ export function deployItem (
       },
       reject
     );
-  });
-}
-
-export function interpolateTemplate (
-  itemTemplate: ITemplate,
-  replacements: any
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePrecreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function createItem (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePostcreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
   });
 }
 

@@ -57,36 +57,3 @@ export function deployItem (
   });
 }
 
-export function interpolateTemplate (
-  itemTemplate: ITemplate,
-  replacements: any
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePrecreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function createItem (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
-export function handlePostcreateLogic (
-  itemTemplate: ITemplate
-): Promise<ITemplate> {
-  return new Promise((resolve, reject) => {
-    resolve(itemTemplate);// //???
-  });
-}
-
