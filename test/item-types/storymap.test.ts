@@ -69,10 +69,28 @@ describe('Story Maps :: ', () => {
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
-          expect(r.length).toEqual(2, 'should have 2 entries');
-          expect(r).toEqual(['234', '567']);
+          expect(r.length).toEqual(3, 'should have 3 entries');
+          expect(r).toEqual(['123','234', '567']);
           done();
         });
+      });
+
+      it('returns empty array if run on a non-storymap item', (done) => {
+        const m = {
+          item: {
+            typeKeywords: ['other']
+          },
+          data: {}
+        };
+  
+        getDependencies(m)
+        .then((r) => {
+          expect(r).toBeTruthy('should return a value');
+          expect(Array.isArray(r)).toBeTruthy('should be an array');
+          expect(r.length).toEqual(0, 'should have 0 entries');
+          done();
+        });
+        
       });
     });
 
@@ -94,6 +112,18 @@ describe('Story Maps :: ', () => {
       expect(r.includes('7db923b748c44666b09afc83ce833b87')).toBeTruthy();
     });
 
+    it('works with no sections', () => {
+      const m = {
+        item: {},
+        data: cloneObject(TestCascade)
+      };
+      delete m.data.values.sections;
+      const r = getCascadeDependencies(m);
+      expect(r).toBeTruthy('should return a value');
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(0, 'should find 0');
+    });
+
   });
 
   describe('MapJournal :: ', () => {
@@ -106,7 +136,15 @@ describe('Story Maps :: ', () => {
       expect(r).toEqual(['234', '567', '91b46c2b162c48dba264b2190e1dbcff']);
 
     });
-    
+
+    it('works if no sections present', () => {
+      const m = cloneObject(TestMapJournal);
+      delete m.data.values.story.sections;
+      const r = getMapJournalDependencies(m);
+      expect(r).toBeTruthy('should return a value');
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(0, 'should have 0 entries');
+    });
 
   });
 
@@ -115,8 +153,39 @@ describe('Story Maps :: ', () => {
       const r = getMapSeriesDependencies(cloneObject(TestMapSeries));
       expect(r).toBeTruthy('should return a value');
       expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(3, 'should have 3 entries');
+      expect(r).toEqual(['123','234', '567']);
+    });
+
+    it('removes duplicates', () => {
+      const m = cloneObject(TestMapSeries);
+      // create a dupe
+      m.data.values.webmap = '234';
+      const r = getMapSeriesDependencies(m);
+      expect(r).toBeTruthy('should return a value');
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
       expect(r.length).toEqual(2, 'should have 2 entries');
       expect(r).toEqual(['234', '567']);
+    });
+
+    it('works if no webmap is present', () => {
+      const m = cloneObject(TestMapSeries);
+      delete m.data.values.webmap;
+      const r = getMapSeriesDependencies(m);
+      expect(r).toBeTruthy('should return a value');
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(2, 'should have 2 entries');
+      expect(r).toEqual(['234', '567']);
+    });
+
+    it('works if no entries are present', () => {
+      const m = cloneObject(TestMapSeries);
+      delete m.data.values.story.entries;
+      const r = getMapSeriesDependencies(m);
+      expect(r).toBeTruthy('should return a value');
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(1, 'should have 1 entries');
+      expect(r).toEqual(['123']);
     });
 
   });

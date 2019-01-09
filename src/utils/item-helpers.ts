@@ -52,6 +52,9 @@ export function parseIdFromUrl (
   url:string
   ):string {
   let id = null;
+  if (!url) {
+    return id;
+  }
   const qs = url.split('?')[1];
   if (qs) {
     id = qs.split('&').reduce((a, p) => {

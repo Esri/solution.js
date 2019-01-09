@@ -61,7 +61,7 @@ export function getCascadeDependencies (
 export function getMapSeriesDependencies (
   model:any
   ):string[] {
-  const deps = getProps(model, ['data.values.webmap']) || [];
+  const deps = getProps(model, ['data.values.webmap']);
   const entries = getProp(model, 'data.values.story.entries') || [];
   entries.forEach((e:any) => {
     const entryWebmaps = getDeepValues(e, 'webmap').map((obj:any) => {

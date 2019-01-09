@@ -94,6 +94,10 @@ describe('item-helpers', () => {
           url: 'https://www.arcgis.com/home/webscene/viewer.html',
           expected: null
         },
+        {
+          url: null,
+          expected: null
+        }
       ];
       examples.forEach(ex => {
         const r = parseIdFromUrl(ex.url);
