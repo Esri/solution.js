@@ -14,20 +14,15 @@
  | limitations under the License.
  */
 
-/**
- * Page Item Utility Functions
- */
-import { getProp } from '../utils/object-helpers';
-import { getLayoutDependencies } from '../utils/layout-dependencies';
+import isGuid from '../../src/utils/is-guid';
 
-/**
- * Return a list of items this page depends on.
- * Currently this is just considering the layout
- */
-export function getDependencies (
-  model: any
-  ): Promise<string[]>  {
-  const layout = getProp(model, 'data.values.layout') || {};
-  return Promise.resolve(getLayoutDependencies(layout));
-};
-
+describe('isGuid', () => {
+  it('works', () => {
+    expect(isGuid(1234)).toBeFalsy();
+    expect(isGuid({prop: 'val'})).toBeFalsy();
+    expect(isGuid('1234')).toBeFalsy();
+    expect(isGuid('imnotaguid')).toBeFalsy();
+    expect(isGuid('76c3db4812d44f0087850093837e7a90')).toBeTruthy();
+    expect(isGuid('{371acc8b-85cf-4251-8c01-7d0e48bac7e3}')).toBeTruthy();
+  });
+});

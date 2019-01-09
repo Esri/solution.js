@@ -14,20 +14,4 @@
  | limitations under the License.
  */
 
-/**
- * Page Item Utility Functions
- */
-import { getProp } from '../utils/object-helpers';
-import { getLayoutDependencies } from '../utils/layout-dependencies';
-
-/**
- * Return a list of items this page depends on.
- * Currently this is just considering the layout
- */
-export function getDependencies (
-  model: any
-  ): Promise<string[]>  {
-  const layout = getProp(model, 'data.values.layout') || {};
-  return Promise.resolve(getLayoutDependencies(layout));
-};
-
+// TODO: This file should have tests for all functions in common.ts

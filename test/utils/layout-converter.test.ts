@@ -15,6 +15,7 @@
  */
 
 import TestLayout from '../fixtures/test-layout';
+import {cloneObject} from '../../src/utils/object-helpers';
 import {
   convertLayoutToTemplate,
   convertSection,
@@ -24,14 +25,39 @@ import {
   convertEventListCard,
   convertItemGalleryCard,
   convertImageCard,
-  convertJumbotronCard
+  convertJumbotronCard,
+  extractAssets
 } from '../../src/utils/layout-converter'
 
 
 describe('Layout Converter', () => {
+  it('should return null if passed null', () => {
+    const result = convertLayoutToTemplate(null);
+    expect(result).toBeNull();
+  });
   it('should convert the layout', () => {
     const result = convertLayoutToTemplate(TestLayout);
     const layout = result.layout;
+    // this is a very basic assertion, but we cover the sub-functions below
+    expect(layout.sections.length).toEqual(TestLayout.sections.length, 'should have same number of sections');
+    expect(result.assets.length).toEqual(2, 'should return 2 assets');
+  });
+
+  it('should clone the footer if passed in', () => {
+    const layout = cloneObject(TestLayout);
+    layout.footer = {
+      foo: "bar"
+    };
+    const result = convertLayoutToTemplate(layout);
+    const footer = result.layout.footer;
+    expect(footer).toEqual(layout.footer, 'footer should be a clone');
+    expect(footer).not.toBe(layout.footer, 'should not be the same obj');
+  });
+
+  it('should work if no header is passed in', () => {
+    const layout = cloneObject(TestLayout);
+    delete layout.header;
+    const result = convertLayoutToTemplate(layout);
     // this is a very basic assertion, but we cover the sub-functions below
     expect(layout.sections.length).toEqual(TestLayout.sections.length, 'should have same number of sections');
     expect(result.assets.length).toEqual(2, 'should return 2 assets');
@@ -249,6 +275,40 @@ describe('Layout Converter', () => {
       expect(result4.component.settings.siteId).toEqual('{{appid}}', 'Only set siteId if its set');
     });
 
+    it('should convert gallery with old format', () => {
+      const c = {
+        'component': {
+          'name': 'items/gallery-card',
+          'settings': {
+            groups: [
+              {
+                'title': 'Maryland Socrata',
+                'id': '9db8bf78132c44ae83131fd879c87881'
+              },
+              {
+                'title': 'Another',
+                'id': 'some-other-id'
+              }
+            ],
+            'display': {
+              'imageType': 'Icons',
+              'viewText': 'Explore',
+              'dropShadow': 'medium',
+              'cornerStyle': 'round'
+            },
+            'version': 2,
+            'orgId': '97KLIFOSt5CxbiRI',
+            'siteId': ''
+          }
+        },
+        'width': 12
+      };
+      const result = convertItemGalleryCard(c).card;
+      expect(result.component.settings.groups.length).toEqual(1, 'only have one group');
+      expect(result.component.settings.groups[0].id).toEqual('{{initiative.collaborationGroupId}}', 'initaitive group');
+      expect(result.component.settings.groups[0].title).toEqual('{{initiative.name}}', 'initaitive group');
+    });
+
     it('converts an image card', () => {
       const card = {
         'component': {
@@ -355,6 +415,38 @@ describe('Layout Converter', () => {
       expect(result2.assets.length).toEqual( 2, 'should have two assets');
       expect(result2.assets[0]).toEqual(card.component.settings.fileSrc, 'should have fileSrc');
       expect(result2.assets[1]).toEqual(card.component.settings.cropSrc, 'should have cropSrc');
+    });
+
+  });
+
+  describe('helper functions', () => {
+    
+    describe('extractAssets', () => {
+      
+      it('should return empty array if null object passed in', () => {
+        const result = extractAssets({});
+        expect(Array.isArray(result)).toBeTruthy('should return an array');
+        expect(result.length).toEqual(0, 'should be empty');
+      });
+
+      it('should return the fileSrc', () => {
+        const result = extractAssets({
+          fileSrc: 'foo.png' 
+        });
+        expect(Array.isArray(result)).toBeTruthy('should return an array');
+        expect(result.length).toEqual(1, 'should have one entry');
+        expect(result[0]).toEqual('foo.png', 'should have one entry');
+      });
+
+      it('should return the cropSrc', () => {
+        const result = extractAssets({
+          cropSrc: 'foo.png' 
+        });
+        expect(Array.isArray(result)).toBeTruthy('should return an array');
+        expect(result.length).toEqual(1, 'should have one entry');
+        expect(result[0]).toEqual('foo.png', 'should have one entry');
+      });
+
     });
 
   });

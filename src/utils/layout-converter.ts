@@ -16,7 +16,7 @@
 /**
  * Site and Page Layout Conversion functions
  */
-import { cloneObject, getProp } from '../common';
+import { cloneObject, getProp } from '../utils/object-helpers';
 /**
  * Walk the tree and templatize the layout...
  */

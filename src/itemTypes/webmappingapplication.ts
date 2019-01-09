@@ -15,6 +15,7 @@
  */
 
 import * as mCommon from "../common";
+import {getProp} from '../utils/object-helpers';
 import { ITemplate } from "../interfaces";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
@@ -32,7 +33,7 @@ export function getDependencies (
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const values = mCommon.getProp(fullItem, "data.values");
+    const values = getProp(fullItem, "data.values");
     if (values) {
       if (values.webmap) {
         dependencies.push(values.webmap);
@@ -58,7 +59,7 @@ export function swizzleDependencies (
   swizzles: mCommon.ISwizzleHash
 ): void {
   // Swizzle its webmap or group
-  const values = mCommon.getProp(fullItem, "data.values");
+  const values = getProp(fullItem, "data.values");
   if (values) {
     if (values.webmap) {
       values.webmap = swizzles[values.webmap].id;

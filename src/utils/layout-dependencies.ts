@@ -16,7 +16,7 @@
 /**
  * Site and Page Layout Depdendency functions
  */
-import { getProp } from '../common';
+import { getProp } from '../utils/object-helpers';;
 
 
 /**
@@ -30,7 +30,8 @@ import { getProp } from '../common';
 export function getLayoutDependencies (
   layout:any
   ): any {
-  return layout.sections.reduce((deps:any, section:any) => {
+    const sections = layout.sections || [];
+  return sections.reduce((deps:any, section:any) => {
     return deps.concat(getSectionDependencies(section));
   }, []);
 };
@@ -58,11 +59,7 @@ export function getRowDependencies (
   row:any
   ):any {
   return row.cards.reduce((deps:any, card:any) => {
-    const cardDeps = getCardDependencies(card);
-    if (cardDeps.length) {
-      deps = deps.concat(cardDeps);
-    }
-    return deps;
+    return deps.concat(getCardDependencies(card));
   }, []);
 };
 

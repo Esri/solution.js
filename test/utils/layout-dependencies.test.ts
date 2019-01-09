@@ -13,7 +13,7 @@
  | See the License for the specific language governing permissions and
  | limitations under the License.
  */
-import { cloneObject } from '../../src/common';
+import { cloneObject } from '../../src/utils/object-helpers';
 import {
   getLayoutDependencies,
   getCardDependencies
@@ -40,7 +40,14 @@ const testLayout = {
                   itemId: 'cc2'
                 }
               }
-            }
+            },
+            {
+              component: {
+                name: 'items/gallery-card',
+                settings: {}
+              }
+            },
+
           ]
         }
       ]
@@ -92,6 +99,7 @@ describe('Layout Dependencies', () => {
       'e8201f104dca4d8d87cb4ce1c7367257',
       '5a14dbb7b2f3417fb4a6ea0506c2eb26'], 'should return them');
   });
+
   describe('card-specific dependencies', () => {
     
     it('should handle chart-card', () => {
