@@ -151,10 +151,11 @@
                   extent: null //???
                 },
                 organization: {
+                  orgUrl: orgUrl,
                   portalBaseUrl: portalUrl
                 }
               };
-              clone.cloneSolution(publishedSolution.templates, requestOptions, 
+              clone.cloneSolution(publishedSolution.templates, requestOptions,
                 settings, currentSolutionName, null)
               .then(
                 clonedSolution => {

@@ -71,14 +71,13 @@ export function getDependencyIds (
 
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     const options:items.IItemAddRequestOptions = {
       item: itemTemplate.item,
-      folder: folderId,
+      folder: settings.folderId,
       ...requestOptions
     };
     if (itemTemplate.data) {

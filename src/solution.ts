@@ -152,16 +152,9 @@ export function cloneSolution (
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
       // Deploy it
-      itemTemplate.fcns.deployItem(itemTemplate, folderId, settings, requestOptions)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions)
       .then(
         itemClone => {
-
-          // //??? debug check for missed property replacements                                // //???
-          const propertyTags = adlib.listDependencies(itemClone);                              // //???
-          if (propertyTags.length !== 0) {                                                     // //???
-            console.error("item " + itemClone.key + " has unadlibbed props " + propertyTags);  // //???
-          }                                                                                    // //???
-
           clonedSolution.push(itemClone);
           runThroughChecklist();
         },
@@ -174,6 +167,8 @@ export function cloneSolution (
     if (folderId) {
       settings.folderId = folderId;
       runThroughChecklist();
+    } else if (settings.folderId) {
+      runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
       const folderName = (solutionName || "Solution") + " (" + mCommon.getTimestamp() + ")";
@@ -184,8 +179,7 @@ export function cloneSolution (
       items.createFolder(options)
       .then(
         createdFolderResponse => {
-          folderId = createdFolderResponse.folder.id;
-          settings.folderId = folderId;
+          settings.folderId = createdFolderResponse.folder.id;
           runThroughChecklist();
         },
         error => {
@@ -288,7 +282,7 @@ export function getItemTemplateHierarchy (
   return new Promise((resolve, reject) => {
     if (typeof rootIds === "string") {
       // Handle a single AGOL id
-      const rootId = rootIds;
+      const rootId = mCommon.templatize(rootIds);
       if (getTemplateInSolution(templates, rootId)) {
         resolve(templates);  // Item and its dependents are already in list or are queued
 

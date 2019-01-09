@@ -65,7 +65,6 @@ export function getDependencyIds (
 
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -86,7 +85,7 @@ export function deployItem (
         settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
           id: createResponse.group.id
         };
-        itemTemplate.itemId = createResponse.id;
+        itemTemplate.itemId = createResponse.group.id;
         itemTemplate = adlib.adlib(itemTemplate, settings);
 
         // Add the group's items to it
@@ -107,32 +106,34 @@ export function deployItem (
 /**
  * Adds the members of a group to it.
  *
- * @param fullItem Group
+ * @param itemTemplate Group
  * @param swizzles Hash mapping Solution source id to id of its clone
  * @param requestOptions Options for the request
  * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function addGroupMembers (
-  fullItem: ITemplate,
+  itemTemplate: ITemplate,
   requestOptions: IUserRequestOptions
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
-    if (fullItem.dependencies.length > 0) {
+    if (itemTemplate.dependencies.length > 0) {
       const awaitGroupAdds:Array<Promise<null>> = [];
-      fullItem.dependencies.forEach(depId => {
+      itemTemplate.dependencies.forEach(depId => {
         awaitGroupAdds.push(new Promise((resolve2, reject2) => {
           sharing.shareItemWithGroup({
-            id: depId,
-            groupId: fullItem.item.id,
+            id: mCommon.deTemplatize(depId),
+            groupId: mCommon.deTemplatize(itemTemplate.item.id),
             ...requestOptions
           })
           .then(
             () => {
               resolve2();
             },
-            error => reject2(error.response.error.message)
+            error => {
+              reject2(error.response.error.message);
+            }
           );
         }));
       });
@@ -168,7 +169,7 @@ export function getGroupContentsTranche (
     .then(
       contents => {
         // Extract the list of content ids from the JSON returned
-        const trancheIds:string[] = contents.items.map((item:any) => item.id);
+        const trancheIds:string[] = contents.items.map((item:any) => mCommon.templatize(item.id));
 
         // Are there more contents to fetch?
         if (contents.nextStart > 0) {

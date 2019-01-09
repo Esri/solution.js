@@ -41,7 +41,8 @@ export function completeItemTemplate (
     const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, mCommon.templatize(itemTemplate.item.id));
     const iSep = orgUrl.indexOf("//");
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
-      orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
+      orgUrl.substring(orgUrl.indexOf("/", iSep + 2), orgUrl.lastIndexOf("=") + 1) +
+      mCommon.templatize(itemTemplate.itemId);
 
     // Set the folder
     if (mCommon.getProp(itemTemplate, "data.folderId")) {
@@ -83,14 +84,13 @@ export function getDependencyIds (
 
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     const options:items.IItemAddRequestOptions = {
       item: itemTemplate.item,
-      folder: folderId,
+      folder: settings.folderId,
       ...requestOptions
     };
     if (itemTemplate.data) {

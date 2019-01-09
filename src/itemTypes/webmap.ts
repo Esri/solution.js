@@ -76,14 +76,13 @@ export function getDependencyIds (
 
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     const options:items.IItemAddRequestOptions = {
       item: itemTemplate.item,
-      folder: folderId,
+      folder: settings.folderId,
       ...requestOptions
     };
     if (itemTemplate.data) {
@@ -124,23 +123,22 @@ export function deployItem (
  * @protected
  */
 export function getWebmapLayerIds (
-  layerList: any
+  layerList = [] as any[]
 ): string[] {
-  return !Array.isArray(layerList) ? [] :
-    layerList.reduce(
-      (ids:string[], layer:any) => {
-        const itemId = layer.itemId as string;
-        if (itemId) {
-          ids.push(itemId);
-        }
-        return ids;
-      },
-      [] as string[]
+  return layerList.reduce(
+    (ids:string[], layer:any) => {
+      const itemId = layer.itemId as string;
+      if (itemId) {
+        ids.push(itemId);
+      }
+      return ids;
+    },
+    [] as string[]
     );
 }
 
 export function templatizeWebmapLayerIdsAndUrls (
-  layerList: any
+  layerList = [] as any[]
 ): void {
   layerList.forEach(
     (layer:any) => {

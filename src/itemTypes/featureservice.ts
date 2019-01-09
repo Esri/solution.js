@@ -59,22 +59,20 @@ export function getDependencyIds (
  * @param itemTemplate Item to be created; n.b.: this item is modified
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
- * @param settings Hash mapping Solution source id to id of its clone
+ * @param settings Hash mapping property names to replacement values
  * @param requestOptions Options for the request
- * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
  * @return A promise that will resolve with the id of the created item
  * @protected
  */
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     const options = {
       item: itemTemplate.item,
-      folderId,
+      folderId: settings.folderId,
       ...requestOptions
     }
     if (itemTemplate.data) {
@@ -88,20 +86,25 @@ export function deployItem (
     featureServiceAdmin.createFeatureService(options)
     .then(
       createResponse => {
-        // Add the new item to the settings list
-        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
-          id: createResponse.serviceItemId,
-          url: createResponse.serviceurl
-        };
-        itemTemplate = adlib.adlib(itemTemplate, settings);
-        itemTemplate.item.url = createResponse.serviceurl;
+        if (!createResponse.success) {
+          reject(createResponse);
 
-        // Add the feature service's layers and tables to it
-        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
-        .then(
-          () => resolve(itemTemplate),
-          reject
-        );
+        } else {
+          // Add the new item to the settings list
+          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+            id: createResponse.serviceItemId,
+            url: createResponse.serviceurl
+          };
+          itemTemplate = adlib.adlib(itemTemplate, settings);
+          itemTemplate.item.url = createResponse.serviceurl;
+
+          // Add the feature service's layers and tables to it
+          addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            reject
+          );
+        }
       },
       reject
     );
@@ -109,11 +112,12 @@ export function deployItem (
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
  * Holds the extra information needed by feature services.
  */
-interface IFeatureServiceProperties {
+export interface IFeatureServiceProperties {
   /**
    * Service description
    */
@@ -229,7 +233,7 @@ export function addFeatureServiceLayersAndTables (
  * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
-function fleshOutFeatureService (
+export function fleshOutFeatureService (
   itemTemplate: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<void> {
@@ -259,6 +263,7 @@ function fleshOutFeatureService (
         serviceData["snippet"] = itemTemplate.item["snippet"];
         serviceData["description"] = itemTemplate.item["description"];
 
+        serviceData.serviceItemId = mCommon.templatize(serviceData.serviceItemId);
         properties.service = serviceData;
 
         // Get the affiliated layer and table items

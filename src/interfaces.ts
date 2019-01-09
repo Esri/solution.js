@@ -64,6 +64,5 @@ export interface IItemTypeModule {
   completeItemTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
   getDependencyIds(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
 
-  deployItem(itemTemplate:ITemplate, folderId:string, settings:any, requestOptions:IUserRequestOptions):
-    Promise<ITemplate>;
+  deployItem(itemTemplate:ITemplate, settings:any, requestOptions:IUserRequestOptions): Promise<ITemplate>;
 }

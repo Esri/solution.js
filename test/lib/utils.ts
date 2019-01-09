@@ -16,9 +16,13 @@
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 
-import * as common from "../../src/common";
+import * as mCommon from "../../src/itemTypes/common";
+import * as mInterfaces from "../../src/interfaces";
 
 // -------------------------------------------------------------------------------------------------------------------//
+
+const orgUrl = "https://myOrg.maps.arcgis.com";
+const portalUrl = "https://www.arcgis.com";
 
 export const TOMORROW = (function() {
   const now = new Date();
@@ -58,14 +62,26 @@ export function createRuntimeMockUserSession (
   });
 }
 
-export function createMockSwizzle (
-  itemId: string,
-  swizzles = {} as common.ISwizzleHash
-): common.ISwizzleHash {
-  const swizzleKey = itemId;
-  const swizzleValue = swizzleKey.toUpperCase();
-  swizzles[swizzleKey] = {id: swizzleValue};
-  return swizzles;
+export function createMockSettings (
+  itemId = null as string,
+  settingsInit = {} as any
+): any {
+  const settings:any = {
+    organization: {
+      orgUrl,
+      portalBaseUrl: portalUrl
+    },
+    ...settingsInit
+  };
+
+  if (itemId) {
+
+    const settingsKey = mCommon.deTemplatize(itemId);
+    const settingsValue = settingsKey.toUpperCase();
+    settings[settingsKey] = {id: settingsValue};
+  }
+
+  return settings;
 }
 
 export function jsonClone (
@@ -73,3 +89,27 @@ export function jsonClone (
 ) {
   return JSON.parse(JSON.stringify(obj));
 }
+
+export function removeItemFcns (
+  templates: mInterfaces.ITemplate | mInterfaces.ITemplate[]
+): void {
+  if (templates) {
+    if (Array.isArray(templates)) {
+      templates.forEach(
+        template => {
+          delete template.fcns;
+        }
+      );
+    } else {
+      delete templates.fcns;
+    }
+  }
+}
+
+export function removeNameField (
+  layerOrTable: any
+): any {
+  layerOrTable.name = null;
+  return layerOrTable;
+}
+

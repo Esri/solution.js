@@ -64,13 +64,17 @@ export function initItemTemplateFromId (
     .then(
       itemResponse => {
         itemTemplate = {
-          itemId: itemResponse.id,
+          itemId: mCommon.templatize(itemResponse.id),
           type: itemResponse.type,
           key: mCommon.camelize(itemResponse.title),
           item: removeUndesirableItemProperties(itemResponse),
           dependencies: [],
           fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule
         };
+        itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
+        if (itemTemplate.item.item) {
+          itemTemplate.item.item = mCommon.templatize(itemTemplate.item.item);
+        }
 
         // Request item data section
         const dataPromise = items.getItemData(itemId, requestOptions);
@@ -123,10 +127,10 @@ export function initItemTemplateFromId (
         .then(
           itemResponse => {
             itemTemplate = {
-              itemId: itemResponse.id,
+              itemId: mCommon.templatize(itemResponse.id),
               type: "Group",
               key: mCommon.camelize(itemResponse.title),
-              item: itemResponse,
+              item: removeUndesirableItemProperties(itemResponse),
               dependencies: [],
               fcns: moduleMap["group"]
             };
@@ -136,6 +140,9 @@ export function initItemTemplateFromId (
             .then(
               dependencies => {
                 itemTemplate.dependencies = removeDuplicates(dependencies);
+
+                // We can templatize the item's id now that we're done using it to get the group members
+                itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
                 resolve(itemTemplate);
               },
               () => {

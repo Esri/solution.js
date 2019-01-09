@@ -14,6 +14,8 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
+import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -48,12 +50,33 @@ export function getDependencyIds (
 
 export function deployItem (
   itemTemplate: ITemplate,
-  folderId: string,
   settings: any,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
-    resolve(itemTemplate);
+    const options:items.IItemAddRequestOptions = {
+      item: itemTemplate.item,
+      folder: settings.folderId,
+      ...requestOptions
+    };
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
+    }
+
+    // Create the item
+    items.createItemInFolder(options)
+    .then(
+      createResponse => {
+        // Add the new item to the settings
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.id
+        };
+        itemTemplate.itemId = createResponse.id;
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        resolve(itemTemplate)
+      },
+      error => reject(error.response.error.message)
+    );
   });
 }
 

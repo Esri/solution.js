@@ -14,6 +14,5 @@
  | limitations under the License.
  */
 
-export * from "./featureServices";
-export * from "./items";
-export * from "./solutions";
+export * from "./agolItems";
+export * from "./templates";
