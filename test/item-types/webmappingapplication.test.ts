@@ -38,7 +38,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      getDependencies(m)
+      return getDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(4, 'should have 4 entries');
@@ -69,7 +69,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      getDependencies(m)
+      return getDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(1, 'should have 1 entries');
@@ -89,7 +89,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      getDependencies(m)
+      return getDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(1, 'should have 1 entries');

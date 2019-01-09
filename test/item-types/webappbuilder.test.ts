@@ -31,7 +31,7 @@
           }
         }
       };
-      getDependencies(model)
+      return getDependencies(model)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy();
         expect(r.length).toEqual(1, 'should have one dep');
@@ -49,7 +49,7 @@
           }
         }
       };
-      getDependencies(model)
+      return getDependencies(model)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy();
         expect(r.length).toEqual(0, 'should have no deps');

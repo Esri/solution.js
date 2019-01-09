@@ -81,7 +81,7 @@ describe('Page Item Utilities', () => {
   describe('getDependencies', () => {
     
     it('should not fail with a null layout', (done) => {
-      getDependencies({})
+      return getDependencies({})
       .then((result) => {
         expect(result).not.toBeNull('should return something');
         expect(Array.isArray(result)).toBeTruthy('should return an array');
@@ -100,7 +100,7 @@ describe('Page Item Utilities', () => {
           }
         }
       }
-      getDependencies(pageModel)
+      return getDependencies(pageModel)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');

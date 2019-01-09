@@ -36,7 +36,7 @@ describe('Story Maps :: ', () => {
           },
           data: cloneObject(TestCascade)
         };
-        getDependencies(m)
+        return getDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -51,7 +51,7 @@ describe('Story Maps :: ', () => {
         const m = cloneObject(TestMapJournal);
         m.typeKeywords = ['Story Map', 'MapJournal']
 
-        getDependencies(m)
+        return getDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -65,7 +65,7 @@ describe('Story Maps :: ', () => {
         const m = cloneObject(TestMapSeries);
         m.typeKeywords = ['Story Map', 'mapseries']
   
-        getDependencies(m)
+        return getDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -83,7 +83,7 @@ describe('Story Maps :: ', () => {
           data: {}
         };
   
-        getDependencies(m)
+        return getDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');

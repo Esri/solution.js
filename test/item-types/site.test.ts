@@ -79,7 +79,7 @@ describe('Site Item Utilities', () => {
   describe('getDependencies', () => {
     
     it('should not fail with a null layout', (done) => {
-      getDependencies({})
+      return getDependencies({})
         .then((result) => {
           expect(result).not.toBeNull('should return something');
           expect(Array.isArray(result)).toBeTruthy('should return an array');
@@ -98,7 +98,7 @@ describe('Site Item Utilities', () => {
           }
         }
       }
-      getDependencies(siteModel)
+      return getDependencies(siteModel)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');

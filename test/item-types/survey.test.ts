@@ -23,7 +23,7 @@ describe('Surveys', () => {
   describe('get dependencies', () => {
     
     it('always returns an empty array', (done) => {
-      getDependencies({item:{}, data:{}})
+      return getDependencies({item:{}, data:{}})
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
             expect(Array.isArray(r)).toBeTruthy('should be an array');
