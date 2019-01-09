@@ -14,14 +14,24 @@
  | limitations under the License.
  */
 
-/**
- * Return a list of items this survey depends on.
- * We just return an empty array because the deployment
- * process for a Survey will utilize the S123 API, which
- * handles creating the feature services etc etc
- */
-export function getDependencies (
-  model: any
-  ): Promise<string[]>  {
-    return Promise.resolve([]);
-};
+import {
+  getDependencies
+} from '../../src/itemTypes/survey'
+
+describe('Surveys', () => {
+  
+  describe('get dependencies', () => {
+    
+    it('always returns an empty array', (done) => {
+      getDependencies({item:{}, data:{}})
+        .then((r) => {
+          expect(r).toBeTruthy('should return a value');
+            expect(Array.isArray(r)).toBeTruthy('should be an array');
+            expect(r.length).toEqual(0, 'should have 0 entries');
+          done();
+        });
+    });
+
+  });
+
+});

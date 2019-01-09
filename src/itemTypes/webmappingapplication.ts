@@ -15,8 +15,11 @@
  */
 
 import * as mCommon from "../common";
-import {getProp} from '../utils/object-helpers';
+import {getProp, getProps} from '../utils/object-helpers';
+import {hasTypeKeyword, hasAnyKeyword} from '../utils/item-helpers';
 import { ITemplate } from "../interfaces";
+import {getDependencies as getStoryMapDependencies} from './storymap';
+import {getDependencies as getWABDependencies} from './webappbuilder';
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -28,24 +31,33 @@ import { ITemplate } from "../interfaces";
  * @protected
  */
 export function getDependencies (
-  fullItem: ITemplate
+  model: any
 ): Promise<string[]> {
-  return new Promise(resolve => {
-    const dependencies:string[] = [];
 
-    const values = getProp(fullItem, "data.values");
-    if (values) {
-      if (values.webmap) {
-        dependencies.push(values.webmap);
-      }
-      if (values.group) {
-        dependencies.push(values.group);
-      }
-    }
+  let processor = getGenericWebAppDependencies;
 
-    resolve(dependencies);
-  });
-}
+  if (hasTypeKeyword(model, 'Story Map')) {
+    processor = getStoryMapDependencies;
+  }
+
+  if (hasAnyKeyword(model, ['WAB2D', 'WAB3D', 'Web AppBuilder'])) {
+    processor = getWABDependencies;
+  }
+
+  return processor(model);
+
+};
+
+/**
+ * Generic Web App Dependencies
+ */
+export function getGenericWebAppDependencies (
+  model:any
+  ):Promise<string[]> {
+  const props = ['data.webmap', 'data.itemId', 'data.values.webmap', 'data.values.group'];
+  return Promise.resolve(getProps(model, props));
+};
+
 
 /**
  * Swizzles the ids of the dependencies of an AGOL webapp item.
@@ -67,4 +79,4 @@ export function swizzleDependencies (
       values.group = swizzles[values.group].id;
     }
   }
-}
+};
