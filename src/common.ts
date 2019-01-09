@@ -108,24 +108,7 @@ export function createItemWithData (
     );
   });
 }
-/**
- * Get a property out of a deeply nested object
- * Does not handle anything but nested object graph
- *
- * @param obj Object to retrieve value from
- * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
- *             in obj
- * @return Value at end of path
- */
-export function getProp (
-  obj: { [index: string]: any },
-  path: string
-): any {
-  return path.split(".").reduce(function(prev, curr) {
-    /* istanbul ignore next no need to test undefined scenario */
-    return prev ? prev[curr] : undefined;
-  }, obj);
-}
+
 
 /**
  * Updates the URL of an item.
