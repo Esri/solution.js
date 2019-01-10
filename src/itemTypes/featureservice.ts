@@ -183,7 +183,7 @@ export function addFeatureServiceLayersAndTables (
 
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
-      updateFeatureServiceDefinition(itemTemplate.item.id, itemTemplate.item.url, layersAndTables,
+      updateFeatureServiceDefinition(itemTemplate.itemId, itemTemplate.item.url, layersAndTables,
         settings, relationships, requestOptions)
       .then(
         () => {

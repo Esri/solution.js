@@ -60,7 +60,7 @@ export function initItemTemplateFromId (
     itemId = mCommon.deTemplatize(itemId);
 
     // Request item base section
-    items.getItem(itemId, requestOptions)
+    items.getItem(mCommon.deTemplatize(itemId), requestOptions)
     .then(
       itemResponse => {
         itemTemplate = {
@@ -71,17 +71,16 @@ export function initItemTemplateFromId (
           dependencies: [],
           fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule
         };
-        itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
         if (itemTemplate.item.item) {
           itemTemplate.item.item = mCommon.templatize(itemTemplate.item.item);
         }
 
         // Request item data section
-        const dataPromise = items.getItemData(itemId, requestOptions);
+        const dataPromise = items.getItemData(mCommon.deTemplatize(itemId), requestOptions);
 
         // Request item resources
         const resourceRequestOptions = {
-          id: itemId,
+          id: mCommon.deTemplatize(itemId),
           ...requestOptions
         };
         const resourcePromise = items.getItemResources(resourceRequestOptions);
@@ -140,9 +139,6 @@ export function initItemTemplateFromId (
             .then(
               dependencies => {
                 itemTemplate.dependencies = removeDuplicates(dependencies);
-
-                // We can templatize the item's id now that we're done using it to get the group members
-                itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
                 resolve(itemTemplate);
               },
               () => {
@@ -202,6 +198,7 @@ export function removeUndesirableItemProperties (
     delete itemSectionClone.avgRating;
     delete itemSectionClone.created;
     delete itemSectionClone.guid;
+    delete itemSectionClone.id;
     delete itemSectionClone.lastModified;
     delete itemSectionClone.modified;
     delete itemSectionClone.numComments;

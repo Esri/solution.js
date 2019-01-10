@@ -169,7 +169,6 @@ export function getGroupTemplatePart (
     "type": "Group",
     "key": "anAgolGroup",
     "item": {
-      "id": "{{grp1234567890.id}}",
       "title": "An AGOL group",
       "isInvitationOnly": true,
       "description": "Description of an AGOL group",
@@ -627,7 +626,6 @@ function getItemTemplateFundamentals (
     "type": type,
     "key": "anAgolItem",
     "item": {
-      "id": "{{" + typePrefix + "1234567890.id}}",
       "item": "{{" + typePrefix + "1234567890.id}}",
       "name": "Name of an AGOL item",
       "title": "An AGOL item",

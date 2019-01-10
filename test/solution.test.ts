@@ -634,7 +634,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("DSH1234567890");
+          expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -654,7 +654,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("DSH1234567890");
+          expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -673,7 +673,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("DSH1234567890");
+          expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -692,7 +692,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("DSH1234567890");
+          expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
         error => done.fail(error)
@@ -758,7 +758,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItem.item.id).toEqual("svc1234567890");
+          expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -808,7 +808,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItem.item.id).toEqual("svc1234567890");
+          expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -858,7 +858,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItem.item.id).toEqual("svc1234567890");
+          expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
         error => done.fail(error)
@@ -965,7 +965,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("WMA1234567890");
+          expect(createdItem.itemId).toEqual("WMA1234567890");
           done();
         },
         error => done.fail(error)
@@ -1060,7 +1060,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
-          expect(createdItem.item.id).toEqual("MTP1234567890");
+          expect(createdItem.itemId).toEqual("MTP1234567890");
           done();
         },
         error => done.fail(error)
@@ -1147,8 +1147,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       expect(abc).toEqual(mockItems.getTrimmedAGOLItem());
       expect(abcCopy).toEqual(mockItems.getTrimmedAGOLItem());
 
-      abcCopy.id = "WMA123";
-      expect(abc.id).toEqual("wma1234567890");
+      abcCopy.name = "Renamed item";
+      expect(abc.name).toEqual("Name of an AGOL item");
     });
 
     it("checks for item before attempting to access its properties", () => {

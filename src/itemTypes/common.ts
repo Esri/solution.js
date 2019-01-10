@@ -66,7 +66,7 @@ export function doCommonTemplatizations (
   }
 
   // Templatize the item's id
-  itemTemplate.itemId = itemTemplate.item.id = templatize(itemTemplate.item.id);
+  itemTemplate.itemId = templatize(itemTemplate.itemId);
 }
 
 /**

@@ -289,7 +289,7 @@ export function getItemTemplateHierarchy (
       } else {
         // Add the id as a placeholder to show that it will be fetched
         const getItemPromise = mClassifier.initItemTemplateFromId(rootId, requestOptions);
-        templates.push(createPlaceholderTemplate(mCommon.templatize(rootId)));
+        templates.push(createPlaceholderTemplate(rootId));
 
         // Get the specified item
         getItemPromise

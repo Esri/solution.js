@@ -38,7 +38,7 @@ export function completeItemTemplate (
     // to
     //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
     // Need to add placeholder server name because otherwise AGOL makes URL null
-    const orgUrl = itemTemplate.item.url.replace(itemTemplate.item.id, mCommon.templatize(itemTemplate.item.id));
+    const orgUrl = itemTemplate.item.url.replace(itemTemplate.itemId, mCommon.templatize(itemTemplate.itemId));
     const iSep = orgUrl.indexOf("//");
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
       orgUrl.substring(orgUrl.indexOf("/", iSep + 2), orgUrl.lastIndexOf("=") + 1) +
@@ -105,11 +105,11 @@ export function deployItem (
         settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
           id: createResponse.id
         };
-        itemTemplate.itemId = createResponse.id;
+        itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
         itemTemplate = adlib.adlib(itemTemplate, settings);
 
         // Update the app URL
-        mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
+        mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
         .then(
           () => resolve(itemTemplate),
           error => reject(error.response.error.message)

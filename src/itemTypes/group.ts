@@ -53,7 +53,7 @@ export function getDependencyIds (
     };
 
     // Fetch group items
-    getGroupContentsTranche(itemTemplate.item.id, pagingRequest)
+    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
     .then(
       contents => resolve(contents),
       reject
@@ -124,7 +124,7 @@ export function addGroupMembers (
         awaitGroupAdds.push(new Promise((resolve2, reject2) => {
           sharing.shareItemWithGroup({
             id: mCommon.deTemplatize(depId),
-            groupId: mCommon.deTemplatize(itemTemplate.item.id),
+            groupId: mCommon.deTemplatize(itemTemplate.itemId),
             ...requestOptions
           })
           .then(
@@ -165,7 +165,7 @@ export function getGroupContentsTranche (
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
-    groups.getGroupContent(id, pagingRequest)
+    groups.getGroupContent(mCommon.deTemplatize(id), pagingRequest)
     .then(
       contents => {
         // Extract the list of content ids from the JSON returned

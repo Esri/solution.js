@@ -92,11 +92,11 @@ export function deployItem (
         settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
           id: createResponse.id
         };
-        itemTemplate.itemId = createResponse.id;
+        itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
         itemTemplate = adlib.adlib(itemTemplate, settings);
 
         // Update the app URL
-        mCommon.updateItemURL(itemTemplate.item.id, itemTemplate.item.url, requestOptions)
+        mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
         .then(
           () => resolve(itemTemplate),
           error => reject(error.response.error.message)
