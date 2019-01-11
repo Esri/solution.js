@@ -19,14 +19,29 @@ import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
+import {getProp} from '../utils/object-helpers';
 import { ITemplate } from "../interfaces";
 
-// (export decoration is for unit testing)
 /**
  * The portion of a Dashboard app URL between the server and the app id.
  * @protected
  */
-export const OPS_DASHBOARD_APP_URL_PATH:string = "/apps/opsdashboard/index.html#/";
+export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
+
+/**
+ * The relevant elements of a Dashboard widget.
+ * @protected
+ */
+interface IDashboardWidget {
+  /**
+   * AGOL item id for some widget types
+   */
+  itemId: string;
+  /**
+   * Dashboard widget type
+   */
+  type: string;
+}
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -41,20 +56,28 @@ export function completeItemTemplate (
     mCommon.doCommonTemplatizations(itemTemplate);
 
     // Templatize the app URL
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PATH;
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
 
     resolve(itemTemplate);
   });
 }
 
-export function getDependencyIds (
+/**
+ * Gets the ids of the dependencies of an AGOL dashboard item.
+ *
+ * @param fullItem A dashboard item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids
+ * @protected
+ */
+export function getDependencies (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const widgets:IDashboardWidget[] = mCommon.getProp(itemTemplate, "data.widgets");
+    const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
     if (widgets) {
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
@@ -107,20 +130,3 @@ export function deployItem (
   });
 }
 
-
-// -- Internals ------------------------------------------------------------------------------------------------------//
-
-/**
- * The relevant elements of a Dashboard widget.
- * @protected
- */
-interface IDashboardWidget {
-  /**
-   * AGOL item id for some widget types
-   */
-  itemId: string;
-  /**
-   * Dashboard widget type
-   */
-  type: string;
-}

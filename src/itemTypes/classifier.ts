@@ -101,7 +101,7 @@ export function initItemTemplateFromId (
             const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
 
             // Request item dependencies
-            const dependenciesPromise = itemTemplate.fcns.getDependencyIds(itemTemplate, requestOptions);
+            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
 
             Promise.all([
               completionPromise,
@@ -135,7 +135,7 @@ export function initItemTemplateFromId (
             };
 
             // Get ids of item dependencies (i.e., the group's contents)
-            itemTemplate.fcns.getDependencyIds(itemTemplate, requestOptions)
+            itemTemplate.fcns.getDependencies(itemTemplate, requestOptions)
             .then(
               dependencies => {
                 itemTemplate.dependencies = removeDuplicates(dependencies);

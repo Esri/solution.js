@@ -24,7 +24,7 @@ import * as mCommon from "./common";
 import { ITemplate } from "../interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
-
+//
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
 export function completeItemTemplate (
@@ -39,9 +39,17 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencyIds (
+/**
+ * Gets the ids of the dependencies (contents) of an AGOL group.
+ *
+ * @param fullItem A group whose contents are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids
+ * @protected
+ */
+export function getDependencies (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingRequest:IPagingParamsRequestOptions = {

@@ -14,5 +14,18 @@
  | limitations under the License.
  */
 
-export * from "./agolItems";
-export * from "./templates";
+import { getProp } from '../utils/object-helpers';
+
+/**
+ * Return a list of items this site depends on
+ */
+export function getDependencies (
+  model: any
+  ): Promise<string[]>  {
+    const deps = [];
+    const v = getProp(model, 'data.map.itemId');
+    if (v) {
+      deps.push(v);
+    }
+    return Promise.resolve(deps);
+};

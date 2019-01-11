@@ -14,5 +14,24 @@
  | limitations under the License.
  */
 
-export * from "./agolItems";
-export * from "./templates";
+import {
+  getDependencies
+} from '../../src/itemTypes/survey'
+
+describe('Surveys', () => {
+  
+  describe('get dependencies', () => {
+    
+    it('always returns an empty array', (done) => {
+      return getDependencies({item:{}, data:{}})
+        .then((r) => {
+          expect(r).toBeTruthy('should return a value');
+            expect(Array.isArray(r)).toBeTruthy('should be an array');
+            expect(r.length).toEqual(0, 'should have 0 entries');
+          done();
+        });
+    });
+
+  });
+
+});

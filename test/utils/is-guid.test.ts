@@ -14,5 +14,15 @@
  | limitations under the License.
  */
 
-export * from "./agolItems";
-export * from "./templates";
+import isGuid from '../../src/utils/is-guid';
+
+describe('isGuid', () => {
+  it('works', () => {
+    expect(isGuid(1234)).toBeFalsy();
+    expect(isGuid({prop: 'val'})).toBeFalsy();
+    expect(isGuid('1234')).toBeFalsy();
+    expect(isGuid('imnotaguid')).toBeFalsy();
+    expect(isGuid('76c3db4812d44f0087850093837e7a90')).toBeTruthy();
+    expect(isGuid('{371acc8b-85cf-4251-8c01-7d0e48bac7e3}')).toBeTruthy();
+  });
+});

@@ -42,7 +42,7 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencyIds (
+export function getDependencies (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {

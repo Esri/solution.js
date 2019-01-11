@@ -220,13 +220,13 @@ export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
  * The portion of a Dashboard app URL between the server and the app id.
  * @protected
  */
-export const OPS_DASHBOARD_APP_URL_PATH:string = "/apps/opsdashboard/index.html#/";
+export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
 
 /**
  * The portion of a Webmap URL between the server and the map id.
  * @protected
  */
-export const WEBMAP_APP_URL_PATH:string = "/home/webmap/viewer.html?webmap=";
+export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
 
 /**
  * A vertex used in the topological sort algorithm.

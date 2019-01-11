@@ -16,6 +16,7 @@
 
 import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
+import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -27,7 +28,7 @@ import { ITemplate } from "../interfaces";
  * The portion of a Webmap URL between the server and the map id.
  * @protected
  */
-const WEBMAP_APP_URL_PATH:string = "/home/webmap/viewer.html?webmap=";
+const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -42,7 +43,7 @@ export function completeItemTemplate (
     mCommon.doCommonTemplatizations(itemTemplate);
 
     // Templatize the app URL
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PATH + itemTemplate.itemId;
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + itemTemplate.itemId;
 
     // Templatize the map layer ids
     if (itemTemplate.data) {
@@ -54,9 +55,17 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencyIds (
+/**
+ * Gets the ids of the dependencies of an AGOL webmap item.
+ *
+ * @param fullItem A webmap item whose dependencies are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids
+ * @protected
+ */
+export function getDependencies (
   itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
+  requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     let dependencies:string[] = [];

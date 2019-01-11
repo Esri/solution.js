@@ -14,5 +14,19 @@
  | limitations under the License.
  */
 
-export * from "./agolItems";
-export * from "./templates";
+/**
+ * Check if a given string is a GUID
+ * @param stringToTest string that may be a guid
+ * 
+ * @returns boolean indicating if the string is a guid
+ */
+export default function isGuid (stringToTest:any):boolean {
+  if (typeof stringToTest !== 'string') {
+    return false;
+  }
+  if (stringToTest[0] === '{') {
+    stringToTest = stringToTest.substring(1, stringToTest.length - 1);
+  }
+  const regexGuid = /^(\{){0,1}[0-9a-fA-F]{8}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{4}[-]?[0-9a-fA-F]{12}(\}){0,1}$/gi;
+  return regexGuid.test(stringToTest);
+}
