@@ -49,14 +49,14 @@ export function completeItemTemplate (
       mCommon.templatize(itemTemplate.itemId);
 
     // Set the folder
-    if (mCommon.getProp(itemTemplate, "data.folderId")) {
+    if (getProp(itemTemplate, "data.folderId")) {
       itemTemplate.data.folderId = "{{folderId}}";
     }
 
     // Set the map or group
-    if (mCommon.getProp(itemTemplate, "data.values.webmap")) {
+    if (getProp(itemTemplate, "data.values.webmap")) {
       itemTemplate.data.values.webmap = mCommon.templatize(itemTemplate.data.values.webmap);
-    } else if (mCommon.getProp(itemTemplate, "data.values.group")) {
+    } else if (getProp(itemTemplate, "data.values.group")) {
       itemTemplate.data.values.group = mCommon.templatize(itemTemplate.data.values.group);
     }
 
