@@ -45,6 +45,7 @@
     "@esri/arcgis-rest-items": "^1.14.3",
     "@esri/arcgis-rest-request": "^1.14.3",
     "@esri/arcgis-rest-sharing": "^1.14.3",
+    "@types/adlib": "^3.0.0",
     "@types/arcgis-js-api": "^4.9.0",
     "@types/fetch-mock": "^6.0.4",
     "@types/isomorphic-fetch": "0.0.34",
