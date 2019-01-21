@@ -14,8 +14,6 @@
  | limitations under the License.
  */
 
-import { listDependencies } from "adlib";
-
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import * as sharing from "@esri/arcgis-rest-sharing";
 import * as items from "@esri/arcgis-rest-items";

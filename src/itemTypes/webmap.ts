@@ -16,7 +16,6 @@
 
 import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
-import { ILayer } from "@esri/arcgis-rest-common-types";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";

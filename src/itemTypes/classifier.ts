@@ -16,7 +16,6 @@
 
 import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
-import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
