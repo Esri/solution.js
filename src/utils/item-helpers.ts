@@ -33,7 +33,7 @@ export function hasTypeKeyword (
  * Does the model have any of a set of keywords
  */
 export function hasAnyKeyword (
-  model:any, 
+  model:any,
   keywords:string[]
   ):boolean {
   const typeKeywords = getProp(model, 'item.typeKeywords') || model.typeKeywords || [];
@@ -67,3 +67,18 @@ export function parseIdFromUrl (
   }
   return id;
 };
+
+/**
+ * Return a random number, prefixed with a string. Used for unique identifiers that do not require
+ * the rigor of a full UUID - i.e. node id's, process ids etc.
+ * @param prefix String to prefix the random number with so the result is a valid javascript property
+ */
+export function createId (
+  prefix: string = "i"
+  ): string {
+  // prepend some char so it's always a valid dotable property name
+  // get a random number, convert to base 36 representation, then grab chars 2-8
+  return `${prefix}${Math.random()
+    .toString(36)
+    .substr(2, 8)}`;
+}
