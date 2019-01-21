@@ -139,8 +139,12 @@
       request.getPortal(null, requestOptions)
       .then(
         portalResponse => {
-          const orgUrl = 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl;
-          const portalUrl = 'https://' + portalResponse.portalHostname;
+          const settings = {
+            organization: {
+              orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
+              portalBaseUrl: 'https://' + portalResponse.portalHostname
+            }
+          };
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
 
           // Get the solution contents
@@ -148,12 +152,12 @@
           .then(
             publishedSolution => {
               clone.cloneSolution(publishedSolution.templates,
-                requestOptions, orgUrl, portalUrl, currentSolutionName, null)
+                requestOptions, settings, currentSolutionName, null)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
                   clone.createSolutionStorymap(solutionStorymapTitle, clonedSolution, requestOptions,
-                    orgUrl, null, "public")
+                    settings.organization.orgUrl, null, "public")
                   .then(
                     storymap  => {
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
@@ -164,7 +168,8 @@
                       document.getElementById('createDisplay').innerHTML =
                         '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
                         solutionStorymapTitle + '</a></li></ul><br>' +
-                        demoCommon.createHierarchyDisplay(clonedSolution, clone.getItemHierarchy(clonedSolution),
+                        demoCommon.createHierarchyDisplay(clonedSolution,
+                          clone.getItemHierarchy(clonedSolution),
                           true, orgUrl + '/home/');
                     }
                   );
