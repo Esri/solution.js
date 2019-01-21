@@ -12,6 +12,8 @@
     "build:umd": "rollup -c ./umd-base-profile.js && rollup -c ./umd-production-profile.js",
     "build:node": "tsc --module commonjs --outDir ./dist/node",
     "build:tsumd": "tsc --module umd --outDir ./dist/tsumd",
+    "build:webpack": "webpack --config webpack.config.js",
+    "build:dist": "npm run build:tsumd && npm run build:webpack",
     "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ./umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",

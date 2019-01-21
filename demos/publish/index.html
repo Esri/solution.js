@@ -70,6 +70,14 @@
   </div>
 
   <script src="../demo_common/require_2.3.6.min.js"></script>
+  <script src="../../dist/adlib.js"></script>
+  <script src="../../dist/arcgis-clone-js.js"></script>
+  <script src="../../dist/arcgis-rest-auth.js"></script>
+  <script src="../../dist/arcgis-rest-feature-service-admin.js"></script>
+  <script src="../../dist/arcgis-rest-groups.js"></script>
+  <script src="../../dist/arcgis-rest-items.js"></script>
+  <script src="../../dist/arcgis-rest-request.js"></script>
+  <script src="../../dist/arcgis-rest-sharing.js"></script>
   <script>
   var createSolutionFcn = publishSolutionFcn = null;
 
@@ -93,33 +101,11 @@
     return checkedItems;
   }
 
-  requirejs.config({
-    baseUrl: './',
-    paths: {
-      // for the benefit of arcgis-clone-js
-      'tslib': '../demo_common/tslib',
-      'adlib': 'https://unpkg.com/adlib@3.0.0/dist/adlib.umd',
-      // for the benefit of called libraries that use arcgis-rest-auth
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.14.3/dist/umd/auth.umd',
-      '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.14.3/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.14.3/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.14.3/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.14.3/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.14.3/dist/umd/sharing.umd'
-    }
-  });
   requirejs([
-    '../../dist/tsumd/src/index',
     '../demo_common/common',
-    '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request',
     '../demo_common/polyfills'
   ], function (
-    clone,
-    demoCommon,
-    items,
-    request
+    demoCommon
   ) {
     createSolutionFcn = createSolution;
     publishSolutionFcn = publishSolution;
@@ -140,7 +126,7 @@
       requestOptions = demoCommon.getRequestOptions('username', 'password');
 
       // Get the publisher's organization URL for creating links to source items
-      request.getPortal(null, requestOptions)
+      arcgis_rest_request.getPortal(null, requestOptions)
       .then(
         function (response) {
           orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
@@ -150,14 +136,14 @@
           var solutionRootIds = getCheckedItems();
 
           // Get the items forming the solution
-          clone.createSolution(solutionRootIds, requestOptions)
+          arcgis_clone_js.createSolution(solutionRootIds, requestOptions)
           .then(
             createdSolution => {
               solution = createdSolution;
 
               // Display the Solution
               document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-                demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
+                demoCommon.createHierarchyDisplay(solution, arcgis_clone_js.getItemHierarchy(solution), true, orgUrl);
             },
             error => {
              document.getElementById('createDisplay').innerHTML = error.toString();
@@ -187,18 +173,18 @@
 
       // Publish the Solution
       var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.publishSolution(solutionName, solution, requestOptions, null, 'public')
+      arcgis_clone_js.publishSolution(solutionName, solution, requestOptions, null, 'public')
       .then(function (publishResponse) {
         var publishedSolutionId = publishResponse.id;
 
-        items.getItemData(publishedSolutionId, requestOptions)
+        arcgis_rest_items.getItemData(publishedSolutionId, requestOptions)
         .then(
           publishedSolution => {
             document.getElementById('detailsDisplay').innerHTML =
               demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
               '<br>Published Solution item hierarchy:' +
               demoCommon.createHierarchyDisplay(publishedSolution.templates,
-                clone.getItemHierarchy(publishedSolution.templates));
+                arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
           }
         );
       }, function (error) {
