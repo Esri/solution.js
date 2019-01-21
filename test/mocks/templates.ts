@@ -60,7 +60,7 @@ export function getItemTemplatePart (
 
     case "Feature Service":
       templatePart = getItemTemplateFundamentals(type, "svc", dependencies, url || "{{svc1234567890.id}}");
-      templatePart.item.url = url || "{{svc1234567890.id}}";
+      templatePart.item.url = url || "{{svc1234567890.url}}";
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = null;
 
@@ -165,10 +165,11 @@ export function getGroupTemplatePart (
   dependencies = [] as string[]
 ): any {
   return {
-    "itemId": "{{grp1234567890.id}}",
+    "itemId": "grp1234567890",
     "type": "Group",
-    "key": "anAgolGroup",
+    "key": "i1a2b3c4",
     "item": {
+      "id": "{{grp1234567890.id}}",
       "title": "An AGOL group",
       "isInvitationOnly": true,
       "description": "Description of an AGOL group",
@@ -201,9 +202,9 @@ export function getGroupTemplatePart (
 export function getWebMappingApplicationTemplate (
 ): mInterfaces.ITemplate[] {
   const template:mInterfaces.ITemplate[] = [
-    getItemTemplatePart("Web Mapping Application", ["{{map1234567890.id}}"],
+    getItemTemplatePart("Web Mapping Application", ["map1234567890"],
       "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"),
-    getItemTemplatePart("Web Map", ["{{svc1234567890.id}}"],
+    getItemTemplatePart("Web Map", ["svc1234567890"],
       "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"),
     getItemTemplatePart("Feature Service", [])
   ];
@@ -622,10 +623,11 @@ function getItemTemplateFundamentals (
   url = ""
 ): any {
   return {
-    "itemId": "{{" + typePrefix + "1234567890.id}}",
+    "itemId": typePrefix + "1234567890",
     "type": type,
-    "key": "anAgolItem",
+    "key": "i1a2b3c4",
     "item": {
+      "id": "{{" + typePrefix + "1234567890.id}}",
       "item": "{{" + typePrefix + "1234567890.id}}",
       "name": "Name of an AGOL item",
       "title": "An AGOL item",

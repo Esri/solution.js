@@ -42,10 +42,10 @@ export function completeItemTemplate (
     // to
     //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
     // Need to add placeholder server name because otherwise AGOL makes URL null
-    const orgUrl = itemTemplate.item.url.replace(itemTemplate.itemId, mCommon.templatize(itemTemplate.itemId));
-    const iSep = orgUrl.indexOf("//");
+    const templatizedUrl = itemTemplate.item.url;
+    const iSep = templatizedUrl.indexOf("//");
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
-      orgUrl.substring(orgUrl.indexOf("/", iSep + 2), orgUrl.lastIndexOf("=") + 1) +
+      templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2), templatizedUrl.lastIndexOf("=") + 1) +
       mCommon.templatize(itemTemplate.itemId);
 
     // Set the folder

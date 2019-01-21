@@ -168,7 +168,7 @@ export function getGroupSolutionPart (
   return {
     "itemId": "grp1234567890",
     "type": "Group",
-    "key": "AnAGOLGroup",
+    "key": "i1a2b3c4",
     "item": {
       "id": "grp1234567890",
       "title": "An AGOL group",
@@ -224,7 +224,7 @@ function getItemSolutionFundamentals (
   return {
     "itemId": typePrefix + "1234567890",
     "type": type,
-    "key": "AnAGOLItem",
+    "key": "i1a2b3c4",
     "item": {
       "id": typePrefix + "1234567890",
       "item": typePrefix + "1234567890",

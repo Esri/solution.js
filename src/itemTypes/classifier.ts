@@ -18,6 +18,7 @@ import * as groups from "@esri/arcgis-rest-groups";
 import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
+import { createId } from '../utils/item-helpers';
 import * as mCommon from "./common";
 import {ITemplate, IItemTypeModule} from "../interfaces";
 import * as DashboardModule from "./dashboard";
@@ -56,30 +57,30 @@ export function initItemTemplateFromId (
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
     let itemTemplate:ITemplate;
-    itemId = mCommon.deTemplatize(itemId);
 
     // Request item base section
-    items.getItem(mCommon.deTemplatize(itemId), requestOptions)
+    items.getItem(itemId, requestOptions)
     .then(
       itemResponse => {
         itemTemplate = {
-          itemId: mCommon.templatize(itemResponse.id),
+          itemId: itemResponse.id,
           type: itemResponse.type,
-          key: mCommon.camelize(itemResponse.title),
+          key: createId(),
           item: removeUndesirableItemProperties(itemResponse),
           dependencies: [],
           fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule
         };
+        itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
         if (itemTemplate.item.item) {
           itemTemplate.item.item = mCommon.templatize(itemTemplate.item.item);
         }
 
         // Request item data section
-        const dataPromise = items.getItemData(mCommon.deTemplatize(itemId), requestOptions);
+        const dataPromise = items.getItemData(itemId, requestOptions);
 
         // Request item resources
         const resourceRequestOptions = {
-          id: mCommon.deTemplatize(itemId),
+          id: itemId,
           ...requestOptions
         };
         const resourcePromise = items.getItemResources(resourceRequestOptions);
@@ -110,7 +111,7 @@ export function initItemTemplateFromId (
               responses2 => {
                 const [completionResponse, dependenciesResponse] = responses2;
                 itemTemplate = completionResponse;
-                itemTemplate.dependencies = mCommon.templatizeList(removeDuplicates(dependenciesResponse));
+                itemTemplate.dependencies = removeDuplicates(mCommon.deTemplatizeList(dependenciesResponse));
                 resolve(itemTemplate);
               },
               reject
@@ -125,9 +126,9 @@ export function initItemTemplateFromId (
         .then(
           itemResponse => {
             itemTemplate = {
-              itemId: mCommon.templatize(itemResponse.id),
+              itemId: itemResponse.id,
               type: "Group",
-              key: mCommon.camelize(itemResponse.title),
+              key: createId(),
               item: removeUndesirableItemProperties(itemResponse),
               dependencies: [],
               fcns: moduleMap["group"]
@@ -137,6 +138,8 @@ export function initItemTemplateFromId (
             itemTemplate.fcns.getDependencies(itemTemplate, requestOptions)
             .then(
               dependencies => {
+                // We can templatize the item's id now that we're done using it to get the group members
+                itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
                 itemTemplate.dependencies = removeDuplicates(dependencies);
                 resolve(itemTemplate);
               },
@@ -197,7 +200,6 @@ export function removeUndesirableItemProperties (
     delete itemSectionClone.avgRating;
     delete itemSectionClone.created;
     delete itemSectionClone.guid;
-    delete itemSectionClone.id;
     delete itemSectionClone.lastModified;
     delete itemSectionClone.modified;
     delete itemSectionClone.numComments;

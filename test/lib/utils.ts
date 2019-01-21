@@ -76,7 +76,7 @@ export function createMockSettings (
 
   if (itemId) {
 
-    const settingsKey = mCommon.deTemplatize(itemId);
+    const settingsKey = itemId;
     const settingsValue = settingsKey.toUpperCase();
     settings[settingsKey] = {id: settingsValue};
   }

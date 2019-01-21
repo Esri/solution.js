@@ -64,7 +64,7 @@ export function doCommonTemplatizations (
   }
 
   // Templatize the item's id
-  itemTemplate.itemId = templatize(itemTemplate.itemId);
+  itemTemplate.item.id = templatize(itemTemplate.item.id);
 }
 
 /**
@@ -150,6 +150,16 @@ export function deTemplatize (
   } else {
     return id;
   }
+}
+
+export function deTemplatizeList (
+  ids: string[]
+): string[] {
+  return ids.map(
+    (id:string) => {
+      return deTemplatize(id);
+    }
+  );
 }
 
 /**

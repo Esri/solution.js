@@ -282,7 +282,7 @@ export function getItemTemplateHierarchy (
   return new Promise((resolve, reject) => {
     if (typeof rootIds === "string") {
       // Handle a single AGOL id
-      const rootId = mCommon.templatize(rootIds);
+      const rootId = rootIds;
       if (getTemplateInSolution(templates, rootId)) {
         resolve(templates);  // Item and its dependents are already in list or are queued
 

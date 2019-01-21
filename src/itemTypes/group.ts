@@ -90,7 +90,7 @@ export function deployItem (
     .then(
       createResponse => {
         // Add the new item to the swizzle list
-        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+        settings[itemTemplate.itemId] = {
           id: createResponse.group.id
         };
         itemTemplate.itemId = createResponse.group.id;
@@ -131,8 +131,8 @@ export function addGroupMembers (
       itemTemplate.dependencies.forEach(depId => {
         awaitGroupAdds.push(new Promise((resolve2, reject2) => {
           sharing.shareItemWithGroup({
-            id: mCommon.deTemplatize(depId),
-            groupId: mCommon.deTemplatize(itemTemplate.itemId),
+            id: depId,
+            groupId: itemTemplate.itemId,
             ...requestOptions
           })
           .then(
@@ -173,11 +173,11 @@ export function getGroupContentsTranche (
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
-    groups.getGroupContent(mCommon.deTemplatize(id), pagingRequest)
+    groups.getGroupContent(id, pagingRequest)
     .then(
       contents => {
         // Extract the list of content ids from the JSON returned
-        const trancheIds:string[] = contents.items.map((item:any) => mCommon.templatize(item.id));
+        const trancheIds:string[] = contents.items.map((item:any) => item.id);
 
         // Are there more contents to fetch?
         if (contents.nextStart > 0) {

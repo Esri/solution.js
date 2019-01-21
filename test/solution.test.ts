@@ -22,6 +22,7 @@ import * as mCommon from "../src/itemTypes/common";
 import * as mFeatureService from "../src/itemTypes/featureservice";
 import * as mGroup from "../src/itemTypes/group";
 import * as mInterfaces from "../src/interfaces";
+import * as mItemHelpers from '../src/utils/item-helpers';
 import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 
@@ -79,6 +80,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("for single item containing WMA & feature service", done => {
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+
+      spyOn(mItemHelpers, "createId").and.callFake(() => {
+        return "i1a2b3c4";
+      });
+
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
@@ -113,6 +119,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("for single item not containing WMA or feature service", done => {
+      spyOn(mItemHelpers, "createId").and.callFake(() => {
+        return "i1a2b3c4";
+      });
+
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())

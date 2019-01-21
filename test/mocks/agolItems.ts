@@ -117,7 +117,6 @@ export function getTrimmedAGOLItem (
   delete item.avgRating;
   delete item.created;
   delete item.guid;
-  delete item.id;
   delete item.lastModified;
   delete item.modified;
   delete item.numComments;

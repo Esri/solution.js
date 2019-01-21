@@ -42,7 +42,8 @@ export function completeItemTemplate (
     mCommon.doCommonTemplatizations(itemTemplate);
 
     // Templatize the app URL
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + itemTemplate.itemId;
+    itemTemplate.item.url =
+      mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + mCommon.templatize(itemTemplate.itemId);
 
     // Templatize the map layer ids
     if (itemTemplate.data) {
