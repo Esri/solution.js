@@ -86,25 +86,20 @@ export function deployItem (
     featureServiceAdmin.createFeatureService(options)
     .then(
       createResponse => {
-        if (!createResponse.success) {
-          reject(createResponse);
+        // Add the new item to the settings list
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.serviceItemId,
+          url: createResponse.serviceurl
+        };
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        itemTemplate.item.url = createResponse.serviceurl;
 
-        } else {
-          // Add the new item to the settings list
-          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
-            id: createResponse.serviceItemId,
-            url: createResponse.serviceurl
-          };
-          itemTemplate = adlib.adlib(itemTemplate, settings);
-          itemTemplate.item.url = createResponse.serviceurl;
-
-          // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
-          .then(
-            () => resolve(itemTemplate),
-            reject
-          );
-        }
+        // Add the feature service's layers and tables to it
+        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+        .then(
+          () => resolve(itemTemplate),
+          reject
+        );
       },
       reject
     );

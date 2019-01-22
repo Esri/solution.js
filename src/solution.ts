@@ -121,10 +121,7 @@ export function publishSolution (
 export function cloneSolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
-  settings: any,
-  solutionName = "",
-  folderId = null as string,
-  access = "private"
+  settings = {} as any
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
     const clonedSolution:mInterfaces.ITemplate[] = [];
@@ -149,6 +146,7 @@ export function cloneSolution (
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
       // Interpolate template
+      itemTemplate.dependencies = itemTemplate.dependencies ? mCommon.templatizeList(itemTemplate.dependencies) : [];
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
       // Deploy it
@@ -164,14 +162,11 @@ export function cloneSolution (
     // -------------------------------------------------------------------------
 
     // Use specified folder to hold the hydrated items to avoid name clashes
-    if (folderId) {
-      settings.folderId = folderId;
-      runThroughChecklist();
-    } else if (settings.folderId) {
+    if (settings.folderId) {
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      const folderName = (solutionName || "Solution") + " (" + mCommon.getTimestamp() + ")";
+      const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getTimestamp() + ")";
       const options = {
         title: folderName,
         authentication: requestOptions.authentication

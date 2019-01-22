@@ -63,23 +63,19 @@ export function createRuntimeMockUserSession (
 }
 
 export function createMockSettings (
-  itemId = null as string,
-  settingsInit = {} as any
+  solutionName = "",
+  folderId = null as string,
+  access = "private"
 ): any {
   const settings:any = {
     organization: {
       orgUrl,
       portalBaseUrl: portalUrl
     },
-    ...settingsInit
+    solutionName,
+    folderId,
+    access
   };
-
-  if (itemId) {
-
-    const settingsKey = itemId;
-    const settingsValue = settingsKey.toUpperCase();
-    settings[settingsKey] = {id: settingsValue};
-  }
 
   return settings;
 }

@@ -104,9 +104,20 @@ export function getAGOLItem (
     case "Workforce Project":
       break;
 
+    case "Unknown":
+    item = getAGOLItemFundamentals(type, "unk");
+      break;
+
   }
 
   return item;
+}
+
+export function getUnknownItemWithoutItemProp (
+): any {
+  const agolItem = getAGOLItem("Unknown");
+  delete agolItem.item;
+  return agolItem;
 }
 
 export function getTrimmedAGOLItem (
@@ -360,6 +371,22 @@ export function getAGOLItemData (
 
   }
 
+  return data;
+}
+
+export function getAGOLItemDataWMAGroup (
+): any {
+  const data = getAGOLItemData("Web Mapping Application");
+  data.values.group = data.values.webmap;
+  delete data.values.webmap;
+  return data;
+}
+
+export function getAGOLItemDataWMANoWebmapOrGroup (
+): any {
+  const data = getAGOLItemData("Web Mapping Application");
+  delete data.folderId;
+  delete data.values.webmap;
   return data;
 }
 

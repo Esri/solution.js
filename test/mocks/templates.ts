@@ -18,6 +18,7 @@
 
 import * as mFeatureService from "../../src/itemTypes/featureservice";
 import * as mInterfaces from "../../src/interfaces";
+import * as mockItems from "../../test/mocks/agolItems";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
@@ -153,6 +154,13 @@ export function getDashboardTemplatePartNoData (
   return templatePart;
 }
 
+export function getDashboardTemplatePartNoExtent (
+): any {
+  const templatePart:any = getItemTemplatePart("Dashboard");
+  templatePart.item.extent = null;
+  return templatePart;
+}
+
 export function getFeatureServiceTemplatePartNoRelationships (
 ): any {
   const templatePart:any = getItemTemplatePart("Feature Service");
@@ -206,8 +214,45 @@ export function getWebMappingApplicationTemplate (
       "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"),
     getItemTemplatePart("Web Map", ["svc1234567890"],
       "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"),
+    getItemTemplatePart("Feature Service")
+  ];
+
+  return template;
+}
+
+export function getWebMappingApplicationTemplateGroup (
+): mInterfaces.ITemplate[] {
+  const template:mInterfaces.ITemplate[] = [
+    getItemTemplatePart("Web Mapping Application", ["map1234567890"],
+      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"),
+    getItemTemplatePart("Web Map", ["svc1234567890"],
+      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"),
     getItemTemplatePart("Feature Service", [])
   ];
+
+  // Switch from webmap to group
+  template[0].data.values.group = template[0].data.values.webmap;
+  delete template[0].data.values.webmap;
+
+  //  Give the WMA a resource
+  template[0].resources = mockItems.getAGOLItemResources("one text").resources;
+
+  return template;
+}
+
+export function getWebMappingApplicationTemplateNoWebmapOrGroup (
+): mInterfaces.ITemplate[] {
+  const template:mInterfaces.ITemplate[] = [
+    getItemTemplatePart("Web Mapping Application", null,
+      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"),
+  ];
+
+  // Change the dependencies from null to an empty array
+  template[0].dependencies = [];
+
+  // Remove folderId & values.webmap
+  delete template[0].data.folderId;
+  delete template[0].data.values.webmap;
 
   return template;
 }
