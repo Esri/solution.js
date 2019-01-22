@@ -15,7 +15,7 @@
  */
 
 define([
-  '../../dist/tsumd/demos/demo_common/icon'
+  './icon'
 ], function (
   icon
 ) {

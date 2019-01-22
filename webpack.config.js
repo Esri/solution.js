@@ -14,7 +14,7 @@ module.exports = {
 */
 
 module.exports = [{
-  entry: './dist/src/index.js',
+  entry: './dist/umd/arcgis-clone.umd.js',
   mode: 'production',
   output: {
     library: 'arcgis_clone_js',
