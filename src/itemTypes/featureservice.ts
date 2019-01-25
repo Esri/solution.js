@@ -37,7 +37,7 @@ export function completeItemTemplate (
     fleshOutFeatureService(itemTemplate, requestOptions)
     .then(
       () => resolve(itemTemplate),
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -86,23 +86,27 @@ export function deployItem (
     featureServiceAdmin.createFeatureService(options)
     .then(
       createResponse => {
-        // Add the new item to the settings list
-        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
-          id: createResponse.serviceItemId,
-          url: createResponse.serviceurl
-        };
-        itemTemplate = adlib.adlib(itemTemplate, settings);
-        itemTemplate.item.url = createResponse.serviceurl;
+        if (createResponse.success) {
+          // Add the new item to the settings list
+          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+            id: createResponse.serviceItemId,
+            url: createResponse.serviceurl
+          };
+          itemTemplate = adlib.adlib(itemTemplate, settings);
+          itemTemplate.item.url = createResponse.serviceurl;
 
-        // Add the feature service's layers and tables to it
-        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
-        .then(
-          () => resolve(itemTemplate),
-          reject
-        );
+          // Add the feature service's layers and tables to it
+          addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            () => reject({ success: false })
+          );
+        } else {
+          reject({ success: false });
+        }
       },
-      reject
-    );
+      () => reject({ success: false })
+    )
   });
 }
 
@@ -209,10 +213,10 @@ export function addFeatureServiceLayersAndTables (
             () => {
               resolve();
             },
-            reject
+            () => reject({ success: false })
           );
         },
-        reject
+        () => reject({ success: false })
       );
     } else {
       resolve();
@@ -273,10 +277,10 @@ export function fleshOutFeatureService (
             itemTemplate.properties = properties;
             resolve();
           },
-          reject
+          () => reject({ success: false })
         );
       },
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -340,7 +344,7 @@ function getLayers (
         });
         resolve(layers);
       },
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -386,6 +390,7 @@ function updateFeatureServiceDefinition(
         ...requestOptions
       };
 
+      // Need to add layers and tables one at a time, waiting until one is complete before moving on to the next one
       if (toAdd.type === "layer") {
         item.adminLayerInfo = {  // ???
           "geometryField": {
@@ -404,10 +409,10 @@ function updateFeatureServiceDefinition(
           updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships, requestOptions)
           .then(
             () => resolve(),
-            reject
+            () => reject({ success: false })
           );
         },
-        reject
+        () => reject({ success: false })
       );
     } else {
       resolve();

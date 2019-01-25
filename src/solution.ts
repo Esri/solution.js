@@ -64,7 +64,7 @@ export function createSolution (
     getItemTemplateHierarchy(solutionRootIds, requestOptions)
     .then(
       solution => resolve(solution),
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -156,7 +156,7 @@ export function cloneSolution (
           clonedSolution.push(itemClone);
           runThroughChecklist();
         },
-        reject
+        () => reject({ success: false })
       )
     }
     // -------------------------------------------------------------------------
@@ -177,9 +177,7 @@ export function cloneSolution (
           settings.folderId = createdFolderResponse.folder.id;
           runThroughChecklist();
         },
-        error => {
-          reject(error.response.error.message)
-        }
+        () => reject({ success: false })
       );
     }
   });
@@ -314,11 +312,11 @@ export function getItemTemplateHierarchy (
                 () => {
                   resolve(templates);
                 },
-                (error:ArcGISRequestError) => reject(error)
+                () => reject({ success: false })
               );
             }
           },
-          (error:ArcGISRequestError) => reject(error)
+          () => reject({ success: false })
         );
       }
 
@@ -335,11 +333,11 @@ export function getItemTemplateHierarchy (
         () => {
           resolve(templates);
         },
-        (error:ArcGISRequestError) => reject(error)
+        () => reject({ success: false })
       );
 
     } else {
-      reject(mCommon.createUnavailableItemError(null));
+      reject({ success: false });
     }
   });
 }
@@ -368,7 +366,7 @@ function getTemplateIndexInSolution (
  * Replaces a template entry in a list of templates
  *
  * @param templates Templates list
- * @param id Id of item in templates list to find; if not found, no replacement is done
+ * @param id Id of item in templates list to find; if not found, no replacement is () => done()
  * @param template Replacement template
  * @return True if replacement was made
  * @protected

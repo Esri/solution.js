@@ -116,7 +116,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response).toEqual(template);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -157,7 +157,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response).toEqual(template);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -180,7 +180,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response).toEqual(template);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -205,7 +205,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           ]);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -246,7 +246,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           ).layers[0].name);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -287,7 +287,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           ).name);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -328,7 +328,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           ).name);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -366,7 +366,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(itemTemplate.properties.service.name).toEqual("Feature Service");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -391,7 +391,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           });
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -402,8 +402,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual("Item type not valid.");
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -420,8 +420,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         null, "public")
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -459,7 +459,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
-        done
+        () => done()
       )
     });
 
@@ -520,7 +520,60 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response.length).toEqual(3);
           done();
         },
-        done.fail
+        error => done.fail(error)
+      );
+    });
+
+    it("for single item containing WMA without a data section", done => {
+      const solutionItem = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
+      delete solutionItem[0].data;
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
+      .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
+        '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
+        '{"success":true,"id":"wma1234567890"}')
+      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      .then(
+        response => {
+          expect(response.length).toEqual(1);
+          expect(response[0].data).toBeUndefined();
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("handle failure to create a single item containing WMA without a data section", done => {
+      const solutionItem = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
+      delete solutionItem[0].data;
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
+      .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", 400);
+      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      .then(
+        () => done.fail(),
+        () => done()
       );
     });
 
@@ -578,7 +631,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response.length).toEqual(3);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -599,7 +652,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           return () => [
             '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
             '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
-            '{"success":false"}'
+            400
           ][stepNum++];
       })();
 
@@ -628,10 +681,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         response => {
-        expect(response.length).toEqual(3);
+          expect(response.length).toEqual(3);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -643,15 +696,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
-      .post("path:/sharing/rest/content/users/casey/createService",
-        '{"success":false}');
+      .post("path:/sharing/rest/content/users/casey/createService", 400);
       mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual({"success":false});
-          done();
-        }
+        () => done()
       );
     });
 
@@ -675,10 +724,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"notSharedWith":[],"itemId":"sto1234567890"}');
       mViewing.createSolutionStorymap(title, solutionItem, MOCK_USER_REQOPTS, orgUrl, folderId, "public")
       .then(
-        storymap => {
-          done();
-        },
-        done.fail
+        () => done(),
+        error => done.fail(error)
       );
     });
 
@@ -692,7 +739,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mViewing.createSolutionStorymap(title, solutionItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
         () => done.fail(),
-        done
+        () => done()
       );
     });
 
@@ -715,7 +762,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -735,7 +782,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -754,7 +801,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -773,7 +820,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("DSH1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -787,8 +834,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual("User folder does not exist.");
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -839,7 +886,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -889,7 +936,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -939,7 +986,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -957,15 +1004,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("path:/sharing/rest/content/users/casey/createService",
-        '{"success":false}');
+      .post("path:/sharing/rest/content/users/casey/createService", 400);
       itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual({"success":false});
-          done();
-        }
+        () => done()
       );
     });
 
@@ -979,7 +1022,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mFeatureService.addFeatureServiceLayersAndTables(itemTemplate, {}, MOCK_USER_REQOPTS)
       .then(
         () => done(),
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1023,8 +1066,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
-        (errorMsg:any) => {
-          expect(errorMsg).toEqual("You do not have permissions to access this resource or perform this operation.");
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1046,7 +1089,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("WMA1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1064,8 +1107,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
-        errorMsg => {
-          expect(errorMsg).toEqual("Item does not exist or is inaccessible.");
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1085,7 +1128,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1103,7 +1146,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1121,7 +1164,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItemUpdateResponse).toEqual({ success: true, id: "dsh1234567890" });
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1141,7 +1184,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createdItem.itemId).toEqual("MTP1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1250,7 +1293,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(response.fcns.completeItemTemplate).toEqual(GenericModule.completeItemTemplate);
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1293,7 +1336,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
         () => done(),
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1383,7 +1426,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mGroup.addGroupMembers(group, MOCK_USER_REQOPTS)
       .then(
         () => done(),
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1404,7 +1447,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mGroup.addGroupMembers(group, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
-        done
+        () => done()
       );
     });
 
@@ -1425,7 +1468,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mGroup.addGroupMembers(group, MOCK_USER_REQOPTS)
       .then(
         () => done(),
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1467,7 +1510,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1505,7 +1548,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1543,7 +1586,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
           done();
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1585,10 +1628,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
               expect(response2).toEqual(response);
               done();
             },
-            done.fail
+            error => done.fail(error)
           );
         },
-        done.fail
+        error => done.fail(error)
       );
     });
 
@@ -1602,7 +1645,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1614,7 +1657,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1626,7 +1669,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1644,7 +1687,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1658,7 +1701,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1692,7 +1735,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: fail1234567890");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1713,7 +1756,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: null");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1738,7 +1781,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done.fail();
         },
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: grp1234567890");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );
@@ -1761,7 +1804,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done.fail();
         },
         error => {
-          expect(error.message).toEqual("Item or group does not exist or is inaccessible: svc1234567890");
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
         }
       );

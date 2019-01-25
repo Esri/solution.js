@@ -64,7 +64,7 @@ export function getDependencies (
     getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
     .then(
       contents => resolve(contents),
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -89,21 +89,25 @@ export function deployItem (
     groups.createGroup(options)
     .then(
       createResponse => {
-        // Add the new item to the swizzle list
-        settings[itemTemplate.itemId] = {
-          id: createResponse.group.id
-        };
-        itemTemplate.itemId = createResponse.group.id;
-        itemTemplate = adlib.adlib(itemTemplate, settings);
+        if (createResponse.success) {
+          // Add the new item to the swizzle list
+          settings[itemTemplate.itemId] = {
+            id: createResponse.group.id
+          };
+          itemTemplate.itemId = createResponse.group.id;
+          itemTemplate = adlib.adlib(itemTemplate, settings);
 
-        // Add the group's items to it
-        addGroupMembers(itemTemplate, requestOptions)
-        .then(
-          () => resolve(itemTemplate),
-          reject
-        );
+          // Add the group's items to it
+          addGroupMembers(itemTemplate, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            () => reject({ success: false })
+          );
+        } else {
+          reject("Unable to create item");
+        }
       },
-      error => reject(error.response.error.message)
+      () => reject({ success: false })
     );
   });
 }
@@ -136,12 +140,8 @@ export function addGroupMembers (
             ...requestOptions
           })
           .then(
-            () => {
-              resolve2();
-            },
-            error => {
-              reject2(error.response.error.message);
-            }
+            () => resolve2(),
+            () => reject2({ success: false })
           );
         }));
       });
@@ -149,7 +149,7 @@ export function addGroupMembers (
       Promise.all(awaitGroupAdds)
       .then(
         () => resolve(),
-        reject
+        () => reject({ success: false })
       );
     } else {
       // No items in this group
@@ -188,15 +188,13 @@ export function getGroupContentsTranche (
               // Append all of the following tranches to this tranche and return it
               resolve(trancheIds.concat(allSubsequentTrancheIds));
             },
-            reject
+            () => reject({ success: false })
           );
         } else {
           resolve(trancheIds);
         }
       },
-      error => {
-        reject(error.originalMessage);
-      }
+      () => reject({ success: false })
     );
   });
 }

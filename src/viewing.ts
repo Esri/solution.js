@@ -130,7 +130,7 @@ export function createSolutionStorymap (
     folderId, access)
     .then(
       storymap  => resolve(storymap),
-      reject
+      () => reject({ success: false })
     );
   });
 }
@@ -342,11 +342,11 @@ export function publishSolutionStorymapItem (
             solutionStorymap.item.url = solutionStorymapUrl;
             resolve(solutionStorymap);
           },
-          reject
+          () => reject({ success: false })
         );
 
       },
-      reject
+      () => reject({ success: false })
     );
   });
 }

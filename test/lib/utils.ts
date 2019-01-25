@@ -36,6 +36,10 @@ export const YESTERDAY = (function() {
   return now;
 })();
 
+export const ArcgisRestSuccessFail = {
+  success: false
+}
+
 export function setMockDateTime (
   now: number
 ): number {

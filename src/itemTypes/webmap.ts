@@ -102,21 +102,25 @@ export function deployItem (
     items.createItemInFolder(options)
     .then(
       createResponse => {
-        // Add the new item to the settings
-        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
-          id: createResponse.id
-        };
-        itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
-        itemTemplate = adlib.adlib(itemTemplate, settings);
+        if (createResponse.success) {
+          // Add the new item to the settings
+          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+            id: createResponse.id
+          };
+          itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
+          itemTemplate = adlib.adlib(itemTemplate, settings);
 
-        // Update the app URL
-        mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
-        .then(
-          () => resolve(itemTemplate),
-          error => reject(error.response.error.message)
-        );
+          // Update the app URL
+          mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
+          .then(
+            () => resolve(itemTemplate),
+            () => reject({ success: false })
+          );
+        } else {
+          reject("Unable to create item");
+        }
       },
-      error => reject(error.response.error.message)
+      () => reject({ success: false })
     );
   });
 }

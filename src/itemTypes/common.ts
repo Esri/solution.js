@@ -88,7 +88,7 @@ export function createItemWithData (
                 id: results2.itemId
               })
             },
-            error => reject(error.originalMessage)
+            () => reject({ success: false })
           );
         } else {
           resolve({
@@ -97,23 +97,9 @@ export function createItemWithData (
           })
         }
       },
-      error => reject(error.originalMessage)
+      () => reject({ success: false })
     );
   });
-}
-
-/**
- * Creates an error object.
- *
- * @param itemId AGOL item id that caused failure
- * @return Error object with message "Item or group does not exist or is inaccessible: <id>"
- */
-export function createUnavailableItemError (
-  itemId: string
-): ArcGISRequestError {
-  return new ArcGISRequestError(
-    "Item or group does not exist or is inaccessible: " + itemId
-  );
 }
 
 export function deTemplatize (
@@ -197,7 +183,7 @@ export function updateItemURL (
       updateResp => {
         resolve(id);
       },
-      reject
+      () => reject({ success: false })
     );
   });
 }

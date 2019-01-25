@@ -114,10 +114,10 @@ export function initItemTemplateFromId (
                 itemTemplate.dependencies = removeDuplicates(mCommon.deTemplatizeList(dependenciesResponse));
                 resolve(itemTemplate);
               },
-              reject
+              () => reject({ success: false })
             );
           },
-          reject
+          () => reject({ success: false })
         );
       },
       () => {
@@ -143,14 +143,10 @@ export function initItemTemplateFromId (
                 itemTemplate.dependencies = removeDuplicates(dependencies);
                 resolve(itemTemplate);
               },
-              () => {
-                reject(mCommon.createUnavailableItemError(itemId));
-              }
+              () => reject({ success: false })
             );
           },
-          () => {
-            reject(mCommon.createUnavailableItemError(itemId));
-          }
+          () => reject({ success: false })
         );
       }
     );
