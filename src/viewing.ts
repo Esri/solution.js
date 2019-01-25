@@ -127,7 +127,7 @@ export function createSolutionStorymap (
 ): Promise<mInterfaces.ITemplate> {
   return new Promise((resolve, reject) => {
     publishSolutionStorymapItem(createSolutionStorymapItem(title, solution, folderId), requestOptions, orgUrl,
-    folderId, access)
+      folderId, access)
     .then(
       storymap  => resolve(storymap),
       () => reject({ success: false })
@@ -169,13 +169,14 @@ export function createSolutionStorymapItem (
     }
   );
 
-  return {
+  const storymapItem = {
     itemId: "",
     type: item.type,
     key: "",
     item,
     data
   };
+  return storymapItem;
 }
 
 /**
@@ -337,16 +338,15 @@ export function publishSolutionStorymapItem (
         const solutionStorymapUrl = orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
         mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, requestOptions)
         .then(
-          () => {
+          response => {
             solutionStorymap.item.id = solutionStorymapId;
             solutionStorymap.item.url = solutionStorymapUrl;
             resolve(solutionStorymap);
           },
-          () => reject({ success: false })
+          () => reject()
         );
-
       },
-      () => reject({ success: false })
+      () => reject()
     );
   });
 }

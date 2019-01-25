@@ -1335,8 +1335,46 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sto1234567890"}');
       mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
-        () => done(),
-        error => done.fail(error)
+        response => {
+          if (response) {
+            done();
+          } else {
+            done.fail();
+          }
+        },
+        response => {
+          done.fail();
+        }
+      );
+    });
+
+    it("should handle defaults to publish a storymap with failure to update storymap URL", done => {
+      const title = "Solution storymap";
+      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
+
+      fetchMock
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sto1234567890","folder":null}')
+
+      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups/map1234567890?f=json&token=fake-token",
+        '{"id":"map1234567890","title":"ROW Permit Manager_1543341045131","isInvitationOnly":true,' +
+        '"owner":"ArcGISTeamLocalGovOrg","description":null,"snippet":"ROW",' +
+        '"tags":["ROW","source-84453ddeff8841e9aa2c25d5e1253cd7"],"phone":null,"sortField":"title",' +
+        '"sortOrder":"asc","isViewOnly":true,"thumbnail":null,"created":1543341045000,"modified":1543341045000,' +
+        '"access":"public","capabilities":[],"isFav":false,"isReadOnly":false,"protected":false,"autoJoin":false,' +
+        '"notificationsEnabled":false,"provider":null,"providerGroupName":null,' +
+        '"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},' +
+        '"collaborationInfo":{}}')
+      .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890" +
+        "?f=json&start=0&num=100&token=fake-token",
+        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
+
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update", 400);
+      mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
+      .then(
+        () => done.fail(),
+        () => done()
       );
     });
 
@@ -1639,7 +1677,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("catch bad input", () => {
 
-    it("throws an error if the hierarchy to be created fails: missing id", done => {
+    it("returns an error if the hierarchy to be created fails: missing id", done => {
+      fetchMock.once("*", mockItems.getAGOLItem());
+      mSolution.createSolution(null, MOCK_USER_REQOPTS)
+      .then(
+        fail,
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("returns an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
       mSolution.getItemTemplateHierarchy(null, MOCK_USER_REQOPTS)
       .then(
@@ -1651,7 +1701,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: empty id list", done => {
+    it("returns an error if the hierarchy to be created fails: empty id list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
       mSolution.getItemTemplateHierarchy([], MOCK_USER_REQOPTS)
       .then(
@@ -1663,7 +1713,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: missing id in list", done => {
+    it("returns an error if the hierarchy to be created fails: missing id in list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
       mSolution.getItemTemplateHierarchy([null], MOCK_USER_REQOPTS)
       .then(
@@ -1679,7 +1729,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("failed fetches", () => {
 
-    it("throws an error if the hierarchy to be created fails: inaccessible", done => {
+    it("returns an error if the hierarchy to be created fails: inaccessible", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
@@ -1693,7 +1743,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: inaccessible in a list", done => {
+    it("returns an error if the hierarchy to be created fails: inaccessible in a list", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
@@ -1707,7 +1757,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
+    it("returns an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
@@ -1741,7 +1791,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if the hierarchy to be created fails: list of [valid, missing id]", done => {
+    it("returns an error if the hierarchy to be created fails: list of [valid, missing id]", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
@@ -1766,7 +1816,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("catch inability to get dependents", () => {
 
-    it("throws an error if getting group dependencies fails", done => {
+    it("returns an error if getting group dependencies fails", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
@@ -1787,7 +1837,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("throws an error if a non-group dependency fails", done => {
+    it("returns an error if a non-group dependency fails", done => {
       fetchMock
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))

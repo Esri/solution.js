@@ -183,7 +183,7 @@ export function updateItemURL (
       updateResp => {
         resolve(id);
       },
-      () => reject({ success: false })
+      () => reject()
     );
   });
 }
