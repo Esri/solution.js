@@ -22,10 +22,18 @@ export function getAGOLItem (
 ): any {
   let item:any = {
     "name":  "",
-    "message": "Item or group does not exist or is inaccessible: fail1234567890",
+    "message": "400: Item or group does not exist or is inaccessible: fail1234567890",
     "originalMessage": "",
-    "code": "400",
-    "response": "",
+    "code": 400,
+    "response": {
+      "error": {
+        "code": 400,
+        "message": "Item or group does not exist or is inaccessible: fail1234567890",
+        "details": [
+          "Item or group does not exist or is inaccessible: fail1234567890"
+        ]
+      }
+    },
     "url": "",
     "options": null
   };

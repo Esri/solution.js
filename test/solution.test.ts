@@ -397,8 +397,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("for single item containing WMA & feature service, but item add fails", done => {
       fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
       mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
@@ -413,9 +412,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"sln1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
-        '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}');
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share", mockItems.get400Failure());
       mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS,
         null, "public")
       .then(
@@ -454,8 +451,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
-        '{"error":{"code":400,"message":"Unable to create folder.","details":["\'title\' must be specified."]}}');
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder", mockItems.get400Failure());
       mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
@@ -569,7 +565,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
-      .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", 400);
+      .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", mockItems.get400Failure());
       mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
@@ -652,7 +648,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           return () => [
             '{"success":true,"id":"map1234567890","folder":"FLD1234567890"}',
             '{"success":true,"id":"wma1234567890","folder":"FLD1234567890"}',
-            400
+            mockItems.get400Failure()
           ][stepNum++];
       })();
 
@@ -696,7 +692,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
-      .post("path:/sharing/rest/content/users/casey/createService", 400);
+      .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
       mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
@@ -734,8 +730,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-        '{"error":{"code":400,"messageCode":"CONT_0113","message":"Item type not valid.","details":[]}}');
+      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
       mViewing.createSolutionStorymap(title, solutionItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
         () => done.fail(),
@@ -829,8 +824,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const settings = createMockSettings();
 
       fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"error":{"code":400,"messageCode":"CONT_0004","message":"User folder does not exist.","details":[]}}');
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
@@ -1004,7 +998,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("path:/sharing/rest/content/users/casey/createService", 400);
+      .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
       itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
@@ -1101,9 +1095,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"WMA1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
-        '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}');
+      .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update", mockItems.get400Failure());
       itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
@@ -1281,19 +1273,100 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: initializing an item template from an id", () => {
 
-    it("should handle an unsupported item type missing data & resources", done => {
-
+    it("should handle an unknown item type", done => {
       fetchMock
-      .mock("path:/sharing/rest/content/items/unk1234567890", mockItems.getUnknownItemWithoutItemProp())
-      .mock("path:/sharing/rest/content/items/unk1234567890/data", mockItems.getAGOLItemData())
-      .mock("path:/sharing/rest/content/items/unk1234567890/resources", mockItems.getAGOLItemResources());
+      .mock("path:/sharing/rest/content/items/unk1234567890", mockItems.getAGOLItem("Unknown"))
+      .mock("path:/sharing/rest/community/groups/unk1234567890", mockItems.getAGOLItem("Unknown"));
       mClassifier.initItemTemplateFromId("unk1234567890", MOCK_USER_REQOPTS)
       .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle an unsupported item type", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/uns1234567890", mockItems.getAGOLItem("Unsupported"))
+      .mock("path:/sharing/rest/content/items/uns1234567890/data", mockItems.getAGOLItemData())
+      .mock("path:/sharing/rest/content/items/uns1234567890/resources", mockItems.getAGOLItemResources());
+      mClassifier.initItemTemplateFromId("uns1234567890", MOCK_USER_REQOPTS)
+      .then(
         response => {
-          expect(response.fcns.completeItemTemplate).toEqual(GenericModule.completeItemTemplate);
+          expect(response.item.type).toEqual("Unsupported");
+          expect(response.data).toBeNull();
+          expect(response.resources).toBeNull();
           done();
         },
         error => done.fail(error)
+      );
+    });
+
+    it("should handle an item without item.item property, data section, or resources sections", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getItemWithoutItemProp())
+      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData())
+      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources());
+      mClassifier.initItemTemplateFromId("map1234567890", MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response.item.type).toEqual("Web Map");
+          expect(response.data).toBeNull();
+          expect(response.resources).toBeNull();
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle an item with a problem fetching dependencies", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
+      .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=0&num=100&token=fake-token", mockItems.get400FailureResponse());
+      mClassifier.initItemTemplateFromId("grp1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle an item with a problem completing an item description 1", done => {
+      const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+
+      fetchMock
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post(baseSvcURL + "FeatureServer?f=json", mockItems.get400FailureResponse());
+      mClassifier.initItemTemplateFromId("svc1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle an item with a problem completing an item description 2", done => {
+      const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+
+      fetchMock
+      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
+      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
+        [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
+        [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
+      ))
+      .post(baseSvcURL + "FeatureServer/0?f=json",
+        mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer",
+        [mockItems.createAGOLRelationship(0, 1, "esriRelRoleOrigin")]
+      ))
+      .post(baseSvcURL + "FeatureServer/1?f=json", mockItems.get400FailureResponse());
+      mClassifier.initItemTemplateFromId("svc1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        () => done()
       );
     });
 
@@ -1370,7 +1443,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "?f=json&start=0&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
 
-      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update", 400);
+      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update", mockItems.get400Failure());
       mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
         () => done.fail(),
@@ -1479,9 +1552,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
         '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
-      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
-        '{"error":{"code":400,"messageCode":"CONT_0001",' +
-        '"message":"Item does not exist or is inaccessible.","details":[]}}');
+      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share', mockItems.get400Failure());
       mGroup.addGroupMembers(group, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
@@ -1822,9 +1893,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
-        "?f=json&start=0&num=100&token=fake-token",
-        '{"error":{"code":400,"messageCode":"CONT_0006",' +
-        '"message":"Group does not exist or is inaccessible.","details":[]}}');
+        "?f=json&start=0&num=100&token=fake-token", mockItems.get400Failure());
       mSolution.getItemTemplateHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {

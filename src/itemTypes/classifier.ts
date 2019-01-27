@@ -86,7 +86,8 @@ export function initItemTemplateFromId (
         const resourcePromise = items.getItemResources(resourceRequestOptions);
 
         // Items without a data section return an error from the REST library, so we'll need to prevent it
-        // from killing off both promises
+        // from killing off both promises. This means that there's no `reject` clause to handle, hence:
+        // tslint:disable-next-line:no-floating-promises
         Promise.all([
           dataPromise.catch(() => null),
           resourcePromise.catch(() => null)
@@ -116,8 +117,7 @@ export function initItemTemplateFromId (
               },
               () => reject({ success: false })
             );
-          },
-          () => reject({ success: false })
+          }
         );
       },
       () => {
