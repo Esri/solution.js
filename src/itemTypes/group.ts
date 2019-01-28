@@ -54,7 +54,7 @@ export function getDependencies (
   return new Promise((resolve, reject) => {
     const pagingRequest:IPagingParamsRequestOptions = {
       paging: {
-        start: 0,
+        start: 1,
         num: 100
       },
       ...requestOptions
@@ -176,22 +176,26 @@ export function getGroupContentsTranche (
     groups.getGroupContent(id, pagingRequest)
     .then(
       contents => {
-        // Extract the list of content ids from the JSON returned
-        const trancheIds:string[] = contents.items.map((item:any) => item.id);
+        if (contents.num > 0) {
+          // Extract the list of content ids from the JSON returned
+          const trancheIds:string[] = contents.items.map((item:any) => item.id);
 
-        // Are there more contents to fetch?
-        if (contents.nextStart > 0) {
-          pagingRequest.paging.start = contents.nextStart;
-          getGroupContentsTranche(id, pagingRequest)
-          .then(
-            (allSubsequentTrancheIds:string[]) => {
-              // Append all of the following tranches to this tranche and return it
-              resolve(trancheIds.concat(allSubsequentTrancheIds));
-            },
-            () => reject({ success: false })
-          );
+          // Are there more contents to fetch?
+          if (contents.nextStart > 0) {
+            pagingRequest.paging.start = contents.nextStart;
+            getGroupContentsTranche(id, pagingRequest)
+            .then(
+              (allSubsequentTrancheIds:string[]) => {
+                // Append all of the following tranches to this tranche and return it
+                resolve(trancheIds.concat(allSubsequentTrancheIds));
+              },
+              () => reject({ success: false })
+            );
+          } else {
+            resolve(trancheIds);
+          }
         } else {
-          resolve(trancheIds);
+          resolve([]);
         }
       },
       () => reject({ success: false })

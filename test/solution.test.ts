@@ -15,6 +15,7 @@
  */
 
 import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 
 import * as mClassifier from "../src/itemTypes/classifier";
 import * as mCommon from "../src/itemTypes/common";
@@ -195,7 +196,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
-        "?f=json&start=0&num=100&token=fake-token",
+        "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
       mSolution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
       .then(
@@ -1597,7 +1598,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
-        "?f=json&start=0&num=100&token=fake-token", mockItems.get400FailureResponse());
+        "?f=json&start=1&num=100&token=fake-token", mockItems.get400FailureResponse());
       mClassifier.initItemTemplateFromId("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
@@ -1698,7 +1699,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},' +
         '"collaborationInfo":{}}')
       .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890" +
-        "?f=json&start=0&num=100&token=fake-token",
+        "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
 
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
@@ -1737,7 +1738,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},' +
         '"collaborationInfo":{}}')
       .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890" +
-        "?f=json&start=0&num=100&token=fake-token",
+        "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
 
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update", mockItems.get400Failure());
@@ -1854,6 +1855,145 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       expect(templatized1).toEqual(expectedTemplatized);
       const templatized2 = mCommon.templatizeList(ids, "url");
       expect(templatized2).toEqual(expectedTemplatized);
+    });
+
+  });
+
+  describe("supporting routine: getGroupContentsTranche", () => {
+
+    it("should handle single tranche", done => {
+      const pagingRequest:IPagingParamsRequestOptions = {
+        paging: {
+          start: 1,
+          num: 5
+        },
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=1&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":1,"num":5,"nextStart":-1,"items":[' +
+        '{"id":"dsh1234567980", "owner":"fayard"},' +
+        '{"id":"map1234567980", "owner":"fred"},' +
+        '{"id":"svc1234567980", "owner":"cyd"},' +
+        '{"id":"wma1234567980", "owner":"ginger"},' +
+        '{"id":"wrk1234567980", "owner":"harold"}' +
+        ']}');
+      mGroup.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        contents => {
+          expect(contents)
+          .toEqual(["dsh1234567980", "map1234567980", "svc1234567980", "wma1234567980", "wrk1234567980"]);
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle two tranches", done => {
+      const pagingRequest:IPagingParamsRequestOptions = {
+        paging: {
+          start: 1,
+          num: 3
+        },
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=1&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":1,"num":3,"nextStart":4,"items":[' +
+        '{"id":"dsh1234567980", "owner":"fayard"},' +
+        '{"id":"map1234567980", "owner":"fred"},' +
+        '{"id":"svc1234567980", "owner":"cyd"}' +
+        ']}')
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=4&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":4,"num":2,"nextStart":-1,"items":[' +
+        '{"id":"wma1234567980", "owner":"ginger"},' +
+        '{"id":"wrk1234567980", "owner":"harold"}' +
+        ']}');
+      mGroup.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        contents => {
+          expect(contents)
+          .toEqual(["dsh1234567980", "map1234567980", "svc1234567980", "wma1234567980", "wrk1234567980"]);
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle three tranches", done => {
+      const pagingRequest:IPagingParamsRequestOptions = {
+        paging: {
+          start: 1,
+          num: 2
+        },
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=1&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":1,"num":2,"nextStart":3,"items":[' +
+        '{"id":"dsh1234567980", "owner":"fayard"},' +
+        '{"id":"map1234567980", "owner":"fred"}' +
+        ']}')
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=3&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":3,"num":2,"nextStart":5,"items":[' +
+        '{"id":"svc1234567980", "owner":"cyd"},' +
+        '{"id":"wma1234567980", "owner":"ginger"}' +
+        ']}')
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=5&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":5,"num":1,"nextStart":-1,"items":[' +
+        '{"id":"wrk1234567980", "owner":"harold"}' +
+        ']}');
+      mGroup.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        contents => {
+          expect(contents)
+          .toEqual(["dsh1234567980", "map1234567980", "svc1234567980", "wma1234567980", "wrk1234567980"]);
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle a failure to get a tranche", done => {
+      const pagingRequest:IPagingParamsRequestOptions = {
+        paging: {
+          start: 1,
+          num: 2
+        },
+        ...MOCK_USER_REQOPTS
+      };
+
+      fetchMock
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=1&num=" + pagingRequest.paging.num + "&token=fake-token",
+        '{"total":0,"start":1,"num":2,"nextStart":3,"items":[' +
+        '{"id":"dsh1234567980", "owner":"fayard"},' +
+        '{"id":"map1234567980", "owner":"fred"}' +
+        ']}')
+      .mock(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
+        "?f=json&start=3&num=" + pagingRequest.paging.num + "&token=fake-token", mockItems.get400Failure());
+      mGroup.getGroupContentsTranche("grp1234567890", pagingRequest)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
     });
 
   });
@@ -2221,7 +2361,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
-        "?f=json&start=0&num=100&token=fake-token", mockItems.get400Failure());
+        "?f=json&start=1&num=100&token=fake-token", mockItems.get400Failure());
       mSolution.getItemTemplateHierarchy(["grp1234567890"], MOCK_USER_REQOPTS)
       .then(
         () => {
@@ -2295,3 +2435,4 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   });
 
 });
+
