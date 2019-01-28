@@ -134,13 +134,21 @@ export function initItemTemplateFromId (
               fcns: moduleMap["group"]
             };
 
-            // Get ids of item dependencies (i.e., the group's contents)
-            itemTemplate.fcns.getDependencies(itemTemplate, requestOptions)
+            // Complete item
+            const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
+
+            // Request item dependencies (i.e., the group's contents)
+            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
+
+            Promise.all([
+              completionPromise,
+              dependenciesPromise
+            ])
             .then(
-              dependencies => {
-                // We can templatize the item's id now that we're done using it to get the group members
-                itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
-                itemTemplate.dependencies = removeDuplicates(dependencies);
+              responses2 => {
+                const [completionResponse, dependenciesResponse] = responses2;
+                itemTemplate = completionResponse;
+                itemTemplate.dependencies = removeDuplicates(mCommon.deTemplatizeList(dependenciesResponse));
                 resolve(itemTemplate);
               },
               () => reject({ success: false })

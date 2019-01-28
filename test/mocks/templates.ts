@@ -153,16 +153,18 @@ export function getDashboardTemplatePartNoWidgets (
   return templatePart;
 }
 
-export function getDashboardTemplatePartNoData (
+export function getTemplatePartNoData (
+  type: string
 ): any {
-  const templatePart:any = getItemTemplatePart("Dashboard");
+  const templatePart:any = getItemTemplatePart(type);
   templatePart.data = null;
   return templatePart;
 }
 
-export function getDashboardTemplatePartNoExtent (
+export function getTemplatePartNoExtent (
+  type: string
 ): any {
-  const templatePart:any = getItemTemplatePart("Dashboard");
+  const templatePart:any = getItemTemplatePart(type);
   templatePart.item.extent = null;
   return templatePart;
 }

@@ -24,6 +24,7 @@ import * as mInterfaces from "../src/interfaces";
 import * as mItemHelpers from '../src/utils/item-helpers';
 import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
+import * as mWebMap from "../src/itemTypes/webmap";
 import * as GenericModule from "../src/itemTypes/generic";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSettings } from "./lib/utils";
@@ -801,7 +802,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a dataless Dashboard", done => {
-      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoData());
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getTemplatePartNoData("Dashboard"));
       const settings = createMockSettings();
 
       fetchMock
@@ -819,7 +820,46 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create a Dashboard 1", done => {
+    it("should create a dataless Web Map", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getTemplatePartNoData("Web Map"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"MAP1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/MAP1234567890/update",
+        '{"success":true,"id":"MAP1234567890"}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        createdItem => {
+          expect(createdItem.itemId).toEqual("MAP1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should create a dataless Web Mapping Application", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(
+        mockSolutions.getTemplatePartNoData("Web Mapping Application"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"WMA1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
+        '{"success":true,"id":"WMA1234567890"}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        createdItem => {
+          expect(createdItem.itemId).toEqual("WMA1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle failure to create a Dashboard 200", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoWidgets());
       const settings = createMockSettings();
 
@@ -835,7 +875,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create a Dashboard 2", done => {
+    it("should handle failure to create a Dashboard 400", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoWidgets());
       const settings = createMockSettings();
 
@@ -888,7 +928,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create an unsupported item 1", done => {
+    it("should handle failure to create an unsupported item 200", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
       const settings = createMockSettings();
 
@@ -904,7 +944,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create an unsupported item 2", done => {
+    it("should handle failure to create an unsupported item 400", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
       const settings = createMockSettings();
 
@@ -957,7 +997,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create Web Map 1", done => {
+    it("should handle failure to create Web Map 200", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
       const settings = createMockSettings();
 
@@ -973,8 +1013,42 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create Web Map 2", done => {
+    it("should handle failure to create Web Map 400", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create Web Mapping Application 200", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(
+        mockSolutions.getItemTemplatePart("Web Mapping Application"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create Web Mapping Application 400", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(
+        mockSolutions.getItemTemplatePart("Web Mapping Application"));
       const settings = createMockSettings();
 
       fetchMock
@@ -1174,7 +1248,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should create an empty group", done => {
+    it("should create an empty Group", done => {
       const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart());
       const settings = createMockSettings();
 
@@ -1195,7 +1269,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle the failure to create an empty group", done => {
+    it("should handle the failure to create an empty Group 200", done => {
       const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart());
       const settings = createMockSettings();
 
@@ -1207,10 +1281,55 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post('path:/sharing/rest/community/createGroup',
-        '{"error":{"code":403,"messageCode":"GWM_0003",' +
-        '"message":"You do not have permissions to access this resource or perform this operation.","details":[]}}'
+      .post('path:/sharing/rest/community/createGroup', mockItems.get200Failure());
+      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
       );
+    });
+
+    it("should handle the failure to create an empty Group 400", done => {
+      const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart());
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      fetchMock
+      .post('path:/sharing/rest/community/createGroup', mockItems.get400Failure());
+      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to add to Group", done => {
+      const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart(["map1234657890"]));
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      fetchMock
+      .post('path:/sharing/rest/community/createGroup',
+        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}')
+      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share', mockItems.get400Failure());
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
@@ -1260,7 +1379,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should create an unswizzled public Dashboard in a specified folder", done => {
+    it("should create a public Dashboard in the root folder", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Dashboard"));
 
       fetchMock
@@ -1278,8 +1397,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should create an unswizzled dataless public Dashboard in a specified folder", done => {
-      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoData());
+    it("should create a dataless public Dashboard in the root folder", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getTemplatePartNoData("Dashboard"));
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -1296,8 +1415,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should create an unswizzled dataless public Dashboard with both folder and access undefined", done => {
-      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoData());
+    it("should create a dataless public Dashboard with both folder and access undefined", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getTemplatePartNoData("Dashboard"));
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -1663,7 +1782,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: doCommonTemplatizations", () => {
 
     it("should handle provided extent", () => {
-      const templatePart = mockSolutions.getDashboardTemplatePartNoData();
+      const templatePart = mockSolutions.getTemplatePartNoData("Dashboard");
       templatePart.item.extent = [
         [-8589300.590117617, 40.36926825227528],
         [-73.96624645399964, 4722244.554455302]
@@ -1674,9 +1793,40 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle missing extent", () => {
-      const template = mockSolutions.getDashboardTemplatePartNoExtent();
+      const template = mockSolutions.getTemplatePartNoExtent("Dashboard");
       mCommon.doCommonTemplatizations(template);
       expect(template.item.extent).toBeNull();
+    });
+
+  });
+
+  describe("supporting routine: getWebmapLayerIds", () => {
+
+    it("should handle missing layer list", () => {
+      const ids = mWebMap.getWebmapLayerIds();
+      expect(Array.isArray(ids)).toBeTruthy();
+      expect(ids.length).toEqual(0);
+    });
+
+    it("should handle missing itemId in layer in layer list", () => {
+      const ids = mWebMap.getWebmapLayerIds([{
+        itemId: "a"
+      }, {
+        itemId: "b"
+      }, {
+        somethingElse: "c"
+      }, {
+        itemId: "d"
+      }]);
+      expect(ids).toEqual(["a", "b", "d"]);
+    });
+
+  });
+
+  describe("supporting routine: templatizeWebmapLayerIdsAndUrls", () => {
+
+    it("should handle missing layer list", () => {
+      expect(mWebMap.templatizeWebmapLayerIdsAndUrls).not.toThrowError();
     });
 
   });
@@ -1719,7 +1869,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to add to group", done => {
+    it("should handle failure to add to Group", done => {
       const group = mockSolutions.getGroupTemplatePart(["map1234567890"]);
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
