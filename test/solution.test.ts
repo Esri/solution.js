@@ -819,8 +819,162 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle failure to create a Dashboard", done => {
+    it("should handle failure to create a Dashboard 1", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoWidgets());
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create a Dashboard 2", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoWidgets());
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to update Dashboard URL", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getDashboardTemplatePartNoWidgets());
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"DSH1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update", mockItems.get400Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should create an unsupported item in the root folder", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"unk1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/unk1234567890/update",
+        '{"success":true,"id":"unk1234567890"}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        createdItem => {
+          expect(createdItem.itemId).toEqual("unk1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle failure to create an unsupported item 1", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create an unsupported item 2", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should create Web Map in the root folder", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"map1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
+        '{"success":true,"id":"map1234567890"}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        createdItem => {
+          expect(createdItem.itemId).toEqual("map1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
+    it("should handle failure to update Web Map URL", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"map1234567890","folder":null}')
+      .post("path:/sharing/rest/content/users/casey/items/map1234567890/update", mockItems.get400Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create Web Map 1", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
+      const settings = createMockSettings();
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          done();
+        }
+      );
+    });
+
+    it("should handle failure to create Web Map 2", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
       const settings = createMockSettings();
 
       fetchMock
@@ -1367,6 +1521,30 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         () => done()
+      );
+    });
+
+    it("should handle a dashboard item", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/dsh1234567890", mockItems.getAGOLItem("Dashboard"))
+      .mock("path:/sharing/rest/content/items/dsh1234567890/data", mockItems.getAGOLItemData("Dashboard"))
+      .mock("path:/sharing/rest/content/items/dsh1234567890/resources", mockItems.getAGOLItemResources("none"))
+      mClassifier.initItemTemplateFromId("dsh1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => done(),
+        () => done.fail()
+      );
+    });
+
+    it("should handle a widgetless dashboard item", done => {
+      fetchMock
+      .mock("path:/sharing/rest/content/items/dsh1234567890", mockItems.getAGOLItem("Dashboard"))
+      .mock("path:/sharing/rest/content/items/dsh1234567890/data", mockItems.getItemDataWidgetlessDashboard())
+      .mock("path:/sharing/rest/content/items/dsh1234567890/resources", mockItems.getAGOLItemResources("none"))
+      mClassifier.initItemTemplateFromId("dsh1234567890", MOCK_USER_REQOPTS)
+      .then(
+        () => done(),
+        () => done.fail()
       );
     });
 

@@ -132,6 +132,12 @@ export function getItemTemplatePart (
     case "Workforce Project":
       break;
 
+    case "Unsupported":
+      templatePart = getItemTemplateFundamentals(type, "unk", dependencies, url);
+      templatePart.data = getItemTemplateData(type);
+      templatePart.resources = null;
+      break;
+
     default:
       fail("Unsupported template item type");
       break;
@@ -495,6 +501,9 @@ export function getItemTemplateData (
     case "Workforce Project":
       break;
 
+    case "Unknown":
+      data = {};
+      break;
   }
 
   return data;

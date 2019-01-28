@@ -16,7 +16,7 @@
 
 import * as mInterfaces from "../../src/interfaces";
 import * as mFeatureService from "../../src/itemTypes/featureservice";
-import * as mockItems from "./items";
+import * as mockItems from "./agolItems";
 import * as mockServices from "./featureServices";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//

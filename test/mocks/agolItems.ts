@@ -18,6 +18,13 @@
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
+export function get200Failure (
+): any {
+  return {
+    "success": false
+  };
+}
+
 export function get400Failure (
 ): any {
   return {
@@ -386,6 +393,9 @@ export function getAGOLItemData (
     case "Workforce Project":
       break;
 
+    case "Unsupported":
+      data = {};
+      break;
   }
 
   return data;
@@ -404,6 +414,13 @@ export function getAGOLItemDataWMANoWebmapOrGroup (
   const data = getAGOLItemData("Web Mapping Application");
   delete data.folderId;
   delete data.values.webmap;
+  return data;
+}
+
+export function getItemDataWidgetlessDashboard (
+): any {
+  const data = getAGOLItemData("Dashboard");
+  data.widgets = null;
   return data;
 }
 

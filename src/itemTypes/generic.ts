@@ -76,7 +76,7 @@ export function deployItem (
           itemTemplate = adlib.adlib(itemTemplate, settings);
           resolve(itemTemplate)
         } else {
-          reject("Unable to create item");
+          reject({ success: false });
         }
       },
       () => reject({ success: false })

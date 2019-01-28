@@ -104,7 +104,7 @@ export function deployItem (
             () => reject({ success: false })
           );
         } else {
-          reject("Unable to create item");
+          reject({ success: false });
         }
       },
       () => reject({ success: false })
