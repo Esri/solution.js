@@ -86,24 +86,20 @@ export function deployItem (
     featureServiceAdmin.createFeatureService(options)
     .then(
       createResponse => {
-        if (createResponse.success) {
-          // Add the new item to the settings list
-          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
-            id: createResponse.serviceItemId,
-            url: createResponse.serviceurl
-          };
-          itemTemplate = adlib.adlib(itemTemplate, settings);
-          itemTemplate.item.url = createResponse.serviceurl;
+        // Add the new item to the settings list
+        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          id: createResponse.serviceItemId,
+          url: createResponse.serviceurl
+        };
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+        itemTemplate.item.url = createResponse.serviceurl;
 
-          // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
-          .then(
-            () => resolve(itemTemplate),
-            () => reject({ success: false })
-          );
-        } else {
-          reject({ success: false });
-        }
+        // Add the feature service's layers and tables to it
+        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+        .then(
+          () => resolve(itemTemplate),
+          () => reject({ success: false })
+        );
       },
       () => reject({ success: false })
     )
@@ -190,7 +186,7 @@ export function addFeatureServiceLayersAndTables (
           const awaitRelationshipUpdates:Array<Promise<void>> = [];
           Object.keys(relationships).forEach(
             id => {
-              awaitRelationshipUpdates.push(new Promise(resolveFn => {
+              awaitRelationshipUpdates.push(new Promise((resolveFn, rejectFn) => {
                 const options = {
                   params: {
                     updateFeatureServiceDefinition: {
@@ -201,18 +197,15 @@ export function addFeatureServiceLayersAndTables (
                 };
                 featureServiceAdmin.addToServiceDefinition(itemTemplate.item.url + "/" + id, options)
                 .then(
-                  () => {
-                    resolve();
-                  },
-                  resolveFn);
+                  () => resolveFn(),
+                  () => rejectFn()
+                );
               }));
             }
           );
           Promise.all(awaitRelationshipUpdates)
           .then(
-            () => {
-              resolve();
-            },
+            () => resolve(),
             () => reject({ success: false })
           );
         },
@@ -419,3 +412,4 @@ function updateFeatureServiceDefinition(
     }
   });
 }
+
