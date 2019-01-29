@@ -1462,6 +1462,41 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    it("should handle Feature Service failure to update third layers|tables relationship in chain", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getFourItemFeatureServiceTemplatePart());
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
+          return () => layerNum++ === 2 ?
+            mockItems.get400Failure() :'{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum + '}]}'
+      })();
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
+        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
+        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
+        '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+        now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/addToDefinition", layerNumUpdater);
+      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
     it("should handle service without any layers or tables", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
       itemTemplate.properties.service.layers = null;
