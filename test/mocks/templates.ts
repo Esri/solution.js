@@ -177,6 +177,42 @@ export function getFeatureServiceTemplatePartNoRelationships (
   return templatePart;
 }
 
+export function getFourItemFeatureServiceTemplatePart (
+): any {
+  const templatePart:any = getItemTemplatePart("Feature Service");
+
+  // Update data section
+  templatePart.data.layers.push({
+      "id": 2,
+      "popupInfo": {
+        "title": "layer 2"
+      },
+      "layerDefinition": {
+        "defaultVisibility": true
+      }
+    });
+  templatePart.data.layers.push({
+      "id": 3,
+      "popupInfo": {
+        "title": "layer 3"
+      },
+      "layerDefinition": {
+        "defaultVisibility": true
+      }
+    });
+
+  // Update service properties
+  const layer2:any = removeEditFieldsInfoField(getLayerOrTableTemplate(2, "ROW Permits layer 2", "Feature Layer"));
+  const layer3:any = removeEditFieldsInfoField(getLayerOrTableTemplate(3, "ROW Permits layer 3", "Feature Layer"));
+  addCondensedFormOfLayer([layer2, layer3], templatePart.properties.service.layers);
+
+  // Update layers section
+  templatePart.properties.layers.push(layer2);
+  templatePart.properties.layers.push(layer3);
+
+  return templatePart;
+}
+
 export function getGroupTemplatePart (
   dependencies = [] as string[]
 ): any {
@@ -266,6 +302,23 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup (
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+
+function addCondensedFormOfLayer (layersOrTables: any[], serviceLayerList: any[]) {
+  layersOrTables.forEach(
+    layer => {
+      serviceLayerList.push({
+        "id": layer.id,
+        "name": layer.name,
+        "parentLayerId": -1,
+        "defaultVisibility": true,
+        "subLayerIds": null,
+        "minScale": 0,
+        "maxScale": 0,
+        "geometryType": "esriGeometryPoint"
+      });
+    }
+  );
+}
 
 function createItemTemplateRelationship (
   id: number,
@@ -389,11 +442,15 @@ export function getItemTemplateData (
       data = {
         "tables": [{
           "id": 1,
-          "popupInfo": {}
+          "popupInfo": {
+            "title": "table 1"
+          }
         }],
         "layers": [{
           "id": 0,
-          "popupInfo": {},
+          "popupInfo": {
+            "title": "layer 0"
+          },
           "layerDefinition": {
             "defaultVisibility": true
           }
@@ -578,23 +635,6 @@ function getServiceTemplate (
     "layers": [],
     "tables": []
   };
-
-  function addCondensedFormOfLayer (layersOrTables: any[], serviceLayerList: any[]) {
-    layersOrTables.forEach(
-      layer => {
-        serviceLayerList.push({
-          "id": layer.id,
-          "name": layer.name,
-          "parentLayerId": -1,
-          "defaultVisibility": true,
-          "subLayerIds": null,
-          "minScale": 0,
-          "maxScale": 0,
-          "geometryType": "esriGeometryPoint"
-        });
-      }
-    );
-  }
 
   addCondensedFormOfLayer(layers, service.layers);
   addCondensedFormOfLayer(tables, service.tables);

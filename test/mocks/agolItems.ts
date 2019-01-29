@@ -277,11 +277,15 @@ export function getAGOLItemData (
       data = {
         "tables": [{
           "id": 1,
-          "popupInfo": {}
+          "popupInfo": {
+            "title": "table 1"
+          }
         }],
         "layers": [{
           "id": 0,
-          "popupInfo": {},
+          "popupInfo": {
+            "title": "layer 0"
+          },
           "layerDefinition": {
             "defaultVisibility": true
           }

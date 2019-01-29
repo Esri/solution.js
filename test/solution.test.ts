@@ -1359,6 +1359,109 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    it("should handle Feature Service with four layers|tables relationship", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getFourItemFeatureServiceTemplatePart());
+      const settings = createMockSettings();
+
+      // Verify template layers|tables ordering
+      expect(itemTemplate.data.layers.length).toEqual(3);
+      expect(itemTemplate.data.layers.map(
+        (item:any) => item.popupInfo.title
+      ))
+      .toEqual(["layer 0", "layer 2", "layer 3"]);
+
+      expect(itemTemplate.data.tables.length).toEqual(1);
+      expect(itemTemplate.data.tables.map(
+        (item:any) => item.popupInfo.title
+      ))
+      .toEqual(["table 1"]);
+
+      expect(itemTemplate.properties.service.layers.length).toEqual(3);
+      expect(itemTemplate.properties.service.layers.map(
+        (item:any) => item.name
+      ))
+      .toEqual(["ROW Permits", "ROW Permits layer 2", "ROW Permits layer 3"]);
+
+      expect(itemTemplate.properties.service.tables.length).toEqual(1);
+      expect(itemTemplate.properties.service.tables.map(
+        (item:any) => item.name
+      ))
+      .toEqual(["ROW Permit Comment"]);
+
+      expect(itemTemplate.properties.layers.length).toEqual(3);
+      expect(itemTemplate.properties.layers.map(
+        (item:any) => item.name
+      ))
+      .toEqual(["ROW Permits", "ROW Permits layer 2", "ROW Permits layer 3"]);
+
+      expect(itemTemplate.properties.tables.length).toEqual(1);
+      expect(itemTemplate.properties.tables.map(
+        (item:any) => item.name
+      ))
+      .toEqual(["ROW Permit Comment"]);
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      const layerNumUpdater = (() => {
+          let layerNum = 0;
+          return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
+      })();
+
+      // Feature layer indices are assigned incrementally as they are added to the feature service
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService",
+        '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
+        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
+        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
+        '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
+        now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/addToDefinition", layerNumUpdater)
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/0/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/1/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/2/addToDefinition", '{"success":true}')
+      .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+        "/FeatureServer/3/addToDefinition", '{"success":true}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      .then(
+        response => {
+          // Verify order of layers|tables adding
+          const addToDefinitionCalls =
+            fetchMock.calls("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
+              "/FeatureServer/addToDefinition");
+          expect(addToDefinitionCalls.map(
+            (call:any) => {
+              // Each call record is [url, options], where options has method, credentials, body, headers properties
+              const body = call[1].body as string;
+
+              const iIdStart = body.indexOf("%2C%22id%22%3A") + "%2C%22id%22%3A".length;
+              const iIdEnd = body.indexOf("%2C", iIdStart);
+
+              const iNameStart = body.indexOf("%2C%22name%22%3A%22") + "%2C%22name%22%3A%22".length;
+              const iNameEnd = body.indexOf("%22%2C", iNameStart);
+
+              return body.substring(iIdStart, iIdEnd) + ":" + body.substring(iNameStart, iNameEnd);
+            }
+          )).toEqual(
+            ["0:ROW%20Permits", "1:ROW%20Permit%20Comment",
+            "2:ROW%20Permits%20layer%202", "3:ROW%20Permits%20layer%203"]
+          );
+
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
     it("should handle service without any layers or tables", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
       itemTemplate.properties.service.layers = null;
