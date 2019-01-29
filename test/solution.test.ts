@@ -1114,8 +1114,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a Feature Service without a data section", done => {
-      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
-      itemTemplate.data = null;
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getTemplatePartNoData("Feature Service"));
       const settings = createMockSettings();
       settings.folderId = "fld1234567890";
 
@@ -1205,7 +1204,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           const createServiceCallBody = createServiceCall[0][1].body as string;
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
-
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
@@ -1213,7 +1211,29 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("should handle an error while trying to create a Feature Service", done => {
+    it("should handle an error while trying to create a Feature Service 200", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
+      itemTemplate.item.url = null;
+      const settings = createMockSettings();
+      settings.folderId = "fld1234567890";
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const now = 1555555555555;
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/createService", mockItems.get200Failure());
+      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle an error while trying to create a Feature Service 400", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
       itemTemplate.item.url = null;
       const settings = createMockSettings();
@@ -1330,7 +1350,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
         '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}')
-      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share', mockItems.get400Failure());
+      .mock('path:/sharing/rest/community/users/casey',
+        '{"username":"casey","id":"9e227333ba7a"}')
+      .post('path:/sharing/rest/search',
+        '{"query":"id: map1234567890 AND group: grp1234567890",' +
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
+      .mock('path:/sharing/rest/community/groups/grp1234567890',
+        '{"id":"grp1234567890","title":"My group","owner":"casey",' +
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
+      .post('path:/sharing/rest/content/users/casey/items/map1234657890/share', mockItems.get400Failure());
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
