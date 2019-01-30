@@ -699,7 +699,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         () => done()
-      );
+      )
+      .catch(
+        () => done()
+      )
     });
 
   });
@@ -1252,7 +1255,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         () => done()
-      );
+        )
+        .catch(
+          () => done()
+        )
     });
 
     it("should create a Feature Service and handle failure to add layers|tables", done => {
