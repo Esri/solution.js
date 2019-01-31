@@ -10,6 +10,13 @@ module.exports = [{
     path: destination
   }
 }, {
+  entry: '../adlib/dist/adlib.js',
+  mode: 'production',
+  output: {
+    library: 'adlib',
+    filename: 'adlib.js',
+    path: destination
+  }}, {
   entry: '../arcgis-rest-js/packages/arcgis-rest-auth/dist/umd/auth.umd.min.js',
   mode: 'production',
   output: {
