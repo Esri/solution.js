@@ -1522,12 +1522,19 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
+      const expectedCreatedItemId = (mockSolutions.getGroupTemplatePart().itemId as string).toUpperCase();
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
-        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}');
+        '{"success":true,"group":{"id":"' + expectedCreatedItemId +
+        '","title":"Group_1555555555555","owner":"casey"}}');
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
-        () => done(),
+        (response:any) => {
+          expect(settings[mockSolutions.getGroupTemplatePart().itemId].id as string).toEqual(expectedCreatedItemId);
+          expect(response.itemId as string).toEqual(expectedCreatedItemId);
+          expect(response.item.id as string).toEqual(expectedCreatedItemId);
+          done();
+        },
         (error:any) => done.fail(error)
       );
     });
