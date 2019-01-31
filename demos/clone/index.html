@@ -124,20 +124,21 @@
       arcgis_rest_request.getPortal(null, requestOptions)
       .then(
         portalResponse => {
+          currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           const settings = {
+            solutionName: currentSolutionName,
+            folderId: null,
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
             }
           };
-          currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
 
           // Get the solution contents
           arcgis_rest_items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              arcgis_clone_js.cloneSolution(publishedSolution.templates,
-                requestOptions, settings, currentSolutionName, null)
+              arcgis_clone_js.cloneSolution(publishedSolution.templates, requestOptions, settings)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
