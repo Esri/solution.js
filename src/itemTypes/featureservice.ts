@@ -91,6 +91,7 @@ export function deployItem (
           id: createResponse.serviceItemId,
           url: createResponse.serviceurl
         };
+        itemTemplate.itemId = itemTemplate.item.id = createResponse.serviceItemId;
         itemTemplate = adlib.adlib(itemTemplate, settings);
         itemTemplate.item.url = createResponse.serviceurl;
 

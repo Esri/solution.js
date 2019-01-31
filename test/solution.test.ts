@@ -1065,7 +1065,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create a Feature Service", done => {
-      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Feature Service"));
+      const templatePart = mockSolutions.getItemTemplatePart("Feature Service");
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(templatePart);
       const settings = createMockSettings();
       settings.folderId = "fld1234567890";
 
@@ -1082,15 +1083,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           return () => '{"success":true,"layers":[{"name":"ROW Permits","id":' + layerNum++ + '}]}'
       })();
 
+      const templateItemId = templatePart.itemId as string;
+      const expectedCreatedItemId = templateItemId.toUpperCase();
       fetchMock
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
-        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
-        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
+        'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"SVC1234567890",' +
+        '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"SVC1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
-      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
-        '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/SVC1234567890/move",
+        '{"success":true,"itemId":"SVC1234567890","owner":"casey","folder":"fld1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1106,7 +1109,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
             .toBeGreaterThan(0);
 
-          expect(createdItem.itemId).toEqual("svc1234567890");
+          expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.itemId as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.item.id as string).toEqual(expectedCreatedItemId);
           done();
         },
         error => done.fail(error)
@@ -1512,7 +1517,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should create an empty Group", done => {
-      const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart());
+      const templatePart = mockSolutions.getGroupTemplatePart();
+      const groupTemplate = mClassifier.initItemTemplateFromJSON(templatePart);
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -1522,17 +1528,18 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
-      const expectedCreatedItemId = (mockSolutions.getGroupTemplatePart().itemId as string).toUpperCase();
+      const templateItemId = templatePart.itemId as string;
+      const expectedCreatedItemId = templateItemId.toUpperCase();
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
         '{"success":true,"group":{"id":"' + expectedCreatedItemId +
         '","title":"Group_1555555555555","owner":"casey"}}');
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
-        (response:any) => {
-          expect(settings[mockSolutions.getGroupTemplatePart().itemId].id as string).toEqual(expectedCreatedItemId);
-          expect(response.itemId as string).toEqual(expectedCreatedItemId);
-          expect(response.item.id as string).toEqual(expectedCreatedItemId);
+        (createdItem:any) => {
+          expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.itemId as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.item.id as string).toEqual(expectedCreatedItemId);
           done();
         },
         (error:any) => done.fail(error)
