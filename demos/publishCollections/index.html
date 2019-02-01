@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset=utf-8>
+  <!--
+   | Copyright 2018 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <title>Publish solution template</title>
+  <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
+</head>
+<body>
+  <h3>Publish solution template</h3>
+  <div id="page" style="display:none">
+
+    <div class="section">
+      <div class="section-title">Credentials in publishing organization</div>
+      <label for="username">Username:</label> <input type="text" id="username">
+      <label for="password">Password:</label> <input type="password" id="password">
+    </div>
+
+    <div class="section">
+      <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
+      <input type="radio" onclick="onRadioClicked()" name="solution"
+        id="Manage_Right_of_Way_Activities" value="Manage_Right_of_Way_Activities">
+        <label for="Manage_Right_of_Way_Activities">Manage Right of Way Activities</label> <br>
+      <input type="radio" onclick="onRadioClicked()" name="solution"
+        id="Reduce_Homelessness" value="Reduce_Homelessness">
+        <label for="Reduce_Homelessness">Reduce Homelessness</label> <br>
+      <input type="radio" onclick="onRadioClicked()" name="solution"
+                                                                                                     disabled="disabled"
+        id="Tackle_Opioid_Epidemic" value="Tackle_Opioid_Epidemic">
+        <label for="Tackle_Opioid_Epidemic">Tackle Opioid Epidemic</label> <br>
+      <br>
+      <button id="createBtn" onclick="createSolutionFcn()" disabled="disabled">Create solution</button>
+    </div>
+
+    <div id="create" class="section" style="display:none">
+      <div class="section-title">Solution ready for publishing</div>
+      <img id="creating" src="../demo_common/images/loading.gif"/>
+      <div id="createResults" style="display:none">
+        <div id="createDisplay"></div>
+        <br>
+        <label for="username">Name for published Solution</label>
+        <input type="text" id="solutionName" style="width:256px"><br>
+        <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
+      </div>
+    </div>
+
+    <div id="display" class="section" style="display:none">
+      <div class="section-title">Published Solution details</div>
+      <img id="fetchingDetails" src="../demo_common/images/loading.gif"/>
+      <div id="detailsResults" style="display:none">
+        <div id="detailsDisplay"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="../demo_common/require_2.3.6.min.js"></script>
+  <script src="../lib/arcgis-rest-auth.js"></script>
+  <script src="../lib/arcgis-rest-items.js"></script>
+  <script src="../lib/arcgis-rest-request.js"></script>
+  <script src="../lib/arcgis-clone-js.js"></script>
+  <script>
+  var createSolutionFcn = publishSolutionFcn = null;
+
+  /**
+   * Makes the 'Create' button's available once a solution is selected.
+   */
+  function onRadioClicked() {
+    document.getElementById('createBtn').disabled = '';
+  }
+
+  requirejs([
+    '../demo_common/common',
+    '../demo_common/polyfills'
+  ], function (
+    demoCommon
+  ) {
+    createSolutionFcn = createSolution;
+    publishSolutionFcn = publishSolution;
+    var requestOptions, orgUrl, portalUrl, templatesList, solutionName;
+
+    document.getElementById('page').style.display = 'block';
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+    /**
+     * Gets the selected source item from the UI.
+     */
+    function getCheckedItem() {
+      var selection;
+      Array.prototype.slice.call(document.getElementsByTagName('input')).forEach(function (item) {
+        if (item.type === 'radio' && item.checked) {
+          selection = item;
+        }
+      });
+      return selection;
+    }
+
+    /**
+     * Creates a solution from a set of existing AGOL items
+     */
+    function createSolution() {
+      document.getElementById('createBtn').disabled = 'disabled';
+      document.getElementById('create').style.display = 'block';
+
+      document.getElementById('creating').style.display = 'block';
+      document.getElementById('createResults').style.display = 'none';
+
+      // Prepare credentials for library
+      requestOptions = demoCommon.getRequestOptions('username', 'password');
+
+      // Get the publisher's organization URL for creating links to source items
+      arcgis_rest_request.getPortal(null, requestOptions)
+      .then(
+        function (response) {
+          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          portalUrl = 'https://' + response.portalHostname + '/';
+
+          // Get the items to include in the solution, then generate the solution
+          var solutionRootIds;
+          var selection = getCheckedItem();
+          document.getElementById('solutionName').value = solutionName = selection.labels[0].innerText;
+          switch(selection.value) {
+            case 'Manage_Right_of_Way_Activities':
+              solutionRootIds = [
+                '23dd08e07c3944009a7da0a28d524582', '7f7a34fbe3ef4ea4a913aedf5c411d8a',
+                '5f88c4368bf64b99b0dc16065b22a477', '42e1ef6e0ac8484e9ef443ca988a683b',
+                '14ffc9672de84fc6aea443854fa551b8', '994b20d8041949c3823ddc04c4c95ca8',
+                'bc7122fd901d4f648c4f28fd0942b38a', '463b5318f3e9479ab4899b24f618e118',
+                '217c0fcb6b084cf39081462d5a61c4ba', '6e120a158f9445b29d047d6164578df7',
+                '81ec4dfdc02f43deb8651ca65198b4f1', '8d9b552677ba4b90b6d556901afbb1a9',
+                '0c3ed13e840842578d59d575eb6e4bcd', '049f861ad61b4d2992de47e2d0375097',
+                '57e2ca72066a4ecd99dc51ab135969c6', 'c3bea7d9491244d89a1ac33ce074084b'
+              ];
+              break;
+            case 'Reduce_Homelessness':
+              solutionRootIds = [
+                '2c9540149b9d45deb8fccff4e7580d5d', '33131c4372a640e8b73b9f23d1f129cb',
+                '6ed439efa0ea4a199578ad5cbe71300e', 'd70a0ab93b4e4cfb964909c493091584',
+                'c138f32e894e445697eb6af8ec40e752', '383dbea5e9104f78b1c65415cc196af0',
+                '1c447bbb8f87411e949534e75d1726c3', '335524c104d9420f99dfd4158a42e9d2',
+                'a43ff09178fa4a99a93ef1ba7868f90e', '9e6d15ba6c6a43ba917a1342cdb373cd',
+                '69a72a7085604350a42a4c169f66f065', '5489022edbbf452fab1fc5719ea650f7',
+                '6ab1621937bd446283c1a0769671426c', '23bbd2a13404450fa1136ed09828e7cc',
+                '96dbf95775eb4e3ebb7209a5c3bf8232', 'c08c921e65d840409f7ea77ff167ce17',
+                '61b1e3c56a8141e5aeff1d66556c9261', 'e282391d46e64d65b9d44cd405b52b2c',
+                '9bd6b3f2dd124f18a14d74d3c2b9b0d4', 'b8be16f03f2d42988fec5b00820a2b22',
+                'dd5d8d559a494bb69dd4f37f3038d827', '811d0bbc9a4942fe9f1375088c4ed049'
+              ];
+              break;
+            case 'Tackle_Opioid_Epidemic':
+              solutionRootIds = [
+                '471e7500ab364db5a4f074c704962650', 'd70a0ab93b4e4cfb964909c493091584',
+                '6ed439efa0ea4a199578ad5cbe71300e', 'c138f32e894e445697eb6af8ec40e752',
+                'bca5e8c4db324d5ab8f0acb8e670176e', 'a8f5f22eb71043b1b5b12d5d9f210a87',
+                '0641a37cb9c74a6386d782e792e59628', '113a420bdce348ce85c53e9867d80ad0',
+                'd7482c6962654eb8afcdf7be6f2a9131', '49fbdca9c54b4dbea14f03f64ee59385',
+                '6deb7d98ded5476fb945f49399338413', '9b3c7c7a04404cef89a7226060883b74',
+                '60ba732aae454aebbccdfa5697d91b31', '668bae2f30974753a7e887ef81b55599',
+                '6ab1621937bd446283c1a0769671426c', 'c25afff14bc2480c84b4532bbc8e71f8',
+                '5f78217ef16a4c8986d5374e8dec6ee8', 'b58287b05309414aa9876c5267c889bc',
+                'cbeb7b2f0ae14e75b44061c26f5d6eec', 'b77d7c2c5506449a82868a51c5b9f202',
+                'df1364a86c9c4344a5a889d01647c13f', '0a41790f71b04caa9d770e359ef2913d',
+                '2c1cee32aa4f4995adafb5e4d356d37e', '5489022edbbf452fab1fc5719ea650f7',
+                '336ba4cc7ec64c0183e9403a031be713', '68aa6fdbbe8a4c67be3d80d1c889f7d3',
+                '8a3e6f0ab98f48e6a34efdb0429e1c82', '9c68140e0a454d19870a66355123f5cc',
+                '538d9228099142019f91dbe46eefbabc', '68f487af6c85418b90aefb56fc28eb42',
+                'e282391d46e64d65b9d44cd405b52b2c', 'ae2fe48850b5466aa7beea160e6916a7',
+                '8af7a14d99f74d499d06faa1ec73a5fe', '9eb173ac2a344fc3afea07f5829cb8b9',
+                '57992bc384494ab0bddd4c7d9fb0a979', 'f8565c3e1879453da207e654a6f37be1',
+                '5780b252ddac4dcb8750882be3c85ce7', '13dcebb507aa466d9b3ca1c2d6236433',
+                '01c2814aff4f413da2c764943af92dfa', '3de76ba1016345d3a5aa295ff3b2160d',
+                '215ab784bf074fdfbfbe2bfea5adf633', 'e1b447d32cc740cea53d85a2dbffc344'
+              ];
+              break;
+          }
+
+          // Get the items forming the solution
+          arcgis_clone_js.createSolution(solutionRootIds, requestOptions)
+          .then(
+            response => {
+              templatesList = response;
+
+              // Display the Solution
+              document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
+                demoCommon.createHierarchyDisplay(templatesList,
+                arcgis_clone_js.getItemHierarchy(templatesList), true, orgUrl);
+              document.getElementById('publishBtn').disabled = '';
+            },
+            error => {
+              document.getElementById('createDisplay').innerHTML = JSON.stringify(error);
+              document.getElementById('publishBtn').disabled = 'disabled';
+            }
+          )
+          .finally(
+            () => {
+              document.getElementById('creating').style.display = 'none';
+              document.getElementById('createResults').style.display = 'block';
+            }
+          );
+
+        },
+        function () {
+          document.getElementById('create').style.display = 'none';
+          alert('Please refresh page and provide credentials');
+        }
+      );
+    }
+
+    /**
+     * Creates a solution item in the user's organization.
+     */
+    function publishSolution() {
+      document.getElementById('publishBtn').disabled = 'disabled';
+      document.getElementById('display').style.display = 'block';
+
+      // Publish the Solution
+      solutionName = document.getElementById('solutionName').value || 'Solution';
+      arcgis_clone_js.publishSolution(solutionName, templatesList, requestOptions, null, 'public')
+      .then(function (publishResponse) {
+        var publishedSolutionId = publishResponse.id;
+
+        arcgis_rest_items.getItemData(publishedSolutionId, requestOptions)
+        .then(
+          publishedSolution => {
+            document.getElementById('detailsDisplay').innerHTML =
+              demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
+              '<br>Published Solution item hierarchy:' +
+              demoCommon.createHierarchyDisplay(publishedSolution.templates,
+                arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
+          }
+        );
+      }, function (error) {
+         document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
+      })
+      .finally(() => {
+        document.getElementById('fetchingDetails').style.display = 'none';
+        document.getElementById('detailsResults').style.display = 'block';
+      });
+    }
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+  });
+  </script>
+</body>
+</html>

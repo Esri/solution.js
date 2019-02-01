@@ -92,6 +92,7 @@ export function publishSolution (
     title,
     type: "Solution",
     itemType: "text",
+    typeKeywords: ["Template"],
     access,
     listed: false,
     commentsEnabled: false
