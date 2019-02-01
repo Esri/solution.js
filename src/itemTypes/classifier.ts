@@ -62,6 +62,10 @@ export function initItemTemplateFromId (
     items.getItem(itemId, requestOptions)
     .then(
       itemResponse => {
+        if (!moduleMap[itemResponse.type.toLowerCase()]) {
+          console.warn("Unimplemented item type " + itemResponse.type);
+        }
+
         itemTemplate = {
           itemId: itemResponse.id,
           type: itemResponse.type,
