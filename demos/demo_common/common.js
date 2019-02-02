@@ -25,17 +25,24 @@ define([
      * Creates an arcgis-rest-arcgis-rest-auth IAuthenticatedRequestOptions object with an active UserSession.
      * @param {string} usernameElementId HTML element with username
      * @param {string} passwordElementId HTML element with password
+     * @param {string?} requestOptions Base url for the portal you want to make the request to; defaults
+     *        to 'https://www.arcgis.com/sharing/rest'
      * @return {object} IAuthenticatedRequestOptions object
      * @see @esri/arcgis-rest-auth
      * @see @esri/arcgis-rest-request
      */
-    getRequestOptions: function (usernameElementId, passwordElementId) {
-      return {
-        authentication: new arcgis_rest_auth.UserSession({
-          username: document.getElementById(usernameElementId).value,
-          password: document.getElementById(passwordElementId).value
-        })
+    getRequestOptions: function (username, password, portal) {
+      var userSessionOptions = {
+        username: username || undefined,
+        password: password || undefined
       };
+      var requestOptions = {
+        authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
+      };
+      if (portal) {
+        requestOptions.portal = portal.replace('arcgis', 'ARCGIS');
+      }
+      return requestOptions;
     },
 
     /**

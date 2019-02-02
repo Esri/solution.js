@@ -25,9 +25,17 @@
   <div id="page" style="display:none">
 
     <div class="section">
-      <div class="section-title">Credentials in publishing organization</div>
-      <label for="username">Username:</label> <input type="text" id="username">
-      <label for="password">Password:</label> <input type="password" id="password">
+      <div class="section-title">Credentials in source organization</div>
+      <label for="srcUsername">Username:</label> <input type="text" id="srcUsername">
+      <label for="srcPassword">Password:</label> <input type="password" id="srcPassword">
+      <label for="srcPortal">Portal:</label>
+      <input type="text" id="srcPortal" style="width:256px" placeholder="https://www.arcgis.com/sharing/rest">
+      <br/><br/>
+      <div class="section-title">Credentials in destination organization</div>
+      <label for="destUsername">Username:</label> <input type="text" id="destUsername">
+      <label for="destPassword">Password:</label> <input type="password" id="destPassword">
+      <label for="destPortal">Portal:</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com/sharing/rest">
     </div>
 
     <div class="section">
@@ -52,7 +60,7 @@
       <div id="createResults" style="display:none">
         <div id="createDisplay"></div>
         <br>
-        <label for="username">Name for published Solution</label>
+        <label for="solutionName">Name for published Solution:</label>
         <input type="text" id="solutionName" style="width:256px"><br>
         <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
       </div>
@@ -91,7 +99,7 @@
   ) {
     createSolutionFcn = createSolution;
     publishSolutionFcn = publishSolution;
-    var requestOptions, orgUrl, portalUrl, templatesList, solutionName;
+    var requestOptions, templatesList, solutionName;
 
     document.getElementById('page').style.display = 'block';
 
@@ -120,15 +128,23 @@
       document.getElementById('creating').style.display = 'block';
       document.getElementById('createResults').style.display = 'none';
 
-      // Prepare credentials for library
-      requestOptions = demoCommon.getRequestOptions('username', 'password');
+      // Prepare credentials for source
+      sourceRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('srcUsername').value, document.getElementById('srcPassword').value,
+        document.getElementById('srcPortal').value || 'https://www.arcgis.com/sharing/rest');
 
-      // Get the publisher's organization URL for creating links to source items
-      arcgis_rest_request.getPortal(null, requestOptions)
+      // Prepare credentials for destination
+      destinationRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('destUsername').value, document.getElementById('destPassword').value,
+        document.getElementById('destPortal').value || 'https://www.arcgis.com/sharing/rest');
+
+      // Get the source's organization URL for creating links to source items
+      arcgis_rest_request.getPortal(null, sourceRequestOptions)
       .then(
         function (response) {
-          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-          portalUrl = 'https://' + response.portalHostname + '/';
+          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          var portalUrl = 'https://' + response.portalHostname + '/';
+          console.log('create:', orgUrl, portalUrl, sourceRequestOptions);//???
 
           // Get the items to include in the solution, then generate the solution
           var solutionRootIds;
@@ -190,7 +206,7 @@
           }
 
           // Get the items forming the solution
-          arcgis_clone_js.createSolution(solutionRootIds, requestOptions)
+          arcgis_clone_js.createSolution(solutionRootIds, sourceRequestOptions)
           .then(
             response => {
               templatesList = response;
@@ -214,7 +230,8 @@
           );
 
         },
-        function () {
+        function (error) {
+          console.warn(JSON.stringify(error));
           document.getElementById('create').style.display = 'none';
           alert('Please refresh page and provide credentials');
         }
@@ -228,29 +245,39 @@
       document.getElementById('publishBtn').disabled = 'disabled';
       document.getElementById('display').style.display = 'block';
 
-      // Publish the Solution
-      solutionName = document.getElementById('solutionName').value || 'Solution';
-      arcgis_clone_js.publishSolution(solutionName, templatesList, requestOptions, null, 'public')
-      .then(function (publishResponse) {
-        var publishedSolutionId = publishResponse.id;
+      // Get the destinations's organization URL for creating links to source items
+      arcgis_rest_request.getPortal(null, destinationRequestOptions)
+      .then(
+        function (response) {
+          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          var portalUrl = 'https://' + response.portalHostname + '/';
+          console.log('publish:', orgUrl, portalUrl, destinationRequestOptions);//???
 
-        arcgis_rest_items.getItemData(publishedSolutionId, requestOptions)
-        .then(
-          publishedSolution => {
-            document.getElementById('detailsDisplay').innerHTML =
-              demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
-              '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.templates,
-                arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
-          }
-        );
-      }, function (error) {
-         document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
-      })
-      .finally(() => {
-        document.getElementById('fetchingDetails').style.display = 'none';
-        document.getElementById('detailsResults').style.display = 'block';
-      });
+          // Publish the Solution
+          solutionName = document.getElementById('solutionName').value || 'Solution';
+          arcgis_clone_js.publishSolution(solutionName, templatesList, destinationRequestOptions, null, 'public')
+          .then(function (publishResponse) {
+            var publishedSolutionId = publishResponse.id;
+
+            arcgis_rest_items.getItemData(publishedSolutionId, destinationRequestOptions)
+            .then(
+              publishedSolution => {
+                document.getElementById('detailsDisplay').innerHTML =
+                  demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
+                  '<br>Published Solution item hierarchy:' +
+                  demoCommon.createHierarchyDisplay(publishedSolution.templates,
+                    arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
+              }
+            );
+          }, function (error) {
+             document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
+          })
+          .finally(() => {
+            document.getElementById('fetchingDetails').style.display = 'none';
+            document.getElementById('detailsResults').style.display = 'block';
+          });
+        }
+      );
     }
 
     //----------------------------------------------------------------------------------------------------------------//
