@@ -114,7 +114,8 @@
       //progress.show();
 
       // Prepare credentials for library
-      var requestOptions = demoCommon.getRequestOptions('username', 'password');
+      var requestOptions = demoCommon.getRequestOptions(
+        document.getElementById('username').value, document.getElementById('password').value);
 
       // Get the destination organization URL for creating links to source items
       arcgis_rest_request.getPortal(null, requestOptions)
