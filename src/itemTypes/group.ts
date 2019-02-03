@@ -33,7 +33,7 @@ export function completeItemTemplate (
 ): Promise<ITemplate> {
   return new Promise(resolve => {
     // Update the estimated cost factor to deploy this item
-    itemTemplate.estimatedDeploymentCostFactor = 3 + itemTemplate.dependencies.length;
+    itemTemplate.estimatedDeploymentCostFactor = 3;
 
     // Common templatizations: item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
@@ -66,7 +66,12 @@ export function getDependencies (
     // Fetch group items
     getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
     .then(
-      contents => resolve(contents),
+      contents => {
+        // Update the estimated cost factor to deploy this item
+        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
+
+        resolve(contents);
+      },
       () => reject({ success: false })
     );
   });
