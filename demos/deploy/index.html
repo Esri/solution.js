@@ -44,7 +44,7 @@
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
         <br>
-        <button id="createBtn" onclick="cloneSolutionFcn()">Create solution in your organization</button>
+        <button id="createBtn" onclick="deploySolutionFcn()">Create solution in your organization</button>
         using name <input type="text" id="solutionNameField">
       </div>
     </div>
@@ -66,7 +66,7 @@
   <script src="../lib/arcgis-rest-request.js"></script>
   <script src="../lib/arcgis-clone-js.js"></script>
   <script>
-  var showSolutionFcn = cloneSolutionFcn = null;
+  var showSolutionFcn = deploySolutionFcn = null;
   var currentSolutionId, currentSolutionName, currentSolutionItems;
 
   /**
@@ -93,7 +93,7 @@
     progress
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    cloneSolutionFcn = cloneSolution;
+    deploySolutionFcn = deploySolution;
 
     document.getElementById('page').style.display = 'block';
 
@@ -105,7 +105,7 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function cloneSolution() {
+    function deploySolution() {
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
@@ -137,13 +137,12 @@
             publishedSolution => {
 
               // Get the total estimated cost of creating these items
-              var reducer = (accumulator, currentTemplate) =>
-                accumulator + (currentTemplate.estimatedDeploymentCostFactor ? currentTemplate.estimatedDeploymentCostFactor : 3);
-              totalEstimatedDeploymentCostFactor = publishedSolution.templates.reduce(reducer, 0);
-              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length + " items: " + totalEstimatedDeploymentCostFactor);// //???
-              var progressCallback = _createProgressCallback(totalEstimatedDeploymentCostFactor);
+              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length + // //???
+                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));// //???
+              var progressCallback =
+                _createProgressCallback(arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
-              arcgis_clone_js.cloneSolution(publishedSolution.templates, requestOptions, settings, progressCallback)
+              arcgis_clone_js.deploySolution(publishedSolution.templates, requestOptions, settings, progressCallback)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
