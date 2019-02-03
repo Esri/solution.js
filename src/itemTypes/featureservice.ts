@@ -300,9 +300,16 @@ export function fleshOutFeatureService (
             properties.layers = results[0];
             properties.tables = results[1];
             itemTemplate.properties = properties;
+
+            const reducer = (accumulator:number, currentLayer:any) =>
+              accumulator + (currentLayer.relationships ? currentLayer.relationships.length : 0);
+
             itemTemplate.estimatedDeploymentCostFactor +=
-              properties.layers.length * 2 +  // layers & estimated single relationship for each
-              properties.tables.length * 2;   // tables & estimated single relationship for each
+              properties.layers.length +              // layers
+              properties.layers.reduce(reducer, 0) +  // layer relationships
+              properties.tables.length +              // tables & estimated single relationship for each
+              properties.tables.reduce(reducer, 0);   // table relationships
+              
             resolve();
           },
           () => reject({ success: false })
