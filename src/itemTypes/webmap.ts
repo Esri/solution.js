@@ -19,7 +19,7 @@ import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
-import { ITemplate } from "../interfaces";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -38,6 +38,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 4;
+
     // Common templatizations: extent, item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
@@ -86,8 +89,16 @@ export function getDependencies (
 export function deployItem (
   itemTemplate: ITemplate,
   settings: any,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
+  progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
   return new Promise((resolve, reject) => {
     const options:items.IItemAddRequestOptions = {
       item: itemTemplate.item,
@@ -99,6 +110,10 @@ export function deployItem (
     }
 
     // Create the item
+    progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
     items.createItemInFolder(options)
     .then(
       createResponse => {
@@ -111,17 +126,31 @@ export function deployItem (
           itemTemplate = adlib.adlib(itemTemplate, settings);
 
           // Update the app URL
+          progressCallback({
+            processId: itemTemplate.key,
+            status: "updating URL"
+          });
           mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
           .then(
-            () => resolve(itemTemplate),
-            () => reject({ success: false })
+            () => {
+              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+              resolve(itemTemplate);
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject({ success: false });
+            }
           );
         } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
           reject({ success: false });
         }
       },
-      () => reject({ success: false })
-    );
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
+    )
   });
 }
 
@@ -147,7 +176,7 @@ export function getWebmapLayerIds (
       return ids;
     },
     [] as string[]
-    );
+  );
 }
 
 export function templatizeWebmapLayerIdsAndUrls (

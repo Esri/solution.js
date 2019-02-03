@@ -21,7 +21,7 @@ import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
-import { ITemplate } from "../interfaces";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 //
@@ -32,6 +32,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 3 + itemTemplate.dependencies.length;
+
     // Common templatizations: item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
@@ -74,8 +77,16 @@ export function getDependencies (
 export function deployItem (
   itemTemplate: ITemplate,
   settings: any,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
+  progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
   return new Promise((resolve, reject) => {
     const options = {
       group: itemTemplate.item,
@@ -86,6 +97,10 @@ export function deployItem (
     options.group.title += "_" + mCommon.getTimestamp();
 
     // Create the item
+    progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
     groups.createGroup(options)
     .then(
       createResponse => {
@@ -98,16 +113,26 @@ export function deployItem (
           itemTemplate = adlib.adlib(itemTemplate, settings);
 
           // Add the group's items to it
-          addGroupMembers(itemTemplate, requestOptions)
+          addGroupMembers(itemTemplate, requestOptions, progressCallback)
           .then(
-            () => resolve(itemTemplate),
-            () => reject({ success: false })
-          );
+            () => {
+              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+              resolve(itemTemplate);
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject({ success: false });
+            }
+                );
         } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
           reject({ success: false });
         }
       },
-      () => reject({ success: false })
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
     );
   });
 }
@@ -126,7 +151,8 @@ export function deployItem (
  */
 export function addGroupMembers (
   itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ):Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Add each of the group's items to it
@@ -140,8 +166,17 @@ export function addGroupMembers (
             ...requestOptions
           })
           .then(
-            () => resolve2(),
-            () => reject2({ success: false })
+            () => {
+              progressCallback({
+                processId: itemTemplate.key,
+                status: "added group member"
+              });
+              resolve2();
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject2({ success: false });
+            }
           );
         }));
       });

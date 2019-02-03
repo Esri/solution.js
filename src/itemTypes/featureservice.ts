@@ -20,7 +20,7 @@ import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
-import { ITemplate } from "../interfaces";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -31,6 +31,9 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise((resolve, reject) => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 3;
+
     // Common templatizations: extent, item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
@@ -67,8 +70,16 @@ export function getDependencies (
 export function deployItem (
   itemTemplate: ITemplate,
   settings: any,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
+  progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
   return new Promise((resolve, reject) => {
     const options = {
       item: itemTemplate.item,
@@ -83,6 +94,10 @@ export function deployItem (
     options.item.name += "_" + mCommon.getTimestamp();
 
     // Create the item
+    progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
     featureServiceAdmin.createFeatureService(options)
     .then(
       createResponse => {
@@ -96,13 +111,22 @@ export function deployItem (
         itemTemplate.item.url = createResponse.serviceurl;
 
         // Add the feature service's layers and tables to it
-        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions)
+        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions, progressCallback)
         .then(
-          () => resolve(itemTemplate),
-          () => reject({ success: false })
+          () => {
+            mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+            resolve(itemTemplate);
+          },
+          () => {
+            mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+            reject({ success: false });
+          }
         );
       },
-      () => reject({ success: false })
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
     )
   });
 }
@@ -153,6 +177,7 @@ export function addFeatureServiceLayersAndTables (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
 
@@ -180,7 +205,7 @@ export function addFeatureServiceLayersAndTables (
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(itemTemplate.itemId, itemTemplate.item.url, layersAndTables,
-        settings, relationships, requestOptions)
+        settings, relationships, requestOptions, itemTemplate.key, progressCallback)
       .then(
         () => {
           // Restore relationships for all layers and tables in the service
@@ -198,7 +223,13 @@ export function addFeatureServiceLayersAndTables (
                 };
                 featureServiceAdmin.addToServiceDefinition(itemTemplate.item.url + "/" + id, options)
                 .then(
-                  () => resolveFn(),
+                  () => {
+                    progressCallback({
+                      processId: itemTemplate.key,
+                      status: "updated relationship"
+                    });
+                    resolveFn();
+                  },
                   () => rejectFn()
                 );
               }));
@@ -269,6 +300,9 @@ export function fleshOutFeatureService (
             properties.layers = results[0];
             properties.tables = results[1];
             itemTemplate.properties = properties;
+            itemTemplate.estimatedDeploymentCostFactor +=
+              properties.layers.length * 2 +  // layers & estimated single relationship for each
+              properties.tables.length * 2;   // tables & estimated single relationship for each
             resolve();
           },
           () => reject({ success: false })
@@ -362,7 +396,9 @@ function updateFeatureServiceDefinition(
   listToAdd: any[],
   settings: any,
   relationships: IRelationship,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  key: string,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<void> {
   // Launch the adds serially because server doesn't support parallel adds
   return new Promise((resolve, reject) => {
@@ -400,7 +436,13 @@ function updateFeatureServiceDefinition(
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
         () => {
-          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships, requestOptions)
+          progressCallback({
+            processId: key,
+            status: "added layer"
+          });
+
+          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, settings, relationships,
+            requestOptions, key, progressCallback)
           .then(
             () => resolve(),
             () => reject({ success: false })

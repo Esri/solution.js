@@ -19,7 +19,7 @@ import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
-import { ITemplate } from "../interfaces";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -51,8 +51,16 @@ export function getDependencies (
 export function deployItem (
   itemTemplate: ITemplate,
   settings: any,
-  requestOptions: IUserRequestOptions
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
+  progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
   return new Promise((resolve, reject) => {
     const options:items.IItemAddRequestOptions = {
       item: itemTemplate.item,
@@ -64,6 +72,10 @@ export function deployItem (
     }
 
     // Create the item
+    progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
     items.createItemInFolder(options)
     .then(
       createResponse => {
@@ -74,12 +86,18 @@ export function deployItem (
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
           itemTemplate = adlib.adlib(itemTemplate, settings);
-          resolve(itemTemplate)
+
+          mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+          resolve(itemTemplate);
         } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
           reject({ success: false });
         }
       },
-      () => reject({ success: false })
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
     );
   });
 }

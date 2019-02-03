@@ -135,6 +135,20 @@ export function cloneSolution (
     // Run through the list of item ids in clone order
     const cloneOrderChecklist:string[] = topologicallySortItems(solution);
 
+    // Get the total estimated cost of creating these items
+    const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
+      accumulator + (currentTemplate.estimatedDeploymentCostFactor ? currentTemplate.estimatedDeploymentCostFactor : 3);
+    const totalEstimatedDeploymentCostFactor = solution.reduce(reducer, 0);
+    console.log("totalEstimatedDeploymentCostFactor for " + solution.length + " items: " + totalEstimatedDeploymentCostFactor);// //???
+
+    // -------------------------------------------------------------------------
+    function _createProgressCallback () {
+      let stepsReported = 0;
+      return function (update:mInterfaces.IProgressUpdate) {
+        console.log((++stepsReported*100/totalEstimatedDeploymentCostFactor).toFixed(0) + "% done: " + JSON.stringify(update));// //???
+      };
+    }
+    const progressCallback = _createProgressCallback();
     // -------------------------------------------------------------------------
     function runThroughChecklist () {
       if (cloneOrderChecklist.length === 0) {
@@ -151,7 +165,7 @@ export function cloneSolution (
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
       // Deploy it
-      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
       .then(
         itemClone => {
           clonedSolution.push(itemClone);
