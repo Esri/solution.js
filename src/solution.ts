@@ -104,6 +104,16 @@ export function publishSolution (
   return mCommon.createItemWithData(item, data, requestOptions, folderId, access);
 }
 
+export function getEstimatedDeploymentCost (
+  solution: mInterfaces.ITemplate[]
+): number {
+  // Get the total estimated cost of creating this solution
+  const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
+    accumulator + (currentTemplate.estimatedDeploymentCostFactor ? 
+    currentTemplate.estimatedDeploymentCostFactor : 3);
+  return solution.reduce(reducer, 0);
+}
+
 /**
  * Converts a hash by id of generic JSON item descriptions into AGOL items.
  *
@@ -119,7 +129,7 @@ export function publishSolution (
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
-export function cloneSolution (
+export function deploySolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings = {} as any,
