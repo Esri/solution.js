@@ -119,7 +119,8 @@
       document.getElementById('create').style.display = 'block';
 
       // Prepare credentials for library
-      requestOptions = demoCommon.getRequestOptions('username', 'password');
+      requestOptions = demoCommon.getRequestOptions(
+        document.getElementById('username').value, document.getElementById('password').value);
 
       // Get the publisher's organization URL for creating links to source items
       arcgis_rest_request.getPortal(null, requestOptions)

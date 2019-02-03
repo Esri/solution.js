@@ -19,6 +19,8 @@ import * as sharing from "@esri/arcgis-rest-sharing";
 import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
+import { IProgressUpdate } from "../interfaces";
+
 // -------------------------------------------------------------------------------------------------------------------//
 
 /**
@@ -120,6 +122,17 @@ export function deTemplatizeList (
       return deTemplatize(id);
     }
   );
+}
+
+export function finalCallback (
+  key: string,
+  successful: boolean,
+  progressCallback?: (update:IProgressUpdate) => void
+): void {
+  progressCallback({
+    processId: key,
+    status: successful ? "done" : "failed"
+  });
 }
 
 /**

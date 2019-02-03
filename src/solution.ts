@@ -122,8 +122,8 @@ export function publishSolution (
 export function cloneSolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
-  settings = {} as any
-): Promise<mInterfaces.ITemplate[]> {
+  settings = {} as any,
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void,): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
     const clonedSolution:mInterfaces.ITemplate[] = [];
 
@@ -151,7 +151,7 @@ export function cloneSolution (
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
       // Deploy it
-      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
       .then(
         itemClone => {
           clonedSolution.push(itemClone);

@@ -20,7 +20,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import { createId } from '../utils/item-helpers';
 import * as mCommon from "./common";
-import {ITemplate, IItemTypeModule} from "../interfaces";
+import { ITemplate, IItemTypeModule, IProgressUpdate } from "../interfaces";
 import * as DashboardModule from "./dashboard";
 import * as GroupModule from "./group";
 import * as FeatureServiceModule from "./featureservice";
@@ -72,7 +72,8 @@ export function initItemTemplateFromId (
           key: createId(),
           item: removeUndesirableItemProperties(itemResponse),
           dependencies: [],
-          fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule
+          fcns: moduleMap[itemResponse.type.toLowerCase()] || GenericModule,
+          estimatedDeploymentCostFactor: 3  // minimal set is starting, creating, done|failed
         };
         itemTemplate.item.id = mCommon.templatize(itemTemplate.item.id);
         if (itemTemplate.item.item) {
