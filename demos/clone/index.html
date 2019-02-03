@@ -135,7 +135,15 @@
           arcgis_rest_items.getItemData(currentSolutionId)
           .then(
             publishedSolution => {
-              arcgis_clone_js.cloneSolution(publishedSolution.templates, requestOptions, settings)
+
+              // Get the total estimated cost of creating these items
+              var reducer = (accumulator, currentTemplate) =>
+                accumulator + (currentTemplate.estimatedDeploymentCostFactor ? currentTemplate.estimatedDeploymentCostFactor : 3);
+              totalEstimatedDeploymentCostFactor = publishedSolution.templates.reduce(reducer, 0);
+              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length + " items: " + totalEstimatedDeploymentCostFactor);// //???
+              var progressCallback = _createProgressCallback(totalEstimatedDeploymentCostFactor);
+
+              arcgis_clone_js.cloneSolution(publishedSolution.templates, requestOptions, settings, progressCallback)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
@@ -162,6 +170,14 @@
           );
         }
       );
+    }
+
+    function _createProgressCallback (totalEstimatedDeploymentCostFactor) {
+      let stepsReported = 0;
+      let percentFactor = 100 / totalEstimatedDeploymentCostFactor;
+      return function (update) {
+        console.log((++stepsReported * percentFactor).toFixed(0) + "% done: " + JSON.stringify(update));// //???
+      };
     }
 
     //----------------------------------------------------------------------------------------------------------------//
