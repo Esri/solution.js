@@ -137,8 +137,8 @@
             publishedSolution => {
 
               // Get the total estimated cost of creating these items
-              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length + // //???
-                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));// //???
+              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length +
+                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
               var progressCallback =
                 _createProgressCallback(arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
@@ -175,7 +175,7 @@
       let stepsReported = 0;
       let percentFactor = 100 / totalEstimatedDeploymentCostFactor;
       return function (update) {
-        console.log((++stepsReported * percentFactor).toFixed(0) + "% done: " + JSON.stringify(update));// //???
+        console.log((++stepsReported * percentFactor).toFixed(0) + "% done: " + JSON.stringify(update));
       };
     }
 

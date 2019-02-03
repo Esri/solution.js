@@ -109,7 +109,7 @@ export function getEstimatedDeploymentCost (
 ): number {
   // Get the total estimated cost of creating this solution
   const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
-    accumulator + (currentTemplate.estimatedDeploymentCostFactor ? 
+    accumulator + (currentTemplate.estimatedDeploymentCostFactor ?
     currentTemplate.estimatedDeploymentCostFactor : 3);
   return solution.reduce(reducer, 0);
 }
@@ -157,7 +157,8 @@ export function deploySolution (
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
       // Interpolate template
-      itemTemplate.dependencies = itemTemplate.dependencies ? mCommon.templatizeList(itemTemplate.dependencies) : [];
+      itemTemplate.dependencies = itemTemplate.dependencies ? 
+        mCommon.templatize(itemTemplate.dependencies) as string[] : [];
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
       // Deploy it

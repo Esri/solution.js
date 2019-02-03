@@ -102,7 +102,7 @@ export function deployItem (
     .then(
       createResponse => {
         // Add the new item to the settings list
-        settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+        settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
           id: createResponse.serviceItemId,
           url: createResponse.serviceurl
         };

@@ -105,21 +105,25 @@ export function createItemWithData (
 }
 
 export function deTemplatize (
-  id: string
-): string {
-  if (id.startsWith("{{")) {
+  id: string | string[]
+): string | string[] {
+  if (Array.isArray(id)) {
+    return deTemplatizeList(id);
+  }
+
+  if (id && id.startsWith("{{")) {
     return id.substring(2, id.indexOf("."));
   } else {
     return id;
   }
 }
 
-export function deTemplatizeList (
+function deTemplatizeList (
   ids: string[]
 ): string[] {
   return ids.map(
     (id:string) => {
-      return deTemplatize(id);
+      return deTemplatize(id) as string;
     }
   );
 }
@@ -147,23 +151,27 @@ export function getTimestamp (
 }
 
 export function templatize (
-  id: string,
+  id: string | string[],
   param = "id"
-): string {
-  if (id.startsWith("{{")) {
+): string | string[] {
+  if (Array.isArray(id)) {
+    return templatizeList(id, param);
+  }
+
+  if (id && id.startsWith("{{")) {
     return id;
   } else {
     return "{{" + id + "." + param + "}}";
   }
 }
 
-export function templatizeList (
+function templatizeList (
   ids: string[],
   param = "id"
 ): string[] {
   return ids.map(
     (id:string) => {
-      return templatize(id, param);
+      return templatize(id, param) as string;
     }
   );
 }

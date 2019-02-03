@@ -63,7 +63,7 @@ export function initItemTemplateFromId (
     .then(
       itemResponse => {
         if (!moduleMap[itemResponse.type.toLowerCase()]) {
-          console.warn("Unimplemented item type " + itemResponse.type);
+          console.warn("Unimplemented item type " + itemResponse.type + " for " + itemId);
         }
 
         itemTemplate = {
@@ -117,7 +117,14 @@ export function initItemTemplateFromId (
               responses2 => {
                 const [completionResponse, dependenciesResponse] = responses2;
                 itemTemplate = completionResponse;
-                itemTemplate.dependencies = removeDuplicates(mCommon.deTemplatizeList(dependenciesResponse));
+
+                itemTemplate.dependencies = removeDuplicates(
+                  mCommon.deTemplatize(
+                    dependenciesResponse
+                    .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
+                  ) as string[]
+                );
+
                 resolve(itemTemplate);
               },
               () => reject({ success: false })
@@ -153,7 +160,13 @@ export function initItemTemplateFromId (
               responses2 => {
                 const [completionResponse, dependenciesResponse] = responses2;
                 itemTemplate = completionResponse;
-                itemTemplate.dependencies = removeDuplicates(mCommon.deTemplatizeList(dependenciesResponse));
+
+                itemTemplate.dependencies = removeDuplicates(
+                  mCommon.deTemplatize(
+                    dependenciesResponse
+                    .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
+                  ) as string[]
+                );
                 resolve(itemTemplate);
               },
               () => reject({ success: false })

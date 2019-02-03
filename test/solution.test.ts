@@ -2116,6 +2116,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  // //???
+  /*
   describe("supporting routine: templatizeList", () => {
 
     it("should handle default parameter", () => {
@@ -2142,6 +2144,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
   });
+  */
 
   describe("supporting routine: getGroupContentsTranche", () => {
 

@@ -119,7 +119,7 @@ export function deployItem (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId)] = {
+          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
@@ -182,7 +182,11 @@ export function getWebmapLayerIds (
 export function templatizeWebmapLayerIdsAndUrls (
   layerList = [] as any[]
 ): void {
-  layerList.forEach(
+  layerList
+  .filter(
+    (layer:any) => !!layer.itemId
+  )
+  .forEach(
     (layer:any) => {
       const layerId = layer.url.substr((layer.url as string).lastIndexOf("/"));
       layer.itemId = mCommon.templatize(layer.itemId);
