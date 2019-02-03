@@ -431,13 +431,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("clone solution", () => {
 
     it("should handle a missing solution", done => {
-      mSolution.cloneSolution(null, MOCK_USER_REQOPTS)
+      mSolution.deploySolution(null, MOCK_USER_REQOPTS)
       .then(done, done.fail);
     });
 
     it("should handle an empty, nameless solution", done => {
       const settings = createMockSettings();
-      mSolution.cloneSolution({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, settings)
+      mSolution.deploySolution({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, settings)
       .then(done, done.fail);
     });
 
@@ -454,7 +454,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder", mockItems.get400Failure());
-      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -512,7 +512,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -541,7 +541,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}')
-      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         response => {
           expect(response.length).toEqual(1);
@@ -568,7 +568,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", mockItems.get400Failure());
-      mSolution.cloneSolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -623,7 +623,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -676,7 +676,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}');
-      mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -695,7 +695,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
-      mSolution.cloneSolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
         () => done()
