@@ -47,7 +47,7 @@
         <div id="detailsDisplay"></div>
         <br>
         <button id="createBtn" onclick="deploySolutionFcn()">Create solution in your organization</button>
-        using name <input type="text" id="solutionNameField">
+        using name <input type="text" id="solutionNameField" style="width:256px">
       </div>
     </div>
 
@@ -148,8 +148,9 @@
               arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions,
                 settings, progressCallback)
               .then(
-                clonedSolution => {
-                  arcgis_clone_js.createDeployedSolutionItem(currentSolutionName, clonedSolution,
+                deployedSolution => {
+                  // Create a deployed Solution item as a table of contents for the created items
+                  arcgis_clone_js.createDeployedSolutionItem(currentSolutionName, deployedSolution,
                     destinationRequestOptions, settings, "public")
                   .then(
                     deployedSolutionItem  => {
@@ -161,8 +162,8 @@
                       document.getElementById('createDisplay').innerHTML =
                       '<ul class="solutionList"><li><a href="' + deployedSolutionItem.url + '" target="_blank">' +
                         currentSolutionName + '</a></li></ul><br>' +
-                        demoCommon.createHierarchyDisplay(clonedSolution,
-                          arcgis_clone_js.getItemHierarchy(clonedSolution),
+                        demoCommon.createHierarchyDisplay(deployedSolution,
+                          arcgis_clone_js.getItemHierarchy(deployedSolution),
                           true, settings.organization.orgUrl + '/home/');
                     }
                   );
