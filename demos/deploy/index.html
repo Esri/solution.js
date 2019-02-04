@@ -112,8 +112,8 @@
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
 
-      //progress.init('progressBarContainer', 'progressBar');
-      //progress.show();
+      progress.init('progressBarContainer', 'progressBar');
+      progress.show();
 
       // Prepare credentials for destination
       destinationRequestOptions = demoCommon.getRequestOptions(
@@ -156,7 +156,7 @@
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
                       document.getElementById('creating').style.display = 'none';
                       document.getElementById('createResults').style.display = 'block';
-                      //progress.hide();
+                      progress.hide();
 
                       document.getElementById('createDisplay').innerHTML =
                         '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
@@ -178,7 +178,9 @@
       let stepsReported = 0;
       let percentFactor = 100 / totalEstimatedDeploymentCostFactor;
       return function (update) {
-        console.log((++stepsReported * percentFactor).toFixed(0) + "% done: " + JSON.stringify(update));
+        var percentDone = (++stepsReported * percentFactor).toFixed(0);
+        console.log(percentDone + "% done: " + JSON.stringify(update));
+        progress.set(percentDone);
       };
     }
 
