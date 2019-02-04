@@ -34,13 +34,15 @@ define([
     getRequestOptions: function (username, password, portal) {
       var userSessionOptions = {
         username: username || undefined,
-        password: password || undefined
+        password: password || undefined,
+        portal: portal || undefined
       };
+
       var requestOptions = {
         authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
       };
       if (portal) {
-        requestOptions.portal = portal.replace('arcgis', 'ARCGIS');
+        requestOptions.portal = portal.replace('arcgis', 'ARCGIS');  // set portal after tweaking it to get it past filter
       }
       return requestOptions;
     },
@@ -120,7 +122,7 @@ define([
         publishedSolution => {
           document.getElementById('detailsDisplay').innerHTML =
             this.createItemLinksDisplay(publishedSolutionId,
-              'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+              'https://localdeployment.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
             '<br>Published Solution item hierarchy:' +
             this.createHierarchyDisplay(publishedSolution.templates,
               arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
@@ -137,7 +139,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgis_rest_items.searchItems('type:Solution owner:ArcGISTeamLocalGovOrg')
+      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {

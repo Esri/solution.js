@@ -26,8 +26,10 @@
 
     <div class="section">
       <div class="section-title">Credentials in destination organization</div>
-      <label for="username">Username:</label> <input type="text" id="username">
-      <label for="password">Password:</label> <input type="password" id="password">
+      <label for="destUsername">Username:</label> <input type="text" id="destUsername">
+      <label for="destPassword">Password:</label> <input type="password" id="destPassword">
+      <label for="destPortal">Portal:</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://www.arcgis.com/sharing/rest">
     </div>
 
     <div id="availableSolutions" class="section">
@@ -113,12 +115,13 @@
       //progress.init('progressBarContainer', 'progressBar');
       //progress.show();
 
-      // Prepare credentials for library
-      var requestOptions = demoCommon.getRequestOptions(
-        document.getElementById('username').value, document.getElementById('password').value);
+      // Prepare credentials for destination
+      destinationRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('destUsername').value, document.getElementById('destPassword').value,
+        document.getElementById('destPortal').value || 'https://www.arcgis.com/sharing/rest');
 
-      // Get the destination organization URL for creating links to source items
-      arcgis_rest_request.getPortal(null, requestOptions)
+      // Get the destination organization URL for creating links to deployed items
+      arcgis_rest_request.getPortal(null, destinationRequestOptions)
       .then(
         portalResponse => {
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
@@ -142,11 +145,11 @@
               var progressCallback =
                 _createProgressCallback(arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
-              arcgis_clone_js.deploySolution(publishedSolution.templates, requestOptions, settings, progressCallback)
+              arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions, settings, progressCallback)
               .then(
                 clonedSolution => {
                   var solutionStorymapTitle = 'Storymap about your solution';
-                  arcgis_clone_js.createSolutionStorymap(solutionStorymapTitle, clonedSolution, requestOptions,
+                  arcgis_clone_js.createSolutionStorymap(solutionStorymapTitle, clonedSolution, destinationRequestOptions,
                     settings.organization.orgUrl, null, "public")
                   .then(
                     storymap  => {
