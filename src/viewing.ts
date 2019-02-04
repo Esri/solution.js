@@ -35,6 +35,11 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
+export interface IDeployedSolutionItemAccess {
+  id: string,
+  url: string
+}
+
 /**
  * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
  *
@@ -104,6 +109,51 @@ export function getItemHierarchy (
 
   itemChildren(topLevelItemIds, hierarchy);
   return hierarchy;
+}
+
+export function createDeployedSolutionItem (
+  title: string,
+  solution: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  settings = {} as any,
+  access = "private"
+): Promise<IDeployedSolutionItemAccess> {
+  return new Promise((resolve, reject) => {
+    const item = {
+      itemType: "text",
+      name: null as string,
+      title,
+      type: "Solution",
+      typeKeywords: ["Solution", "Deployed"],
+      tags: ["Solutions"],
+      commentsEnabled: false
+    };
+    const data = {
+      templates: solution
+    };
+
+    mCommon.createItemWithData(item, data, requestOptions, settings.folderId, access)
+    .then(
+      createResponse => {
+        // Update its app URL
+        const orgUrl = (settings.organization && settings.organization.orgUrl) || "http://www.arcgis.com";
+        const deployedSolutionItemId = createResponse.id;
+        const deployedSolutionItemUrl = orgUrl + "/home/item.html?id=" + deployedSolutionItemId;
+        mCommon.updateItemURL(deployedSolutionItemId, deployedSolutionItemUrl, requestOptions)
+        .then(
+          response => {
+            const deployedSolutionItem:IDeployedSolutionItemAccess = {
+              id: deployedSolutionItemId,
+              url: deployedSolutionItemUrl
+            }
+            resolve(deployedSolutionItem);
+          },
+          () => reject()
+        );
+      },
+      () => reject()
+    );
+  });
 }
 
 /**
@@ -334,13 +384,13 @@ export function publishSolutionStorymapItem (
     .then(
       createResponse => {
         // Update its app URL
-        const solutionStorymapId = createResponse.id;
-        const solutionStorymapUrl = orgUrl + "/apps/MapSeries/index.html?appid=" + solutionStorymapId;
-        mCommon.updateItemURL(solutionStorymapId, solutionStorymapUrl, requestOptions)
+        const deployedSolutionItemId = createResponse.id;
+        const deployedSolutionItemUrl = orgUrl + "/apps/MapSeries/index.html?appid=" + deployedSolutionItemId;
+        mCommon.updateItemURL(deployedSolutionItemId, deployedSolutionItemUrl, requestOptions)
         .then(
           response => {
-            solutionStorymap.item.id = solutionStorymapId;
-            solutionStorymap.item.url = solutionStorymapUrl;
+            solutionStorymap.item.id = deployedSolutionItemId;
+            solutionStorymap.item.url = deployedSolutionItemUrl;
             resolve(solutionStorymap);
           },
           () => reject()

@@ -127,7 +127,7 @@
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           const settings = {
             solutionName: currentSolutionName,
-            folderId: null,
+            folderId: null,  // Have deploySolution create the folder for us
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
@@ -145,22 +145,22 @@
               var progressCallback =
                 _createProgressCallback(arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
-              arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions, settings, progressCallback)
+              arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions,
+                settings, progressCallback)
               .then(
                 clonedSolution => {
-                  var solutionStorymapTitle = 'Storymap about your solution';
-                  arcgis_clone_js.createSolutionStorymap(solutionStorymapTitle, clonedSolution, destinationRequestOptions,
-                    settings.organization.orgUrl, null, "public")
+                  arcgis_clone_js.createDeployedSolutionItem(currentSolutionName, clonedSolution,
+                    destinationRequestOptions, settings, "public")
                   .then(
-                    storymap  => {
+                    deployedSolutionItem  => {
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
                       document.getElementById('creating').style.display = 'none';
                       document.getElementById('createResults').style.display = 'block';
                       progress.hide();
 
                       document.getElementById('createDisplay').innerHTML =
-                        '<ul class="solutionList"><li><a href="' + storymap.item.url + '" target="_blank">' +
-                        solutionStorymapTitle + '</a></li></ul><br>' +
+                      '<ul class="solutionList"><li><a href="' + deployedSolutionItem.url + '" target="_blank">' +
+                        currentSolutionName + '</a></li></ul><br>' +
                         demoCommon.createHierarchyDisplay(clonedSolution,
                           arcgis_clone_js.getItemHierarchy(clonedSolution),
                           true, settings.organization.orgUrl + '/home/');
