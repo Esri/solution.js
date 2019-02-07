@@ -147,7 +147,23 @@ export function finalCallback (
  */
 export function getTimestamp (
 ): string {
-  return (new Date()).getTime().toString();
+  const now = new Date();
+  return padPositiveNum(now.getUTCFullYear(), 4) + padPositiveNum(now.getUTCMonth(), 2) +
+    padPositiveNum(now.getUTCDate(), 2) + "_" + padPositiveNum(now.getUTCHours(), 2) +
+    padPositiveNum(now.getUTCMinutes(), 2) + "_" + padPositiveNum(now.getUTCSeconds(), 2) +
+    padPositiveNum(now.getUTCMilliseconds(), 3);
+}
+
+function padPositiveNum (
+  n: number,
+  totalSize: number
+): string {
+  let numStr = n.toString();
+  const numPads = totalSize - numStr.length;
+  if (numPads > 0) {
+    numStr = "0".repeat(numPads) + numStr;  // TODO IE11 does not support repeat()
+  }
+  return numStr;
 }
 
 export function templatize (

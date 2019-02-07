@@ -80,6 +80,11 @@ export function initItemTemplateFromId (
           itemTemplate.item.item = mCommon.templatize(itemTemplate.item.item);
         }
 
+        // Convert relative thumbnail URL to an absolute one so that it can be preserved
+        // TODO disconnected deployment may not have access to the absolute URL
+        itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
+          itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
+
         // Request item data section
         const dataPromise = items.getItemData(itemId, requestOptions);
 
