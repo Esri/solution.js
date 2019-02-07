@@ -141,7 +141,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT')
+      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
