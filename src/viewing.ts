@@ -18,6 +18,7 @@ import * as mCommon from "./itemTypes/common";
 import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "./solution";
 import { IUserRequestOptions } from '@esri/arcgis-rest-auth';
+import { IItem } from '@esri/arcgis-rest-common-types';
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -114,18 +115,25 @@ export function getItemHierarchy (
 export function createDeployedSolutionItem (
   title: string,
   solution: mInterfaces.ITemplate[],
+  templateItem: IItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   access = "private"
 ): Promise<IDeployedSolutionItemAccess> {
   return new Promise((resolve, reject) => {
+    const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
+      templateItem.id + "/info/" + templateItem.thumbnail;
     const item = {
       itemType: "text",
       name: null as string,
       title,
+      description: templateItem.description,
+      tags: templateItem.tags,
+      snippet: templateItem.snippet,
+      thumbnailurl: thumbnailUrl,
+      accessInformation: templateItem.accessInformation,
       type: "Solution",
       typeKeywords: ["Solution", "Deployed"],
-      tags: ["Solutions"],
       commentsEnabled: false
     };
     const data = {
