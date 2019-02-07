@@ -42,7 +42,9 @@ define([
         authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
       };
       if (portal) {
-        requestOptions.portal = portal.replace('arcgis', 'ARCGIS');  // set portal after tweaking it to get it past arcgis-rest-js filter
+        requestOptions.portal = portal
+          .replace('http:', 'https:')
+          .replace(/arcgis/g, 'ARCGIS');  // set portal after tweaking it to get it past arcgis-rest-js filter
       }
       return requestOptions;
     },
