@@ -26,7 +26,8 @@
     "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "docs": "typedoc --target ES5 --out ./docs/src/ src/index.ts",
     "ver": "tsc -v",
-    "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts"
+    "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts",
+    "postinstall": "grunt install-hook"
   },
   "repository": {
     "type": "git",
