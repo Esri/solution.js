@@ -26,7 +26,6 @@ import * as mItemHelpers from '../src/utils/item-helpers';
 import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 import * as mWebMap from "../src/itemTypes/webmap";
-import * as mGenericModule from "../src/itemTypes/generic";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSettings } from "./lib/utils";
 import { ICustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
@@ -994,13 +993,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("should create Web Map in the root folder", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Map"));
       const settings = createMockSettings();
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(itemTemplate.key);
+      };
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"map1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
         '{"success":true,"id":"map1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("map1234567890");
@@ -1561,6 +1563,55 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    it("should create a non-empty Group", done => {
+      const templatePart = mockSolutions.getGroupTemplatePart(["wma1234567890", "map1234567890", "map1234567890"]);
+      const groupTemplate = mClassifier.initItemTemplateFromJSON(templatePart);
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(groupTemplate.key);
+      };
+      const settings = createMockSettings();
+
+      // Because we make the service name unique by appending a timestamp, set up a clock & user session
+      // with known results
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
+      const sessionWithMockedTime:IUserRequestOptions = {
+        authentication: createRuntimeMockUserSession(setMockDateTime(now))
+      };
+
+      const templateItemId = templatePart.itemId as string;
+      const expectedCreatedItemId = templateItemId.toUpperCase();
+      fetchMock
+      .post('path:/sharing/rest/community/createGroup',
+        '{"success":true,"group":{"id":"' + expectedCreatedItemId +
+        '","title":"Group_' + expected + '","owner":"casey"}}')
+      .mock('path:/sharing/rest/community/users/casey',
+        '{"username":"casey","id":"' + expectedCreatedItemId + '"}')
+      .post('path:/sharing/rest/search',
+        '{"query":"id: map1234567890 AND group: ' + expectedCreatedItemId + '",' +
+        '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
+      .mock('path:/sharing/rest/community/groups/' + expectedCreatedItemId + '',
+        '{"id":"' + expectedCreatedItemId + '","title":"My group","owner":"casey",' +
+        '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
+      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
+        '{"notSharedWith":[],"itemId":"map1234567890"}')
+      .post('path:/sharing/rest/content/users/casey/items/wma1234567890/share',
+        '{"notSharedWith":[],"itemId":"wma1234567890"}');
+      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime, progressCallback)
+      .then(
+        (createdItem:any) => {
+          expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.itemId as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.item.id as string).toEqual(expectedCreatedItemId);
+          expect(createdItem.dependencies.length).toEqual(3);
+          expect(createdItem.estimatedDeploymentCostFactor).toEqual(6);
+          done();
+        },
+        (error:any) => done.fail(error)
+      );
+    });
+
     it("should create an empty Group", done => {
       const templatePart = mockSolutions.getGroupTemplatePart();
       const groupTemplate = mClassifier.initItemTemplateFromJSON(templatePart);
@@ -1642,7 +1693,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle failure to add to Group", done => {
-      const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart(["map1234657890"]));
+      const groupTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getGroupTemplatePart(["map1234567890"]));
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -1658,14 +1709,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post('path:/sharing/rest/community/createGroup',
         '{"success":true,"group":{"id":"grp1234567890","title":"Group_' + expected + '","owner":"casey"}}')
       .mock('path:/sharing/rest/community/users/casey',
-        '{"username":"casey","id":"9e227333ba7a"}')
+        '{"username":"casey","id":"grp1234567890"}')
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
         '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
       .mock('path:/sharing/rest/community/groups/grp1234567890',
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
         '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
-      .post('path:/sharing/rest/content/users/casey/items/map1234657890/share', mockItems.get400Failure());
+      .post('path:/sharing/rest/content/users/casey/items/map1234567890/share', mockItems.get400Failure());
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
@@ -1680,13 +1731,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const itemTemplate =
         mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Web Mapping Application"));
       const settings = createMockSettings();
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(itemTemplate.key);
+      };
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"WMA1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
         '{"success":true,"id":"WMA1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("WMA1234567890");
@@ -1876,6 +1930,90 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("checks for item before attempting to access its properties", () => {
       const result = mClassifier.removeUndesirableItemProperties(null);
       expect(result).toBeNull();
+    });
+
+  });
+
+  describe("supporting routine: count relationships", () => {
+
+    it("should handle a layer with no relationships", () => {
+      const layers:any[] = [{
+        relationships: undefined
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(0);
+    });
+
+    it("should handle layers with no relationships", () => {
+      const layers:any[] = [{
+        relationships: []
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(0);
+    });
+
+    it("should handle layers with no relationships", () => {
+      const layers:any[] = [{
+        relationships: undefined
+      }, {
+        relationships: undefined
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(0);
+    });
+
+    it("should handle layers with no relationships", () => {
+      const layers:any[] = [{
+        relationships: []
+      }, {
+        relationships: []
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(0);
+    });
+
+    it("should handle layers with no relationships", () => {
+      const layers:any[] = [{
+        relationships: undefined
+      }, {
+        relationships: []
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(0);
+    });
+
+    it("should handle a layer with relationships 1", () => {
+      const layers:any[] = [{
+        relationships: [1]
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(1);
+    });
+
+    it("should handle a layer with relationships 2", () => {
+      const layers:any[] = [{
+        relationships: [1, 2]
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(2);
+    });
+
+    it("should handle a layer with relationships 1", () => {
+      const layers:any[] = [{
+        relationships: [1, 2, 3, 4, 5]
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(5);
+    });
+
+    it("should handle layers with relationships", () => {
+      const layers:any[] = [{
+        relationships: [1, 2]
+      }, {
+        relationships: [1]
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(3);
+    });
+
+    it("should handle layers with and without relationships", () => {
+      const layers:any[] = [{
+        relationships: undefined
+      }, {
+        relationships: [1, 2, 3]
+      }];
+      expect(mFeatureService.countRelationships(layers)).toEqual(3);
     });
 
   });
@@ -2414,7 +2552,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const group = mockSolutions.getGroupTemplatePart(["map1234567890"]);
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
-        '{"username":"casey","id":"9e227333ba7a"}')
+        '{"username":"casey","id":"grp1234567890"}')
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
         '"total":0,"start":1,"num":10,"nextStart":-1,"results":[]}')
@@ -2431,9 +2569,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should add an item to a group", done => {
       const group = mockSolutions.getGroupTemplatePart(["map1234567890"]);
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(group.key);
+      };
+
       fetchMock
       .mock('path:/sharing/rest/community/users/casey',
-        '{"username":"casey","id":"9e227333ba7a"}'
+        '{"username":"casey","id":"grp1234567890"}'
       )
       .post('path:/sharing/rest/search',
         '{"query":"id: map1234567890 AND group: grp1234567890",' +
@@ -2443,7 +2585,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share',
         '{"notSharedWith":[],"itemId":"map1234567890"}');
-      mGroup.addGroupMembers(group, MOCK_USER_REQOPTS)
+      mGroup.addGroupMembers(group, MOCK_USER_REQOPTS, progressCallback)
       .then(
         () => done(),
         error => done.fail(error)

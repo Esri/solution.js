@@ -249,6 +249,15 @@ export function addFeatureServiceLayersAndTables (
   });
 }
 
+export function countRelationships (
+  layers: any[]
+): number {
+  const reducer = (accumulator:number, currentLayer:any) =>
+    accumulator + (currentLayer.relationships ? currentLayer.relationships.length : 0);
+
+  return layers.reduce(reducer, 0);
+}
+
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
@@ -301,14 +310,11 @@ export function fleshOutFeatureService (
             properties.tables = results[1];
             itemTemplate.properties = properties;
 
-            const reducer = (accumulator:number, currentLayer:any) =>
-              accumulator + (currentLayer.relationships ? currentLayer.relationships.length : 0);
-
             itemTemplate.estimatedDeploymentCostFactor +=
-              properties.layers.length +              // layers
-              properties.layers.reduce(reducer, 0) +  // layer relationships
-              properties.tables.length +              // tables & estimated single relationship for each
-              properties.tables.reduce(reducer, 0);   // table relationships
+              properties.layers.length +               // layers
+              countRelationships(properties.layers) +  // layer relationships
+              properties.tables.length +               // tables & estimated single relationship for each
+              countRelationships(properties.tables);   // table relationships
 
             resolve();
           },
