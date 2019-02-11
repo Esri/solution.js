@@ -133,7 +133,7 @@ export function finalCallback (
   successful: boolean,
   progressCallback?: (update:IProgressUpdate) => void
 ): void {
-  progressCallback({
+  progressCallback && progressCallback({
     processId: key,
     status: successful ? "done" : "failed"
   });
@@ -145,10 +145,10 @@ export function finalCallback (
  * @return Timestamp
  * @protected
  */
-export function getTimestamp (
+export function getUTCTimestamp (
 ): string {
   const now = new Date();
-  return padPositiveNum(now.getUTCFullYear(), 4) + padPositiveNum(now.getUTCMonth(), 2) +
+  return padPositiveNum(now.getUTCFullYear(), 4) + padPositiveNum(now.getUTCMonth() + 1, 2) +
     padPositiveNum(now.getUTCDate(), 2) + "_" + padPositiveNum(now.getUTCHours(), 2) +
     padPositiveNum(now.getUTCMinutes(), 2) + "_" + padPositiveNum(now.getUTCSeconds(), 2) +
     padPositiveNum(now.getUTCMilliseconds(), 3);

@@ -157,7 +157,7 @@ export function deploySolution (
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
       // Interpolate template
-      itemTemplate.dependencies = itemTemplate.dependencies ? 
+      itemTemplate.dependencies = itemTemplate.dependencies ?
         mCommon.templatize(itemTemplate.dependencies) as string[] : [];
       itemTemplate = adlib.adlib(itemTemplate, settings);
 
@@ -178,7 +178,7 @@ export function deploySolution (
       runThroughChecklist();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getTimestamp() + ")";
+      const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getUTCTimestamp() + ")";
       const options = {
         title: folderName,
         authentication: requestOptions.authentication

@@ -101,7 +101,7 @@ export function deployItem (
   requestOptions: IUserRequestOptions,
   progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
-  progressCallback({
+  progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
     status: "starting",
@@ -119,7 +119,7 @@ export function deployItem (
     }
 
     // Create the item
-    progressCallback({
+    progressCallback && progressCallback({
       processId: itemTemplate.key,
       status: "creating",
     });
@@ -135,7 +135,7 @@ export function deployItem (
           itemTemplate = adlib.adlib(itemTemplate, settings);
 
           // Update the app URL
-          progressCallback({
+          progressCallback && progressCallback({
             processId: itemTemplate.key,
             status: "updating URL"
           });

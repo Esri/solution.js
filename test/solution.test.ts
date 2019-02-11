@@ -447,7 +447,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -467,7 +468,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -490,7 +493,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
-        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
+        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
         'ROWPermits_publiccomment_' + now + '/FeatureServer","itemId":"svc1234567890",' +
@@ -529,14 +532,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
-        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
+        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
         '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
@@ -559,14 +564,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       fetchMock
       .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
-        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (1555555555555)"}}')
+        '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", mockItems.get400Failure());
       mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
@@ -1072,7 +1079,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1106,7 +1115,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           // Check that we're appending a timestamp to the service name
           const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           const createServiceCallBody = createServiceCall[0][1].body as string;
-          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
+          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_" + expected + "%22%2C"))
             .toBeGreaterThan(0);
 
           expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
@@ -1125,7 +1134,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1157,9 +1168,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           // Check that we're appending a timestamp to the service name
           const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           const createServiceCallBody = createServiceCall[0][1].body as string;
-          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
+          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_" + expected + "%22%2C"))
             .toBeGreaterThan(0);
-
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
         },
@@ -1175,7 +1185,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1207,7 +1219,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           // Check that we're appending a timestamp to the service name
           const createServiceCall = fetchMock.calls("path:/sharing/rest/content/users/casey/createService");
           const createServiceCallBody = createServiceCall[0][1].body as string;
-          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_1555555555555%22%2C"))
+          expect(createServiceCallBody.indexOf("name%22%3A%22Name%20of%20an%20AGOL%20item_" + expected + "%22%2C"))
             .toBeGreaterThan(0);
           expect(createdItem.itemId).toEqual("svc1234567890");
           done();
@@ -1224,7 +1236,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1246,7 +1259,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1266,7 +1280,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1294,7 +1309,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1332,7 +1348,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1407,7 +1424,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1473,7 +1491,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1523,7 +1542,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1533,7 +1554,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
         '{"success":true,"group":{"id":"' + expectedCreatedItemId +
-        '","title":"Group_1555555555555","owner":"casey"}}');
+        '","title":"Group_' + expected + '","owner":"casey"}}');
       groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
       .then(
         (createdItem:any) => {
@@ -1552,7 +1573,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1575,7 +1597,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
@@ -1598,14 +1621,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      const now = 1555555555555;
+      const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7));  // 0-based month
+      const expected = "20190304_0506_07000";  // 1-based month
+      const now = date.getTime();
       const sessionWithMockedTime:IUserRequestOptions = {
         authentication: createRuntimeMockUserSession(setMockDateTime(now))
       };
 
       fetchMock
       .post('path:/sharing/rest/community/createGroup',
-        '{"success":true,"group":{"id":"grp1234567890","title":"Group_1555555555555","owner":"casey"}}')
+        '{"success":true,"group":{"id":"grp1234567890","title":"Group_' + expected + '","owner":"casey"}}')
       .mock('path:/sharing/rest/community/users/casey',
         '{"username":"casey","id":"9e227333ba7a"}')
       .post('path:/sharing/rest/search',
@@ -2054,11 +2079,57 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: timestamp", () => {
 
-    it("should return time 1541440408000", () => {
-      const expected = 1541440408000;
+    it("should return time 19951217_0324_00000", () => {
+      const date = new Date(Date.UTC(1995, 11, 17, 3, 24));  // 0-based month
+      const expected = "19951217_0324_00000";  // 1-based month
       jasmine.clock().install();
-      jasmine.clock().mockDate(new Date(expected));
-      expect(mCommon.getTimestamp()).toEqual(expected.toString());
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+    it("should return time 20050601_1559_23000", () => {
+      const date = new Date(Date.UTC(2005, 5, 1, 15, 59, 23));  // 0-based month
+      const expected = "20050601_1559_23000";  // 1-based month
+      jasmine.clock().install();
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+    it("should return time 20050601_0204_06000", () => {
+      const date = new Date(Date.UTC(2005, 5, 1, 2, 4, 6));  // 0-based month
+      const expected = "20050601_0204_06000";  // 1-based month
+      jasmine.clock().install();
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+    it("should return time 20190430_2003_04005", () => {
+      const date = new Date(Date.UTC(2019, 3, 30, 20, 3, 4));  // 0-based month
+      const expected = "20190430_2003_04000";  // 1-based month
+      jasmine.clock().install();
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+    it("should return time 20191231_2359_59000", () => {
+      const date = new Date(Date.UTC(2019, 11, 31, 23, 59, 59));  // 0-based month
+      const expected = "20191231_2359_59000";  // 1-based month
+      jasmine.clock().install();
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
+      jasmine.clock().uninstall();
+    });
+
+    it("should return time 20200101_0000_00000", () => {
+      const date = new Date(Date.UTC(2020, 0, 1, 0, 0, 0));  // 0-based month
+      const expected = "20200101_0000_00000";  // 1-based month
+      jasmine.clock().install();
+      jasmine.clock().mockDate(date);
+      expect(mCommon.getUTCTimestamp()).toEqual(expected.toString());
       jasmine.clock().uninstall();
     });
 

@@ -73,7 +73,7 @@ export function deployItem (
   requestOptions: IUserRequestOptions,
   progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
-  progressCallback({
+  progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
     status: "starting",
@@ -91,10 +91,10 @@ export function deployItem (
     }
 
     // Make the item name unique
-    options.item.name += "_" + mCommon.getTimestamp();
+    options.item.name += "_" + mCommon.getUTCTimestamp();
 
     // Create the item
-    progressCallback({
+    progressCallback && progressCallback({
       processId: itemTemplate.key,
       status: "creating",
     });
@@ -224,7 +224,7 @@ export function addFeatureServiceLayersAndTables (
                 featureServiceAdmin.addToServiceDefinition(itemTemplate.item.url + "/" + id, options)
                 .then(
                   () => {
-                    progressCallback({
+                    progressCallback && progressCallback({
                       processId: itemTemplate.key,
                       status: "updated relationship"
                     });
@@ -309,7 +309,7 @@ export function fleshOutFeatureService (
               properties.layers.reduce(reducer, 0) +  // layer relationships
               properties.tables.length +              // tables & estimated single relationship for each
               properties.tables.reduce(reducer, 0);   // table relationships
-              
+
             resolve();
           },
           () => reject({ success: false })
@@ -443,7 +443,7 @@ function updateFeatureServiceDefinition(
       featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
       .then(
         () => {
-          progressCallback({
+          progressCallback && progressCallback({
             processId: key,
             status: "added layer"
           });

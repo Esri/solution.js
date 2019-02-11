@@ -85,7 +85,7 @@ export function deployItem (
   requestOptions: IUserRequestOptions,
   progressCallback?: (update:IProgressUpdate) => void
 ): Promise<ITemplate> {
-  progressCallback({
+  progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
     status: "starting",
@@ -99,10 +99,10 @@ export function deployItem (
     };
 
     // Make the item title unique
-    options.group.title += "_" + mCommon.getTimestamp();
+    options.group.title += "_" + mCommon.getUTCTimestamp();
 
     // Create the item
-    progressCallback({
+    progressCallback && progressCallback({
       processId: itemTemplate.key,
       status: "creating",
     });
@@ -172,7 +172,7 @@ export function addGroupMembers (
           })
           .then(
             () => {
-              progressCallback({
+              progressCallback && progressCallback({
                 processId: itemTemplate.key,
                 status: "added group member"
               });
