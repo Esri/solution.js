@@ -26,7 +26,7 @@ import * as mItemHelpers from '../src/utils/item-helpers';
 import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 import * as mWebMap from "../src/itemTypes/webmap";
-import * as GenericModule from "../src/itemTypes/generic";
+import * as mGenericModule from "../src/itemTypes/generic";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSettings } from "./lib/utils";
 import { ICustomArrayLikeMatchers, CustomMatchers } from './customMatchers';
@@ -751,16 +751,39 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   describe("supporting routine: create item", () => {
 
+    it("should create a Generic in the root folder", done => {
+      const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Unsupported"));
+      const settings = createMockSettings();
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(itemTemplate.key);
+      };
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"GEN1234567890","folder":null}');
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
+      .then(
+        createdItem => {
+          expect(createdItem.itemId).toEqual("GEN1234567890");
+          done();
+        },
+        error => done.fail(error)
+      );
+    });
+
     it("should create a Dashboard in the root folder", done => {
       const itemTemplate = mClassifier.initItemTemplateFromJSON(mockSolutions.getItemTemplatePart("Dashboard"));
       const settings = createMockSettings();
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(itemTemplate.key);
+      };
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"DSH1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
         '{"success":true,"id":"DSH1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("DSH1234567890");
@@ -1075,6 +1098,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const templatePart = mockSolutions.getItemTemplatePart("Feature Service");
       const itemTemplate = mClassifier.initItemTemplateFromJSON(templatePart);
       const settings = createMockSettings();
+      function progressCallback(update:any): void {
+        expect(update.processId).toEqual(itemTemplate.key);
+      };
       settings.folderId = "fld1234567890";
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -1109,7 +1135,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime, progressCallback)
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
@@ -2077,6 +2103,26 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: finalCallback", () => {
+
+    it("should handle successful progress update", () => {
+      function progressCallback(update: any):void {
+        expect(update.processId).toEqual("key");
+        expect(update.status).toEqual("done");
+      }
+      mCommon.finalCallback("key", true, progressCallback);
+    });
+
+    it("should handle failed progress update", () => {
+      function progressCallback(update: any):void {
+        expect(update.processId).toEqual("key");
+        expect(update.status).toEqual("failed");
+      }
+      mCommon.finalCallback("key", false, progressCallback);
+    });
+
+  });
+
   describe("supporting routine: timestamp", () => {
 
     it("should return time 19951217_0324_00000", () => {
@@ -2187,8 +2233,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  // //???
-  /*
   describe("supporting routine: templatizeList", () => {
 
     it("should handle default parameter", () => {
@@ -2215,7 +2259,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
   });
-  */
 
   describe("supporting routine: getGroupContentsTranche", () => {
 

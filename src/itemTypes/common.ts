@@ -181,7 +181,7 @@ export function templatize (
   }
 }
 
-function templatizeList (
+export function templatizeList (
   ids: string[],
   param = "id"
 ): string[] {

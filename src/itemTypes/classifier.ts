@@ -173,10 +173,7 @@ export function initItemTemplateFromId (
                 itemTemplate = completionResponse;
 
                 itemTemplate.dependencies = removeDuplicates(
-                  mCommon.deTemplatize(
-                    dependenciesResponse
-                    .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
-                  ) as string[]
+                  mCommon.deTemplatize(dependenciesResponse) as string[]
                 );
                 resolve(itemTemplate);
               },
