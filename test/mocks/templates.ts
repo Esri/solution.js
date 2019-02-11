@@ -45,6 +45,7 @@ export function getItemTemplatePart (
       templatePart = getItemTemplateFundamentals(type, "dsh", dependencies, url);
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = null;
+      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Desktop Add In":
@@ -69,10 +70,13 @@ export function getItemTemplatePart (
         getLayerOrTableTemplate(0, "ROW Permits", "Feature Layer",
         [createItemTemplateRelationship(0, 1, "esriRelRoleOrigin")]
       ));
+      templatePart.estimatedDeploymentCostFactor += 2;
+
       const table1:any = removeEditFieldsInfoField(
         getLayerOrTableTemplate(1, "ROW Permit Comment", "Table",
         [createItemTemplateRelationship(0, 0, "esriRelRoleDestination")]
       ));
+      templatePart.estimatedDeploymentCostFactor += 2;
 
       const properties:mFeatureService.IFeatureServiceProperties = {
         service: getServiceTemplate([layer0], [table1]),
@@ -120,6 +124,7 @@ export function getItemTemplatePart (
         url || "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}");
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = null;
+      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Web Mapping Application":
@@ -127,6 +132,7 @@ export function getItemTemplatePart (
         url || "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}");
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = null;
+      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Workforce Project":
@@ -231,7 +237,7 @@ export function getGroupTemplatePart (
       "sortField": "title",
       "sortOrder": "asc",
       "isViewOnly": true,
-      "thumbnail": "ROWPermitManager.png",
+      "thumbnail": "https://www.arcgis.com/sharing/content/items/grp1234567890/info/ROWPermitManager.png",
       "access": "public",
       "capabilities": [],
       "isFav": false,
@@ -247,7 +253,8 @@ export function getGroupTemplatePart (
       },
       "collaborationInfo": {}
     },
-    "dependencies": dependencies
+    "dependencies": dependencies,
+    "estimatedDeploymentCostFactor": 3 + (dependencies ? dependencies.length : 0)
   };
 }
 
@@ -732,7 +739,8 @@ function getItemTemplateFundamentals (
       "description": "Description of an AGOL item",
       "tags": ["test"],
       "snippet": "Snippet of an AGOL item",
-      "thumbnail": "thumbnail/ago_downloaded.png",
+      "thumbnail": "https://www.arcgis.com/sharing/content/items/" +
+        typePrefix + "1234567890/info/thumbnail/ago_downloaded.png",
       "documentation": null,
       "extent": "{{initiative.extent:optional}}",
       "categories": [],
@@ -754,7 +762,8 @@ function getItemTemplateFundamentals (
       "commentsEnabled": false,
       "groupDesignations": null
     },
-    "dependencies": dependencies
+    "dependencies": dependencies,
+    "estimatedDeploymentCostFactor": 3 + (dependencies ? dependencies.length : 0)
   };
 }
 

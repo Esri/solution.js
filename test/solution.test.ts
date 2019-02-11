@@ -186,7 +186,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("for single item not containing WMA or feature service", done => {
+    it("for a group", done => {
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
       });

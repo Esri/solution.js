@@ -148,8 +148,14 @@ export function initItemTemplateFromId (
               key: createId(),
               item: removeUndesirableItemProperties(itemResponse),
               dependencies: [],
-              fcns: moduleMap["group"]
+              fcns: moduleMap["group"],
+              estimatedDeploymentCostFactor: 3  // minimal set is starting, creating, done|failed
             };
+
+            // Convert relative thumbnail URL to an absolute one so that it can be preserved
+            // TODO disconnected deployment may not have access to the absolute URL
+            itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
+              itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
 
             // Complete item
             const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
