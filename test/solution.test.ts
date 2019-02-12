@@ -2400,6 +2400,35 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: get estimated deployment cost", () => {
+
+    it("should handle empty solution", () => {
+      const cost = mSolution.getEstimatedDeploymentCost([]);
+      expect(cost).toEqual(0);
+    });
+
+    it("should handle solution with items 1", () => {
+      const cost = mSolution.getEstimatedDeploymentCost(mockSolutions.getWebMappingApplicationTemplate());
+      expect(cost).toEqual(
+        4 +  // Web Mapping Application
+        4 +  // Web Map
+        7    // Feature Service
+      );
+    });
+
+    it("should handle solution with items 2", () => {
+      const solution = mockSolutions.getWebMappingApplicationTemplate();
+      solution[1].estimatedDeploymentCostFactor = undefined;
+      const cost = mSolution.getEstimatedDeploymentCost(solution);
+      expect(cost).toEqual(
+        4 +  // Web Mapping Application
+        3 +  // Web Map
+        7    // Feature Service
+      );
+    });
+
+  });
+
   describe("supporting routine: add members to cloned group", () => {
 
     it("should handle empty group", done => {
