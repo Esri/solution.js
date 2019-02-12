@@ -24,7 +24,6 @@ import * as mGroup from "../src/itemTypes/group";
 import * as mInterfaces from "../src/interfaces";
 import * as mItemHelpers from '../src/utils/item-helpers';
 import * as mSolution from "../src/solution";
-import * as mViewing from "../src/viewing";
 import * as mWebMap from "../src/itemTypes/webmap";
 
 import { TOMORROW, setMockDateTime, createRuntimeMockUserSession, createMockSettings } from "./lib/utils";
@@ -453,7 +452,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder", mockItems.get400Failure());
+      .post("path:/sharing/rest/content/users/casey/createFolder", mockItems.get400Failure());
       mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
@@ -491,7 +490,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
@@ -539,7 +538,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
         '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}')
@@ -571,7 +570,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       };
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", mockItems.get400Failure());
       mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
@@ -606,7 +605,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
@@ -661,7 +660,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       })();
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService",
         '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
@@ -698,48 +697,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const settings = createMockSettings(undefined, folderId);
 
       fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+      .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
       mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
-      .then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-  });
-
-  describe("create solution storymap", () => {
-
-    it("should create a storymap using a specified folder and public access", done => {
-      const title = "Solution storymap";
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const folderId = "fld1234567890";
-
-      fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem",
-        '{"success":true,"id":"sto1234567890","folder":"fld1234567890"}')
-      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
-        '{"success":true,"id":"sto1234567890"}')
-      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/share",
-        '{"notSharedWith":[],"itemId":"sto1234567890"}');
-      mViewing.createSolutionStorymap(title, solutionItem, MOCK_USER_REQOPTS, orgUrl, folderId, "public")
-      .then(
-        () => done(),
-        error => done.fail(error)
-      );
-    });
-
-    it("should handle the failure to publish a storymap", done => {
-      const title = "Solution storymap";
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-
-      fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      mViewing.createSolutionStorymap(title, solutionItem, MOCK_USER_REQOPTS, orgUrl)
       .then(
         () => done.fail(),
         () => done()
@@ -2139,104 +2100,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         () => done(),
         () => done.fail()
       );
-    });
-
-  });
-
-  describe("supporting routine: solution storymap", () => {
-
-    it("should handle defaults to create a storymap", () => {
-      const title = "Solution storymap";
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-
-      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
-      expect(storymapItem).toBeDefined();
-    });
-
-    it("should handle defaults to publish a storymap", done => {
-      const title = "Solution storymap";
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
-
-      fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"sto1234567890","folder":null}')
-
-      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups/map1234567890?f=json&token=fake-token",
-        '{"id":"map1234567890","title":"ROW Permit Manager_1543341045131","isInvitationOnly":true,' +
-        '"owner":"ArcGISTeamLocalGovOrg","description":null,"snippet":"ROW",' +
-        '"tags":["ROW","source-84453ddeff8841e9aa2c25d5e1253cd7"],"phone":null,"sortField":"title",' +
-        '"sortOrder":"asc","isViewOnly":true,"thumbnail":null,"created":1543341045000,"modified":1543341045000,' +
-        '"access":"public","capabilities":[],"isFav":false,"isReadOnly":false,"protected":false,"autoJoin":false,' +
-        '"notificationsEnabled":false,"provider":null,"providerGroupName":null,' +
-        '"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},' +
-        '"collaborationInfo":{}}')
-      .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890" +
-        "?f=json&start=1&num=100&token=fake-token",
-        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
-
-      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
-        '{"success":true,"id":"sto1234567890"}');
-      mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
-      .then(
-        response => {
-          if (response) {
-            done();
-          } else {
-            done.fail();
-          }
-        },
-        response => {
-          done.fail();
-        }
-      );
-    });
-
-    it("should handle defaults to publish a storymap with failure to update storymap URL", done => {
-      const title = "Solution storymap";
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const storymapItem = mViewing.createSolutionStorymapItem(title, solutionItem);
-
-      fetchMock
-      .post("https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"sto1234567890","folder":null}')
-
-      .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups/map1234567890?f=json&token=fake-token",
-        '{"id":"map1234567890","title":"ROW Permit Manager_1543341045131","isInvitationOnly":true,' +
-        '"owner":"ArcGISTeamLocalGovOrg","description":null,"snippet":"ROW",' +
-        '"tags":["ROW","source-84453ddeff8841e9aa2c25d5e1253cd7"],"phone":null,"sortField":"title",' +
-        '"sortOrder":"asc","isViewOnly":true,"thumbnail":null,"created":1543341045000,"modified":1543341045000,' +
-        '"access":"public","capabilities":[],"isFav":false,"isReadOnly":false,"protected":false,"autoJoin":false,' +
-        '"notificationsEnabled":false,"provider":null,"providerGroupName":null,' +
-        '"userMembership":{"username":"ArcGISTeamLocalGovOrg","memberType":"owner","applications":0},' +
-        '"collaborationInfo":{}}')
-      .get("https://myorg.maps.arcgis.com/sharing/rest/content/groups/map1234567890" +
-        "?f=json&start=1&num=100&token=fake-token",
-        '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}')
-
-      .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update", mockItems.get400Failure());
-      mViewing.publishSolutionStorymapItem(storymapItem, MOCK_USER_REQOPTS, orgUrl)
-      .then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-    it("should handle solution items without a URL when creating a storymap", () => {
-      const title = "Solution storymap";
-      const solution:mInterfaces.ITemplate[] = [
-        mockSolutions.getItemTemplatePart("Dashboard")
-      ];
-
-      const storymapItem = mViewing.createSolutionStorymapItem(title, solution);
-      expect(storymapItem.type).toEqual("Web Mapping Application");
-      expect(storymapItem.item).toBeDefined();
-      expect(storymapItem.data).toBeDefined();
-    });
-
-    it("should get an untitled storymap item base", () => {
-      const storymapItemBase = mViewing.getStorymapItemFundamentals();
-      expect(storymapItemBase.title).toEqual("");
     });
 
   });

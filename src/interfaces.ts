@@ -18,6 +18,10 @@
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
+export interface ISolutionItem {
+  templates: ITemplate[];
+}
+
 /**
  * An AGOL item for serializing.
  */

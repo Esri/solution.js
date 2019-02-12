@@ -144,6 +144,11 @@ export function getAGOLItem (
   return item;
 }
 
+export function getSolutionItem (
+): any {
+  return getAGOLItemFundamentals("Solution", "sol");
+}
+
 export function getItemWithoutItemProp (
 ): any {
   const agolItem = getAGOLItem("Web Map");

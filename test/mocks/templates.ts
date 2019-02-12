@@ -22,6 +22,14 @@ import * as mockItems from "../../test/mocks/agolItems";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
+export function getSolution (
+  templates: mInterfaces.ITemplate[]
+): mInterfaces.ISolutionItem {
+  return {
+    templates
+  }
+}
+
 export function getItemTemplatePart (
   type: string,
   dependencies = [] as string[],
