@@ -14,13 +14,19 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
+import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "../common";
+import * as mCommon from "./common";
 import {getProp} from '../utils/object-helpers';
-import { ITemplate } from "../interfaces";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+/**
+ * The portion of a Dashboard app URL between the server and the app id.
+ * @protected
+ */
+export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#/";
 
 /**
  * The relevant elements of a Dashboard widget.
@@ -37,6 +43,28 @@ interface IDashboardWidget {
   type: string;
 }
 
+// -- Externals ------------------------------------------------------------------------------------------------------//
+
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 4;
+
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    // Templatize the app URL
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
+
+    resolve(itemTemplate);
+  });
+}
+
 /**
  * Gets the ids of the dependencies of an AGOL dashboard item.
  *
@@ -46,13 +74,13 @@ interface IDashboardWidget {
  * @protected
  */
 export function getDependencies (
-  fullItem: ITemplate,
+  itemTemplate: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
     const dependencies:string[] = [];
 
-    const widgets:IDashboardWidget[] = getProp(fullItem, "data.widgets");
+    const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
     if (widgets) {
       widgets.forEach((widget:any) => {
         if (widget.type === "mapWidget") {
@@ -65,24 +93,73 @@ export function getDependencies (
   });
 }
 
-/**
- * Swizzles the ids of the dependencies of an AGOL dashboard item.
- *
- * @param fullItem A dashboard item whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-export function swizzleDependencies (
-  fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
-): void {
-  // Swizzle its webmap(s)
-  const widgets:IDashboardWidget[] = getProp(fullItem, "data.widgets");
-  if (Array.isArray(widgets)) {
-    widgets.forEach(widget => {
-      if (widget.type === "mapWidget") {
-        widget.itemId = swizzles[widget.itemId].id;
-      }
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function deployItem (
+  itemTemplate: ITemplate,
+  settings: any,
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
+): Promise<ITemplate> {
+  progressCallback && progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
+  return new Promise((resolve, reject) => {
+    const options:items.IItemAddRequestOptions = {
+      item: itemTemplate.item,
+      folder: settings.folderId,
+      ...requestOptions
+    };
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
+    }
+
+    // Create the item
+    progressCallback && progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
     });
-  }
+    items.createItemInFolder(options)
+    .then(
+      createResponse => {
+        if (createResponse.success) {
+          // Add the new item to the settings
+          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+            id: createResponse.id
+          };
+          itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
+          itemTemplate = adlib.adlib(itemTemplate, settings);
+
+          // Update the app URL
+          progressCallback && progressCallback({
+            processId: itemTemplate.key,
+            status: "updating URL"
+          });
+          mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
+          .then(
+            () => {
+              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+              resolve(itemTemplate);
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject({ success: false });
+            }
+                );
+        } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+          reject({ success: false });
+        }
+      },
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
+    );
+  });
 }
+

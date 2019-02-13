@@ -14,37 +14,16 @@
  | limitations under the License.
  */
 
-import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
-import * as groups from "@esri/arcgis-rest-groups";
+import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
-import * as sharing from "@esri/arcgis-rest-sharing";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
-import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import * as mCommon from "./common";
-import * as mFullItem from "./fullItem";
-import * as mInterfaces from "../src/interfaces";
+import * as mCommon from "./itemTypes/common";
+import * as mClassifier from "./itemTypes/classifier";
+import * as mInterfaces from "./interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
-
-/**
- * Holds the extra information needed by feature services.
- */
-export interface IFeatureServiceProperties {
-  /**
-   * Service description
-   */
-  service: any;
-  /**
-   * Description for each layer
-   */
-  layers: any[];
-  /**
-   * Description for each table
-   */
-  tables: any[];
-}
+// -- Externals ------------------------------------------------------------------------------------------------------//
 
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
@@ -82,49 +61,10 @@ export function createSolution (
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
 
     // Get the items forming the solution
-    getFullItemHierarchy(solutionRootIds, requestOptions)
+    getItemTemplateHierarchy(solutionRootIds, requestOptions)
     .then(
-      solution => {
-        const adjustmentPromises:Array<Promise<void>> = [];
-
-        // Prepare the Solution by adjusting its items
-        solution.forEach(
-          template => {
-
-            // 1. remove unwanted properties
-            template.item = removeUndesirableItemProperties(template.item);
-
-            // 2. for web mapping apps,
-            //    a. generalize app URL
-            if (template.type === "Web Mapping Application") {
-              generalizeWebMappingApplicationURL(template);
-
-            // 3. for items missing their application URLs,
-            //    a. fill in URL
-            } else if (template.type === "Dashboard" || template.type === "Web Map") {
-              addGeneralizedApplicationURL(template);
-
-            // 4. for feature services,
-            //    a. fill in missing data
-            //    b. get layer & table details
-            //    c. generalize layer & table URLs
-            } else if (template.type === "Feature Service") {
-              adjustmentPromises.push(fleshOutFeatureService(template, requestOptions));
-            }
-          }
-        );
-
-        if (adjustmentPromises.length === 0) {
-          resolve(solution);
-        } else {
-          Promise.all(adjustmentPromises)
-          .then(
-            () => resolve(solution),
-            reject
-          );
-        }
-      },
-      reject
+      solution => resolve(solution),
+      () => reject({ success: false })
     );
   });
 }
@@ -152,6 +92,7 @@ export function publishSolution (
     title,
     type: "Solution",
     itemType: "text",
+    typeKeywords: ["Template"],
     access,
     listed: false,
     commentsEnabled: false
@@ -161,6 +102,16 @@ export function publishSolution (
   };
 
   return mCommon.createItemWithData(item, data, requestOptions, folderId, access);
+}
+
+export function getEstimatedDeploymentCost (
+  solution: mInterfaces.ITemplate[]
+): number {
+  // Get the total estimated cost of creating this solution
+  const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
+    accumulator + (currentTemplate.estimatedDeploymentCostFactor ?
+    currentTemplate.estimatedDeploymentCostFactor : 3);
+  return solution.reduce(reducer, 0);
 }
 
 /**
@@ -178,17 +129,13 @@ export function publishSolution (
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
-export function cloneSolution (
+export function deploySolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
-  orgUrl: string,
-  portalUrl: string,
-  solutionName = "",
-  folderId = null as string,
-  access = "private"
+  settings = {} as any,
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const swizzles:mCommon.ISwizzleHash = {};
     const clonedSolution:mInterfaces.ITemplate[] = [];
 
     // Don't bother creating folder if there are no items in solution
@@ -199,31 +146,28 @@ export function cloneSolution (
     // Run through the list of item ids in clone order
     const cloneOrderChecklist:string[] = topologicallySortItems(solution);
 
-    function runThroughChecklist () {
-      if (cloneOrderChecklist.length === 0) {
-        resolve(clonedSolution);
-        return;
-      }
+    // -------------------------------------------------------------------------
+    function runThroughChecklistInParallel () {
+      const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
+      cloneOrderChecklist.forEach(
+        id => awaitAllItems.push(deployWhenReady(solution, requestOptions, settings, id, progressCallback))
+      );
 
-      // Clone item at top of list
-      const itemId = cloneOrderChecklist.shift();
-      const template = getTemplateInSolution(solution, itemId);
-      createSwizzledItem(template, folderId, swizzles, requestOptions, orgUrl)
+      // Wait until all items have been created
+      Promise.all(awaitAllItems)
       .then(
-        clone => {
-          clonedSolution.push(clone);
-          runThroughChecklist();
-        },
-        reject
-      )
+        clonedSolutionItems => resolve(clonedSolutionItems),
+        () => reject({ success: false })
+      );
     }
+    // -------------------------------------------------------------------------
 
     // Use specified folder to hold the hydrated items to avoid name clashes
-    if (folderId) {
-      runThroughChecklist();
+    if (settings.folderId) {
+      runThroughChecklistInParallel();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      const folderName = (solutionName || "Solution") + " (" + getTimestamp() + ")";
+      const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getUTCTimestamp() + ")";
       const options = {
         title: folderName,
         authentication: requestOptions.authentication
@@ -231,15 +175,57 @@ export function cloneSolution (
       items.createFolder(options)
       .then(
         createdFolderResponse => {
-          folderId = createdFolderResponse.folder.id;
-          runThroughChecklist();
+          settings.folderId = createdFolderResponse.folder.id;
+          runThroughChecklistInParallel();
         },
-        error => {
-          reject(error.response.error.message)
-        }
+        () => reject({ success: false })
       );
     }
   });
+}
+
+export function deployWhenReady (
+  solution: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  settings: any,
+  itemId: string,
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
+): Promise<mInterfaces.ITemplate> {
+  settings[itemId] = {};
+  const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
+    const template = getTemplateInSolution(solution, itemId);
+    if (!template) {
+      reject({ success: false });
+    }
+
+    // Wait until all dependencies are deployed
+    const awaitDependencies = [] as Array<Promise<mInterfaces.ITemplate>>;
+    (template.dependencies || []).forEach(dependencyId => awaitDependencies.push(settings[dependencyId].def));
+    Promise.all(awaitDependencies)
+    .then(
+      () => {
+        // Prepare template
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
+
+        // Interpolate it
+        itemTemplate.dependencies = itemTemplate.dependencies ?
+          mCommon.templatize(itemTemplate.dependencies) as string[] : [];
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+
+        // Deploy it
+        itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
+        .then(
+          itemClone => resolve(itemClone),
+          () => reject({ success: false })
+        )
+      },
+      () => reject({ success: false })
+    );
+  });
+
+  // Save the deferred for the use of items that depend on this item being created first
+  settings[itemId].def = itemDef;
+  return itemDef;
 }
 
 /**
@@ -258,13 +244,15 @@ export function getTemplateInSolution (
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
 
 /**
- * A general server name to replace the organization URL in a Web Mapping Application's URL to itself;
- * name has to be acceptable to AGOL, otherwise it discards the URL.
+ * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
+ * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
+ * made before attempting to create the item.
  * @protected
  */
-export const PLACEHOLDER_SERVER_NAME:string = "https://arcgis.com";
+export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 
 /**
  * The portion of a Dashboard app URL between the server and the app id.
@@ -277,17 +265,6 @@ export const OPS_DASHBOARD_APP_URL_PART:string = "/apps/opsdashboard/index.html#
  * @protected
  */
 export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
-
-/**
- * Storage of a one-way relationship.
- * @protected
- */
-interface IRelationship {
-  /**
-   * Relationship id and the ids of the items that it is related to.
-   */
-  [id:string]: string[];
-}
 
 /**
  * A vertex used in the topological sort algorithm.
@@ -314,151 +291,6 @@ enum SortVisitColor {
 }
 
 /**
- * Replaces the application URL with a generalized form that omits the source server name and id
- * values in the URL query.
- * @param fullItem Item to update
- * @protected
- */
-export function addGeneralizedApplicationURL (
-  fullItem: mInterfaces.ITemplate
-): void {
-  // Create URL with a placeholder server name because otherwise AGOL makes URL null; don't include item id; e.g.,
-  // Dashboard: https://<PLACEHOLDER_SERVER_NAME>/apps/opsdashboard/index.html#/
-  // Web Map: https://<PLACEHOLDER_SERVER_NAME>/home/webmap/viewer.html?webmap=
-  if (fullItem.type === "Dashboard") {
-    fullItem.item.url = PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
-  } else if (fullItem.type === "Web Map") {
-    fullItem.item.url = PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART;
-  }
-}
-
-/**
- * Adds the layers and tables of a feature service to it and restores their relationships.
- *
- * @param fullItem Feature service
- * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @param requestOptions Options for the request
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function addFeatureServiceLayersAndTables (
-  fullItem: mInterfaces.ITemplate,
-  swizzles: mCommon.ISwizzleHash,
-  requestOptions: IUserRequestOptions,
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-
-    // Sort layers and tables by id so that they're added with the same ids
-    const properties = fullItem.properties as IFeatureServiceProperties;
-    const layersAndTables:any[] = [];
-
-    (properties.layers || []).forEach(function (layer) {
-      layersAndTables[layer.id] = {
-        item: layer,
-        type: "layer"
-      };
-    });
-
-    (properties.tables || []).forEach(function (table) {
-      layersAndTables[table.id] = {
-        item: table,
-        type: "table"
-      };
-    });
-
-    // Hold a hash of relationships
-    const relationships:IRelationship = {};
-
-    // Add the service's layers and tables to it
-    if (layersAndTables.length > 0) {
-      updateFeatureServiceDefinition(fullItem.item.id, fullItem.item.url, layersAndTables,
-        swizzles, relationships, requestOptions)
-      .then(
-        () => {
-          // Restore relationships for all layers and tables in the service
-          const awaitRelationshipUpdates:Array<Promise<void>> = [];
-          Object.keys(relationships).forEach(
-            id => {
-              awaitRelationshipUpdates.push(new Promise(resolveFn => {
-                const options = {
-                  params: {
-                    updateFeatureServiceDefinition: {
-                      relationships: relationships[id]
-                    }
-                  },
-                  ...requestOptions
-                };
-                featureServiceAdmin.addToServiceDefinition(fullItem.item.url + "/" + id, options)
-                .then(
-                  () => {
-                    resolve();
-                  },
-                  resolveFn);
-              }));
-            }
-          );
-          Promise.all(awaitRelationshipUpdates)
-          .then(
-            () => {
-              resolve();
-            },
-            reject
-          );
-        },
-        reject
-      );
-    } else {
-      resolve();
-    }
-  });
-}
-
-/**
- * Adds the members of a group to it.
- *
- * @param fullItem Group
- * @param swizzles Hash mapping Solution source id to id of its clone
- * @param requestOptions Options for the request
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function addGroupMembers (
-  fullItem: mInterfaces.ITemplate,
-  requestOptions: IUserRequestOptions
-):Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    // Add each of the group's items to it
-    if (fullItem.dependencies.length > 0) {
-      const awaitGroupAdds:Array<Promise<null>> = [];
-      fullItem.dependencies.forEach(depId => {
-        awaitGroupAdds.push(new Promise((resolve2, reject2) => {
-          sharing.shareItemWithGroup({
-            id: depId,
-            groupId: fullItem.item.id,
-            ...requestOptions
-          })
-          .then(
-            () => {
-              resolve2();
-            },
-            error => reject2(error.response.error.message)
-          );
-        }));
-      });
-      // After all items have been added to the group
-      Promise.all(awaitGroupAdds)
-      .then(
-        () => resolve(),
-        reject
-      );
-    } else {
-      // No items in this group
-      resolve();
-    }
-  });
-}
-
-/**
  * Creates an empty template.
  *
  * @param id AGOL id of item
@@ -476,273 +308,7 @@ function createPlaceholderTemplate (
   };
 }
 
-/**
- * Creates an item in a specified folder (except for Group item type).
- *
- * @param fullItem Item to be created; n.b.: this item is modified
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder; ignored for Group item type
- * @param swizzles Hash mapping Solution source id to id of its clone
- * @param requestOptions Options for the request
- * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
- * @return A promise that will resolve with the id of the created item
- * @protected
- */
-export function createSwizzledItem (
-  fullItem: mInterfaces.ITemplate,
-  folderId: string,
-  swizzles: mCommon.ISwizzleHash,
-  requestOptions: IUserRequestOptions,
-  orgUrl: string
-): Promise<mInterfaces.ITemplate> {
-  return new Promise<mInterfaces.ITemplate>((resolve, reject) => {
-
-    const clonedItem = JSON.parse(JSON.stringify(fullItem)) as mInterfaces.ITemplate;
-
-    // Swizzle item's dependencies
-    mFullItem.swizzleDependencies(clonedItem, swizzles);
-
-    // Feature Services
-    if (clonedItem.type === "Feature Service") {
-      const options = {
-        item: clonedItem.item,
-        folderId,
-        ...requestOptions
-      }
-      if (clonedItem.data) {
-        options.item.text = clonedItem.data;
-      }
-
-      // Make the item name unique
-      options.item.name += "_" + getTimestamp();
-
-      // Create the item
-      featureServiceAdmin.createFeatureService(options)
-      .then(
-        createResponse => {
-          // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
-            id: createResponse.serviceItemId,
-            url: createResponse.serviceurl
-          };
-          clonedItem.itemId = clonedItem.item.id = createResponse.serviceItemId;
-          clonedItem.item.url = createResponse.serviceurl;
-
-          // Add the feature service's layers and tables to it
-          addFeatureServiceLayersAndTables(clonedItem, swizzles, requestOptions)
-          .then(
-            () => resolve(clonedItem),
-            reject
-          );
-        },
-        reject
-      );
-
-    // Groups
-    } else if (clonedItem.type === "Group") {
-      const options = {
-        group: clonedItem.item,
-        ...requestOptions
-      };
-
-      // Make the item title unique
-      options.group.title += "_" + getTimestamp();
-
-      // Create the item
-      groups.createGroup(options)
-      .then(
-        createResponse => {
-          // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
-            id: createResponse.group.id
-          };
-          clonedItem.itemId = clonedItem.item.id = createResponse.group.id;
-
-          // Add the group's items to it
-          addGroupMembers(clonedItem, requestOptions)
-          .then(
-            () => resolve(clonedItem),
-            reject
-          );
-        },
-        error => reject(error.response.error.message)
-      );
-
-    // All other types
-    } else {
-      const options:items.IItemAddRequestOptions = {
-        item: clonedItem.item,
-        folder: folderId,
-        ...requestOptions
-      };
-      if (clonedItem.data) {
-        options.item.text = clonedItem.data;
-      }
-
-      // Create the item
-      items.createItemInFolder(options)
-      .then(
-        createResponse => {
-          // Add the new item to the swizzle list
-          swizzles[clonedItem.item.id] = {
-            id: createResponse.id
-          };
-          clonedItem.itemId = clonedItem.item.id = createResponse.id;
-
-          // Update the app URL of a dashboard, webmap, or web mapping app
-          if (clonedItem.type === "Dashboard" ||
-              clonedItem.type === "Web Map" ||
-              clonedItem.type === "Web Mapping Application") {
-            updateApplicationURL(clonedItem, requestOptions, orgUrl)
-            .then(
-              () => resolve(clonedItem),
-              error => reject(error.response.error.message)
-            );
-          } else {
-            resolve(clonedItem)
-          }
-        },
-        error => reject(error.response.error.message)
-      );
-    }
-
-  });
-}
-
-/**
- * Fills in missing data, including full layer and table definitions, in a feature services' definition.
- *
- * @param fullItem Feature service item, data, dependencies definition to be modified
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function fleshOutFeatureService (
-  fullItem: mInterfaces.ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const properties:IFeatureServiceProperties = {
-      service: {},
-      layers: [],
-      tables: []
-    };
-
-    // To have enough information for reconstructing the service, we'll supplement
-    // the item and data sections with sections for the service, full layers, and
-    // full tables
-
-    // Get the service description
-    const serviceUrl = fullItem.item.url;
-    request(serviceUrl + "?f=json", requestOptions)
-    .then(
-      serviceData => {
-        // Fill in some missing parts
-        // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["name"] = fullItem.item["name"] ||
-          getFirstUsableName(serviceData["layers"]) ||
-          getFirstUsableName(serviceData["tables"]) ||
-          "Feature Service";
-        serviceData["snippet"] = fullItem.item["snippet"];
-        serviceData["description"] = fullItem.item["description"];
-
-        properties.service = serviceData;
-
-        // Get the affiliated layer and table items
-        Promise.all([
-          getLayers(serviceUrl, serviceData["layers"], requestOptions),
-          getLayers(serviceUrl, serviceData["tables"], requestOptions)
-        ])
-        .then(
-          results => {
-            properties.layers = results[0];
-            properties.tables = results[1];
-            fullItem.properties = properties;
-            resolve();
-          },
-          reject
-        );
-      },
-      reject
-    );
-  });
-}
-
-/**
- * Simplifies a web mapping application's app URL for cloning.
- *
- * @param fullItem Web mapping application definition to be modified
- * @protected
- */
-function generalizeWebMappingApplicationURL (
-  fullItem: mInterfaces.ITemplate
-): void {
-  // Remove org base URL and app id, e.g.,
-  //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
-  // to
-  //   http://<PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid=
-  // Need to add placeholder server name because otherwise AGOL makes URL null
-  const orgUrl = fullItem.item.url.replace(fullItem.item.id, "");
-  const iSep = orgUrl.indexOf("//");
-  fullItem.item.url = PLACEHOLDER_SERVER_NAME +  // add placeholder server name
-    orgUrl.substr(orgUrl.indexOf("/", iSep + 2));
-}
-
-/**
- * Gets the name of the first layer in list of layers that has a name
- * @param layerList List of layers to use as a name source
- * @return The name of the found layer or an empty string if no layers have a name
- * @protected
- */
-function getFirstUsableName (
-  layerList: any[]
-): string {
-  let name = "";
-  // Return the first layer name found
-  if (Array.isArray(layerList) && layerList.length > 0) {
-    layerList.some(layer => {
-      if (layer["name"] !== "") {
-        name = layer["name"];
-        return true;
-      }
-      return false;
-    });
-  }
-  return name;
-}
-
-/**
- * Fetches the item, data, and resources of one or more AGOL items and their dependencies.
- *
- * ```typescript
- * import { ITemplate[], getFullItemHierarchy } from "../src/fullItemHierarchy";
- *
- * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
- * .then(
- *   (response:ITemplate[]) => {
- *     let keys = Object.keys(response);
- *     console.log(keys.length);  // => "6"
- *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
- *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
- *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
- *   },
- *   error => {
- *     // (should not see this as long as both of the above ids--real ones--stay available)
- *     console.log(error); // => "Item or group does not exist or is inaccessible: " + the problem id number
- *   }
- * );
- * ```
- *
- * @param rootIds AGOL id string or list of AGOL id strings
- * @param requestOptions Options for requesting information from AGOL
- * @param templates A hash of items already converted useful for avoiding duplicate conversions and
- * hierarchy tracing
- * @return A promise that will resolve with a hash by id of IFullItems;
- * if any id is inaccessible, a single error response will be produced for the set
- * of ids
- * @protected
- */
-export function getFullItemHierarchy (
+export function getItemTemplateHierarchy (
   rootIds: string | string[],
   requestOptions: IUserRequestOptions,
   templates?: mInterfaces.ITemplate[]
@@ -752,10 +318,7 @@ export function getFullItemHierarchy (
   }
 
   return new Promise((resolve, reject) => {
-    if (!rootIds || (Array.isArray(rootIds) && rootIds.length === 0)) {
-      reject(mFullItem.createUnavailableItemError(null));
-
-    } else if (typeof rootIds === "string") {
+    if (typeof rootIds === "string") {
       // Handle a single AGOL id
       const rootId = rootIds;
       if (getTemplateInSolution(templates, rootId)) {
@@ -763,18 +326,18 @@ export function getFullItemHierarchy (
 
       } else {
         // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mFullItem.getFullItem(rootId, requestOptions);
+        const getItemPromise = mClassifier.initItemTemplateFromId(rootId, requestOptions);
         templates.push(createPlaceholderTemplate(rootId));
 
         // Get the specified item
         getItemPromise
         .then(
-          fullItem => {
-            // Set the value keyed by the id
-            replaceTemplate(templates, fullItem.itemId, fullItem);
+          itemTemplate => {
+            // Set the value keyed by the id, replacing the placeholder
+            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
 
             // Trace item dependencies
-            if (fullItem.dependencies.length === 0) {
+            if (itemTemplate.dependencies.length === 0) {
               resolve(templates);
 
             } else {
@@ -782,10 +345,10 @@ export function getFullItemHierarchy (
               // recursive calls to this function
               const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
-              fullItem.dependencies.forEach(
+              itemTemplate.dependencies.forEach(
                 dependentId => {
                   if (!getTemplateInSolution(templates, dependentId)) {
-                    dependentDfds.push(getFullItemHierarchy(dependentId, requestOptions, templates));
+                    dependentDfds.push(getItemTemplateHierarchy(dependentId, requestOptions, templates));
                   }
                 }
               );
@@ -794,69 +357,33 @@ export function getFullItemHierarchy (
                 () => {
                   resolve(templates);
                 },
-                (error:ArcGISRequestError) => reject(error)
+                () => reject({ success: false })
               );
             }
           },
-          (error:ArcGISRequestError) => reject(error)
+          () => reject({ success: false })
         );
       }
 
-    } else {
+    } else if (Array.isArray(rootIds) && rootIds.length > 0) {
       // Handle a list of one or more AGOL ids by stepping through the list
       // and calling this function recursively
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
       rootIds.forEach(rootId => {
-        getHierarchyPromise.push(getFullItemHierarchy(rootId, requestOptions, templates));
+        getHierarchyPromise.push(getItemTemplateHierarchy(rootId, requestOptions, templates));
       });
       Promise.all(getHierarchyPromise)
       .then(
         () => {
           resolve(templates);
         },
-        (error:ArcGISRequestError) => reject(error)
+        () => reject({ success: false })
       );
+
+    } else {
+      reject({ success: false });
     }
-  });
-}
-
-/**
- * Gets the full definitions of the layers affiliated with a hosted service.
- *
- * @param serviceUrl URL to hosted service
- * @param layerList List of layers at that service
- * @param requestOptions Options for the request
- * @return A promise that will resolve with a list of the enhanced layers
- * @protected
- */
-function getLayers (
-  serviceUrl: string,
-  layerList: any[],
-  requestOptions: IUserRequestOptions
-): Promise<any[]> {
-  return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
-      resolve([]);
-    }
-
-    const requestsDfd:Array<Promise<any>> = [];
-    layerList.forEach(layer => {
-      requestsDfd.push(request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions));
-    });
-
-    // Wait until all layers are heard from
-    Promise.all(requestsDfd)
-    .then(
-      layers => {
-        // Remove the editFieldsInfo because it references fields that may not be in the layer/table
-        layers.forEach(layer => {
-          layer["editFieldsInfo"] = null;
-        });
-        resolve(layers);
-      },
-      reject
-    );
   });
 }
 
@@ -872,59 +399,19 @@ function getTemplateIndexInSolution (
   templates: mInterfaces.ITemplate[],
   id: string
 ): number {
+  const baseId = mCommon.deTemplatize(id);
   return templates.findIndex(
     template => {
-      return id === template.itemId;
+      return baseId === mCommon.deTemplatize(template.itemId);
     }
   );
-}
-
-/**
- * Creates a timestamp string using the current date and time.
- *
- * @return Timestamp
- * @protected
- */
-export function getTimestamp (): string {
-  return (new Date()).getTime().toString();
-}
-
-/**
- * Creates a copy of item base properties with properties irrelevant to cloning removed.
- *
- * @param item The base section of an item
- * @return Cloned copy of item without certain properties such as `created`, `modified`,
- *        `owner`,...; note that is is a shallow copy
- * @protected
- */
-export function removeUndesirableItemProperties (
-  item: any
-): any {
-  if (item) {
-    const itemSectionClone = {...item};
-    delete itemSectionClone.avgRating;
-    delete itemSectionClone.created;
-    delete itemSectionClone.guid;
-    delete itemSectionClone.lastModified;
-    delete itemSectionClone.modified;
-    delete itemSectionClone.numComments;
-    delete itemSectionClone.numRatings;
-    delete itemSectionClone.numViews;
-    delete itemSectionClone.orgId;
-    delete itemSectionClone.owner;
-    delete itemSectionClone.scoreCompleteness;
-    delete itemSectionClone.size;
-    delete itemSectionClone.uploaded;
-    return itemSectionClone;
-  }
-  return null;
 }
 
 /**
  * Replaces a template entry in a list of templates
  *
  * @param templates Templates list
- * @param id Id of item in templates list to find; if not found, no replacement is done
+ * @param id Id of item in templates list to find; if not found, no replacement is () => done()
  * @param template Replacement template
  * @return True if replacement was made
  * @protected
@@ -985,7 +472,7 @@ export function topologicallySortItems (
   // 3 return the linked list of vertices
 
   const buildList:string[] = [];  // list of ordered vertices--don't need linked list because
-                                // we just want relative ordering
+                                  // we just want relative ordering
 
   const verticesToVisit:ISortVertex = {};
   fullItems.forEach(function(template) {
@@ -1020,99 +507,3 @@ export function topologicallySortItems (
 
   return buildList;
 }
-
-/**
- * Updates the URL of an application to one usable for running the app.
- *
- * @param fullItem An item that has an application URL, e.g., a dashboard, webmap, or web mapping
- *                 application
- * @param requestOptions Options for the request
- * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function updateApplicationURL (
-  fullItem: mInterfaces.ITemplate,
-  requestOptions: IUserRequestOptions,
-  orgUrl: string
-): Promise<string> {
-  const url = orgUrl +
-        (fullItem.item.url.substr(PLACEHOLDER_SERVER_NAME.length)) +  // remove placeholder server name
-        fullItem.item.id;
-
-  // Update local copy
-  fullItem.item.url = url;
-
-  // Update AGOL copy
-  return mCommon.updateItemURL(fullItem.item.id, url, requestOptions)
-}
-
-/**
- * Updates a feature service with a list of layers and/or tables.
- *
- * @param serviceItemId AGOL id of feature service
- * @param serviceUrl URL of feature service
- * @param listToAdd List of layers and/or tables to add
- * @param swizzles Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @param relationships Hash mapping a layer's relationship id to the ids of its relationships
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve when the feature service has been updated
- * @protected
- */
-function updateFeatureServiceDefinition(
-  serviceItemId: string,
-  serviceUrl: string,
-  listToAdd: any[],
-  swizzles: mCommon.ISwizzleHash,
-  relationships: IRelationship,
-  requestOptions: IUserRequestOptions
-): Promise<void> {
-  // Launch the adds serially because server doesn't support parallel adds
-  return new Promise((resolve, reject) => {
-    if (listToAdd.length > 0) {
-      const toAdd = listToAdd.shift();
-
-      const item = toAdd.item;
-      const originalId = item.id;
-      delete item.serviceItemId;  // Updated by updateFeatureServiceDefinition
-
-      // Need to remove relationships and add them back individually after all layers and tables
-      // have been added to the definition
-      if (Array.isArray(item.relationships) && item.relationships.length > 0) {
-        relationships[originalId] = item.relationships;
-        item.relationships = [];
-      }
-
-      const options:featureServiceAdmin.IAddToServiceDefinitionRequestOptions = {
-        ...requestOptions
-      };
-
-      if (toAdd.type === "layer") {
-        item.adminLayerInfo = {  // ???
-          "geometryField": {
-            "name": "Shape",
-            "srid": 102100
-          }
-        };
-        options.layers = [item];
-      } else {
-        options.tables = [item];
-      }
-
-      featureServiceAdmin.addToServiceDefinition(serviceUrl, options)
-      .then(
-        () => {
-          updateFeatureServiceDefinition(serviceItemId, serviceUrl, listToAdd, swizzles, relationships, requestOptions)
-          .then(
-            () => resolve(),
-            reject
-          );
-        },
-        reject
-      );
-    } else {
-      resolve();
-    }
-  });
-}
-

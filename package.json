@@ -7,11 +7,13 @@
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "scripts": {
-    "build": "npm run build:node && npm run build:umd && npm run build:esm",
-    "build:esm": "tsc --module es2015 --outDir ./dist/esm --declaration",
-    "build:umd": "rollup -c ./umd-base-profile.js && rollup -c ./umd-production-profile.js",
+    "build": "npm run build:node && npm run build:umd && npm run build:esm && npm run build:tsumd && npm run build:webpack",
     "build:node": "tsc --module commonjs --outDir ./dist/node",
+    "build:umd": "rollup -c ./umd-base-profile.js && rollup -c ./umd-production-profile.js",
+    "build:esm": "tsc --module es2015 --outDir ./dist/esm --declaration",
     "build:tsumd": "tsc --module umd --outDir ./dist/tsumd",
+    "build:webpack": "webpack --config webpack.config.js",
+    "build:demos": "cd demos && tsc --module umd --outDir ./demo_common && cp ../dist/*.js ./lib",
     "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ./umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
@@ -24,7 +26,8 @@
     "test:node": "ts-node node_modules/jasmine/bin/jasmine --config=jasmine.json",
     "docs": "typedoc --target ES5 --out ./docs/src/ src/index.ts",
     "ver": "tsc -v",
-    "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts"
+    "docs:mocks": "typedoc --target ES5 --out ./docs/mocks/ test/mocks/index.ts",
+    "postinstall": "grunt install-hook"
   },
   "repository": {
     "type": "git",
@@ -38,13 +41,7 @@
   },
   "homepage": "https://github.com/Esri/arcgis-clone-js#readme",
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^1.14.3",
-    "@esri/arcgis-rest-common-types": "^1.14.3",
-    "@esri/arcgis-rest-feature-service-admin": "^1.14.3",
-    "@esri/arcgis-rest-groups": "^1.14.3",
-    "@esri/arcgis-rest-items": "^1.14.3",
-    "@esri/arcgis-rest-request": "^1.14.3",
-    "@esri/arcgis-rest-sharing": "^1.14.3",
+    "@types/adlib": "^3.0.0",
     "@types/arcgis-js-api": "^4.9.0",
     "@types/fetch-mock": "^6.0.4",
     "@types/isomorphic-fetch": "0.0.34",
@@ -80,10 +77,19 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^6.0.1",
     "typedoc": "^0.13.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1"
   },
   "dependencies": {
-    "adlib": "^2.3.1",
+    "@esri/arcgis-rest-auth": "^1.16.1",
+    "@esri/arcgis-rest-common-types": "^1.16.1",
+    "@esri/arcgis-rest-feature-service-admin": "^1.16.1",
+    "@esri/arcgis-rest-groups": "^1.16.1",
+    "@esri/arcgis-rest-items": "^1.16.1",
+    "@esri/arcgis-rest-request": "^1.16.1",
+    "@esri/arcgis-rest-sharing": "^1.16.1",
+    "adlib": "^3.0.0",
     "es6-promise": "^4.2.5",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",

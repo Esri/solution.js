@@ -14,7 +14,13 @@
  | limitations under the License.
  */
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
+// -- Externals ------------------------------------------------------------------------------------------------------//
+
+export interface ISolutionItem {
+  templates: ITemplate[];
+}
 
 /**
  * An AGOL item for serializing.
@@ -52,4 +58,27 @@ export interface ITemplate {
    * Miscellaneous item-specific properties
    */
   properties?: any;
+  /**
+   * Item-type-specific functions
+   */
+  fcns?: IItemTypeModule;
+
+
+  estimatedDeploymentCostFactor?: number;
+}
+
+export interface IItemTypeModule {
+  completeItemTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
+  getDependencies(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
+
+  deployItem(itemTemplate:ITemplate, settings:any, requestOptions:IUserRequestOptions,
+    progressCallback?: (update:IProgressUpdate) => void): Promise<ITemplate>;
+}
+
+export interface IProgressUpdate {
+  processId?: string,
+  type?: string,
+  status?: string,
+  activeStep?: string,
+  estimatedCostFactor?: number
 }

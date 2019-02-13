@@ -1,22 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset=utf-8>
-    <!--
-     | Copyright 2018 Esri
-     |
-     | Licensed under the Apache License, Version 2.0 (the "License");
-     | you may not use this file except in compliance with the License.
-     | You may obtain a copy of the License at
-     |
-     |    http://www.apache.org/licenses/LICENSE-2.0
-     |
-     | Unless required by applicable law or agreed to in writing, software
-     | distributed under the License is distributed on an "AS IS" BASIS,
-     | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     | See the License for the specific language governing permissions and
-     | limitations under the License.
-    -->
+  <meta charset=utf-8>
+  <!--
+   | Copyright 2019 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
   <title>Publish solution template</title>
   <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
 </head>
@@ -25,27 +25,30 @@
   <div id="page" style="display:none">
 
     <div class="section">
-      <div class="section-title">Credentials in publishing organization</div>
-      <label for="username">Username:</label> <input type="text" id="username">
-      <label for="password">Password:</label> <input type="password" id="password">
+      <div class="section-title">Credentials in source organization for Solution items</div>
+      <label for="srcUsername">Username:</label> <input type="text" id="srcUsername">
+      <label for="srcPassword">Password:</label> <input type="password" id="srcPassword">
+      <label for="srcPortal">Portal:</label>
+      <input type="text" id="srcPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+      <br/><br/>
+      <div class="section-title">Credentials in destination organization for Solution template</div>
+      <label for="destUsername">Username:</label> <input type="text" id="destUsername">
+      <label for="destPassword">Password:</label> <input type="password" id="destPassword">
+      <label for="destPortal">Portal:</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
     </div>
 
     <div class="section">
-      <div class="section-title">Items to package into a single Solution (along with their dependencies)</div>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="9bccd0fac5f3422c948e15c101c26934">
-        <label for="9bccd0fac5f3422c948e15c101c26934">ROW Permit Dashboard (Dashboard)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="8974dec44d794311a69f5562659587e6">
-        <label for="8974dec44d794311a69f5562659587e6">ROW Permit Manager (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="164831217e154849a731573e1855cb1a">
-        <label for="164831217e154849a731573e1855cb1a">ROW Permit Public Comment (Web Map)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="6fc5992522d34f26b2210d17835eea21">
-        <label for="6fc5992522d34f26b2210d17835eea21">ROW Permit Public Comment (Web Mapping Application)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="3ee671cf05594744864afe6c368d4a1a">
-        <label for="3ee671cf05594744864afe6c368d4a1a">PointFilterableComments (Service Definition)</label> <br>
-      <input type="checkbox" onclick="onCheckboxClicked()" name="435b1a7cb3a04885afba40c07a4f2fdf">
-        <label for="435b1a7cb3a04885afba40c07a4f2fdf">Climbing A Mountain (PNG)</label> <br>
-      <br>
-      <button id="createBtn" onclick="createSolutionFcn()" disabled="disabled">Create solution</button>
+      <div class="section-title">Drag & drop URLs of top-level items to package into a single Solution
+        (their dependencies are automatically included)</div>
+      <div><i>e.g., https://myorg.maps.arcgis.com/home/item.html?id=1af7db9a03b54d5793d6f79ce12ef030</i></div>
+      <div><i>Please only use drag & drop; editing the contents of the box below will not work</i></div>
+
+      <textarea id="itemLinksText" rows="2" cols="115" ondrop="onDrop(event)"></textarea>
+
+      <br/><br/>
+      <button id="clearBtn" onclick="clearList()">Clear list</button>
+      <button id="createBtn" onclick="createSolutionFcn()">Create solution</button>
     </div>
 
     <div id="create" class="section" style="display:none">
@@ -54,7 +57,8 @@
       <div id="createResults" style="display:none">
         <div id="createDisplay"></div>
         <br>
-        <label for="username">Name for published Solution</label> <input type="text" id="solutionName"><br>
+        <label for="solutionName">Name for published Solution:</label>
+        <input type="text" id="solutionName" style="width:300px" placeholder="Solution"><br>
         <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
       </div>
     </div>
@@ -70,96 +74,135 @@
   </div>
 
   <script src="../demo_common/require_2.3.6.min.js"></script>
+  <script src="../lib/arcgis-rest-auth.js"></script>
+  <script src="../lib/arcgis-rest-items.js"></script>
+  <script src="../lib/arcgis-rest-request.js"></script>
+  <script src="../lib/arcgis-clone-js.js"></script>
   <script>
   var createSolutionFcn = publishSolutionFcn = null;
 
-  /**
-   * Makes the 'Create' button's available if one or more source items are checked.
-   */
-  function onCheckboxClicked() {
-    document.getElementById('createBtn').disabled = getCheckedItems().length === 0 ? 'disabled' : '';
+  function clearList() {
+    document.getElementById('itemLinksText').textContent = '';
+    document.getElementById('itemLinksText').rows = 2;
+
+    document.getElementById('create').style.display = 'none';
+    document.getElementById('createResults').style.display = 'none';
+    document.getElementById('createDisplay').innerHTML = '';
+    document.getElementById('publishBtn').disabled = 'disabled';
+
+    document.getElementById('display').style.display = 'none';
+    document.getElementById('detailsResults').style.display = 'none';
+    document.getElementById('detailsDisplay').innerHTML = '';
   }
 
-  /**
-   * Gets the list of checked source items from the UI.
-   */
-  function getCheckedItems() {
-    var checkedItems = [];
-    Array.prototype.slice.call(document.getElementsByTagName('input')).forEach(function (item) {
-      if (item.type === 'checkbox' && item.checked) {
-        checkedItems.push(item.name);
-      }
-    });
-    return checkedItems;
-  }
-
-  requirejs.config({
-    baseUrl: './',
-    paths: {
-      // for the benefit of arcgis-clone-js
-      'tslib': '../demo_common/tslib',
-      // for the benefit of called libraries that use arcgis-rest-auth
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.14.3/dist/umd/auth.umd',
-      '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.14.3/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.14.3/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.14.3/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.14.3/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.14.3/dist/umd/sharing.umd'
+  // -----------------
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+  // "Any copyright is dedicated to the Public Domain. http://creativecommons.org/publicdomain/zero/1.0/"
+  function contains(list, value) {
+    for( var i = 0; i < list.length; ++i ) {
+      if(list[i] === value) return true;
     }
-  });
+    return false;
+  }
+  // -----------------
+
+  function onDrop(event) {
+    if (contains(event.dataTransfer.types, 'text/uri-list')) {
+      var data = event.dataTransfer.getData('text/uri-list');
+      if (event.target.textContent.length > 0) {
+        event.target.textContent += '\n';
+      }
+      event.target.textContent += data;
+      event.target.rows++;
+    }
+    event.preventDefault();
+  }
+
   requirejs([
-    '../../dist/tsumd/src/index',
     '../demo_common/common',
-    '@esri/arcgis-rest-items',
-    '@esri/arcgis-rest-request',
     '../demo_common/polyfills'
   ], function (
-    clone,
-    demoCommon,
-    items,
-    request
+    demoCommon
   ) {
     createSolutionFcn = createSolution;
     publishSolutionFcn = publishSolution;
-    var requestOptions, orgUrl, portalUrl, solution;
+    var requestOptions, templatesList, solutionName;
 
     document.getElementById('page').style.display = 'block';
 
+
     //----------------------------------------------------------------------------------------------------------------//
+
+    /**
+     * Gets the selected source item from the UI.
+     */
+    function getCheckedItem() {
+      var selection;
+      Array.prototype.slice.call(document.getElementsByTagName('input')).forEach(function (item) {
+        if (item.type === 'radio' && item.checked) {
+          selection = item;
+        }
+      });
+      return selection;
+    }
 
     /**
      * Creates a solution from a set of existing AGOL items
      */
     function createSolution() {
-      document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
 
-      // Prepare credentials for library
-      requestOptions = demoCommon.getRequestOptions('username', 'password');
+      document.getElementById('creating').style.display = 'block';
+      document.getElementById('createResults').style.display = 'none';
 
-      // Get the publisher's organization URL for creating links to source items
-      request.getPortal(null, requestOptions)
+      // Prepare credentials for source
+      sourceRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('srcUsername').value, document.getElementById('srcPassword').value,
+        document.getElementById('srcPortal').value + '/sharing/rest');
+
+      // Prepare credentials for destination
+      destinationRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('destUsername').value, document.getElementById('destPassword').value,
+        document.getElementById('destPortal').value + '/sharing/rest');
+
+      // Get the source's organization URL for creating links to source items
+      arcgis_rest_request.getPortal(null, sourceRequestOptions)
       .then(
         function (response) {
-          orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-          portalUrl = 'https://' + response.portalHostname + '/';
+          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          var portalUrl = 'https://' + response.portalHostname + '/';
 
           // Get the items to include in the solution, then generate the solution
-          var solutionRootIds = getCheckedItems();
+          var urlsList = document.getElementById('itemLinksText').textContent.split('\n');
+          var solutionRootIds = urlsList.map(
+            function (line) {
+              var urlSplit = line.split('/home/item.html?id=');
+              if (urlSplit.length === 2) {
+                return urlSplit[1];
+              }
+              return null;
+            }
+          ).filter(
+            function (id) {
+              return id;
+            }
+          );
 
           // Get the items forming the solution
-          clone.createSolution(solutionRootIds, requestOptions)
+          arcgis_clone_js.createSolution(solutionRootIds, sourceRequestOptions)
           .then(
-            createdSolution => {
-              solution = createdSolution;
+            response => {
+              templatesList = response;
 
               // Display the Solution
               document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-                demoCommon.createHierarchyDisplay(solution, clone.getItemHierarchy(solution), true, orgUrl);
+                demoCommon.createHierarchyDisplay(templatesList,
+                arcgis_clone_js.getItemHierarchy(templatesList), true, orgUrl);
+              document.getElementById('publishBtn').disabled = '';
             },
             error => {
-             document.getElementById('createDisplay').innerHTML = error.toString();
+              document.getElementById('createDisplay').innerHTML = JSON.stringify(error);
+              document.getElementById('publishBtn').disabled = 'disabled';
             }
           )
           .finally(
@@ -170,7 +213,8 @@
           );
 
         },
-        function () {
+        function (error) {
+          console.warn(JSON.stringify(error));
           document.getElementById('create').style.display = 'none';
           alert('Please refresh page and provide credentials');
         }
@@ -184,29 +228,38 @@
       document.getElementById('publishBtn').disabled = 'disabled';
       document.getElementById('display').style.display = 'block';
 
-      // Publish the Solution
-      var solutionName = document.getElementById('solutionName').value || 'Solution';
-      clone.publishSolution(solutionName, solution, requestOptions, null, 'public')
-      .then(function (publishResponse) {
-        var publishedSolutionId = publishResponse.id;
+      // Get the destinations's organization URL for creating links to source items
+      arcgis_rest_request.getPortal(null, destinationRequestOptions)
+      .then(
+        function (response) {
+          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          var portalUrl = 'https://' + response.portalHostname + '/';
 
-        items.getItemData(publishedSolutionId, requestOptions)
-        .then(
-          publishedSolution => {
-            document.getElementById('detailsDisplay').innerHTML =
-              demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
-              '<br>Published Solution item hierarchy:' +
-              demoCommon.createHierarchyDisplay(publishedSolution.templates,
-                clone.getItemHierarchy(publishedSolution.templates));
-          }
-        );
-      }, function (error) {
-         document.getElementById('detailsDisplay').innerHTML = error.toString();
-      })
-      .finally(() => {
-        document.getElementById('fetchingDetails').style.display = 'none';
-        document.getElementById('detailsResults').style.display = 'block';
-      });
+          // Publish the Solution
+          solutionName = document.getElementById('solutionName').value || 'Solution';
+          arcgis_clone_js.publishSolution(solutionName, templatesList, destinationRequestOptions, null, 'public')
+          .then(function (publishResponse) {
+            var publishedSolutionId = publishResponse.id;
+
+            arcgis_rest_items.getItemData(publishedSolutionId, destinationRequestOptions)
+            .then(
+              publishedSolution => {
+                document.getElementById('detailsDisplay').innerHTML =
+                  demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
+                  '<br>Published Solution item hierarchy:' +
+                  demoCommon.createHierarchyDisplay(publishedSolution.templates,
+                    arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
+              }
+            );
+          }, function (error) {
+             document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
+          })
+          .finally(() => {
+            document.getElementById('fetchingDetails').style.display = 'none';
+            document.getElementById('detailsResults').style.display = 'block';
+          });
+        }
+      );
     }
 
     //----------------------------------------------------------------------------------------------------------------//

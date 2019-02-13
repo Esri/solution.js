@@ -21,14 +21,6 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import * as mCommon from "./common";
 import { ITemplate, IProgressUpdate } from "../interfaces";
 
-// -------------------------------------------------------------------------------------------------------------------//
-
-/**
- * The portion of a Webmap URL between the server and the map id.
- * @protected
- */
-const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
-
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
@@ -38,49 +30,19 @@ export function completeItemTemplate (
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
   return new Promise(resolve => {
-    // Update the estimated cost factor to deploy this item
-    itemTemplate.estimatedDeploymentCostFactor = 4;
-
     // Common templatizations: extent, item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
-
-    // Templatize the app URL
-    itemTemplate.item.url =
-      mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + mCommon.templatize(itemTemplate.itemId);
-
-    // Templatize the map layer ids
-    if (itemTemplate.data) {
-      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
-      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
-    }
 
     resolve(itemTemplate);
   });
 }
 
-/**
- * Gets the ids of the dependencies of an AGOL webmap item.
- *
- * @param fullItem A webmap item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
 export function getDependencies (
   itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
+  requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise(resolve => {
-    let dependencies:string[] = [];
-
-    if (itemTemplate.data) {
-      dependencies = [
-        ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
-        ...getWebmapLayerIds(itemTemplate.data.tables)
-      ];
-    }
-
-    resolve(dependencies);
+    resolve([]);
   });
 }
 
@@ -125,22 +87,8 @@ export function deployItem (
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
           itemTemplate = adlib.adlib(itemTemplate, settings);
 
-          // Update the app URL
-          progressCallback && progressCallback({
-            processId: itemTemplate.key,
-            status: "updating URL"
-          });
-          mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
-          .then(
-            () => {
-              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
-              resolve(itemTemplate);
-            },
-            () => {
-              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-              reject({ success: false });
-            }
-          );
+          mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+          resolve(itemTemplate);
         } else {
           mCommon.finalCallback(itemTemplate.key, false, progressCallback);
           reject({ success: false });
@@ -150,47 +98,7 @@ export function deployItem (
         mCommon.finalCallback(itemTemplate.key, false, progressCallback);
         reject({ success: false });
       }
-    )
+    );
   });
 }
 
-// -- Internals ------------------------------------------------------------------------------------------------------//
-// (export decoration is for unit testing)
-
-/**
- * Extracts the AGOL id or URL for each layer or table object in a list.
- *
- * @param layerList List of map layers or tables
- * @return List containing id of each layer or table that has an itemId
- * @protected
- */
-export function getWebmapLayerIds (
-  layerList = [] as any[]
-): string[] {
-  return layerList.reduce(
-    (ids:string[], layer:any) => {
-      const itemId = layer.itemId as string;
-      if (itemId) {
-        ids.push(itemId);
-      }
-      return ids;
-    },
-    [] as string[]
-  );
-}
-
-export function templatizeWebmapLayerIdsAndUrls (
-  layerList = [] as any[]
-): void {
-  layerList
-  .filter(
-    (layer:any) => !!layer.itemId
-  )
-  .forEach(
-    (layer:any) => {
-      const layerId = layer.url.substr((layer.url as string).lastIndexOf("/"));
-      layer.itemId = mCommon.templatize(layer.itemId);
-      layer.url = mCommon.templatize(mCommon.deTemplatize(layer.itemId), "url") + layerId;
-    }
-  );
-}

@@ -14,21 +14,55 @@
  | limitations under the License.
  */
 
+// This file contains examples of items of the type one would expect to get from the AGOL REST API.
+
 // -- Exports -------------------------------------------------------------------------------------------------------//
+
+export function get200Failure (
+): any {
+  return {
+    "success": false
+  };
+}
+
+export function get400Failure (
+): any {
+  return {
+    "error": {
+      "code": 400,
+      "messageCode": "CONT_0001",
+      "message": "Item does not exist or is inaccessible.",
+      "details": []
+    }
+  };
+}
+
+export function get400FailureResponse (
+): any {
+  return {
+    "name":  "",
+    "message": "400: Item or group does not exist or is inaccessible: fail1234567890",
+    "originalMessage": "",
+    "code": 400,
+    "response": {
+      "error": {
+        "code": 400,
+        "message": "Item or group does not exist or is inaccessible: fail1234567890",
+        "details": [
+          "Item or group does not exist or is inaccessible: fail1234567890"
+        ]
+      }
+    },
+    "url": "",
+    "options": null
+  };
+}
 
 export function getAGOLItem (
   type?: string,
   url = ""
 ): any {
-  let item:any = {
-    "name":  "",
-    "message": "Item or group does not exist or is inaccessible: fail1234567890",
-    "originalMessage": "",
-    "code": "400",
-    "response": "",
-    "url": "",
-    "options": null
-  };
+  let item:any = get400FailureResponse();
 
   // Supported item types
   switch (type) {
@@ -43,8 +77,7 @@ export function getAGOLItem (
       break;
 
     case "Dashboard":
-      item = getAGOLItemFundamentals(type, "dsh",
-        url || "https://arcgis.com/apps/opsdashboard/index.html#/");
+      item = getAGOLItemFundamentals(type, "dsh", url || null);
       break;
 
     case "Desktop Add In":
@@ -92,27 +125,42 @@ export function getAGOLItem (
       break;
 
     case "Web Map":
-      item = getAGOLItemFundamentals(type, "map",
-        url || "https://arcgis.com/home/webmap/viewer.html?webmap=");
+      item = getAGOLItemFundamentals(type, "map", url || null);
       break;
 
     case "Web Mapping Application":
       item = getAGOLItemFundamentals(type, "wma",
-        url || "https://arcgis.com/apps/CrowdsourcePolling/index.html?appid=");
+        url || "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890");
       break;
 
     case "Workforce Project":
       break;
 
+    case "Unsupported":
+      item = getAGOLItemFundamentals(type, "uns");
+      break;
   }
 
   return item;
+}
+
+export function getSolutionItem (
+): any {
+  return getAGOLItemFundamentals("Solution", "sol");
+}
+
+export function getItemWithoutItemProp (
+): any {
+  const agolItem = getAGOLItem("Web Map");
+  delete agolItem.item;
+  return agolItem;
 }
 
 export function getTrimmedAGOLItem (
 ): any {
   const item = getAGOLItemFundamentals("Web Mapping Application", "wma",
     "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21");
+
   delete item.avgRating;
   delete item.created;
   delete item.guid;
@@ -126,10 +174,11 @@ export function getTrimmedAGOLItem (
   delete item.scoreCompleteness;
   delete item.size;
   delete item.uploaded;
+
   return item;
 }
 
-export function getNoNameFeatureServiceItem (
+export function getNoNameAGOLFeatureServiceItem (
 ): any {
   const item = getAGOLItem("Feature Service");
   item.name = null;
@@ -139,14 +188,7 @@ export function getNoNameFeatureServiceItem (
 export function getAGOLItemData (
   type?: string
 ): any {
-  let data:any = {
-    "error": {
-      "code": 400,
-      "messageCode": "CONT_0001",
-      "message": "Item does not exist or is inaccessible.",
-      "details": []
-    }
-  };
+  let data:any = get400Failure();
 
   // Supported item types
   switch (type) {
@@ -240,11 +282,15 @@ export function getAGOLItemData (
       data = {
         "tables": [{
           "id": 1,
-          "popupInfo": {}
+          "popupInfo": {
+            "title": "table 1"
+          }
         }],
         "layers": [{
           "id": 0,
-          "popupInfo": {},
+          "popupInfo": {
+            "title": "layer 0"
+          },
           "layerDefinition": {
             "defaultVisibility": true
           }
@@ -356,22 +402,41 @@ export function getAGOLItemData (
     case "Workforce Project":
       break;
 
+    case "Unsupported":
+      data = {};
+      break;
   }
 
+  return data;
+}
+
+export function getAGOLItemDataWMAGroup (
+): any {
+  const data = getAGOLItemData("Web Mapping Application");
+  data.values.group = data.values.webmap;
+  delete data.values.webmap;
+  return data;
+}
+
+export function getAGOLItemDataWMANoWebmapOrGroup (
+): any {
+  const data = getAGOLItemData("Web Mapping Application");
+  delete data.folderId;
+  delete data.values.webmap;
+  return data;
+}
+
+export function getItemDataWidgetlessDashboard (
+): any {
+  const data = getAGOLItemData("Dashboard");
+  data.widgets = null;
   return data;
 }
 
 export function getAGOLItemResources (
   testCase?: string,
 ): any {
-  let resources:any = {
-    "error": {
-      "code": 400,
-      "messageCode": "CONT_0001",
-      "message": "Item does not exist or is inaccessible.",
-      "details": []
-    }
-  };
+  let resources:any = get400Failure();
 
   // Supported item types
   switch (testCase) {
@@ -451,6 +516,185 @@ export function getAGOLGroupContentsList (
     group.items.push("itm" + group.items.length);
   }
   return group;
+}
+
+export function getAGOLService (
+  layers = [] as any,
+  tables = [] as any
+): any {
+  const service:any = {
+    "currentVersion": 10.61,
+    "serviceItemId": "svc1234567890",
+    "isView": true,
+    "isUpdatableView": true,
+    "sourceSchemaChangesAllowed": true,
+    "serviceDescription": "",
+    "hasVersionedData": false,
+    "supportsDisconnectedEditing": false,
+    "hasStaticData": false,
+    "maxRecordCount": 1000,
+    "supportedQueryFormats": "JSON",
+    "supportsVCSProjection": false,
+    "capabilities": "Create,Query,Editing",
+    "description": "",
+    "copyrightText": "",
+    "spatialReference": {
+      "wkid": 102100,
+      "latestWkid": 3857
+    },
+    "initialExtent": {
+      "xmin": -14999999.999989873,
+      "ymin": 2699999.9999980442,
+      "xmax": -6199999.9999958146,
+      "ymax": 6499999.99999407,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "fullExtent": {
+      "xmin": -14999999.999989873,
+      "ymin": 2699999.9999980442,
+      "xmax": -6199999.9999958146,
+      "ymax": 6499999.99999407,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "allowGeometryUpdates": true,
+    "units": "esriMeters",
+    "supportsAppend": true,
+    "syncEnabled": false,
+    "supportsApplyEditsWithGlobalIds": true,
+    "editorTrackingInfo": {
+      "enableEditorTracking": true,
+      "enableOwnershipAccessControl": false,
+      "allowOthersToQuery": true,
+      "allowOthersToUpdate": true,
+      "allowOthersToDelete": true,
+      "allowAnonymousToQuery": true,
+      "allowAnonymousToUpdate": true,
+      "allowAnonymousToDelete": true
+    },
+    "xssPreventionInfo": {
+      "xssPreventionEnabled": true,
+      "xssPreventionRule": "InputOnly",
+      "xssInputRule": "rejectInvalid"
+    },
+    "layers": [],
+    "tables": []
+  };
+
+  function addCondensedFormOfLayer (layersOrTables: any[], serviceLayerList: any[]) {
+    layersOrTables.forEach(
+      layer => {
+        serviceLayerList.push({
+          "id": layer.id,
+          "name": layer.name,
+          "parentLayerId": -1,
+          "defaultVisibility": true,
+          "subLayerIds": null,
+          "minScale": 0,
+          "maxScale": 0,
+          "geometryType": "esriGeometryPoint"
+        });
+      }
+    );
+  }
+
+  addCondensedFormOfLayer(layers, service.layers);
+  addCondensedFormOfLayer(tables, service.tables);
+
+  return service;
+}
+
+export function getAGOLLayerOrTable (
+  id: number,
+  name: string,
+  type: string,
+  relationships = [] as any
+): any {
+  return {
+    "currentVersion": 10.61,
+    "id": id,
+    "name": name,
+    "type": type,
+    "serviceItemId": "svc1234567890",
+    "isView": true,
+    "isUpdatableView": true,
+    "sourceSchemaChangesAllowed": true,
+    "displayField": "appname",
+    "description": "PermitApplication",
+    "copyrightText": "",
+    "defaultVisibility": true,
+    "editFieldsInfo": {
+      "creationDateField": "CreationDate",
+      "creatorField": "Creator",
+      "editDateField": "EditDate",
+      "editorField": "Editor"
+    },
+    "editingInfo": {
+      "lastEditDate": 1538579807130
+    },
+    "relationships": relationships,
+    "geometryType": "esriGeometryPoint",
+    "minScale": 0,
+    "maxScale": 0,
+    "extent": {
+      "xmin": -14999999.999989873,
+      "ymin": -13315943.826968452,
+      "xmax": 1604565.8194646926,
+      "ymax": 6499999.99999407,
+      "spatialReference": {
+        "wkid": 102100,
+        "latestWkid": 3857
+      }
+    },
+    "allowGeometryUpdates": true,
+    "hasAttachments": true,
+    "viewSourceHasAttachments": false,
+    "attachmentProperties": [{
+      "name": "name",
+      "isEnabled": true
+    }, {
+      "name": "size",
+      "isEnabled": true
+    }, {
+      "name": "contentType",
+      "isEnabled": true
+    }, {
+      "name": "keywords",
+      "isEnabled": true
+    }],
+    "objectIdField": "OBJECTID",
+    "uniqueIdField": {
+      "name": "OBJECTID",
+      "isSystemMaintained": true
+    },
+    "globalIdField": "globalid",
+    "capabilities": "Create,Query,Editing",
+    "viewDefinitionQuery": "status = 'BoardReview'",
+    "definitionQuery": "status = 'BoardReview'"
+  };
+}
+
+export function createAGOLRelationship (
+  id: number,
+  relatedTableId: number,
+  role: string
+): any {
+  const relationship:any = {
+    "id": id,
+    "name": "",
+    "relatedTableId": relatedTableId,
+    "cardinality": "esriRelCardinalityOneToMany",
+    "role": role,
+    "": "globalid",
+    "composite": true
+  };
+  relationship.keyField = role === "esriRelRoleOrigin" ? "globalid" : "parentglobalid";
+  return relationship;
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//

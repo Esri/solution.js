@@ -14,14 +14,15 @@
  | limitations under the License.
  */
 
- import {
-   hasTypeKeyword,
-   hasAnyKeyword,
-   parseIdFromUrl
- } from '../../src/utils/item-helpers';
+import {
+  createId,
+  hasTypeKeyword,
+  hasAnyKeyword,
+  parseIdFromUrl
+} from '../../src/utils/item-helpers';
 
 describe('item-helpers', () => {
-  
+
   describe('hasKeyword', () => {
     it('accepts a model', () => {
       const m = {
@@ -74,6 +75,11 @@ describe('item-helpers', () => {
     });
   });
 
+  describe('createId', () => {
+    it("should accept custom prefix character", () => {
+      expect(createId("x").substr(0, 1)).toEqual("x");
+    });
+  });
 
   describe('parseIdFromUrl', () => {
     it('works for common types', () => {

@@ -1,22 +1,22 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset=utf-8>
-    <!--
-     | Copyright 2018 Esri
-     |
-     | Licensed under the Apache License, Version 2.0 (the "License");
-     | you may not use this file except in compliance with the License.
-     | You may obtain a copy of the License at
-     |
-     |    http://www.apache.org/licenses/LICENSE-2.0
-     |
-     | Unless required by applicable law or agreed to in writing, software
-     | distributed under the License is distributed on an "AS IS" BASIS,
-     | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     | See the License for the specific language governing permissions and
-     | limitations under the License.
-    -->
+  <meta charset=utf-8>
+  <!--
+   | Copyright 2018 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
   <title>View solution template</title>
   <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
 </head>
@@ -43,6 +43,10 @@
   </div>
 
   <script src="../demo_common/require_2.3.6.min.js"></script>
+  <script src="../lib/arcgis-rest-auth.js"></script>
+  <script src="../lib/arcgis-rest-items.js"></script>
+  <script src="../lib/arcgis-rest-request.js"></script>
+  <script src="../lib/arcgis-clone-js.js"></script>
   <script>
   var showSolutionFcn = null;
 
@@ -57,28 +61,11 @@
     showSolutionFcn(currentSolutionId);
   }
 
-  requirejs.config({
-    baseUrl: './',
-    paths: {
-      // for the benefit of arcgis-clone-js
-      'tslib': '../demo_common/tslib',
-      // for the benefit of called libraries that use arcgis-rest-auth
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.14.3/dist/umd/auth.umd',
-      '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.14.3/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.14.3/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.14.3/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.14.3/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.14.3/dist/umd/sharing.umd'
-    }
-  });
   requirejs([
     '../demo_common/common',
-    '@esri/arcgis-rest-items',
     '../demo_common/polyfills'
   ], function (
-    demoCommon,
-    items
+    demoCommon
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
 

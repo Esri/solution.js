@@ -14,13 +14,33 @@
  | limitations under the License.
  */
 
+import * as adlib from "adlib";
 import * as groups from "@esri/arcgis-rest-groups";
+import * as sharing from "@esri/arcgis-rest-sharing";
 import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-import { ITemplate } from "../interfaces";
+import * as mCommon from "./common";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -- Externals ------------------------------------------------------------------------------------------------------//
+//
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 3;
+
+    // Common templatizations: item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    resolve(itemTemplate);
+  });
+}
 
 /**
  * Gets the ids of the dependencies (contents) of an AGOL group.
@@ -31,28 +51,152 @@ import { ITemplate } from "../interfaces";
  * @protected
  */
 export function getDependencies (
-  fullItem: ITemplate,
+  itemTemplate: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingRequest:IPagingParamsRequestOptions = {
       paging: {
-        start: 0,
+        start: 1,
         num: 100
       },
       ...requestOptions
     };
 
     // Fetch group items
-    getGroupContentsTranche(fullItem.item.id, pagingRequest)
+    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
     .then(
-      contents => resolve(contents),
-      reject
+      contents => {
+        // Update the estimated cost factor to deploy this item
+        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
+
+        resolve(contents);
+      },
+      () => reject({ success: false })
+    );
+  });
+}
+
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+export function deployItem (
+  itemTemplate: ITemplate,
+  settings: any,
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
+): Promise<ITemplate> {
+  progressCallback && progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
+  return new Promise((resolve, reject) => {
+    const options = {
+      group: itemTemplate.item,
+      ...requestOptions
+    };
+
+    // Make the item title unique
+    options.group.title += "_" + mCommon.getUTCTimestamp();
+
+    // Create the item
+    progressCallback && progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
+    groups.createGroup(options)
+    .then(
+      createResponse => {
+        if (createResponse.success) {
+          // Add the new item to the settings
+          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+            id: createResponse.group.id
+          };
+          itemTemplate.itemId = createResponse.group.id;
+          itemTemplate = adlib.adlib(itemTemplate, settings);
+
+          // Add the group's items to it
+          addGroupMembers(itemTemplate, requestOptions, progressCallback)
+          .then(
+            () => {
+              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+              resolve(itemTemplate);
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject({ success: false });
+            }
+                );
+        } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+          reject({ success: false });
+        }
+      },
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
     );
   });
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+
+/**
+ * Adds the members of a group to it.
+ *
+ * @param itemTemplate Group
+ * @param swizzles Hash mapping Solution source id to id of its clone
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function addGroupMembers (
+  itemTemplate: ITemplate,
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
+):Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    // Add each of the group's items to it
+    if (itemTemplate.dependencies.length > 0) {
+      const awaitGroupAdds:Array<Promise<null>> = [];
+      itemTemplate.dependencies.forEach(depId => {
+        awaitGroupAdds.push(new Promise((resolve2, reject2) => {
+          sharing.shareItemWithGroup({
+            id: depId,
+            groupId: itemTemplate.itemId,
+            ...requestOptions
+          })
+          .then(
+            () => {
+              progressCallback && progressCallback({
+                processId: itemTemplate.key,
+                status: "added group member"
+              });
+              resolve2();
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject2({ success: false });
+            }
+          );
+        }));
+      });
+      // After all items have been added to the group
+      Promise.all(awaitGroupAdds)
+      .then(
+        () => resolve(),
+        () => reject({ success: false })
+      );
+    } else {
+      // No items in this group
+      resolve();
+    }
+  });
+}
 
 /**
  * Gets the ids of a group's contents.
@@ -72,27 +216,29 @@ export function getGroupContentsTranche (
     groups.getGroupContent(id, pagingRequest)
     .then(
       contents => {
-        // Extract the list of content ids from the JSON returned
-        const trancheIds:string[] = contents.items.map((item:any) => item.id);
+        if (contents.num > 0) {
+          // Extract the list of content ids from the JSON returned
+          const trancheIds:string[] = contents.items.map((item:any) => item.id);
 
-        // Are there more contents to fetch?
-        if (contents.nextStart > 0) {
-          pagingRequest.paging.start = contents.nextStart;
-          getGroupContentsTranche(id, pagingRequest)
-          .then(
-            (allSubsequentTrancheIds:string[]) => {
-              // Append all of the following tranches to this tranche and return it
-              resolve(trancheIds.concat(allSubsequentTrancheIds));
-            },
-            reject
-          );
+          // Are there more contents to fetch?
+          if (contents.nextStart > 0) {
+            pagingRequest.paging.start = contents.nextStart;
+            getGroupContentsTranche(id, pagingRequest)
+            .then(
+              (allSubsequentTrancheIds:string[]) => {
+                // Append all of the following tranches to this tranche and return it
+                resolve(trancheIds.concat(allSubsequentTrancheIds));
+              },
+              () => reject({ success: false })
+            );
+          } else {
+            resolve(trancheIds);
+          }
         } else {
-          resolve(trancheIds);
+          resolve([]);
         }
       },
-      error => {
-        reject(error.originalMessage);
-      }
+      () => reject({ success: false })
     );
   });
 }

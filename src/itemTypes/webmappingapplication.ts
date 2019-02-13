@@ -14,14 +14,59 @@
  | limitations under the License.
  */
 
-import * as mCommon from "../common";
+import * as adlib from "adlib";
 import {getProp, getProps} from '../utils/object-helpers';
 import {hasTypeKeyword, hasAnyKeyword} from '../utils/item-helpers';
-import { ITemplate } from "../interfaces";
+import * as items from "@esri/arcgis-rest-items";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+
+import * as mCommon from "./common";
+import { ITemplate, IProgressUpdate } from "../interfaces";
 import {getDependencies as getStoryMapDependencies} from './storymap';
 import {getDependencies as getWABDependencies} from './webappbuilder';
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+// -- Externals ------------------------------------------------------------------------------------------------------//
+
+// -- Create Bundle Process ------------------------------------------------------------------------------------------//
+
+export function completeItemTemplate (
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<ITemplate> {
+  return new Promise(resolve => {
+    // Update the estimated cost factor to deploy this item
+    itemTemplate.estimatedDeploymentCostFactor = 4;
+
+    // Common templatizations: extent, item id, item dependency ids
+    mCommon.doCommonTemplatizations(itemTemplate);
+
+    // Remove org base URL and app id, e.g.,
+    //   http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34f26b2210d17835eea21
+    // to
+    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
+    // Need to add placeholder server name because otherwise AGOL makes URL null
+    const templatizedUrl = itemTemplate.item.url;
+    const iSep = templatizedUrl.indexOf("//");
+    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
+      templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2), templatizedUrl.lastIndexOf("=") + 1) +
+      mCommon.templatize(itemTemplate.itemId);
+
+    // Set the folder
+    if (getProp(itemTemplate, "data.folderId")) {
+      itemTemplate.data.folderId = "{{folderId}}";
+    }
+
+    // Set the map or group
+    if (getProp(itemTemplate, "data.values.webmap")) {
+      itemTemplate.data.values.webmap = mCommon.templatize(itemTemplate.data.values.webmap);
+    } else if (getProp(itemTemplate, "data.values.group")) {
+      itemTemplate.data.values.group = mCommon.templatize(itemTemplate.data.values.group);
+    }
+
+    resolve(itemTemplate);
+  });
+}
+
 
 /**
  * Gets the ids of the dependencies of an AGOL webapp item.
@@ -58,25 +103,73 @@ export function getGenericWebAppDependencies (
   return Promise.resolve(getProps(model, props));
 };
 
+// -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-/**
- * Swizzles the ids of the dependencies of an AGOL webapp item.
- *
- * @param fullItem A webapp item whose dependencies are to be swizzled
- * @param swizzles Hash mapping original ids to replacement ids
- * @protected
- */
-export function swizzleDependencies (
-  fullItem: ITemplate,
-  swizzles: mCommon.ISwizzleHash
-): void {
-  // Swizzle its webmap or group
-  const values = getProp(fullItem, "data.values");
-  if (values) {
-    if (values.webmap) {
-      values.webmap = swizzles[values.webmap].id;
-    } else if (values.group) {
-      values.group = swizzles[values.group].id;
+export function deployItem (
+  itemTemplate: ITemplate,
+  settings: any,
+  requestOptions: IUserRequestOptions,
+  progressCallback?: (update:IProgressUpdate) => void
+): Promise<ITemplate> {
+  progressCallback && progressCallback({
+    processId: itemTemplate.key,
+    type: itemTemplate.type,
+    status: "starting",
+    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+  });
+
+  return new Promise((resolve, reject) => {
+    const options:items.IItemAddRequestOptions = {
+      item: itemTemplate.item,
+      folder: settings.folderId,
+      ...requestOptions
+    };
+    if (itemTemplate.data) {
+      options.item.text = itemTemplate.data;
     }
-  }
-};
+
+    // Create the item
+    progressCallback && progressCallback({
+      processId: itemTemplate.key,
+      status: "creating",
+    });
+    items.createItemInFolder(options)
+    .then(
+      createResponse => {
+        if (createResponse.success) {
+          // Add the new item to the settings
+          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+            id: createResponse.id
+          };
+          itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
+          itemTemplate = adlib.adlib(itemTemplate, settings);
+
+          // Update the app URL
+          progressCallback && progressCallback({
+            processId: itemTemplate.key,
+            status: "updating URL"
+          });
+          mCommon.updateItemURL(itemTemplate.itemId, itemTemplate.item.url, requestOptions)
+          .then(
+            () => {
+              mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+              resolve(itemTemplate);
+            },
+            () => {
+              mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+              reject({ success: false });
+            }
+                );
+        } else {
+          mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+          reject({ success: false });
+        }
+      },
+      () => {
+        mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+        reject({ success: false });
+      }
+    );
+  });
+}
+

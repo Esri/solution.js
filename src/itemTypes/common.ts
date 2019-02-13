@@ -14,38 +14,33 @@
  | limitations under the License.
  */
 
-import * as items from "@esri/arcgis-rest-items";
+import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import * as sharing from "@esri/arcgis-rest-sharing";
-import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import * as items from "@esri/arcgis-rest-items";
+import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
-// -- Exports -------------------------------------------------------------------------------------------------------//
+import { IProgressUpdate } from "../interfaces";
 
-/**
- * The replacement information for an AGOL item id in a cloned solution.
- */
-export interface ISwizzle {
-  /**
-   * The replacement AGOL id
-   */
-  id: string;
-  /**
-   * For a feature layer, the updated layer name
-   */
-  name?: string;
-  /**
-   * For a feature layer, the updated layer URL
-   */
-  url?: string;
-}
+// -------------------------------------------------------------------------------------------------------------------//
 
 /**
- * The collection of mappings from original AGOL item ids to cloned values.
+ * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
+ * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
+ * made before attempting to create the item.
+ * @protected
  */
-export interface ISwizzleHash {
-  /**
-   * A mapping from an original AGOL item id to its cloned value.
-   */
-  [id:string]: ISwizzle;
+export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
+
+export function doCommonTemplatizations (
+  itemTemplate: any
+): void {
+  // Use the initiative's extent
+  if (itemTemplate.item.extent) {
+    itemTemplate.item.extent = "{{initiative.extent:optional}}";
+  }
+
+  // Templatize the item's id
+  itemTemplate.item.id = templatize(itemTemplate.item.id);
 }
 
 /**
@@ -95,7 +90,7 @@ export function createItemWithData (
                 id: results2.itemId
               })
             },
-            error => reject(error.originalMessage)
+            () => reject({ success: false })
           );
         } else {
           resolve({
@@ -104,11 +99,98 @@ export function createItemWithData (
           })
         }
       },
-      error => reject(error.originalMessage)
+      () => reject({ success: false })
     );
   });
 }
 
+export function deTemplatize (
+  id: string | string[]
+): string | string[] {
+  if (Array.isArray(id)) {
+    return deTemplatizeList(id);
+  }
+
+  if (id && id.startsWith("{{")) {
+    return id.substring(2, id.indexOf("."));
+  } else {
+    return id;
+  }
+}
+
+function deTemplatizeList (
+  ids: string[]
+): string[] {
+  return ids.map(
+    (id:string) => {
+      return deTemplatize(id) as string;
+    }
+  );
+}
+
+export function finalCallback (
+  key: string,
+  successful: boolean,
+  progressCallback?: (update:IProgressUpdate) => void
+): void {
+  progressCallback && progressCallback({
+    processId: key,
+    status: successful ? "done" : "failed"
+  });
+}
+
+/**
+ * Creates a timestamp string using the current date and time.
+ *
+ * @return Timestamp
+ * @protected
+ */
+export function getUTCTimestamp (
+): string {
+  const now = new Date();
+  return padPositiveNum(now.getUTCFullYear(), 4) + padPositiveNum(now.getUTCMonth() + 1, 2) +
+    padPositiveNum(now.getUTCDate(), 2) + "_" + padPositiveNum(now.getUTCHours(), 2) +
+    padPositiveNum(now.getUTCMinutes(), 2) + "_" + padPositiveNum(now.getUTCSeconds(), 2) +
+    padPositiveNum(now.getUTCMilliseconds(), 3);
+}
+
+function padPositiveNum (
+  n: number,
+  totalSize: number
+): string {
+  let numStr = n.toString();
+  const numPads = totalSize - numStr.length;
+  if (numPads > 0) {
+    numStr = "0".repeat(numPads) + numStr;  // TODO IE11 does not support repeat()
+  }
+  return numStr;
+}
+
+export function templatize (
+  id: string | string[],
+  param = "id"
+): string | string[] {
+  if (Array.isArray(id)) {
+    return templatizeList(id, param);
+  }
+
+  if (id && id.startsWith("{{")) {
+    return id;
+  } else {
+    return "{{" + id + "." + param + "}}";
+  }
+}
+
+export function templatizeList (
+  ids: string[],
+  param = "id"
+): string[] {
+  return ids.map(
+    (id:string) => {
+      return templatize(id, param) as string;
+    }
+  );
+}
 
 /**
  * Updates the URL of an item.
@@ -138,7 +220,7 @@ export function updateItemURL (
       updateResp => {
         resolve(id);
       },
-      reject
+      () => reject()
     );
   });
 }

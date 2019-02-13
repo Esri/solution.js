@@ -15,40 +15,43 @@
  */
 
 define([
-  '../../dist/tsumd/src/index',
-  '../../dist/tsumd/demos/demo_common/icon',
-  '@esri/arcgis-rest-auth',
-  '@esri/arcgis-rest-groups',
-  '@esri/arcgis-rest-items',
+  './icon'
 ], function (
-  clone,
-  icon,
-  auth,
-  groups,
-  items
+  icon
 ) {
   return {
 
     /**
-     * Creates an arcgis-rest-auth IAuthenticatedRequestOptions object with an active UserSession.
+     * Creates an arcgis-rest-arcgis-rest-auth IAuthenticatedRequestOptions object with an active UserSession.
      * @param {string} usernameElementId HTML element with username
      * @param {string} passwordElementId HTML element with password
+     * @param {string?} requestOptions Base url for the portal you want to make the request to; defaults
+     *        to 'https://www.arcgis.com/sharing/rest'
      * @return {object} IAuthenticatedRequestOptions object
      * @see @esri/arcgis-rest-auth
      * @see @esri/arcgis-rest-request
      */
-    getRequestOptions: function (usernameElementId, passwordElementId) {
-      return {
-        authentication: new auth.UserSession({
-          username: document.getElementById(usernameElementId).value,
-          password: document.getElementById(passwordElementId).value
-        })
+    getRequestOptions: function (username, password, portal) {
+      var userSessionOptions = {
+        username: username || undefined,
+        password: password || undefined,
+        portal: portal || undefined
       };
+
+      var requestOptions = {
+        authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
+      };
+      if (portal) {
+        requestOptions.portal = portal
+          .replace('http:', 'https:')
+          .replace(/arcgis/g, 'ARCGIS');  // set portal after tweaking it to get it past arcgis-rest-js filter
+      }
+      return requestOptions;
     },
 
     /**
-     * Creates a display of the hierarchy involving in a set of AGOL items.
-     * @param {object} solutionItems Hash containing items in solution
+     * Creates a display of the hierarchy involving in a set of AGOL arcgis-rest-items.
+     * @param {object} solutionItems Hash containing arcgis-rest-items in solution
      * @param {object} hierachy Hash contining, at each level, an item id and array of dependencies
      * @param {boolean} createLinks Indicates if a link to AGOL should be created for each item
      * @param {string} orgUrl URL to organization's home, e.g.,
@@ -60,7 +63,7 @@ define([
       // Show solution contents as they'd be in the solution's AGOL item
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var fullItem = clone.getTemplateInSolution(solutionItems, hierarchyItem.id);
+        var fullItem = arcgis_clone_js.getTemplateInSolution(solutionItems, hierarchyItem.id);
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
         var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
@@ -106,8 +109,17 @@ define([
       return display;
     },
 
+    createIdsList: function (solutionItemIds) {
+      var display = '<ol>';
+      solutionItemIds.forEach(function (id) {
+        display += '<li>' + id + '</li>';
+      });
+      display += '</ol>';
+      return display;
+    },
+
     /**
-     * Creates a display of solution item, its JSON, and the hierarchy of items that it contains.
+     * Creates a display of solution item, its JSON, and the hierarchy of arcgis-rest-items that it contains.
      * @param {string} publishedSolutionId
      * @see @esri/arcgis-rest-items
      */
@@ -116,15 +128,26 @@ define([
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
 
-      items.getItemData(publishedSolutionId)
+      arcgis_rest_items.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
+          // Solution details
           document.getElementById('detailsDisplay').innerHTML =
+            // List of links to Solution item, its item JSON, its data JSON
             this.createItemLinksDisplay(publishedSolutionId,
-              'http://arcgis4localgov2.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+              'https://localdeployment.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+
+            // Hierarchical display of item
             '<br>Published Solution item hierarchy:' +
             this.createHierarchyDisplay(publishedSolution.templates,
-              clone.getItemHierarchy(publishedSolution.templates));
+              arcgis_clone_js.getItemHierarchy(publishedSolution.templates)) +
+
+            // Topological sort displays
+            '<br>Linear build order (' + publishedSolution.templates.length + '):' +
+            this.createIdsList(arcgis_clone_js.topologicallySortItems(publishedSolution.templates)) +
+
+            '<br>Dependencies graph:<div id="topologicalSortGraphic"></div>';
+            this.showTopologicalSortGraph(publishedSolution.templates, '#topologicalSortGraphic');
         }
       )
       .finally(() => {
@@ -133,12 +156,60 @@ define([
       });
     },
 
+    showTopologicalSortGraph: function (templates, canvas) {
+      var self = this, typeLookupTable = {};
+      templates.forEach(function (template) {
+        typeLookupTable[template.itemId] = template.type;
+      });
+
+      // Topologically sort solution items into graphic display
+      requirejs(['../lib/raphael_2.2.1.min'], function (Raphael) {
+        window.Raphael = Raphael;
+        requirejs(['../lib/dracula_1.2.1.min'], function (Dracula) {
+          var g = new Dracula.Graph();
+
+          templates.forEach(function (template) {
+            g.addNode(self.shortName(template.type, template.itemId));  // to insure that dependencyless items appear
+
+            var dependencies = template.dependencies || [];
+            dependencies.forEach(function (dependencyId) {
+              g.addEdge(
+                self.shortName(typeLookupTable[dependencyId], dependencyId),
+                self.shortName(template.type, template.itemId),
+                { directed : true }
+              );
+            });
+          });
+          (new Dracula.Layout.Spring(g)).layout();
+          (new Dracula.Renderer.Raphael(canvas, g, 800, Math.max(400, templates.length * 24))).draw();
+        });
+      });
+    },
+
+    shortName: function (itemType, itemId) {
+      var shortTypes = {
+        "ArcGIS Pro Add In": "pad",
+        "Code Attachment": "att",
+        "Desktop Add In": "dad",
+        "Document Link": "lnk",
+        "Feature Collection": "col",
+        "Feature Service": "svc",
+        "Geoprocessing Package": "gpk",
+        "Geoprocessing Sample": "gsm",
+        "Project Template": "ptm",
+        "Web Map": "map",
+        "Web Mapping Application": "wma"
+      };
+      var shortItemType = shortTypes[itemType] || itemType.toLowerCase().replace(/[\s\daeiou]/g, "").substr(0, 3);
+      return shortItemType + ' ' + itemId.substr(0, 4);
+    },
+
     /**
-     * Creates a list of published solution items.
+     * Creates a list of published solution arcgis-rest-items.
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      items.searchItems('type:Solution owner:ArcGISTeamLocalGovOrg')
+      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
@@ -164,10 +235,10 @@ define([
 
     /**
      * Displays the folder and its contents created from a solution into a user's organization; also
-     * lists any groups created as part of the solution.
+     * lists any arcgis-rest-groups created as part of the solution.
      * @param {object} portalResponse Response from calling arcgis-rest-js' request.getPortal
      * @param {object} createResponse Response from calling arcgis-clone-js' createItemHierachyFromJSON
-     *       to create solution items
+     *       to create solution arcgis-rest-items
      * @see @esri/arcgis-rest-request
      */
     showCreatedItems: function (portalResponse, createResponse) {
@@ -180,7 +251,7 @@ define([
          },
          authentication: requestOptions.authentication
        }
-       items.searchItems(searchOptions)
+       arcgis_rest_items.searchItems(searchOptions)
        .then(
          foundItems => {
            if (foundItems.total === 0) {
@@ -200,7 +271,7 @@ define([
                display += '<br>The following groups were created:<ul>';
                createResponse.groups.forEach(
                  groupId => {
-                   var groupDfd = groups.getGroup(groupId, requestOptions);
+                   var groupDfd = arcgis_rest_groups.getGroup(groupId, requestOptions);
                    groupDfds.push(groupDfd);
                    groupDfd
                    .then(
@@ -234,6 +305,6 @@ define([
          }
        );
     }
-
   }
 });
+
