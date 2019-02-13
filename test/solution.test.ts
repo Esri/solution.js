@@ -2104,6 +2104,28 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: deployWhenReady ", () => {
+
+    it("should reject a missing AGOL", done => {
+      const settings = {} as any;
+      mSolution.deployWhenReady([], MOCK_USER_REQOPTS, settings, null)
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should reject an AGOL id that isn't in the current solution", done => {
+      const settings = {} as any;
+      mSolution.deployWhenReady([], MOCK_USER_REQOPTS, settings, "wma1234567890")
+      .then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+  });
+
   describe("supporting routine: finalCallback", () => {
 
     it("should handle successful progress update", () => {

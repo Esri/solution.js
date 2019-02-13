@@ -191,13 +191,12 @@ export function deployWhenReady (
   itemId: string,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate> {
-  const template = getTemplateInSolution(solution, itemId);
-  if (!template) {
-    return null;
-  }
-
   settings[itemId] = {};
   const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
+    const template = getTemplateInSolution(solution, itemId);
+    if (!template) {
+      reject({ success: false });
+    }
 
     // Wait until all dependencies are deployed
     const awaitDependencies = [] as Array<Promise<mInterfaces.ITemplate>>;
