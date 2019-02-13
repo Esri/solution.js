@@ -157,6 +157,12 @@ export function deploySolution (
       const itemId = cloneOrderChecklist.shift();
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
+      const templateType = itemTemplate.type;
+      const templateId = itemTemplate.itemId;
+      const templateDependencies = (itemTemplate.dependencies || []).slice();
+      console.log(shortName(templateType, templateId) + " construction; dependencies: " +
+        JSON.stringify(templateDependencies.map(id => shortName(getTemplateInSolution(solution,id).type, id))));
+
       // Interpolate it
       itemTemplate.dependencies = itemTemplate.dependencies ?
         mCommon.templatize(itemTemplate.dependencies) as string[] : [];
@@ -166,6 +172,7 @@ export function deploySolution (
       itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
       .then(
         itemClone => {
+          console.log(shortName(templateType, templateId) + " done");
           clonedSolution.push(itemClone);
           runThroughChecklistLinearly();
         },
@@ -227,7 +234,7 @@ function shortName (itemType:string, itemId:string):string {
     "Web Mapping Application": "wma"
   };
   const shortItemType = shortTypes[itemType] || itemType.toLowerCase().replace(/[\s\daeiou]/g, "").substr(0, 3);
-  return shortItemType + ' ' + itemId.substr(0, 4);
+  return shortItemType + '_' + itemId.substr(0, 4);
 }
 
 export function deployWhenReady (
@@ -251,9 +258,9 @@ export function deployWhenReady (
     Promise.all(awaitDependencies)
     .then(
       () => {
-        console.log("creating item " + shortName(template.type, template.itemId) + " with dependencies " +
+        console.log(shortName(template.type, template.itemId) + " construction; dependencies: " +
           JSON.stringify((template.dependencies || [])
-          .map(id => shortName(getTemplateInSolution(solution,id).type, id))) + "...");
+          .map(id => shortName(getTemplateInSolution(solution,id).type, id))));
 
         // Prepare template
         let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
@@ -267,7 +274,7 @@ export function deployWhenReady (
         itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
         .then(
           itemClone => {
-            console.log("created item " + shortName(template.type, template.itemId));
+            console.log(shortName(template.type, template.itemId) + " done");
             resolve(itemClone);
           },
           () => reject({ success: false })

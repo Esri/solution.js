@@ -110,11 +110,11 @@ define([
     },
 
     createIdsList: function (solutionItemIds) {
-      var display = '<ul>';
+      var display = '<ol>';
       solutionItemIds.forEach(function (id) {
         display += '<li>' + id + '</li>';
       });
-      display += '</ul>';
+      display += '</ol>';
       return display;
     },
 
