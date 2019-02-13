@@ -109,6 +109,15 @@ define([
       return display;
     },
 
+    createIdsList: function (solutionItemIds) {
+      var display = '<ul>';
+      solutionItemIds.forEach(function (id) {
+        display += '<li>' + id + '</li>';
+      });
+      display += '</ul>';
+      return display;
+    },
+
     /**
      * Creates a display of solution item, its JSON, and the hierarchy of arcgis-rest-items that it contains.
      * @param {string} publishedSolutionId
@@ -122,18 +131,77 @@ define([
       arcgis_rest_items.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
+          // Solution details
           document.getElementById('detailsDisplay').innerHTML =
+            // List of links to Solution item, its item JSON, its data JSON
             this.createItemLinksDisplay(publishedSolutionId,
               'https://localdeployment.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+
+            // Hierarchical display of item
             '<br>Published Solution item hierarchy:' +
             this.createHierarchyDisplay(publishedSolution.templates,
-              arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
+              arcgis_clone_js.getItemHierarchy(publishedSolution.templates)) +
+
+            // Topological sort displays
+            '<br>Linear build order (' + publishedSolution.templates.length + '):' +
+            this.createIdsList(arcgis_clone_js.topologicallySortItems(publishedSolution.templates)) +
+
+            '<br>Dependencies graph:<div id="topologicalSortGraphic"></div>';
+            this.showTopologicalSortGraph(publishedSolution.templates, '#topologicalSortGraphic');
         }
       )
       .finally(() => {
         document.getElementById('fetchingDetails').style.display = 'none';
         document.getElementById('detailsResults').style.display = 'block';
       });
+    },
+
+    showTopologicalSortGraph: function (templates, canvas) {
+      var self = this, typeLookupTable = {};
+      templates.forEach(function (template) {
+        typeLookupTable[template.itemId] = template.type;
+      });
+
+      // Topologically sort solution items into graphic display
+      requirejs(['../demo_common/raphael_2.2.1.min'], function (Raphael) {
+        window.Raphael = Raphael;
+        requirejs(['../demo_common/dracula_1.2.1.min'], function (Dracula) {
+          var g = new Dracula.Graph();
+
+          templates.forEach(function (template) {
+            g.addNode(self.shortName(template.type, template.itemId));  // to insure that dependencyless items appear
+
+            var dependencies = template.dependencies || [];
+            dependencies.forEach(function (dependencyId) {
+              g.addEdge(
+                self.shortName(typeLookupTable[dependencyId], dependencyId),
+                self.shortName(template.type, template.itemId),
+                { directed : true }
+              );
+            });
+          });
+          (new Dracula.Layout.Spring(g)).layout();
+          (new Dracula.Renderer.Raphael(canvas, g, 800, Math.max(400, templates.length * 24))).draw();
+        });
+      });
+    },
+
+    shortName: function (itemType, itemId) {
+      var shortTypes = {
+        "ArcGIS Pro Add In": "pad",
+        "Code Attachment": "att",
+        "Desktop Add In": "dad",
+        "Document Link": "lnk",
+        "Feature Collection": "col",
+        "Feature Service": "svc",
+        "Geoprocessing Package": "gpk",
+        "Geoprocessing Sample": "gsm",
+        "Project Template": "ptm",
+        "Web Map": "map",
+        "Web Mapping Application": "wma"
+      };
+      var shortItemType = shortTypes[itemType] || itemType.toLowerCase().replace(/[\s\daeiou]/g, "").substr(0, 3);
+      return shortItemType + ' ' + itemId.substr(0, 4);
     },
 
     /**
@@ -237,6 +305,6 @@ define([
          }
        );
     }
-
   }
 });
+

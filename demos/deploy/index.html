@@ -48,6 +48,7 @@
         <br>
         <button id="createBtn" onclick="deploySolutionFcn()">Create solution in your organization</button>
         using name <input type="text" id="solutionNameField" style="width:256px">
+        <input type="checkbox" id="runLinearly"> Linear
       </div>
     </div>
 
@@ -108,6 +109,7 @@
      * Creates the items described in a solution in the user's organization.
      */
     function deploySolution() {
+      var startTime = Date.now();
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
       document.getElementById('availableSolutions').style.display = 'none';
@@ -143,9 +145,11 @@
               // Get the total estimated cost of creating these items
               console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length +
                 " items: " + arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
-              var progressCallback =
-                _createProgressCallback(arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
+              var progressCallback = _createProgressCallback(
+                2 + // for creating deployed Solution item
+                arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
+              settings.linear = document.getElementById('runLinearly').checked;
               Promise.all([  // TODO IE11 does not support Promise
                 arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions,
                   settings, progressCallback),
@@ -153,19 +157,21 @@
               ])
               .then(
                 function (responses) {
-                  progressCallback("deployed Solution");
+                  progressCallback('creating deployed Solution item');
                   var deployedSolution = responses[0];
                   var templateItem = responses[1];
 
                   // Create a deployed Solution item as a table of contents for the created items
                   arcgis_clone_js.createDeployedSolutionItem(currentSolutionName, deployedSolution, templateItem,
-                    destinationRequestOptions, settings, "public")
+                    destinationRequestOptions, settings, 'public')
                   .then(
                     deployedSolutionItem  => {
                       document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
                       document.getElementById('creating').style.display = 'none';
                       document.getElementById('createResults').style.display = 'block';
                       progress.hide();
+                      var endTime = Date.now();
+                      console.log('completed in ' + (endTime - startTime) / 1000 + ' seconds');
 
                       document.getElementById('createDisplay').innerHTML =
                       '<ul class="solutionList"><li><a href="' + deployedSolutionItem.url + '" target="_blank">' +

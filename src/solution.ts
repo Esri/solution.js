@@ -133,7 +133,8 @@ export function deploySolution (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings = {} as any,
-  progressCallback?: (update:mInterfaces.IProgressUpdate) => void,): Promise<mInterfaces.ITemplate[]> {
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
+): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
     const clonedSolution:mInterfaces.ITemplate[] = [];
 
@@ -146,17 +147,17 @@ export function deploySolution (
     const cloneOrderChecklist:string[] = topologicallySortItems(solution);
 
     // -------------------------------------------------------------------------
-    function runThroughChecklist () {
+    function runThroughChecklistLinearly () {
       if (cloneOrderChecklist.length === 0) {
         resolve(clonedSolution);
         return;
       }
 
-      // Clone item at top of list
+      // Prepare template at top of list
       const itemId = cloneOrderChecklist.shift();
       let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
-      // Interpolate template
+      // Interpolate it
       itemTemplate.dependencies = itemTemplate.dependencies ?
         mCommon.templatize(itemTemplate.dependencies) as string[] : [];
       itemTemplate = adlib.adlib(itemTemplate, settings);
@@ -166,16 +167,31 @@ export function deploySolution (
       .then(
         itemClone => {
           clonedSolution.push(itemClone);
-          runThroughChecklist();
+          runThroughChecklistLinearly();
         },
         () => reject({ success: false })
       )
+    }
+
+    // -------------------------------------------------------------------------
+    function runThroughChecklistInParallel () {
+      const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
+      cloneOrderChecklist.forEach(
+        id => awaitAllItems.push(deployWhenReady(solution, requestOptions, settings, id, progressCallback))
+      );
+
+      // Wait until all items have been created
+      Promise.all(awaitAllItems)
+      .then(
+        clonedSolutionItems => resolve(clonedSolutionItems),
+        () => reject({ success: false })
+      );
     }
     // -------------------------------------------------------------------------
 
     // Use specified folder to hold the hydrated items to avoid name clashes
     if (settings.folderId) {
-      runThroughChecklist();
+      settings.linear ? runThroughChecklistLinearly() : runThroughChecklistInParallel();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
       const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getUTCTimestamp() + ")";
@@ -187,12 +203,83 @@ export function deploySolution (
       .then(
         createdFolderResponse => {
           settings.folderId = createdFolderResponse.folder.id;
-          runThroughChecklist();
+          settings.linear ? runThroughChecklistLinearly() : runThroughChecklistInParallel();
         },
         () => reject({ success: false })
       );
     }
   });
+}
+
+function shortName (itemType:string, itemId:string):string {
+  let shortTypes: {[tag:string]: string};
+  shortTypes = {
+    "ArcGIS Pro Add In": "pad",
+    "Code Attachment": "att",
+    "Desktop Add In": "dad",
+    "Document Link": "lnk",
+    "Feature Collection": "col",
+    "Feature Service": "svc",
+    "Geoprocessing Package": "gpk",
+    "Geoprocessing Sample": "gsm",
+    "Project Template": "ptm",
+    "Web Map": "map",
+    "Web Mapping Application": "wma"
+  };
+  const shortItemType = shortTypes[itemType] || itemType.toLowerCase().replace(/[\s\daeiou]/g, "").substr(0, 3);
+  return shortItemType + ' ' + itemId.substr(0, 4);
+}
+
+export function deployWhenReady (
+  solution: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  settings: any,
+  itemId: string,
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
+): Promise<mInterfaces.ITemplate> {
+  const template = getTemplateInSolution(solution, itemId);
+  if (!template) {
+    return null;
+  }
+
+  settings[itemId] = {};
+  const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
+
+    // Wait until all dependencies are deployed
+    const awaitDependencies = [] as Array<Promise<mInterfaces.ITemplate>>;
+    (template.dependencies || []).forEach(dependencyId => awaitDependencies.push(settings[dependencyId].def));
+    Promise.all(awaitDependencies)
+    .then(
+      () => {
+        console.log("creating item " + shortName(template.type, template.itemId) + " with dependencies " +
+          JSON.stringify((template.dependencies || [])
+          .map(id => shortName(getTemplateInSolution(solution,id).type, id))) + "...");
+
+        // Prepare template
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
+
+        // Interpolate it
+        itemTemplate.dependencies = itemTemplate.dependencies ?
+          mCommon.templatize(itemTemplate.dependencies) as string[] : [];
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+
+        // Deploy it
+        itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
+        .then(
+          itemClone => {
+            console.log("created item " + shortName(template.type, template.itemId));
+            resolve(itemClone);
+          },
+          () => reject({ success: false })
+        )
+      },
+      () => reject({ success: false })
+    );
+  });
+
+  // Save the deferred for the use of items that depend on this item being created first
+  settings[itemId].def = itemDef;
+  return itemDef;
 }
 
 /**
