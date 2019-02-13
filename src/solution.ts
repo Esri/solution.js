@@ -147,40 +147,6 @@ export function deploySolution (
     const cloneOrderChecklist:string[] = topologicallySortItems(solution);
 
     // -------------------------------------------------------------------------
-    function runThroughChecklistLinearly () {
-      if (cloneOrderChecklist.length === 0) {
-        resolve(clonedSolution);
-        return;
-      }
-
-      // Prepare template at top of list
-      const itemId = cloneOrderChecklist.shift();
-      let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
-
-      const templateType = itemTemplate.type;
-      const templateId = itemTemplate.itemId;
-      const templateDependencies = (itemTemplate.dependencies || []).slice();
-      console.log(shortName(templateType, templateId) + " construction; dependencies: " +
-        JSON.stringify(templateDependencies.map(id => shortName(getTemplateInSolution(solution,id).type, id))));
-
-      // Interpolate it
-      itemTemplate.dependencies = itemTemplate.dependencies ?
-        mCommon.templatize(itemTemplate.dependencies) as string[] : [];
-      itemTemplate = adlib.adlib(itemTemplate, settings);
-
-      // Deploy it
-      itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
-      .then(
-        itemClone => {
-          console.log(shortName(templateType, templateId) + " done");
-          clonedSolution.push(itemClone);
-          runThroughChecklistLinearly();
-        },
-        () => reject({ success: false })
-      )
-    }
-
-    // -------------------------------------------------------------------------
     function runThroughChecklistInParallel () {
       const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
       cloneOrderChecklist.forEach(
@@ -198,7 +164,7 @@ export function deploySolution (
 
     // Use specified folder to hold the hydrated items to avoid name clashes
     if (settings.folderId) {
-      settings.linear ? runThroughChecklistLinearly() : runThroughChecklistInParallel();
+      runThroughChecklistInParallel();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
       const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getUTCTimestamp() + ")";
@@ -210,31 +176,12 @@ export function deploySolution (
       .then(
         createdFolderResponse => {
           settings.folderId = createdFolderResponse.folder.id;
-          settings.linear ? runThroughChecklistLinearly() : runThroughChecklistInParallel();
+          runThroughChecklistInParallel();
         },
         () => reject({ success: false })
       );
     }
   });
-}
-
-function shortName (itemType:string, itemId:string):string {
-  let shortTypes: {[tag:string]: string};
-  shortTypes = {
-    "ArcGIS Pro Add In": "pad",
-    "Code Attachment": "att",
-    "Desktop Add In": "dad",
-    "Document Link": "lnk",
-    "Feature Collection": "col",
-    "Feature Service": "svc",
-    "Geoprocessing Package": "gpk",
-    "Geoprocessing Sample": "gsm",
-    "Project Template": "ptm",
-    "Web Map": "map",
-    "Web Mapping Application": "wma"
-  };
-  const shortItemType = shortTypes[itemType] || itemType.toLowerCase().replace(/[\s\daeiou]/g, "").substr(0, 3);
-  return shortItemType + '_' + itemId.substr(0, 4);
 }
 
 export function deployWhenReady (
@@ -258,10 +205,6 @@ export function deployWhenReady (
     Promise.all(awaitDependencies)
     .then(
       () => {
-        console.log(shortName(template.type, template.itemId) + " construction; dependencies: " +
-          JSON.stringify((template.dependencies || [])
-          .map(id => shortName(getTemplateInSolution(solution,id).type, id))));
-
         // Prepare template
         let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
 
@@ -273,10 +216,7 @@ export function deployWhenReady (
         // Deploy it
         itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
         .then(
-          itemClone => {
-            console.log(shortName(template.type, template.itemId) + " done");
-            resolve(itemClone);
-          },
+          itemClone => resolve(itemClone),
           () => reject({ success: false })
         )
       },

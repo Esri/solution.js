@@ -163,9 +163,9 @@ define([
       });
 
       // Topologically sort solution items into graphic display
-      requirejs(['../demo_common/raphael_2.2.1.min'], function (Raphael) {
+      requirejs(['../lib/raphael_2.2.1.min'], function (Raphael) {
         window.Raphael = Raphael;
-        requirejs(['../demo_common/dracula_1.2.1.min'], function (Dracula) {
+        requirejs(['../lib/dracula_1.2.1.min'], function (Dracula) {
           var g = new Dracula.Graph();
 
           templates.forEach(function (template) {
