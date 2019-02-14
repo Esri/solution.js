@@ -73,11 +73,12 @@
 
   </div>
 
-  <script src="../lib/require_2.3.6.min.js"></script>
-  <script src="../lib/arcgis-rest-auth.js"></script>
-  <script src="../lib/arcgis-rest-items.js"></script>
-  <script src="../lib/arcgis-rest-request.js"></script>
+  <script src="https://cdn.polyfill.io/v2/polyfill.js?features=es5,Promise,fetch"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-auth@1.16.1/dist/umd/auth.umd.js"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-items@1.16.1/dist/umd/items.umd.js"></script>
+  <script src="https://unpkg.com/@esri/arcgis-rest-request@1.16.1/dist/umd/request.umd.js"></script>
   <script src="../lib/arcgis-clone-js.js"></script>
+  <script src="../lib/require_2.3.6.min.js"></script>
   <script>
   var createSolutionFcn = publishSolutionFcn = null;
 
@@ -166,7 +167,7 @@
         document.getElementById('destPortal').value + '/sharing/rest');
 
       // Get the source's organization URL for creating links to source items
-      arcgis_rest_request.getPortal(null, sourceRequestOptions)
+      arcgisRest.getPortal(null, sourceRequestOptions)
       .then(
         function (response) {
           var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
@@ -229,7 +230,7 @@
       document.getElementById('display').style.display = 'block';
 
       // Get the destinations's organization URL for creating links to source items
-      arcgis_rest_request.getPortal(null, destinationRequestOptions)
+      arcgisRest.getPortal(null, destinationRequestOptions)
       .then(
         function (response) {
           var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
@@ -241,7 +242,7 @@
           .then(function (publishResponse) {
             var publishedSolutionId = publishResponse.id;
 
-            arcgis_rest_items.getItemData(publishedSolutionId, destinationRequestOptions)
+            arcgisRest.getItemData(publishedSolutionId, destinationRequestOptions)
             .then(
               publishedSolution => {
                 document.getElementById('detailsDisplay').innerHTML =
