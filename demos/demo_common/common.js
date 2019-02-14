@@ -15,8 +15,16 @@
  */
 
 define([
+  '@esri/arcgis-rest-auth',
+  '@esri/arcgis-rest-groups',
+  '@esri/arcgis-rest-items',
+  '../lib/arcgis-clone.umd.min',
   './icon'
 ], function (
+  arcgis_rest_auth,
+  arcgis_rest_groups,
+  arcgis_rest_items,
+  arcgis_clone_js,
   icon
 ) {
   return {
@@ -42,9 +50,7 @@ define([
         authentication: new arcgisRest.UserSession(userSessionOptions)
       };
       if (portal) {
-        requestOptions.portal = portal
-          .replace('http:', 'https:')
-          .replace(/arcgis/g, 'ARCGIS');  // set portal after tweaking it to get it past arcgis-rest-js filter
+        requestOptions.portal = portal.replace('http:', 'https:');
       }
       return requestOptions;
     },

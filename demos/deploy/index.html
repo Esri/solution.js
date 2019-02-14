@@ -63,10 +63,6 @@
   </div>
 
   <script src="https://cdn.polyfill.io/v2/polyfill.js?features=es5,Promise,fetch"></script>
-  <script src="https://unpkg.com/@esri/arcgis-rest-auth@1.16.1/dist/umd/auth.umd.js"></script>
-  <script src="https://unpkg.com/@esri/arcgis-rest-items@1.16.1/dist/umd/items.umd.js"></script>
-  <script src="https://unpkg.com/@esri/arcgis-rest-request@1.16.1/dist/umd/request.umd.js"></script>
-  <script src="../lib/arcgis-clone-js.js"></script>
   <script src="../lib/require_2.3.6.min.js"></script>
   <script>
   var showSolutionFcn = deploySolutionFcn = null;
@@ -87,11 +83,30 @@
     showSolutionFcn(currentSolutionId);
   }
 
+  requirejs.config({
+    baseUrl: './',
+    paths: {  // for the benefit of called libraries
+      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.11.1/dist/umd/sharing.umd'
+    }
+  });
+
   requirejs([
+    '@esri/arcgis-rest-items',
+    '@esri/arcgis-rest-request',
+    '../lib/arcgis-clone.umd.min',
     '../demo_common/common',
     '../demo_common/progress',
     '../demo_common/polyfills'
   ], function (
+    arcgis_rest_items,
+    arcgis_rest_request,
+    arcgis_clone_js,
     demoCommon,
     progress
   ) {
@@ -123,7 +138,7 @@
         document.getElementById('destPortal').value + '/sharing/rest');
 
       // Get the destination organization URL for creating links to deployed items
-      arcgisRest.getPortal(null, destinationRequestOptions)
+      arcgis_rest_request.getPortal(null, destinationRequestOptions)
       .then(
         portalResponse => {
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
@@ -135,10 +150,10 @@
               portalBaseUrl: 'https://' + portalResponse.portalHostname
             }
           };
-          var solutionTemplateItemDef = arcgisRest.getItem(currentSolutionId, destinationRequestOptions);
+          var solutionTemplateItemDef = arcgis_rest_items.getItem(currentSolutionId, destinationRequestOptions);
 
           // Get the solution contents
-          arcgisRest.getItemData(currentSolutionId, destinationRequestOptions)
+          arcgis_rest_items.getItemData(currentSolutionId, destinationRequestOptions)
           .then(
             publishedSolution => {
 
