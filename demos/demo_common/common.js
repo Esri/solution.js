@@ -47,7 +47,7 @@ define([
       };
 
       var requestOptions = {
-        authentication: new arcgisRest.UserSession(userSessionOptions)
+        authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
       };
       if (portal) {
         requestOptions.portal = portal.replace('http:', 'https:');
@@ -134,7 +134,7 @@ define([
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
 
-      arcgisRest.getItemData(publishedSolutionId)
+      arcgis_rest_items.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
           // Solution details
@@ -215,7 +215,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgisRest.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
+      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
@@ -257,7 +257,7 @@ define([
          },
          authentication: requestOptions.authentication
        }
-       arcgisRest.searchItems(searchOptions)
+       arcgis_rest_items.searchItems(searchOptions)
        .then(
          foundItems => {
            if (foundItems.total === 0) {
@@ -277,7 +277,7 @@ define([
                display += '<br>The following groups were created:<ul>';
                createResponse.groups.forEach(
                  groupId => {
-                   var groupDfd = arcgisRest.getGroup(groupId, requestOptions);
+                   var groupDfd = arcgis_rest_groups.getGroup(groupId, requestOptions);
                    groupDfds.push(groupDfd);
                    groupDfd
                    .then(
