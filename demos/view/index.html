@@ -42,11 +42,8 @@
 
   </div>
 
+  <script src="https://cdn.polyfill.io/v2/polyfill.js?features=es5,Promise,fetch"></script>
   <script src="../lib/require_2.3.6.min.js"></script>
-  <script src="../lib/arcgis-rest-auth.js"></script>
-  <script src="../lib/arcgis-rest-items.js"></script>
-  <script src="../lib/arcgis-rest-request.js"></script>
-  <script src="../lib/arcgis-clone-js.js"></script>
   <script>
   var showSolutionFcn = null;
 
@@ -60,6 +57,19 @@
     currentSolutionId = currentSolutionParts[0];
     showSolutionFcn(currentSolutionId);
   }
+
+  requirejs.config({
+    baseUrl: './',
+    paths: {  // for the benefit of called libraries
+      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.11.1/dist/umd/auth.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.11.1/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.11.1/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.11.1/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.11.1/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.11.1/dist/umd/sharing.umd'
+    }
+  });
 
   requirejs([
     '../demo_common/common',
