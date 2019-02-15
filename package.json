@@ -13,7 +13,7 @@
     "build:esm": "tsc --module es2015 --outDir ./dist/esm --declaration",
     "build:tsumd": "tsc --module umd --outDir ./dist/tsumd",
     "build:webpack": "webpack --config webpack.config.js",
-    "build:demos": "cd demos && tsc --module umd --outDir ./demo_common && cp ../dist/*.js ./lib",
+    "build:demos": "npm run build:umd && cp ./dist/umd/arcgis-clone.umd.min.js ./demos/lib",
     "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ./umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
