@@ -382,7 +382,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}');
-      mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
+      mSolution.publishSolutionTemplate("My Solution",
+        mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
       .then(
         response => {
           expect(response).toEqual({
@@ -398,7 +399,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     it("for single item containing WMA & feature service, but item add fails", done => {
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
+      mSolution.publishSolutionTemplate("My Solution",
+        mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -413,7 +415,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"sln1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share", mockItems.get400Failure());
-      mSolution.publishSolution("My Solution", mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS,
+      mSolution.publishSolutionTemplate("My Solution",
+        mockSolutions.getWebMappingApplicationTemplate(), MOCK_USER_REQOPTS,
         null, "public")
       .then(
         () => done.fail(),

@@ -111,7 +111,7 @@
     progress
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    deploySolutionFcn = deploySolution;
+    deploySolutionFcn = createSolutionFromTemplate;
 
     document.getElementById('page').style.display = 'block';
 
@@ -123,7 +123,7 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function deploySolution() {
+    function createSolutionFromTemplate() {
       var startTime = Date.now();
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
@@ -144,7 +144,7 @@
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           const settings = {
             solutionName: currentSolutionName,
-            folderId: null,  // Have deploySolution create the folder for us
+            folderId: null,  // Have createSolutionFromTemplate create the folder for us
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
@@ -165,7 +165,7 @@
                 arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
 
               Promise.all([  // TODO IE11 does not support Promise
-                arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions,
+                arcgis_clone_js.createSolutionFromTemplate(publishedSolution.templates, destinationRequestOptions,
                   settings, progressCallback),
                 solutionTemplateItemDef
               ])
@@ -195,6 +195,9 @@
                           true, settings.organization.orgUrl + '/home/');
                     }
                   );
+                },
+                function (error) {
+                  debugger;
                 }
               );
             }

@@ -140,8 +140,8 @@
     arcgis_clone_js,
     demoCommon
   ) {
-    createSolutionFcn = createSolution;
-    publishSolutionFcn = publishSolution;
+    createSolutionFcn = createSolutionTemplate;
+    publishSolutionFcn = publishSolutionTemplate;
     var requestOptions, templatesList, solutionName;
 
     document.getElementById('page').style.display = 'block';
@@ -165,7 +165,7 @@
     /**
      * Creates a solution from a set of existing AGOL items
      */
-    function createSolution() {
+    function createSolutionTemplate() {
       document.getElementById('create').style.display = 'block';
 
       document.getElementById('creating').style.display = 'block';
@@ -205,7 +205,7 @@
           );
 
           // Get the items forming the solution
-          arcgis_clone_js.createSolution(solutionRootIds, sourceRequestOptions)
+          arcgis_clone_js.createSolutionTemplate(solutionRootIds, sourceRequestOptions)
           .then(
             response => {
               templatesList = response;
@@ -240,7 +240,7 @@
     /**
      * Creates a solution item in the user's organization.
      */
-    function publishSolution() {
+    function publishSolutionTemplate() {
       document.getElementById('publishBtn').disabled = 'disabled';
       document.getElementById('display').style.display = 'block';
 
@@ -253,7 +253,8 @@
 
           // Publish the Solution
           solutionName = document.getElementById('solutionName').value || 'Solution';
-          arcgis_clone_js.publishSolution(solutionName, templatesList, destinationRequestOptions, null, 'public')
+          arcgis_clone_js.publishSolutionTemplate(
+            solutionName, templatesList, destinationRequestOptions, null, 'public')
           .then(function (publishResponse) {
             var publishedSolutionId = publishResponse.id;
 

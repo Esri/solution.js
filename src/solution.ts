@@ -80,7 +80,7 @@ export function createSolutionTemplate (
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
-export function publishSolution (
+export function publishSolutionTemplate (
   title: string,
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
