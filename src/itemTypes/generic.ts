@@ -25,7 +25,7 @@ import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -37,7 +37,7 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencies (
+export function extractDependencies (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<string[]> {
@@ -48,7 +48,7 @@ export function getDependencies (
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,

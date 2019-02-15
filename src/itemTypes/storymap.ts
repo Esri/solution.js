@@ -20,7 +20,7 @@ import { hasTypeKeyword, parseIdFromUrl } from '../utils/item-helpers';
 /**
  * Return a list of items this depends on
  */
-export function getDependencies (
+export function extractDependencies (
   model:any)
   : Promise<string[]> {
   // unknown types have no deps...

@@ -107,7 +107,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
           mockUtils.removeItemFcns(response);
@@ -149,7 +149,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
           mockUtils.removeItemFcns(response);
@@ -172,7 +172,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemDataWMANoWebmapOrGroup())
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
-      mSolution.createSolution("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
           mockUtils.removeItemFcns(response);
@@ -196,7 +196,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
-      mSolution.createSolution("grp1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("grp1234567890", MOCK_USER_REQOPTS)
       .then(
         response => {
           mockUtils.removeItemFcns(response);
@@ -429,13 +429,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("clone solution", () => {
 
     it("should handle a missing solution", done => {
-      mSolution.deploySolution(null, MOCK_USER_REQOPTS)
+      mSolution.createSolutionFromTemplate(null, MOCK_USER_REQOPTS)
       .then(done, done.fail);
     });
 
     it("should handle an empty, nameless solution", done => {
       const settings = createMockSettings();
-      mSolution.deploySolution({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, settings)
+      mSolution.createSolutionFromTemplate({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, settings)
       .then(done, done.fail);
     });
 
@@ -453,7 +453,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/createFolder", mockItems.get400Failure());
-      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -513,7 +513,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, sessionWithMockedTime, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -544,7 +544,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"wma1234567890","folder":"fld1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}')
-      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, sessionWithMockedTime, settings)
       .then(
         response => {
           expect(response.length).toEqual(1);
@@ -573,7 +573,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"fld1234567890","title":"Solution (' + expected + ')"}}')
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", mockItems.get400Failure());
-      mSolution.deploySolution(solutionItem, sessionWithMockedTime, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, sessionWithMockedTime, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -628,7 +628,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}');
-      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -681,7 +681,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}');
-      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         response => {
           expect(response.length).toEqual(3);
@@ -700,7 +700,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/createFolder",
         '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
       .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
-      mSolution.deploySolution(solutionItem, MOCK_USER_REQOPTS, settings)
+      mSolution.createSolutionFromTemplate(solutionItem, MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -721,7 +721,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"GEN1234567890","folder":null}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("GEN1234567890");
@@ -743,7 +743,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"DSH1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
         '{"success":true,"id":"DSH1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("DSH1234567890");
@@ -763,7 +763,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"DSH1234567890","folder":"fld1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
         '{"success":true,"id":"DSH1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("DSH1234567890");
@@ -782,7 +782,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"DSH1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
         '{"success":true,"id":"DSH1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("DSH1234567890");
@@ -801,7 +801,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"DSH1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update",
         '{"success":true,"id":"DSH1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("DSH1234567890");
@@ -820,7 +820,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"MAP1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/MAP1234567890/update",
         '{"success":true,"id":"MAP1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("MAP1234567890");
@@ -840,7 +840,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"WMA1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
         '{"success":true,"id":"WMA1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("WMA1234567890");
@@ -856,7 +856,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -872,7 +872,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -890,7 +890,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"DSH1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/DSH1234567890/update", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -909,7 +909,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"unk1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/unk1234567890/update",
         '{"success":true,"id":"unk1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("unk1234567890");
@@ -925,7 +925,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -941,7 +941,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -963,7 +963,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"map1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/map1234567890/update",
         '{"success":true,"id":"map1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("map1234567890");
@@ -981,7 +981,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"map1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/map1234567890/update", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -997,7 +997,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -1013,7 +1013,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -1030,7 +1030,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get200Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -1047,7 +1047,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -1098,7 +1098,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime, progressCallback)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime, progressCallback)
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
@@ -1151,7 +1151,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
@@ -1202,7 +1202,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         createdItem => {
           // Check that we're appending a timestamp to the service name
@@ -1233,7 +1233,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/createService", mockItems.get200Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1256,7 +1256,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/createService", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1285,7 +1285,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1324,7 +1324,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", mockItems.get400Failure())
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1363,7 +1363,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/0/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/1/addToDefinition", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1443,7 +1443,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "/FeatureServer/2/addToDefinition", '{"success":true}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/3/addToDefinition", '{"success":true}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         response => {
           // Verify order of layers|tables adding
@@ -1503,7 +1503,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater);
-      itemTemplate.fcns.deployItem(itemTemplate, settings, sessionWithMockedTime)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         () => done()
@@ -1559,7 +1559,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"notSharedWith":[],"itemId":"map1234567890"}')
       .post('path:/sharing/rest/content/users/casey/items/wma1234567890/share',
         '{"notSharedWith":[],"itemId":"wma1234567890"}');
-      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime, progressCallback)
+      groupTemplate.fcns.createItemFromTemplate(groupTemplate, settings, sessionWithMockedTime, progressCallback)
       .then(
         (createdItem:any) => {
           expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
@@ -1593,7 +1593,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post('path:/sharing/rest/community/createGroup',
         '{"success":true,"group":{"id":"' + expectedCreatedItemId +
         '","title":"Group_' + expected + '","owner":"casey"}}');
-      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      groupTemplate.fcns.createItemFromTemplate(groupTemplate, settings, sessionWithMockedTime)
       .then(
         (createdItem:any) => {
           expect(settings[templateItemId].id as string).toEqual(expectedCreatedItemId);
@@ -1619,7 +1619,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post('path:/sharing/rest/community/createGroup', mockItems.get200Failure());
-      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      groupTemplate.fcns.createItemFromTemplate(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         error => {
@@ -1643,7 +1643,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
       fetchMock
       .post('path:/sharing/rest/community/createGroup', mockItems.get400Failure());
-      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      groupTemplate.fcns.createItemFromTemplate(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         error => {
@@ -1678,7 +1678,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"id":"grp1234567890","title":"My group","owner":"casey",' +
         '"userMembership":{"username":"casey","memberType":"owner","applications":0}}')
       .post('path:/sharing/rest/content/users/casey/items/map1234567890/share', mockItems.get400Failure());
-      groupTemplate.fcns.deployItem(groupTemplate, settings, sessionWithMockedTime)
+      groupTemplate.fcns.createItemFromTemplate(groupTemplate, settings, sessionWithMockedTime)
       .then(
         () => done.fail(),
         error => {
@@ -1701,7 +1701,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"WMA1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update",
         '{"success":true,"id":"WMA1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS, progressCallback)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("WMA1234567890");
@@ -1720,7 +1720,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/addItem",
         '{"success":true,"id":"WMA1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/WMA1234567890/update", mockItems.get400Failure());
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         () => done.fail(),
         error => {
@@ -1794,7 +1794,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"MTP1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/MTP1234567890/update",
         '{"success":true,"id":"MTP1234567890"}');
-      itemTemplate.fcns.deployItem(itemTemplate, settings, MOCK_USER_REQOPTS)
+      itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, MOCK_USER_REQOPTS)
       .then(
         createdItem => {
           expect(createdItem.itemId).toEqual("MTP1234567890");
@@ -2104,11 +2104,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("supporting routine: deployWhenReady ", () => {
+  describe("supporting routine: createItemFromTemplateWhenReady ", () => {
 
     it("should reject a missing AGOL", done => {
       const settings = {} as any;
-      mSolution.deployWhenReady([], MOCK_USER_REQOPTS, settings, null)
+      mSolution.createItemFromTemplateWhenReady([], MOCK_USER_REQOPTS, settings, null)
       .then(
         () => done.fail(),
         () => done()
@@ -2117,7 +2117,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should reject an AGOL id that isn't in the current solution", done => {
       const settings = {} as any;
-      mSolution.deployWhenReady([], MOCK_USER_REQOPTS, settings, "wma1234567890")
+      mSolution.createItemFromTemplateWhenReady([], MOCK_USER_REQOPTS, settings, "wma1234567890")
       .then(
         () => done.fail(),
         () => done()
@@ -2675,7 +2675,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("returns an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      mSolution.createSolution(null, MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate(null, MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {

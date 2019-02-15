@@ -14,7 +14,7 @@
  | limitations under the License.
  */
 
-import {getDependencies} from '../../src/itemTypes/site';
+import {extractDependencies} from '../../src/itemTypes/site';
 
 const testLayoutWithAllSupportedCards = {
   sections: [
@@ -75,11 +75,11 @@ const testLayoutWithAllSupportedCards = {
 };
 
 describe('Site Item Utilities', () => {
-  
-  describe('getDependencies', () => {
-    
+
+  describe('extractDependencies', () => {
+
     it('should not fail with a null layout', (done) => {
-      return getDependencies({})
+      return extractDependencies({})
         .then((result) => {
           expect(result).not.toBeNull('should return something');
           expect(Array.isArray(result)).toBeTruthy('should return an array');
@@ -98,7 +98,7 @@ describe('Site Item Utilities', () => {
           }
         }
       }
-      return getDependencies(siteModel)
+      return extractDependencies(siteModel)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -113,7 +113,7 @@ describe('Site Item Utilities', () => {
             '5a14dbb7b2f3417fb4a6ea0506c2eb26'], 'should return them');
           done();
         })
-      
+
     });
 
   });

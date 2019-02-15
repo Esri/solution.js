@@ -19,7 +19,7 @@ import { getProp } from '../utils/object-helpers';
 /**
  * Return a list of items this site depends on
  */
-export function getDependencies (
+export function extractDependencies (
   model: any
   ): Promise<string[]>  {
     const deps = [];

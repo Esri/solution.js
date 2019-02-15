@@ -15,13 +15,13 @@
  */
 
  import {
-   getDependencies
+   extractDependencies
  } from '../../src/itemTypes/webappbuilder';
 
  describe('Web App Builder', () => {
-   
-  describe('getDependencies', () => {
-    
+
+  describe('extractDependencies', () => {
+
     it('should return the itemid if it exists', (done) => {
       const model = {
         item: {},
@@ -31,14 +31,14 @@
           }
         }
       };
-      return getDependencies(model)
+      return extractDependencies(model)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy();
         expect(r.length).toEqual(1, 'should have one dep');
         expect(r.indexOf('3ef')).toBeGreaterThan(-1, 'should have one dep');
         done();
       })
-      
+
     });
 
     it('should return empty array if itemId does not exist', (done) => {
@@ -49,7 +49,7 @@
           }
         }
       };
-      return getDependencies(model)
+      return extractDependencies(model)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy();
         expect(r.length).toEqual(0, 'should have no deps');

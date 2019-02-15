@@ -30,7 +30,7 @@ import * as mInterfaces from "./interfaces";
  *
  * ```typescript
  * import { ITemplate[] } from "../src/fullItemHierarchy";
- * import { createSolution } from "../src/solution";
+ * import { createSolutionTemplate } from "../src/solution";
  *
  * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
  * .then(
@@ -54,7 +54,7 @@ import * as mInterfaces from "./interfaces";
  * if any id is inaccessible, a single error response will be produced for the set
  * of ids
  */
-export function createSolution (
+export function createSolutionTemplate (
   solutionRootIds: string | string[],
   requestOptions: IUserRequestOptions
 ): Promise<mInterfaces.ITemplate[]> {
@@ -129,7 +129,7 @@ export function getEstimatedDeploymentCost (
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
-export function deploySolution (
+export function createSolutionFromTemplate (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings = {} as any,
@@ -150,7 +150,7 @@ export function deploySolution (
     function runThroughChecklistInParallel () {
       const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
       cloneOrderChecklist.forEach(
-        id => awaitAllItems.push(deployWhenReady(solution, requestOptions, settings, id, progressCallback))
+        id => awaitAllItems.push(createItemFromTemplateWhenReady(solution, requestOptions, settings, id, progressCallback))
       );
 
       // Wait until all items have been created
@@ -184,7 +184,7 @@ export function deploySolution (
   });
 }
 
-export function deployWhenReady (
+export function createItemFromTemplateWhenReady (
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings: any,
@@ -213,7 +213,7 @@ export function deployWhenReady (
         itemTemplate = adlib.adlib(itemTemplate, settings);
 
         // Deploy it
-        itemTemplate.fcns.deployItem(itemTemplate, settings, requestOptions, progressCallback)
+        itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, requestOptions, progressCallback)
         .then(
           itemClone => resolve(itemClone),
           () => reject({ success: false })

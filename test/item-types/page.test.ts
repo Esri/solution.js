@@ -15,7 +15,7 @@
  */
 
 import {
-  getDependencies
+  extractDependencies
 } from '../../src/itemTypes/page';
 
 const testLayoutWithAllSupportedCards = {
@@ -77,11 +77,11 @@ const testLayoutWithAllSupportedCards = {
 };
 
 describe('Page Item Utilities', () => {
-  
-  describe('getDependencies', () => {
-    
+
+  describe('extractDependencies', () => {
+
     it('should not fail with a null layout', (done) => {
-      return getDependencies({})
+      return extractDependencies({})
       .then((result) => {
         expect(result).not.toBeNull('should return something');
         expect(Array.isArray(result)).toBeTruthy('should return an array');
@@ -100,7 +100,7 @@ describe('Page Item Utilities', () => {
           }
         }
       }
-      return getDependencies(pageModel)
+      return extractDependencies(pageModel)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');

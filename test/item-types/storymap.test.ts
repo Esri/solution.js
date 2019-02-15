@@ -14,8 +14,8 @@
  | limitations under the License.
  */
 
-import { 
-  getDependencies,
+import {
+  extractDependencies,
   getCascadeDependencies,
   getMapJournalDependencies,
   getMapSeriesDependencies
@@ -27,7 +27,7 @@ import {cloneObject} from '../../src/utils/object-helpers';
 
 describe('Story Maps :: ', () => {
   describe('generic functions', () => {
-    
+
     describe('getting dependencies', () => {
       it('can get dependencies for a cascade', (done) => {
         const m = {
@@ -36,7 +36,7 @@ describe('Story Maps :: ', () => {
           },
           data: cloneObject(TestCascade)
         };
-        return getDependencies(m)
+        return extractDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -51,7 +51,7 @@ describe('Story Maps :: ', () => {
         const m = cloneObject(TestMapJournal);
         m.typeKeywords = ['Story Map', 'MapJournal']
 
-        return getDependencies(m)
+        return extractDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -64,8 +64,8 @@ describe('Story Maps :: ', () => {
       it('works for Map Series', (done) => {
         const m = cloneObject(TestMapSeries);
         m.typeKeywords = ['Story Map', 'mapseries']
-  
-        return getDependencies(m)
+
+        return extractDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
@@ -82,19 +82,19 @@ describe('Story Maps :: ', () => {
           },
           data: {}
         };
-  
-        return getDependencies(m)
+
+        return extractDependencies(m)
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
           expect(Array.isArray(r)).toBeTruthy('should be an array');
           expect(r.length).toEqual(0, 'should have 0 entries');
           done();
         });
-        
+
       });
     });
 
-    
+
 
 
   });
@@ -127,7 +127,7 @@ describe('Story Maps :: ', () => {
   });
 
   describe('MapJournal :: ', () => {
-    
+
     it('gets dependencies for a map journal', () => {
       const r = getMapJournalDependencies(cloneObject(TestMapJournal));
       expect(r).toBeTruthy('should return a value');
@@ -189,5 +189,5 @@ describe('Story Maps :: ', () => {
     });
 
   });
-  
+
 });

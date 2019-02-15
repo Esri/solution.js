@@ -22,14 +22,14 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
 import { ITemplate, IProgressUpdate } from "../interfaces";
-import {getDependencies as getStoryMapDependencies} from './storymap';
-import {getDependencies as getWABDependencies} from './webappbuilder';
+import {extractDependencies as getStoryMapDependencies} from './storymap';
+import {extractDependencies as getWABDependencies} from './webappbuilder';
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -75,7 +75,7 @@ export function completeItemTemplate (
  * @return A promise that will resolve with list of dependent ids
  * @protected
  */
-export function getDependencies (
+export function extractDependencies (
   model: any
 ): Promise<string[]> {
 
@@ -105,7 +105,7 @@ export function getGenericWebAppDependencies (
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,

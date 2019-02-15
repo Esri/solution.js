@@ -47,7 +47,7 @@ interface IDashboardWidget {
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -73,7 +73,7 @@ export function completeItemTemplate (
  * @return A promise that will resolve with list of dependent ids
  * @protected
  */
-export function getDependencies (
+export function extractDependencies (
   itemTemplate: ITemplate,
   requestOptions: IUserRequestOptions
 ): Promise<string[]> {
@@ -95,7 +95,7 @@ export function getDependencies (
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,

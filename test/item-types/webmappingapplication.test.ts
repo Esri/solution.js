@@ -16,13 +16,13 @@
 
 
 import {
-  getDependencies,
+  extractDependencies,
 } from '../../src/itemTypes/webmappingapplication';
 
 
 describe('Web Mapping Application', () => {
-  
-  describe('getDependencies', () => {
+
+  describe('extractDependencies', () => {
 
     it('returns various ids from named props in generic items', (done) => {
       const m = {
@@ -38,7 +38,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
+      return extractDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(4, 'should have 4 entries');
@@ -69,7 +69,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
+      return extractDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(1, 'should have 1 entries');
@@ -89,7 +89,7 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
+      return extractDependencies(m)
       .then((r) => {
         expect(Array.isArray(r)).toBeTruthy('should be an array');
         expect(r.length).toEqual(1, 'should have 1 entries');
@@ -97,7 +97,7 @@ describe('Web Mapping Application', () => {
         done();
       })
     });
-    
+
   });
 
 });

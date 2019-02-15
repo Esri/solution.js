@@ -15,15 +15,15 @@
  */
 
 import {
-  getDependencies
+  extractDependencies
 } from '../../src/itemTypes/survey'
 
 describe('Surveys', () => {
-  
+
   describe('get dependencies', () => {
-    
+
     it('always returns an empty array', (done) => {
-      return getDependencies({item:{}, data:{}})
+      return extractDependencies({item:{}, data:{}})
         .then((r) => {
           expect(r).toBeTruthy('should return a value');
             expect(Array.isArray(r)).toBeTruthy('should be an array');
