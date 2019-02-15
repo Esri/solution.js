@@ -69,8 +69,6 @@ export interface ITemplate {
 
 export interface IItemTypeModule {
   convertItemToTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
-  extractDependencies(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
-
   createItemFromTemplate(itemTemplate:ITemplate, settings:any, requestOptions:IUserRequestOptions,
     progressCallback?: (update:IProgressUpdate) => void): Promise<ITemplate>;
 }
