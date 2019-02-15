@@ -25,6 +25,11 @@ import * as mInterfaces from "./interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
+export function getSupportedItemTypes (
+  ): string[] {
+    return mClassifier.getSupportedItemTypes();
+  }
+  
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *

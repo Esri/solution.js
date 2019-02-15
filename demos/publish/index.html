@@ -39,6 +39,8 @@
     </div>
 
     <div class="section">
+      <div class="section-title">Currently supported item types</div>
+      <div id="supportedItemTypes"></div>
       <div class="section-title">Drag & drop URLs of top-level items to package into a single Solution
         (their dependencies are automatically included)</div>
       <div><i>e.g., https://myorg.maps.arcgis.com/home/item.html?id=1af7db9a03b54d5793d6f79ce12ef030</i></div>
@@ -143,6 +145,9 @@
     createSolutionFcn = createSolution;
     publishSolutionFcn = publishSolution;
     var requestOptions, templatesList, solutionName;
+
+    document.getElementById('supportedItemTypes').innerHTML =
+      arcgis_clone_js.getSupportedItemTypes().join(", ") + "<br><br>";
 
     document.getElementById('page').style.display = 'block';
 
