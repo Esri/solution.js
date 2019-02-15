@@ -68,10 +68,10 @@ export interface ITemplate {
 }
 
 export interface IItemTypeModule {
-  completeItemTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
-  getDependencies(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
+  convertItemToTemplate(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<ITemplate>;
+  extractDependencies(itemTemplate:ITemplate, requestOptions?: IUserRequestOptions): Promise<string[]>;
 
-  deployItem(itemTemplate:ITemplate, settings:any, requestOptions:IUserRequestOptions,
+  createItemFromTemplate(itemTemplate:ITemplate, settings:any, requestOptions:IUserRequestOptions,
     progressCallback?: (update:IProgressUpdate) => void): Promise<ITemplate>;
 }
 
