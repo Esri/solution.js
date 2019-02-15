@@ -22,7 +22,7 @@
 
   describe('extractDependencies', () => {
 
-    it('should return the itemid if it exists', (done) => {
+    it('should return the itemid if it exists', () => {
       const model = {
         item: {},
         data: {
@@ -31,17 +31,13 @@
           }
         }
       };
-      return extractDependencies(model)
-      .then((r) => {
-        expect(Array.isArray(r)).toBeTruthy();
-        expect(r.length).toEqual(1, 'should have one dep');
-        expect(r.indexOf('3ef')).toBeGreaterThan(-1, 'should have one dep');
-        done();
-      })
-
+      const r = extractDependencies(model);
+      expect(Array.isArray(r)).toBeTruthy();
+      expect(r.length).toEqual(1, 'should have one dep');
+      expect(r.indexOf('3ef')).toBeGreaterThan(-1, 'should have one dep');
     });
 
-    it('should return empty array if itemId does not exist', (done) => {
+    it('should return empty array if itemId does not exist', () => {
       const model = {
         item: {},
         data: {
@@ -49,12 +45,9 @@
           }
         }
       };
-      return extractDependencies(model)
-      .then((r) => {
-        expect(Array.isArray(r)).toBeTruthy();
-        expect(r.length).toEqual(0, 'should have no deps');
-        done();
-      })
+      const r = extractDependencies(model)
+      expect(Array.isArray(r)).toBeTruthy();
+      expect(r.length).toEqual(0, 'should have no deps');
     });
 
   });

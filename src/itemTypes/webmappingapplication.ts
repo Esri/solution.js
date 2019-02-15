@@ -63,45 +63,12 @@ export function convertItemToTemplate (
       itemTemplate.data.values.group = mCommon.templatize(itemTemplate.data.values.group);
     }
 
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
     resolve(itemTemplate);
   });
 }
-
-
-/**
- * Gets the ids of the dependencies of an AGOL webapp item.
- *
- * @param fullItem A webapp item whose dependencies are sought
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function extractDependencies (
-  model: any
-): Promise<string[]> {
-
-  let processor = getGenericWebAppDependencies;
-
-  if (hasTypeKeyword(model, 'Story Map')) {
-    processor = getStoryMapDependencies;
-  }
-
-  if (hasAnyKeyword(model, ['WAB2D', 'WAB3D', 'Web AppBuilder'])) {
-    processor = getWABDependencies;
-  }
-
-  return processor(model);
-
-};
-
-/**
- * Generic Web App Dependencies
- */
-export function getGenericWebAppDependencies (
-  model:any
-  ):Promise<string[]> {
-  const props = ['data.webmap', 'data.itemId', 'data.values.webmap', 'data.values.group'];
-  return Promise.resolve(getProps(model, props));
-};
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
@@ -173,3 +140,39 @@ export function createItemFromTemplate (
   });
 }
 
+// -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+
+/**
+ * Gets the ids of the dependencies of an AGOL webapp item.
+ *
+ * @param fullItem A webapp item whose dependencies are sought
+ * @return A promise that will resolve with list of dependent ids
+ * @protected
+ */
+export function extractDependencies (
+  model: any
+): string[] {
+  let processor = getGenericWebAppDependencies;
+
+  if (hasTypeKeyword(model, 'Story Map')) {
+    processor = getStoryMapDependencies;
+  }
+
+  if (hasAnyKeyword(model, ['WAB2D', 'WAB3D', 'Web AppBuilder'])) {
+    processor = getWABDependencies;
+  }
+
+  return processor(model);
+
+};
+
+/**
+ * Generic Web App Dependencies
+ */
+export function getGenericWebAppDependencies (
+  model:any
+  ): string[] {
+  const props = ['data.webmap', 'data.itemId', 'data.values.webmap', 'data.values.group'];
+  return getProps(model, props);
+};

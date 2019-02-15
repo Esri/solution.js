@@ -21,11 +21,11 @@ import { getProp } from '../utils/object-helpers';
  */
 export function extractDependencies (
   model: any
-  ): Promise<string[]>  {
+  ): string[]  {
     const deps = [];
     const v = getProp(model, 'data.map.itemId');
     if (v) {
       deps.push(v);
     }
-    return Promise.resolve(deps);
+    return deps;
 };

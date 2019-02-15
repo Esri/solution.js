@@ -54,33 +54,10 @@ export function convertItemToTemplate (
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
     }
 
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
     resolve(itemTemplate);
-  });
-}
-
-/**
- * Gets the ids of the dependencies of an AGOL webmap item.
- *
- * @param fullItem A webmap item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function extractDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    let dependencies:string[] = [];
-
-    if (itemTemplate.data) {
-      dependencies = [
-        ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
-        ...getWebmapLayerIds(itemTemplate.data.tables)
-      ];
-    }
-
-    resolve(dependencies);
   });
 }
 
@@ -156,6 +133,28 @@ export function createItemFromTemplate (
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 // (export decoration is for unit testing)
+
+/**
+ * Gets the ids of the dependencies of an AGOL webmap item.
+ *
+ * @param fullItem A webmap item whose dependencies are sought
+ * @return List of dependencies
+ * @protected
+ */
+export function extractDependencies (
+  itemTemplate: ITemplate
+): string[] {
+  let dependencies:string[] = [];
+
+  if (itemTemplate.data) {
+    dependencies = [
+      ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
+      ...getWebmapLayerIds(itemTemplate.data.tables)
+    ];
+  }
+
+  return dependencies;
+}
 
 /**
  * Extracts the AGOL id or URL for each layer or table object in a list.

@@ -31,49 +31,22 @@ export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     // Update the estimated cost factor to deploy this item
     itemTemplate.estimatedDeploymentCostFactor = 3;
 
     // Common templatizations: item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
-    resolve(itemTemplate);
-  });
-}
-
-/**
- * Gets the ids of the dependencies (contents) of an AGOL group.
- *
- * @param fullItem A group whose contents are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function extractDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const pagingRequest:IPagingParamsRequestOptions = {
-      paging: {
-        start: 1,
-        num: 100
-      },
-      ...requestOptions
-    };
-
-    // Fetch group items
-    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
+    // Get dependencies (contents)
+    getGroupContents(itemTemplate, requestOptions)
     .then(
-      contents => {
-        // Update the estimated cost factor to deploy this item
-        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
-
-        resolve(contents);
+      dependencies => {
+        itemTemplate.dependencies = dependencies;
+        resolve(itemTemplate);
       },
       () => reject({ success: false })
-    );
+    )
   });
 }
 
@@ -195,6 +168,41 @@ export function addGroupMembers (
       // No items in this group
       resolve();
     }
+  });
+}
+
+/**
+ * Gets the ids of the dependencies (contents) of an AGOL group.
+ *
+ * @param fullItem A group whose contents are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids
+ * @protected
+ */
+export function getGroupContents (
+  itemTemplate: ITemplate,
+  requestOptions: IUserRequestOptions
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const pagingRequest:IPagingParamsRequestOptions = {
+      paging: {
+        start: 1,
+        num: 100
+      },
+      ...requestOptions
+    };
+
+    // Fetch group items
+    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
+    .then(
+      contents => {
+        // Update the estimated cost factor to deploy this item
+        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
+
+        resolve(contents);
+      },
+      () => reject({ success: false })
+    );
   });
 }
 

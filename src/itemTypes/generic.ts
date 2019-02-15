@@ -37,15 +37,6 @@ export function convertItemToTemplate (
   });
 }
 
-export function extractDependencies (
-  itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    resolve([]);
-  });
-}
-
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 export function createItemFromTemplate (

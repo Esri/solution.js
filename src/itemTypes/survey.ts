@@ -22,6 +22,6 @@
  */
 export function extractDependencies (
   model: any
-  ): Promise<string[]>  {
-    return Promise.resolve([]);
+  ): string[]  {
+    return [];
 };

@@ -26,8 +26,8 @@ import { getLayoutDependencies } from '../utils/layout-dependencies';
  */
 export function extractDependencies (
   model: any
-  ): Promise<string[]>  {
+  ): string[]  {
   const layout = getProp(model, 'data.values.layout') || {};
-  return Promise.resolve(getLayoutDependencies(layout));
+  return getLayoutDependencies(layout);
 };
 

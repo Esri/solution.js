@@ -2753,6 +2753,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
+    // Displays
+    // Unmatched GET to https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token
+    // because fetch order is root items wma1234567890, fail1234567890 followed by the first's dependencies.
+    // Promise.all catches failure of fail1234567890 and returns from function before any dependency is resolved.
     it("returns an error if the hierarchy to be created fails: list of [valid, inaccessible]", done => {
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock

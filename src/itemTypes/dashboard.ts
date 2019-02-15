@@ -61,35 +61,10 @@ export function convertItemToTemplate (
     // Templatize the app URL
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
 
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
     resolve(itemTemplate);
-  });
-}
-
-/**
- * Gets the ids of the dependencies of an AGOL dashboard item.
- *
- * @param fullItem A dashboard item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function extractDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    const dependencies:string[] = [];
-
-    const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
-    if (widgets) {
-      widgets.forEach((widget:any) => {
-        if (widget.type === "mapWidget") {
-          dependencies.push(widget.itemId);
-        }
-      })
-    }
-
-    resolve(dependencies);
   });
 }
 
@@ -163,3 +138,29 @@ export function createItemFromTemplate (
   });
 }
 
+// -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+
+/**
+ * Gets the ids of the dependencies of an AGOL dashboard item.
+ *
+ * @param fullItem A dashboard item whose dependencies are sought
+ * @return List of dependencies
+ * @protected
+ */
+export function extractDependencies (
+  itemTemplate: ITemplate
+): string[] {
+  const dependencies:string[] = [];
+
+  const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
+  if (widgets) {
+    widgets.forEach((widget:any) => {
+      if (widget.type === "mapWidget") {
+        dependencies.push(widget.itemId);
+      }
+    })
+  }
+
+  return dependencies;
+}
