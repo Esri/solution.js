@@ -312,15 +312,6 @@ export function fleshOutFeatureService (
     request(serviceUrl + "?f=json", requestOptions)
     .then(
       serviceData => {
-        // Fill in some missing parts
-        // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["name"] = itemTemplate.item["name"] ||
-          getFirstUsableName(serviceData["layers"]) ||
-          getFirstUsableName(serviceData["tables"]) ||
-          "Feature Service";
-        serviceData["snippet"] = itemTemplate.item["snippet"];
-        serviceData["description"] = itemTemplate.item["description"];
-
         serviceData.serviceItemId = mCommon.templatize(serviceData.serviceItemId);
         properties.service = serviceData;
 
