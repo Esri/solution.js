@@ -7,35 +7,61 @@
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat-square
 [license-url]: #license
 
-# @esri/arcgis-clone-js
+## arcgis-clone-js
 
-> JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.
+### Table of Contents
 
-## Table of Contents
-
-- [Example](#example)
-- [API Reference](#api-reference)
+- [API Overview](#api-overview)
 - [Instructions](#instructions)
 - [FAQ](#frequently-asked-questions)
 - [Issues](#issues)
 - [Versioning](#versioning)
 - [Contributing](#contributing)
-- [Code of Conduct](/CODE_OF_CONDUCT.md)
 - [License](#license)
 
-### Supported ArcGIS Online Item Types
+---
 
-Currently, the item types that can be dependents of a solution item are:
+### API Overview
+
+#### Common terms
+
+An ArcGIS Online (AGO) `item` is transformed into a `template` that contains all of its defining information (except its thumbnail and resources; see [/docs/Background.md]()). If the item depends on other items, those items are also transformed into templates.
+
+A collection of templates can be bundled into a `solution template` AGO item for organization and distribution.
+
+A solution template's templates can be transformed into items in an AGO organization. In addition, a `deployed solution` AGO item is created that serves as a table of contents to the deployed solution items.
+
+#### Modules
+
+The API contains two primary modules:
+
+* `solution`, which contains functions for transforming items into templates, deploying templates into items, and creating solution template and deployed solution items.
+* `viewing`, which contains functions to support displaying solution templates and deployed solutions. 
+
+#### Additional information
+
+The API documentation is published at https://esri.github.io/arcgis-clone-js/ (source code in [/docs/src]()).
+
+Background information about the library is available in [/docs/Background.md]().
+
+#### Supported ArcGIS Online Item Types
+
+Currently, the item types that can be converted into a template are:
+
+* Dashboard
+* Feature Service (Hosted only and Hosted Feature Layer Views)
+* Web Map
+* Web Mapping Application
+
+Planned item types are:
 
 * ArcGIS Pro Add In
 * Code Attachment
 * Code Sample
-* Dashboard
 * Desktop Add In
 * Desktop Application Template
 * Document Link
 * Feature Collection
-* Feature Service (Hosted only and Hosted Feature Layer Views)
 * Form
 * Geoprocessing Package
 * Geoprocessing Sample
@@ -45,29 +71,13 @@ Currently, the item types that can be dependents of a solution item are:
 * Pro Map
 * Project Package
 * Project Template
-* Web Map
-* Web Mapping Application
 * Workforce Project
-
-### API Reference
-
-The documentation is published at https://esri.github.io/arcgis-clone-js/ (source code [here](/docs/src)).
-
-The API contains two primary modules:
-
-* `fullItem`, which represents all parts of an AGOL item: its base information, its data, its resources, and the list of AGOL items that it depends upon
-* `solution`, which represents a collection of one or more AGOL items that work together, including all dependency items
-
-To support these modules, there are two secondary modules:
-
-* `viewing`, which contains functions for extracting a representation of a solution's hierarchy and for creating a Storymap about the solution's web applications
-* `common`, which contains shared utility functions
 
 ### Instructions
 
 You can install dependencies by cloning the repository and running:
 
-```bash
+```
 npm install
 ```
 
@@ -75,33 +85,30 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
+* `npm run build` runs the node, umd, esm, tsumd, & webpack builds
+* `npm run build:node`
+* `npm run build:umd`
+* `npm run build:esm`
+* `npm run build:tsumd`
+* `npm run build:webpack` prepares the umd build to create the variable arcgis_clone_js in the current global context
+* `npm run build:demos` runs the umd build and copies the result to the demos lib/ folder
+* `npm run lint` or `grunt tslint` lint the TypeScript files
 * `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
 * `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
 * `npm run test:firefox` runs karma in the Firefox browser
 * `npm run test:node` runs ts-node and jasmine
 * `npm run docs` creates documentation about the API and its internal functions
 * `npm run docs:mocks` creates documentation about the mock items used in unit testing
-* `npm run lint` lints the project
 * `npm run ver` reports the version of TypeScript
+* `npm run postinstall` installs a pre-commit hook to Grunt linting
 
 ### Frequently Asked Questions
 
-* [Is this a _supported_ Esri product?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#is-this-a-supported-esri-product)
-* [How does this project compare with the ArcGIS API for JavaScript?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#comparison-with-the-arcgis-api-for-javascript)
-* [Is this similar to the ArcGIS API for Python?](https://github.com/Esri/arcgis-clone-js/blob/master/docs/FAQ.md#comparison-with-the-arcgis-api-for-python)
-* [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
+* Is this a _supported_ Esri product?  Yes
 
 ### Issues
 
-If something isn't working the way you expected, please take a look at [previously logged issues](https://github.com/Esri/arcgis-clone-js/issues) first.  Have you found a new bug?  Want to request a new feature?  We'd [**love**](https://github.com/Esri/arcgis-clone-js/issues/new) to hear from you.
-
-If you're looking for help you can also post issues on [GIS Stackexchange](http://gis.stackexchange.com/questions/ask?tags=esri-oss).
-
-### Versioning
-
-For transparency into the release cycle and in striving to maintain backward compatibility, @esri/arcgis-clone-js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible.
-
-For more information on SemVer, please visit <http://semver.org/>.
+Find a bug or want to request a new feature? Please let us know by submitting an issue.
 
 ### Contributing
 
