@@ -44,6 +44,11 @@ const moduleMap:IItemTypeModuleMap = {
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
+export function getSupportedItemTypes (
+): string[] {
+  return Object.keys(moduleMap);
+}
+  
 /**
  * Fetches the item and data sections, the resource and dependencies lists, and the item-type-specific
  * functions for an item using its AGOL item id.
