@@ -55,17 +55,81 @@ import * as mInterfaces from "./interfaces";
  * of ids
  */
 export function createSolutionTemplate (
-  solutionRootIds: string | string[],
-  requestOptions: IUserRequestOptions
+  ids: string | string[],
+  requestOptions: IUserRequestOptions,
+  templates?: mInterfaces.ITemplate[]
 ): Promise<mInterfaces.ITemplate[]> {
-  return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
+  if (!templates) {
+    templates = [];
+  }
 
-    // Get the items forming the solution
-    getItemTemplateHierarchy(solutionRootIds, requestOptions)
-    .then(
-      solution => resolve(solution),
-      () => reject({ success: false })
-    );
+  return new Promise((resolve, reject) => {
+    if (typeof ids === "string") {
+      // Handle a single AGOL id
+      const rootId = ids;
+      if (getTemplateInSolution(templates, rootId)) {
+        resolve(templates);  // Item and its dependents are already in list or are queued
+
+      } else {
+        // Add the id as a placeholder to show that it will be fetched
+        const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
+        templates.push(createPlaceholderTemplate(rootId));
+
+        // Get the specified item
+        getItemPromise
+        .then(
+          itemTemplate => {
+            // Set the value keyed by the id, replacing the placeholder
+            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
+
+            // Trace item dependencies
+            if (itemTemplate.dependencies.length === 0) {
+              resolve(templates);
+
+            } else {
+              // Get its dependents, asking each to get its dependents via
+              // recursive calls to this function
+              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+              itemTemplate.dependencies.forEach(
+                dependentId => {
+                  if (!getTemplateInSolution(templates, dependentId)) {
+                    dependentDfds.push(createSolutionTemplate(dependentId, requestOptions, templates));
+                  }
+                }
+              );
+              Promise.all(dependentDfds)
+              .then(
+                () => {
+                  resolve(templates);
+                },
+                () => reject({ success: false })
+              );
+            }
+          },
+          () => reject({ success: false })
+        );
+      }
+
+    } else if (Array.isArray(ids) && ids.length > 0) {
+      // Handle a list of one or more AGOL ids by stepping through the list
+      // and calling this function recursively
+      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+      ids.forEach(id => {
+        getHierarchyPromise.push(createSolutionTemplate(id, requestOptions, templates));
+      });
+      Promise.all(getHierarchyPromise)
+      .then(
+        () => {
+          resolve(templates);
+        },
+        () => reject({ success: false })
+      );
+
+    } else {
+      reject({ success: false });
+    }
   });
 }
 
@@ -115,7 +179,7 @@ export function getEstimatedDeploymentCost (
 }
 
 /**
- * Converts a hash by id of generic JSON item descriptions into AGOL items.
+ * Converts a solution template into an AGO deployed solution and items.
  *
  * @param solution A hash of item descriptions to convert; note that the item ids are updated
  *     to their cloned versions
@@ -185,10 +249,10 @@ export function createSolutionFromTemplate (
 }
 
 export function createItemFromTemplateWhenReady (
+  itemId: string,
   solution: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings: any,
-  itemId: string,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate> {
   settings[itemId] = {};
@@ -306,85 +370,6 @@ function createPlaceholderTemplate (
     key: "",
     item: null
   };
-}
-
-export function getItemTemplateHierarchy (
-  rootIds: string | string[],
-  requestOptions: IUserRequestOptions,
-  templates?: mInterfaces.ITemplate[]
-): Promise<mInterfaces.ITemplate[]> {
-  if (!templates) {
-    templates = [];
-  }
-
-  return new Promise((resolve, reject) => {
-    if (typeof rootIds === "string") {
-      // Handle a single AGOL id
-      const rootId = rootIds;
-      if (getTemplateInSolution(templates, rootId)) {
-        resolve(templates);  // Item and its dependents are already in list or are queued
-
-      } else {
-        // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mClassifier.initItemTemplateFromId(rootId, requestOptions);
-        templates.push(createPlaceholderTemplate(rootId));
-
-        // Get the specified item
-        getItemPromise
-        .then(
-          itemTemplate => {
-            // Set the value keyed by the id, replacing the placeholder
-            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
-
-            // Trace item dependencies
-            if (itemTemplate.dependencies.length === 0) {
-              resolve(templates);
-
-            } else {
-              // Get its dependents, asking each to get its dependents via
-              // recursive calls to this function
-              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
-              itemTemplate.dependencies.forEach(
-                dependentId => {
-                  if (!getTemplateInSolution(templates, dependentId)) {
-                    dependentDfds.push(getItemTemplateHierarchy(dependentId, requestOptions, templates));
-                  }
-                }
-              );
-              Promise.all(dependentDfds)
-              .then(
-                () => {
-                  resolve(templates);
-                },
-                () => reject({ success: false })
-              );
-            }
-          },
-          () => reject({ success: false })
-        );
-      }
-
-    } else if (Array.isArray(rootIds) && rootIds.length > 0) {
-      // Handle a list of one or more AGOL ids by stepping through the list
-      // and calling this function recursively
-      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
-      rootIds.forEach(rootId => {
-        getHierarchyPromise.push(getItemTemplateHierarchy(rootId, requestOptions, templates));
-      });
-      Promise.all(getHierarchyPromise)
-      .then(
-        () => {
-          resolve(templates);
-        },
-        () => reject({ success: false })
-      );
-
-    } else {
-      reject({ success: false });
-    }
-  });
 }
 
 /**

@@ -36,7 +36,7 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
-export interface IDeployedSolutionItemAccess {
+export interface IAGOItemAccess {
   id: string,
   url: string
 }
@@ -73,7 +73,7 @@ export function getTopLevelItemIds (
 }
 
 /**
- * Extracts item hierarchy structure from a Solution's items list.
+ * Extracts item hierarchy structure from a solution template.
  *
  * @param items Hash of JSON descriptions of items
  * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
@@ -119,7 +119,7 @@ export function createDeployedSolutionItem (
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   access = "private"
-): Promise<IDeployedSolutionItemAccess> {
+): Promise<IAGOItemAccess> {
   return new Promise((resolve, reject) => {
     const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
       templateItem.id + "/info/" + templateItem.thumbnail;
@@ -150,7 +150,7 @@ export function createDeployedSolutionItem (
         mCommon.updateItemURL(deployedSolutionItemId, deployedSolutionItemUrl, requestOptions)
         .then(
           response => {
-            const deployedSolutionItem:IDeployedSolutionItemAccess = {
+            const deployedSolutionItem:IAGOItemAccess = {
               id: deployedSolutionItemId,
               url: deployedSolutionItemUrl
             }

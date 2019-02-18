@@ -62,7 +62,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
   });
 
   describe("get item hierarchies", () => {
-  
+
     it("item without dependencies", () => {
       // hierarchy:
       // - abc
@@ -307,7 +307,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         '{"success":true,"id":"sol1234567890"}');
       mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem, MOCK_USER_REQOPTS)
       .then(
-        (result:mViewing.IDeployedSolutionItemAccess) => {
+        (result:mViewing.IAGOItemAccess) => {
           expect(result.id).toEqual("sol1234567890");
           expect(result.url).toEqual("https://www.arcgis.com/home/item.html?id=sol1234567890");
           done();
@@ -335,7 +335,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem,
         MOCK_USER_REQOPTS, settings, "public")
       .then(
-        (result:mViewing.IDeployedSolutionItemAccess) => {
+        (result:mViewing.IAGOItemAccess) => {
           expect(result.id).toEqual("sol1234567890");
           expect(result.url).toEqual("https://myOrg.maps.arcgis.com/home/item.html?id=sol1234567890");
           done();

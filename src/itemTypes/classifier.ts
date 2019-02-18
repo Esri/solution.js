@@ -51,7 +51,7 @@ const moduleMap:IItemTypeModuleMap = {
  * @param itemId
  * @param requestOptions
  */
-export function initItemTemplateFromId (
+export function convertItemToTemplate (
   itemId: string,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
