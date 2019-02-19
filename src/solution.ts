@@ -29,8 +29,8 @@ import * as mInterfaces from "./interfaces";
 /**
  * Creates a solution template item.
  *
- * @param title
- * @param version
+ * @param title The title to use for the item
+ * @param version The version to include in the item's metadata
  * @param ids AGO id string or list of AGO id strings
  * @param sourceRequestOptions Options for requesting information from AGO about items to be
  *                             included in solution template
@@ -45,7 +45,7 @@ export function createSolutionTemplate (
   destinationRequestOptions: IUserRequestOptions
 ): Promise<mInterfaces.ISolutionTemplateItem> {
   return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
-    // Create the solution template item
+    // Create an empty solution template item
     createSolutionTemplateItem(title, version, destinationRequestOptions, undefined, "public")
     .then(
       solutionTemplateItem => {
@@ -75,20 +75,21 @@ export function createSolutionTemplate (
 /**
  * Converts a solution template into an AGO deployed solution and items.
  *
- * @param solutionTemplate Solution template to deploy
+ * @param solutionTemplateItem Solution template to deploy
  * @param requestOptions Options for the request
- * @param settings
- * @param progressCallback
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param progressCallback Function for reporting progress updates from type-specific template
+ *                         handlers
  * @return A promise that will resolve with a list of the ids of items created in AGO
  */
 export function createSolutionFromTemplate  (
-  solutionTemplate: mInterfaces.ISolutionTemplateItem,
+  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const templates:mInterfaces.ITemplate[] = solutionTemplate.data.templates;
+    const templates:mInterfaces.ITemplate[] = solutionTemplateItem.data.templates;
     const clonedSolution:mInterfaces.ITemplate[] = [];
     settings.solutionName = settings.solutionName || "Solution";
 
@@ -101,9 +102,10 @@ export function createSolutionFromTemplate  (
     const cloneOrderChecklist:string[] = topologicallySortItems(templates);
 
     // -------------------------------------------------------------------------
+    // Common launch point whether using an existing folder or following the creation of one
+    // Creates deployed solution item, then launches deployment of its items
     function launchDeployment () {
-      createDeployedSolutionItem(settings.solutionName, solutionTemplate.item,
-        requestOptions, settings, 'public')
+      createDeployedSolutionItem(settings.solutionName, solutionTemplateItem, requestOptions, settings, 'public')
       .then(
         solutionItem => {
           progressCallback({
@@ -118,6 +120,7 @@ export function createSolutionFromTemplate  (
       );
     }
 
+    // Trigger creation of all items in list and wait for completion
     function runThroughChecklistInParallel () {
       const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
       cloneOrderChecklist.forEach(
@@ -156,16 +159,27 @@ export function createSolutionFromTemplate  (
   });
 }
 
+/**
+ * Returns the sum of the estimated cost factors of a set of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @return Sum of cost factors
+ */
 export function getEstimatedDeploymentCost (
-  solution: mInterfaces.ITemplate[]
+  templates: mInterfaces.ITemplate[]
 ): number {
   // Get the total estimated cost of creating this solution
   const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
     accumulator + (currentTemplate.estimatedDeploymentCostFactor ?
     currentTemplate.estimatedDeploymentCostFactor : 3);
-  return solution.reduce(reducer, 0);
+  return templates.reduce(reducer, 0);
 }
 
+/**
+ * Returns a list of the currently-supported AGO item types.
+ *
+ * @return List of item type names; names are all-lowercase forms of standard names
+ */
 export function getSupportedItemTypes (
 ): string[] {
   return mClassifier.getSupportedItemTypes();
@@ -222,7 +236,7 @@ enum SortVisitColor {
  * Creates an empty template.
  *
  * @param id AGO id of item
- * @return Empty item containing supplied id
+ * @return Empty template containing supplied id
  * @protected
  */
 function createPlaceholderTemplate (
@@ -236,14 +250,27 @@ function createPlaceholderTemplate (
   };
 }
 
+/**
+ * Creates an empty deployed solution AGO item.
+ *
+ * @param title Title to use for item
+ * @param solutionTemplateItem Solution template to deploy; serves as source of text info for new
+ *                             item
+ * @param requestOptions Options for the request
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return Empty template item
+ * @protected
+ */
 export function createDeployedSolutionItem (
   title: string,
-  templateItem: IItem,
+  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   access = "private"
 ): Promise<mInterfaces.IAGOItemAccess> {
   return new Promise((resolve, reject) => {
+    const templateItem = solutionTemplateItem.item;
     const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
       templateItem.id + "/info/" + templateItem.thumbnail;
     const item = {
@@ -275,6 +302,20 @@ export function createDeployedSolutionItem (
   });
 }
 
+/**
+ * Fetches an AGO item and converts it into a template after its dependencies have been fetched and
+ * converted.
+ *
+ * @param itemId AGO id of solution template item to deploy
+ * @param templates A collection of AGO item templates
+ * @param requestOptions Options for the request
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param progressCallback Function for reporting progress updates from type-specific template
+ *                         handlers
+ * @return A promise that will resolve with the item's template (which is simply returned if it's
+ *         already in the templates list
+ * @protected
+ */
 export function createItemFromTemplateWhenReady (
   itemId: string,
   templates: mInterfaces.ITemplate[],
@@ -284,7 +325,7 @@ export function createItemFromTemplateWhenReady (
 ): Promise<mInterfaces.ITemplate> {
   settings[itemId] = {};
   const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
-    const template = getTemplateInSolution(templates, itemId);
+    const template = findTemplateInList(templates, itemId);
     if (!template) {
       reject({ success: false });
     }
@@ -296,7 +337,7 @@ export function createItemFromTemplateWhenReady (
     .then(
       () => {
         // Prepare template
-        let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(templates, itemId));
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(findTemplateInList(templates, itemId));
 
         // Interpolate it
         itemTemplate.dependencies = itemTemplate.dependencies ?
@@ -319,6 +360,17 @@ export function createItemFromTemplateWhenReady (
   return itemDef;
 }
 
+/**
+ * Creates templates for a set of AGO items.
+ *
+ * @param ids AGO id string or list of AGO id strings
+ * @param solutionTemplateItem Solution template serving as parent for templates
+ * @param requestOptions Options for the request
+ * @param templates A collection of AGO item templates that can be referenced by newly-created
+ *                  templates
+ * @return A promise that will resolve with the created template items
+ * @protected
+ */
 export function createSolutionItemTemplates (
   ids: string | string[],
   solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
@@ -333,7 +385,7 @@ export function createSolutionItemTemplates (
     if (typeof ids === "string") {
       // Handle a single AGO id
       const rootId = ids;
-      if (getTemplateInSolution(templates, rootId)) {
+      if (findTemplateInList(templates, rootId)) {
         resolve(templates);  // Item and its dependents are already in list or are queued
 
       } else {
@@ -359,7 +411,7 @@ export function createSolutionItemTemplates (
 
               itemTemplate.dependencies.forEach(
                 dependentId => {
-                  if (!getTemplateInSolution(templates, dependentId)) {
+                  if (!findTemplateInList(templates, dependentId)) {
                     dependentDfds.push(createSolutionItemTemplates(dependentId,
                       solutionTemplateItem, requestOptions, templates));
                   }
@@ -400,6 +452,17 @@ export function createSolutionItemTemplates (
   });
 }
 
+/**
+ * Creates an empty solution template AGO item.
+ *
+ * @param title The title to use for the item
+ * @param version The version to include in the item's metadata
+ * @param requestOptions Options for the request
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return Empty template item
+ * @protected
+ */
 export function createSolutionTemplateItem (
   title: string,
   version: string,
@@ -442,12 +505,12 @@ export function createSolutionTemplateItem (
 /**
  * Finds index of template by id in a list of templates.
  *
- * @param templates List of templates to search
+ * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
  * @return Id of matching template or -1 if not found
  * @protected
  */
-function getTemplateIndexInSolution (
+function findTemplateIndexInSolution (
   templates: mInterfaces.ITemplate[],
   id: string
 ): number {
@@ -462,15 +525,15 @@ function getTemplateIndexInSolution (
 /**
  * Finds template by id in a list of templates.
  *
- * @param templates List of templates to search
+ * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
  * @return Matching template or null
  */
-export function getTemplateInSolution (
+export function findTemplateInList (
   templates: mInterfaces.ITemplate[],
   id: string
 ): mInterfaces.ITemplate {
-  const childId = getTemplateIndexInSolution(templates, id);
+  const childId = findTemplateIndexInSolution(templates, id);
   return childId >= 0 ? templates[childId] : null;
 }
 
@@ -478,16 +541,17 @@ export function getTemplateInSolution (
  * Creates a Solution item containing JSON descriptions of items forming the solution.
  *
  * @param title Title for Solution item to create
- * @param solution Hash of JSON descriptions of items to publish into Solution
+ * @param templates Hash of JSON descriptions of items to publish into Solution
  * @param requestOptions Options for the request
  * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: 'public', 'org', 'private'
- * @return A promise that will resolve with an object reporting success and the Solution id
+ * @return A promise that will resolve with an object reporting success and the solution id
+ * @protected
  */
 export function publishSolutionTemplate (
   title: string,
-  solution: mInterfaces.ITemplate[],
+  templates: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   folderId = null as string,
   access = "private"
@@ -503,7 +567,7 @@ export function publishSolutionTemplate (
     commentsEnabled: false
   };
   const data = {
-    templates: solution
+    templates
   };
 
   return mCommon.createItemWithData(item, data, requestOptions, folderId, access);
@@ -512,7 +576,7 @@ export function publishSolutionTemplate (
 /**
  * Replaces a template entry in a list of templates
  *
- * @param templates Templates list
+ * @param templates A collection of AGO item templates
  * @param id Id of item in templates list to find; if not found, no replacement is () => done()
  * @param template Replacement template
  * @return True if replacement was made
@@ -523,7 +587,7 @@ export function replaceTemplate (
   id: string,
   template: mInterfaces.ITemplate
 ): boolean {
-  const i = getTemplateIndexInSolution(templates, id);
+  const i = findTemplateIndexInSolution(templates, id);
   if (i >=  0) {
     templates[i] = template;
     return true;
@@ -534,14 +598,14 @@ export function replaceTemplate (
 /**
  * Topologically sort a Solution's items into a build list.
  *
- * @param items Hash of JSON descriptions of items
+ * @param templates A collection of AGO item templates
  * @return List of ids of items in the order in which they need to be built so that dependencies
  * are built before items that require those dependencies
  * @throws Error("Cyclical dependency graph detected")
  * @protected
  */
 export function topologicallySortItems (
-  fullItems: mInterfaces.ITemplate[]
+  templates: mInterfaces.ITemplate[]
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -577,12 +641,12 @@ export function topologicallySortItems (
                                   // we just want relative ordering
 
   const verticesToVisit:ISortVertex = {};
-  fullItems.forEach(function(template) {
+  templates.forEach(function(template) {
     verticesToVisit[template.itemId] = SortVisitColor.White;  // not yet visited
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  fullItems.forEach(function(template) {
+  templates.forEach(function(template) {
     if (verticesToVisit[template.itemId] === SortVisitColor.White) {  // if not yet visited
       visit(template.itemId);
     }
@@ -593,7 +657,7 @@ export function topologicallySortItems (
     verticesToVisit[vertexId] = SortVisitColor.Gray;  // visited, in progress
 
     // Visit dependents if not already visited
-    const template = getTemplateInSolution(fullItems, vertexId);
+    const template = findTemplateInList(templates, vertexId);
     const dependencies:string[] = template.dependencies || [];
     dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {  // if not yet visited
@@ -610,6 +674,14 @@ export function topologicallySortItems (
   return buildList;
 }
 
+/**
+ * Updates the data section of an solution template in AGO.
+ *
+ * @param solutionTemplateItem Solution template to update
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve with solutionTemplateItem
+ * @protected
+ */
 function updateSolutionTemplateItem (
   solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
   requestOptions: IUserRequestOptions

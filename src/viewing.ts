@@ -39,7 +39,7 @@ export interface IHierarchyEntry {
 /**
  * Extracts item hierarchy structure from a solution template.
  *
- * @param items Hash of JSON descriptions of items
+ * @param templates A collection of AGO item templates
  * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
  * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
  * item's dependencies
@@ -62,7 +62,7 @@ export function getItemHierarchy (
       };
 
       // Fill in the child's dependencies array with its children
-      const template = mSolution.getTemplateInSolution(templates, id);
+      const template = mSolution.findTemplateInList(templates, id);
       const dependencyIds = template.dependencies;
       if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
         itemChildren(dependencyIds, child.dependencies);
@@ -79,7 +79,7 @@ export function getItemHierarchy (
 /**
  * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
  *
- * @param items Solution to explore
+ * @param templates A collection of AGO item templates
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (

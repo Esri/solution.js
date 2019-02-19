@@ -30,10 +30,16 @@ import * as GenericModule from "./generic";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Structure for mapping from item type to module with type-specific template-handling code
+ */
 interface IItemTypeModuleMap {
   [itemType: string]: IItemTypeModule;
 }
 
+/**
+ * Mapping from item type to module with type-specific template-handling code
+ */
 const moduleMap:IItemTypeModuleMap = {
   "dashboard": DashboardModule,
   "feature service": FeatureServiceModule,
@@ -44,17 +50,24 @@ const moduleMap:IItemTypeModuleMap = {
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
+/**
+ * Returns a list of the currently-supported AGO item types.
+ *
+ * @return List of item type names; names are all-lowercase forms of standard names
+ */
 export function getSupportedItemTypes (
 ): string[] {
   return Object.keys(moduleMap);
 }
-  
+
 /**
  * Fetches the item and data sections, the resource and dependencies lists, and the item-type-specific
- * functions for an item using its AGOL item id.
+ * functions for an item using its AGOL item id, and then calls a type-specific function to convert
+ * the item into a template.
  *
- * @param itemId
- * @param requestOptions
+ * @param itemId AGO id of solution template item to templatize
+ * @param requestOptions Options for the request
+ * @return A promise which will resolve with an item template
  */
 export function convertItemToTemplate (
   itemId: string,
@@ -170,6 +183,12 @@ export function convertItemToTemplate (
   });
 }
 
+/**
+ * Loads the item-type-specific functions for an item.
+ *
+ * @param itemTemplate Item template to update
+ * @return Updated item template
+ */
 export function initItemTemplateFromJSON (
   itemTemplate:ITemplate
 ): ITemplate {
