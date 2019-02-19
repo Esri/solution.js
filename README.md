@@ -25,7 +25,7 @@
 
 #### Common terms
 
-An ArcGIS Online (AGO) `item` is transformed into a `template` that contains all of its defining information (except its thumbnail and resources; see [/docs/Background.md]()). If the item depends on other items, those items are also transformed into templates.
+An ArcGIS Online (AGO) `item` is transformed into a `template` that contains all of its defining information (except its thumbnail and resources; see [background info](./docs/Background.md)). If the item depends on other items, those items are also transformed into templates.
 
 A collection of templates can be bundled into a `solution template` AGO item for organization and distribution.
 
@@ -40,9 +40,9 @@ The API contains two primary modules:
 
 #### Additional information
 
-The API documentation is published at https://esri.github.io/arcgis-clone-js/ (source code in [/docs/src]()).
+The API documentation is published at https://esri.github.io/arcgis-clone-js/ ([source code](./docs/src)).
 
-Background information about the library is available in [/docs/Background.md]().
+Background information about the library is available in [background info](./docs/Background.md)).
 
 #### Supported ArcGIS Online Item Types
 
