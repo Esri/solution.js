@@ -107,13 +107,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        response => {
-          mockUtils.removeItemFcns(response);
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
           const template = mockSolutions.getWebMappingApplicationTemplate();
           template[0].resources = mockItems.getAGOLItemResources("one text").resources;
-          expect(response).toEqual(template);
+          expect(response).toEqual(mockSolutions.getSolutionTemplateItem(template));
           done();
         },
         error => done.fail(error)
@@ -149,12 +149,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        response => {
-          mockUtils.removeItemFcns(response);
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
           const template = mockSolutions.getWebMappingApplicationTemplateGroup();
-          expect(response).toEqual(template);
+          expect(response).toEqual(mockSolutions.getSolutionTemplateItem(template));
           done();
         },
         error => done.fail(error)
@@ -172,12 +172,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemDataWMANoWebmapOrGroup())
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
-      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        response => {
-          mockUtils.removeItemFcns(response);
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
           const template = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
-          expect(response).toEqual(template);
+          expect(response).toEqual(mockSolutions.getSolutionTemplateItem(template));
           done();
         },
         error => done.fail(error)
@@ -196,13 +196,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}');
-      mSolution.createSolutionTemplate("grp1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "grp1234567890", MOCK_USER_REQOPTS)
       .then(
-        response => {
-          mockUtils.removeItemFcns(response);
-          expect(response).toEqual([
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
+          expect(response).toEqual(mockSolutions.getSolutionTemplateItem([
             mockSolutions.getGroupTemplatePart()
-          ]);
+          ]));
           done();
         },
         error => done.fail(error)
@@ -438,12 +438,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should handle an empty, nameless solution", done => {
       const settings = createMockSettings();
-      mSolution.createSolutionFromTemplate({} as mInterfaces.ITemplate[], MOCK_USER_REQOPTS, settings)
+      mSolution.createSolutionFromTemplate(mockSolutions.getSolutionTemplateItem(), MOCK_USER_REQOPTS, settings)
       .then(done, done.fail);
     });
 
     it("should handle failure to create solution's folder", done => {
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplate());
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -464,7 +465,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a generated folder", done => {
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplate());
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -527,8 +529,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("for single item containing WMA without a data section", done => {
-      const solutionItem = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
-      delete solutionItem[0].data;
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup());
+      delete solutionItem.data.templates[0].data;
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -559,8 +562,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("handle failure to create a single item containing WMA without a data section", done => {
-      const solutionItem = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
-      delete solutionItem[0].data;
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup());
+      delete solutionItem.data.templates[0].data;
       const settings = createMockSettings();
 
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
@@ -584,12 +588,13 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a supplied folder and supplied solution name", done => {
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplate());
       const folderId = "FLD1234567890";
       const settings = createMockSettings("My Solution", folderId);
 
       // Test a code path
-      solutionItem[2].dependencies = null;
+      solutionItem.data.templates[2].dependencies = null;
 
       // Feature layer indices are assigned incrementally as they are added to the feature service
       const layerNumUpdater = (() => {
@@ -642,7 +647,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should clone a solution using a supplied folder, but handle failed storymap", done => {
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplate());
       const folderId = "FLD1234567890";
       const settings = createMockSettings(undefined, folderId, "org");
 
@@ -695,7 +701,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle failure to create a contained item", done => {
-      const solutionItem:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
+      const solutionItem:mInterfaces.ISolutionTemplateItem =
+        mockSolutions.getSolutionTemplateItem(mockSolutions.getWebMappingApplicationTemplate());
       const folderId = "FLD1234567890";
       const settings = createMockSettings(undefined, folderId);
 
@@ -2111,7 +2118,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should reject a missing AGOL", done => {
       const settings = {} as any;
-      mSolution.createItemFromTemplateWhenReady([], MOCK_USER_REQOPTS, settings, null)
+      mSolution.createItemFromTemplateWhenReady(null, [], MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -2120,7 +2127,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("should reject an AGOL id that isn't in the current solution", done => {
       const settings = {} as any;
-      mSolution.createItemFromTemplateWhenReady([], MOCK_USER_REQOPTS, settings, "wma1234567890")
+      mSolution.createItemFromTemplateWhenReady("wma1234567890", [], MOCK_USER_REQOPTS, settings)
       .then(
         () => done.fail(),
         () => done()
@@ -2537,11 +2544,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
-        (response:mInterfaces.ITemplate[]) => {
-          expect(response.length).toEqual(3);
-          const itemTemplate = response[0];
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          expect(response.data.templates.length).toEqual(3);
+          const itemTemplate = response.data.templates[0];
           expect(itemTemplate.type).toEqual("Web Mapping Application");
           expect(itemTemplate.item.title).toEqual("An AGOL item");
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
@@ -2575,11 +2582,11 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolutionTemplate(["wma1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mInterfaces.ITemplate[]) => {
-          expect(response.length).toEqual(3);
-          const itemTemplate = response[0];
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          expect(response.data.templates.length).toEqual(3);
+          const itemTemplate = response.data.templates[0];
           expect(itemTemplate.type).toEqual("Web Mapping Application");
           expect(itemTemplate.item.title).toEqual("An AGOL item");
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
@@ -2613,60 +2620,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
       ));
-      mSolution.createSolutionTemplate(["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
-        (response:mInterfaces.ITemplate[]) => {
-          expect(response.length).toEqual(3);
-          const itemTemplate = response[0];
+        (response:mInterfaces.ISolutionTemplateItem) => {
+          expect(response.data.templates.length).toEqual(3);
+          const itemTemplate = response.data.templates[0];
           expect(itemTemplate.type).toEqual("Web Mapping Application");
           expect(itemTemplate.item.title).toEqual("An AGOL item");
           expect(itemTemplate.data.source).toEqual("tpl1234567890");
           done();
-        },
-        error => done.fail(error)
-      );
-    });
-
-    it("should handle repeat calls without re-fetching items", done => {
-      const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
-      fetchMock
-      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
-      .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
-      .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
-      .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
-      .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
-      .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
-      .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
-      .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
-      .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
-        [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
-        [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
-      ))
-      .post(baseSvcURL + "FeatureServer/0?f=json",
-        mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer",
-        [mockItems.createAGOLRelationship(0, 1, "esriRelRoleOrigin")]
-      ))
-      .post(baseSvcURL + "FeatureServer/1?f=json",
-        mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
-        [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
-      ));
-      mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS)
-      .then(
-        (response:mInterfaces.ITemplate[]) => {
-          expect(response.length).toEqual(3);
-          expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
-
-          mSolution.createSolutionTemplate("wma1234567890", MOCK_USER_REQOPTS, response)
-          .then(
-            (response2:mInterfaces.ITemplate[]) => {
-              expect(response2.length).toEqual(3);  // unchanged
-              expect(fetchMock.calls("begin:https://myorg.maps.arcgis.com/").length).toEqual(9);
-              expect(response2).toEqual(response);
-              done();
-            },
-            error => done.fail(error)
-          );
         },
         error => done.fail(error)
       );
@@ -2678,7 +2640,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("returns an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate(null, MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", null, MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2690,7 +2652,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("returns an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate(null, MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", null, MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2702,7 +2664,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("returns an error if the hierarchy to be created fails: empty id list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate([], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", [], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2714,7 +2676,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
     it("returns an error if the hierarchy to be created fails: missing id in list", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate([null], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", [null], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2732,7 +2694,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate("fail1234567890", MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", "fail1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2746,7 +2708,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       fetchMock
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate(["fail1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2784,7 +2746,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       ))
       .mock("path:/sharing/rest/content/items/fail1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/fail1234567890", mockItems.getAGOLItem());
-      mSolution.createSolutionTemplate(["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["wma1234567890", "fail1234567890"], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2805,7 +2767,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      mSolution.createSolutionTemplate(["wma1234567890", null], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["wma1234567890", null], MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
@@ -2826,11 +2788,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=1&num=100&token=fake-token", mockItems.get400Failure());
-      mSolution.createSolutionTemplate(["grp1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["grp1234567890"], MOCK_USER_REQOPTS)
       .then(
-        () => {
-          done.fail();
-        },
+        fail,
         error => {
           expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();
@@ -2849,11 +2809,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/svc1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"));
-      mSolution.createSolutionTemplate(["wma1234567890"], MOCK_USER_REQOPTS)
+      mSolution.createSolutionTemplate("title", "version", ["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
-        () => {
-          done.fail();
-        },
+        fail,
         error => {
           expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
           done();

@@ -42,9 +42,13 @@ export function createSolutionTemplate (
   version: string,
   ids: string | string[],
   sourceRequestOptions: IUserRequestOptions,
-  destinationRequestOptions: IUserRequestOptions
+  destinationRequestOptions?: IUserRequestOptions
 ): Promise<mInterfaces.ISolutionTemplateItem> {
   return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
+    if (!destinationRequestOptions) {
+      destinationRequestOptions = sourceRequestOptions;
+    }
+
     // Create an empty solution template item
     createSolutionTemplateItem(title, version, destinationRequestOptions, undefined, "public")
     .then(

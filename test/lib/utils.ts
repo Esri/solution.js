@@ -18,6 +18,7 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "../../src/itemTypes/common";
 import * as mInterfaces from "../../src/interfaces";
+import * as mObjHelpers from "../../src/utils/object-helpers"
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -90,9 +91,15 @@ export function jsonClone (
   return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * Removes item-specific functions from templates.
+ *
+ * @param solutionTemplateItem Solution template
+ */
 export function removeItemFcns (
-  templates: mInterfaces.ITemplate | mInterfaces.ITemplate[]
+  solutionTemplateItem: mInterfaces.ISolutionTemplateItem
 ): void {
+  const templates = mObjHelpers.getProps(solutionTemplateItem, ["data", "templates"]);
   if (templates) {
     if (Array.isArray(templates)) {
       templates.forEach(
