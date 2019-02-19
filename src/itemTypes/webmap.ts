@@ -48,14 +48,14 @@ export function convertItemToTemplate (
     itemTemplate.item.url =
       mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + mCommon.templatize(itemTemplate.itemId);
 
-    // Templatize the map layer ids
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
+    // Templatize the map layer ids now that we've extracted them as dependencies
     if (itemTemplate.data) {
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
     }
-
-    // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(itemTemplate);
 
     resolve(itemTemplate);
   });

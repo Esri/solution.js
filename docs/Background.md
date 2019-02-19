@@ -21,7 +21,7 @@ This is the function chain that transforms a collection of ArcGIS Online (AGO) i
 
 | Level | Function | Returns |
 | ---- | ---- | ---- |
-| external | `createSolutionTemplate (ids, requestOptions, templates?)` | Promise => IAGOItemAccess |
+| external | `createSolutionTemplate (title, version, ids, requestOptions)` | Promise => ISolutionTemplateItem |
 | | This is the entry point that constructs a Solution Template item based on the passed in item and its dependencies. This function's main job is to produce the Solution Template item itself. It then delegates the template construction. | |
 | internal | `convertItemToTemplate(itemId, requestOptions, templates?)` | Promise => ITemplate |
 | | This orchestrates the construction the actual item template by getting the source item's information, creating a base template, and then delegating to type-specific services to complete the template. | |

@@ -36,42 +36,6 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
-export interface IAGOItemAccess {
-  id: string,
-  url: string
-}
-
-/**
- * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
- *
- * @param items Solution to explore
- * @return List of ids of top-level items in Solution
- */
-export function getTopLevelItemIds (
-  templates: mInterfaces.ITemplate[]
-): string[] {
-  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemCandidateIds:string[] =
-    templates.map(
-      template => {
-        return template.itemId;
-      }
-    );
-  templates.forEach(
-    template => {
-      (template.dependencies || []).forEach(function (dependencyId) {
-        const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
-        if (iNode >= 0) {
-          // Node is somebody's dependency, so remove the node from the list of top-level nodes
-          // If iNode == -1, then it's a shared dependency and it has already been removed
-          topLevelItemCandidateIds.splice(iNode, 1);
-        }
-      });
-    }
-  );
-  return topLevelItemCandidateIds;
-}
-
 /**
  * Extracts item hierarchy structure from a solution template.
  *
@@ -112,54 +76,33 @@ export function getItemHierarchy (
   return hierarchy;
 }
 
-export function createDeployedSolutionItem (
-  title: string,
-  solution: mInterfaces.ITemplate[],
-  templateItem: IItem,
-  requestOptions: IUserRequestOptions,
-  settings = {} as any,
-  access = "private"
-): Promise<IAGOItemAccess> {
-  return new Promise((resolve, reject) => {
-    const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
-      templateItem.id + "/info/" + templateItem.thumbnail;
-    const item = {
-      itemType: "text",
-      name: null as string,
-      title,
-      description: templateItem.description,
-      tags: templateItem.tags,
-      snippet: templateItem.snippet,
-      thumbnailurl: thumbnailUrl,
-      accessInformation: templateItem.accessInformation,
-      type: "Solution",
-      typeKeywords: ["Solution", "Deployed"],
-      commentsEnabled: false
-    };
-    const data = {
-      templates: solution
-    };
-
-    mCommon.createItemWithData(item, data, requestOptions, settings.folderId, access)
-    .then(
-      createResponse => {
-        // Update its app URL
-        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
-        const deployedSolutionItemId = createResponse.id;
-        const deployedSolutionItemUrl = orgUrl + "/home/item.html?id=" + deployedSolutionItemId;
-        mCommon.updateItemURL(deployedSolutionItemId, deployedSolutionItemUrl, requestOptions)
-        .then(
-          response => {
-            const deployedSolutionItem:IAGOItemAccess = {
-              id: deployedSolutionItemId,
-              url: deployedSolutionItemUrl
-            }
-            resolve(deployedSolutionItem);
-          },
-          () => reject({ success: false })
-        );
-      },
-      () => reject({ success: false })
+/**
+ * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
+ *
+ * @param items Solution to explore
+ * @return List of ids of top-level items in Solution
+ */
+export function getTopLevelItemIds (
+  templates: mInterfaces.ITemplate[]
+): string[] {
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  const topLevelItemCandidateIds:string[] =
+    templates.map(
+      template => {
+        return template.itemId;
+      }
     );
-  });
+  templates.forEach(
+    template => {
+      (template.dependencies || []).forEach(function (dependencyId) {
+        const iNode = topLevelItemCandidateIds.indexOf(dependencyId);
+        if (iNode >= 0) {
+          // Node is somebody's dependency, so remove the node from the list of top-level nodes
+          // If iNode == -1, then it's a shared dependency and it has already been removed
+          topLevelItemCandidateIds.splice(iNode, 1);
+        }
+      });
+    }
+  );
+  return topLevelItemCandidateIds;
 }

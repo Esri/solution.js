@@ -49,25 +49,18 @@
       <textarea id="itemLinksText" rows="2" cols="115" ondrop="onDrop(event)"></textarea>
 
       <br/><br/>
+      <label for="solutionName">Name for published Solution:</label>
+      <input type="text" id="solutionName" style="width:300px" placeholder="Solution"><br>
+      <label for="solutionVersion">Version for published Solution:</label>
+      <input type="text" id="solutionVersion" placeholder="1.0"><br>
+      <br/>
       <button id="clearBtn" onclick="clearList()">Clear list</button>
       <button id="createBtn" onclick="createSolutionFcn()">Create solution</button>
     </div>
 
-    <div id="create" class="section" style="display:none">
-      <div class="section-title">Solution ready for publishing</div>
-      <img id="creating" src="../demo_common/images/loading.gif"/>
-      <div id="createResults" style="display:none">
-        <div id="createDisplay"></div>
-        <br>
-        <label for="solutionName">Name for published Solution:</label>
-        <input type="text" id="solutionName" style="width:300px" placeholder="Solution"><br>
-        <button id="publishBtn" onclick="publishSolutionFcn()">Publish solution</button>
-      </div>
-    </div>
-
     <div id="display" class="section" style="display:none">
+      <img id="creating" src="../demo_common/images/loading.gif"/>
       <div class="section-title">Published Solution details</div>
-      <img id="fetchingDetails" src="../demo_common/images/loading.gif"/>
       <div id="detailsResults" style="display:none">
         <div id="detailsDisplay"></div>
       </div>
@@ -83,11 +76,6 @@
   function clearList() {
     document.getElementById('itemLinksText').textContent = '';
     document.getElementById('itemLinksText').rows = 2;
-
-    document.getElementById('create').style.display = 'none';
-    document.getElementById('createResults').style.display = 'none';
-    document.getElementById('createDisplay').innerHTML = '';
-    document.getElementById('publishBtn').disabled = 'disabled';
 
     document.getElementById('display').style.display = 'none';
     document.getElementById('detailsResults').style.display = 'none';
@@ -143,7 +131,6 @@
     demoCommon
   ) {
     createSolutionFcn = createSolutionTemplate;
-    publishSolutionFcn = publishSolutionTemplate;
     var requestOptions, templatesList, solutionName;
 
     document.getElementById('supportedItemTypes').innerHTML =
@@ -171,10 +158,7 @@
      * Creates a solution from a set of existing AGOL items
      */
     function createSolutionTemplate() {
-      document.getElementById('create').style.display = 'block';
-
-      document.getElementById('creating').style.display = 'block';
-      document.getElementById('createResults').style.display = 'none';
+      document.getElementById('display').style.display = 'block';
 
       // Prepare credentials for source
       sourceRequestOptions = demoCommon.getRequestOptions(
@@ -210,26 +194,29 @@
           );
 
           // Get the items forming the solution
-          arcgis_clone_js.createSolutionTemplate(solutionRootIds, sourceRequestOptions)
+          arcgis_clone_js.createSolutionTemplate(
+            (document.getElementById('solutionName').value || 'Solution'),
+            (document.getElementById('solutionVersion').value || '1.0'),
+            solutionRootIds, destinationRequestOptions)
           .then(
-            response => {
-              templatesList = response;
+            solutionTemplate => {
+              templatesList = solutionTemplate.data.templates;
 
               // Display the Solution
-              document.getElementById('createDisplay').innerHTML = 'Source hierarchy:' +
-                demoCommon.createHierarchyDisplay(templatesList,
-                arcgis_clone_js.getItemHierarchy(templatesList), true, orgUrl);
-              document.getElementById('publishBtn').disabled = '';
+              document.getElementById('detailsDisplay').innerHTML =
+                demoCommon.createItemLinksDisplay(solutionTemplate.item.id, orgUrl, portalUrl) +
+                '<br>Published Solution item hierarchy:' +
+                demoCommon.createHierarchyDisplay(solutionTemplate.data.templates,
+                  arcgis_clone_js.getItemHierarchy(solutionTemplate.data.templates));
             },
             error => {
-              document.getElementById('createDisplay').innerHTML = JSON.stringify(error);
-              document.getElementById('publishBtn').disabled = 'disabled';
+              document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
             }
           )
           .finally(
             () => {
               document.getElementById('creating').style.display = 'none';
-              document.getElementById('createResults').style.display = 'block';
+              document.getElementById('detailsResults').style.display = 'block';
             }
           );
 
@@ -238,48 +225,6 @@
           console.warn(JSON.stringify(error));
           document.getElementById('create').style.display = 'none';
           alert('Please refresh page and provide credentials');
-        }
-      );
-    }
-
-    /**
-     * Creates a solution item in the user's organization.
-     */
-    function publishSolutionTemplate() {
-      document.getElementById('publishBtn').disabled = 'disabled';
-      document.getElementById('display').style.display = 'block';
-
-      // Get the destinations's organization URL for creating links to source items
-      arcgis_rest_request.getPortal(null, destinationRequestOptions)
-      .then(
-        function (response) {
-          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
-          var portalUrl = 'https://' + response.portalHostname + '/';
-
-          // Publish the Solution
-          solutionName = document.getElementById('solutionName').value || 'Solution';
-          arcgis_clone_js.publishSolutionTemplate(
-            solutionName, templatesList, destinationRequestOptions, null, 'public')
-          .then(function (publishResponse) {
-            var publishedSolutionId = publishResponse.id;
-
-            arcgis_rest_items.getItemData(publishedSolutionId, destinationRequestOptions)
-            .then(
-              publishedSolution => {
-                document.getElementById('detailsDisplay').innerHTML =
-                  demoCommon.createItemLinksDisplay(publishedSolutionId, orgUrl, portalUrl) +
-                  '<br>Published Solution item hierarchy:' +
-                  demoCommon.createHierarchyDisplay(publishedSolution.templates,
-                    arcgis_clone_js.getItemHierarchy(publishedSolution.templates));
-              }
-            );
-          }, function (error) {
-             document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
-          })
-          .finally(() => {
-            document.getElementById('fetchingDetails').style.display = 'none';
-            document.getElementById('detailsResults').style.display = 'block';
-          });
         }
       );
     }

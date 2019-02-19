@@ -75,6 +75,9 @@ export function createItemWithData (
     items.createItemInFolder(options)
     .then(
       results => {
+        // Clear property used to create item's data
+        delete item.text;
+
         if (access !== "private") {  // set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
           const options1 = {
@@ -191,6 +194,30 @@ export function templatizeList (
     }
   );
 }
+export function updateItemData (
+  id: string,
+  data: any,
+  requestOptions: IUserRequestOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Update its URL
+    const options = {
+      item: {
+        id,
+        text: data
+      },
+      ...requestOptions
+    };
+
+    items.updateItem(options)
+    .then(
+      updateResp => {
+        resolve(id);
+      },
+      () => reject()
+    );
+  });
+}
 
 /**
  * Updates the URL of an item.
@@ -209,8 +236,8 @@ export function updateItemURL (
     // Update its URL
     const options = {
       item: {
-        'id': id,
-        'url': url
+        id,
+        url
       },
       ...requestOptions
     };

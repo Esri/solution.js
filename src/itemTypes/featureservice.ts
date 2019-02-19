@@ -16,6 +16,7 @@
 
 import * as adlib from "adlib";
 import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
+import * as items from "@esri/arcgis-rest-items";
 import { request } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
@@ -26,7 +27,7 @@ import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -45,15 +46,6 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencies (
-  itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    resolve([]);
-  });
-}
-
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
 /**
@@ -67,7 +59,7 @@ export function getDependencies (
  * @return A promise that will resolve with the id of the created item
  * @protected
  */
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -81,24 +73,24 @@ export function deployItem (
   });
 
   return new Promise((resolve, reject) => {
-    const options = {
+    const createOptions = {
       item: itemTemplate.item,
       folderId: settings.folderId,
       ...requestOptions
     }
     if (itemTemplate.data) {
-      options.item.text = itemTemplate.data;
+      createOptions.item.text = itemTemplate.data;
     }
 
     // Make the item name unique
-    options.item.name += "_" + mCommon.getUTCTimestamp();
+    createOptions.item.name = itemTemplate.item.name + "_" + mCommon.getUTCTimestamp();
 
     // Create the item
     progressCallback && progressCallback({
       processId: itemTemplate.key,
       status: "creating",
     });
-    featureServiceAdmin.createFeatureService(options)
+    featureServiceAdmin.createFeatureService(createOptions)
     .then(
       createResponse => {
         // Add the new item to the settings list
@@ -110,12 +102,36 @@ export function deployItem (
         itemTemplate = adlib.adlib(itemTemplate, settings);
         itemTemplate.item.url = createResponse.serviceurl;
 
-        // Add the feature service's layers and tables to it
-        addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions, progressCallback)
+        // Update item using a unique name because createFeatureService doesn't provide a way to specify
+        // snippet, description, etc.
+        const updateOptions:items.IItemUpdateRequestOptions = {
+          item: {
+            id: itemTemplate.itemId,
+            title: itemTemplate.item.title,
+            snippet: itemTemplate.item.snippet,
+            description: itemTemplate.item.description,
+            accessInfo: itemTemplate.item.accessInfo,
+            licenseInfo: itemTemplate.item.licenseInfo,
+            text: itemTemplate.data
+          },
+          ...requestOptions
+        };
+
+        items.updateItem(updateOptions)
         .then(
           () => {
-            mCommon.finalCallback(itemTemplate.key, true, progressCallback);
-            resolve(itemTemplate);
+            // Add the feature service's layers and tables to it
+            addFeatureServiceLayersAndTables(itemTemplate, settings, requestOptions, progressCallback)
+            .then(
+              () => {
+                mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+                resolve(itemTemplate);
+              },
+              () => {
+                mCommon.finalCallback(itemTemplate.key, false, progressCallback);
+                reject({ success: false });
+              }
+            );
           },
           () => {
             mCommon.finalCallback(itemTemplate.key, false, progressCallback);
@@ -287,15 +303,6 @@ export function fleshOutFeatureService (
     request(serviceUrl + "?f=json", requestOptions)
     .then(
       serviceData => {
-        // Fill in some missing parts
-        // If the service doesn't have a name, try to get a name from its layers or tables
-        serviceData["name"] = itemTemplate.item["name"] ||
-          getFirstUsableName(serviceData["layers"]) ||
-          getFirstUsableName(serviceData["tables"]) ||
-          "Feature Service";
-        serviceData["snippet"] = itemTemplate.item["snippet"];
-        serviceData["description"] = itemTemplate.item["description"];
-
         serviceData.serviceItemId = mCommon.templatize(serviceData.serviceItemId);
         properties.service = serviceData;
 
@@ -461,7 +468,8 @@ function updateFeatureServiceDefinition(
             () => reject({ success: false })
           );
         },
-        () => reject({ success: false })
+        error => {console.warn("addToServiceDefinition reject", JSON.stringify(error,null,2)); reject({ success: false });} // //???
+        // //???() => reject({ success: false })
       );
     } else {
       resolve();

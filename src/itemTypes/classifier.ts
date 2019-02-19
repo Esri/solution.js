@@ -88,7 +88,7 @@ export function convertItemToTemplate (
         // Convert relative thumbnail URL to an absolute one so that it can be preserved
         // TODO disconnected deployment may not have access to the absolute URL
         itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
-          itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
+          itemId + "/info/" + itemTemplate.item.thumbnail;
 
         // Request item data section
         const dataPromise = items.getItemData(itemId, requestOptions);
@@ -113,26 +113,13 @@ export function convertItemToTemplate (
             itemTemplate.data = dataResponse;
             itemTemplate.resources = resourceResponse && resourceResponse.total > 0 ? resourceResponse.resources : null;
 
-            // Complete item
-            const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
-
-            // Request item dependencies
-            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
-
-            Promise.all([
-              completionPromise,
-              dependenciesPromise
-            ])
+            // Create the item's template
+            itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
-              responses2 => {
-                const [completionResponse, dependenciesResponse] = responses2;
-                itemTemplate = completionResponse;
-
+              template => {
                 itemTemplate.dependencies = removeDuplicates(
-                  mCommon.deTemplatize(
-                    dependenciesResponse
-                    .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
-                  ) as string[]
+                  (template.dependencies || [] as string[])
+                  .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
                 );
 
                 resolve(itemTemplate);
@@ -160,26 +147,17 @@ export function convertItemToTemplate (
             // Convert relative thumbnail URL to an absolute one so that it can be preserved
             // TODO disconnected deployment may not have access to the absolute URL
             itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
-              itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
+              itemId + "/info/" + itemTemplate.item.thumbnail;
 
-            // Complete item
-            const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
-
-            // Request item dependencies (i.e., the group's contents)
-            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
-
-            Promise.all([
-              completionPromise,
-              dependenciesPromise
-            ])
+            // Create the item's template
+            itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
-              responses2 => {
-                const [completionResponse, dependenciesResponse] = responses2;
-                itemTemplate = completionResponse;
-
+              template => {
                 itemTemplate.dependencies = removeDuplicates(
-                  mCommon.deTemplatize(dependenciesResponse) as string[]
+                  (template.dependencies || [] as string[])
+                  .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
                 );
+
                 resolve(itemTemplate);
               },
               () => reject({ success: false })

@@ -18,8 +18,19 @@
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
-export interface ISolutionItem {
+export interface IAGOItemAccess {
+  id: string,
+  url: string
+}
+
+export interface ISolution {
+  metadata: any;
   templates: ITemplate[];
+}
+
+export interface ISolutionTemplateItem {
+  item: any;
+  data: ISolution;
 }
 
 /**

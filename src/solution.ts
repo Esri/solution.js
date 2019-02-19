@@ -18,6 +18,7 @@ import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
 import { ArcGISRequestError } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IItem } from '@esri/arcgis-rest-common-types';
 
 import * as mCommon from "./itemTypes/common";
 import * as mClassifier from "./itemTypes/classifier";
@@ -25,11 +26,6 @@ import * as mInterfaces from "./interfaces";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
-export function getSupportedItemTypes (
-  ): string[] {
-    return mClassifier.getSupportedItemTypes();
-  }
-  
 /**
  * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
  *
@@ -60,127 +56,37 @@ export function getSupportedItemTypes (
  * of ids
  */
 export function createSolutionTemplate (
+  title: string,
+  version: string,
   ids: string | string[],
-  requestOptions: IUserRequestOptions,
-  templates?: mInterfaces.ITemplate[]
-): Promise<mInterfaces.ITemplate[]> {
-  if (!templates) {
-    templates = [];
-  }
-
-  return new Promise((resolve, reject) => {
-    if (typeof ids === "string") {
-      // Handle a single AGOL id
-      const rootId = ids;
-      if (getTemplateInSolution(templates, rootId)) {
-        resolve(templates);  // Item and its dependents are already in list or are queued
-
-      } else {
-        // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
-        templates.push(createPlaceholderTemplate(rootId));
-
-        // Get the specified item
-        getItemPromise
+  requestOptions: IUserRequestOptions
+): Promise<mInterfaces.ISolutionTemplateItem> {
+  return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
+    // Create the solution template item
+    createSolutionTemplateItem(title, version, requestOptions, undefined, "public")
+    .then(
+      solutionTemplateItem => {
+        // Get the templates for the items in the solution
+        createSolutionItemTemplates(ids, solutionTemplateItem, requestOptions)
         .then(
-          itemTemplate => {
-            // Set the value keyed by the id, replacing the placeholder
-            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
+          templates => {
+            solutionTemplateItem.data.templates = templates;
 
-            // Trace item dependencies
-            if (itemTemplate.dependencies.length === 0) {
-              resolve(templates);
-
-            } else {
-              // Get its dependents, asking each to get its dependents via
-              // recursive calls to this function
-              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
-              itemTemplate.dependencies.forEach(
-                dependentId => {
-                  if (!getTemplateInSolution(templates, dependentId)) {
-                    dependentDfds.push(createSolutionTemplate(dependentId, requestOptions, templates));
-                  }
-                }
-              );
-              Promise.all(dependentDfds)
-              .then(
-                () => {
-                  resolve(templates);
-                },
-                () => reject({ success: false })
-              );
-            }
+            // Update the solution template item
+            updateSolutionTemplateItem(solutionTemplateItem, requestOptions)
+            .then(
+              updatedSolutionTemplateItem => {
+                resolve(updatedSolutionTemplateItem);
+              },
+              () => reject({ success: false })
+            )
           },
           () => reject({ success: false })
         );
-      }
-
-    } else if (Array.isArray(ids) && ids.length > 0) {
-      // Handle a list of one or more AGOL ids by stepping through the list
-      // and calling this function recursively
-      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
-      ids.forEach(id => {
-        getHierarchyPromise.push(createSolutionTemplate(id, requestOptions, templates));
-      });
-      Promise.all(getHierarchyPromise)
-      .then(
-        () => {
-          resolve(templates);
-        },
-        () => reject({ success: false })
-      );
-
-    } else {
-      reject({ success: false });
-    }
+      },
+      () => reject({ success: false })
+    );
   });
-}
-
-/**
- * Creates a Solution item containing JSON descriptions of items forming the solution.
- *
- * @param title Title for Solution item to create
- * @param solution Hash of JSON descriptions of items to publish into Solution
- * @param requestOptions Options for the request
- * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
- *                 folder; ignored for Group item type
- * @param access Access to set for item: 'public', 'org', 'private'
- * @return A promise that will resolve with an object reporting success and the Solution id
- */
-export function publishSolutionTemplate (
-  title: string,
-  solution: mInterfaces.ITemplate[],
-  requestOptions: IUserRequestOptions,
-  folderId = null as string,
-  access = "private"
-): Promise<items.IItemUpdateResponse> {
-  // Define the solution item
-  const item = {
-    title,
-    type: "Solution",
-    itemType: "text",
-    typeKeywords: ["Template"],
-    access,
-    listed: false,
-    commentsEnabled: false
-  };
-  const data = {
-    templates: solution
-  };
-
-  return mCommon.createItemWithData(item, data, requestOptions, folderId, access);
-}
-
-export function getEstimatedDeploymentCost (
-  solution: mInterfaces.ITemplate[]
-): number {
-  // Get the total estimated cost of creating this solution
-  const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
-    accumulator + (currentTemplate.estimatedDeploymentCostFactor ?
-    currentTemplate.estimatedDeploymentCostFactor : 3);
-  return solution.reduce(reducer, 0);
 }
 
 /**
@@ -198,28 +104,49 @@ export function getEstimatedDeploymentCost (
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return A promise that will resolve with a list of the ids of items created in AGOL
  */
-export function createSolutionFromTemplate (
-  solution: mInterfaces.ITemplate[],
+export function createSolutionFromTemplate  (
+  solutionTemplate: mInterfaces.ISolutionTemplateItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
+    const templates:mInterfaces.ITemplate[] = solutionTemplate.data.templates;
     const clonedSolution:mInterfaces.ITemplate[] = [];
+    settings.solutionName = settings.solutionName || "Solution";
 
     // Don't bother creating folder if there are no items in solution
-    if (!solution || Object.keys(solution).length === 0) {
+    if (!templates || Object.keys(templates).length === 0) {
       resolve(clonedSolution);
     }
 
     // Run through the list of item ids in clone order
-    const cloneOrderChecklist:string[] = topologicallySortItems(solution);
+    const cloneOrderChecklist:string[] = topologicallySortItems(templates);
 
     // -------------------------------------------------------------------------
+    function launchDeployment () {
+      createDeployedSolutionItem(settings.solutionName, solutionTemplate.item,
+        requestOptions, settings, 'public')
+      .then(
+        solutionItem => {
+          progressCallback({
+            processId: solutionItem.id,
+            type: "Solution",
+            status: "done",
+            estimatedCostFactor: 1
+          });
+
+          runThroughChecklistInParallel();
+        },
+        () => reject({ success: false })
+      );
+    }
+
     function runThroughChecklistInParallel () {
       const awaitAllItems = [] as Array<Promise<mInterfaces.ITemplate>>;
       cloneOrderChecklist.forEach(
-        id => awaitAllItems.push(createItemFromTemplateWhenReady(solution, requestOptions, settings, id, progressCallback))
+        id => awaitAllItems.push(createItemFromTemplateWhenReady(id,
+          templates, requestOptions, settings, progressCallback))
       );
 
       // Wait until all items have been created
@@ -233,10 +160,10 @@ export function createSolutionFromTemplate (
 
     // Use specified folder to hold the hydrated items to avoid name clashes
     if (settings.folderId) {
-      runThroughChecklistInParallel();
+      launchDeployment();
     } else {
       // Create a folder to hold the hydrated items to avoid name clashes
-      const folderName = (settings.solutionName || "Solution") + " (" + mCommon.getUTCTimestamp() + ")";
+      const folderName = settings.solutionName + " (" + mCommon.getUTCTimestamp() + ")";
       const options = {
         title: folderName,
         authentication: requestOptions.authentication
@@ -245,7 +172,7 @@ export function createSolutionFromTemplate (
       .then(
         createdFolderResponse => {
           settings.folderId = createdFolderResponse.folder.id;
-          runThroughChecklistInParallel();
+          launchDeployment();
         },
         () => reject({ success: false })
       );
@@ -253,63 +180,19 @@ export function createSolutionFromTemplate (
   });
 }
 
-export function createItemFromTemplateWhenReady (
-  itemId: string,
-  solution: mInterfaces.ITemplate[],
-  requestOptions: IUserRequestOptions,
-  settings: any,
-  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
-): Promise<mInterfaces.ITemplate> {
-  settings[itemId] = {};
-  const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
-    const template = getTemplateInSolution(solution, itemId);
-    if (!template) {
-      reject({ success: false });
-    }
-
-    // Wait until all dependencies are deployed
-    const awaitDependencies = [] as Array<Promise<mInterfaces.ITemplate>>;
-    (template.dependencies || []).forEach(dependencyId => awaitDependencies.push(settings[dependencyId].def));
-    Promise.all(awaitDependencies)
-    .then(
-      () => {
-        // Prepare template
-        let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(solution, itemId));
-
-        // Interpolate it
-        itemTemplate.dependencies = itemTemplate.dependencies ?
-          mCommon.templatize(itemTemplate.dependencies) as string[] : [];
-        itemTemplate = adlib.adlib(itemTemplate, settings);
-
-        // Deploy it
-        itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, requestOptions, progressCallback)
-        .then(
-          itemClone => resolve(itemClone),
-          () => reject({ success: false })
-        )
-      },
-      () => reject({ success: false })
-    );
-  });
-
-  // Save the deferred for the use of items that depend on this item being created first
-  settings[itemId].def = itemDef;
-  return itemDef;
+export function getEstimatedDeploymentCost (
+  solution: mInterfaces.ITemplate[]
+): number {
+  // Get the total estimated cost of creating this solution
+  const reducer = (accumulator:number, currentTemplate:mInterfaces.ITemplate) =>
+    accumulator + (currentTemplate.estimatedDeploymentCostFactor ?
+    currentTemplate.estimatedDeploymentCostFactor : 3);
+  return solution.reduce(reducer, 0);
 }
 
-/**
- * Finds template by id in a list of templates.
- *
- * @param templates List of templates to search
- * @param id AGOL id of template to find
- * @return Matching template or null
- */
-export function getTemplateInSolution (
-  templates: mInterfaces.ITemplate[],
-  id: string
-): mInterfaces.ITemplate {
-  const childId = getTemplateIndexInSolution(templates, id);
-  return childId >= 0 ? templates[childId] : null;
+export function getSupportedItemTypes (
+): string[] {
+  return mClassifier.getSupportedItemTypes();
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
@@ -377,6 +260,209 @@ function createPlaceholderTemplate (
   };
 }
 
+export function createDeployedSolutionItem (
+  title: string,
+  templateItem: IItem,
+  requestOptions: IUserRequestOptions,
+  settings = {} as any,
+  access = "private"
+): Promise<mInterfaces.IAGOItemAccess> {
+  return new Promise((resolve, reject) => {
+    const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
+      templateItem.id + "/info/" + templateItem.thumbnail;
+    const item = {
+      itemType: "text",
+      name: null as string,
+      title,
+      description: templateItem.description,
+      tags: templateItem.tags,
+      snippet: templateItem.snippet,
+      thumbnailurl: thumbnailUrl,
+      accessInformation: templateItem.accessInformation,
+      type: "Solution",
+      typeKeywords: ["Solution", "Deployed"],
+      commentsEnabled: false
+    };
+
+    mCommon.createItemWithData(item, null, requestOptions, settings.folderId, access)
+    .then(
+      createResponse => {
+        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
+        const deployedSolutionItem:mInterfaces.IAGOItemAccess = {
+          id: createResponse.id,
+          url: orgUrl + "/home/item.html?id=" + createResponse.id
+        }
+        resolve(deployedSolutionItem);
+      },
+      () => reject({ success: false })
+    );
+  });
+}
+
+export function createItemFromTemplateWhenReady (
+  itemId: string,
+  templates: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  settings: any,
+  progressCallback?: (update:mInterfaces.IProgressUpdate) => void
+): Promise<mInterfaces.ITemplate> {
+  settings[itemId] = {};
+  const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
+    const template = getTemplateInSolution(templates, itemId);
+    if (!template) {
+      reject({ success: false });
+    }
+
+    // Wait until all dependencies are deployed
+    const awaitDependencies = [] as Array<Promise<mInterfaces.ITemplate>>;
+    (template.dependencies || []).forEach(dependencyId => awaitDependencies.push(settings[dependencyId].def));
+    Promise.all(awaitDependencies)
+    .then(
+      () => {
+        // Prepare template
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(getTemplateInSolution(templates, itemId));
+
+        // Interpolate it
+        itemTemplate.dependencies = itemTemplate.dependencies ?
+          mCommon.templatize(itemTemplate.dependencies) as string[] : [];
+        itemTemplate = adlib.adlib(itemTemplate, settings);
+
+        // Deploy it
+        itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, requestOptions, progressCallback)
+        .then(
+          itemClone => resolve(itemClone),
+          () => reject({ success: false })
+        )
+      },
+      () => reject({ success: false })
+    );
+  });
+
+  // Save the deferred for the use of items that depend on this item being created first
+  settings[itemId].def = itemDef;
+  return itemDef;
+}
+
+export function createSolutionItemTemplates (
+  ids: string | string[],
+  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+  requestOptions: IUserRequestOptions,
+  templates?: mInterfaces.ITemplate[]
+): Promise<mInterfaces.ITemplate[]> {
+  if (!templates) {
+    templates = [];
+  }
+
+  return new Promise((resolve, reject) => {
+    if (typeof ids === "string") {
+      // Handle a single AGOL id
+      const rootId = ids;
+      if (getTemplateInSolution(templates, rootId)) {
+        resolve(templates);  // Item and its dependents are already in list or are queued
+
+      } else {
+        // Add the id as a placeholder to show that it will be fetched
+        const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
+        templates.push(createPlaceholderTemplate(rootId));
+
+        // Get the specified item
+        getItemPromise
+        .then(
+          itemTemplate => {
+            // Set the value keyed by the id, replacing the placeholder
+            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
+
+            // Trace item dependencies
+            if (itemTemplate.dependencies.length === 0) {
+              resolve(templates);
+
+            } else {
+              // Get its dependents, asking each to get its dependents via
+              // recursive calls to this function
+              const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+              itemTemplate.dependencies.forEach(
+                dependentId => {
+                  if (!getTemplateInSolution(templates, dependentId)) {
+                    dependentDfds.push(createSolutionItemTemplates(dependentId,
+                      solutionTemplateItem, requestOptions, templates));
+                  }
+                }
+              );
+              Promise.all(dependentDfds)
+              .then(
+                () => {
+                  resolve(templates);
+                },
+                () => reject({ success: false })
+              );
+            }
+          },
+          () => reject({ success: false })
+        );
+      }
+
+    } else if (Array.isArray(ids) && ids.length > 0) {
+      // Handle a list of one or more AGOL ids by stepping through the list
+      // and calling this function recursively
+      const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
+
+      ids.forEach(id => {
+        getHierarchyPromise.push(createSolutionItemTemplates(id, solutionTemplateItem, requestOptions, templates));
+      });
+      Promise.all(getHierarchyPromise)
+      .then(
+        () => {
+          resolve(templates);
+        },
+        () => reject({ success: false })
+      );
+
+    } else {
+      reject({ success: false });
+    }
+  });
+}
+
+export function createSolutionTemplateItem (
+  title: string,
+  version: string,
+  requestOptions: IUserRequestOptions,
+  settings = {} as any,
+  access = "private"
+): Promise<mInterfaces.ISolutionTemplateItem> {
+  return new Promise((resolve, reject) => {
+    const solutionTemplateItem:mInterfaces.ISolutionTemplateItem = {
+      item: {
+        itemType: "text",
+        name: null as string,
+        title,
+        type: "Solution",
+        typeKeywords: ["Solution", "Template"],
+        commentsEnabled: false
+      },
+      data: {
+        metadata: {
+          version
+        },
+        templates: [] as mInterfaces.ITemplate[]
+      }
+    }
+
+    mCommon.createItemWithData(solutionTemplateItem.item, solutionTemplateItem.data,
+      requestOptions, settings.folderId, access)
+    .then(
+      createResponse => {
+        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
+        solutionTemplateItem.item.id = createResponse.id;
+        solutionTemplateItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
+        resolve(solutionTemplateItem);
+      },
+      () => reject({ success: false })
+    );
+  });
+}
+
 /**
  * Finds index of template by id in a list of templates.
  *
@@ -395,6 +481,56 @@ function getTemplateIndexInSolution (
       return baseId === mCommon.deTemplatize(template.itemId);
     }
   );
+}
+
+/**
+ * Finds template by id in a list of templates.
+ *
+ * @param templates List of templates to search
+ * @param id AGOL id of template to find
+ * @return Matching template or null
+ */
+export function getTemplateInSolution (
+  templates: mInterfaces.ITemplate[],
+  id: string
+): mInterfaces.ITemplate {
+  const childId = getTemplateIndexInSolution(templates, id);
+  return childId >= 0 ? templates[childId] : null;
+}
+
+/**
+ * Creates a Solution item containing JSON descriptions of items forming the solution.
+ *
+ * @param title Title for Solution item to create
+ * @param solution Hash of JSON descriptions of items to publish into Solution
+ * @param requestOptions Options for the request
+ * @param folderId Id of folder to receive item; null/empty indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return A promise that will resolve with an object reporting success and the Solution id
+ */
+export function publishSolutionTemplate (
+  title: string,
+  solution: mInterfaces.ITemplate[],
+  requestOptions: IUserRequestOptions,
+  folderId = null as string,
+  access = "private"
+): Promise<items.IItemUpdateResponse> {
+  // Define the solution item
+  const item = {
+    title,
+    type: "Solution",
+    itemType: "text",
+    typeKeywords: ["Template"],
+    access,
+    listed: false,
+    commentsEnabled: false
+  };
+  const data = {
+    templates: solution
+  };
+
+  return mCommon.createItemWithData(item, data, requestOptions, folderId, access);
 }
 
 /**
@@ -496,4 +632,18 @@ export function topologicallySortItems (
   }
 
   return buildList;
+}
+
+function updateSolutionTemplateItem (
+  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+  requestOptions: IUserRequestOptions
+): Promise<mInterfaces.ISolutionTemplateItem> {
+  return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
+    // Update the data section of the solution item
+    mCommon.updateItemData(solutionTemplateItem.item.id, solutionTemplateItem.data, requestOptions)
+    .then(
+      () => resolve(solutionTemplateItem),
+      () => reject({ success: false })
+    )
+  });
 }
