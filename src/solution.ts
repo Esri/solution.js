@@ -27,53 +27,36 @@ import * as mInterfaces from "./interfaces";
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
 /**
- * Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
+ * Creates a solution template item.
  *
- * ```typescript
- * import { ITemplate[] } from "../src/fullItemHierarchy";
- * import { createSolutionTemplate } from "../src/solution";
- *
- * getFullItemHierarchy(["6fc5992522d34f26b2210d17835eea21", "9bccd0fac5f3422c948e15c101c26934"])
- * .then(
- *   (response:ITemplate[]) => {
- *     let keys = Object.keys(response);
- *     console.log(keys.length);  // => "6"
- *     console.log((response[keys[0]] as ITemplate).type);  // => "Web Mapping Application"
- *     console.log((response[keys[0]] as ITemplate).item.title);  // => "ROW Permit Public Comment"
- *     console.log((response[keys[0]] as ITemplate).text.source);  // => "bb3fcf7c3d804271bfd7ac6f48290fcf"
- *   },
- *   error => {
- *     // (should not see this as long as both of the above ids--real ones--stay available)
- *     console.log(error); // => "Item or group does not exist or is inaccessible: " + the problem id number
- *   }
- * );
- * ```
- *
- * @param solutionRootIds AGOL id string or list of AGOL id strings
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with a hash by id of IFullItems;
- * if any id is inaccessible, a single error response will be produced for the set
- * of ids
+ * @param title
+ * @param version
+ * @param ids AGO id string or list of AGO id strings
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be
+ *                             included in solution template
+ * @param destinationRequestOptions Options for creating solution template item in AGO
+ * @return A promise that will resolve with a solution template item
  */
 export function createSolutionTemplate (
   title: string,
   version: string,
   ids: string | string[],
-  requestOptions: IUserRequestOptions
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
 ): Promise<mInterfaces.ISolutionTemplateItem> {
   return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
     // Create the solution template item
-    createSolutionTemplateItem(title, version, requestOptions, undefined, "public")
+    createSolutionTemplateItem(title, version, destinationRequestOptions, undefined, "public")
     .then(
       solutionTemplateItem => {
         // Get the templates for the items in the solution
-        createSolutionItemTemplates(ids, solutionTemplateItem, requestOptions)
+        createSolutionItemTemplates(ids, solutionTemplateItem, sourceRequestOptions)
         .then(
           templates => {
             solutionTemplateItem.data.templates = templates;
 
             // Update the solution template item
-            updateSolutionTemplateItem(solutionTemplateItem, requestOptions)
+            updateSolutionTemplateItem(solutionTemplateItem, destinationRequestOptions)
             .then(
               updatedSolutionTemplateItem => {
                 resolve(updatedSolutionTemplateItem);
@@ -92,17 +75,11 @@ export function createSolutionTemplate (
 /**
  * Converts a solution template into an AGO deployed solution and items.
  *
- * @param solution A hash of item descriptions to convert; note that the item ids are updated
- *     to their cloned versions
+ * @param solutionTemplate Solution template to deploy
  * @param requestOptions Options for the request
- * @param orgUrl The base URL for the AGOL organization, e.g., https://myOrg.maps.arcgis.com
- * @param portalUrl The base URL for the portal, e.g., https://www.arcgis.com
- * @param solutionName Name root to use if folder is to be created
- * @param folderId AGOL id of folder to receive item, or null/empty if folder is to be created;
- *     if created, folder name is a combination of the solution name and a timestamp for uniqueness,
- *     e.g., "Dashboard (1540841846958)"
- * @param access Access to set for item: 'public', 'org', 'private'
- * @return A promise that will resolve with a list of the ids of items created in AGOL
+ * @param settings
+ * @param progressCallback
+ * @return A promise that will resolve with a list of the ids of items created in AGO
  */
 export function createSolutionFromTemplate  (
   solutionTemplate: mInterfaces.ISolutionTemplateItem,
@@ -132,8 +109,7 @@ export function createSolutionFromTemplate  (
           progressCallback({
             processId: solutionItem.id,
             type: "Solution",
-            status: "done",
-            estimatedCostFactor: 1
+            status: "done"
           });
 
           runThroughChecklistInParallel();
@@ -200,7 +176,7 @@ export function getSupportedItemTypes (
 
 /**
  * A parameterized server name to replace the organization URL in a Web Mapping Application's URL to
- * itself; name has to be acceptable to AGOL, otherwise it discards the URL, so substitution must be
+ * itself; name has to be acceptable to AGO, otherwise it discards the URL, so substitution must be
  * made before attempting to create the item.
  * @protected
  */
@@ -224,7 +200,7 @@ export const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
  */
 interface ISortVertex {
   /**
-   * Vertex (AGOL) id and its visited status, described by the SortVisitColor enum
+   * Vertex (AGO) id and its visited status, described by the SortVisitColor enum
    */
   [id:string]: number;
 }
@@ -245,7 +221,7 @@ enum SortVisitColor {
 /**
  * Creates an empty template.
  *
- * @param id AGOL id of item
+ * @param id AGO id of item
  * @return Empty item containing supplied id
  * @protected
  */
@@ -355,7 +331,7 @@ export function createSolutionItemTemplates (
 
   return new Promise((resolve, reject) => {
     if (typeof ids === "string") {
-      // Handle a single AGOL id
+      // Handle a single AGO id
       const rootId = ids;
       if (getTemplateInSolution(templates, rootId)) {
         resolve(templates);  // Item and its dependents are already in list or are queued
@@ -403,7 +379,7 @@ export function createSolutionItemTemplates (
       }
 
     } else if (Array.isArray(ids) && ids.length > 0) {
-      // Handle a list of one or more AGOL ids by stepping through the list
+      // Handle a list of one or more AGO ids by stepping through the list
       // and calling this function recursively
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
@@ -467,7 +443,7 @@ export function createSolutionTemplateItem (
  * Finds index of template by id in a list of templates.
  *
  * @param templates List of templates to search
- * @param id AGOL id of template to find
+ * @param id AGO id of template to find
  * @return Id of matching template or -1 if not found
  * @protected
  */
@@ -487,7 +463,7 @@ function getTemplateIndexInSolution (
  * Finds template by id in a list of templates.
  *
  * @param templates List of templates to search
- * @param id AGOL id of template to find
+ * @param id AGO id of template to find
  * @return Matching template or null
  */
 export function getTemplateInSolution (

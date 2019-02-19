@@ -197,7 +197,7 @@
           arcgis_clone_js.createSolutionTemplate(
             (document.getElementById('solutionName').value || 'Solution'),
             (document.getElementById('solutionVersion').value || '1.0'),
-            solutionRootIds, destinationRequestOptions)
+            solutionRootIds, sourceRequestOptions, destinationRequestOptions)
           .then(
             solutionTemplate => {
               templatesList = solutionTemplate.data.templates;

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;viewing&quot; | arcgis-clone-js</title>
+	<title>&quot;itemTypes/webmappingapplication&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_viewing_.html">&quot;viewing&quot;</a>
+					<a href="_itemtypes_webmappingapplication_.html">&quot;itemTypes/webmappingapplication&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;viewing&quot;</h1>
+			<h1>External module &quot;itemTypes/webmappingapplication&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,16 +71,12 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_webmappingapplication_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_webmappingapplication_.html#createitemfromtemplate" class="tsd-kind-icon">create<wbr>Item<wbr>From<wbr>Template</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_itemtypes_webmappingapplication_.html#extractdependencies" class="tsd-kind-icon">extract<wbr>Dependencies</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_webmappingapplication_.html#getgenericwebappdependencies" class="tsd-kind-icon">get<wbr>Generic<wbr>Web<wbr>App<wbr>Dependencies</a></li>
 							</ul>
 						</section>
 					</div>
@@ -89,62 +85,135 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="getitemhierarchy" class="tsd-anchor"></a>
-					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<a name="convertitemtotemplate" class="tsd-anchor"></a>
+					<h3>convert<wbr>Item<wbr>ToTemplate</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>templates<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate<span class="tsd-signature-symbol">(</span>itemTemplate<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a>, requestOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">IUserRequestOptions</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/viewing.ts#L47">viewing.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/itemTypes/webmappingapplication.ts#L32">itemTypes/webmappingapplication.ts:32</a></li>
 								</ul>
 							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Extracts item hierarchy structure from a solution template.</p>
-								</div>
-							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>templates: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>itemTemplate: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> requestOptions: <span class="tsd-signature-type">IUserRequestOptions</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></h4>
-							<p>JSON structure reflecting dependency hierarchy of items; shared dependencies are
-								repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
-							item&#39;s dependencies</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="gettoplevelitemids" class="tsd-anchor"></a>
-					<h3>get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</h3>
+					<a name="createitemfromtemplate" class="tsd-anchor"></a>
+					<h3>create<wbr>Item<wbr>From<wbr>Template</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids<span class="tsd-signature-symbol">(</span>templates<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Item<wbr>From<wbr>Template<span class="tsd-signature-symbol">(</span>itemTemplate<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a>, settings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, requestOptions<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">IUserRequestOptions</span>, progressCallback<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/viewing.ts#L85">viewing.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/itemTypes/webmappingapplication.ts#L75">itemTypes/webmappingapplication.ts:75</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>itemTemplate: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a></h5>
+								</li>
+								<li>
+									<h5>settings: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>requestOptions: <span class="tsd-signature-type">IUserRequestOptions</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> progressCallback: <span class="tsd-signature-type">function</span></h5>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-siganture">
+											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>update<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.iprogressupdate.html" class="tsd-signature-type">IProgressUpdate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>update: <a href="../interfaces/_interfaces_.iprogressupdate.html" class="tsd-signature-type">IProgressUpdate</a></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+					<a name="extractdependencies" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> extract<wbr>Dependencies</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">extract<wbr>Dependencies<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/itemTypes/webmappingapplication.ts#L152">itemTypes/webmappingapplication.ts:152</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.</p>
+									<p>Gets the ids of the dependencies of an AGOL webapp item.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>templates: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>model: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
-							<p>List of ids of top-level items in Solution</p>
+							<p>A promise that will resolve with list of dependent ids</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="getgenericwebappdependencies" class="tsd-anchor"></a>
+					<h3>get<wbr>Generic<wbr>Web<wbr>App<wbr>Dependencies</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Generic<wbr>Web<wbr>App<wbr>Dependencies<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d83e7e8/src/itemTypes/webmappingapplication.ts#L172">itemTypes/webmappingapplication.ts:172</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Generic Web App Dependencies</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>model: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -195,7 +264,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_itemtypes_webmap_.html">"item<wbr>Types/webmap"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_itemtypes_webmappingapplication_.html">"item<wbr>Types/webmappingapplication"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -210,21 +279,24 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_itemtypes_webmappingapplication_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+						<a href="_itemtypes_webmappingapplication_.html#createitemfromtemplate" class="tsd-kind-icon">create<wbr>Item<wbr>From<wbr>Template</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="_itemtypes_webmappingapplication_.html#extractdependencies" class="tsd-kind-icon">extract<wbr>Dependencies</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+						<a href="_itemtypes_webmappingapplication_.html#getgenericwebappdependencies" class="tsd-kind-icon">get<wbr>Generic<wbr>Web<wbr>App<wbr>Dependencies</a>
 					</li>
 				</ul>
 			</nav>
