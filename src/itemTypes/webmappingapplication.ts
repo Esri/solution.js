@@ -56,15 +56,15 @@ export function convertItemToTemplate (
       itemTemplate.data.folderId = "{{folderId}}";
     }
 
-    // Set the map or group
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
+    // Set the map or group after we've extracted them as dependencies
     if (getProp(itemTemplate, "data.values.webmap")) {
       itemTemplate.data.values.webmap = mCommon.templatize(itemTemplate.data.values.webmap);
     } else if (getProp(itemTemplate, "data.values.group")) {
       itemTemplate.data.values.group = mCommon.templatize(itemTemplate.data.values.group);
     }
-
-    // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(itemTemplate);
 
     resolve(itemTemplate);
   });
@@ -104,7 +104,7 @@ export function createItemFromTemplate (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;

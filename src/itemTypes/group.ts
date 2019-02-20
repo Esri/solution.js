@@ -83,7 +83,7 @@ export function createItemFromTemplate (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.group.id
           };
           itemTemplate.itemId = createResponse.group.id;

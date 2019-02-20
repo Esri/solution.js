@@ -99,7 +99,7 @@ export function jsonClone (
 export function removeItemFcns (
   solutionTemplateItem: mInterfaces.ISolutionTemplateItem
 ): void {
-  const templates = mObjHelpers.getProps(solutionTemplateItem, ["data", "templates"]);
+  const templates = mObjHelpers.getProp(solutionTemplateItem, "data.templates");
   if (templates) {
     if (Array.isArray(templates)) {
       templates.forEach(

@@ -23,6 +23,7 @@ import { IItem } from '@esri/arcgis-rest-common-types';
 import * as mCommon from "./itemTypes/common";
 import * as mClassifier from "./itemTypes/classifier";
 import * as mInterfaces from "./interfaces";
+import * as mObjHelpers from "./utils/object-helpers"
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -93,7 +94,7 @@ export function createSolutionFromTemplate  (
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const templates:mInterfaces.ITemplate[] = solutionTemplateItem.data.templates;
+    const templates:mInterfaces.ITemplate[] = mObjHelpers.getProp(solutionTemplateItem, "data.templates");
     const clonedSolution:mInterfaces.ITemplate[] = [];
     settings.solutionName = settings.solutionName || "Solution";
 
@@ -112,7 +113,7 @@ export function createSolutionFromTemplate  (
       createDeployedSolutionItem(settings.solutionName, solutionTemplateItem, requestOptions, settings, 'public')
       .then(
         solutionItem => {
-          progressCallback({
+          progressCallback && progressCallback({
             processId: solutionItem.id,
             type: "Solution",
             status: "done"

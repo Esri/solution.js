@@ -93,7 +93,7 @@ export function createItemFromTemplate (
     .then(
       createResponse => {
         // Add the new item to the settings list
-        settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+        settings[itemTemplate.itemId] = {
           id: createResponse.serviceItemId,
           url: createResponse.serviceurl
         };
@@ -467,8 +467,7 @@ function updateFeatureServiceDefinition(
             () => reject({ success: false })
           );
         },
-        error => {console.warn("addToServiceDefinition reject", JSON.stringify(error,null,2)); reject({ success: false });} // //???
-        // //???() => reject({ success: false })
+        () => reject({ success: false })
       );
     } else {
       resolve();

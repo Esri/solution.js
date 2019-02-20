@@ -51,7 +51,7 @@ export function convertItemToTemplate (
     // Extract dependencies
     itemTemplate.dependencies = extractDependencies(itemTemplate);
 
-    // Templatize the map layer ids now that we've extracted them as dependencies
+    // Templatize the map layer ids after we've extracted them as dependencies
     if (itemTemplate.data) {
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
@@ -95,7 +95,7 @@ export function createItemFromTemplate (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
