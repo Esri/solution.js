@@ -333,29 +333,6 @@ export function fleshOutFeatureService (
 }
 
 /**
- * Gets the name of the first layer in list of layers that has a name
- * @param layerList List of layers to use as a name source
- * @return The name of the found layer or an empty string if no layers have a name
- * @protected
- */
-function getFirstUsableName (
-  layerList: any[]
-): string {
-  let name = "";
-  // Return the first layer name found
-  if (Array.isArray(layerList) && layerList.length > 0) {
-    layerList.some(layer => {
-      if (layer["name"] !== "") {
-        name = layer["name"];
-        return true;
-      }
-      return false;
-    });
-  }
-  return name;
-}
-
-/**
  * Gets the full definitions of the layers affiliated with a hosted service.
  *
  * @param serviceUrl URL to hosted service
@@ -364,7 +341,7 @@ function getFirstUsableName (
  * @return A promise that will resolve with a list of the enhanced layers
  * @protected
  */
-function getLayers (
+export function getLayers (
   serviceUrl: string,
   layerList: any[],
   requestOptions: IUserRequestOptions

@@ -519,10 +519,10 @@ function findTemplateIndexInSolution (
   templates: mInterfaces.ITemplate[],
   id: string
 ): number {
-  const baseId = mCommon.deTemplatize(id);
+  const baseId = id;
   return templates.findIndex(
     template => {
-      return baseId === mCommon.deTemplatize(template.itemId);
+      return baseId === template.itemId;
     }
   );
 }

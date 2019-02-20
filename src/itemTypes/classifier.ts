@@ -130,11 +130,8 @@ export function convertItemToTemplate (
             itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
               template => {
-                itemTemplate.dependencies = removeDuplicates(
-                  (template.dependencies || [] as string[])
-                  .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
-                );
-
+                itemTemplate.dependencies = // some dependencies come out as nested, so flatten
+                  removeDuplicates(flatten(template.dependencies));
                 resolve(itemTemplate);
               },
               () => reject({ success: false })
@@ -166,11 +163,7 @@ export function convertItemToTemplate (
             itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
               template => {
-                itemTemplate.dependencies = removeDuplicates(
-                  (template.dependencies || [] as string[])
-                  .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
-                );
-
+                itemTemplate.dependencies = removeDuplicates(template.dependencies);
                 resolve(itemTemplate);
               },
               () => reject({ success: false })
@@ -200,6 +193,19 @@ export function initItemTemplateFromJSON (
 // (export decoration is for unit testing)
 
 /**
+ * Flattens an array of strings and/or string arrays.
+ *
+ * @param nestedArray An array to be flattened
+ * @return Copy of array, but flattened
+ * @protected
+ */
+export function flatten (
+  nestedArray = [] as string[]
+): string[] {
+  return nestedArray.reduce((acc, val) => acc.concat(val), []);
+}
+
+/**
  * Removes duplicates from an array of strings.
  *
  * @param arrayWithDups An array to be copied
@@ -207,7 +213,7 @@ export function initItemTemplateFromJSON (
  * @protected
  */
 export function removeDuplicates (
-  arrayWithDups:string[]
+  arrayWithDups = [] as string[]
 ): string[] {
   const uniqueStrings:{
     [value:string]: boolean;

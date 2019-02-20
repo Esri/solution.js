@@ -175,7 +175,7 @@ export function addGroupMembers (
  *
  * @param fullItem A group whose contents are sought
  * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
+ * @return A promise that will resolve with list of dependent ids or an empty list
  * @protected
  */
 export function getGroupContents (
@@ -211,7 +211,8 @@ export function getGroupContents (
  * @param id Group id
  * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
  *                      be modified by this routine
- * @return A promise that will resolve with a list of the ids of the group's contents
+ * @return A promise that will resolve with a list of the ids of the group's contents or an empty
+ *         list
  * @protected
  */
 export function getGroupContentsTranche (
