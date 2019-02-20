@@ -991,6 +991,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
       .post("path:/sharing/rest/content/users/casey/items/SVC1234567890/move",
         '{"success":true,"itemId":"SVC1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/SVC1234567890/update",
+        '{"success":true,"id":"SVC1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1044,6 +1046,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
       .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
         '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"SVC1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1095,6 +1099,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
       .post("path:/sharing/rest/content/users/casey/items/svc1234567890/move",
         '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"SVC1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1182,6 +1188,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"svc1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", mockItems.get400Failure());
       itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
@@ -1217,6 +1225,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"svc1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1256,6 +1266,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"svc1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1332,6 +1344,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"svc1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater)
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
@@ -1400,6 +1414,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '"name":"ROWPermits_publiccomment_' + now + '","serviceItemId":"svc1234567890",' +
         '"serviceurl":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment_' +
         now + '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}')
+      .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
+        '{"success":true,"id":"svc1234567890"}')
       .post("path:/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment_" + now +
         "/FeatureServer/addToDefinition", layerNumUpdater);
       itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, sessionWithMockedTime)
@@ -1705,7 +1721,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: get cloning order", () => {
+  describe("supporting routine: get cloning order", () => {
 
     it("sorts an item and its dependencies 1", () => {
       const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi", "def"]});
@@ -1764,7 +1780,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: remove undesirable properties", () => {
+  describe("supporting routine: remove undesirable properties", () => {
 
     it("remove properties", () => {
       const abc = mockItems.getAGOLItem("Web Mapping Application",
@@ -1794,7 +1810,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: count relationships", () => {
+  describe("supporting routine: count relationships", () => {
 
     it("should handle a layer with no relationships", () => {
       const layers:any[] = [{
@@ -1878,7 +1894,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: initializing an item template from an id", () => {
+  describe("supporting routine: initializing an item template from an id", () => {
 
     it("should handle an unknown item type", done => {
       fetchMock
@@ -2003,7 +2019,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: createItemFromTemplateWhenReady ", () => {
+  describe("supporting routine: createItemFromTemplateWhenReady ", () => {
 
     it("should reject a missing AGOL", done => {
       const settings = {} as any;
@@ -2025,7 +2041,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: finalCallback", () => {
+  describe("supporting routine: finalCallback", () => {
 
     it("should handle successful progress update", () => {
       function progressCallback(update: any):void {
@@ -2045,7 +2061,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: timestamp", () => {
+  describe("supporting routine: timestamp", () => {
 
     it("should return time 19951217_0324_00000", () => {
       const date = new Date(Date.UTC(1995, 11, 17, 3, 24));  // 0-based month
@@ -2103,7 +2119,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: doCommonTemplatizations", () => {
+  describe("supporting routine: doCommonTemplatizations", () => {
 
     it("should handle provided extent", () => {
       const templatePart = mockSolutions.getTemplatePartNoData("Dashboard");
@@ -2124,7 +2140,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: getWebmapLayerIds", () => {
+  describe("supporting routine: getWebmapLayerIds", () => {
 
     it("should handle missing layer list", () => {
       const ids = mWebMap.getWebmapLayerIds();
@@ -2147,7 +2163,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: templatizeWebmapLayerIdsAndUrls", () => {
+  describe("supporting routine: templatizeWebmapLayerIdsAndUrls", () => {
 
     it("should handle missing layer list", () => {
       expect(mWebMap.templatizeWebmapLayerIdsAndUrls).not.toThrowError();
@@ -2155,7 +2171,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: templatizeList", () => {
+  describe("supporting routine: templatizeList", () => {
 
     it("should handle default parameter", () => {
       const ids = ["abc", "def", "ghi"];
@@ -2182,7 +2198,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: getGroupContentsTranche", () => {
+  describe("supporting routine: getGroupContentsTranche", () => {
 
     it("should handle single tranche", done => {
       const pagingRequest:IPagingParamsRequestOptions = {
@@ -2321,7 +2337,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: get estimated deployment cost", () => {
+  describe("supporting routine: get estimated deployment cost", () => {
 
     it("should handle empty solution", () => {
       const cost = mSolution.getEstimatedDeploymentCost([]);
@@ -2350,7 +2366,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: add members to cloned group", () => {
+  describe("supporting routine: add members to cloned group", () => {
 
     it("should handle empty group", done => {
       const group = mockSolutions.getGroupTemplatePart();
@@ -2407,7 +2423,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("successful fetches", () => {
+  describe("successful fetches", () => {
 
     it("should return a list of WMA details for a valid AGOL id", done => {
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
@@ -2543,7 +2559,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("catch bad input", () => {
+  describe("catch bad input", () => {
 
     it("returns an error if the hierarchy to be created fails: missing id", done => {
       fetchMock.once("*", mockItems.getAGOLItem());
@@ -2595,7 +2611,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("failed fetches", () => {
+  describe("failed fetches", () => {
 
     it("returns an error if the hierarchy to be created fails: inaccessible", done => {
       fetchMock
@@ -2686,7 +2702,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("catch inability to get dependents", () => {
+  describe("catch inability to get dependents", () => {
 
     it("returns an error if getting group dependencies fails", done => {
       fetchMock
@@ -2728,7 +2744,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  xdescribe("supporting routine: get template from template bundle", () => {
+  describe("supporting routine: get template from template bundle", () => {
 
     it("empty bundle", () => {
       const bundle:mInterfaces.ITemplate[] = [];
