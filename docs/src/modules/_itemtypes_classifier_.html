@@ -80,6 +80,7 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_classifier_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_itemtypes_classifier_.html#flatten" class="tsd-kind-icon">flatten</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_classifier_.html#getsupporteditemtypes" class="tsd-kind-icon">get<wbr>Supported<wbr>Item<wbr>Types</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_classifier_.html#inititemtemplatefromjson" class="tsd-kind-icon">init<wbr>Item<wbr>Template<wbr>FromJSON</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external"><a href="_itemtypes_classifier_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a></li>
@@ -107,7 +108,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L72">itemTypes/classifier.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L72">itemTypes/classifier.ts:72</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -137,6 +138,38 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+					<a name="flatten" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> flatten</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">flatten<span class="tsd-signature-symbol">(</span>nestedArray<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L202">itemTypes/classifier.ts:202</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Flattens an array of strings and/or string arrays.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> nestedArray: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[] as string[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An array to be flattened</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+							<p>Copy of array, but flattened</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 					<a name="getsupporteditemtypes" class="tsd-anchor"></a>
 					<h3>get<wbr>Supported<wbr>Item<wbr>Types</h3>
@@ -147,7 +180,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L58">itemTypes/classifier.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L58">itemTypes/classifier.ts:58</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -170,7 +203,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L192">itemTypes/classifier.ts:192</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L185">itemTypes/classifier.ts:185</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -196,13 +229,13 @@
 					<a name="removeduplicates" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagProtected">Protected</span> remove<wbr>Duplicates</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Duplicates<span class="tsd-signature-symbol">(</span>arrayWithDups<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Duplicates<span class="tsd-signature-symbol">(</span>arrayWithDups<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L209">itemTypes/classifier.ts:209</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L215">itemTypes/classifier.ts:215</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -213,7 +246,7 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>arrayWithDups: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> arrayWithDups: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> =&nbsp;[] as string[]</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>An array to be copied</p>
 									</div>
@@ -234,7 +267,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L227">itemTypes/classifier.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L233">itemTypes/classifier.ts:233</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -266,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">module<wbr>Map<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L43">itemTypes/classifier.ts:43</a></li>
+							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L43">itemTypes/classifier.ts:43</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -280,7 +313,7 @@
 						<div class="tsd-signature tsd-kind-icon">dashboard<span class="tsd-signature-symbol">:</span> <a href="_itemtypes_dashboard_.html" class="tsd-signature-type">&quot;itemTypes/dashboard&quot;</a><span class="tsd-signature-symbol"> =&nbsp;DashboardModule</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L44">itemTypes/classifier.ts:44</a></li>
+								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L44">itemTypes/classifier.ts:44</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -290,7 +323,7 @@
 						<div class="tsd-signature tsd-kind-icon">feature service<span class="tsd-signature-symbol">:</span> <a href="_itemtypes_featureservice_.html" class="tsd-signature-type">&quot;itemTypes/featureservice&quot;</a><span class="tsd-signature-symbol"> =&nbsp;FeatureServiceModule</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L45">itemTypes/classifier.ts:45</a></li>
+								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L45">itemTypes/classifier.ts:45</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -300,7 +333,7 @@
 						<div class="tsd-signature tsd-kind-icon">group<span class="tsd-signature-symbol">:</span> <a href="_itemtypes_group_.html" class="tsd-signature-type">&quot;itemTypes/group&quot;</a><span class="tsd-signature-symbol"> =&nbsp;GroupModule</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L46">itemTypes/classifier.ts:46</a></li>
+								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L46">itemTypes/classifier.ts:46</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -310,7 +343,7 @@
 						<div class="tsd-signature tsd-kind-icon">web map<span class="tsd-signature-symbol">:</span> <a href="_itemtypes_webmap_.html" class="tsd-signature-type">&quot;itemTypes/webmap&quot;</a><span class="tsd-signature-symbol"> =&nbsp;WebMapModule</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L47">itemTypes/classifier.ts:47</a></li>
+								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L47">itemTypes/classifier.ts:47</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -320,7 +353,7 @@
 						<div class="tsd-signature tsd-kind-icon">web mapping application<span class="tsd-signature-symbol">:</span> <a href="_itemtypes_webmappingapplication_.html" class="tsd-signature-type">&quot;itemTypes/webmappingapplication&quot;</a><span class="tsd-signature-symbol"> =&nbsp;WebMappingApplicationModule</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/9b9dcc5/src/itemTypes/classifier.ts#L48">itemTypes/classifier.ts:48</a></li>
+								<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/classifier.ts#L48">itemTypes/classifier.ts:48</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -399,6 +432,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_itemtypes_classifier_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="_itemtypes_classifier_.html#flatten" class="tsd-kind-icon">flatten</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
 						<a href="_itemtypes_classifier_.html#getsupporteditemtypes" class="tsd-kind-icon">get<wbr>Supported<wbr>Item<wbr>Types</a>
