@@ -69,7 +69,7 @@ define([
       // Show solution contents as they'd be in the solution's AGOL item
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var fullItem = arcgis_clone_js.getTemplateInSolution(solutionItems, hierarchyItem.id);
+        var fullItem = arcgis_clone_js.findTemplateInList(solutionItems, hierarchyItem.id);
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
         var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
