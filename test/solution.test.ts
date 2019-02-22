@@ -378,8 +378,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem", addItemUpdater)
       .post("path:/sharing/rest/content/users/casey/items/wma1234567890/update",
         '{"success":true,"id":"wma1234567890"}')
-      .post("path:/sharing/rest/contslent/users/casey/items/map1234567890/update",
-        '{"success":true,"id":"map1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sto1234567890/update",
         '{"success":true,"id":"sto1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/svc1234567890/update",
