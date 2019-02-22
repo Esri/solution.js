@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHierarchyEntry | arcgis-clone-js</title>
+	<title>ISolutionTemplateMetadata | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_viewing_.html">&quot;viewing&quot;</a>
+					<a href="../modules/_interfaces_.html">&quot;interfaces&quot;</a>
 				</li>
 				<li>
-					<a href="_viewing_.ihierarchyentry.html">IHierarchyEntry</a>
+					<a href="_interfaces_.isolutiontemplatemetadata.html">ISolutionTemplateMetadata</a>
 				</li>
 			</ul>
-			<h1>Interface IHierarchyEntry</h1>
+			<h1>Interface ISolutionTemplateMetadata</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A recursive structure describing the hierarchy of a collection of AGOL items.</p>
+						<p>General information about a solution template</p>
 					</div>
 				</div>
 			</section>
@@ -80,7 +80,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IHierarchyEntry</span>
+						<span class="target">ISolutionTemplateMetadata</span>
 					</li>
 				</ul>
 			</section>
@@ -91,8 +91,7 @@
 						<section class="tsd-index-section tsd-is-external">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_interfaces_.isolutiontemplatemetadata.html#version" class="tsd-kind-icon">version</a></li>
 							</ul>
 						</section>
 					</div>
@@ -101,32 +100,17 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="dependencies" class="tsd-anchor"></a>
-					<h3>dependencies</h3>
-					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <a href="_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></div>
+					<a name="version" class="tsd-anchor"></a>
+					<h3>version</h3>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L36">viewing.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/interfaces.ts#L56">interfaces.ts:56</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Item&#39;s dependencies</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="id" class="tsd-anchor"></a>
-					<h3>id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L32">viewing.ts:32</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>AGOL item id</p>
+							<p>Version of the solution template definition</p>
 						</div>
 					</div>
 				</section>
@@ -147,7 +131,7 @@
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_interfaces_.html">"interfaces"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -192,33 +176,42 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.iagoitemaccess.html" class="tsd-kind-icon">IAGOItem<wbr>Access</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.iitemtypemodule.html" class="tsd-kind-icon">IItem<wbr>Type<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.iprogressupdate.html" class="tsd-kind-icon">IProgress<wbr>Update</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.isolutiontemplate.html" class="tsd-kind-icon">ISolution<wbr>Template</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.isolutiontemplateitem.html" class="tsd-kind-icon">ISolution<wbr>Template<wbr>Item</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
+						<a href="_interfaces_.isolutiontemplatemetadata.html" class="tsd-kind-icon">ISolution<wbr>Template<wbr>Metadata</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a>
+								<a href="_interfaces_.isolutiontemplatemetadata.html#version" class="tsd-kind-icon">version</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.itemplate.html" class="tsd-kind-icon">ITemplate</a>
 					</li>
 				</ul>
 			</nav>

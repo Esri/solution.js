@@ -22,11 +22,26 @@ import * as mockItems from "../../test/mocks/agolItems";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
-export function getSolution (
-  templates: mInterfaces.ITemplate[]
+export function getSolutionTemplateItem (
+  templates = [] as mInterfaces.ITemplate[]
 ): mInterfaces.ISolutionItem {
   return {
-    templates
+    item: {
+      commentsEnabled: false,
+      id: "sln1234567890",
+      itemType: "text",
+      name: null,
+      title: "title",
+      type: "Solution",
+      typeKeywords: [ "Solution", "Template" ],
+      url: "https://www.arcgis.com/home/item.html?id=sln1234567890"
+    },
+    data: {
+      metadata: {
+        version: "x"
+      },
+      templates
+    }
   }
 }
 
@@ -91,9 +106,6 @@ export function getItemTemplatePart (
         layers: [layer0],
         tables: [table1]
       };
-      properties.service.name = templatePart.item.name;
-      properties.service.snippet = templatePart.item.snippet;
-      properties.service.description = templatePart.item.description;
 
       templatePart.properties = properties;
       break;

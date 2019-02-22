@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IDashboardWidget | arcgis-clone-js</title>
+	<title>IRelationship | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_fullitem_.html">&quot;fullItem&quot;</a>
+					<a href="../modules/_itemtypes_featureservice_.html">&quot;itemTypes/featureservice&quot;</a>
 				</li>
 				<li>
-					<a href="_fullitem_.idashboardwidget.html">IDashboardWidget</a>
+					<a href="_itemtypes_featureservice_.irelationship.html">IRelationship</a>
 				</li>
 			</ul>
-			<h1>Interface IDashboardWidget</h1>
+			<h1>Interface IRelationship</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The relevant elements of a Dashboard widget.</p>
+						<p>Storage of a one-way relationship.</p>
 					</div>
 				</div>
 			</section>
@@ -80,56 +80,18 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IDashboardWidget</span>
+						<span class="target">IRelationship</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external tsd-is-not-exported">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_fullitem_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported"><a href="_fullitem_.idashboardwidget.html#type" class="tsd-kind-icon">type</a></li>
-							</ul>
-						</section>
+			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Relationship id and the ids of the items that it is related to.</p>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external tsd-is-not-exported">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-					<a name="itemid" class="tsd-anchor"></a>
-					<h3>item<wbr>Id</h3>
-					<div class="tsd-signature tsd-kind-icon">item<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/2696007/src/fullItem.ts#L208">fullItem.ts:208</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>AGOL item id for some widget types</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-					<a name="type" class="tsd-anchor"></a>
-					<h3>type</h3>
-					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/ArcGIS/arcgis-clone-js/blob/2696007/src/fullItem.ts#L212">fullItem.ts:212</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Dashboard widget type</p>
-						</div>
-					</div>
-				</section>
+				</div>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -148,13 +110,49 @@
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_common_.html">"common"</a>
+						<a href="../modules/_interfaces_.html">"interfaces"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_classifier_.html">"item<wbr>Types/classifier"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_common_.html">"item<wbr>Types/common"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_dashboard_.html">"item<wbr>Types/dashboard"</a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitem_.html">"full<wbr>Item"</a>
+						<a href="../modules/_itemtypes_featureservice_.html">"item<wbr>Types/featureservice"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_generic_.html">"item<wbr>Types/generic"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_group_.html">"item<wbr>Types/group"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_storymap_.html">"item<wbr>Types/storymap"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webappbuilder_.html">"item<wbr>Types/webappbuilder"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webmap_.html">"item<wbr>Types/webmap"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webmappingapplication_.html">"item<wbr>Types/webmappingapplication"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_solution_.html">"solution"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_is_guid_.html">"utils/is-<wbr>guid"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_item_helpers_.html">"utils/item-<wbr>helpers"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
@@ -163,77 +161,36 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_itemtypes_featureservice_.ifeatureserviceproperties.html" class="tsd-kind-icon">IFeature<wbr>Service<wbr>Properties</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="_fullitem_.idashboardwidget.html" class="tsd-kind-icon">IDashboard<wbr>Widget</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-								<a href="_fullitem_.idashboardwidget.html#itemid" class="tsd-kind-icon">item<wbr>Id</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external tsd-is-not-exported">
-								<a href="_fullitem_.idashboardwidget.html#type" class="tsd-kind-icon">type</a>
-							</li>
-						</ul>
+						<a href="_itemtypes_featureservice_.irelationship.html" class="tsd-kind-icon">IRelationship</a>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="_fullitem_.idependencyfunctionlookup.html" class="tsd-kind-icon">IDependency<wbr>Function<wbr>Lookup</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_fullitem_.ifullitem.html" class="tsd-kind-icon">IFull<wbr>Item</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_fullitem_.ifullitemfeatureservice.html" class="tsd-kind-icon">IFull<wbr>Item<wbr>Feature<wbr>Service</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="_fullitem_.iswizzlefunctionlookup.html" class="tsd-kind-icon">ISwizzle<wbr>Function<wbr>Lookup</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_itemtypes_featureservice_.html#addfeatureservicelayersandtables" class="tsd-kind-icon">add<wbr>Feature<wbr>Service<wbr>Layers<wbr>And<wbr>Tables</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitem_.html#createunavailableitemerror" class="tsd-kind-icon">create<wbr>Unavailable<wbr>Item<wbr>Error</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#getdashboarddependencies" class="tsd-kind-icon">get<wbr>Dashboard<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_fullitem_.html#getdependencies" class="tsd-kind-icon">get<wbr>Dependencies</a>
+						<a href="../modules/_itemtypes_featureservice_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitem_.html#getfullitem" class="tsd-kind-icon">get<wbr>Full<wbr>Item</a>
+						<a href="../modules/_itemtypes_featureservice_.html#countrelationships" class="tsd-kind-icon">count<wbr>Relationships</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_fullitem_.html#getgroupcontentstranche" class="tsd-kind-icon">get<wbr>Group<wbr>Contents<wbr>Tranche</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#getgroupdependencies" class="tsd-kind-icon">get<wbr>Group<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#getwebmappingapplicationdependencies" class="tsd-kind-icon">get<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#getwebmapdependencies" class="tsd-kind-icon">get<wbr>Webmap<wbr>Dependencies</a>
+						<a href="../modules/_itemtypes_featureservice_.html#createitemfromtemplate" class="tsd-kind-icon">create<wbr>Item<wbr>From<wbr>Template</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_fullitem_.html#getwebmaplayerids" class="tsd-kind-icon">get<wbr>Webmap<wbr>Layer<wbr>Ids</a>
+						<a href="../modules/_itemtypes_featureservice_.html#fleshoutfeatureservice" class="tsd-kind-icon">flesh<wbr>Out<wbr>Feature<wbr>Service</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
-						<a href="../modules/_fullitem_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a>
+						<a href="../modules/_itemtypes_featureservice_.html#getlayers" class="tsd-kind-icon">get<wbr>Layers</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#swizzlecommondependencies" class="tsd-kind-icon">swizzle<wbr>Common<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#swizzledashboarddependencies" class="tsd-kind-icon">swizzle<wbr>Dashboard<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitem_.html#swizzledependencies" class="tsd-kind-icon">swizzle<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#swizzlewebmappingapplicationdependencies" class="tsd-kind-icon">swizzle<wbr>Web<wbr>Mapping<wbr>Application<wbr>Dependencies</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external tsd-is-not-exported">
-						<a href="../modules/_fullitem_.html#swizzlewebmapdependencies" class="tsd-kind-icon">swizzle<wbr>Webmap<wbr>Dependencies</a>
+						<a href="../modules/_itemtypes_featureservice_.html#updatefeatureservicedefinition" class="tsd-kind-icon">update<wbr>Feature<wbr>Service<wbr>Definition</a>
 					</li>
 				</ul>
 			</nav>

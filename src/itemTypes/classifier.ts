@@ -30,10 +30,16 @@ import * as GenericModule from "./generic";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
+/**
+ * Structure for mapping from item type to module with type-specific template-handling code
+ */
 interface IItemTypeModuleMap {
   [itemType: string]: IItemTypeModule;
 }
 
+/**
+ * Mapping from item type to module with type-specific template-handling code
+ */
 const moduleMap:IItemTypeModuleMap = {
   "dashboard": DashboardModule,
   "feature service": FeatureServiceModule,
@@ -44,19 +50,26 @@ const moduleMap:IItemTypeModuleMap = {
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
+/**
+ * Returns a list of the currently-supported AGO item types.
+ *
+ * @return List of item type names; names are all-lowercase forms of standard names
+ */
 export function getSupportedItemTypes (
 ): string[] {
   return Object.keys(moduleMap);
 }
-  
+
 /**
  * Fetches the item and data sections, the resource and dependencies lists, and the item-type-specific
- * functions for an item using its AGOL item id.
+ * functions for an item using its AGOL item id, and then calls a type-specific function to convert
+ * the item into a template.
  *
- * @param itemId
- * @param requestOptions
+ * @param itemId AGO id of solution template item to templatize
+ * @param requestOptions Options for the request
+ * @return A promise which will resolve with an item template
  */
-export function initItemTemplateFromId (
+export function convertItemToTemplate (
   itemId: string,
   requestOptions: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -88,7 +101,7 @@ export function initItemTemplateFromId (
         // Convert relative thumbnail URL to an absolute one so that it can be preserved
         // TODO disconnected deployment may not have access to the absolute URL
         itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
-          itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
+          itemId + "/info/" + itemTemplate.item.thumbnail;
 
         // Request item data section
         const dataPromise = items.getItemData(itemId, requestOptions);
@@ -113,28 +126,12 @@ export function initItemTemplateFromId (
             itemTemplate.data = dataResponse;
             itemTemplate.resources = resourceResponse && resourceResponse.total > 0 ? resourceResponse.resources : null;
 
-            // Complete item
-            const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
-
-            // Request item dependencies
-            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
-
-            Promise.all([
-              completionPromise,
-              dependenciesPromise
-            ])
+            // Create the item's template
+            itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
-              responses2 => {
-                const [completionResponse, dependenciesResponse] = responses2;
-                itemTemplate = completionResponse;
-
-                itemTemplate.dependencies = removeDuplicates(
-                  mCommon.deTemplatize(
-                    dependenciesResponse
-                    .reduce((acc, val) => acc.concat(val), [])  // some dependencies come out as nested, so flatten
-                  ) as string[]
-                );
-
+              template => {
+                itemTemplate.dependencies = // some dependencies come out as nested, so flatten
+                  removeDuplicates(flatten(template.dependencies));
                 resolve(itemTemplate);
               },
               () => reject({ success: false })
@@ -160,26 +157,13 @@ export function initItemTemplateFromId (
             // Convert relative thumbnail URL to an absolute one so that it can be preserved
             // TODO disconnected deployment may not have access to the absolute URL
             itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
-              itemResponse.id + "/info/" + itemTemplate.item.thumbnail;
+              itemId + "/info/" + itemTemplate.item.thumbnail;
 
-            // Complete item
-            const completionPromise = itemTemplate.fcns.completeItemTemplate(itemTemplate, requestOptions);
-
-            // Request item dependencies (i.e., the group's contents)
-            const dependenciesPromise = itemTemplate.fcns.getDependencies(itemTemplate, requestOptions);
-
-            Promise.all([
-              completionPromise,
-              dependenciesPromise
-            ])
+            // Create the item's template
+            itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
             .then(
-              responses2 => {
-                const [completionResponse, dependenciesResponse] = responses2;
-                itemTemplate = completionResponse;
-
-                itemTemplate.dependencies = removeDuplicates(
-                  mCommon.deTemplatize(dependenciesResponse) as string[]
-                );
+              template => {
+                itemTemplate.dependencies = removeDuplicates(template.dependencies);
                 resolve(itemTemplate);
               },
               () => reject({ success: false })
@@ -192,6 +176,12 @@ export function initItemTemplateFromId (
   });
 }
 
+/**
+ * Loads the item-type-specific functions for an item.
+ *
+ * @param itemTemplate Item template to update
+ * @return Updated item template
+ */
 export function initItemTemplateFromJSON (
   itemTemplate:ITemplate
 ): ITemplate {
@@ -203,6 +193,19 @@ export function initItemTemplateFromJSON (
 // (export decoration is for unit testing)
 
 /**
+ * Flattens an array of strings and/or string arrays.
+ *
+ * @param nestedArray An array to be flattened
+ * @return Copy of array, but flattened
+ * @protected
+ */
+export function flatten (
+  nestedArray = [] as string[]
+): string[] {
+  return nestedArray.reduce((acc, val) => acc.concat(val), []);
+}
+
+/**
  * Removes duplicates from an array of strings.
  *
  * @param arrayWithDups An array to be copied
@@ -210,7 +213,7 @@ export function initItemTemplateFromJSON (
  * @protected
  */
 export function removeDuplicates (
-  arrayWithDups:string[]
+  arrayWithDups = [] as string[]
 ): string[] {
   const uniqueStrings:{
     [value:string]: boolean;

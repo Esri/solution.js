@@ -18,6 +18,7 @@ import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItem } from '@esri/arcgis-rest-common-types';
 
 import * as mInterfaces from "../src/interfaces";
+import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 
 import { TOMORROW, createMockSettings } from "./lib/utils";
@@ -62,7 +63,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
   });
 
   describe("get item hierarchies", () => {
-  
+
     it("item without dependencies", () => {
       // hierarchy:
       // - abc
@@ -289,95 +290,6 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
-    });
-
-  });
-
-  describe("create deployed solution item", () => {
-
-    it("should create a deployed solution item in the default folder and with default access", done => {
-      const title = "Solution item";
-      const deployedSolution:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const solutionItem:IItem = mockItems.getSolutionItem()
-
-      fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"sol1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/sol1234567890/update",
-        '{"success":true,"id":"sol1234567890"}');
-      mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem, MOCK_USER_REQOPTS)
-      .then(
-        (result:mViewing.IDeployedSolutionItemAccess) => {
-          expect(result.id).toEqual("sol1234567890");
-          expect(result.url).toEqual("https://www.arcgis.com/home/item.html?id=sol1234567890");
-          done();
-        },
-        error => done.fail(error)
-      );
-    });
-
-    it("should create a deployed solution item using a specified folder and public access", done => {
-      const title = "Solution item";
-      const deployedSolution:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const solutionItem:IItem = mockItems.getSolutionItem()
-      const folderId = "fld1234567890";
-      const settings = createMockSettings(undefined, folderId);
-
-      fetchMock
-      .post("path:/sharing/rest/content/users/casey/createFolder",
-        '{"success":true,"folder":{"username":"casey","id":"' + folderId + '","title":"' + folderId + '"}}')
-      .post("path:/sharing/rest/content/users/casey/fld1234567890/addItem",
-        '{"success":true,"id":"sol1234567890","folder":"fld1234567890"}')
-      .post("path:/sharing/rest/content/users/casey/items/sol1234567890/update",
-        '{"success":true,"id":"sol1234567890"}')
-      .post("path:/sharing/rest/content/users/casey/items/sol1234567890/share",
-        '{"notSharedWith":[],"itemId":"sol1234567890"}');
-      mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem,
-        MOCK_USER_REQOPTS, settings, "public")
-      .then(
-        (result:mViewing.IDeployedSolutionItemAccess) => {
-          expect(result.id).toEqual("sol1234567890");
-          expect(result.url).toEqual("https://myOrg.maps.arcgis.com/home/item.html?id=sol1234567890");
-          done();
-        },
-        error => done.fail(error)
-      );
-    });
-
-    it("should handle failure to create a deployed solution item", done => {
-      const title = "Solution item";
-      const deployedSolution:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const solutionItem:IItem = mockItems.getSolutionItem()
-
-      fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
-      mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem, MOCK_USER_REQOPTS)
-      .then(
-        () => done.fail(),
-        error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
-          done();
-        }
-      );
-    });
-
-    it("should handle failure to update the URL after creating a deployed solution item", done => {
-      const title = "Solution item";
-      const deployedSolution:mInterfaces.ITemplate[] = mockSolutions.getWebMappingApplicationTemplate();
-      const solutionItem:IItem = mockItems.getSolutionItem()
-
-      fetchMock
-      .post("path:/sharing/rest/content/users/casey/addItem",
-        '{"success":true,"id":"sol1234567890","folder":null}')
-      .post("path:/sharing/rest/content/users/casey/items/sol1234567890/update", mockItems.get400Failure());
-      mViewing.createDeployedSolutionItem(title, deployedSolution, solutionItem, MOCK_USER_REQOPTS)
-      .then(
-        () => done.fail(),
-        error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
-          done();
-        }
-      );
     });
 
   });

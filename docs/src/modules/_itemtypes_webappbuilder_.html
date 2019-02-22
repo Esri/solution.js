@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHierarchyEntry | arcgis-clone-js</title>
+	<title>&quot;itemTypes/webappbuilder&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,79 +56,58 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_viewing_.html">&quot;viewing&quot;</a>
-				</li>
-				<li>
-					<a href="_viewing_.ihierarchyentry.html">IHierarchyEntry</a>
+					<a href="_itemtypes_webappbuilder_.html">&quot;itemTypes/webappbuilder&quot;</a>
 				</li>
 			</ul>
-			<h1>Interface IHierarchyEntry</h1>
+			<h1>External module &quot;itemTypes/webappbuilder&quot;</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>A recursive structure describing the hierarchy of a collection of AGOL items.</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">IHierarchyEntry</span>
-					</li>
-				</ul>
-			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
+							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_itemtypes_webappbuilder_.html#extractdependencies" class="tsd-kind-icon">extract<wbr>Dependencies</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="dependencies" class="tsd-anchor"></a>
-					<h3>dependencies</h3>
-					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <a href="_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L36">viewing.ts:36</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Item&#39;s dependencies</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="id" class="tsd-anchor"></a>
-					<h3>id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L32">viewing.ts:32</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>AGOL item id</p>
-						</div>
-					</div>
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="extractdependencies" class="tsd-anchor"></a>
+					<h3>extract<wbr>Dependencies</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">extract<wbr>Dependencies<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/itemTypes/webappbuilder.ts#L22">itemTypes/webappbuilder.ts:22</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return a list of items this site depends on</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>model: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -142,83 +121,65 @@
 						<span>Internals</span>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="../modules/_index_.html">"index"</a>
+						<a href="_index_.html">"index"</a>
 					</li>
 					<li class="label tsd-is-external">
 						<span>Externals</span>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_interfaces_.html">"interfaces"</a>
+						<a href="_interfaces_.html">"interfaces"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_classifier_.html">"item<wbr>Types/classifier"</a>
+						<a href="_itemtypes_classifier_.html">"item<wbr>Types/classifier"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_common_.html">"item<wbr>Types/common"</a>
+						<a href="_itemtypes_common_.html">"item<wbr>Types/common"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_dashboard_.html">"item<wbr>Types/dashboard"</a>
+						<a href="_itemtypes_dashboard_.html">"item<wbr>Types/dashboard"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_featureservice_.html">"item<wbr>Types/featureservice"</a>
+						<a href="_itemtypes_featureservice_.html">"item<wbr>Types/featureservice"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_generic_.html">"item<wbr>Types/generic"</a>
+						<a href="_itemtypes_generic_.html">"item<wbr>Types/generic"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_group_.html">"item<wbr>Types/group"</a>
+						<a href="_itemtypes_group_.html">"item<wbr>Types/group"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_storymap_.html">"item<wbr>Types/storymap"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_webappbuilder_.html">"item<wbr>Types/webappbuilder"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_webmap_.html">"item<wbr>Types/webmap"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_itemtypes_webmappingapplication_.html">"item<wbr>Types/webmappingapplication"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_solution_.html">"solution"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_utils_is_guid_.html">"utils/is-<wbr>guid"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_utils_item_helpers_.html">"utils/item-<wbr>helpers"</a>
-					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
+						<a href="_itemtypes_storymap_.html">"item<wbr>Types/storymap"</a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html">"viewing"</a>
+						<a href="_itemtypes_webappbuilder_.html">"item<wbr>Types/webappbuilder"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_itemtypes_webmap_.html">"item<wbr>Types/webmap"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_itemtypes_webmappingapplication_.html">"item<wbr>Types/webmappingapplication"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_solution_.html">"solution"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_utils_is_guid_.html">"utils/is-<wbr>guid"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_utils_item_helpers_.html">"utils/item-<wbr>helpers"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
-					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+						<a href="_itemtypes_webappbuilder_.html#extractdependencies" class="tsd-kind-icon">extract<wbr>Dependencies</a>
 					</li>
 				</ul>
 			</nav>

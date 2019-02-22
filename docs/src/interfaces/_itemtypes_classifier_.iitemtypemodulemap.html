@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IHierarchyEntry | arcgis-clone-js</title>
+	<title>IItemTypeModuleMap | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_viewing_.html">&quot;viewing&quot;</a>
+					<a href="../modules/_itemtypes_classifier_.html">&quot;itemTypes/classifier&quot;</a>
 				</li>
 				<li>
-					<a href="_viewing_.ihierarchyentry.html">IHierarchyEntry</a>
+					<a href="_itemtypes_classifier_.iitemtypemodulemap.html">IItemTypeModuleMap</a>
 				</li>
 			</ul>
-			<h1>Interface IHierarchyEntry</h1>
+			<h1>Interface IItemTypeModuleMap</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A recursive structure describing the hierarchy of a collection of AGOL items.</p>
+						<p>Structure for mapping from item type to module with type-specific template-handling code</p>
 					</div>
 				</div>
 			</section>
@@ -80,56 +80,18 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IHierarchyEntry</span>
+						<span class="target">IItemTypeModuleMap</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a></li>
-							</ul>
-						</section>
+			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-external-module tsd-is-external tsd-is-not-exported">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>itemType: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="_interfaces_.iitemtypemodule.html" class="tsd-signature-type">IItemTypeModule</a></div>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Structure for mapping from item type to module with type-specific template-handling code</p>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-external">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="dependencies" class="tsd-anchor"></a>
-					<h3>dependencies</h3>
-					<div class="tsd-signature tsd-kind-icon">dependencies<span class="tsd-signature-symbol">:</span> <a href="_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L36">viewing.ts:36</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Item&#39;s dependencies</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-					<a name="id" class="tsd-anchor"></a>
-					<h3>id</h3>
-					<div class="tsd-signature tsd-kind-icon">id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L32">viewing.ts:32</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>AGOL item id</p>
-						</div>
-					</div>
-				</section>
+				</div>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -150,7 +112,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_interfaces_.html">"interfaces"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_itemtypes_classifier_.html">"item<wbr>Types/classifier"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
@@ -192,7 +154,7 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
@@ -201,24 +163,31 @@
 				<ul class="before-current">
 				</ul>
 				<ul class="current">
-					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
-						<ul>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#dependencies" class="tsd-kind-icon">dependencies</a>
-							</li>
-							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
-								<a href="_viewing_.ihierarchyentry.html#id" class="tsd-kind-icon">id</a>
-							</li>
-						</ul>
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external tsd-is-not-exported">
+						<a href="_itemtypes_classifier_.iitemtypemodulemap.html" class="tsd-kind-icon">IItem<wbr>Type<wbr>Module<wbr>Map</a>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+						<a href="../modules/_itemtypes_classifier_.html#convertitemtotemplate" class="tsd-kind-icon">convert<wbr>Item<wbr>ToTemplate</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_itemtypes_classifier_.html#flatten" class="tsd-kind-icon">flatten</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+						<a href="../modules/_itemtypes_classifier_.html#getsupporteditemtypes" class="tsd-kind-icon">get<wbr>Supported<wbr>Item<wbr>Types</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_classifier_.html#inititemtemplatefromjson" class="tsd-kind-icon">init<wbr>Item<wbr>Template<wbr>FromJSON</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_itemtypes_classifier_.html#removeduplicates" class="tsd-kind-icon">remove<wbr>Duplicates</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-protected tsd-is-external">
+						<a href="../modules/_itemtypes_classifier_.html#removeundesirableitemproperties" class="tsd-kind-icon">remove<wbr>Undesirable<wbr>Item<wbr>Properties</a>
+					</li>
+					<li class=" tsd-kind-object-literal tsd-parent-kind-external-module tsd-is-external tsd-is-not-exported">
+						<a href="../modules/_itemtypes_classifier_.html#modulemap" class="tsd-kind-icon">module<wbr>Map</a>
 					</li>
 				</ul>
 			</nav>

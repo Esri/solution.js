@@ -25,7 +25,7 @@ import { ITemplate, IProgressUpdate } from "../interfaces";
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -37,18 +37,9 @@ export function completeItemTemplate (
   });
 }
 
-export function getDependencies (
-  itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    resolve([]);
-  });
-}
-
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -57,8 +48,7 @@ export function deployItem (
   progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
-    status: "starting",
-    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+    status: "starting"
   });
 
   return new Promise((resolve, reject) => {
@@ -81,7 +71,7 @@ export function deployItem (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;

@@ -20,9 +20,9 @@ import { hasTypeKeyword, parseIdFromUrl } from '../utils/item-helpers';
 /**
  * Return a list of items this depends on
  */
-export function getDependencies (
+export function extractDependencies (
   model:any)
-  : Promise<string[]> {
+  : string[] {
   // unknown types have no deps...
   let processor = (m:any) => [] as any;
   // find known types by typeKeyword
@@ -37,7 +37,7 @@ export function getDependencies (
     processor = getMapSeriesDependencies;
   }
   // execute
-  return Promise.resolve(processor(model));
+  return processor(model);
 };
 
 /**

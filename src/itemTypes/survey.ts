@@ -20,8 +20,8 @@
  * process for a Survey will utilize the S123 API, which
  * handles creating the feature services etc etc
  */
-export function getDependencies (
+export function extractDependencies (
   model: any
-  ): Promise<string[]>  {
-    return Promise.resolve([]);
+  ): string[]  {
+    return [];
 };

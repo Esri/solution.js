@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ISwizzleHash | arcgis-clone-js</title>
+	<title>ISolutionTemplate | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_common_.html">&quot;common&quot;</a>
+					<a href="../modules/_interfaces_.html">&quot;interfaces&quot;</a>
 				</li>
 				<li>
-					<a href="_common_.iswizzlehash.html">ISwizzleHash</a>
+					<a href="_interfaces_.isolutiontemplate.html">ISolutionTemplate</a>
 				</li>
 			</ul>
-			<h1>Interface ISwizzleHash</h1>
+			<h1>Interface ISolutionTemplate</h1>
 		</div>
 	</div>
 </header>
@@ -72,7 +72,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The collection of mappings from original AGOL item ids to cloned values.</p>
+						<p>A solution template: a collection of AGO item templates</p>
 					</div>
 				</div>
 			</section>
@@ -80,18 +80,56 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ISwizzleHash</span>
+						<span class="target">ISolutionTemplate</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-				<h3 class="tsd-before-signature">Indexable</h3>
-				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="_common_.iswizzle.html" class="tsd-signature-type">ISwizzle</a></div>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>A mapping from an original AGOL item id to its cloned value.</p>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_interfaces_.isolutiontemplate.html#metadata" class="tsd-kind-icon">metadata</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_interfaces_.isolutiontemplate.html#templates" class="tsd-kind-icon">templates</a></li>
+							</ul>
+						</section>
 					</div>
-				</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="metadata" class="tsd-anchor"></a>
+					<h3>metadata</h3>
+					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <a href="_interfaces_.isolutiontemplatemetadata.html" class="tsd-signature-type">ISolutionTemplateMetadata</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/interfaces.ts#L42">interfaces.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>General information about the solution template</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="templates" class="tsd-anchor"></a>
+					<h3>templates</h3>
+					<div class="tsd-signature tsd-kind-icon">templates<span class="tsd-signature-symbol">:</span> <a href="_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/interfaces.ts#L46">interfaces.ts:46</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The collection of templates</p>
+						</div>
+					</div>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -110,13 +148,49 @@
 						<span>Externals</span>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_common_.html">"common"</a>
+						<a href="../modules/_interfaces_.html">"interfaces"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
-						<a href="../modules/_fullitem_.html">"full<wbr>Item"</a>
+						<a href="../modules/_itemtypes_classifier_.html">"item<wbr>Types/classifier"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_common_.html">"item<wbr>Types/common"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_dashboard_.html">"item<wbr>Types/dashboard"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_featureservice_.html">"item<wbr>Types/featureservice"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_generic_.html">"item<wbr>Types/generic"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_group_.html">"item<wbr>Types/group"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_storymap_.html">"item<wbr>Types/storymap"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webappbuilder_.html">"item<wbr>Types/webappbuilder"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webmap_.html">"item<wbr>Types/webmap"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_itemtypes_webmappingapplication_.html">"item<wbr>Types/webmappingapplication"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_solution_.html">"solution"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_is_guid_.html">"utils/is-<wbr>guid"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_item_helpers_.html">"utils/item-<wbr>helpers"</a>
+					</li>
+					<li class=" tsd-kind-external-module tsd-is-external">
+						<a href="../modules/_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="../modules/_viewing_.html">"viewing"</a>
@@ -126,23 +200,37 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_common_.iorgsession.html" class="tsd-kind-icon">IOrg<wbr>Session</a>
+						<a href="_interfaces_.iagoitemaccess.html" class="tsd-kind-icon">IAGOItem<wbr>Access</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_common_.iswizzle.html" class="tsd-kind-icon">ISwizzle</a>
+						<a href="_interfaces_.iitemtypemodule.html" class="tsd-kind-icon">IItem<wbr>Type<wbr>Module</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.iprogressupdate.html" class="tsd-kind-icon">IProgress<wbr>Update</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="_common_.iswizzlehash.html" class="tsd-kind-icon">ISwizzle<wbr>Hash</a>
+						<a href="_interfaces_.isolutiontemplate.html" class="tsd-kind-icon">ISolution<wbr>Template</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_interfaces_.isolutiontemplate.html#metadata" class="tsd-kind-icon">metadata</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_interfaces_.isolutiontemplate.html#templates" class="tsd-kind-icon">templates</a>
+							</li>
+						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_common_.html#createitemwithdata" class="tsd-kind-icon">create<wbr>Item<wbr>With<wbr>Data</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.isolutiontemplateitem.html" class="tsd-kind-icon">ISolution<wbr>Template<wbr>Item</a>
 					</li>
-					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="../modules/_common_.html#updateitemurl" class="tsd-kind-icon">update<wbr>ItemURL</a>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.isolutiontemplatemetadata.html" class="tsd-kind-icon">ISolution<wbr>Template<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_interfaces_.itemplate.html" class="tsd-kind-icon">ITemplate</a>
 					</li>
 				</ul>
 			</nav>

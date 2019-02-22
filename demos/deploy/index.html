@@ -111,7 +111,7 @@
     progress
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    deploySolutionFcn = deploySolution;
+    deploySolutionFcn = deploySolutionItem;
 
     document.getElementById('page').style.display = 'block';
 
@@ -123,7 +123,7 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function deploySolution() {
+    function deploySolutionItem() {
       var startTime = Date.now();
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
@@ -144,57 +144,52 @@
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           const settings = {
             solutionName: currentSolutionName,
-            folderId: null,  // Have deploySolution create the folder for us
+            folderId: null,  // Have deploySolutionItem create the folder for us
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
             }
           };
           var solutionTemplateItemDef = arcgis_rest_items.getItem(currentSolutionId, destinationRequestOptions);
+          var solutionTemplateItemDataDef = arcgis_rest_items.getItemData(currentSolutionId, destinationRequestOptions);
 
-          // Get the solution contents
-          arcgis_rest_items.getItemData(currentSolutionId, destinationRequestOptions)
+          // Await the template info
+          Promise.all([  // TODO IE11 does not support Promise
+            solutionTemplateItemDef,
+            solutionTemplateItemDataDef
+          ])
           .then(
-            publishedSolution => {
+            function (responses) {
+              var templateItem = responses[0];
+              var templateItemData = responses[1];
 
               // Get the total estimated cost of creating these items
-              console.log("totalEstimatedDeploymentCostFactor for " + publishedSolution.templates.length +
-                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
+              console.log("totalEstimatedDeploymentCostFactor for " + templateItemData.templates.length +
+                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(templateItemData.templates));
               var progressCallback = _createProgressCallback(
-                2 + // for creating deployed Solution item
-                arcgis_clone_js.getEstimatedDeploymentCost(publishedSolution.templates));
+                arcgis_clone_js.getEstimatedDeploymentCost(templateItemData.templates));
 
-              Promise.all([  // TODO IE11 does not support Promise
-                arcgis_clone_js.deploySolution(publishedSolution.templates, destinationRequestOptions,
-                  settings, progressCallback),
-                solutionTemplateItemDef
-              ])
+              // Deploy!
+              arcgis_clone_js.deploySolutionItem({
+                item: templateItem,
+                data: templateItemData
+              }, destinationRequestOptions, settings, progressCallback)
               .then(
-                function (responses) {
-                  progressCallback('creating deployed Solution item');
-                  var deployedSolution = responses[0];
-                  var templateItem = responses[1];
+                function (deployedSolution) {  //???
+                  // Report the results
+                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                  document.getElementById('creating').style.display = 'none';
+                  document.getElementById('createResults').style.display = 'block';
+                  progress.hide();
+                  var endTime = Date.now();
+                  console.log('completed in ' + (endTime - startTime) / 1000 + ' seconds');
 
-                  // Create a deployed Solution item as a table of contents for the created items
-                  arcgis_clone_js.createDeployedSolutionItem(currentSolutionName, deployedSolution, templateItem,
-                    destinationRequestOptions, settings, 'public')
-                  .then(
-                    deployedSolutionItem  => {
-                      document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
-                      document.getElementById('creating').style.display = 'none';
-                      document.getElementById('createResults').style.display = 'block';
-                      progress.hide();
-                      var endTime = Date.now();
-                      console.log('completed in ' + (endTime - startTime) / 1000 + ' seconds');
-
-                      document.getElementById('createDisplay').innerHTML =
-                      '<ul class="solutionList"><li><a href="' + deployedSolutionItem.url + '" target="_blank">' +
-                        currentSolutionName + '</a></li></ul><br>' +
-                        demoCommon.createHierarchyDisplay(deployedSolution,
-                          arcgis_clone_js.getItemHierarchy(deployedSolution),
-                          true, settings.organization.orgUrl + '/home/');
-                    }
-                  );
+                  document.getElementById('createDisplay').innerHTML =
+                  '<ul class="solutionList"><li><a href="' + deployedSolution.url + '" target="_blank">' +
+                    currentSolutionName + '</a></li></ul><br>' +
+                    demoCommon.createHierarchyDisplay(deployedSolution,
+                      arcgis_clone_js.getItemHierarchy(deployedSolution),
+                      true, settings.organization.orgUrl + '/home/');
                 }
               );
             }

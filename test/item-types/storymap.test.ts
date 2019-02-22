@@ -14,8 +14,8 @@
  | limitations under the License.
  */
 
-import { 
-  getDependencies,
+import {
+  extractDependencies,
   getCascadeDependencies,
   getMapJournalDependencies,
   getMapSeriesDependencies
@@ -27,74 +27,62 @@ import {cloneObject} from '../../src/utils/object-helpers';
 
 describe('Story Maps :: ', () => {
   describe('generic functions', () => {
-    
+
     describe('getting dependencies', () => {
-      it('can get dependencies for a cascade', (done) => {
+      it('can get dependencies for a cascade', () => {
         const m = {
           item: {
             typeKeywords: ['Story Map', 'Cascade']
           },
           data: cloneObject(TestCascade)
         };
-        return getDependencies(m)
-        .then((r) => {
-          expect(r).toBeTruthy('should return a value');
-          expect(Array.isArray(r)).toBeTruthy('should be an array');
-          expect(r.length).toEqual(4, 'should find 4');
-          expect(r.includes('234a94478490445cb4a57878451cb4b8')).toBeTruthy();
-          expect(r.includes('7db923b748c44666b09afc83ce833b87')).toBeTruthy();
-          done();
-        });
+        const r = extractDependencies(m);
+        expect(r).toBeTruthy('should return a value');
+        expect(Array.isArray(r)).toBeTruthy('should be an array');
+        expect(r.length).toEqual(4, 'should find 4');
+        expect(r.includes('234a94478490445cb4a57878451cb4b8')).toBeTruthy();
+        expect(r.includes('7db923b748c44666b09afc83ce833b87')).toBeTruthy();
       });
 
-      it('works for Map Journal', (done) => {
+      it('works for Map Journal', () => {
         const m = cloneObject(TestMapJournal);
         m.typeKeywords = ['Story Map', 'MapJournal']
 
-        return getDependencies(m)
-        .then((r) => {
-          expect(r).toBeTruthy('should return a value');
-          expect(Array.isArray(r)).toBeTruthy('should be an array');
-          expect(r.length).toEqual(3, 'should have 3 entries');
-          expect(r).toEqual(['234', '567', '91b46c2b162c48dba264b2190e1dbcff']);
-          done();
-        });
+        const r = extractDependencies(m);
+        expect(r).toBeTruthy('should return a value');
+        expect(Array.isArray(r)).toBeTruthy('should be an array');
+        expect(r.length).toEqual(3, 'should have 3 entries');
+        expect(r).toEqual(['234', '567', '91b46c2b162c48dba264b2190e1dbcff']);
       });
 
-      it('works for Map Series', (done) => {
+      it('works for Map Series', () => {
         const m = cloneObject(TestMapSeries);
         m.typeKeywords = ['Story Map', 'mapseries']
-  
-        return getDependencies(m)
-        .then((r) => {
-          expect(r).toBeTruthy('should return a value');
-          expect(Array.isArray(r)).toBeTruthy('should be an array');
-          expect(r.length).toEqual(3, 'should have 3 entries');
-          expect(r).toEqual(['123','234', '567']);
-          done();
-        });
+
+        const r = extractDependencies(m);
+        expect(r).toBeTruthy('should return a value');
+        expect(Array.isArray(r)).toBeTruthy('should be an array');
+        expect(r.length).toEqual(3, 'should have 3 entries');
+        expect(r).toEqual(['123','234', '567']);
       });
 
-      it('returns empty array if run on a non-storymap item', (done) => {
+      it('returns empty array if run on a non-storymap item', () => {
         const m = {
           item: {
             typeKeywords: ['other']
           },
           data: {}
         };
-  
-        return getDependencies(m)
-        .then((r) => {
-          expect(r).toBeTruthy('should return a value');
-          expect(Array.isArray(r)).toBeTruthy('should be an array');
-          expect(r.length).toEqual(0, 'should have 0 entries');
-          done();
-        });
-        
+
+        const r = extractDependencies(m);
+        expect(r).toBeTruthy('should return a value');
+        expect(Array.isArray(r)).toBeTruthy('should be an array');
+        expect(r.length).toEqual(0, 'should have 0 entries');
+
       });
     });
 
-    
+
 
 
   });
@@ -127,7 +115,7 @@ describe('Story Maps :: ', () => {
   });
 
   describe('MapJournal :: ', () => {
-    
+
     it('gets dependencies for a map journal', () => {
       const r = getMapJournalDependencies(cloneObject(TestMapJournal));
       expect(r).toBeTruthy('should return a value');
@@ -189,5 +177,5 @@ describe('Story Maps :: ', () => {
     });
 
   });
-  
+
 });

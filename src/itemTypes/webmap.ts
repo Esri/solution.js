@@ -33,7 +33,7 @@ const WEBMAP_APP_URL_PART:string = "/home/webmap/viewer.html?webmap=";
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -48,7 +48,10 @@ export function completeItemTemplate (
     itemTemplate.item.url =
       mCommon.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + mCommon.templatize(itemTemplate.itemId);
 
-    // Templatize the map layer ids
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
+    // Templatize the map layer ids after we've extracted them as dependencies
     if (itemTemplate.data) {
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
       templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
@@ -58,35 +61,9 @@ export function completeItemTemplate (
   });
 }
 
-/**
- * Gets the ids of the dependencies of an AGOL webmap item.
- *
- * @param fullItem A webmap item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function getDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    let dependencies:string[] = [];
-
-    if (itemTemplate.data) {
-      dependencies = [
-        ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
-        ...getWebmapLayerIds(itemTemplate.data.tables)
-      ];
-    }
-
-    resolve(dependencies);
-  });
-}
-
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -95,8 +72,7 @@ export function deployItem (
   progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
-    status: "starting",
-    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+    status: "starting"
   });
 
   return new Promise((resolve, reject) => {
@@ -119,7 +95,7 @@ export function deployItem (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
@@ -156,6 +132,28 @@ export function deployItem (
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 // (export decoration is for unit testing)
+
+/**
+ * Gets the ids of the dependencies of an AGOL webmap item.
+ *
+ * @param fullItem A webmap item whose dependencies are sought
+ * @return List of dependencies
+ * @protected
+ */
+export function extractDependencies (
+  itemTemplate: ITemplate
+): string[] {
+  let dependencies:string[] = [];
+
+  if (itemTemplate.data) {
+    dependencies = [
+      ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
+      ...getWebmapLayerIds(itemTemplate.data.tables)
+    ];
+  }
+
+  return dependencies;
+}
 
 /**
  * Extracts the AGOL id or URL for each layer or table object in a list.

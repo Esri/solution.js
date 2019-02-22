@@ -36,15 +36,50 @@ export interface IHierarchyEntry {
   dependencies: IHierarchyEntry[]
 }
 
-export interface IDeployedSolutionItemAccess {
-  id: string,
-  url: string
+/**
+ * Extracts item hierarchy structure from a solution template.
+ *
+ * @param templates A collection of AGO item templates
+ * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
+ * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
+ * item's dependencies
+ */
+export function getItemHierarchy (
+  templates: mInterfaces.ITemplate[]
+): IHierarchyEntry[] {
+  const hierarchy:IHierarchyEntry[] = [];
+
+  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
+  const topLevelItemIds = getTopLevelItemIds(templates);
+
+  // Hierarchically list the children of specified nodes
+  function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
+    // Visit each child
+    children.forEach(function (id) {
+      const child:IHierarchyEntry = {
+        id,
+        dependencies: []
+      };
+
+      // Fill in the child's dependencies array with its children
+      const template = mSolution.findTemplateInList(templates, id);
+      const dependencyIds = template.dependencies;
+      if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
+        itemChildren(dependencyIds, child.dependencies);
+      }
+
+      accumulatedHierarchy.push(child);
+    });
+  }
+
+  itemChildren(topLevelItemIds, hierarchy);
+  return hierarchy;
 }
 
 /**
  * Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.
  *
- * @param items Solution to explore
+ * @param templates A collection of AGO item templates
  * @return List of ids of top-level items in Solution
  */
 export function getTopLevelItemIds (
@@ -70,96 +105,4 @@ export function getTopLevelItemIds (
     }
   );
   return topLevelItemCandidateIds;
-}
-
-/**
- * Extracts item hierarchy structure from a Solution's items list.
- *
- * @param items Hash of JSON descriptions of items
- * @return JSON structure reflecting dependency hierarchy of items; shared dependencies are
- * repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
- * item's dependencies
- */
-export function getItemHierarchy (
-  templates: mInterfaces.ITemplate[]
-): IHierarchyEntry[] {
-  const hierarchy:IHierarchyEntry[] = [];
-
-  // Find the top-level nodes. Start with all nodes, then remove those that other nodes depend on
-  const topLevelItemIds = getTopLevelItemIds(templates);
-
-  // Hierarchically list the children of specified nodes
-  function itemChildren(children:string[], accumulatedHierarchy:IHierarchyEntry[]): void {
-    // Visit each child
-    children.forEach(function (id) {
-      const child:IHierarchyEntry = {
-        id,
-        dependencies: []
-      };
-
-      // Fill in the child's dependencies array with its children
-      const template = mSolution.getTemplateInSolution(templates, id);
-      const dependencyIds = template.dependencies;
-      if (Array.isArray(dependencyIds) && dependencyIds.length > 0) {
-        itemChildren(dependencyIds, child.dependencies);
-      }
-
-      accumulatedHierarchy.push(child);
-    });
-  }
-
-  itemChildren(topLevelItemIds, hierarchy);
-  return hierarchy;
-}
-
-export function createDeployedSolutionItem (
-  title: string,
-  solution: mInterfaces.ITemplate[],
-  templateItem: IItem,
-  requestOptions: IUserRequestOptions,
-  settings = {} as any,
-  access = "private"
-): Promise<IDeployedSolutionItemAccess> {
-  return new Promise((resolve, reject) => {
-    const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
-      templateItem.id + "/info/" + templateItem.thumbnail;
-    const item = {
-      itemType: "text",
-      name: null as string,
-      title,
-      description: templateItem.description,
-      tags: templateItem.tags,
-      snippet: templateItem.snippet,
-      thumbnailurl: thumbnailUrl,
-      accessInformation: templateItem.accessInformation,
-      type: "Solution",
-      typeKeywords: ["Solution", "Deployed"],
-      commentsEnabled: false
-    };
-    const data = {
-      templates: solution
-    };
-
-    mCommon.createItemWithData(item, data, requestOptions, settings.folderId, access)
-    .then(
-      createResponse => {
-        // Update its app URL
-        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
-        const deployedSolutionItemId = createResponse.id;
-        const deployedSolutionItemUrl = orgUrl + "/home/item.html?id=" + deployedSolutionItemId;
-        mCommon.updateItemURL(deployedSolutionItemId, deployedSolutionItemUrl, requestOptions)
-        .then(
-          response => {
-            const deployedSolutionItem:IDeployedSolutionItemAccess = {
-              id: deployedSolutionItemId,
-              url: deployedSolutionItemUrl
-            }
-            resolve(deployedSolutionItem);
-          },
-          () => reject({ success: false })
-        );
-      },
-      () => reject({ success: false })
-    );
-  });
 }

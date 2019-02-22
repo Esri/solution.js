@@ -27,59 +27,32 @@ import { ITemplate, IProgressUpdate } from "../interfaces";
 //
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     // Update the estimated cost factor to deploy this item
     itemTemplate.estimatedDeploymentCostFactor = 3;
 
     // Common templatizations: item id, item dependency ids
     mCommon.doCommonTemplatizations(itemTemplate);
 
-    resolve(itemTemplate);
-  });
-}
-
-/**
- * Gets the ids of the dependencies (contents) of an AGOL group.
- *
- * @param fullItem A group whose contents are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function getDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const pagingRequest:IPagingParamsRequestOptions = {
-      paging: {
-        start: 1,
-        num: 100
-      },
-      ...requestOptions
-    };
-
-    // Fetch group items
-    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
+    // Get dependencies (contents)
+    getGroupContents(itemTemplate, requestOptions)
     .then(
-      contents => {
-        // Update the estimated cost factor to deploy this item
-        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
-
-        resolve(contents);
+      dependencies => {
+        itemTemplate.dependencies = dependencies;
+        resolve(itemTemplate);
       },
       () => reject({ success: false })
-    );
+    )
   });
 }
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -88,8 +61,7 @@ export function deployItem (
   progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
-    status: "starting",
-    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+    status: "starting"
   });
 
   return new Promise((resolve, reject) => {
@@ -111,7 +83,7 @@ export function deployItem (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.group.id
           };
           itemTemplate.itemId = createResponse.group.id;
@@ -199,12 +171,48 @@ export function addGroupMembers (
 }
 
 /**
+ * Gets the ids of the dependencies (contents) of an AGOL group.
+ *
+ * @param fullItem A group whose contents are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids or an empty list
+ * @protected
+ */
+export function getGroupContents (
+  itemTemplate: ITemplate,
+  requestOptions: IUserRequestOptions
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const pagingRequest:IPagingParamsRequestOptions = {
+      paging: {
+        start: 1,
+        num: 100
+      },
+      ...requestOptions
+    };
+
+    // Fetch group items
+    getGroupContentsTranche(itemTemplate.itemId, pagingRequest)
+    .then(
+      contents => {
+        // Update the estimated cost factor to deploy this item
+        itemTemplate.estimatedDeploymentCostFactor = 3 + contents.length;
+
+        resolve(contents);
+      },
+      () => reject({ success: false })
+    );
+  });
+}
+
+/**
  * Gets the ids of a group's contents.
  *
  * @param id Group id
  * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
  *                      be modified by this routine
- * @return A promise that will resolve with a list of the ids of the group's contents
+ * @return A promise that will resolve with a list of the ids of the group's contents or an empty
+ *         list
  * @protected
  */
 export function getGroupContentsTranche (

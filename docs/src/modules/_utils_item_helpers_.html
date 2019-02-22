@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;viewing&quot; | arcgis-clone-js</title>
+	<title>&quot;utils/item-helpers&quot; | arcgis-clone-js</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,10 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_viewing_.html">&quot;viewing&quot;</a>
+					<a href="_utils_item_helpers_.html">&quot;utils/item-helpers&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;viewing&quot;</h1>
+			<h1>External module &quot;utils/item-helpers&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -71,16 +71,12 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section tsd-is-external">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a></li>
-								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_utils_item_helpers_.html#createid" class="tsd-kind-icon">create<wbr>Id</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_utils_item_helpers_.html#hasanykeyword" class="tsd-kind-icon">has<wbr>Any<wbr>Keyword</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_utils_item_helpers_.html#hastypekeyword" class="tsd-kind-icon">has<wbr>Type<wbr>Keyword</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-is-external"><a href="_utils_item_helpers_.html#parseidfromurl" class="tsd-kind-icon">parse<wbr>IdFrom<wbr>Url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -89,68 +85,124 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-external">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="getitemhierarchy" class="tsd-anchor"></a>
-					<h3>get<wbr>Item<wbr>Hierarchy</h3>
+					<a name="createid" class="tsd-anchor"></a>
+					<h3>create<wbr>Id</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Item<wbr>Hierarchy<span class="tsd-signature-symbol">(</span>templates<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Id<span class="tsd-signature-symbol">(</span>prefix<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L47">viewing.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/utils/item-helpers.ts#L76">utils/item-helpers.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Extracts item hierarchy structure from a solution template.</p>
+									<p>Return a random number, prefixed with a string. Used for unique identifiers that do not require
+									the rigor of a full UUID - i.e. node id&#39;s, process ids etc.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>templates: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> prefix: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;i&quot;</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>A collection of AGO item templates</p>
+										<p>String to prefix the random number with so the result is a valid javascript property</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-signature-type">IHierarchyEntry</a><span class="tsd-signature-symbol">[]</span></h4>
-							<p>JSON structure reflecting dependency hierarchy of items; shared dependencies are
-								repeated; each element of the structure contains the AGOL id of an item and a list of ids of the
-							item&#39;s dependencies</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-					<a name="gettoplevelitemids" class="tsd-anchor"></a>
-					<h3>get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</h3>
+					<a name="hasanykeyword" class="tsd-anchor"></a>
+					<h3>has<wbr>Any<wbr>Keyword</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids<span class="tsd-signature-symbol">(</span>templates<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Any<wbr>Keyword<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, keywords<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/viewing.ts#L85">viewing.ts:85</a></li>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/utils/item-helpers.ts#L35">utils/item-helpers.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Gets a list of the top-level items in a Solution, i.e., the items that no other item depends on.</p>
+									<p>Does the model have any of a set of keywords</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>templates: <a href="../interfaces/_interfaces_.itemplate.html" class="tsd-signature-type">ITemplate</a><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A collection of AGO item templates</p>
-									</div>
+									<h5>model: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>keywords: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h4>
-							<p>List of ids of top-level items in Solution</p>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="hastypekeyword" class="tsd-anchor"></a>
+					<h3>has<wbr>Type<wbr>Keyword</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">has<wbr>Type<wbr>Keyword<span class="tsd-signature-symbol">(</span>model<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, keyword<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/utils/item-helpers.ts#L24">utils/item-helpers.ts:24</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Does the model have a specific typeKeyword?</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>model: <span class="tsd-signature-type">any</span></h5>
+								</li>
+								<li>
+									<h5>keyword: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+					<a name="parseidfromurl" class="tsd-anchor"></a>
+					<h3>parse<wbr>IdFrom<wbr>Url</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<li class="tsd-signature tsd-kind-icon">parse<wbr>IdFrom<wbr>Url<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/Esri/arcgis-clone-js/blob/d64ff15/src/utils/item-helpers.ts#L51">utils/item-helpers.ts:51</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Given the url of a webapp, parse our the id from the url</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -210,27 +262,30 @@
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_utils_is_guid_.html">"utils/is-<wbr>guid"</a>
 					</li>
-					<li class=" tsd-kind-external-module tsd-is-external">
+					<li class="current tsd-kind-external-module tsd-is-external">
 						<a href="_utils_item_helpers_.html">"utils/item-<wbr>helpers"</a>
 					</li>
 					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_utils_object_helpers_.html">"utils/object-<wbr>helpers"</a>
 					</li>
-					<li class="current tsd-kind-external-module tsd-is-external">
+					<li class=" tsd-kind-external-module tsd-is-external">
 						<a href="_viewing_.html">"viewing"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_viewing_.ihierarchyentry.html" class="tsd-kind-icon">IHierarchy<wbr>Entry</a>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_utils_item_helpers_.html#createid" class="tsd-kind-icon">create<wbr>Id</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#getitemhierarchy" class="tsd-kind-icon">get<wbr>Item<wbr>Hierarchy</a>
+						<a href="_utils_item_helpers_.html#hasanykeyword" class="tsd-kind-icon">has<wbr>Any<wbr>Keyword</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
-						<a href="_viewing_.html#gettoplevelitemids" class="tsd-kind-icon">get<wbr>Top<wbr>Level<wbr>Item<wbr>Ids</a>
+						<a href="_utils_item_helpers_.html#hastypekeyword" class="tsd-kind-icon">has<wbr>Type<wbr>Keyword</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-is-external">
+						<a href="_utils_item_helpers_.html#parseidfromurl" class="tsd-kind-icon">parse<wbr>IdFrom<wbr>Url</a>
 					</li>
 				</ul>
 			</nav>

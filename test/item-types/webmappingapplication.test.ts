@@ -16,15 +16,15 @@
 
 
 import {
-  getDependencies,
+  extractDependencies,
 } from '../../src/itemTypes/webmappingapplication';
 
 
 describe('Web Mapping Application', () => {
-  
-  describe('getDependencies', () => {
 
-    it('returns various ids from named props in generic items', (done) => {
+  describe('extractDependencies', () => {
+
+    it('returns various ids from named props in generic items', () => {
       const m = {
         item: {
           typeKeywords: ['Javascript']
@@ -38,16 +38,13 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
-      .then((r) => {
-        expect(Array.isArray(r)).toBeTruthy('should be an array');
-        expect(r.length).toEqual(4, 'should have 4 entries');
-        expect(r).toEqual(['3ef', 'bc3', 'ef3', 'bc7']);
-        done();
-      })
+      const r = extractDependencies(m);
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(4, 'should have 4 entries');
+      expect(r).toEqual(['3ef', 'bc3', 'ef3', 'bc7']);
     });
 
-    it('processes a storymap', (done) => {
+    it('processes a storymap', () => {
       const m = {
         item: {
           typeKeywords: ['Story Map', 'MapJournal']
@@ -69,16 +66,13 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
-      .then((r) => {
-        expect(Array.isArray(r)).toBeTruthy('should be an array');
-        expect(r.length).toEqual(1, 'should have 1 entries');
-        expect(r).toEqual(['234']);
-        done();
-      })
+      const r = extractDependencies(m);
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(1, 'should have 1 entries');
+      expect(r).toEqual(['234']);
     });
 
-    it('processes a WAB', (done) => {
+    it('processes a WAB', () => {
       const m = {
         item: {
           typeKeywords: ['Web AppBuilder']
@@ -89,15 +83,12 @@ describe('Web Mapping Application', () => {
           }
         }
       };
-      return getDependencies(m)
-      .then((r) => {
-        expect(Array.isArray(r)).toBeTruthy('should be an array');
-        expect(r.length).toEqual(1, 'should have 1 entries');
-        expect(r).toEqual(['3ef']);
-        done();
-      })
+      const r = extractDependencies(m);
+      expect(Array.isArray(r)).toBeTruthy('should be an array');
+      expect(r.length).toEqual(1, 'should have 1 entries');
+      expect(r).toEqual(['3ef']);
     });
-    
+
   });
 
 });

@@ -47,7 +47,7 @@ interface IDashboardWidget {
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
-export function completeItemTemplate (
+export function convertItemToTemplate (
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
 ): Promise<ITemplate> {
@@ -61,41 +61,16 @@ export function completeItemTemplate (
     // Templatize the app URL
     itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME + OPS_DASHBOARD_APP_URL_PART;
 
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
+
     resolve(itemTemplate);
-  });
-}
-
-/**
- * Gets the ids of the dependencies of an AGOL dashboard item.
- *
- * @param fullItem A dashboard item whose dependencies are sought
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve with list of dependent ids
- * @protected
- */
-export function getDependencies (
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<string[]> {
-  return new Promise(resolve => {
-    const dependencies:string[] = [];
-
-    const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
-    if (widgets) {
-      widgets.forEach((widget:any) => {
-        if (widget.type === "mapWidget") {
-          dependencies.push(widget.itemId);
-        }
-      })
-    }
-
-    resolve(dependencies);
   });
 }
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
 
-export function deployItem (
+export function createItemFromTemplate (
   itemTemplate: ITemplate,
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -104,8 +79,7 @@ export function deployItem (
   progressCallback && progressCallback({
     processId: itemTemplate.key,
     type: itemTemplate.type,
-    status: "starting",
-    estimatedCostFactor: itemTemplate.estimatedDeploymentCostFactor
+    status: "starting"
   });
 
   return new Promise((resolve, reject) => {
@@ -128,7 +102,7 @@ export function deployItem (
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
-          settings[mCommon.deTemplatize(itemTemplate.itemId) as string] = {
+          settings[itemTemplate.itemId] = {
             id: createResponse.id
           };
           itemTemplate.itemId = itemTemplate.item.id = createResponse.id;
@@ -163,3 +137,29 @@ export function deployItem (
   });
 }
 
+// -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+
+/**
+ * Gets the ids of the dependencies of an AGOL dashboard item.
+ *
+ * @param fullItem A dashboard item whose dependencies are sought
+ * @return List of dependencies
+ * @protected
+ */
+export function extractDependencies (
+  itemTemplate: ITemplate
+): string[] {
+  const dependencies:string[] = [];
+
+  const widgets:IDashboardWidget[] = getProp(itemTemplate, "data.widgets");
+  if (widgets) {
+    widgets.forEach((widget:any) => {
+      if (widget.type === "mapWidget") {
+        dependencies.push(widget.itemId);
+      }
+    })
+  }
+
+  return dependencies;
+}
