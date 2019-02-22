@@ -24,7 +24,7 @@ import * as mockItems from "../../test/mocks/agolItems";
 
 export function getSolutionTemplateItem (
   templates = [] as mInterfaces.ITemplate[]
-): mInterfaces.ISolutionTemplateItem {
+): mInterfaces.ISolutionItem {
   return {
     item: {
       commentsEnabled: false,

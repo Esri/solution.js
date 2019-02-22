@@ -97,7 +97,7 @@ export function jsonClone (
  * @param solutionTemplateItem Solution template
  */
 export function removeItemFcns (
-  solutionTemplateItem: mInterfaces.ISolutionTemplateItem
+  solutionTemplateItem: mInterfaces.ISolutionItem
 ): void {
   const templates = mObjHelpers.getProp(solutionTemplateItem, "data.templates");
   if (templates) {

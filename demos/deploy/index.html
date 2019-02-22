@@ -111,7 +111,7 @@
     progress
   ) {
     showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
-    deploySolutionFcn = createSolutionFromTemplate;
+    deploySolutionFcn = deploySolutionItem;
 
     document.getElementById('page').style.display = 'block';
 
@@ -123,7 +123,7 @@
     /**
      * Creates the items described in a solution in the user's organization.
      */
-    function createSolutionFromTemplate() {
+    function deploySolutionItem() {
       var startTime = Date.now();
       document.getElementById('createBtn').disabled = 'disabled';
       document.getElementById('create').style.display = 'block';
@@ -144,7 +144,7 @@
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
           const settings = {
             solutionName: currentSolutionName,
-            folderId: null,  // Have createSolutionFromTemplate create the folder for us
+            folderId: null,  // Have deploySolutionItem create the folder for us
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
@@ -170,7 +170,7 @@
                 arcgis_clone_js.getEstimatedDeploymentCost(templateItemData.templates));
 
               // Deploy!
-              arcgis_clone_js.createSolutionFromTemplate({
+              arcgis_clone_js.deploySolutionItem({
                 item: templateItem,
                 data: templateItemData
               }, destinationRequestOptions, settings, progressCallback)

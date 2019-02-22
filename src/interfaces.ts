@@ -21,7 +21,7 @@ import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 /**
  * A solution template AGO item
  */
-export interface ISolutionTemplateItem {
+export interface ISolutionItem {
   /**
    * Item base section JSON
    */
@@ -29,13 +29,13 @@ export interface ISolutionTemplateItem {
   /**
    * Item data section JSON
    */
-  data: ISolutionTemplate;
+  data: ISolutionTemplates;
 }
 
 /**
  * A solution template: a collection of AGO item templates
  */
-export interface ISolutionTemplate {
+export interface ISolutionTemplates {
   /**
    * General information about the solution template
    */

@@ -130,7 +130,7 @@
     arcgis_clone_js,
     demoCommon
   ) {
-    createSolutionFcn = createSolutionTemplate;
+    createSolutionFcn = createSolutionItem;
     var requestOptions, templatesList, solutionName;
 
     document.getElementById('supportedItemTypes').innerHTML =
@@ -157,7 +157,7 @@
     /**
      * Creates a solution from a set of existing AGOL items
      */
-    function createSolutionTemplate() {
+    function createSolutionItem() {
       document.getElementById('display').style.display = 'block';
 
       // Prepare credentials for source
@@ -194,7 +194,7 @@
           );
 
           // Get the items forming the solution
-          arcgis_clone_js.createSolutionTemplate(
+          arcgis_clone_js.createSolutionItem(
             (document.getElementById('solutionName').value || 'Solution'),
             (document.getElementById('solutionVersion').value || '1.0'),
             solutionRootIds, sourceRequestOptions, destinationRequestOptions)

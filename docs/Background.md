@@ -21,9 +21,9 @@ This is the function chain that transforms a collection of ArcGIS Online (AGO) i
 
 | Level | Function | Returns |
 | ---- | ---- | ---- |
-| external | `createSolutionTemplate (title, version, ids, sourceRequestOptions, destinationRequestOptions)` | Promise => ISolutionTemplateItem |
+| external | `createSolutionItem (title, version, ids, sourceRequestOptions, destinationRequestOptions)` | Promise => ISolutionTemplateItem |
 | | This is the entry point that constructs a Solution Item containing the template form of the passed-in item and its dependencies. This function's main job is to produce the Solution Item itself. It then delegates the template construction. | |
-| internal | `convertItemToTemplate(itemId, requestOptions, templates?)` | Promise => ITemplate |
+| internal | `convertItemToTemplate(itemId, requestOptions)` | Promise => ITemplate |
 | | This orchestrates the construction the actual item template by getting the source item's information, creating a base template, and then delegating to type-specific services to complete the template. | |
 
 #### Viewing a solution item
@@ -41,13 +41,13 @@ This is the function chain that transforms a Solution Item's templates into a se
 
 | Level | Function | Returns |
 | ---- | ---- | ---- |
-| external | `createSolutionFromTemplate (solutionTemplate, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
+| external | `deploySolutionItem (solutionTemplate, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
 | | Converts a Solution Item with item templates into a Solution Item for deployed items, as well as deploying the items. | |
 | internal | `createDeployedSolutionItem (title, solutionTemplate, requestOptions, settings?, access?)` | Promise => IAGOItemAccess |
 | | Creates a Solution Item for deployed items. | |
-| internal | `createItemFromTemplateWhenReady (itemId, templates, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
+| internal | `createItemFromTemplateWhenReady (itemId, itemTemplates, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
 | | Creates an AGO item from its template after its dependencies have been created. | |
-| internal | `createItemFromTemplate (template, settings, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
+| internal | `createItemFromTemplate (itemTemplate, settings, requestOptions, settings, progressCallback?)` | Promise => IAGOItemAccess |
 | | Creates an AGO item from its template. | |
 
 ---

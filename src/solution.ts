@@ -33,38 +33,37 @@ import * as mObjHelpers from "./utils/object-helpers"
  * @param title The title to use for the item
  * @param version The version to include in the item's metadata
  * @param ids AGO id string or list of AGO id strings
- * @param sourceRequestOptions Options for requesting information from AGO about items to be
- *                             included in solution template
- * @param destinationRequestOptions Options for creating solution template item in AGO
- * @return A promise that will resolve with a solution template item
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
+ * @param destinationRequestOptions Options for creating solution item in AGO
+ * @return A promise that will resolve with a solution item
  */
-export function createSolutionTemplate (
+export function createSolutionItem (
   title: string,
   version: string,
   ids: string | string[],
   sourceRequestOptions: IUserRequestOptions,
   destinationRequestOptions?: IUserRequestOptions
-): Promise<mInterfaces.ISolutionTemplateItem> {
-  return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
+): Promise<mInterfaces.ISolutionItem> {
+  return new Promise<mInterfaces.ISolutionItem>((resolve, reject) => {
     if (!destinationRequestOptions) {
       destinationRequestOptions = sourceRequestOptions;
     }
 
-    // Create an empty solution template item
-    createSolutionTemplateItem(title, version, destinationRequestOptions, undefined, "public")
+    // Create an empty solution item
+    createSolutionAgoItem(title, version, destinationRequestOptions, undefined, "public")
     .then(
-      solutionTemplateItem => {
+      solutionItem => {
         // Get the templates for the items in the solution
-        createSolutionItemTemplates(ids, solutionTemplateItem, sourceRequestOptions)
+        createItemTemplates(ids, solutionItem, sourceRequestOptions)
         .then(
           templates => {
-            solutionTemplateItem.data.templates = templates;
+            solutionItem.data.templates = templates;
 
-            // Update the solution template item
-            updateSolutionTemplateItem(solutionTemplateItem, destinationRequestOptions)
+            // Update the solution item
+            updateSolutionAgoItem(solutionItem, destinationRequestOptions)
             .then(
-              updatedSolutionTemplateItem => {
-                resolve(updatedSolutionTemplateItem);
+              updatedSolutionItem => {
+                resolve(updatedSolutionItem);
               },
               () => reject({ success: false })
             )
@@ -80,21 +79,20 @@ export function createSolutionTemplate (
 /**
  * Converts a solution template into an AGO deployed solution and items.
  *
- * @param solutionTemplateItem Solution template to deploy
+ * @param solutionItem Solution template to deploy
  * @param requestOptions Options for the request
  * @param settings Hash of facts: org URL, adlib replacements
- * @param progressCallback Function for reporting progress updates from type-specific template
- *                         handlers
+ * @param progressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with a list of the ids of items created in AGO
  */
-export function createSolutionFromTemplate  (
-  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+export function deploySolutionItem  (
+  solutionItem: mInterfaces.ISolutionItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate[]> {
   return new Promise<mInterfaces.ITemplate[]>((resolve, reject) => {
-    const templates:mInterfaces.ITemplate[] = mObjHelpers.getProp(solutionTemplateItem, "data.templates");
+    const templates:mInterfaces.ITemplate[] = mObjHelpers.getProp(solutionItem, "data.templates");
     const clonedSolution:mInterfaces.ITemplate[] = [];
     settings.solutionName = settings.solutionName || "Solution";
 
@@ -110,11 +108,11 @@ export function createSolutionFromTemplate  (
     // Common launch point whether using an existing folder or following the creation of one
     // Creates deployed solution item, then launches deployment of its items
     function launchDeployment () {
-      createDeployedSolutionItem(settings.solutionName, solutionTemplateItem, requestOptions, settings, 'public')
+      createDeployedSolutionAgoItem(settings.solutionName, solutionItem, requestOptions, settings, 'public')
       .then(
-        solutionItem => {
+        deployedSolutionItem => {
           progressCallback && progressCallback({
-            processId: solutionItem.id,
+            processId: deployedSolutionItem.id,
             type: "Solution",
             status: "done"
           });
@@ -259,23 +257,22 @@ function createPlaceholderTemplate (
  * Creates an empty deployed solution AGO item.
  *
  * @param title Title to use for item
- * @param solutionTemplateItem Solution template to deploy; serves as source of text info for new
- *                             item
+ * @param solutionItem Solution template to deploy; serves as source of text info for new item
  * @param requestOptions Options for the request
  * @param settings Hash of facts: org URL, adlib replacements
  * @param access Access to set for item: 'public', 'org', 'private'
  * @return Empty template item
  * @protected
  */
-export function createDeployedSolutionItem (
+export function createDeployedSolutionAgoItem (
   title: string,
-  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+  solutionItem: mInterfaces.ISolutionItem,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   access = "private"
 ): Promise<mInterfaces.IAGOItemAccess> {
   return new Promise((resolve, reject) => {
-    const templateItem = solutionTemplateItem.item;
+    const templateItem = solutionItem.item;
     const thumbnailUrl:string = "https://www.arcgis.com/sharing/content/items/" +
       templateItem.id + "/info/" + templateItem.thumbnail;
     const item = {
@@ -312,25 +309,24 @@ export function createDeployedSolutionItem (
  * converted.
  *
  * @param itemId AGO id of solution template item to deploy
- * @param templates A collection of AGO item templates
+ * @param itemTemplates A collection of AGO item templates
  * @param requestOptions Options for the request
  * @param settings Hash of facts: org URL, adlib replacements
- * @param progressCallback Function for reporting progress updates from type-specific template
- *                         handlers
+ * @param progressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
  * @protected
  */
 export function createItemFromTemplateWhenReady (
   itemId: string,
-  templates: mInterfaces.ITemplate[],
+  itemTemplates: mInterfaces.ITemplate[],
   requestOptions: IUserRequestOptions,
   settings: any,
   progressCallback?: (update:mInterfaces.IProgressUpdate) => void
 ): Promise<mInterfaces.ITemplate> {
   settings[itemId] = {};
   const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
-    const template = findTemplateInList(templates, itemId);
+    const template = findTemplateInList(itemTemplates, itemId);
     if (!template) {
       reject({ success: false });
     }
@@ -342,7 +338,7 @@ export function createItemFromTemplateWhenReady (
     .then(
       () => {
         // Prepare template
-        let itemTemplate = mClassifier.initItemTemplateFromJSON(findTemplateInList(templates, itemId));
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(findTemplateInList(itemTemplates, itemId));
 
         // Interpolate it
         itemTemplate.dependencies = itemTemplate.dependencies ?
@@ -369,45 +365,44 @@ export function createItemFromTemplateWhenReady (
  * Creates templates for a set of AGO items.
  *
  * @param ids AGO id string or list of AGO id strings
- * @param solutionTemplateItem Solution template serving as parent for templates
+ * @param solutionItem Solution template serving as parent for templates
  * @param requestOptions Options for the request
- * @param templates A collection of AGO item templates that can be referenced by newly-created
- *                  templates
+ * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve with the created template items
  * @protected
  */
-export function createSolutionItemTemplates (
+export function createItemTemplates (
   ids: string | string[],
-  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+  solutionItem: mInterfaces.ISolutionItem,
   requestOptions: IUserRequestOptions,
-  templates?: mInterfaces.ITemplate[]
+  existingTemplates?: mInterfaces.ITemplate[]
 ): Promise<mInterfaces.ITemplate[]> {
-  if (!templates) {
-    templates = [];
+  if (!existingTemplates) {
+    existingTemplates = [];
   }
 
   return new Promise((resolve, reject) => {
     if (typeof ids === "string") {
       // Handle a single AGO id
       const rootId = ids;
-      if (findTemplateInList(templates, rootId)) {
-        resolve(templates);  // Item and its dependents are already in list or are queued
+      if (findTemplateInList(existingTemplates, rootId)) {
+        resolve(existingTemplates);  // Item and its dependents are already in list or are queued
 
       } else {
         // Add the id as a placeholder to show that it will be fetched
         const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
-        templates.push(createPlaceholderTemplate(rootId));
+        existingTemplates.push(createPlaceholderTemplate(rootId));
 
         // Get the specified item
         getItemPromise
         .then(
           itemTemplate => {
             // Set the value keyed by the id, replacing the placeholder
-            replaceTemplate(templates, itemTemplate.itemId, itemTemplate);
+            replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
 
             // Trace item dependencies
             if (itemTemplate.dependencies.length === 0) {
-              resolve(templates);
+              resolve(existingTemplates);
 
             } else {
               // Get its dependents, asking each to get its dependents via
@@ -416,16 +411,16 @@ export function createSolutionItemTemplates (
 
               itemTemplate.dependencies.forEach(
                 dependentId => {
-                  if (!findTemplateInList(templates, dependentId)) {
-                    dependentDfds.push(createSolutionItemTemplates(dependentId,
-                      solutionTemplateItem, requestOptions, templates));
+                  if (!findTemplateInList(existingTemplates, dependentId)) {
+                    dependentDfds.push(createItemTemplates(dependentId,
+                      solutionItem, requestOptions, existingTemplates));
                   }
                 }
               );
               Promise.all(dependentDfds)
               .then(
                 () => {
-                  resolve(templates);
+                  resolve(existingTemplates);
                 },
                 () => reject({ success: false })
               );
@@ -441,12 +436,12 @@ export function createSolutionItemTemplates (
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
       ids.forEach(id => {
-        getHierarchyPromise.push(createSolutionItemTemplates(id, solutionTemplateItem, requestOptions, templates));
+        getHierarchyPromise.push(createItemTemplates(id, solutionItem, requestOptions, existingTemplates));
       });
       Promise.all(getHierarchyPromise)
       .then(
         () => {
-          resolve(templates);
+          resolve(existingTemplates);
         },
         () => reject({ success: false })
       );
@@ -468,15 +463,15 @@ export function createSolutionItemTemplates (
  * @return Empty template item
  * @protected
  */
-export function createSolutionTemplateItem (
+export function createSolutionAgoItem (
   title: string,
   version: string,
   requestOptions: IUserRequestOptions,
   settings = {} as any,
   access = "private"
-): Promise<mInterfaces.ISolutionTemplateItem> {
+): Promise<mInterfaces.ISolutionItem> {
   return new Promise((resolve, reject) => {
-    const solutionTemplateItem:mInterfaces.ISolutionTemplateItem = {
+    const solutionItem:mInterfaces.ISolutionItem = {
       item: {
         itemType: "text",
         name: null as string,
@@ -493,14 +488,13 @@ export function createSolutionTemplateItem (
       }
     }
 
-    mCommon.createItemWithData(solutionTemplateItem.item, solutionTemplateItem.data,
-      requestOptions, settings.folderId, access)
+    mCommon.createItemWithData(solutionItem.item, solutionItem.data, requestOptions, settings.folderId, access)
     .then(
       createResponse => {
         const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
-        solutionTemplateItem.item.id = createResponse.id;
-        solutionTemplateItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
-        resolve(solutionTemplateItem);
+        solutionItem.item.id = createResponse.id;
+        solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
+        resolve(solutionItem);
       },
       () => reject({ success: false })
     );
@@ -682,20 +676,20 @@ export function topologicallySortItems (
 /**
  * Updates the data section of an solution template in AGO.
  *
- * @param solutionTemplateItem Solution template to update
+ * @param solutionItem Solution template to update
  * @param requestOptions Options for the request
  * @return A promise that will resolve with solutionTemplateItem
  * @protected
  */
-function updateSolutionTemplateItem (
-  solutionTemplateItem: mInterfaces.ISolutionTemplateItem,
+function updateSolutionAgoItem (
+  solutionItem: mInterfaces.ISolutionItem,
   requestOptions: IUserRequestOptions
-): Promise<mInterfaces.ISolutionTemplateItem> {
-  return new Promise<mInterfaces.ISolutionTemplateItem>((resolve, reject) => {
+): Promise<mInterfaces.ISolutionItem> {
+  return new Promise<mInterfaces.ISolutionItem>((resolve, reject) => {
     // Update the data section of the solution item
-    mCommon.updateItemData(solutionTemplateItem.item.id, solutionTemplateItem.data, requestOptions)
+    mCommon.updateItemData(solutionItem.item.id, solutionItem.data, requestOptions)
     .then(
-      () => resolve(solutionTemplateItem),
+      () => resolve(solutionItem),
       () => reject({ success: false })
     )
   });
