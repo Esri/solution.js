@@ -27,16 +27,21 @@
 
 An ArcGIS Online (AGO) `item` is transformed into a `template` that contains all of its defining information (except its thumbnail and resources; see [background info](./docs/Background.md)). If the item depends on other items, those items are also transformed into templates.
 
-A collection of templates can be bundled into a `solution template` AGO item for organization and distribution.
+A `Solution Item` can contain either
 
-A solution template's templates can be transformed into items in an AGO organization. In addition, a `deployed solution` AGO item is created that serves as a table of contents to the deployed solution items.
+* a list of Item Templates
+* a list of references to deployed items
+
+When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.
+
+When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment. 
 
 #### Modules
 
 The API contains two primary modules:
 
-* `solution`, which contains functions for transforming items into templates, deploying templates into items, and creating solution template and deployed solution items.
-* `viewing`, which contains functions to support displaying solution templates and deployed solutions. 
+* `solution`, which contains functions for transforming items into templates, deploying item templates into items, and creating & using Solution Items.
+* `viewing`, which contains functions to support displaying Solution Items. 
 
 #### Additional information
 
