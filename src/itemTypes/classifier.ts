@@ -100,7 +100,7 @@ export function convertItemToTemplate (
 
         // Convert relative thumbnail URL to an absolute one so that it can be preserved
         // TODO disconnected deployment may not have access to the absolute URL
-        itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
+        itemTemplate.item.thumbnail = requestOptions.portal + "/content/items/" +
           itemId + "/info/" + itemTemplate.item.thumbnail;
 
         // Request item data section
@@ -124,7 +124,14 @@ export function convertItemToTemplate (
           responses => {
             const [dataResponse, resourceResponse] = responses;
             itemTemplate.data = dataResponse;
-            itemTemplate.resources = resourceResponse && resourceResponse.total > 0 ? resourceResponse.resources : null;
+            itemTemplate.resources = resourceResponse && resourceResponse.total > 0 ?
+              resourceResponse.resources.map(
+                (resourceInfo:any) => {
+                  return requestOptions.portal + "/content/items/" +
+                    itemId + "/resources/" + resourceInfo.resource;
+                }
+              ) :
+              [];
 
             // Create the item's template
             itemTemplate.fcns.convertItemToTemplate(itemTemplate, requestOptions)
@@ -156,7 +163,7 @@ export function convertItemToTemplate (
 
             // Convert relative thumbnail URL to an absolute one so that it can be preserved
             // TODO disconnected deployment may not have access to the absolute URL
-            itemTemplate.item.thumbnail = "https://www.arcgis.com/sharing/content/items/" +
+            itemTemplate.item.thumbnail = requestOptions.portal + "/content/items/" +
               itemId + "/info/" + itemTemplate.item.thumbnail;
 
             // Create the item's template
