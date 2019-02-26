@@ -60,14 +60,30 @@ export function createSolutionItem (
           templates => {
             solutionItem.data.templates = templates;
 
-            // Update the solution item
-            updateSolutionAgoItem(solutionItem, destinationRequestOptions)
+            // Save the source item thumbnails and resources
+            const saveResourcesDef = saveResourcesInSolutionItem(solutionItem,
+              sourceRequestOptions, destinationRequestOptions);
+
+            // Update the solution item with its templates
+            const saveTemplatesDef = updateSolutionAgoItem(solutionItem, destinationRequestOptions);
+
+            Promise.all([
+              saveResourcesDef,
+              saveTemplatesDef
+            ])
             .then(
-              updatedSolutionItem => {
-                resolve(updatedSolutionItem);
+              responses => {
+                const [saveResourcesResponse, saveTemplatesResponse] = responses;
+
+                console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
+                console.warn("saveResourcesInSolutiomnItem", JSON.stringify(saveTemplatesResponse,null,2));
+
+                resolve(saveTemplatesResponse);
               },
-              () => reject({ success: false })
-            )
+              error => {
+                console.warn("saveResourcesResponse, saveTemplatesResponse failed", JSON.stringify(error,null,2));
+              }
+            );
           },
           () => reject({ success: false })
         );
@@ -234,6 +250,121 @@ enum SortVisitColor {
   Gray,
   /** finished */
   Black
+}
+
+/**
+ * Copies a conventional (non-thumbnail) resource from one item to another.
+ *
+ * @param itemId Id of item serving as source of resource
+ * @param url URL to source resource
+ * @param storageItemId Id of item to receive resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyRegularResource (
+  itemId: string,
+  url: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
+  // item can store resources from more than one source item; supplement the folder name with the source
+  // folder name if there is one
+  let folder = itemId;
+  let filename = url.substring(url.indexOf("/resources/") + "/resources/".length);
+  const filenameParts = filename.split("/");
+  if (filenameParts.length > 1) {
+    folder += "_" + filenameParts[0];
+    filename = filenameParts[1];
+  }
+
+  return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
+}
+
+/**
+ * Copies a resource from a URL to an item.
+ *
+ * @param url URL to source resource
+ * @param folder Folder in destination for resource; defaults to top level
+ * @param filename Filename in destination for resource
+ * @param storageItemId Id of item to receive resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyResource (
+  url: string,
+  folder = null as string,
+  filename: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the resource from the URL
+    const requestOptions = {
+      rawResponse: true,
+      ...sourceRequestOptions
+    } as IRequestOptions;
+    request.request(url, requestOptions)
+    .then(
+      content => {
+        // Convert it into a blob, which makes it look like a file list because adding a resource
+        // requires a form upload
+        const blob = new Blob([content], { type: "application/octet-stream" });  // TODO Edge support?
+
+        // Add it to the storage item
+        const resourceTag = folder + "/" + filename;
+        const addRsrcOptions = {
+          id: storageItemId,
+          resource: blob,
+          name: filename,
+          ...destinationRequestOptions,
+          params: {
+            resourcesPrefix: folder
+          }
+        }
+        items.addItemResource(addRsrcOptions)
+        .then(
+          () => resolve(resourceTag),
+          () => reject(resourceTag)
+        );
+
+      },
+      () => reject(url)
+    );
+  });
+}
+
+/**
+ * Copies a thumbnail resource from one item to another.
+ *
+ * @param itemId Id of item serving as source of resource
+ * @param url URL to source resource
+ * @param storageItemId Id of item to receive resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyThumbnailResource (
+  itemId: string,
+  url: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
+  // item can store resources from more than one source item; supplement the folder name with text indicating
+  // that it's a thumbnail resource
+  const folder = itemId + "_info_thumbnail";
+  const filename = url.substring(url.indexOf("/info/thumbnail/") + "/info/thumbnail/".length);
+
+  return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
 }
 
 /**
@@ -501,6 +632,37 @@ export function createSolutionAgoItem (
   });
 }
 
+export function createSolutionStorageAgoItem (
+  title: string,
+  requestOptions: IUserRequestOptions,
+  settings = {} as any,
+  access = "private"
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const solutionItem = {
+      item: {
+        itemType: "text",
+        name: null as string,
+        title,
+        type: "Code Attachment",
+        typeKeywords: ["Solution", "Template"],
+        commentsEnabled: false
+      } as any
+    }
+
+    mCommon.createItemWithData(solutionItem.item, null, requestOptions, settings.folderId, access)
+    .then(
+      createResponse => {
+        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
+        solutionItem.item.id = createResponse.id;
+        solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
+        resolve(solutionItem);
+      },
+      () => reject({ success: false })
+    );
+  });
+}
+
 /**
  * Finds index of template by id in a list of templates.
  *
@@ -592,6 +754,59 @@ export function replaceTemplate (
     return true;
   }
   return false;
+}
+
+/**
+ * Saves the thumbnails and resources of the template's items with the solution item.
+ *
+ * @param solutionItem Solution template serving as parent for templates
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
+ * @param destinationRequestOptions Options for accessing solution item in AGO
+ * @return A promise that will resolve a list of thes tag under which the resources are stored 
+ * @protected
+ */
+export function saveResourcesInSolutionItem (
+  solutionItem: mInterfaces.ISolutionItem,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    // The classifier returns the item's thumbnail and resources as absolute URLs,
+    // so we can fetch them and save them into the solution as resources using the
+    // item id as a folder. For resources that are already in a folder, we'll merge
+    // that folder name with the item name since only single-level folders are supported.
+
+    // Create an empty solution storage item to hold thumbnails and resources until solution items are enabled
+    // to store resources
+    createSolutionStorageAgoItem(solutionItem.item.title, destinationRequestOptions, undefined, "public")
+    .then(
+      solutionStorageItem => {
+        // Accumulate each copy's promise
+        const copiesDefList = [] as Array<Promise<string>>;
+
+        solutionItem.data.templates.forEach(
+          itemTemplate => {
+            // Store web resources in solution storage item
+            if (itemTemplate.item.thumbnail) {
+              copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
+                solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions));
+            }
+
+            itemTemplate.resources.forEach(
+              resourceUrl => {
+                copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
+                  solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions));
+              }
+            );
+          }
+        );
+
+        // Await conclusion of copies
+        Promise.all(copiesDefList)
+        .then(resolve, reject);
+      }
+    );
+  });
 }
 
 /**
