@@ -2222,7 +2222,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         item: {}
       }];
 
-      mSolution.createItemTemplates ("itm1234567890", solutionTemplateItem, MOCK_USER_REQOPTS, templates)
+      mSolution.createItemTemplates ("itm1234567890",  MOCK_USER_REQOPTS, templates)
       .then(
         (updatedTemplates: mInterfaces.ITemplate[]) => {
           expect(updatedTemplates).toEqual(templates);

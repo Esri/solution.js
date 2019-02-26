@@ -16,7 +16,8 @@
 
 import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
-import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+import * as request from "@esri/arcgis-rest-request";
+import { ArcGISRequestError, IRequestOptions, ResponseFormats } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItem } from '@esri/arcgis-rest-common-types';
 
@@ -54,7 +55,7 @@ export function createSolutionItem (
     .then(
       solutionItem => {
         // Get the templates for the items in the solution
-        createItemTemplates(ids, solutionItem, sourceRequestOptions)
+        createItemTemplates(ids, sourceRequestOptions)
         .then(
           templates => {
             solutionItem.data.templates = templates;
@@ -365,16 +366,14 @@ export function createItemFromTemplateWhenReady (
  * Creates templates for a set of AGO items.
  *
  * @param ids AGO id string or list of AGO id strings
- * @param solutionItem Solution template serving as parent for templates
- * @param requestOptions Options for the request
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve with the created template items
  * @protected
  */
 export function createItemTemplates (
   ids: string | string[],
-  solutionItem: mInterfaces.ISolutionItem,
-  requestOptions: IUserRequestOptions,
+  sourceRequestOptions: IUserRequestOptions,
   existingTemplates?: mInterfaces.ITemplate[]
 ): Promise<mInterfaces.ITemplate[]> {
   if (!existingTemplates) {
@@ -389,15 +388,17 @@ export function createItemTemplates (
         resolve(existingTemplates);  // Item and its dependents are already in list or are queued
 
       } else {
+        // Init item type
+        const getItemPromise = mClassifier.convertItemToTemplate(rootId, sourceRequestOptions);
+
         // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
         existingTemplates.push(createPlaceholderTemplate(rootId));
 
-        // Get the specified item
+        // Await the item
         getItemPromise
         .then(
           itemTemplate => {
-            // Set the value keyed by the id, replacing the placeholder
+            // Set the value keyed by the id to the created template, replacing the placeholder template
             replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
 
             // Trace item dependencies
@@ -412,8 +413,7 @@ export function createItemTemplates (
               itemTemplate.dependencies.forEach(
                 dependentId => {
                   if (!findTemplateInList(existingTemplates, dependentId)) {
-                    dependentDfds.push(createItemTemplates(dependentId,
-                      solutionItem, requestOptions, existingTemplates));
+                    dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
                   }
                 }
               );
@@ -436,7 +436,7 @@ export function createItemTemplates (
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
       ids.forEach(id => {
-        getHierarchyPromise.push(createItemTemplates(id, solutionItem, requestOptions, existingTemplates));
+        getHierarchyPromise.push(createItemTemplates(id, sourceRequestOptions, existingTemplates));
       });
       Promise.all(getHierarchyPromise)
       .then(
