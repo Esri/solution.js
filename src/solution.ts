@@ -60,35 +60,42 @@ export function createSolutionItem (
           templates => {
             solutionItem.data.templates = templates;
 
-            // Save the source item thumbnails and resources
-            const saveResourcesDef = saveResourcesInSolutionItem(solutionItem,
-              sourceRequestOptions, destinationRequestOptions);
-
-            // Update the solution item with its templates
-            const saveTemplatesDef = updateSolutionAgoItem(solutionItem, destinationRequestOptions);
-
-            Promise.all([
-              saveResourcesDef,
-              saveTemplatesDef
-            ])
+            // Create an empty solution storage item to hold thumbnails and resources until solution items are enabled
+            // to store resources
+            createSolutionStorageAgoItem(solutionItem.item.title, destinationRequestOptions, undefined, "public")
             .then(
-              responses => {
-                const [saveResourcesResponse, saveTemplatesResponse] = responses;
+              solutionStorageItem => {
+                solutionItem.data.metadata.resourceStorageItemId = solutionStorageItem.item.id;
 
-                console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
-                console.warn("saveResourcesInSolutiomnItem", JSON.stringify(saveTemplatesResponse,null,2));
+                // Save the source item thumbnails and resources
+                const saveResourcesDef = saveResourcesInSolutionItem(solutionItem.data.templates,
+                  solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions);
 
-                resolve(saveTemplatesResponse);
+                // Update the solution item with its templates
+                const saveTemplatesDef = updateSolutionAgoItem(solutionItem, destinationRequestOptions);
+
+                Promise.all([
+                  saveResourcesDef,
+                  saveTemplatesDef
+                ])
+                .then(
+                  responses => {
+                    const [saveResourcesResponse, saveTemplatesResponse] = responses;
+                    console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
+                    console.warn("saveResourcesInSolutionItem", JSON.stringify(saveTemplatesResponse,null,2));
+
+                    resolve(solutionItem);
+                  },
+                  () => reject({ success: false })  // unable to save resources or templates
+                );
               },
-              error => {
-                console.warn("saveResourcesResponse, saveTemplatesResponse failed", JSON.stringify(error,null,2));
-              }
+              () => reject({ success: false })  // unable to create item to save resources
             );
           },
-          () => reject({ success: false })
+          () => reject({ success: false })  // unable to create templates
         );
       },
-      () => reject({ success: false })
+      () => reject({ success: false })  // unable to create solution item
     );
   });
 }
@@ -257,7 +264,7 @@ enum SortVisitColor {
  *
  * @param itemId Id of item serving as source of resource
  * @param url URL to source resource
- * @param storageItemId Id of item to receive resource
+ * @param storageItemId Id of item to receive copy of resource
  * @param sourceRequestOptions Options for requesting information from source
  * @param destinationRequestOptions Options for writing information to destination
  * @return A promise which resolves to the tag under which the resource is stored
@@ -290,7 +297,7 @@ export function copyRegularResource (
  * @param url URL to source resource
  * @param folder Folder in destination for resource; defaults to top level
  * @param filename Filename in destination for resource
- * @param storageItemId Id of item to receive resource
+ * @param storageItemId Id of item to receive copy of resource
  * @param sourceRequestOptions Options for requesting information from source
  * @param destinationRequestOptions Options for writing information to destination
  * @return A promise which resolves to the tag under which the resource is stored
@@ -345,7 +352,7 @@ export function copyResource (
  *
  * @param itemId Id of item serving as source of resource
  * @param url URL to source resource
- * @param storageItemId Id of item to receive resource
+ * @param storageItemId Id of item to receive copy of resource
  * @param sourceRequestOptions Options for requesting information from source
  * @param destinationRequestOptions Options for writing information to destination
  * @return A promise which resolves to the tag under which the resource is stored
@@ -757,16 +764,18 @@ export function replaceTemplate (
 }
 
 /**
- * Saves the thumbnails and resources of the template's items with the solution item.
+ * Saves the thumbnails and resources of template items with a solution item.
  *
- * @param solutionItem Solution template serving as parent for templates
+ * @param templates A collection of AGO item templates
+ * @param storageItemId Id of item to receive copies of resources
  * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
  * @param destinationRequestOptions Options for accessing solution item in AGO
- * @return A promise that will resolve a list of thes tag under which the resources are stored 
+ * @return A promise that will resolve a list of thes tag under which the resources are stored
  * @protected
  */
 export function saveResourcesInSolutionItem (
-  solutionItem: mInterfaces.ISolutionItem,
+  templates: mInterfaces.ITemplate[],
+  storageItemId: string,
   sourceRequestOptions: IUserRequestOptions,
   destinationRequestOptions: IUserRequestOptions
 ): Promise<string[]> {
@@ -776,36 +785,30 @@ export function saveResourcesInSolutionItem (
     // item id as a folder. For resources that are already in a folder, we'll merge
     // that folder name with the item name since only single-level folders are supported.
 
-    // Create an empty solution storage item to hold thumbnails and resources until solution items are enabled
-    // to store resources
-    createSolutionStorageAgoItem(solutionItem.item.title, destinationRequestOptions, undefined, "public")
-    .then(
-      solutionStorageItem => {
-        // Accumulate each copy's promise
-        const copiesDefList = [] as Array<Promise<string>>;
+    // Accumulate each copy's promise
+    const copiesDefList = [] as Array<Promise<string>>;
 
-        solutionItem.data.templates.forEach(
-          itemTemplate => {
-            // Store web resources in solution storage item
-            if (itemTemplate.item.thumbnail) {
-              copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
-                solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions));
-            }
+    templates.forEach(
+      itemTemplate => {
+        // Store thumbnail resource
+        if (itemTemplate.item.thumbnail) {
+          copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
+            storageItemId, sourceRequestOptions, destinationRequestOptions));
+        }
 
-            itemTemplate.resources.forEach(
-              resourceUrl => {
-                copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
-                  solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions));
-              }
-            );
+        // Store regular resources
+        itemTemplate.resources.forEach(
+          resourceUrl => {
+            copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
+              storageItemId, sourceRequestOptions, destinationRequestOptions));
           }
         );
-
-        // Await conclusion of copies
-        Promise.all(copiesDefList)
-        .then(resolve, reject);
       }
     );
+
+    // Await conclusion of copies
+    Promise.all(copiesDefList)
+    .then(resolve, reject);
   });
 }
 
