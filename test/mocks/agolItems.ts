@@ -438,7 +438,9 @@ export function getAGOLItemResources (
 ): any {
   let resources:any = get400Failure();
 
-  // Supported item types
+  // Supported file formats are: JSON, XML, TXT, PNG, JPEG, GIF, BMP, PDF, MP3, MP4, and ZIP.
+
+  // Some test cases
   switch (testCase) {
 
     case "none":
@@ -451,14 +453,26 @@ export function getAGOLItemResources (
       };
       break;
 
-    case "one text":
+    case "one png":
       resources = {
         "total": 1,
         "start": 1,
         "num": 1,
         "nextStart": -1,
         "resources": [{
-          "value": "abc"
+          "resource":"anImage.png","created":1551117331000,"size":236838,"access":"inherit"
+        }]
+      };
+      break;
+
+      case "one png in folder":
+      resources = {
+        "total": 1,
+        "start": 1,
+        "num": 1,
+        "nextStart": -1,
+        "resources": [{
+          "resource":"aFolder/anImage.png","created":1551117331000,"size":236838,"access":"inherit"
         }]
       };
       break;
@@ -695,6 +709,11 @@ export function createAGOLRelationship (
   };
   relationship.keyField = role === "esriRelRoleOrigin" ? "globalid" : "parentglobalid";
   return relationship;
+}
+
+export function getAnImage (
+): any {
+  return Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);//"data:image/png;base64,Rm91cnNjb3JlIGFuZCBzZXZlbiB5ZWFycyBhZ28=";
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//

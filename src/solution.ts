@@ -24,7 +24,7 @@ import { IItem } from '@esri/arcgis-rest-common-types';
 import * as mCommon from "./itemTypes/common";
 import * as mClassifier from "./itemTypes/classifier";
 import * as mInterfaces from "./interfaces";
-import * as mObjHelpers from "./utils/object-helpers"
+import * as mObjHelpers from "./utils/object-helpers";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -60,8 +60,8 @@ export function createSolutionItem (
           templates => {
             solutionItem.data.templates = templates;
 
-            // Create an empty solution storage item to hold thumbnails and resources until solution items are enabled
-            // to store resources
+            // Create an empty solution storage item to hold thumbnails and resources
+            // until solution items are enabled to store resources
             createSolutionStorageAgoItem(solutionItem.item.title, destinationRequestOptions, undefined, "public")
             .then(
               solutionStorageItem => {
@@ -81,21 +81,21 @@ export function createSolutionItem (
                 .then(
                   responses => {
                     const [saveResourcesResponse, saveTemplatesResponse] = responses;
-                    console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
-                    console.warn("saveResourcesInSolutionItem", JSON.stringify(saveTemplatesResponse,null,2));
+                    //???console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
+                    //???console.warn("saveResourcesInSolutionItem", JSON.stringify(saveTemplatesResponse,null,2));
 
                     resolve(solutionItem);
                   },
-                  () => reject({ success: false })  // unable to save resources or templates
+                  (e) => reject(mCommon.fail(e))  // unable to save resources or templates
                 );
               },
-              () => reject({ success: false })  // unable to create item to save resources
+              (e) => reject(mCommon.fail(e))  // unable to create item to save resources
             );
           },
-          () => reject({ success: false })  // unable to create templates
+          (e) => reject(mCommon.fail(e))  // unable to create templates
         );
       },
-      () => reject({ success: false })  // unable to create solution item
+      (e) => reject(mCommon.fail(e))  // unable to create solution item
     );
   });
 }
@@ -143,7 +143,7 @@ export function deploySolutionItem  (
 
           runThroughChecklistInParallel();
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
 
@@ -159,7 +159,7 @@ export function deploySolutionItem  (
       Promise.all(awaitAllItems)
       .then(
         clonedSolutionItems => resolve(clonedSolutionItems),
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
     // -------------------------------------------------------------------------
@@ -180,7 +180,7 @@ export function deploySolutionItem  (
           settings.folderId = createdFolderResponse.folder.id;
           launchDeployment();
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
   });
@@ -322,7 +322,10 @@ export function copyResource (
       content => {
         // Convert it into a blob, which makes it look like a file list because adding a resource
         // requires a form upload
-        const blob = new Blob([content], { type: "application/octet-stream" });  // TODO Edge support?
+        //const blob = new Blob([content], { type: "application/octet-stream" });
+        const blob = blobify(content);
+        //let blob = new FormData();
+        //blob.append("file", Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]) as any);
 
         // Add it to the storage item
         const resourceTag = folder + "/" + filename;
@@ -340,11 +343,27 @@ export function copyResource (
           () => resolve(resourceTag),
           () => reject(resourceTag)
         );
-
       },
       () => reject(url)
     );
   });
+}
+
+export function blobify (
+  content: any
+): any {
+  if (typeof Blob !== "undefined" && Blob) {
+    return new Blob([content], { type: "application/octet-stream" });
+  } else {
+    let blob = new FormData();
+    blob.append("file", Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]) as any);
+    return blob
+    //const fs = require("fs");
+    //content = Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);
+    //console.warn(typeof content);
+    //console.warn(JSON.stringify(content));
+    //return fs.createReadStream(content);
+  }
 }
 
 /**
@@ -361,6 +380,7 @@ export function copyResource (
 export function copyThumbnailResource (
   itemId: string,
   url: string,
+  itemType: string,
   storageItemId: string,
   sourceRequestOptions: IUserRequestOptions,
   destinationRequestOptions: IUserRequestOptions
@@ -368,8 +388,12 @@ export function copyThumbnailResource (
   // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
   // item can store resources from more than one source item; supplement the folder name with text indicating
   // that it's a thumbnail resource
-  const folder = itemId + "_info_thumbnail";
-  const filename = url.substring(url.indexOf("/info/thumbnail/") + "/info/thumbnail/".length);
+  let folder = itemId + "_info_thumbnail";
+  let filename = url.substring(url.indexOf("/info/thumbnail/") + "/info/thumbnail/".length);
+  if (itemType === "Group") {
+    folder = itemId + "_info";
+    filename = url.substring(url.indexOf("/info/") + "/info/".length);
+  }
 
   return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
 }
@@ -438,7 +462,7 @@ export function createDeployedSolutionAgoItem (
         }
         resolve(deployedSolutionItem);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -488,10 +512,10 @@ export function createItemFromTemplateWhenReady (
         itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, requestOptions, progressCallback)
         .then(
           itemClone => resolve(itemClone),
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         )
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 
@@ -548,23 +572,25 @@ export function createItemTemplates (
               // recursive calls to this function
               const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
-              itemTemplate.dependencies.forEach(
-                dependentId => {
-                  if (!findTemplateInList(existingTemplates, dependentId)) {
-                    dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
+              if (itemTemplate.dependencies) {
+                itemTemplate.dependencies.forEach(
+                  dependentId => {
+                    if (!findTemplateInList(existingTemplates, dependentId)) {
+                      dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
+                    }
                   }
-                }
-              );
+                );
+              }
               Promise.all(dependentDfds)
               .then(
                 () => {
                   resolve(existingTemplates);
                 },
-                () => reject({ success: false })
+                (e) => reject(mCommon.fail(e))
               );
             }
           },
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         );
       }
 
@@ -581,7 +607,7 @@ export function createItemTemplates (
         () => {
           resolve(existingTemplates);
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
 
     } else {
@@ -634,7 +660,7 @@ export function createSolutionAgoItem (
         solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
         resolve(solutionItem);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -788,23 +814,27 @@ export function saveResourcesInSolutionItem (
     // Accumulate each copy's promise
     const copiesDefList = [] as Array<Promise<string>>;
 
-    templates.forEach(
-      itemTemplate => {
-        // Store thumbnail resource
-        if (itemTemplate.item.thumbnail) {
-          copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
-            storageItemId, sourceRequestOptions, destinationRequestOptions));
-        }
-
-        // Store regular resources
-        itemTemplate.resources.forEach(
-          resourceUrl => {
-            copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
-              storageItemId, sourceRequestOptions, destinationRequestOptions));
+    if (templates) {
+      templates.forEach(
+        itemTemplate => {
+          // Store thumbnail resource
+          if (itemTemplate.item.thumbnail) {
+            copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
+              itemTemplate.type, storageItemId, sourceRequestOptions, destinationRequestOptions));
           }
-        );
-      }
-    );
+
+          // Store regular resources
+          if (itemTemplate.resources) {
+            itemTemplate.resources.forEach(
+              resourceUrl => {
+                copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
+                  storageItemId, sourceRequestOptions, destinationRequestOptions));
+              }
+            );
+          }
+        }
+      );
+    }
 
     // Await conclusion of copies
     Promise.all(copiesDefList)
@@ -908,7 +938,7 @@ function updateSolutionAgoItem (
     mCommon.updateItemData(solutionItem.item.id, solutionItem.data, requestOptions)
     .then(
       () => resolve(solutionItem),
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     )
   });
 }

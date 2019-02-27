@@ -163,7 +163,7 @@ export function convertItemToTemplate (
 
             // Convert relative thumbnail URL to an absolute one so that it can be preserved
             // TODO disconnected deployment may not have access to the absolute URL
-            itemTemplate.item.thumbnail = requestOptions.portal + "/content/items/" +
+            itemTemplate.item.thumbnail = requestOptions.portal + "/community/groups/" +
               itemId + "/info/" + itemTemplate.item.thumbnail;
 
             // Create the item's template

@@ -61,7 +61,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   });
 
   const MOCK_USER_REQOPTS:IUserRequestOptions = {
-    authentication: MOCK_USER_SESSION
+    authentication: MOCK_USER_SESSION,
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
   };
 
   const orgUrl = "https://myOrg.maps.arcgis.com";
@@ -94,13 +95,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one png"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
+      .post("path:/sharing/rest/content/items/wma1234567890/resources/anImage.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -112,13 +117,16 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post(baseSvcURL + "FeatureServer/1?f=json",
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
-      ));
+      ))
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
           mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
           const template = mockSolutions.getWebMappingApplicationTemplate();
-          template[0].resources = mockItems.getAGOLItemResources("one text").resources;
+          template[0].resources =
+            ["https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png"];
           expect(response).toEqual(mockSolutions.getSolutionTemplateItem(template));
           done();
         },
@@ -142,13 +150,17 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemDataWMAGroup())
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one text"))
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("one png"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
+      .post("path:/sharing/rest/content/items/wma1234567890/resources/anImage.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -160,7 +172,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post(baseSvcURL + "FeatureServer/1?f=json",
         mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table",
         [mockItems.createAGOLRelationship(0, 0, "esriRelRoleDestination")]
-      ));
+      ))
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -189,7 +203,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemDataWMANoWebmapOrGroup())
-      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources());
+      .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources())
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -216,11 +233,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890"}')
       .mock("path:/sharing/rest/content/items/grp1234567890", mockItems.getAGOLItem())
       .mock("path:/sharing/rest/community/groups/grp1234567890", mockItems.getAGOLGroup())
+      .post("path:/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png", mockItems.getAnImage())
       .mock(
         "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890" +
         "?f=json&start=1&num=100&token=fake-token",
         '{"total":0,"start":1,"num":0,"nextStart":-1,"items":[]}'
-      );
+      )
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "grp1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -1953,7 +1973,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         response => {
           expect(response.item.type).toEqual("Unsupported");
           expect(response.data).toBeNull();
-          expect(response.resources).toBeNull();
+          expect(response.resources).toEqual([]);
           done();
         },
         error => done.fail(error)
@@ -1970,7 +1990,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         response => {
           expect(response.item.type).toEqual("Web Map");
           expect(response.data).toBeNull();
-          expect(response.resources).toBeNull();
+          expect(response.resources).toEqual([]);
           done();
         },
         error => done.fail(error)
@@ -2176,6 +2196,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         (response: mInterfaces.ISolutionItem) => {
           const expected:mInterfaces.ISolutionItem = mockSolutions.getSolutionTemplateItem();
           expected.item.url = "https://myOrg.maps.arcgis.com/home/item.html?id=sln1234567890";
+          delete expected.data.metadata.resourceStorageItemId;  // not yet assigned
           expect(response).toEqual(expected);
           done();
         },
@@ -2620,12 +2641,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -2643,7 +2667,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"success":true,"id":"sln1234567890"}');
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -2682,12 +2708,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -2705,7 +2734,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"success":true,"id":"sln1234567890"}');
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS, DEST_MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -2731,12 +2762,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -2754,7 +2788,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"success":true,"id":"sln1234567890"}');
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", ["wma1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
@@ -2775,12 +2811,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -2798,7 +2837,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
-        '{"success":true,"id":"sln1234567890"}');
+        '{"success":true,"id":"sln1234567890"}')
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", ["wma1234567890", "svc1234567890"], MOCK_USER_REQOPTS)
       .then(
         (response:mInterfaces.ISolutionItem) => {
