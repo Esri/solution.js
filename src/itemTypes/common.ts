@@ -34,7 +34,7 @@ export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 export function fail (
   e: any
 ): any {
-  return { success: false, error: e.error || e };
+  return { success: false, error: (e && e.error) || e };
 }
 
 export function doCommonTemplatizations (
@@ -220,7 +220,7 @@ export function updateItemData (
       updateResp => {
         resolve(id);
       },
-      () => reject()
+      () => reject({ success: false })
     );
   });
 }

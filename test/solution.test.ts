@@ -2864,7 +2864,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2876,7 +2876,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2888,7 +2888,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2900,7 +2900,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2924,7 +2924,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2944,7 +2944,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -2988,7 +2988,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -3015,7 +3015,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -3027,12 +3027,15 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemData("Web Mapping Application"))
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/map1234567890", mockItems.getAGOLItem("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/data", mockItems.getAGOLItemData("Web Map"))
       .mock("path:/sharing/rest/content/items/map1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .mock("path:/sharing/rest/content/items/svc1234567890", mockItems.getAGOLItem("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/data", mockItems.getAGOLItemData("Feature Service"))
       .mock("path:/sharing/rest/content/items/svc1234567890/resources", mockItems.getAGOLItemResources("none"))
+      .post("path:/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png", mockItems.getAnImage())
       .post(baseSvcURL + "FeatureServer?f=json", mockItems.getAGOLService(
         [mockItems.getAGOLLayerOrTable(0, "ROW Permits", "Feature Layer")],
         [mockItems.getAGOLLayerOrTable(1, "ROW Permit Comment", "Table")]
@@ -3049,12 +3052,14 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"success":true,"id":"sln1234567890","folder":null}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/share",
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
-      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update", mockItems.get400Failure());
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update", mockItems.get400Failure())
+      .post("path:/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+        '{"success":true,"itemId":"sln1234567890","owner":"casey","folder":null}');
       mSolution.createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -3081,7 +3086,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -3108,7 +3113,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );

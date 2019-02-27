@@ -79,7 +79,6 @@
     "webpack-cli": "^3.2.1"
   },
   "dependencies": {
-    "adlib": "^3.0.0",
     "@esri/arcgis-rest-auth": "^1.17.0",
     "@esri/arcgis-rest-common-types": "^1.17.0",
     "@esri/arcgis-rest-feature-service-admin": "^1.17.0",
@@ -87,6 +86,7 @@
     "@esri/arcgis-rest-items": "^1.17.0",
     "@esri/arcgis-rest-request": "^1.17.0",
     "@esri/arcgis-rest-sharing": "^1.17.0",
+    "adlib": "^3.0.0",
     "es6-promise": "^4.2.5",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",
