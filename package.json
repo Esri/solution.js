@@ -67,7 +67,7 @@
     "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-json": "^2.3.0",
     "rollup-plugin-node-resolve": "^3.0.3",
-    "rollup-plugin-typescript2": "^0.18.1",
+    "rollup-plugin-typescript2": "^0.19.3",
     "rollup-plugin-uglify": "^3.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
