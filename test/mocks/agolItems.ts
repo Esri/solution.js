@@ -711,9 +711,10 @@ export function createAGOLRelationship (
   return relationship;
 }
 
-export function getAnImage (
+export function getAnImageResponse (
 ): any {
-  return Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);//"data:image/png;base64,Rm91cnNjb3JlIGFuZCBzZXZlbiB5ZWFycyBhZ28=";
+  const fs = require("fs");
+  return fs.createReadStream("./test/mocks/success.png");
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//

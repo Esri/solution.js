@@ -80,10 +80,6 @@ export function createSolutionItem (
                 ])
                 .then(
                   responses => {
-                    const [saveResourcesResponse, saveTemplatesResponse] = responses;
-                    //???console.warn("saveResourcesResponse", JSON.stringify(saveResourcesResponse,null,2));
-                    //???console.warn("saveResourcesInSolutionItem", JSON.stringify(saveTemplatesResponse,null,2));
-
                     resolve(solutionItem);
                   },
                   (e) => reject(mCommon.fail(e))  // unable to save resources or templates
@@ -320,50 +316,32 @@ export function copyResource (
     request.request(url, requestOptions)
     .then(
       content => {
-        // Convert it into a blob, which makes it look like a file list because adding a resource
-        // requires a form upload
-        //const blob = new Blob([content], { type: "application/octet-stream" });
-        const blob = blobify(content);
-        //let blob = new FormData();
-        //blob.append("file", Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]) as any);
-
         // Add it to the storage item
-        const resourceTag = folder + "/" + filename;
-        const addRsrcOptions = {
-          id: storageItemId,
-          resource: blob,
-          name: filename,
-          ...destinationRequestOptions,
-          params: {
-            resourcesPrefix: folder
-          }
-        }
-        items.addItemResource(addRsrcOptions)
+        content.blob()
         .then(
-          () => resolve(resourceTag),
-          () => reject(resourceTag)
+          (blob:any) => {
+            const resourceTag = folder + "/" + filename;
+            const addRsrcOptions = {
+              id: storageItemId,
+              resource: blob,
+              name: filename,
+              ...destinationRequestOptions,
+              params: {
+                resourcesPrefix: folder
+              }
+            };
+            items.addItemResource(addRsrcOptions)
+            .then(
+              () => resolve(resourceTag),
+              () => reject(resourceTag)
+            );
+          },
+          () => reject(url)
         );
       },
       () => reject(url)
     );
   });
-}
-
-export function blobify (
-  content: any
-): any {
-  if (typeof Blob !== "undefined" && Blob) {
-    return new Blob([content], { type: "application/octet-stream" });
-  } else {
-    let blob = new FormData();
-    blob.append("file", Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]) as any);
-    return blob
-    //const fs = require("fs");
-    //content = Buffer.from([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]);
-    //console.warn(typeof content);
-    //console.warn(JSON.stringify(content));
-    //return fs.createReadStream(content);
-  }
 }
 
 /**
