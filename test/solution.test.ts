@@ -78,6 +78,29 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     jasmine.clock().uninstall();
   });
 
+  /**
+   * Short-circuits request.request call if a png is being requested so that faked result format matches
+   * real query format.
+   */
+  function setUpImageRequestSpy() {
+    const realRequest = request.request;
+    spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
+      if (url.endsWith(".png")) {
+        return new Promise(resolve => {
+          resolve({
+            blob: () => {
+              return new Promise(resolve2 => {
+                resolve2(mockItems.getAnImageResponse())
+              });
+            }
+          })
+        });
+      } else {
+        return realRequest(url, requestOptions);
+      }
+    });
+  }
+
   describe("create solution", () => {
 
     it("for single item containing webmap WMA & feature service", done => {
@@ -86,23 +109,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
       });
-
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -158,23 +165,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
       });
-
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -228,23 +219,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
       });
-
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -275,23 +250,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
       });
-
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       fetchMock
       .post("path:/sharing/rest/content/users/casey/addItem",
@@ -2705,22 +2664,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("successful fetches", () => {
 
     it("should return a list of WMA details for a valid AGOL id", done => {
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
@@ -2789,22 +2733,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         authentication: DEST_MOCK_USER_SESSION
       };
 
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
@@ -2860,22 +2789,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should return a list of WMA details for a valid AGOL id in a list", done => {
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
@@ -2926,22 +2840,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should return a list of WMA details for a valid AGOL id in a list with more than one id", done => {
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
@@ -3159,22 +3058,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
     });
 
     it("should handle failure to update the solution item", done => {
-      const realRequest = request.request;
-      spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
-        if (url.endsWith(".png")) {
-          return new Promise(resolve => {
-            resolve({
-              blob: () => {
-                return new Promise(resolve2 => {
-                  resolve2(mockItems.getAnImageResponse())
-                });
-              }
-            })
-          });
-        } else {
-          return realRequest(url, requestOptions);
-        }
-      });
+      setUpImageRequestSpy();
 
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
       fetchMock
