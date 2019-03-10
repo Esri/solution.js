@@ -213,8 +213,10 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       );
     });
 
-    it("for single item containing WMA without folderId, webmap, or group", done => {
+    it("for single item containing WMA without URL, folderId, webmap, or group", done => {
       const baseSvcURL = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/";
+      const wma = mockItems.getAGOLItem("Web Mapping Application");
+      wma.url = null;
 
       spyOn(mItemHelpers, "createId").and.callFake(() => {
         return "i1a2b3c4";
@@ -228,7 +230,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         '{"notSharedWith":[],"itemId":"sln1234567890"}')
       .post("path:/sharing/rest/content/users/casey/items/sln1234567890/update",
         '{"success":true,"id":"sln1234567890"}')
-      .mock("path:/sharing/rest/content/items/wma1234567890", mockItems.getAGOLItem("Web Mapping Application"))
+      .mock("path:/sharing/rest/content/items/wma1234567890", wma)
       .mock("path:/sharing/rest/content/items/wma1234567890/data", mockItems.getAGOLItemDataWMANoWebmapOrGroup())
       .mock("path:/sharing/rest/content/items/wma1234567890/resources", mockItems.getAGOLItemResources())
       .post("path:/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png", 200)
@@ -239,7 +241,9 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         (response:mInterfaces.ISolutionItem) => {
           mockUtils.removeItemFcns(response);  // don't want to compare item-specific fcns
           const template = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
-          expect(response).toEqual(mockSolutions.getSolutionTemplateItem(template));
+          const solution = mockSolutions.getSolutionTemplateItem(template);
+          solution.data.templates[0].item.url = null;  // WMA doesn't have a URL in this case
+          expect(response).toEqual(solution);
           done();
         },
         error => done.fail(error)
