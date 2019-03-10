@@ -333,13 +333,13 @@ export function copyResource (
             items.addItemResource(addRsrcOptions)
             .then(
               () => resolve(resourceTag),
-              () => reject(resourceTag)
+              (e) => reject(mCommon.fail(e))
             );
           },
-          () => reject(url)
+          (e:any) => reject(mCommon.fail(e))
         );
       },
-      () => reject(url)
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -469,7 +469,7 @@ export function createItemFromTemplateWhenReady (
   const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
     const template = findTemplateInList(itemTemplates, itemId);
     if (!template) {
-      reject({ success: false });
+      reject(mCommon.fail());
     }
 
     // Wait until all dependencies are deployed
@@ -589,7 +589,7 @@ export function createItemTemplates (
       );
 
     } else {
-      reject({ success: false });
+      reject(mCommon.fail());
     }
   });
 }
@@ -669,7 +669,7 @@ export function createSolutionStorageAgoItem (
         solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
         resolve(solutionItem);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -816,7 +816,9 @@ export function saveResourcesInSolutionItem (
 
     // Await conclusion of copies
     Promise.all(copiesDefList)
-    .then(resolve, reject);
+    .then(resolve,
+      (e) => reject(mCommon.fail(e))
+    );
   });
 }
 
