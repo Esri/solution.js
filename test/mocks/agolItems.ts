@@ -714,7 +714,13 @@ export function createAGOLRelationship (
 export function getAnImageResponse (
 ): any {
   const fs = require("fs");
-  return fs.createReadStream("./test/mocks/success.png");
+  if (fs.createReadStream) {
+    // Node test
+    return fs.createReadStream("./test/mocks/success.png");
+  } else {
+    // Chrome test
+    return new Blob([atob(imageAsDataUri(false))], {type: "image/png"})
+  }
 }
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
@@ -769,3 +775,33 @@ function getAGOLItemFundamentals (
     "groupDesignations": null
   };
 }
+
+function imageAsDataUri (
+  withUri: boolean
+) {
+  let uri = "";
+  if (withUri) {
+    uri = "data:image/png;charset=utf-8;base64,";
+  }
+  uri +=
+"iVBORw0KGgoAAAANSUhEUgAAABEAAAARCAYAAAA7bUf6AAAACXBIWXMAAA7EAAAOxAGVKw4bAAAA\
+B3RJTUUH4wECFDYv8o+FNwAAAAd0RVh0QXV0aG9yAKmuzEgAAAAMdEVYdERlc2NyaXB0aW9uABMJ\
+ISMAAAAKdEVYdENvcHlyaWdodACsD8w6AAAADnRFWHRDcmVhdGlvbiB0aW1lADX3DwkAAAAJdEVY\
+dFNvZnR3YXJlAF1w/zoAAAALdEVYdERpc2NsYWltZXIAt8C0jwAAAAh0RVh0V2FybmluZwDAG+aH\
+AAAAB3RFWHRTb3VyY2UA9f+D6wAAAAh0RVh0Q29tbWVudAD2zJa/AAAABnRFWHRUaXRsZQCo7tIn\
+AAACaklEQVQ4jZWUS09TYRCGn3NpS0uhPeXSNlxLJQgYExAXEGIkRCKGhZfEnT/LnTs3ujQhLggL\
+NYSFihhUQAkBRFoELbSlPbTnfN/nQoMW0Mi7m0zmmbwzk9GUUoozKlvYZTn9mkwxTVdjP+ZZAcVS\
+nsXULHNfJimW98kW0uhnAbjCYW1ngXfpaXJuCs0AoQn0/zUjlWQ7u8GrzUl27XV0TKyqJgZab2Aq\
+wHEPKbs2umbgMwMYxkmXuWKGZ8sP2c59BE3h1yNciI7SGevHBMXy5kvmP09RU2UxdO4WsbqOCoCQ\
+Di+WHpHKL+OqEiYBehqv0tc2iq7rmI7jsLQzw8bBG3yHQfxbFuPHIHOfpljZm6WsDlBSozs2zEBi\
+HJ83AIBuejwEvRFMzUdJFNjJr5Et7P+cgxRspD/wfP0xtptHSkV7+BJ9bdcJVdcfNdFBoznURY2n\
+HlAclL+R2ltFSkEmt82T9/c5lHsIKbA87VxunyBuJdC134vVNSBuJQn74ziOS7b4nZWv8+TtDE8X\
+HpA53MAVDroMMpS8TVtDNx7DW2HXBEU42Eh9dQsru3MUSlkWUzO4TonVzBwCByVNhpITdMb68XuD\
+JzanA3g9VURrEwQMC1c47Nsp3m5NU3IOKJdduhuGGei4RtAfPvWGjoxFQwkaqlsRrsAVJWxnDykg\
+Vt3FyPm7hAP1FXM4FVJXE6cp0oWSBkJIpIAaX5SxnntEI20YhudUQAWkyhcgbiWp9UZRUsNvWgwm\
+b9KbGMT8B+AXRDsKmiNJLrZcIeRvoq91jJHeO2h/5P8m7fg/scs2eTtHJGBherx/q6vQD/83+vfY\
++Sr/AAAAAElFTkSuQmCC";
+
+  return uri
+}
+

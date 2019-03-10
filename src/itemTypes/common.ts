@@ -32,9 +32,13 @@ import { IProgressUpdate } from "../interfaces";
 export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
 
 export function fail (
-  e: any
+  e?: any
 ): any {
-  return { success: false, error: (e && e.error) || e };
+  if (e) {
+    return { success: false, error: e.error || e };
+  } else {
+    return { success: false };
+  }
 }
 
 export function doCommonTemplatizations (
