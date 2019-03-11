@@ -729,7 +729,7 @@ export function getAnImageResponse (
     return fs.createReadStream("./test/mocks/success.png");
   } else {
     // Chrome test
-    return new Blob([atob(imageAsDataUri(false))], {type: "image/png"})
+    return new Blob([atob(imageAsDataUri(false))], {type: "image/png"});
   }
 }
 
