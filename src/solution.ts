@@ -85,6 +85,7 @@ export function createSolutionItem (
                   (e) => reject(mCommon.fail(e))  // unable to save resources or templates
                 );
               },
+              // istanbul ignore next because this is temporary solution until Solution item can hold resources TODO
               (e) => reject(mCommon.fail(e))  // unable to create item to save resources
             );
           },
@@ -276,14 +277,7 @@ export function copyRegularResource (
   // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
   // item can store resources from more than one source item; supplement the folder name with the source
   // folder name if there is one
-  let folder = itemId;
-  let filename = url.substring(url.indexOf("/resources/") + "/resources/".length);
-  const filenameParts = filename.split("/");
-  if (filenameParts.length > 1) {
-    folder += "_" + filenameParts[0];
-    filename = filenameParts[1];
-  }
-
+  const { folder, filename } = getFolderAndFilenameForResource(itemId, url);
   return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
 }
 
@@ -320,26 +314,28 @@ export function copyResource (
         content.blob()
         .then(
           (blob:any) => {
-            const resourceTag = folder + "/" + filename;
+            const resourceTag = folder ? folder + "/" + filename : filename;
             const addRsrcOptions = {
               id: storageItemId,
               resource: blob,
               name: filename,
-              ...destinationRequestOptions,
-              params: {
-                resourcesPrefix: folder
-              }
+              ...destinationRequestOptions
             };
+            if (folder) {
+              addRsrcOptions.params = {
+                resourcesPrefix: folder
+              };
+            }
             items.addItemResource(addRsrcOptions)
             .then(
               () => resolve(resourceTag),
-              (e) => reject(mCommon.fail(e))
+              (e) => reject(mCommon.fail(e))  // unable to store copy of resource
             );
           },
-          (e:any) => reject(mCommon.fail(e))
+          (e:any) => reject(mCommon.fail(e))  // unable to get blob out of resource
         );
       },
-      (e) => reject(mCommon.fail(e))
+      (e) => reject(mCommon.fail(e))  // unable to get resource
     );
   });
 }
@@ -549,16 +545,13 @@ export function createItemTemplates (
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
               const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
-              if (itemTemplate.dependencies) {
-                itemTemplate.dependencies.forEach(
-                  dependentId => {
-                    if (!findTemplateInList(existingTemplates, dependentId)) {
-                      dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
-                    }
+              itemTemplate.dependencies.forEach(
+                dependentId => {
+                  if (!findTemplateInList(existingTemplates, dependentId)) {
+                    dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
                   }
-                );
-              }
+                }
+              );
               Promise.all(dependentDfds)
               .then(
                 () => {
@@ -707,6 +700,30 @@ export function findTemplateInList (
 ): mInterfaces.ITemplate {
   const childId = findTemplateIndexInSolution(templates, id);
   return childId >= 0 ? templates[childId] : null;
+}
+
+/**
+ * Determines a folder and filename for a resource given the resource's item and the URL of the resource.
+ *
+ * @param itemId Id of item containing resource
+ * @param url URL of the resource
+ * @return Folder and filename
+ */
+export function getFolderAndFilenameForResource (
+  itemId: string,
+  url: string
+): {
+  folder: string,
+  filename: string
+} {
+  let folder = itemId;
+  let filename = url.substring(url.indexOf("/resources/") + "/resources/".length);
+  const filenameParts = filename.split("/");
+  if (filenameParts.length > 1) {
+    folder += "_" + filenameParts[0];
+    filename = filenameParts[1];
+  }
+  return { folder, filename };
 }
 
 /**

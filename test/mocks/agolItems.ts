@@ -37,6 +37,16 @@ export function get400Failure (
   };
 }
 
+export function get400SuccessFailure (
+): any {
+  return {
+    "success": false,
+    "error": {
+      "success": false
+    }
+  };
+}
+
 export function get400FailureResponse (
 ): any {
   return {

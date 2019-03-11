@@ -82,15 +82,41 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
    * Short-circuits request.request call if a png is being requested so that faked result format matches
    * real query format.
    */
-  function setUpImageRequestSpy() {
+  function setUpImageRequestSpy(
+    fakeResponse?: any
+  ) {
     const realRequest = request.request;
     spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
       if (url.endsWith(".png")) {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
+          if (!fakeResponse) {
+            resolve({
+              blob: () => {
+                return new Promise(resolve2 => {
+                  resolve2(mockItems.getAnImageResponse())
+                });
+              }
+            })
+          } else {
+            reject(fakeResponse);
+          }
+        });
+      } else {
+        return realRequest(url, requestOptions);
+      }
+    });
+  }
+  function setUpImageRequestSpyBadBlob(
+    fakeResponse: any
+  ) {
+    const realRequest = request.request;
+    spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
+      if (url.endsWith(".png")) {
+        return new Promise((resolve, reject) => {
           resolve({
             blob: () => {
-              return new Promise(resolve2 => {
-                resolve2(mockItems.getAnImageResponse())
+              return new Promise((resolve2, reject2) => {
+                reject2(fakeResponse);
               });
             }
           })
@@ -2207,6 +2233,151 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
+  describe("supporting routine: copyResource", () => {
+
+    it("should handle a resource not in a folder", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy();
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources",
+        '{"success":true,"itemId":"dst1234567890","owner":"casey","folder":null}');
+      mSolution.copyResource(url, undefined, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual("splash.png");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle a resource not in a folder; null variant", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const folder = null as string;
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy();
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources",
+        '{"success":true,"itemId":"dst1234567890","owner":"casey","folder":null}');
+      mSolution.copyResource(url, folder, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual("splash.png");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle a resource from a folder", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const folder = "src1234567890";
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy();
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources",
+        '{"success":true,"itemId":"dst1234567890","owner":"casey","folder":null}');
+      mSolution.copyResource(url, folder, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual("src1234567890/splash.png");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle a resource from a subfolder", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/icons/success.png";
+      const folder = "src1234567890_icons";
+      const filename = "success.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy();
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/icons/success.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources",
+        '{"success":true,"itemId":"dst1234567890","owner":"casey","folder":null}');
+      mSolution.copyResource(url, folder, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(response).toEqual("src1234567890_icons/success.png");
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle inability to get a resource to copy", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy(mockItems.get400Failure());
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 400);
+      mSolution.copyResource(url, undefined, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        done.fail,
+        response => {
+          expect(response.success).toBeFalsy();
+          expect(response.error.code).toEqual(400);
+          done();
+        }
+      );
+    });
+
+    it("should handle inability to get a blob out of a resource to copy", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const folder = "src1234567890";
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpyBadBlob(mockItems.get400Failure());
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources",
+        '{"success":true,"itemId":"dst1234567890","owner":"casey","folder":null}');
+      mSolution.copyResource(url, folder, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        done.fail,
+        response => {
+          expect(response.success).toBeFalsy();
+          expect(response.error.code).toEqual(400);
+          done();
+        }
+      );
+    });
+
+    it("should handle inability to store copy of resource", done => {
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/src1234567890/resources/splash.png";
+      const folder = "src1234567890";
+      const filename = "splash.png";
+      const destinationItemId = "dst1234567890";
+      setUpImageRequestSpy();
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/src1234567890/resources/splash.png", 200)
+      .post("path:/sharing/rest/content/users/casey/items/dst1234567890/addResources", mockItems.get400Failure());
+      mSolution.copyResource(url, folder, filename, destinationItemId, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        done.fail,
+        done
+      );
+    });
+
+  });
+
   describe("supporting routine: createSolutionTemplateItem", () => {
 
     it("should handle default (private) access and supplied settings with an org url", done => {
@@ -2264,7 +2435,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
 
   });
 
-  describe("supporting routine: createSolutionItemTemplates ", () => {
+  describe("supporting routine: createSolutionItemTemplates", () => {
 
     it("should not create a template if one has already been created for an item", done => {
       const solutionTemplateItem: mInterfaces.ISolutionItem = mockSolutions.getSolutionTemplateItem();
@@ -2283,6 +2454,117 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           done();
         },
         done.fail
+      );
+    });
+
+  });
+
+  describe("supporting routine: createSolutionStorageAgoItem", () => {
+
+    it("should handle supplied settings and default access", done => {
+      const settings = {
+        organization: {
+          orgUrl: "https://myorg.maps.arcgis.com"
+        }
+      }
+
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem",
+        '{"success":true,"id":"sln1234567890","folder":null}');
+      mSolution.createSolutionStorageAgoItem("title", MOCK_USER_REQOPTS, settings)
+      .then(
+        response => {
+          const expected = {
+            "item": {
+              "itemType": "text",
+              "name": null as string,
+              "title": "title",
+              "type": "Code Attachment",
+              "typeKeywords": [
+                "Solution",
+                "Template"
+              ],
+              "commentsEnabled": false,
+              "id": "sln1234567890",
+              "url": "https://myorg.maps.arcgis.com/home/item.html?id=sln1234567890"
+            }
+          };
+          expect(response).toEqual(expected);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle failure to create item", done => {
+      fetchMock
+      .post("path:/sharing/rest/content/users/casey/addItem", mockItems.get400Failure());
+      mSolution.createSolutionStorageAgoItem("title", MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail,
+        response => {
+          expect(response).toEqual(mockItems.get400SuccessFailure());
+          done();
+        }
+      );
+    });
+
+  });
+
+  describe("supporting routine: saveResourcesInSolutionItem", () => {
+
+    it("should handle missing templates list", done => {
+      mSolution.saveResourcesInSolutionItem(null, null, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(Array.isArray(response)).toBeTruthy();
+          expect(response.length).toEqual(0);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle empty templates list", done => {
+      mSolution.saveResourcesInSolutionItem([], null, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(Array.isArray(response)).toBeTruthy();
+          expect(response.length).toEqual(0);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle template item without a thumbnail", done => {
+      const template = mockSolutions.getItemTemplatePart("Dashboard");
+      template.item.thumbnail = null;
+      mSolution.saveResourcesInSolutionItem([template], null, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        response => {
+          expect(Array.isArray(response)).toBeTruthy();
+          expect(response.length).toEqual(0);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("should handle failure to save a resource", done => {
+      const template = mockSolutions.getItemTemplatePart("Dashboard");
+      setUpImageRequestSpy(mockItems.get400Failure());
+
+      fetchMock
+      .post("path:/sharing/rest/content/items/dsh1234567890/info/thumbnail/ago_downloaded.png", 400);
+      mSolution.saveResourcesInSolutionItem([template], null, MOCK_USER_REQOPTS, MOCK_USER_REQOPTS)
+      .then(
+        () => done.fail(),
+        response => {
+          expect(response.success).toBeFalsy();
+          expect(response.error.code).toEqual(400);
+          done();
+        }
       );
     });
 
@@ -2367,6 +2649,30 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       const normalIds = ["wma1234567890", "wma1234567890", "map1234567890"];
       const expectedIds = ["wma1234567890", "wma1234567890", "map1234567890"];
       expect(mCommon.deTemplatize(normalIds)).toEqual(expectedIds);
+    });
+
+  });
+
+  describe("supporting routine: getFolderAndFilenameForResource", () => {
+
+    it("should handle resource without a folder in its path", () => {
+      const itemId = "itm1234567890";
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/splash.png";
+      const expected = {
+        folder: "itm1234567890",
+        filename: "splash.png"
+      }
+      expect(mSolution.getFolderAndFilenameForResource(itemId, url)).toEqual(expected);
+    });
+
+    it("should handle resource with a folder in its path", () => {
+      const itemId = "itm1234567890";
+      const url = "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/icons/success.png";
+      const expected = {
+        folder: "itm1234567890_icons",
+        filename: "success.png"
+      }
+      expect(mSolution.getFolderAndFilenameForResource(itemId, url)).toEqual(expected);
     });
 
   });
