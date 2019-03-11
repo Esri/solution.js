@@ -41,7 +41,7 @@ export function convertItemToTemplate (
     fleshOutFeatureService(itemTemplate, requestOptions)
     .then(
       () => resolve(itemTemplate),
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -126,21 +126,21 @@ export function createItemFromTemplate (
                 mCommon.finalCallback(itemTemplate.key, true, progressCallback);
                 resolve(itemTemplate);
               },
-              () => {
+              (e) => {
                 mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-                reject({ success: false });
+                reject(mCommon.fail(e));
               }
             );
           },
-          () => {
+          (e) => {
             mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-            reject({ success: false });
+            reject(mCommon.fail(e));
           }
         );
       },
-      () => {
+      (e) => {
         mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-        reject({ success: false });
+        reject(mCommon.fail(e));
       }
     )
   });
@@ -253,10 +253,10 @@ export function addFeatureServiceLayersAndTables (
           Promise.all(awaitRelationshipUpdates)
           .then(
             () => resolve(),
-            () => reject({ success: false })
+            (e) => reject(mCommon.fail(e))
           );
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     } else {
       resolve();
@@ -324,10 +324,10 @@ export function fleshOutFeatureService (
 
             resolve();
           },
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         );
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -368,7 +368,7 @@ export function getLayers (
         });
         resolve(layers);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -441,10 +441,10 @@ function updateFeatureServiceDefinition(
             requestOptions, key, progressCallback)
           .then(
             () => resolve(),
-            () => reject({ success: false })
+            (e) => reject(mCommon.fail(e))
           );
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     } else {
       resolve();

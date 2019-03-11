@@ -81,12 +81,12 @@ export function createItemFromTemplate (
           resolve(itemTemplate);
         } else {
           mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-          reject({ success: false });
+          reject(mCommon.fail());
         }
       },
-      () => {
+      (e) => {
         mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-        reject({ success: false });
+        reject(mCommon.fail(e));
       }
     );
   });

@@ -37,8 +37,25 @@ export const YESTERDAY = (function() {
   return now;
 })();
 
-export const ArcgisRestSuccessFail = {
-  success: false
+export const ArcgisRestSuccessFailSimple = {
+  "success": false
+}
+
+export const ArcgisRestSuccessFailStruct = {
+  "success": false,
+  "error": {
+    "success": false
+  }
+}
+
+export function checkForArcgisRestSuccessRequestError (
+  error: any
+): boolean {
+  return error &&
+    typeof error.success === "boolean" &&
+    error.success === false &&
+    typeof error.error === "object" &&
+    error.error.name === "ArcGISRequestError";
 }
 
 export function setMockDateTime (

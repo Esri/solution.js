@@ -16,14 +16,15 @@
 
 import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
-import { ArcGISRequestError } from "@esri/arcgis-rest-request";
+import * as request from "@esri/arcgis-rest-request";
+import { ArcGISRequestError, IRequestOptions, ResponseFormats } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 import { IItem } from '@esri/arcgis-rest-common-types';
 
 import * as mCommon from "./itemTypes/common";
 import * as mClassifier from "./itemTypes/classifier";
 import * as mInterfaces from "./interfaces";
-import * as mObjHelpers from "./utils/object-helpers"
+import * as mObjHelpers from "./utils/object-helpers";
 
 // -- Externals ------------------------------------------------------------------------------------------------------//
 
@@ -54,24 +55,44 @@ export function createSolutionItem (
     .then(
       solutionItem => {
         // Get the templates for the items in the solution
-        createItemTemplates(ids, solutionItem, sourceRequestOptions)
+        createItemTemplates(ids, sourceRequestOptions)
         .then(
           templates => {
             solutionItem.data.templates = templates;
 
-            // Update the solution item
-            updateSolutionAgoItem(solutionItem, destinationRequestOptions)
+            // Create an empty solution storage item to hold thumbnails and resources
+            // until solution items are enabled to store resources
+            createSolutionStorageAgoItem(solutionItem.item.title, destinationRequestOptions, undefined, "public")
             .then(
-              updatedSolutionItem => {
-                resolve(updatedSolutionItem);
+              solutionStorageItem => {
+                solutionItem.data.metadata.resourceStorageItemId = solutionStorageItem.item.id;
+
+                // Save the source item thumbnails and resources
+                const saveResourcesDef = saveResourcesInSolutionItem(solutionItem.data.templates,
+                  solutionStorageItem.item.id, sourceRequestOptions, destinationRequestOptions);
+
+                // Update the solution item with its templates
+                const saveTemplatesDef = updateSolutionAgoItem(solutionItem, destinationRequestOptions);
+
+                Promise.all([
+                  saveResourcesDef,
+                  saveTemplatesDef
+                ])
+                .then(
+                  responses => {
+                    resolve(solutionItem);
+                  },
+                  (e) => reject(mCommon.fail(e))  // unable to save resources or templates
+                );
               },
-              () => reject({ success: false })
-            )
+              // istanbul ignore next because this is temporary solution until Solution item can hold resources TODO
+              (e) => reject(mCommon.fail(e))  // unable to create item to save resources
+            );
           },
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))  // unable to create templates
         );
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))  // unable to create solution item
     );
   });
 }
@@ -119,7 +140,7 @@ export function deploySolutionItem  (
 
           runThroughChecklistInParallel();
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
 
@@ -135,7 +156,7 @@ export function deploySolutionItem  (
       Promise.all(awaitAllItems)
       .then(
         clonedSolutionItems => resolve(clonedSolutionItems),
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
     // -------------------------------------------------------------------------
@@ -156,7 +177,7 @@ export function deploySolutionItem  (
           settings.folderId = createdFolderResponse.folder.id;
           launchDeployment();
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
     }
   });
@@ -236,6 +257,122 @@ enum SortVisitColor {
 }
 
 /**
+ * Copies a conventional (non-thumbnail) resource from one item to another.
+ *
+ * @param itemId Id of item serving as source of resource
+ * @param url URL to source resource
+ * @param storageItemId Id of item to receive copy of resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyRegularResource (
+  itemId: string,
+  url: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
+  // item can store resources from more than one source item; supplement the folder name with the source
+  // folder name if there is one
+  const { folder, filename } = getFolderAndFilenameForResource(itemId, url);
+  return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
+}
+
+/**
+ * Copies a resource from a URL to an item.
+ *
+ * @param url URL to source resource
+ * @param folder Folder in destination for resource; defaults to top level
+ * @param filename Filename in destination for resource
+ * @param storageItemId Id of item to receive copy of resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyResource (
+  url: string,
+  folder = null as string,
+  filename: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the resource from the URL
+    const requestOptions = {
+      rawResponse: true,
+      ...sourceRequestOptions
+    } as IRequestOptions;
+    request.request(url, requestOptions)
+    .then(
+      content => {
+        // Add it to the storage item
+        content.blob()
+        .then(
+          (blob:any) => {
+            const resourceTag = folder ? folder + "/" + filename : filename;
+            const addRsrcOptions = {
+              id: storageItemId,
+              resource: blob,
+              name: filename,
+              ...destinationRequestOptions
+            };
+            if (folder) {
+              addRsrcOptions.params = {
+                resourcesPrefix: folder
+              };
+            }
+            items.addItemResource(addRsrcOptions)
+            .then(
+              () => resolve(resourceTag),
+              (e) => reject(mCommon.fail(e))  // unable to store copy of resource
+            );
+          },
+          (e:any) => reject(mCommon.fail(e))  // unable to get blob out of resource
+        );
+      },
+      (e) => reject(mCommon.fail(e))  // unable to get resource
+    );
+  });
+}
+
+/**
+ * Copies a thumbnail resource from one item to another.
+ *
+ * @param itemId Id of item serving as source of resource
+ * @param url URL to source resource
+ * @param storageItemId Id of item to receive copy of resource
+ * @param sourceRequestOptions Options for requesting information from source
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to the tag under which the resource is stored
+ * @protected
+ */
+export function copyThumbnailResource (
+  itemId: string,
+  url: string,
+  itemType: string,
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string> {
+  // Extract the resource's filename; we'll use the source item's id as a folder name so that the destination
+  // item can store resources from more than one source item; supplement the folder name with text indicating
+  // that it's a thumbnail resource
+  let folder = itemId + "_info_thumbnail";
+  let filename = url.substring(url.indexOf("/info/thumbnail/") + "/info/thumbnail/".length);
+  if (itemType === "Group") {
+    folder = itemId + "_info";
+    filename = url.substring(url.indexOf("/info/") + "/info/".length);
+  }
+
+  return copyResource(url, folder, filename, storageItemId, sourceRequestOptions, destinationRequestOptions);
+}
+
+/**
  * Creates an empty template.
  *
  * @param id AGO id of item
@@ -299,7 +436,7 @@ export function createDeployedSolutionAgoItem (
         }
         resolve(deployedSolutionItem);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -328,7 +465,7 @@ export function createItemFromTemplateWhenReady (
   const itemDef = new Promise<mInterfaces.ITemplate>((resolve, reject) => {
     const template = findTemplateInList(itemTemplates, itemId);
     if (!template) {
-      reject({ success: false });
+      reject(mCommon.fail());
     }
 
     // Wait until all dependencies are deployed
@@ -349,10 +486,10 @@ export function createItemFromTemplateWhenReady (
         itemTemplate.fcns.createItemFromTemplate(itemTemplate, settings, requestOptions, progressCallback)
         .then(
           itemClone => resolve(itemClone),
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         )
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 
@@ -365,16 +502,14 @@ export function createItemFromTemplateWhenReady (
  * Creates templates for a set of AGO items.
  *
  * @param ids AGO id string or list of AGO id strings
- * @param solutionItem Solution template serving as parent for templates
- * @param requestOptions Options for the request
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve with the created template items
  * @protected
  */
 export function createItemTemplates (
   ids: string | string[],
-  solutionItem: mInterfaces.ISolutionItem,
-  requestOptions: IUserRequestOptions,
+  sourceRequestOptions: IUserRequestOptions,
   existingTemplates?: mInterfaces.ITemplate[]
 ): Promise<mInterfaces.ITemplate[]> {
   if (!existingTemplates) {
@@ -389,15 +524,17 @@ export function createItemTemplates (
         resolve(existingTemplates);  // Item and its dependents are already in list or are queued
 
       } else {
+        // Init item type
+        const getItemPromise = mClassifier.convertItemToTemplate(rootId, sourceRequestOptions);
+
         // Add the id as a placeholder to show that it will be fetched
-        const getItemPromise = mClassifier.convertItemToTemplate(rootId, requestOptions);
         existingTemplates.push(createPlaceholderTemplate(rootId));
 
-        // Get the specified item
+        // Await the item
         getItemPromise
         .then(
           itemTemplate => {
-            // Set the value keyed by the id, replacing the placeholder
+            // Set the value keyed by the id to the created template, replacing the placeholder template
             replaceTemplate(existingTemplates, itemTemplate.itemId, itemTemplate);
 
             // Trace item dependencies
@@ -408,12 +545,10 @@ export function createItemTemplates (
               // Get its dependents, asking each to get its dependents via
               // recursive calls to this function
               const dependentDfds:Array<Promise<mInterfaces.ITemplate[]>> = [];
-
               itemTemplate.dependencies.forEach(
                 dependentId => {
                   if (!findTemplateInList(existingTemplates, dependentId)) {
-                    dependentDfds.push(createItemTemplates(dependentId,
-                      solutionItem, requestOptions, existingTemplates));
+                    dependentDfds.push(createItemTemplates(dependentId, sourceRequestOptions, existingTemplates));
                   }
                 }
               );
@@ -422,11 +557,11 @@ export function createItemTemplates (
                 () => {
                   resolve(existingTemplates);
                 },
-                () => reject({ success: false })
+                (e) => reject(mCommon.fail(e))
               );
             }
           },
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         );
       }
 
@@ -436,18 +571,18 @@ export function createItemTemplates (
       const getHierarchyPromise:Array<Promise<mInterfaces.ITemplate[]>> = [];
 
       ids.forEach(id => {
-        getHierarchyPromise.push(createItemTemplates(id, solutionItem, requestOptions, existingTemplates));
+        getHierarchyPromise.push(createItemTemplates(id, sourceRequestOptions, existingTemplates));
       });
       Promise.all(getHierarchyPromise)
       .then(
         () => {
           resolve(existingTemplates);
         },
-        () => reject({ success: false })
+        (e) => reject(mCommon.fail(e))
       );
 
     } else {
-      reject({ success: false });
+      reject(mCommon.fail());
     }
   });
 }
@@ -496,7 +631,49 @@ export function createSolutionAgoItem (
         solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
         resolve(solutionItem);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
+    );
+  });
+}
+
+/**
+ * Creates a partner item to a solution; the partner holds the resources for the solution
+ * until the solution is upgraded to do this itself.
+ *
+ * @param title The title to use for the item
+ * @param requestOptions Options for the request
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return Empty template item
+ * @protected
+ */
+export function createSolutionStorageAgoItem (
+  title: string,
+  requestOptions: IUserRequestOptions,
+  settings = {} as any,
+  access = "private"
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const solutionItem = {
+      item: {
+        itemType: "text",
+        name: null as string,
+        title,
+        type: "Code Attachment",
+        typeKeywords: ["Solution", "Template"],
+        commentsEnabled: false
+      } as any
+    }
+
+    mCommon.createItemWithData(solutionItem.item, null, requestOptions, settings.folderId, access)
+    .then(
+      createResponse => {
+        const orgUrl = (settings.organization && settings.organization.orgUrl) || "https://www.arcgis.com";
+        solutionItem.item.id = createResponse.id;
+        solutionItem.item.url = orgUrl + "/home/item.html?id=" + createResponse.id;
+        resolve(solutionItem);
+      },
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -534,6 +711,30 @@ export function findTemplateInList (
 ): mInterfaces.ITemplate {
   const childId = findTemplateIndexInSolution(templates, id);
   return childId >= 0 ? templates[childId] : null;
+}
+
+/**
+ * Determines a folder and filename for a resource given the resource's item and the URL of the resource.
+ *
+ * @param itemId Id of item containing resource
+ * @param url URL of the resource
+ * @return Folder and filename
+ */
+export function getFolderAndFilenameForResource (
+  itemId: string,
+  url: string
+): {
+  folder: string,
+  filename: string
+} {
+  let folder = itemId;
+  let filename = url.substring(url.indexOf("/resources/") + "/resources/".length);
+  const filenameParts = filename.split("/");
+  if (filenameParts.length > 1) {
+    folder += "_" + filenameParts[0];
+    filename = filenameParts[1];
+  }
+  return { folder, filename };
 }
 
 /**
@@ -592,6 +793,61 @@ export function replaceTemplate (
     return true;
   }
   return false;
+}
+
+/**
+ * Saves the thumbnails and resources of template items with a solution item.
+ *
+ * @param templates A collection of AGO item templates
+ * @param storageItemId Id of item to receive copies of resources
+ * @param sourceRequestOptions Options for requesting information from AGO about items to be included in solution item
+ * @param destinationRequestOptions Options for accessing solution item in AGO
+ * @return A promise that will resolve a list of thes tag under which the resources are stored
+ * @protected
+ */
+export function saveResourcesInSolutionItem (
+  templates: mInterfaces.ITemplate[],
+  storageItemId: string,
+  sourceRequestOptions: IUserRequestOptions,
+  destinationRequestOptions: IUserRequestOptions
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    // The classifier returns the item's thumbnail and resources as absolute URLs,
+    // so we can fetch them and save them into the solution as resources using the
+    // item id as a folder. For resources that are already in a folder, we'll merge
+    // that folder name with the item name since only single-level folders are supported.
+
+    // Accumulate each copy's promise
+    const copiesDefList = [] as Array<Promise<string>>;
+
+    if (templates) {
+      templates.forEach(
+        itemTemplate => {
+          // Store thumbnail resource
+          if (itemTemplate.item.thumbnail) {
+            copiesDefList.push(copyThumbnailResource(itemTemplate.itemId, itemTemplate.item.thumbnail as string,
+              itemTemplate.type, storageItemId, sourceRequestOptions, destinationRequestOptions));
+          }
+
+          // Store regular resources
+          if (itemTemplate.resources) {
+            itemTemplate.resources.forEach(
+              resourceUrl => {
+                copiesDefList.push(copyRegularResource(itemTemplate.itemId, resourceUrl as string,
+                  storageItemId, sourceRequestOptions, destinationRequestOptions));
+              }
+            );
+          }
+        }
+      );
+    }
+
+    // Await conclusion of copies
+    Promise.all(copiesDefList)
+    .then(resolve,
+      (e) => reject(mCommon.fail(e))
+    );
+  });
 }
 
 /**
@@ -690,7 +946,7 @@ function updateSolutionAgoItem (
     mCommon.updateItemData(solutionItem.item.id, solutionItem.data, requestOptions)
     .then(
       () => resolve(solutionItem),
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     )
   });
 }

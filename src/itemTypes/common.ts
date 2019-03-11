@@ -19,6 +19,7 @@ import * as sharing from "@esri/arcgis-rest-sharing";
 import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
+import * as mCommon from "./common";
 import { IProgressUpdate } from "../interfaces";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -30,6 +31,16 @@ import { IProgressUpdate } from "../interfaces";
  * @protected
  */
 export const PLACEHOLDER_SERVER_NAME:string = "{{organization.portalBaseUrl}}";
+
+export function fail (
+  e?: any
+): any {
+  if (e) {
+    return { success: false, error: e.error || e };
+  } else {
+    return { success: false };
+  }
+}
 
 export function doCommonTemplatizations (
   itemTemplate: any
@@ -93,7 +104,7 @@ export function createItemWithData (
                 id: results2.itemId
               })
             },
-            () => reject({ success: false })
+            (e) => reject(mCommon.fail(e))
           );
         } else {
           resolve({
@@ -102,7 +113,7 @@ export function createItemWithData (
           })
         }
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -214,7 +225,7 @@ export function updateItemData (
       updateResp => {
         resolve(id);
       },
-      () => reject()
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -247,7 +258,7 @@ export function updateItemURL (
       updateResp => {
         resolve(id);
       },
-      () => reject()
+      (e) => reject(mCommon.fail(e))
     );
   });
 }

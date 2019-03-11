@@ -38,7 +38,8 @@ export function getSolutionTemplateItem (
     },
     data: {
       metadata: {
-        version: "x"
+        version: "x",
+        resourceStorageItemId: 'sln1234567890'
       },
       templates
     }
@@ -67,7 +68,7 @@ export function getItemTemplatePart (
     case "Dashboard":
       templatePart = getItemTemplateFundamentals(type, "dsh", dependencies, url);
       templatePart.data = getItemTemplateData(type);
-      templatePart.resources = null;
+      templatePart.resources = [];
       templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
@@ -87,7 +88,7 @@ export function getItemTemplatePart (
       templatePart = getItemTemplateFundamentals(type, "svc", dependencies, url || "{{svc1234567890.id}}");
       templatePart.item.url = url || "{{svc1234567890.url}}";
       templatePart.data = getItemTemplateData(type);
-      templatePart.resources = null;
+      templatePart.resources = [];
 
       const layer0:any = removeEditFieldsInfoField(
         getLayerOrTableTemplate(0, "ROW Permits", "Feature Layer",
@@ -124,7 +125,7 @@ export function getItemTemplatePart (
 
     case "Map Template":  // //??? temporary definition
       templatePart = getItemTemplateFundamentals(type, "mtp", dependencies, url);
-      templatePart.resources = null;
+      templatePart.resources = [];
       break;
 
     case "Operation View":
@@ -143,7 +144,7 @@ export function getItemTemplatePart (
       templatePart = getItemTemplateFundamentals(type, "map", dependencies,
         url || "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}");
       templatePart.data = getItemTemplateData(type);
-      templatePart.resources = null;
+      templatePart.resources = [];
       templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
@@ -151,7 +152,7 @@ export function getItemTemplatePart (
       templatePart = getItemTemplateFundamentals(type, "wma", dependencies,
         url || "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}");
       templatePart.data = getItemTemplateData(type);
-      templatePart.resources = null;
+      templatePart.resources = [];
       templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
@@ -161,7 +162,7 @@ export function getItemTemplatePart (
     case "Unsupported":
       templatePart = getItemTemplateFundamentals(type, "unk", dependencies, url);
       templatePart.data = getItemTemplateData(type);
-      templatePart.resources = null;
+      templatePart.resources = [];
       break;
 
     default:
@@ -257,7 +258,8 @@ export function getGroupTemplatePart (
       "sortField": "title",
       "sortOrder": "asc",
       "isViewOnly": true,
-      "thumbnail": "https://www.arcgis.com/sharing/content/items/grp1234567890/info/ROWPermitManager.png",
+      "thumbnail":
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
       "access": "public",
       "capabilities": [],
       "isFav": false,
@@ -306,7 +308,8 @@ export function getWebMappingApplicationTemplateGroup (
   delete template[0].data.values.webmap;
 
   //  Give the WMA a resource
-  template[0].resources = mockItems.getAGOLItemResources("one text").resources;
+  template[0].resources =
+    ["https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png"];
 
   return template;
 }
@@ -759,7 +762,7 @@ function getItemTemplateFundamentals (
       "description": "Description of an AGOL item",
       "tags": ["test"],
       "snippet": "Snippet of an AGOL item",
-      "thumbnail": "https://www.arcgis.com/sharing/content/items/" +
+      "thumbnail": "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
         typePrefix + "1234567890/info/thumbnail/ago_downloaded.png",
       "documentation": null,
       "extent": "{{initiative.extent:optional}}",
@@ -783,7 +786,8 @@ function getItemTemplateFundamentals (
       "groupDesignations": null
     },
     "dependencies": dependencies,
-    "estimatedDeploymentCostFactor": 3 + (dependencies ? dependencies.length : 0)
+    "estimatedDeploymentCostFactor": 3 + (dependencies ? dependencies.length : 0),
+    "resources": []
   };
 }
 

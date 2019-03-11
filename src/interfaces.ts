@@ -54,6 +54,10 @@ export interface ISolutionTemplateMetadata {
    * Version of the solution template definition
    */
   version: string;
+  /**
+   * Id of item holding templates's thumbnails and resources
+   */
+  resourceStorageItemId?: string;
 }
 
 /**

@@ -1,10 +1,12 @@
-![build status](https://travis-ci.org/Esri/arcgis-clone-js.svg?branch=develop)
-[![Coverage Status][coverage-img]][coverage-url]
-[![apache 2.0 licensed][license-img]][license-url]
+[![Build status][travis-img]][travis-url]
+[![Coverage status][coverage-img]][coverage-url]
+[![Apache 2.0 licensed][license-img]][license-url]
 
+[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/develop.svg
+[travis-url]: https://travis-ci.org/Esri/arcgis-clone-js
 [coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
-[license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg?style=flat-square
+[license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
 ## arcgis-clone-js

@@ -45,11 +45,13 @@ export function convertItemToTemplate (
     // to
     //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
     // Need to add placeholder server name because otherwise AGOL makes URL null
-    const templatizedUrl = itemTemplate.item.url;
-    const iSep = templatizedUrl.indexOf("//");
-    itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
-      templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2), templatizedUrl.lastIndexOf("=") + 1) +
-      mCommon.templatize(itemTemplate.itemId);
+    if (itemTemplate.item.url) {
+      const templatizedUrl = itemTemplate.item.url;
+      const iSep = templatizedUrl.indexOf("//");
+      itemTemplate.item.url = mCommon.PLACEHOLDER_SERVER_NAME +  // add placeholder server name
+        templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2), templatizedUrl.lastIndexOf("=") + 1) +
+        mCommon.templatize(itemTemplate.itemId);
+    }
 
     // Set the folder
     if (getProp(itemTemplate, "data.folderId")) {
@@ -121,19 +123,19 @@ export function createItemFromTemplate (
               mCommon.finalCallback(itemTemplate.key, true, progressCallback);
               resolve(itemTemplate);
             },
-            () => {
+            (e) => {
               mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-              reject({ success: false });
+              reject(mCommon.fail(e));
             }
                 );
         } else {
           mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-          reject({ success: false });
+          reject(mCommon.fail());
         }
       },
-      () => {
+      (e) => {
         mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-        reject({ success: false });
+        reject(mCommon.fail(e));
       }
     );
   });
