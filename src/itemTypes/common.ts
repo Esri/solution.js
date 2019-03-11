@@ -19,6 +19,7 @@ import * as sharing from "@esri/arcgis-rest-sharing";
 import * as items from "@esri/arcgis-rest-items";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
+import * as mCommon from "./common";
 import { IProgressUpdate } from "../interfaces";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -103,7 +104,7 @@ export function createItemWithData (
                 id: results2.itemId
               })
             },
-            () => reject({ success: false })
+            (e) => reject(mCommon.fail(e))
           );
         } else {
           resolve({
@@ -112,7 +113,7 @@ export function createItemWithData (
           })
         }
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -224,7 +225,7 @@ export function updateItemData (
       updateResp => {
         resolve(id);
       },
-      () => reject({ success: false })
+      (e) => reject(mCommon.fail(e))
     );
   });
 }
@@ -257,7 +258,7 @@ export function updateItemURL (
       updateResp => {
         resolve(id);
       },
-      () => reject()
+      (e) => reject(mCommon.fail(e))
     );
   });
 }

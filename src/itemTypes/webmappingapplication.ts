@@ -123,19 +123,19 @@ export function createItemFromTemplate (
               mCommon.finalCallback(itemTemplate.key, true, progressCallback);
               resolve(itemTemplate);
             },
-            () => {
+            (e) => {
               mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-              reject({ success: false });
+              reject(mCommon.fail(e));
             }
                 );
         } else {
           mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-          reject({ success: false });
+          reject(mCommon.fail());
         }
       },
-      () => {
+      (e) => {
         mCommon.finalCallback(itemTemplate.key, false, progressCallback);
-        reject({ success: false });
+        reject(mCommon.fail(e));
       }
     );
   });

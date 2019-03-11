@@ -141,7 +141,7 @@ export function convertItemToTemplate (
                   removeDuplicates(flatten(template.dependencies));
                 resolve(itemTemplate);
               },
-              () => reject({ success: false })
+              (e) => reject(mCommon.fail(e))
             );
           }
         );
@@ -173,10 +173,10 @@ export function convertItemToTemplate (
                 itemTemplate.dependencies = removeDuplicates(template.dependencies);
                 resolve(itemTemplate);
               },
-              () => reject({ success: false })
+              (e) => reject(mCommon.fail(e))
             );
           },
-          () => reject({ success: false })
+          (e) => reject(mCommon.fail(e))
         );
       }
     );

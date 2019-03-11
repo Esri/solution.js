@@ -346,7 +346,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -363,7 +363,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -838,7 +838,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
           done();
         }
       );
@@ -854,7 +854,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -872,7 +872,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -907,7 +907,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
           done();
         }
       );
@@ -923,7 +923,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -963,7 +963,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -979,7 +979,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
           done();
         }
       );
@@ -995,7 +995,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -1012,7 +1012,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
           done();
         }
       );
@@ -1029,7 +1029,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -1651,7 +1651,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
           done();
         }
       );
@@ -1675,7 +1675,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -1710,7 +1710,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
           done();
         }
       );
@@ -1752,7 +1752,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         () => done.fail(),
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFail);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -2502,8 +2502,8 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.createSolutionStorageAgoItem("title", MOCK_USER_REQOPTS)
       .then(
         () => done.fail,
-        response => {
-          expect(response).toEqual(mockItems.get400SuccessFailure());
+        error => {
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3210,7 +3210,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3222,7 +3222,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3234,7 +3234,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3246,7 +3246,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3270,7 +3270,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3290,7 +3290,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3334,7 +3334,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3407,7 +3407,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3434,7 +3434,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -3461,7 +3461,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       .then(
         fail,
         error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(mockUtils.checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
