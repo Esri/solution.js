@@ -636,6 +636,17 @@ export function createSolutionAgoItem (
   });
 }
 
+/**
+ * Creates a partner item to a solution; the partner holds the resources for the solution
+ * until the solution is upgraded to do this itself.
+ *
+ * @param title The title to use for the item
+ * @param requestOptions Options for the request
+ * @param settings Hash of facts: org URL, adlib replacements
+ * @param access Access to set for item: 'public', 'org', 'private'
+ * @return Empty template item
+ * @protected
+ */
 export function createSolutionStorageAgoItem (
   title: string,
   requestOptions: IUserRequestOptions,

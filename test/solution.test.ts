@@ -81,17 +81,23 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   /**
    * Short-circuits request.request call if a png is being requested so that faked result format matches
    * real query format.
+   *
+   * @param fakeResponse Response to be used for the faked request for the png
    */
   function setUpImageRequestSpy(
     fakeResponse?: any
   ) {
+    // Intercept request.request calls
     const realRequest = request.request;
     spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
       if (url.endsWith(".png")) {
+        // Go ahead with faking the call to request
         return new Promise((resolve, reject) => {
           if (!fakeResponse) {
+            // If a response wasn't supplied, return an object with a blob-fetching function
             resolve({
               blob: () => {
+                // Return the blob in response to the call
                 return new Promise(resolve2 => {
                   resolve2(mockItems.getAnImageResponse())
                 });
@@ -102,19 +108,31 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           }
         });
       } else {
+        // Skip fake; use real request instead
         return realRequest(url, requestOptions);
       }
     });
   }
+
+  /**
+   * Short-circuits request.request call if a png is being requested so that faked result format matches
+   * real query format.
+   *
+   * @param fakeResponse Response to be used for extracting the blob from the png
+   */
   function setUpImageRequestSpyBadBlob(
     fakeResponse: any
   ) {
+    // Intercept request.request calls
     const realRequest = request.request;
     spyOn(request, "request").and.callFake((url:string, requestOptions:any) => {
       if (url.endsWith(".png")) {
+        // Go ahead with faking the call to request
         return new Promise((resolve, reject) => {
+          // Return an object with a blob-fetching function
           resolve({
             blob: () => {
+              // Return a failure to extract the blob
               return new Promise((resolve2, reject2) => {
                 reject2(fakeResponse);
               });
@@ -122,6 +140,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           })
         });
       } else {
+        // Skip fake; use real request instead
         return realRequest(url, requestOptions);
       }
     });
