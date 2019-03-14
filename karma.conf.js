@@ -25,6 +25,7 @@ module.exports = function(config) {
             branches: 100,
             functions: 100,
             lines: 100,
+            // not sure why were getting stats for more than just the src/ directory
             excludes: [
               'packages/*/test/**/*.ts'
             ]

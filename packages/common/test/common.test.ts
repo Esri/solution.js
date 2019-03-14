@@ -14,5 +14,4 @@
  | limitations under the License.
  */
 
-export * from "./agolItems";
-export * from "./templates";
+// TODO: This file should have tests for all functions in common.ts

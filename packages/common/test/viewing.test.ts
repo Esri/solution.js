@@ -14,34 +14,66 @@
  | limitations under the License.
  */
 
-import * as mFullItem from "../src/fullItem";
+import { UserSession, IUserRequestOptions } from "@esri/arcgis-rest-auth";
+import { IItem } from '@esri/arcgis-rest-common-types';
+
+import * as mInterfaces from "../src/interfaces";
+import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 
-//--------------------------------------------------------------------------------------------------------------------//
+import { TOMORROW, createMockSettings } from "./lib/utils";
+import * as fetchMock from "fetch-mock";
+import * as mockItems from "./mocks/agolItems";
+import * as mockSolutions from "./mocks/templates";
+import * as mockUtils from "./lib/utils";
+
+// -------------------------------------------------------------------------------------------------------------------//
 
 describe("Module `viewing`: supporting solution item display in AGOL", () => {
 
-  describe("get item hierarchies", () => {
+  const MOCK_ITEM_PROTOTYPE:mInterfaces.ITemplate = {
+    itemId: "",
+    type: "",
+    key: "",
+    item: null
+  };
 
-    const MOCK_ITEM_PROTOTYPE:mFullItem.IFullItem = {
-      type: "",
-      item: {}
-    };
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000;  // default is 5000 ms
+
+  // Set up a UserSession to use in all these tests
+  const MOCK_USER_SESSION = new UserSession({
+    clientId: "clientId",
+    redirectUri: "https://example-app.com/redirect-uri",
+    token: "fake-token",
+    tokenExpires: TOMORROW,
+    refreshToken: "refreshToken",
+    refreshTokenExpires: TOMORROW,
+    refreshTokenTTL: 1440,
+    username: "casey",
+    password: "123456",
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  });
+
+  const MOCK_USER_REQOPTS:IUserRequestOptions = {
+    authentication: MOCK_USER_SESSION
+  };
+
+  afterEach(() => {
+    fetchMock.restore();
+  });
+
+  describe("get item hierarchies", () => {
 
     it("item without dependencies", () => {
       // hierarchy:
       // - abc
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc"});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc]);
 
       expect(results).toEqual(expected);
     });
@@ -49,19 +81,13 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
     it("item with empty list of dependencies", () => {
       // hierarchy:
       // - abc
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-
-      abc.dependencies = [];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: []});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc]);
 
       expect(results).toEqual(expected);
     });
@@ -70,14 +96,9 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // hierarchy:
       // - abc
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-
-      abc.dependencies = ["def"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["def"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -85,11 +106,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def
-      });
-
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def]);
       expect(results).toEqual(expected);
     });
 
@@ -98,16 +115,10 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - abc
       //   - def
       //   - ghi
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-
-      abc.dependencies = ["def", "ghi"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["def", "ghi"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -118,11 +129,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi]);
 
       expect(results).toEqual(expected);
     });
@@ -132,17 +139,10 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - abc
       //   - ghi
       //     - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-
-      abc.dependencies = ["ghi"];
-      ghi.dependencies = ["def"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["ghi"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi", dependencies: ["def"]});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "ghi",
@@ -153,11 +153,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi]);
 
       expect(results).toEqual(expected);
     });
@@ -168,18 +164,11 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       //   - ghi
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
-
-      jkl.dependencies = ["ghi", "def"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc"});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
+      const jkl = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "jkl", dependencies: ["ghi", "def"]});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -193,12 +182,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });
@@ -211,19 +195,11 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       //   - ghi
       //   - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
-
-      abc.dependencies = ["def", "ghi"];
-      jkl.dependencies = ["ghi", "def"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc", dependencies: ["def", "ghi"]});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
+      const jkl = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "jkl", dependencies: ["ghi", "def"]});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: [{
           id: "def",
@@ -243,12 +219,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });
@@ -261,24 +232,13 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       // - pqr
       //   - ghi
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
-      let mno = {...MOCK_ITEM_PROTOTYPE};
-      mno.item.id = "mno";
-      let pqr = {...MOCK_ITEM_PROTOTYPE};
-      pqr.item.id = "pqr";
-
-      pqr.dependencies = ["ghi"];
-      mno.dependencies = ["abc"];
-      def.dependencies = ["mno"];
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc"});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def", dependencies: ["mno"]});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
+      const jkl = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "jkl"});
+      const mno = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "mno", dependencies: ["abc"]});
+      const pqr = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "pqr", dependencies: ["ghi"]});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "def",
         dependencies: [{
           id: "mno",
@@ -298,14 +258,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         }]
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl,
-        "mno": mno,
-        "pqr": pqr
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl, mno, pqr]);
 
       expect(results).toEqual(expected);
     });
@@ -316,16 +269,11 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
       // - jkl
       // - ghi
       // - def
-      let abc = {...MOCK_ITEM_PROTOTYPE};
-      abc.item.id = "abc";
-      let def = {...MOCK_ITEM_PROTOTYPE};
-      def.item.id = "def";
-      let ghi = {...MOCK_ITEM_PROTOTYPE};
-      ghi.item.id = "ghi";
-      let jkl = {...MOCK_ITEM_PROTOTYPE};
-      jkl.item.id = "jkl";
-
-      let expected:mViewing.IHierarchyEntry[] = [{
+      const abc = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "abc"});
+      const def = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "def"});
+      const ghi = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "ghi"});
+      const jkl = Object.assign({}, MOCK_ITEM_PROTOTYPE, {itemId: "jkl"});
+      const expected:mViewing.IHierarchyEntry[] = [{
         id: "abc",
         dependencies: []
       }, {
@@ -339,12 +287,7 @@ describe("Module `viewing`: supporting solution item display in AGOL", () => {
         dependencies: []
       }];
 
-      let results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy({
-        "abc": abc,
-        "def": def,
-        "ghi": ghi,
-        "jkl": jkl
-      });
+      const results:mViewing.IHierarchyEntry[] = mViewing.getItemHierarchy([abc, def, ghi, jkl]);
 
       expect(results).toEqual(expected);
     });
