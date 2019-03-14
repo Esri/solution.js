@@ -1,69 +1,62 @@
+## Origins
+
+The idea for this library originated in a slack conversation between @patrickarlt and @ajturner when he was looking for a library to automate the creation of Feature Layers in ArcGIS Online for the Hub project.
+
+## Key Collaborators
+
+This list includes people who contributed to the original conversation and those who have contributed to similar projects.
+
+* @ajturner - ArcGIS Hub
+* @dbouwman - ArcGIS Hub
+* @tomwayson - ArcGIS Hub
+* @patricakrlt - ArcGIS for Developers
+* @noahmulfinger - ArcGIS for Developers
+* @araedavis - ArcGIS for Developers
+* @nixta - Developer Outreach
+* @jgravois - Developer Outreach
+
 ## Use Cases and Target Audience
 
-This API intends to simplify the creation and cloning of ArcGIS Solutions and Initiatives in both Node.js and browsers. This library supports downstream projects like the ArcGIS Solutions website and ArcGIS Hub.
+This API intends to simplify interactions with the ArcGIS REST API, enabling the creation of powerful scripting tools in both Node.js and the browser that currently require deep knowledge of the REST API, and coordinating chained calls with a variety of complex parameters. This library also enables downstream projects like the ArcGIS for Developers website and ArcGIS Hub to achieve identity management.
+
+The tools proposed here are intended to be useful in internal projects such as ArcGIS for Developers and ArcGIS Hub, but they also strongly target outside developers who need to script and automate the platform but do not know or are not willing to integrate the ArcGIS API for Python into their projects. Hopefully, this project will also have appeal to enterprise developers who have existing Node.js systems and want to integrate with ArcGIS.
 
 ## Functionality Roadmap
 
-* Create Solutions and Initiative AGOL items
-	* Extract JSON forms of items forming a Solution or Initiative and package them into the Solution or Initiative
-* Provide convenience functions for reading the Solution or Initiative, such as its item hierarchy or dependency order
-* Clone a Solution or Initiative into a group in an AGOL organization
-* Be compatible with Node 6+ and the two latest releases of the Chrome, Safari, Firefox, and Edge browsers as well as IE 11. (Browsers selected by [USA browser market share](http://gs.statcounter.com/browser-market-share/all/united-states-of-america).)
+* Manage feature layers
+   * Create new feature layers
+   * Add/Remove/Update fields in feature layers
+   * Query and edit features
+   * Get statistics
+* Make interacting with premium ArcGIS Online services intuitive
+   * Geocoding
+   * Routing
+   * Geoenrichment
+   * Spatial Analysis
+   * Elevation Analysis
+* Managing groups and users
+   * Create/invite new users
+   * Create/edit/delete/share with groups
+* Manage content
+   * Create, edit and delete items, maps and scenes
+* Handle authentication and identity
+* Compatible with Node 6+ and the 2 latest releases of every browser and IE 11.
+
+## Prior Projects
+
+* [node-arcgis](https://github.com/Esri/node-arcgis) - Originally started by Nik Wise and currently maintained by John Gravois this library wraps a large amount of functionality for ArcGIS Online into a single API. However this library lacks much key functionality and does not handle authentication at all leaving it to the user to obtain and manage tokens. This library also lacks a significant test suite.
+* [geoservices.js](https://github.com/Esri/geoservices-js) - Originally created by Jerry Seivert to wrap the [Geoservices](https://geoservices.github.io/) specification it is currently maintained by John Gravois. However this library does not fully implement the specification, handle authentication with ArcGIS or work in browsers.
+* ArcGIS for Developers - The developers website has a large amount of internal tooling for working with Portal APIs and publishing feature services, we have plans to add additional features that would require either creating our own implementations or writing a common implementation in this project.
+* Koop
+* ArcGIS Hub
 
 ## Project Architecture
 
 As with any new JavaScript project there are numerous decisions to make regarding which technologies to use. We decided to go with the options below, but all these choices are up for debate.
 
-* Author the library in [TypeScript](https://www.typescriptlang.org/). Using TypeScript will allow us to add type information to request params and response structures which vastly simplifies development. TypeScript also has excellent support for newer `async`/`await` patterns with miminal code overhead and can publish to any module format we might need to support. Additionally TypeScript has excellent support for generating API documentation with [TypeDoc](http://typedoc.org/). TypeScript also has better internal adoption since Dojo 2 is using it as well as the JSAPI, Insights, and the ArcGIS for Developers site.
-* Build upon [arcgis-rest-js](https://github.com/Esri/arcgis-rest-js) and attempt to be architecturally compatible with it.
-* Use a functional form following the Hub lead as described in [Why Not Objects?](https://github.com/esri/hub.js#why-not-objects)
-* Use Jasmine and the Jasmine CLI for Node tests.
+* Implemented as a [monorepo managed with Lerna](https://lernajs.io/). The monorepo approach allows us to manage distinct packages like `arcgis-rest-geocoding` and separate functionality while sharing build, test and documentation tooling.
+* Author the library in [TypeScript](https://www.typescriptlang.org/). Using TypeScript will allow us to add type information to request params and response structures which vastly simplifies development. TypeScript also has excellent support for newer `async`/`await` patterns with miminal code overhead and can publish to any module format we might need to support. Additionally TypeScript has excellent support for generating API documentation with [TypeDoc](http://typedoc.org/). TypeScript also has better internal adoption since Dojo 2 is using it as well as the JSAPI, Insights and the ArcGIS for Developers site.
+* ~Would recommend using a Node/browser HTTP library like [Axios](https://github.com/mzabriskie/axios) which also has support for mocking in tests via [axios-mock-adapter](https://github.com/ctimmerm/axios-mock-adapter).~ We have decided to use the new [fetch](https://fetch.spec.whatwg.org/) standard.
+* Testing is a concern. I initially thought that we could simply use Karma to test all the code. However Karma can only be used to test browser based code. We could however use the `jasmine` command line tool it would just mean we would have to compile the TypeScript source first and then run the Jasmine CLI tools. Karma would use the `karma-typescript` plugin and run the browser tests. ~An alternative to this might be to use [The Intern](https://theintern.github.io/) setup according to this [blog post about testing with TypeScript](https://www.sitepen.com/blog/2015/03/24/testing-typescript-with-intern/). However the Intern doesn't have super great support for TypeScript currently though these issues should be solved in this Falls Intern 4 release.~ We have decided to use Jasmine and the Jasmine CLI for Node tests and Karma with Jasmine for browser tests.
 
 It is worth noting that a TypeScript/Intern approach aligns perfectly with the direction of the JavaScript API team.
-
-### Modules
-
-* **solution**
-	* `createSolution()`: Converts one or more AGOL items and their dependencies into a hash by id of generic JSON item descriptions.
-	* `publishSolution()`: Creates a Solution item containing JSON descriptions of items forming the solution.
-	* `cloneSolution()`: Converts a hash by id of generic JSON item descriptions into AGOL items.
-* **fullItem**
-	* `getFullItem()`: Fetches the item, data, and resources of an AGOL item.
-* **fullItemHierarchy**
-	* `getFullItemHierarchy()`: Converts one or more AGOL items and their dependencies into a hash by id of JSON item descriptions.
-* **dependencies**
-	* `getDependencies()`: Gets the ids of the dependencies of an AGOL item.
-	* `swizzleDependencies()`: Swizzles the dependencies of an AGOL item.
-* **viewing**
-	* `getItemHierarchy()`: Extracts item hierarchy structure from a Solution's items list
-
-### Solution item data packet
-
-The Solution item contains a single property--`items`--that is a hash by AGOL id of the items in the solution. Hashes use the ids of the Solution's source items; these ids are swizzled into new ids when the solution is cloned.
-
-Each item contains
-
-* `type`: its AGOL item type string; for groups, "Group" is used
-* `dependencies`: a list of AGOL item ids that the item depends upon
-* `item`: the JSON structure that every AGOL item and group has as its basic information (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21?f=json)
-
-Some items also contain
-
-* `data`: the JSON structure holding additional data for the item (e.g., what is returned by http://www.arcgis.com/sharing/content/items/6fc5992522d34f26b2210d17835eea21/data?f=json)
-
-A property named `estimatedCost` may be present. It is a number indicating the approximate relative cost of cloning the item; for example, a web map has an estimated cost of 1, while a web mapping app has an estimated cost of 2 because it requires an extra server call to update its URL; feature services and their layers are particularly slow and have an increased cost estimate as a result.
-
-The Solution does not contain explicit information about its hierarchy or the order in which items need to be created to satisfy dependencies because these can be quickly generated on the fly.
-
-Example Solution data packet: [exampleSolutionItem.json](https://github.com/ArcGIS/arcgis-clone-js/blob/master/docs/exampleSolutionItem.json). It contains three independent apps and their dependencies; hierarchies of dependencies are shown via indentation:
-
-1. ROW Permit Dashboard (Dashboard)
-	* ROW Permit Dashboard (Webmap)
-		* ROWPermits_dashboard (Feature Service)
-2. ROW Permit Manager (Web Mapping Application)
-	* ROW Permit Manager (Group)
-		* ROW Permit Manager (Webmap)
-			* ROWPermits_manager (Feature Service)
-3. ROW Permit Public Comment (Web Mapping Application)
-	* ROW Permit Public Comment (Webmap)
-		* ROWPermits_publiccomment (Feature Service)

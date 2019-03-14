@@ -9,7 +9,7 @@
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
-## arcgis-clone-js
+## Solutions.js
 
 ### Table of Contents
 
@@ -123,7 +123,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018-2019 Esri
+Copyright &copy; 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
