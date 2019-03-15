@@ -21,11 +21,20 @@ import * as mInterfaces from "../src/interfaces";
 import * as mSolution from "../src/solution";
 import * as mViewing from "../src/viewing";
 
-import { TOMORROW, createMockSettings } from "./lib/utils";
+import {
+  TOMORROW,
+  setMockDateTime,
+  createRuntimeMockUserSession,
+  createMockSettings,
+  removeItemFcns,
+  checkForArcgisRestSuccessRequestError,
+  ArcgisRestSuccessFailSimple,
+  ArcgisRestSuccessFailStruct
+} from "./lib/utils";
+
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "./mocks/agolItems";
 import * as mockSolutions from "./mocks/templates";
-import * as mockUtils from "./lib/utils";
 
 // -------------------------------------------------------------------------------------------------------------------//
 

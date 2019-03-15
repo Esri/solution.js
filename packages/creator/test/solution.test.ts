@@ -31,13 +31,16 @@ import {
   TOMORROW,
   setMockDateTime,
   createRuntimeMockUserSession,
-  createMockSettings
+  createMockSettings,
+  removeItemFcns,
+  checkForArcgisRestSuccessRequestError,
+  ArcgisRestSuccessFailSimple,
+  ArcgisRestSuccessFailStruct
 } from "./lib/utils";
 import { ICustomArrayLikeMatchers, CustomMatchers } from "./customMatchers";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "./mocks/agolItems";
 import * as mockSolutions from "./mocks/templates";
-import * as mockUtils from "./lib/utils";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -252,7 +255,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
         .then(
           (response: mInterfaces.ISolutionItem) => {
-            mockUtils.removeItemFcns(response); // don't want to compare item-specific fcns
+            removeItemFcns(response); // don't want to compare item-specific fcns
             const template = mockSolutions.getWebMappingApplicationTemplate();
             template[0].resources = [
               "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png"
@@ -367,7 +370,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
         .then(
           (response: mInterfaces.ISolutionItem) => {
-            mockUtils.removeItemFcns(response); // don't want to compare item-specific fcns
+            removeItemFcns(response); // don't want to compare item-specific fcns
             const template = mockSolutions.getWebMappingApplicationTemplateGroup();
             expect(response).toEqual(
               mockSolutions.getSolutionTemplateItem(template)
@@ -423,7 +426,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
         .then(
           (response: mInterfaces.ISolutionItem) => {
-            mockUtils.removeItemFcns(response); // don't want to compare item-specific fcns
+            removeItemFcns(response); // don't want to compare item-specific fcns
             const template = mockSolutions.getWebMappingApplicationTemplateNoWebmapOrGroup();
             const solution = mockSolutions.getSolutionTemplateItem(template);
             solution.data.templates[0].item.url = null; // WMA doesn't have a URL in this case
@@ -478,7 +481,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .createSolutionItem("title", "x", "grp1234567890", MOCK_USER_REQOPTS)
         .then(
           (response: mInterfaces.ISolutionItem) => {
-            mockUtils.removeItemFcns(response); // don't want to compare item-specific fcns
+            removeItemFcns(response); // don't want to compare item-specific fcns
             expect(response).toEqual(
               mockSolutions.getSolutionTemplateItem([
                 mockSolutions.getGroupTemplatePart()
@@ -538,9 +541,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -567,9 +568,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1283,7 +1282,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
+            expect(error).toEqual(ArcgisRestSuccessFailSimple);
             done();
           }
         );
@@ -1304,9 +1303,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1332,9 +1329,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1381,7 +1376,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
+            expect(error).toEqual(ArcgisRestSuccessFailSimple);
             done();
           }
         );
@@ -1402,9 +1397,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1464,9 +1457,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1487,7 +1478,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
+            expect(error).toEqual(ArcgisRestSuccessFailSimple);
             done();
           }
         );
@@ -1508,9 +1499,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1531,7 +1520,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
+            expect(error).toEqual(ArcgisRestSuccessFailSimple);
             done();
           }
         );
@@ -1552,9 +1541,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -1655,7 +1642,6 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
             expect(settings[templateItemId].id as string).toEqual(
               expectedCreatedItemId
             );
-            expect(createdItem.itemId as string).toEqual(expectedCreatedItemId);
             expect(createdItem.item.id as string).toEqual(
               expectedCreatedItemId
             );
@@ -2475,7 +2461,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailSimple);
+            expect(error).toEqual(ArcgisRestSuccessFailSimple);
             done();
           }
         );
@@ -2504,9 +2490,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -2557,7 +2541,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+            expect(error).toEqual(ArcgisRestSuccessFailStruct);
             done();
           }
         );
@@ -2617,9 +2601,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
         .then(
           () => done.fail(),
           error => {
-            expect(
-              mockUtils.checkForArcgisRestSuccessRequestError(error)
-            ).toBeTruthy();
+            expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
             done();
           }
         );
@@ -3654,9 +3636,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution.createSolutionStorageAgoItem("title", MOCK_USER_REQOPTS).then(
         () => done.fail,
         error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         }
       );
@@ -4643,9 +4623,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", null, MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4655,9 +4633,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", null, MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4667,9 +4643,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", [], MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4679,9 +4653,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", [null], MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4713,9 +4685,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", "fail1234567890", MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4745,9 +4715,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", ["fail1234567890"], MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4843,9 +4811,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           MOCK_USER_REQOPTS
         )
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -4908,7 +4874,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
           MOCK_USER_REQOPTS
         )
         .then(fail, error => {
-          expect(error).toEqual(mockUtils.ArcgisRestSuccessFailStruct);
+          expect(error).toEqual(ArcgisRestSuccessFailStruct);
           done();
         });
     });
@@ -5005,9 +4971,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", "wma1234567890", MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -5044,9 +5008,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", ["grp1234567890"], MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });
@@ -5104,9 +5066,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       mSolution
         .createSolutionItem("title", "x", ["wma1234567890"], MOCK_USER_REQOPTS)
         .then(fail, error => {
-          expect(
-            mockUtils.checkForArcgisRestSuccessRequestError(error)
-          ).toBeTruthy();
+          expect(checkForArcgisRestSuccessRequestError(error)).toBeTruthy();
           done();
         });
     });

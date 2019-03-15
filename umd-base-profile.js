@@ -37,7 +37,7 @@ const moduleName = "arcgisSolutions";
 const arcgisRestModuleName = 'arcgisRest'
 
 /**
- * Now we need to discover all the `@esri/solutions-*` package names so we can create
+ * Now we need to discover all the `@esri/solution-*` package names so we can create
  * the `globals` and `externals` to pass to Rollup.
  */
 const packageNames = fs
@@ -80,7 +80,7 @@ arcgisRestJsPackageNames.reduce((globals, p) => {
 export default {
   input: "./src/index.ts",
   output: {
-    file: `./dist/umd/${name.replace("@esri/solutions-", "")}.umd.js`,
+    file: `./dist/umd/${name.replace("@esri/solution-", "")}.umd.js`,
     sourcemap: true,
     banner: copyright,
     format: "umd",

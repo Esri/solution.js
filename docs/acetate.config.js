@@ -23,7 +23,7 @@ module.exports = function(acetate) {
    * default layout.
    */
   acetate.load("**/*.+(html|md)", {
-    basePath: "solutions.js",
+    basePath: "solution.js",
     metadata: {
       layout: "_layout:main"
     }
@@ -113,7 +113,7 @@ module.exports = function(acetate) {
    * start looking for changes and we can listen for the events later.
    */
   acetate.load("typedoc.json", {
-    basePath: "solutions.js",
+    basePath: "solution.js",
     metadata: {
       layout: false,
       prettyUrl: false
@@ -151,7 +151,7 @@ module.exports = function(acetate) {
         });
 
         const searchIndex = createPage.fromTemplateString(
-          "solutions.js/js/index.js",
+          "solution.js/js/index.js",
           `const ESRI_REST_API_REF_INDEX = ${JSON.stringify(
             typedoc.quickSearchIndex
           )}`,

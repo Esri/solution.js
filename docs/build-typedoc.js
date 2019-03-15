@@ -140,7 +140,7 @@ const md = new MarkdownIt();
        */
       return declarations.map(declaration => {
         const abbreviatedPackageName = declaration.package.replace("solutions-", "")
-        const src = `solutions.js/api/${abbreviatedPackageName}/${declaration.name}.html`;
+        const src = `solution.js/api/${abbreviatedPackageName}/${declaration.name}.html`;
         let children;
 
         if (declaration.children) {
@@ -210,7 +210,7 @@ const md = new MarkdownIt();
           .reduce((packages, package) => {
 
             const abbreviatedPackageName = package.replace("solutions-", "")
-            const src = `solutions.js/api/${abbreviatedPackageName}.html`;
+            const src = `solution.js/api/${abbreviatedPackageName}.html`;
             const pkg = require(`${process.cwd()}/packages/${package}/package.json`);
 
             packages.push({

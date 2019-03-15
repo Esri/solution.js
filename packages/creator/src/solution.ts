@@ -16,8 +16,8 @@
 
 import * as adlib from "adlib";
 import * as items from "@esri/arcgis-rest-items";
-import * as request from "@esri/arcgis-rest-request";
 import {
+  request,
   ArcGISRequestError,
   IRequestOptions,
   ResponseFormats
@@ -350,7 +350,7 @@ export function copyResource(
       rawResponse: true,
       ...sourceRequestOptions
     } as IRequestOptions;
-    request.request(url, requestOptions).then(
+    request(url, requestOptions).then(
       content => {
         // Add it to the storage item
         content.blob().then(

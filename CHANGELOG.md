@@ -7,4 +7,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### [Unreleased][HEAD]
 
-[HEAD]: https://github.com/Esri/solutions.js/compare/v0.0.1...HEAD "Unreleased Changes"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.0.1...HEAD "Unreleased Changes"

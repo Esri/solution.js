@@ -24,9 +24,9 @@ const packages = [
 const promises = [];
 
 packages.forEach(pkg => {
-  const package = `@esri/arcgis-rest-${pkg}`;
+  const package = `@esri/solution-${pkg}`;
   const promise = new Promise((resolve, reject) => {
-    readFile(`packages/arcgis-rest-${pkg}/dist/umd/${pkg}.umd.min.js`, (err, data) => {
+    readFile(`packages/${pkg}/dist/umd/${pkg}.umd.min.js`, (err, data) => {
       err ? resolve({
         package,
         hash: false
