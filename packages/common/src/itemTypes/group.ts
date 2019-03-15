@@ -15,9 +15,13 @@
  */
 
 import * as adlib from "adlib";
-import * as groups from "@esri/arcgis-rest-groups";
+// import * as groups from "@esri/arcgis-rest-groups";
 import * as sharing from "@esri/arcgis-rest-sharing";
-import { IPagingParamsRequestOptions } from "@esri/arcgis-rest-groups";
+import {
+  createGroup,
+  getGroupContent,
+  IPagingParamsRequestOptions
+} from "@esri/arcgis-rest-groups";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -79,7 +83,7 @@ export function createItemFromTemplate(
         processId: itemTemplate.key,
         status: "creating"
       });
-    groups.createGroup(options).then(
+    createGroup(options).then(
       createResponse => {
         if (createResponse.success) {
           // Add the new item to the settings
@@ -226,7 +230,7 @@ export function getGroupContentsTranche(
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
-    groups.getGroupContent(id, pagingRequest).then(
+    getGroupContent(id, pagingRequest).then(
       contents => {
         if (contents.num > 0) {
           // Extract the list of content ids from the JSON returned
