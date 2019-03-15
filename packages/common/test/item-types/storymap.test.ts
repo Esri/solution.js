@@ -91,7 +91,7 @@ describe("Story Maps :: ", () => {
       expect(Array.isArray(r)).toBeTruthy("should be an array");
       expect(r.length).toEqual(4, "should find 4");
       expect(r.indexOf("234a94478490445cb4a57878451cb4b8")).not.toBe(-1);
-        expect(r.indexOf("7db923b748c44666b09afc83ce833b87")).not.toBe(-1);
+      expect(r.indexOf("7db923b748c44666b09afc83ce833b87")).not.toBe(-1);
     });
 
     it("works with no sections", () => {

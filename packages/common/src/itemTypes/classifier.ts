@@ -144,7 +144,8 @@ export function convertItemToTemplate(
             .convertItemToTemplate(itemTemplate, requestOptions)
             .then(
               template => {
-                itemTemplate.dependencies = removeDuplicates( // some dependencies come out as nested, so flatten
+                itemTemplate.dependencies = removeDuplicates(
+                  // some dependencies come out as nested, so flatten
                   flatten(template.dependencies)
                 );
                 resolve(itemTemplate);
