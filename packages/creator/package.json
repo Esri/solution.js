@@ -51,5 +51,8 @@
     "arcgis",
     "esri",
     "ES6"
-  ]
+  ],
+  "devDependencies": {
+    "rollup": "^1.6.0"
+  }
 }

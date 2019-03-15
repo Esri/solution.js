@@ -15,15 +15,9 @@
  */
 
 define([
-  '@esri/arcgis-rest-auth',
-  '@esri/arcgis-rest-groups',
-  '@esri/arcgis-rest-items',
   '../lib/arcgis-clone.umd.min',
   './icon'
 ], function (
-  arcgis_rest_auth,
-  arcgis_rest_groups,
-  arcgis_rest_items,
   arcgis_clone_js,
   icon
 ) {
@@ -47,7 +41,7 @@ define([
       };
 
       var requestOptions = {
-        authentication: new arcgis_rest_auth.UserSession(userSessionOptions)
+        authentication: new arcgisRest.UserSession(userSessionOptions)
       };
       if (portal) {
         requestOptions.portal = portal.replace('http:', 'https:');
@@ -134,7 +128,7 @@ define([
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
 
-      arcgis_rest_items.getItemData(publishedSolutionId)
+      arcgisRest.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
           // Solution details
@@ -215,7 +209,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgis_rest_items.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
+      arcgisRest.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
@@ -257,7 +251,7 @@ define([
          },
          authentication: requestOptions.authentication
        }
-       arcgis_rest_items.searchItems(searchOptions)
+       arcgisRest.searchItems(searchOptions)
        .then(
          foundItems => {
            if (foundItems.total === 0) {
@@ -277,7 +271,7 @@ define([
                display += '<br>The following groups were created:<ul>';
                createResponse.groups.forEach(
                  groupId => {
-                   var groupDfd = arcgis_rest_groups.getGroup(groupId, requestOptions);
+                   var groupDfd = arcgisRest.getGroup(groupId, requestOptions);
                    groupDfds.push(groupDfd);
                    groupDfd
                    .then(
