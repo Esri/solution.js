@@ -2,10 +2,10 @@
 [![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
-[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/develop.svg
-[travis-url]: https://travis-ci.org/Esri/arcgis-clone-js
-[coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
-[coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
+[travis-img]: https://img.shields.io/travis/Esri/solutions.js/develop.svg
+[travis-url]: https://travis-ci.org/Esri/solutions.js
+[coverage-img]: https://coveralls.io/repos/github/Esri/solutions.js/badge.svg
+[coverage-url]: https://coveralls.io/github/Esri/solutions.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
@@ -36,14 +36,14 @@ A `Solution Item` can contain either
 
 When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.
 
-When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment. 
+When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment.
 
 #### Modules
 
 The API contains two primary modules:
 
 * `solution`, which contains functions for transforming items into templates, deploying item templates into items, and creating & using Solution Items.
-* `viewing`, which contains functions to support displaying Solution Items. 
+* `viewing`, which contains functions to support displaying Solution Items.
 
 #### Additional information
 
@@ -123,7 +123,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018 Esri
+Copyright &copy; 2018-2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
