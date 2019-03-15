@@ -92,26 +92,18 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
-* `npm run build` runs the node, umd, esm, tsumd, & webpack builds
-* `npm run build:node`
-* `npm run build:umd`
-* `npm run build:esm`
-* `npm run build:tsumd`
-* `npm run build:webpack` prepares the umd build to create the variable arcgis_clone_js in the current global context
-* `npm run build:demos` runs the umd build and copies the result to the demos lib/ folder
-* `npm run lint` or `grunt tslint` lint the TypeScript files
+* `lerna run build` creates node, umd, and esm output for each package
+* `npm run lint` to lint the TypeScript files
 * `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
 * `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
 * `npm run test:firefox` runs karma in the Firefox browser
 * `npm run test:node` runs ts-node and jasmine
-* `npm run docs` creates documentation about the API and its internal functions
-* `npm run docs:mocks` creates documentation about the mock items used in unit testing
-* `npm run ver` reports the version of TypeScript
-* `npm run postinstall` installs a pre-commit hook to Grunt linting
+* `npm run docs:serve` creates documentation about the API and its internal functions
 
 ### Frequently Asked Questions
 
-* Is this a _supported_ Esri product?  Yes
+* [Is this a _supported_ Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
+* [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
 
 ### Issues
 

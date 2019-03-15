@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution.js",
   "version": "0.0.1",
-  "description": "Compact, modular JavaScript wrappers for the ArcGIS REST API that run in Node.js and modern browsers.",
+  "description": "to do.",
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/fetch-mock": "^6.0.4",
