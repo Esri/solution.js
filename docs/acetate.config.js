@@ -23,7 +23,7 @@ module.exports = function(acetate) {
    * default layout.
    */
   acetate.load("**/*.+(html|md)", {
-    basePath: "arcgis-rest-js",
+    basePath: "solutions.js",
     metadata: {
       layout: "_layout:main"
     }
@@ -113,7 +113,7 @@ module.exports = function(acetate) {
    * start looking for changes and we can listen for the events later.
    */
   acetate.load("typedoc.json", {
-    basePath: "arcgis-rest-js",
+    basePath: "solutions.js",
     metadata: {
       layout: false,
       prettyUrl: false
@@ -151,7 +151,7 @@ module.exports = function(acetate) {
         });
 
         const searchIndex = createPage.fromTemplateString(
-          "arcgis-rest-js/js/index.js",
+          "solutions.js/js/index.js",
           `const ESRI_REST_API_REF_INDEX = ${JSON.stringify(
             typedoc.quickSearchIndex
           )}`,
@@ -212,14 +212,14 @@ module.exports = function(acetate) {
   acetate.helper("cdnUrl", function(context, package) {
     return `https://unpkg.com/${
       package.name
-    }@${package.version}/dist/umd/${package.name.replace("@esri/arcgis-rest-", "")}.umd`;
+    }@${package.version}/dist/umd/${package.name.replace("@esri/solutions-", "")}.umd`;
   });
 
   // <code> friendly script tag string
   acetate.helper("scriptTag", function(context, package) {
     return `&lt;script src="https://unpkg.com/${
       package.name
-    }@${package.version}/dist/umd/${package.name.replace("@esri/arcgis-rest-", "")}.umd.min.js"&gt;&lt;/script&gt;`;
+    }@${package.version}/dist/umd/${package.name.replace("@esri/solutions-", "")}.umd.min.js"&gt;&lt;/script&gt;`;
   });
 
   // CDN with SRI only if hash exists
@@ -230,7 +230,7 @@ module.exports = function(acetate) {
       <pre><code>&lt;script src="https://unpkg.com/${package.name}@${
         package.version
       }/dist/umd/${package.name.replace(
-        "@esri/arcgis-rest-",
+        "@esri/solutions-",
         ""
       )}.umd.min.js" integrity="${hash}" crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>`;
     } else {

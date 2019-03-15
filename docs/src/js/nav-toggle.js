@@ -7,7 +7,7 @@ Vue.component("nav-toggle", {
 
     const match = window.location.pathname.match(/\/api\/([^\/]+)\//);
     const partialPath = match ? match[1] : null;
-    if (partialPath && this.packageName.replace("@esri/arcgis-rest-", "") === partialPath) {
+    if (partialPath && this.packageName.replace("@esri/solutions-", "") === partialPath) {
       this.show();
     }
 
