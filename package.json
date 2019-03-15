@@ -1,5 +1,5 @@
 {
-  "name": "@esri/solutions.js",
+  "name": "@esri/solution.js",
   "version": "0.0.1",
   "description": "Compact, modular JavaScript wrappers for the ArcGIS REST API that run in Node.js and modern browsers.",
   "devDependencies": {
@@ -90,19 +90,19 @@
     "test:all": "npm run test:node && npm run test:firefox && npm run test:chrome",
     "docs:build": "rimraf docs/build && npm run docs:typedoc && npm run docs:build:acetate && npm run docs:build:sass && npm run docs:build:images && npm run docs:build:js",
     "docs:build:acetate": "ENV=prod acetate build --config docs/acetate.config.js",
-    "docs:build:sass": "node-sass --output docs/build/solutions.js/css --source-map true --source-map-contents docs/src/sass",
-    "docs:build:images": "cpx \"docs/src/**/*.{png,jpg,jpeg,gif,svg,webm,ogg}\" docs/build/solutions.js",
-    "docs:build:js": "cpx \"docs/src/**/{api-search,nav-toggle}.js\" docs/build/solutions.js",
+    "docs:build:sass": "node-sass --output docs/build/solution.js/css --source-map true --source-map-contents docs/src/sass",
+    "docs:build:images": "cpx \"docs/src/**/*.{png,jpg,jpeg,gif,svg,webm,ogg}\" docs/build/solution.js",
+    "docs:build:js": "cpx \"docs/src/**/{api-search,nav-toggle}.js\" docs/build/solution.js",
     "docs:deploy": "npm run docs:build && node support/deploy-doc-site.js",
     "docs:typedoc": "node docs/build-typedoc.js",
     "docs:dev:typedoc": "onchange -v 'packages/*/src/**/*.ts' -- npm run docs:typedoc",
     "predocs:serve": "npm run docs:typedoc",
     "docs:serve": "rimraf docs/build && concurrently \"npm run docs:dev:js\" \"npm run docs:dev:images\" \"npm run docs:dev:acetate\" \"npm run docs:dev:sass\" \"npm run docs:dev:typedoc\"",
-    "docs:dev:images": "cpx \"docs/src/**/*.{png,jpg,jpeg,gif,svg,webm,ogg}\" docs/build/solutions.js -w",
-    "docs:dev:acetate": "acetate server --log=debug --config docs/acetate.config.js --startPath solutions.js/",
+    "docs:dev:images": "cpx \"docs/src/**/*.{png,jpg,jpeg,gif,svg,webm,ogg}\" docs/build/solution.js -w",
+    "docs:dev:acetate": "acetate server --log=debug --config docs/acetate.config.js --startPath solution.js/index.html",
     "predocs:dev:sass": "npm run docs:build:sass",
-    "docs:dev:sass": "node-sass --watch --recursive --output docs/build/solutions.js/css --source-map true --source-map-contents docs/src/sass",
-    "docs:dev:js": "cpx \"docs/src/**/{api-search,nav-toggle}.js\" docs/build/solutions.js -w",
+    "docs:dev:sass": "node-sass --watch --recursive --output docs/build/solution.js/css --source-map true --source-map-contents docs/src/sass",
+    "docs:dev:js": "cpx \"docs/src/**/{api-search,nav-toggle}.js\" docs/build/solution.js -w",
     "docs:srihash": "node docs/generate-srihashes.js",
     "lint": "tslint --project tsconfig.json",
     "lint:fix": "tslint --project tsconfig.json --fix",
@@ -119,7 +119,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Esri/solutions.js.git"
+    "url": "git+https://github.com/Esri/solution.js.git"
   },
   "contributors": [
     {
@@ -145,9 +145,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Esri/solutions.js/issues"
+    "url": "https://github.com/Esri/solution.js/issues"
   },
-  "homepage": "https://github.com/Esri/solutions.js#readme",
+  "homepage": "https://github.com/Esri/solution.js#readme",
   "config": {
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"

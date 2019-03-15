@@ -1,5 +1,5 @@
 {
-  "name": "@esri/solutions-dummy",
+  "name": "@esri/solution-creator",
   "version": "0.0.1",
   "description": "to do",
   "main": "dist/node/index.js",
@@ -12,6 +12,14 @@
     "dist/**"
   ],
   "dependencies": {
+    "@esri/arcgis-rest-auth": "^1.17.1",
+    "@esri/arcgis-rest-common-types": "^1.17.1",
+    "@esri/arcgis-rest-feature-service-admin": "^1.17.1",
+    "@esri/arcgis-rest-groups": "^1.17.1",
+    "@esri/arcgis-rest-items": "^1.17.1",
+    "@esri/arcgis-rest-request": "^1.17.1",
+    "@esri/arcgis-rest-sharing": "^1.17.1",
+    "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },
   "scripts": {
@@ -29,13 +37,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Esri/solutions.js.git"
+    "url": "git+https://github.com/Esri/solution.js.git"
   },
   "contributors": [],
   "bugs": {
-    "url": "https://github.com/Esri/solutions.js/issues"
+    "url": "https://github.com/Esri/solution.js/issues"
   },
-  "homepage": "https://github.com/Esri/solutions.js#readme",
+  "homepage": "https://github.com/Esri/solution.js#readme",
   "keywords": [
     "typescript",
     "promise",

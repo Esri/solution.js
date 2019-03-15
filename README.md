@@ -2,10 +2,10 @@
 [![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
-[travis-img]: https://img.shields.io/travis/Esri/solutions.js/develop.svg
-[travis-url]: https://travis-ci.org/Esri/solutions.js
-[coverage-img]: https://coveralls.io/repos/github/Esri/solutions.js/badge.svg
-[coverage-url]: https://coveralls.io/github/Esri/solutions.js
+[travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
+[travis-url]: https://travis-ci.org/Esri/solution.js
+[coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
+[coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
