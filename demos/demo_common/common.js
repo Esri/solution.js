@@ -15,10 +15,16 @@
  */
 
 define([
-  '../lib/arcgis-clone.umd.min',
+  '@esri/arcgis-rest-auth',
+  '@esri/arcgis-rest-items',
+  '@esri/arcgis-rest-groups',
+  '@esri/solution-creator',
   './icon'
 ], function (
-  arcgis_clone_js,
+  arcgisRestAuth,
+  arcgisRestItems,
+  arcgisRestGroups,
+  arcgisSolution,
   icon
 ) {
   return {
@@ -41,7 +47,7 @@ define([
       };
 
       var requestOptions = {
-        authentication: new arcgisRest.UserSession(userSessionOptions)
+        authentication: new arcgisRestAuth.UserSession(userSessionOptions)
       };
       if (portal) {
         requestOptions.portal = portal.replace('http:', 'https:');
@@ -63,7 +69,7 @@ define([
       // Show solution contents as they'd be in the solution's AGOL item
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var fullItem = arcgis_clone_js.findTemplateInList(solutionItems, hierarchyItem.id);
+        var fullItem = arcgisSolution.findTemplateInList(solutionItems, hierarchyItem.id);
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
         var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
@@ -128,7 +134,7 @@ define([
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
 
-      arcgisRest.getItemData(publishedSolutionId)
+      arcgisRestItems.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
           // Solution details
@@ -140,11 +146,11 @@ define([
             // Hierarchical display of item
             '<br>Published Solution item hierarchy:' +
             this.createHierarchyDisplay(publishedSolution.templates,
-              arcgis_clone_js.getItemHierarchy(publishedSolution.templates)) +
+              arcgisSolution.getItemHierarchy(publishedSolution.templates)) +
 
             // Topological sort displays
             '<br>Linear build order (' + publishedSolution.templates.length + '):' +
-            this.createIdsList(arcgis_clone_js.topologicallySortItems(publishedSolution.templates)) +
+            this.createIdsList(arcgisSolution.topologicallySortItems(publishedSolution.templates)) +
 
             '<br>Dependencies graph:<div id="topologicalSortGraphic"></div>';
             this.showTopologicalSortGraph(publishedSolution.templates, '#topologicalSortGraphic');
@@ -209,7 +215,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgisRest.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
+      arcgisRestItems.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
@@ -251,7 +257,7 @@ define([
          },
          authentication: requestOptions.authentication
        }
-       arcgisRest.searchItems(searchOptions)
+       arcgisRestItems.searchItems(searchOptions)
        .then(
          foundItems => {
            if (foundItems.total === 0) {
@@ -271,7 +277,7 @@ define([
                display += '<br>The following groups were created:<ul>';
                createResponse.groups.forEach(
                  groupId => {
-                   var groupDfd = arcgisRest.getGroup(groupId, requestOptions);
+                   var groupDfd = arcgisRestGroups.getGroup(groupId, requestOptions);
                    groupDfds.push(groupDfd);
                    groupDfd
                    .then(

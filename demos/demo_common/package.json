@@ -1,8 +1,8 @@
 {
-  "name": "solution-view",
-  "version": "1.17.1",
+  "name": "solution-common",
+  "version": "0.0.1",
   "private": true,
-  "description": "Demo of viewing solutions",
+  "description": "common code for demos",
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
@@ -11,12 +11,9 @@
     "@esri/arcgis-rest-groups": "^1.17.1",
     "@esri/arcgis-rest-items": "^1.17.1",
     "@esri/arcgis-rest-request": "^1.17.1",
-    "@esri/arcgis-rest-sharing": "^1.17.1"
+    "@esri/arcgis-rest-sharing": "^1.17.1",
+    "@esri/solution-creator": "^0.0.1"
   },
-  "devDependencies": {
-    "http-server": "0.11.1"
-  },
-  "scripts": {
-    "start": "http-server ."
-  }
+  "devDependencies": {},
+  "scripts": {}
 }

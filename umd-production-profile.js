@@ -1,12 +1,13 @@
 import config from './umd-base-profile.js';
-import uglify from "rollup-plugin-uglify";
+// import { uglify } from "rollup-plugin-uglify";
+import { terser } from "rollup-plugin-terser";
 import filesize from "rollup-plugin-filesize";
 
 // use umd.min.js
 config.output.file = config.output.file.replace(".umd.", ".umd.min.");
 
 config.plugins.push(filesize())
-config.plugins.push(uglify({
+config.plugins.push(terser({
   output: { comments: /@preserve/ }
 }))
 
