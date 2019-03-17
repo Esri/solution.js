@@ -24,7 +24,7 @@ const { name } = pkg;
 
 const copyright = `/* @preserve
 * ${pkg.name} - v${pkg.version} - ${pkg.license}
-* Copyright (c) 2017-${new Date().getFullYear()} Esri, Inc.
+* Copyright (c) 2018-${new Date().getFullYear()} Esri, Inc.
 * ${new Date().toString()}
 */`;
 
@@ -33,7 +33,7 @@ const copyright = `/* @preserve
  * The module name will be the name of the global variable used in UMD builds.
  * All exported members of each package will be attached to this global.
  */
-const moduleName = "arcgisSolutions";
+const moduleName = "arcgisSolution";
 const arcgisRestModuleName = 'arcgisRest'
 
 /**
@@ -47,6 +47,8 @@ const packageNames = fs
     return require(path.join(__dirname, "packages", p, "package.json")).name;
   }, {});
 
+console.log(packageNames);
+
 /**
  * Now we need to discover all the `@esri/arcgis-rest-*` package names so we can create
  * the `globals` and `externals` to pass to Rollup.
@@ -54,17 +56,20 @@ const packageNames = fs
 const arcgisRestJsPackageNames = Object.keys(pkg.dependencies)
   .filter(key => /@esri\/arcgis-rest/.test(key));
 
+console.log(arcgisRestJsPackageNames);
+
 /**
  * Rollup will use this map to determine where to lookup modules on the global
  * window object when neither AMD or CommonJS is being used. This configuration
  * will cause Rollup to lookup all imports from our packages on a single global
- * `arcgisSolutions` object.
+ * `arcgisSolution` object.
  */
 const globals = packageNames.reduce((globals, p) => {
   globals[p] = moduleName;
   return globals;
 }, {});
 
+console.log(globals);
 /**
 * now we tell Rollup to lookup all imports from arcgis-rest-js on a single global
 * `arcgisRest` object.
@@ -73,6 +78,8 @@ arcgisRestJsPackageNames.reduce((globals, p) => {
   globals[p] = arcgisRestModuleName;
   return globals;
 }, globals);
+
+console.log(arcgisRestJsPackageNames);
 
 /**
  * Now we can export the Rollup config!

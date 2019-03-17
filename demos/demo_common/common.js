@@ -15,9 +15,15 @@
  */
 
 define([
-  '../lib/arcgis-clone.umd.min',
+  '@esri/arcgis-rest-auth',
+  '@esri/arcgis-rest-items',
+  '@esri/arcgis-rest-groups',
+  '@esri/solution-creator',
   './icon'
 ], function (
+  arcgisRestAuth,
+  arcgisRestItems,
+  arcgisRestGroups,
   arcgis_clone_js,
   icon
 ) {
@@ -41,7 +47,7 @@ define([
       };
 
       var requestOptions = {
-        authentication: new arcgisRest.UserSession(userSessionOptions)
+        authentication: new arcgisRestAuth.UserSession(userSessionOptions)
       };
       if (portal) {
         requestOptions.portal = portal.replace('http:', 'https:');
@@ -128,7 +134,7 @@ define([
       document.getElementById('fetchingDetails').style.display = 'block';
       document.getElementById('detailsResults').style.display = 'none';
 
-      arcgisRest.getItemData(publishedSolutionId)
+      arcgisRestItems.getItemData(publishedSolutionId)
       .then(
         publishedSolution => {
           // Solution details
@@ -209,7 +215,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgisRest.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
+      arcgisRestItems.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
@@ -251,7 +257,7 @@ define([
          },
          authentication: requestOptions.authentication
        }
-       arcgisRest.searchItems(searchOptions)
+       arcgisRestItems.searchItems(searchOptions)
        .then(
          foundItems => {
            if (foundItems.total === 0) {
@@ -271,7 +277,7 @@ define([
                display += '<br>The following groups were created:<ul>';
                createResponse.groups.forEach(
                  groupId => {
-                   var groupDfd = arcgisRest.getGroup(groupId, requestOptions);
+                   var groupDfd = arcgisRestGroups.getGroup(groupId, requestOptions);
                    groupDfds.push(groupDfd);
                    groupDfd
                    .then(
