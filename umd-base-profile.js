@@ -47,16 +47,12 @@ const packageNames = fs
     return require(path.join(__dirname, "packages", p, "package.json")).name;
   }, {});
 
-console.log(packageNames);
-
 /**
  * Now we need to discover all the `@esri/arcgis-rest-*` package names so we can create
  * the `globals` and `externals` to pass to Rollup.
  */
 const arcgisRestJsPackageNames = Object.keys(pkg.dependencies)
   .filter(key => /@esri\/arcgis-rest/.test(key));
-
-console.log(arcgisRestJsPackageNames);
 
 /**
  * Rollup will use this map to determine where to lookup modules on the global
@@ -69,7 +65,6 @@ const globals = packageNames.reduce((globals, p) => {
   return globals;
 }, {});
 
-console.log(globals);
 /**
 * now we tell Rollup to lookup all imports from arcgis-rest-js on a single global
 * `arcgisRest` object.
@@ -78,8 +73,6 @@ arcgisRestJsPackageNames.reduce((globals, p) => {
   globals[p] = arcgisRestModuleName;
   return globals;
 }, globals);
-
-console.log(arcgisRestJsPackageNames);
 
 /**
  * Now we can export the Rollup config!
