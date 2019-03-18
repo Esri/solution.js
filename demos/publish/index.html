@@ -121,20 +121,20 @@
   requirejs([
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request',
-    '../lib/arcgis-clone.umd.min',
+    '@esri/solution-creator',
     '../demo_common/common',
     '../demo_common/polyfills'
   ], function (
     arcgis_rest_items,
     arcgis_rest_request,
-    arcgis_clone_js,
+    arcgisSolution,
     demoCommon
   ) {
     createSolutionFcn = createSolutionItem;
     var requestOptions, templatesList, solutionName;
 
     document.getElementById('supportedItemTypes').innerHTML =
-      arcgis_clone_js.getSupportedItemTypes().join(", ") + "<br><br>";
+      arcgisSolution.getSupportedItemTypes().join(", ") + "<br><br>";
 
     document.getElementById('page').style.display = 'block';
 
@@ -194,7 +194,7 @@
           );
 
           // Get the items forming the solution
-          arcgis_clone_js.createSolutionItem(
+          arcgisSolution.createSolutionItem(
             (document.getElementById('solutionName').value || 'Solution'),
             (document.getElementById('solutionVersion').value || '1.0'),
             solutionRootIds, sourceRequestOptions, destinationRequestOptions)
@@ -207,7 +207,7 @@
                 demoCommon.createItemLinksDisplay(solutionTemplate.item.id, orgUrl, portalUrl) +
                 '<br>Published Solution item hierarchy:' +
                 demoCommon.createHierarchyDisplay(solutionTemplate.data.templates,
-                  arcgis_clone_js.getItemHierarchy(solutionTemplate.data.templates));
+                  arcgisSolution.getItemHierarchy(solutionTemplate.data.templates));
             },
             error => {
               document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);

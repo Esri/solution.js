@@ -1,0 +1,15 @@
+{
+  "name": "solution-common",
+  "version": "0.0.1",
+  "private": true,
+  "description": "common code for demos",
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@esri/arcgis-rest-items": "^1.17.1",
+    "@esri/arcgis-rest-request": "^1.17.1",
+    "@esri/solution-creator": "^0.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {}
+}
