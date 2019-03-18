@@ -1,8 +1,8 @@
 {
-  "name": "solution-common",
+  "name": "solution-publish",
   "version": "0.0.1",
   "private": true,
-  "description": "common code for demos",
+  "description": "publish demo",
   "author": "",
   "license": "Apache-2.0",
   "dependencies": {
