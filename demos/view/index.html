@@ -47,7 +47,7 @@
   <!-- <script src="node_modules/@esri/solution-creator/dist/umd/creator.umd.js"></script> -->
   <script>
   // if you load any solution-* package as a script tag, its methods will hang off the 'arcgisSolution' global
-  
+
   var showSolutionFcn = null;
 
   /**
@@ -64,14 +64,14 @@
   requirejs.config({
     baseUrl: './',
     paths: {  // for the benefit of called libraries
-      '@esri/arcgis-rest-auth': '../demo_common/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd',
+      '@esri/arcgis-rest-auth': '../view/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd',
       '@esri/arcgis-rest-feature-service-admin':
-        '../demo_common/node_modules/@esri/arcgis-rest-feature-service-admin/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': '../demo_common/node_modules/@esri/arcgis-rest-groups/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': '../demo_common/node_modules/@esri/arcgis-rest-items/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': '../demo_common/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': '../demo_common/node_modules/@esri/arcgis-rest-sharing/dist/umd/sharing.umd',
-      '@esri/solution-creator': '../demo_common/node_modules/@esri/solution-creator/dist/umd/creator.umd'
+        '../view/node_modules/@esri/arcgis-rest-feature-service-admin/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': '../view/node_modules/@esri/arcgis-rest-groups/dist/umd/groups.umd',
+      '@esri/arcgis-rest-items': '../view/node_modules/@esri/arcgis-rest-items/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': '../view/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd',
+      '@esri/arcgis-rest-sharing': '../view/node_modules/@esri/arcgis-rest-sharing/dist/umd/sharing.umd',
+      '@esri/solution-creator': '../view/node_modules/@esri/solution-creator/dist/umd/creator.umd'
     }
   });
 
