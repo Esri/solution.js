@@ -24,7 +24,7 @@ define([
   arcgisRestAuth,
   arcgisRestItems,
   arcgisRestGroups,
-  arcgis_clone_js,
+  arcgisSolution,
   icon
 ) {
   return {
@@ -69,7 +69,7 @@ define([
       // Show solution contents as they'd be in the solution's AGOL item
       var display = '<ul class="solutionList">';
       hierarchy.forEach(hierarchyItem => {
-        var fullItem = arcgis_clone_js.findTemplateInList(solutionItems, hierarchyItem.id);
+        var fullItem = arcgisSolution.findTemplateInList(solutionItems, hierarchyItem.id);
         var item = fullItem.item;
         var itemLabel = (item.title || item.name || fullItem.type);
         var itemIcon = icon.getItemIcon('../demo_common/images/', fullItem.type, fullItem.item.typeKeywords);
@@ -146,11 +146,11 @@ define([
             // Hierarchical display of item
             '<br>Published Solution item hierarchy:' +
             this.createHierarchyDisplay(publishedSolution.templates,
-              arcgis_clone_js.getItemHierarchy(publishedSolution.templates)) +
+              arcgisSolution.getItemHierarchy(publishedSolution.templates)) +
 
             // Topological sort displays
             '<br>Linear build order (' + publishedSolution.templates.length + '):' +
-            this.createIdsList(arcgis_clone_js.topologicallySortItems(publishedSolution.templates)) +
+            this.createIdsList(arcgisSolution.topologicallySortItems(publishedSolution.templates)) +
 
             '<br>Dependencies graph:<div id="topologicalSortGraphic"></div>';
             this.showTopologicalSortGraph(publishedSolution.templates, '#topologicalSortGraphic');
