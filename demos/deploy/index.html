@@ -62,7 +62,7 @@
 
   </div>
 
-  <script src="https://cdn.polyfill.io/v2/polyfill.js?features=es5,Promise,fetch"></script>
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Cfetch%2CPromise"></script>
   <script src="../lib/require_2.3.6.min.js"></script>
   <script>
   var showSolutionFcn = deploySolutionFcn = null;
@@ -86,27 +86,30 @@
   requirejs.config({
     baseUrl: './',
     paths: {  // for the benefit of called libraries
-      '@esri/arcgis-rest-auth': 'https://unpkg.com/@esri/arcgis-rest-auth@1.17.0/dist/umd/auth.umd',
+      // common dependencies
+      '@esri/arcgis-rest-auth': '../demo_common/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd',
       '@esri/arcgis-rest-feature-service-admin':
-        'https://unpkg.com/@esri/arcgis-rest-feature-service-admin@1.17.0/dist/umd/feature-service-admin.umd',
-      '@esri/arcgis-rest-groups': 'https://unpkg.com/@esri/arcgis-rest-groups@1.17.0/dist/umd/groups.umd',
-      '@esri/arcgis-rest-items': 'https://unpkg.com/@esri/arcgis-rest-items@1.17.0/dist/umd/items.umd',
-      '@esri/arcgis-rest-request': 'https://unpkg.com/@esri/arcgis-rest-request@1.17.0/dist/umd/request.umd',
-      '@esri/arcgis-rest-sharing': 'https://unpkg.com/@esri/arcgis-rest-sharing@1.17.0/dist/umd/sharing.umd'
+        '../demo_common/node_modules/@esri/arcgis-rest-feature-service-admin/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': '../demo_common/node_modules/@esri/arcgis-rest-groups/dist/umd/groups.umd',
+      '@esri/arcgis-rest-sharing': '../demo_common/node_modules/@esri/arcgis-rest-sharing/dist/umd/sharing.umd',
+      // local dependencies
+      '@esri/arcgis-rest-items': '../publish/node_modules/@esri/arcgis-rest-items/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': '../publish/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd',
+      '@esri/solution-creator': '../publish/node_modules/@esri/solution-creator/dist/umd/creator.umd'
     }
   });
 
   requirejs([
     '@esri/arcgis-rest-items',
     '@esri/arcgis-rest-request',
-    '../lib/arcgis-clone.umd.min',
+    '@esri/solution-creator',
     '../demo_common/common',
     '../demo_common/progress',
     '../demo_common/polyfills'
   ], function (
-    arcgis_rest_items,
-    arcgis_rest_request,
-    arcgis_clone_js,
+    arcgisRestItems,
+    arcgisRestRequest,
+    arcgisSolution,
     demoCommon,
     progress
   ) {
@@ -138,7 +141,7 @@
         document.getElementById('destPortal').value + '/sharing/rest');
 
       // Get the destination organization URL for creating links to deployed items
-      arcgis_rest_request.getPortal(null, destinationRequestOptions)
+      arcgisRestRequest.getPortal(null, destinationRequestOptions)
       .then(
         portalResponse => {
           currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
@@ -150,8 +153,8 @@
               portalBaseUrl: 'https://' + portalResponse.portalHostname
             }
           };
-          var solutionTemplateItemDef = arcgis_rest_items.getItem(currentSolutionId, destinationRequestOptions);
-          var solutionTemplateItemDataDef = arcgis_rest_items.getItemData(currentSolutionId, destinationRequestOptions);
+          var solutionTemplateItemDef = arcgisRestItems.getItem(currentSolutionId, destinationRequestOptions);
+          var solutionTemplateItemDataDef = arcgisRestItems.getItemData(currentSolutionId, destinationRequestOptions);
 
           // Await the template info
           Promise.all([  // TODO IE11 does not support Promise
@@ -165,12 +168,12 @@
 
               // Get the total estimated cost of creating these items
               console.log("totalEstimatedDeploymentCostFactor for " + templateItemData.templates.length +
-                " items: " + arcgis_clone_js.getEstimatedDeploymentCost(templateItemData.templates));
+                " items: " + arcgisSolution.getEstimatedDeploymentCost(templateItemData.templates));
               var progressCallback = _createProgressCallback(
-                arcgis_clone_js.getEstimatedDeploymentCost(templateItemData.templates));
+                arcgisSolution.getEstimatedDeploymentCost(templateItemData.templates));
 
               // Deploy!
-              arcgis_clone_js.deploySolutionItem({
+              arcgisSolution.deploySolutionItem({
                 item: templateItem,
                 data: templateItemData
               }, destinationRequestOptions, settings, progressCallback)
@@ -188,7 +191,7 @@
                   '<ul class="solutionList"><li><a href="' + deployedSolution.url + '" target="_blank">' +
                     currentSolutionName + '</a></li></ul><br>' +
                     demoCommon.createHierarchyDisplay(deployedSolution,
-                      arcgis_clone_js.getItemHierarchy(deployedSolution),
+                      arcgisSolution.getItemHierarchy(deployedSolution),
                       true, settings.organization.orgUrl + '/home/');
                 }
               );
