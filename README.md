@@ -2,10 +2,10 @@
 [![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
-[travis-img]: https://img.shields.io/travis/Esri/arcgis-clone-js/develop.svg
-[travis-url]: https://travis-ci.org/Esri/arcgis-clone-js
-[coverage-img]: https://coveralls.io/repos/github/Esri/arcgis-clone-js/badge.svg
-[coverage-url]: https://coveralls.io/github/Esri/arcgis-clone-js
+[travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
+[travis-url]: https://travis-ci.org/Esri/solution.js
+[coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
+[coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
@@ -36,14 +36,14 @@ A `Solution Item` can contain either
 
 When it contains Item Templates, it can be used for organizing and distributing Solutions, e.g., for displaying in a gallery of Solutions.
 
-When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment. 
+When a Solution is deployed into an organization, a new Solution is created that contains references to the items deployed into the organization; it serves as a table of contents for the deployment.
 
 #### Modules
 
 The API contains two primary modules:
 
 * `solution`, which contains functions for transforming items into templates, deploying item templates into items, and creating & using Solution Items.
-* `viewing`, which contains functions to support displaying Solution Items. 
+* `viewing`, which contains functions to support displaying Solution Items.
 
 #### Additional information
 
@@ -92,26 +92,18 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
-* `npm run build` runs the node, umd, esm, tsumd, & webpack builds
-* `npm run build:node`
-* `npm run build:umd`
-* `npm run build:esm`
-* `npm run build:tsumd`
-* `npm run build:webpack` prepares the umd build to create the variable arcgis_clone_js in the current global context
-* `npm run build:demos` runs the umd build and copies the result to the demos lib/ folder
-* `npm run lint` or `grunt tslint` lint the TypeScript files
+* `lerna run build` creates node, umd, and esm output for each package
+* `npm run lint` to lint the TypeScript files
 * `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
 * `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
 * `npm run test:firefox` runs karma in the Firefox browser
 * `npm run test:node` runs ts-node and jasmine
-* `npm run docs` creates documentation about the API and its internal functions
-* `npm run docs:mocks` creates documentation about the mock items used in unit testing
-* `npm run ver` reports the version of TypeScript
-* `npm run postinstall` installs a pre-commit hook to Grunt linting
+* `npm run docs:serve` creates documentation about the API and its internal functions
 
 ### Frequently Asked Questions
 
-* Is this a _supported_ Esri product?  Yes
+* [Is this a _supported_ Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
+* [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
 
 ### Issues
 
@@ -123,7 +115,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018 Esri
+Copyright &copy; 2018-2019 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
