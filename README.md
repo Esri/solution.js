@@ -9,7 +9,7 @@
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
 [license-url]: #license
 
-## arcgis-clone-js
+## Solution.js
 
 ### Table of Contents
 
