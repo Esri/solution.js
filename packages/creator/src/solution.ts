@@ -477,7 +477,7 @@ export function createDeployedSolutionAgoItem(
     };
 
     mCommon
-      .createItemWithData(item, null, requestOptions, settings.folderId, access)
+      .createItemWithData(item, solutionItem.data, requestOptions, settings.folderId, access)
       .then(
         createResponse => {
           const orgUrl =

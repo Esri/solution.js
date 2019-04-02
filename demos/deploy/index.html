@@ -151,7 +151,8 @@
             organization: {
               orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
               portalBaseUrl: 'https://' + portalResponse.portalHostname
-            }
+            },
+            isPortal: portalResponse.isPortal
           };
           var solutionTemplateItemDef = arcgisRestItems.getItem(currentSolutionId, destinationRequestOptions);
           var solutionTemplateItemDataDef = arcgisRestItems.getItemData(currentSolutionId, destinationRequestOptions);
