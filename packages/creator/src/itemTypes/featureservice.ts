@@ -36,6 +36,8 @@ import * as fieldUtils from "../utils/field-helpers";
 
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
+//#region Publish
+
 export function convertItemToTemplate(
   itemTemplate: ITemplate,
   requestOptions?: IUserRequestOptions
@@ -84,6 +86,182 @@ export function convertItemToTemplate(
       e => reject(mCommon.fail(e))
     );
   });
+}
+
+/**
+ * Fills in missing data, including full layer and table definitions, in a feature services' definition.
+ *
+ * @param itemTemplate Feature service item, data, dependencies definition to be modified
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function fleshOutFeatureService(
+  itemTemplate: ITemplate,
+  requestOptions: IUserRequestOptions
+): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const properties: IFeatureServiceProperties = {
+      service: {},
+      layers: [],
+      tables: []
+    };
+
+    // To have enough information for reconstructing the service, we'll supplement
+    // the item and data sections with sections for the service, full layers, and
+    // full tables
+
+    // Get the service description
+    const serviceUrl = itemTemplate.item.url;
+    request(serviceUrl + "?f=json", requestOptions).then(
+      serviceData => {
+        serviceData.serviceItemId = mCommon.templatize(
+          serviceData.serviceItemId
+        );
+        properties.service = serviceData;
+
+        // Get adminLayerInfo for the service
+        // adminLayerInfo allowsus to map a views source service name and any joins that may exist
+        getAdminLayersAndTables(itemTemplate, requestOptions).then(
+          adminData => {
+            // Get the affiliated layer and table items
+            Promise.all([
+              getLayers(
+                serviceUrl,
+                serviceData["layers"],
+                adminData.adminLayers,
+                requestOptions
+              ),
+              getLayers(
+                serviceUrl,
+                serviceData["tables"],
+                adminData.adminTables,
+                requestOptions
+              )
+            ]).then(
+              results => {
+                properties.layers = results[0];
+                properties.tables = results[1];
+                itemTemplate.properties = properties;
+
+                itemTemplate.estimatedDeploymentCostFactor +=
+                  properties.layers.length + // layers
+                  countRelationships(properties.layers) + // layer relationships
+                  properties.tables.length + // tables & estimated single relationship for each
+                  countRelationships(properties.tables); // table relationships
+
+                resolve();
+              },
+              e => reject(mCommon.fail(e))
+            );
+          },
+          e => reject(mCommon.fail(e))
+        );
+      },
+      e => reject(mCommon.fail(e))
+    );
+  });
+}
+
+/**
+ * Gets layers and tables via the admin api
+ * Must be item owner to publish a solution from a given item
+ *
+ * @param itemTemplate Feature service item, data, and dependencies
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve after the admin api has been checked
+ * @protected
+ */
+export function getAdminLayersAndTables(
+  itemTemplate: ITemplate,
+  requestOptions: IUserRequestOptions
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const serviceUrl = itemTemplate.item.url;
+
+    // get the admin URL
+    const adminUrl = serviceUrl.replace(
+      "/rest/services",
+      "/rest/admin/services"
+    );
+
+    request(adminUrl + "?f=json", requestOptions)
+      .then(
+        adminData => {
+          resolve({
+            adminLayers: adminData.layers.filter(
+              (l: any) => l.type === "Feature Layer"
+            ),
+            adminTables: adminData.layers.filter((l: any) => l.type === "Table")
+          });
+        },
+        e => reject(mCommon.fail(e))
+      )
+      .catch(e => reject(mCommon.fail(e)));
+  });
+}
+
+/**
+ * Gets the full definitions of the layers affiliated with a hosted service.
+ *
+ * @param serviceUrl URL to hosted service
+ * @param layerList List of layers at that service
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve with a list of the enhanced layers
+ * @protected
+ */
+export function getLayers(
+  serviceUrl: string,
+  layerList: any[],
+  adminList: any[],
+  requestOptions: IUserRequestOptions
+): Promise<any[]> {
+  return new Promise<any[]>((resolve, reject) => {
+    if (!Array.isArray(layerList) || layerList.length === 0) {
+      resolve([]);
+    }
+
+    const requestsDfd: Array<Promise<any>> = [];
+    layerList.forEach(layer => {
+      requestsDfd.push(
+        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
+      );
+    });
+
+    // Wait until all layers are heard from
+    Promise.all(requestsDfd).then(
+      layers => {
+        layers.forEach(layer => {
+          const sID = layer["serviceItemId"];
+          // templatize the layer's serviceItemId
+          layer["serviceItemId"] = mCommon.templatize(layer["serviceItemId"]);
+
+          // Get default adminLayerInfo and add to layer
+          // Source service name for views will be templitized when the dependecies are extracted
+          if (adminList && adminList.length > 0) {
+            // Ensure the name and id match between the adminLayerInfo and current layer
+            const subList = adminList.filter(
+              l => l.id === layer.id && l.name === layer.name
+            );
+            layer.adminLayerInfo =
+              subList.length === 1 ? subList[0].adminLayerInfo : {};
+          }
+
+          fieldUtils.templatizeLayerFieldReferences(layer, sID);
+        });
+        resolve(layers);
+      },
+      e => reject(mCommon.fail(e))
+    );
+  });
+}
+
+export function countRelationships(layers: any[]): number {
+  const reducer = (accumulator: number, currentLayer: any) =>
+    accumulator +
+    (currentLayer.relationships ? currentLayer.relationships.length : 0);
+
+  return layers.reduce(reducer, 0);
 }
 
 export function templatizeData(itemTemplate: ITemplate): void {
@@ -210,7 +388,11 @@ export function templatizeName(
   return deps.length === 1 ? mCommon.templatize(deps[0].id, "name") : undefined;
 }
 
+//#endregion
+
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
+
+//#region Deploy
 
 /**
  * Creates an item in a specified folder (except for Group item type).
@@ -750,14 +932,6 @@ export function postProcessFields(
   );
 }
 
-export function countRelationships(layers: any[]): number {
-  const reducer = (accumulator: number, currentLayer: any) =>
-    accumulator +
-    (currentLayer.relationships ? currentLayer.relationships.length : 0);
-
-  return layers.reduce(reducer, 0);
-}
-
 /**
  * Add additional options to a layers definition
  *
@@ -802,119 +976,6 @@ export function postProcess(args: IPostProcessArgs): Array<Promise<void>> {
 }
 
 /**
- * Gets layers and tables via the admin api
- * Must be item owner to publish a solution from a given item
- *
- * @param itemTemplate Feature service item, data, and dependencies
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve after the admin api has been checked
- * @protected
- */
-export function getAdminLayersAndTables(
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const serviceUrl = itemTemplate.item.url;
-
-    // get the admin URL
-    const adminUrl = serviceUrl.replace(
-      "/rest/services",
-      "/rest/admin/services"
-    );
-
-    request(adminUrl + "?f=json", requestOptions)
-      .then(
-        adminData => {
-          resolve({
-            adminLayers: adminData.layers.filter(
-              (l: any) => l.type === "Feature Layer"
-            ),
-            adminTables: adminData.layers.filter((l: any) => l.type === "Table")
-          });
-        },
-        e => reject(mCommon.fail(e))
-      )
-      .catch(e => reject(mCommon.fail(e)));
-  });
-}
-
-/**
- * Fills in missing data, including full layer and table definitions, in a feature services' definition.
- *
- * @param itemTemplate Feature service item, data, dependencies definition to be modified
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function fleshOutFeatureService(
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
-    const properties: IFeatureServiceProperties = {
-      service: {},
-      layers: [],
-      tables: []
-    };
-
-    // To have enough information for reconstructing the service, we'll supplement
-    // the item and data sections with sections for the service, full layers, and
-    // full tables
-
-    // Get the service description
-    const serviceUrl = itemTemplate.item.url;
-    request(serviceUrl + "?f=json", requestOptions).then(
-      serviceData => {
-        serviceData.serviceItemId = mCommon.templatize(
-          serviceData.serviceItemId
-        );
-        properties.service = serviceData;
-
-        // Get adminLayerInfo for the service
-        // adminLayerInfo allowsus to map a views source service name and any joins that may exist
-        getAdminLayersAndTables(itemTemplate, requestOptions).then(
-          adminData => {
-            // Get the affiliated layer and table items
-            Promise.all([
-              getLayers(
-                serviceUrl,
-                serviceData["layers"],
-                adminData.adminLayers,
-                requestOptions
-              ),
-              getLayers(
-                serviceUrl,
-                serviceData["tables"],
-                adminData.adminTables,
-                requestOptions
-              )
-            ]).then(
-              results => {
-                properties.layers = results[0];
-                properties.tables = results[1];
-                itemTemplate.properties = properties;
-
-                itemTemplate.estimatedDeploymentCostFactor +=
-                  properties.layers.length + // layers
-                  countRelationships(properties.layers) + // layer relationships
-                  properties.tables.length + // tables & estimated single relationship for each
-                  countRelationships(properties.tables); // table relationships
-
-                resolve();
-              },
-              e => reject(mCommon.fail(e))
-            );
-          },
-          e => reject(mCommon.fail(e))
-        );
-      },
-      e => reject(mCommon.fail(e))
-    );
-  });
-}
-
-/**
  * Helper function to test if object and property exist and if so delete the property
  *
  * @param obj object instance to test and update
@@ -924,61 +985,6 @@ function deleteProp(obj: any, prop: string) {
   if (obj && obj.hasOwnProperty(prop)) {
     delete obj[prop];
   }
-}
-
-/**
- * Gets the full definitions of the layers affiliated with a hosted service.
- *
- * @param serviceUrl URL to hosted service
- * @param layerList List of layers at that service
- * @param requestOptions Options for the request
- * @return A promise that will resolve with a list of the enhanced layers
- * @protected
- */
-export function getLayers(
-  serviceUrl: string,
-  layerList: any[],
-  adminList: any[],
-  requestOptions: IUserRequestOptions
-): Promise<any[]> {
-  return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
-      resolve([]);
-    }
-
-    const requestsDfd: Array<Promise<any>> = [];
-    layerList.forEach(layer => {
-      requestsDfd.push(
-        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
-      );
-    });
-
-    // Wait until all layers are heard from
-    Promise.all(requestsDfd).then(
-      layers => {
-        layers.forEach(layer => {
-          const sID = layer["serviceItemId"];
-          // templatize the layer's serviceItemId
-          layer["serviceItemId"] = mCommon.templatize(layer["serviceItemId"]);
-
-          // Get default adminLayerInfo and add to layer
-          // Source service name for views will be templitized when the dependecies are extracted
-          if (adminList && adminList.length > 0) {
-            // Ensure the name and id match between the adminLayerInfo and current layer
-            const subList = adminList.filter(
-              l => l.id === layer.id && l.name === layer.name
-            );
-            layer.adminLayerInfo =
-              subList.length === 1 ? subList[0].adminLayerInfo : {};
-          }
-
-          fieldUtils.templatizeLayerFieldReferences(layer, sID);
-        });
-        resolve(layers);
-      },
-      e => reject(mCommon.fail(e))
-    );
-  });
 }
 
 /**
