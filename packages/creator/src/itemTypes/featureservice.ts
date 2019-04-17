@@ -32,8 +32,6 @@ import * as fieldUtils from "../utils/field-helpers";
 
 // TODO figure out how to deal with adminLayerInfo geometry field name in terms of templatizing
 
-// -- Externals ------------------------------------------------------------------------------------------------------//
-
 // -- Create Bundle Process ------------------------------------------------------------------------------------------//
 
 //#region Publish
@@ -160,6 +158,45 @@ export function fleshOutFeatureService(
       },
       e => reject(mCommon.fail(e))
     );
+  });
+}
+
+/**
+ * Gets the ids of the dependencies of an AGOL feature service item.
+ * Dependencies will only exist when the service is a view.
+ *
+ * @param itemTemplate Template of item to be created
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve a list of dependencies
+ * @protected
+ */
+export function extractDependencies(
+  itemTemplate: ITemplate,
+  requestOptions?: IUserRequestOptions
+): Promise<IDependency[]> {
+  const dependencies: any[] = [];
+  return new Promise((resolve, reject) => {
+    const serviceUrl: string = itemTemplate.item.url;
+    itemTemplate.item.url = mCommon.templatize(itemTemplate.itemId, "url");
+    // Get service dependencies when the item is a view
+    if (itemTemplate.properties.service.isView) {
+      request(serviceUrl + "/sources?f=json", requestOptions).then(
+        response => {
+          if (response && response.services) {
+            response.services.forEach((layer: any) => {
+              dependencies.push({
+                id: layer.serviceItemId,
+                name: layer.name
+              });
+            });
+            resolve(dependencies);
+          }
+        },
+        e => reject(mCommon.fail(e))
+      );
+    } else {
+      resolve(dependencies);
+    }
   });
 }
 
@@ -388,6 +425,18 @@ export function templatizeName(
   return deps.length === 1 ? mCommon.templatize(deps[0].id, "name") : undefined;
 }
 
+/**
+ * Helper function to test if object and property exist and if so delete the property
+ *
+ * @param obj object instance to test and update
+ * @param prop name of the property we are after
+ */
+function deleteProp(obj: any, prop: string) {
+  if (obj && obj.hasOwnProperty(prop)) {
+    delete obj[prop];
+  }
+}
+
 //#endregion
 
 // -- Deploy Bundle Process ------------------------------------------------------------------------------------------//
@@ -555,93 +604,6 @@ export function setItemProperties(
   return item;
 }
 
-// -- Internals ------------------------------------------------------------------------------------------------------//
-// (export decoration is for unit testing)
-
-//#region Interfaces
-/**
- * Holds the extra information needed by feature services.
- */
-export interface IFeatureServiceProperties {
-  /**
-   * Service description
-   */
-  service: any;
-  /**
-   * Description for each layer
-   */
-  layers: any[];
-  /**
-   * Description for each table
-   */
-  tables: any[];
-}
-
-/**
- * Storage of a one-way relationship.
- * @protected
- */
-export interface IRelationship {
-  /**
-   * Relationship id and the ids of the items that it is related to.
-   */
-  [id: string]: string[];
-}
-
-/**
- * Storage of dependencies.
- * @protected
- */
-export interface IDependency {
-  /**
-   * Dependency item id for templatization.
-   */
-  id: string;
-
-  /**
-   * Dependency service name for name mapping.
-   * This is used to find appropriate source service name for views.
-   */
-  name: string;
-}
-
-/**
- * Storage of arguments for postProcess function
- * @protected
- */
-export interface IPostProcessArgs {
-  /**
-   * Status message to show after the layerDefinition is updated.
-   */
-  message: string;
-
-  /**
-   * Key objects to add to the layerDefinition.
-   */
-  objects: any;
-
-  /**
-   * Template of item to be created
-   */
-
-  itemTemplate: any;
-
-  /**
-   * Options for the request
-   */
-  requestOptions: IUserRequestOptions;
-
-  /**
-   * Callback for IProgressUpdate
-   */
-  progressCallback: any;
-}
-
-export interface IPopupInfos {
-  layers: INumberValuePair;
-  tables: INumberValuePair;
-}
-
 /**
  * Adds the chached popupInfo back to the layer after the service is created.
  * Popup info will be added after the service is created.
@@ -686,46 +648,6 @@ export function cachePopupInfos(data: any): IPopupInfos {
   }
   return popupInfos;
 }
-
-/**
- * Gets the ids of the dependencies of an AGOL feature service item.
- * Dependencies will only exist when the service is a view.
- *
- * @param itemTemplate Template of item to be created
- * @param requestOptions Options for the request
- * @return A promise that will resolve a list of dependencies
- * @protected
- */
-export function extractDependencies(
-  itemTemplate: ITemplate,
-  requestOptions?: IUserRequestOptions
-): Promise<IDependency[]> {
-  const dependencies: any[] = [];
-  return new Promise((resolve, reject) => {
-    const serviceUrl: string = itemTemplate.item.url;
-    itemTemplate.item.url = mCommon.templatize(itemTemplate.itemId, "url");
-    // Get service dependencies when the item is a view
-    if (itemTemplate.properties.service.isView) {
-      request(serviceUrl + "/sources?f=json", requestOptions).then(
-        response => {
-          if (response && response.services) {
-            response.services.forEach((layer: any) => {
-              dependencies.push({
-                id: layer.serviceItemId,
-                name: layer.name
-              });
-            });
-            resolve(dependencies);
-          }
-        },
-        e => reject(mCommon.fail(e))
-      );
-    } else {
-      resolve(dependencies);
-    }
-  });
-}
-//#endregion
 
 /**
  * Adds the layers and tables of a feature service to it and restores their relationships.
@@ -976,18 +898,6 @@ export function postProcess(args: IPostProcessArgs): Array<Promise<void>> {
 }
 
 /**
- * Helper function to test if object and property exist and if so delete the property
- *
- * @param obj object instance to test and update
- * @param prop name of the property we are after
- */
-function deleteProp(obj: any, prop: string) {
-  if (obj && obj.hasOwnProperty(prop)) {
-    delete obj[prop];
-  }
-}
-
-/**
  * Updates a feature service with a list of layers and/or tables.
  *
  * @param serviceItemId AGOL id of feature service
@@ -1073,3 +983,93 @@ function updateFeatureServiceDefinition(
     }
   });
 }
+
+//#endregion
+
+// -- Internals ------------------------------------------------------------------------------------------------------//
+// (export decoration is for unit testing)
+//#region Interfaces
+/**
+ * Holds the extra information needed by feature services.
+ */
+export interface IFeatureServiceProperties {
+  /**
+   * Service description
+   */
+  service: any;
+  /**
+   * Description for each layer
+   */
+  layers: any[];
+  /**
+   * Description for each table
+   */
+  tables: any[];
+}
+
+/**
+ * Storage of a one-way relationship.
+ * @protected
+ */
+export interface IRelationship {
+  /**
+   * Relationship id and the ids of the items that it is related to.
+   */
+  [id: string]: string[];
+}
+
+/**
+ * Storage of dependencies.
+ * @protected
+ */
+export interface IDependency {
+  /**
+   * Dependency item id for templatization.
+   */
+  id: string;
+
+  /**
+   * Dependency service name for name mapping.
+   * This is used to find appropriate source service name for views.
+   */
+  name: string;
+}
+
+/**
+ * Storage of arguments for postProcess function
+ * @protected
+ */
+export interface IPostProcessArgs {
+  /**
+   * Status message to show after the layerDefinition is updated.
+   */
+  message: string;
+
+  /**
+   * Key objects to add to the layerDefinition.
+   */
+  objects: any;
+
+  /**
+   * Template of item to be created
+   */
+
+  itemTemplate: any;
+
+  /**
+   * Options for the request
+   */
+  requestOptions: IUserRequestOptions;
+
+  /**
+   * Callback for IProgressUpdate
+   */
+  progressCallback: any;
+}
+
+export interface IPopupInfos {
+  layers: INumberValuePair;
+  tables: INumberValuePair;
+}
+
+//#endregion

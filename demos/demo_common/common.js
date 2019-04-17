@@ -141,7 +141,7 @@ define([
           document.getElementById('detailsDisplay').innerHTML =
             // List of links to Solution item, its item JSON, its data JSON
             this.createItemLinksDisplay(publishedSolutionId,
-              'https://localdeployment.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
+              'https://stategovernment.maps.arcgis.com/home/', 'https://www.arcgis.com/') +
 
             // Hierarchical display of item
             '<br>Published Solution item hierarchy:' +
@@ -215,7 +215,7 @@ define([
      * @see @esri/arcgis-rest-items
      */
     showAvailableSolutions: function () {
-      arcgisRestItems.searchItems('type:Solution owner:LocalGovDeployMikeT typekeywords:Template')
+      arcgisRestItems.searchItems('type:Solution owner:john4818 typekeywords:Template')
       .then(
         function (foundItems) {
           if (foundItems.total === 0) {
