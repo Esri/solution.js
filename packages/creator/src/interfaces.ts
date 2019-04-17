@@ -159,3 +159,17 @@ export interface IProgressUpdate {
    */
   activeStep?: string;
 }
+
+/**
+ * A simple interface for a key value pair with string as the key
+ */
+export interface IStringValuePair {
+  [key: string]: any;
+}
+
+/**
+ * A simple interface for a key value pair with number as the key
+ */
+export interface INumberValuePair {
+  [key: number]: any;
+}
