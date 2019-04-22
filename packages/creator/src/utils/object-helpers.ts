@@ -101,3 +101,16 @@ export function getDeepValues(obj: any, prop: string): string[] {
   }
   return result;
 }
+
+/**
+ * Delete a property from an object
+ *
+ * @param obj object with property to delete
+ * @param prop property on object that should be deleted
+ *
+ */
+export function deleteProp(obj: any, prop: string): void {
+  if (obj && obj.hasOwnProperty(prop)) {
+    delete obj[prop];
+  }
+}

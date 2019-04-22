@@ -55,26 +55,8 @@ export function convertItemToTemplate(
             // set the dependencies as an array of IDs from the array of IDependency
             itemTemplate.dependencies = dependencies.map(dep => dep.id);
 
-            // update each layers adminLayerInfo
-            itemTemplate.properties.layers.forEach((layer: any) => {
-              layer.adminLayerInfo = templatizeAdminLayerInfo(
-                layer,
-                dependencies,
-                itemTemplate.itemId
-              );
-            });
-
-            // update each tables adminLayerInfo
-            itemTemplate.properties.tables.forEach((table: any) => {
-              table.adminLayerInfo = templatizeAdminLayerInfo(
-                table,
-                dependencies,
-                itemTemplate.itemId
-              );
-            });
-
             // templatize values in itemTemplate data
-            templatizeData(itemTemplate);
+            templatizeData(itemTemplate, dependencies);
 
             resolve(itemTemplate);
           },
@@ -113,45 +95,23 @@ export function fleshOutFeatureService(
     const serviceUrl = itemTemplate.item.url;
     request(serviceUrl + "?f=json", requestOptions).then(
       serviceData => {
-        serviceData.serviceItemId = mCommon.templatize(
-          serviceData.serviceItemId
-        );
         properties.service = serviceData;
+        Promise.all([
+          getLayers(serviceUrl, serviceData["layers"], requestOptions),
+          getLayers(serviceUrl, serviceData["tables"], requestOptions)
+        ]).then(
+          results => {
+            properties.layers = results[0];
+            properties.tables = results[1];
+            itemTemplate.properties = properties;
 
-        // Get adminLayerInfo for the service
-        // adminLayerInfo allowsus to map a views source service name and any joins that may exist
-        getAdminLayersAndTables(itemTemplate, requestOptions).then(
-          adminData => {
-            // Get the affiliated layer and table items
-            Promise.all([
-              getLayers(
-                serviceUrl,
-                serviceData["layers"],
-                adminData.adminLayers,
-                requestOptions
-              ),
-              getLayers(
-                serviceUrl,
-                serviceData["tables"],
-                adminData.adminTables,
-                requestOptions
-              )
-            ]).then(
-              results => {
-                properties.layers = results[0];
-                properties.tables = results[1];
-                itemTemplate.properties = properties;
+            itemTemplate.estimatedDeploymentCostFactor +=
+              properties.layers.length + // layers
+              countRelationships(properties.layers) + // layer relationships
+              properties.tables.length + // tables & estimated single relationship for each
+              countRelationships(properties.tables); // table relationships
 
-                itemTemplate.estimatedDeploymentCostFactor +=
-                  properties.layers.length + // layers
-                  countRelationships(properties.layers) + // layer relationships
-                  properties.tables.length + // tables & estimated single relationship for each
-                  countRelationships(properties.tables); // table relationships
-
-                resolve();
-              },
-              e => reject(mCommon.fail(e))
-            );
+            resolve();
           },
           e => reject(mCommon.fail(e))
         );
@@ -201,44 +161,6 @@ export function extractDependencies(
 }
 
 /**
- * Gets layers and tables via the admin api
- * Must be item owner to publish a solution from a given item
- *
- * @param itemTemplate Feature service item, data, and dependencies
- * @param requestOptions Options for requesting information from AGOL
- * @return A promise that will resolve after the admin api has been checked
- * @protected
- */
-export function getAdminLayersAndTables(
-  itemTemplate: ITemplate,
-  requestOptions: IUserRequestOptions
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const serviceUrl = itemTemplate.item.url;
-
-    // get the admin URL
-    const adminUrl = serviceUrl.replace(
-      "/rest/services",
-      "/rest/admin/services"
-    );
-
-    request(adminUrl + "?f=json", requestOptions)
-      .then(
-        adminData => {
-          resolve({
-            adminLayers: adminData.layers.filter(
-              (l: any) => l.type === "Feature Layer"
-            ),
-            adminTables: adminData.layers.filter((l: any) => l.type === "Table")
-          });
-        },
-        e => reject(mCommon.fail(e))
-      )
-      .catch(e => reject(mCommon.fail(e)));
-  });
-}
-
-/**
  * Gets the full definitions of the layers affiliated with a hosted service.
  *
  * @param serviceUrl URL to hosted service
@@ -250,13 +172,15 @@ export function getAdminLayersAndTables(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  adminList: any[],
   requestOptions: IUserRequestOptions
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
       resolve([]);
     }
+
+    // get the admin URL
+    serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
 
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
@@ -268,24 +192,6 @@ export function getLayers(
     // Wait until all layers are heard from
     Promise.all(requestsDfd).then(
       layers => {
-        layers.forEach(layer => {
-          const sID = layer["serviceItemId"];
-          // templatize the layer's serviceItemId
-          layer["serviceItemId"] = mCommon.templatize(layer["serviceItemId"]);
-
-          // Get default adminLayerInfo and add to layer
-          // Source service name for views will be templitized when the dependecies are extracted
-          if (adminList && adminList.length > 0) {
-            // Ensure the name and id match between the adminLayerInfo and current layer
-            const subList = adminList.filter(
-              l => l.id === layer.id && l.name === layer.name
-            );
-            layer.adminLayerInfo =
-              subList.length === 1 ? subList[0].adminLayerInfo : {};
-          }
-
-          fieldUtils.templatizeLayerFieldReferences(layer, sID);
-        });
         resolve(layers);
       },
       e => reject(mCommon.fail(e))
@@ -301,7 +207,10 @@ export function countRelationships(layers: any[]): number {
   return layers.reduce(reducer, 0);
 }
 
-export function templatizeData(itemTemplate: ITemplate): void {
+export function templatizeData(
+  itemTemplate: ITemplate,
+  dependencies: IDependency[]
+): void {
   const data: any = itemTemplate.data || {};
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
@@ -312,14 +221,49 @@ export function templatizeData(itemTemplate: ITemplate): void {
   const tables: any[] = data.tables || [];
   const _items: any[] = layers.concat(tables);
 
+  // templatize the service references serviceItemId
+  itemTemplate.properties.service.serviceItemId = mCommon.templatize(
+    itemTemplate.properties.service.serviceItemId
+  );
+
   _items.forEach((item: any) => {
-    const matchingItems = jsonItems.filter(jsonItem => jsonItem.id === item.id);
-    fieldUtils.templatizeLayerFieldReferences(
-      item,
-      itemTemplate.itemId,
-      matchingItems.length === 1 ? matchingItems[0] : undefined
-    );
+    // get the source service json for the given data item
+    const matchingItems = jsonItems.filter(jsonItem => {
+      return jsonItem.id === item.id;
+    });
+
+    // templatize the source service json
+    if (matchingItems.length === 1) {
+      const jsonItem: any = matchingItems[0];
+      templatizeLayer(jsonItem, jsonItem, itemTemplate, dependencies);
+    }
+
+    templatizeLayer(item, matchingItems[0], itemTemplate, dependencies);
   });
+}
+
+export function templatizeLayer(
+  item: any,
+  sourceItem: any,
+  itemTemplate: ITemplate,
+  dependencies: IDependency[]
+): void {
+  if (item.hasOwnProperty("serviceItemId")) {
+    item["serviceItemId"] = mCommon.templatize(item["serviceItemId"]);
+  }
+
+  if (item.hasOwnProperty("adminLayerInfo")) {
+    item.adminLayerInfo = templatizeAdminLayerInfo(
+      item,
+      dependencies,
+      itemTemplate.itemId
+    );
+  }
+  fieldUtils.templatizeLayerFieldReferences(
+    item,
+    itemTemplate.itemId,
+    sourceItem
+  );
 }
 
 /**
@@ -339,65 +283,32 @@ export function templatizeAdminLayerInfo(
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
 
-  deleteProp(adminLayerInfo, "xssTrustedFields");
-  deleteProp(adminLayerInfo, "tableName");
+  objectUtils.deleteProp(adminLayerInfo, "xssTrustedFields");
+  objectUtils.deleteProp(adminLayerInfo, "tableName");
 
-  // const basePath: string = itemId + ".layer" + layer.id + ".fields";
-
-  // const deps = dependencies.filter(dependency => {
-  //   return dependency.id === itemId;
-  // });
-  // return (deps.length === 1) ? mCommon.templatize(deps[0].id, 'name') : undefined;
-
-  // TODO will need to investigate this further...don't see the shape field listed after adding to the definition
-  // if (adminLayerInfo.hasOwnProperty("geometryField") && adminLayerInfo.geometryField) {
-  //   adminLayerInfo.geometryField = fieldUtils._templatize(
-  //     basePath,
-  //     adminLayerInfo.geometryField.name
-  //   );
-  // }
+  // TODO figure out how to deal with shape field
 
   // Remove unnecessary properties and templatize key properties from viewLayerDefinition
   if (adminLayerInfo.viewLayerDefinition) {
     const viewDef = Object.assign({}, adminLayerInfo.viewLayerDefinition);
 
-    deleteProp(viewDef, "sourceId");
-    viewDef.sourceServiceName = templatizeName(
-      viewDef.sourceServiceName,
-      dependencies
-    );
+    processAdminObject(viewDef, dependencies);
 
     // Remove unnecessary properties and templatize key properties from viewLayerDefinition.table
     if (viewDef.table) {
-      deleteProp(viewDef.table, "sourceId");
+      processAdminObject(viewDef.table, dependencies);
 
       if (viewDef.table.hasOwnProperty("sourceServiceName")) {
-        const tName = templatizeName(
-          viewDef.table.sourceServiceName,
-          dependencies
-        );
-        viewDef.table.sourceServiceName = tName;
-
         if (adminLayerInfo.geometryField && adminLayerInfo.geometryField.name) {
           adminLayerInfo.geometryField.name =
-            tName + "." + adminLayerInfo.geometryField.name;
-          // const name: string = objectUtils.getProp(adminLayerInfo, "geometryField.name") || false;
-          // if (name) {
-          // TODO will need to investigate this further...don't see the shape field listed after adding to the definition
-          //   adminLayerInfo.geometryField.name = tName + "." + fieldUtils._templatize(basePath, name);
-          //  adminLayerInfo.geometryField.name = tName + "." + name;
-          // }
+            viewDef.table.sourceServiceName +
+            "." +
+            adminLayerInfo.geometryField.name;
         }
       }
       if (viewDef.table.relatedTables) {
         viewDef.table.relatedTables.forEach((table: any) => {
-          deleteProp(table, "sourceId");
-          if (table.hasOwnProperty("sourceServiceName")) {
-            table.sourceServiceName = templatizeName(
-              table.sourceServiceName,
-              dependencies
-            );
-          }
+          processAdminObject(table, dependencies);
         });
       }
     }
@@ -405,6 +316,19 @@ export function templatizeAdminLayerInfo(
     adminLayerInfo.viewLayerDefinition = viewDef;
   }
   return adminLayerInfo;
+}
+
+export function processAdminObject(
+  object: any,
+  dependencies: IDependency[]
+): void {
+  objectUtils.deleteProp(object, "sourceId");
+  if (object.hasOwnProperty("sourceServiceName")) {
+    object.sourceServiceName = templatizeName(
+      object.sourceServiceName,
+      dependencies
+    );
+  }
 }
 
 /**
@@ -423,18 +347,6 @@ export function templatizeName(
     dependency => dependency.name === lookupName
   );
   return deps.length === 1 ? mCommon.templatize(deps[0].id, "name") : undefined;
-}
-
-/**
- * Helper function to test if object and property exist and if so delete the property
- *
- * @param obj object instance to test and update
- * @param prop name of the property we are after
- */
-function deleteProp(obj: any, prop: string) {
-  if (obj && obj.hasOwnProperty(prop)) {
-    delete obj[prop];
-  }
 }
 
 //#endregion
@@ -603,15 +515,6 @@ export function setItemProperties(
   });
   return item;
 }
-
-/**
- * Adds the chached popupInfo back to the layer after the service is created.
- * Popup info will be added after the service is created.
- *
- * @param itemTemplate Item to be created; n.b.: this item is modified
- * @param IPopupInfos layer id as the key and popupinfo as the value
- * @protected
- */
 
 /**
  * Removes and caches the current popupInfo from layers in the template.
@@ -988,6 +891,7 @@ function updateFeatureServiceDefinition(
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 // (export decoration is for unit testing)
+
 //#region Interfaces
 /**
  * Holds the extra information needed by feature services.
