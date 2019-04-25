@@ -25,8 +25,13 @@ import {
   _templatizeDrawingInfo,
   _templatizeArcadeExpressions,
   _templatizeLabelingInfo,
-  _templatizeTemplates
+  _templatizeTemplates,
+  cacheFieldInfos,
+  getFieldSettings,
+  updateSettingsFieldInfos,
+  deTemplatizeFieldInfos
 } from "../../src/utils/field-helpers";
+import { ITemplate } from "../../src/interfaces";
 
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".fieldInfos.layer0.fields";
@@ -1358,18 +1363,1236 @@ describe("_templatizeTemplates", () => {
   });
 });
 
-// describe("", () => {
-//   it("works", () => {
+describe("cacheFieldInfos", () => {
+  it("works", () => {
+    const fieldInfos: any = {};
 
-//     const fieldNames: any[] = [];
-//     // test with undefined layer
-//     let layer;
-//     _templatizeDefinitionExpression(layer, basePath, fieldNames);
-//     expect(layer).toBeUndefined();
+    // test with undefined layer
+    let layer;
+    cacheFieldInfos(layer, fieldInfos);
+    expect(layer).toBeUndefined();
 
-//     // test without
-//     layer = {};
-//     _templatizeDefinitionExpression(layer, basePath, fieldNames);
-//     expect(layer).toEqual({});
-//   });
-// });
+    // test without
+    layer = {};
+    cacheFieldInfos(layer, fieldInfos);
+    expect(layer).toEqual({});
+
+    layer = {
+      id: "23",
+      fields: [
+        {
+          name: "A",
+          type: "string"
+        },
+        {
+          name: "B",
+          type: "string"
+        }
+      ],
+      displayField: "DisplayField",
+      editFieldsInfo: ["CreateDate"],
+      templates: [
+        {
+          A: null,
+          B: null
+        }
+      ],
+      relationships: [
+        {
+          relatedId: 0
+        }
+      ],
+      drawingInfo: {
+        renderer: {
+          type: "simple"
+        }
+      }
+    };
+
+    cacheFieldInfos(layer, fieldInfos);
+    expect(layer).toEqual({
+      id: "23",
+      fields: [
+        {
+          name: "A",
+          type: "string"
+        },
+        {
+          name: "B",
+          type: "string"
+        }
+      ],
+      displayField: null,
+      editFieldsInfo: null,
+      templates: null,
+      relationships: null,
+      drawingInfo: null
+    });
+
+    expect(fieldInfos).toEqual({
+      "23": {
+        sourceFields: [
+          {
+            name: "A",
+            type: "string"
+          },
+          {
+            name: "B",
+            type: "string"
+          }
+        ],
+        displayField: "DisplayField",
+        editFieldsInfo: ["CreateDate"],
+        templates: [
+          {
+            A: null,
+            B: null
+          }
+        ],
+        relationships: [
+          {
+            relatedId: 0
+          }
+        ],
+        drawingInfo: {
+          renderer: {
+            type: "simple"
+          }
+        }
+      }
+    });
+  });
+});
+
+describe("getFieldSettings", () => {
+  it("works", () => {
+    // fields not changed
+    let fieldInfos: any = {
+      "0": {
+        newFields: [
+          {
+            name: "A"
+          },
+          {
+            name: "B"
+          }
+        ],
+        sourceFields: [
+          {
+            name: "A"
+          },
+          {
+            name: "B"
+          }
+        ],
+        otherProperty: {
+          test: "test"
+        }
+      },
+      "1": {
+        newFields: [
+          {
+            name: "C"
+          },
+          {
+            name: "D"
+          }
+        ],
+        sourceFields: [
+          {
+            name: "C"
+          },
+          {
+            name: "D"
+          }
+        ],
+        otherProperty: {
+          test: "test"
+        }
+      }
+    };
+    let expectedSettingsResult: any = {
+      layer0: {
+        fields: {
+          a: "A",
+          b: "B"
+        }
+      },
+      layer1: {
+        fields: {
+          c: "C",
+          d: "D"
+        }
+      }
+    };
+    let expectedFieldInfosResult: any = {
+      "0": {
+        otherProperty: {
+          test: "test"
+        }
+      },
+      "1": {
+        otherProperty: {
+          test: "test"
+        }
+      }
+    };
+    let settings = getFieldSettings(fieldInfos);
+    expect(fieldInfos).toEqual(expectedFieldInfosResult);
+    expect(settings).toEqual(expectedSettingsResult);
+
+    // fields changed
+    fieldInfos = {
+      "0": {
+        newFields: [
+          {
+            name: "a"
+          },
+          {
+            name: "b"
+          }
+        ],
+        sourceFields: [
+          {
+            name: "A"
+          },
+          {
+            name: "B"
+          }
+        ],
+        otherProperty: {
+          test: "test"
+        }
+      },
+      "1": {
+        newFields: [
+          {
+            name: "c"
+          },
+          {
+            name: "d"
+          }
+        ],
+        sourceFields: [
+          {
+            name: "C"
+          },
+          {
+            name: "D"
+          }
+        ],
+        otherProperty: {
+          test: "test"
+        }
+      }
+    };
+    expectedSettingsResult = {
+      layer0: {
+        fields: {
+          a: "a",
+          b: "b"
+        }
+      },
+      layer1: {
+        fields: {
+          c: "c",
+          d: "d"
+        }
+      }
+    };
+    expectedFieldInfosResult = {
+      "0": {
+        otherProperty: {
+          test: "test"
+        }
+      },
+      "1": {
+        otherProperty: {
+          test: "test"
+        }
+      }
+    };
+    settings = getFieldSettings(fieldInfos);
+    expect(fieldInfos).toEqual(expectedFieldInfosResult);
+    expect(settings).toEqual(expectedSettingsResult);
+  });
+});
+
+describe("updateSettingsFieldInfos", () => {
+  it("works", () => {
+    const fieldInfos: any = {
+      layer0: {
+        fields: {
+          objectid: "OBJECTID",
+          jurisdictionname: "jurisdictionname",
+          jurisdictiontype: "jurisdictiontype",
+          regvoters: "regvoters",
+          ballotscast: "ballotscast",
+          ballotsnotcast: "ballotsnotcast",
+          globalid: "GlobalID",
+          creationdate: "CreationDate",
+          creator: "Creator",
+          editdate: "EditDate",
+          editor: "Editor"
+        }
+      },
+      layer1: {
+        fields: {
+          objectid: "OBJECTID",
+          contest: "contest",
+          category: "category",
+          jurisdictionname: "jurisdictionname",
+          candidate: "candidate",
+          party: "party",
+          numvotes: "numvotes",
+          percvote: "percvote",
+          globalid: "GlobalID",
+          creationdate: "CreationDate",
+          creator: "Creator",
+          editdate: "EditDate",
+          editor: "Editor"
+        }
+      }
+    };
+
+    let settings: any = {
+      solutionName: "test",
+      folderId: "4437cab3aa154f5f85fa35dca36ddccb",
+      organization: {},
+      isPortal: false,
+      "0998341a7a2a4e9c86c553287a1f3e94": {
+        id: "166657ce19f34c32846cd12022e2c33a",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        fieldInfos: fieldInfos
+      },
+      ab766cba0dd44ec080420acc10990282: {
+        id: "ebe7e53cc218423c9225ceb783d412b5",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456"
+      }
+    };
+
+    let itemTemplate: ITemplate = {
+      itemId: "ebe7e53cc218423c9225ceb783d412b5",
+      type: "Feature Service",
+      key: "ixxi7v97b",
+      item: {},
+      dependencies: ["166657ce19f34c32846cd12022e2c33a"],
+      estimatedDeploymentCostFactor: 5,
+      data: {},
+      resources: [],
+      properties: {}
+    };
+
+    let expectedSettingsResult: any = {
+      solutionName: "test",
+      folderId: "4437cab3aa154f5f85fa35dca36ddccb",
+      organization: {},
+      isPortal: false,
+      "0998341a7a2a4e9c86c553287a1f3e94": {
+        id: "166657ce19f34c32846cd12022e2c33a",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        fieldInfos: fieldInfos
+      },
+      ab766cba0dd44ec080420acc10990282: {
+        id: "ebe7e53cc218423c9225ceb783d412b5",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456",
+        fieldInfos: fieldInfos
+      }
+    };
+
+    // test that the settings transfer
+    updateSettingsFieldInfos(itemTemplate, settings);
+    expect(settings).toEqual(expectedSettingsResult);
+
+    // settings should not transfer as the template has no dependencies
+    settings = {
+      solutionName: "test",
+      folderId: "4437cab3aa154f5f85fa35dca36ddccb",
+      organization: {},
+      isPortal: false,
+      "0998341a7a2a4e9c86c553287a1f3e94": {
+        id: "166657ce19f34c32846cd12022e2c33a",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        fieldInfos: fieldInfos
+      },
+      ab766cba0dd44ec080420acc10990282: {
+        id: "ebe7e53cc218423c9225ceb783d412b5",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456"
+      }
+    };
+
+    itemTemplate = {
+      itemId: "ebe7e53cc218423c9225ceb783d412b5",
+      type: "Feature Service",
+      key: "ixxi7v97b",
+      item: {},
+      dependencies: [],
+      estimatedDeploymentCostFactor: 5,
+      data: {},
+      resources: [],
+      properties: {}
+    };
+
+    expectedSettingsResult = {
+      solutionName: "test",
+      folderId: "4437cab3aa154f5f85fa35dca36ddccb",
+      organization: {},
+      isPortal: false,
+      "0998341a7a2a4e9c86c553287a1f3e94": {
+        id: "166657ce19f34c32846cd12022e2c33a",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        fieldInfos: fieldInfos
+      },
+      ab766cba0dd44ec080420acc10990282: {
+        id: "ebe7e53cc218423c9225ceb783d412b5",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456"
+      }
+    };
+
+    updateSettingsFieldInfos(itemTemplate, settings);
+    expect(settings).toEqual(expectedSettingsResult);
+  });
+});
+
+describe("deTemplatizeFieldInfos", () => {
+  it("works", () => {
+    const fieldInfos: any = {
+      "0": {
+        displayField:
+          "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}",
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}": null,
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}": null,
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}": null,
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}": null,
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}": null
+              }
+            }
+          }
+        ],
+        relationships: [],
+        drawingInfo: {
+          renderer: {
+            visualVariables: [
+              {
+                field:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}"
+              }
+            ],
+            authoringInfo: {},
+            type: "uniqueValue",
+            field1:
+              "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}}",
+            defaultSymbol: {},
+            uniqueValueInfos: []
+          }
+        }
+      },
+      "1": {
+        displayField:
+          "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}",
+        templates: [],
+        relationships: []
+      }
+    };
+
+    const popupInfos: any = {
+      layers: {
+        "0": {
+          title: "",
+          fieldInfos: [
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.objectid}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.contest}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.category}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.candidate}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.numvotes}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+            },
+            {
+              fieldName: "expression/expr0"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname_1552494094382}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid_1552494094382}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate_1552494094382}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator_1552494094382}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate_1552494094382}}"
+            },
+            {
+              fieldName:
+                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor_1552494094382}}"
+            }
+          ],
+          description:
+            "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.contest}}\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.candidate}}</b> received the most votes in {{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.numvotes}}<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
+          expressionInfos: [
+            {
+              name: "expr0",
+              title: "Banner Color",
+              expression:
+                "if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
+              returnType: "string"
+            }
+          ]
+        }
+      },
+      tables: {}
+    };
+
+    const adminLayerInfos: any = {
+      "0": {
+        geometryField: {
+          name: "ElectionResults_20190425_2115_55512.Shape"
+        },
+        viewLayerDefinition: {
+          table: {
+            sourceLayerId: 0,
+            sourceLayerFields: [
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+              }
+            ],
+            relatedTables: [
+              {
+                name: "ElectionResults_1552494094382_join",
+                sourceServiceName: "ElectionResults_20190425_2115_55512",
+                sourceLayerId: 1,
+                topFilter: {
+                  orderByFields:
+                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}} DESC",
+                  groupByFields:
+                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}},{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+                },
+                sourceLayerFields: [
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.category}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.candidate}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.party}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.percvote}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.globalid}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creationdate}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creator}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editdate}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editor}}"
+                  }
+                ],
+                parentKeyFields: [
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                ],
+                keyFields: [
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                ]
+              }
+            ]
+          }
+        }
+      },
+      "1": {
+        geometryField: null,
+        viewLayerDefinition: {
+          table: {
+            name: "ElectionResults_1552493773603_target",
+            sourceServiceName: "ElectionResults_20190425_2115_55512",
+            sourceLayerId: 1,
+            sourceLayerFields: [
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.category}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.candidate}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.party}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.percvote}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.globalid}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creationdate}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creator}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editdate}}"
+              },
+              {
+                source:
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editor}}"
+              }
+            ],
+            relatedTables: [
+              {
+                name: "ElectionResults_1552493773603_join",
+                sourceServiceName: "ElectionResults_20190425_2115_55512",
+                sourceLayerId: 0,
+                sourceLayerFields: [
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+                  },
+                  {
+                    source:
+                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+                  }
+                ],
+                type: "INNER",
+                parentKeyFields: [
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                ],
+                keyFields: [
+                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                ]
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    const settings: any = {
+      solutionName: "test",
+      isPortal: false,
+      "0998341a7a2a4e9c86c553287a1f3e94": {
+        id: "82ed3b6c2236429d885c872b3e188ead",
+        name: "ElectionResults_20190425_2115_55512",
+        fieldInfos: {
+          layer0: {
+            fields: {
+              objectid: "OBJECTID",
+              jurisdictionname: "jurisdictionname",
+              jurisdictiontype: "jurisdictiontype",
+              regvoters: "regvoters",
+              ballotscast: "ballotscast",
+              ballotsnotcast: "ballotsnotcast",
+              globalid: "GlobalID",
+              creationdate: "CreationDate",
+              creator: "Creator",
+              editdate: "EditDate",
+              editor: "Editor"
+            }
+          },
+          layer1: {
+            fields: {
+              objectid: "OBJECTID",
+              contest: "contest",
+              category: "category",
+              jurisdictionname: "jurisdictionname",
+              candidate: "candidate",
+              party: "party",
+              numvotes: "numvotes",
+              percvote: "percvote",
+              globalid: "GlobalID",
+              creationdate: "CreationDate",
+              creator: "Creator",
+              editdate: "EditDate",
+              editor: "Editor"
+            }
+          }
+        }
+      },
+      ab766cba0dd44ec080420acc10990282: {
+        id: "b3c3021ef3e5409dbb2a35c8f111d1de",
+        fieldInfos: {
+          layer0: {
+            fields: {
+              jurisdictionname: "jurisdictionname",
+              jurisdictiontype: "jurisdictiontype",
+              regvoters: "regvoters",
+              ballotscast: "ballotscast",
+              ballotsnotcast: "ballotsnotcast",
+              globalid: "GlobalID",
+              creationdate: "CreationDate",
+              creator: "Creator",
+              editdate: "EditDate",
+              editor: "Editor",
+              contest: "contest",
+              category: "category",
+              jurisdictionname_1552494094382: "jurisdictionname_1552494094382",
+              candidate: "candidate",
+              party: "party",
+              numvotes: "numvotes",
+              percvote: "percvote",
+              globalid_1552494094382: "GlobalID_1552494094382",
+              creationdate_1552494094382: "CreationDate_1552494094382",
+              creator_1552494094382: "Creator_1552494094382",
+              editdate_1552494094382: "EditDate_1552494094382",
+              editor_1552494094382: "Editor_1552494094382",
+              objectid: "ObjectId"
+            }
+          },
+          layer1: {
+            fields: {
+              contest: "contest",
+              category: "category",
+              jurisdictionname: "jurisdictionname",
+              candidate: "candidate",
+              party: "party",
+              numvotes: "numvotes",
+              percvote: "percvote",
+              globalid: "GlobalID",
+              creationdate: "CreationDate",
+              creator: "Creator",
+              editdate: "EditDate",
+              editor: "Editor",
+              jurisdictionname_1552493773603: "jurisdictionname_1552493773603",
+              jurisdictiontype: "jurisdictiontype",
+              regvoters: "regvoters",
+              ballotscast: "ballotscast",
+              ballotsnotcast: "ballotsnotcast",
+              globalid_1552493773603: "GlobalID_1552493773603",
+              creationdate_1552493773603: "CreationDate_1552493773603",
+              creator_1552493773603: "Creator_1552493773603",
+              editdate_1552493773603: "EditDate_1552493773603",
+              editor_1552493773603: "Editor_1552493773603",
+              objectid: "ObjectId"
+            }
+          }
+        }
+      }
+    };
+
+    const expectedFieldInfosResults: any = {
+      "0": {
+        displayField: "jurisdictionname",
+        templates: [
+          {
+            prototype: {
+              attributes: {
+                jurisdictionname: null,
+                jurisdictiontype: null,
+                regvoters: null,
+                ballotscast: null,
+                ballotsnotcast: null
+              }
+            }
+          }
+        ],
+        relationships: [],
+        drawingInfo: {
+          renderer: {
+            visualVariables: [
+              {
+                field: "percvote"
+              }
+            ],
+            authoringInfo: {},
+            type: "uniqueValue",
+            field1: "party",
+            defaultSymbol: {},
+            uniqueValueInfos: []
+          }
+        }
+      },
+      "1": {
+        displayField: "jurisdictionname",
+        templates: [],
+        relationships: []
+      }
+    };
+
+    const expectedPopupResult = {
+      layers: {
+        "0": {
+          title: "",
+          fieldInfos: [
+            {
+              fieldName: "ObjectId"
+            },
+            {
+              fieldName: "contest"
+            },
+            {
+              fieldName: "category"
+            },
+            {
+              fieldName: "jurisdictionname"
+            },
+            {
+              fieldName: "jurisdictiontype"
+            },
+            {
+              fieldName: "candidate"
+            },
+            {
+              fieldName: "party"
+            },
+            {
+              fieldName: "numvotes"
+            },
+            {
+              fieldName: "percvote"
+            },
+            {
+              fieldName: "regvoters"
+            },
+            {
+              fieldName: "ballotscast"
+            },
+            {
+              fieldName: "ballotsnotcast"
+            },
+            {
+              fieldName: "expression/expr0"
+            },
+            {
+              fieldName: "GlobalID"
+            },
+            {
+              fieldName: "CreationDate"
+            },
+            {
+              fieldName: "Creator"
+            },
+            {
+              fieldName: "EditDate"
+            },
+            {
+              fieldName: "Editor"
+            },
+            {
+              fieldName: "jurisdictionname_1552494094382"
+            },
+            {
+              fieldName: "GlobalID_1552494094382"
+            },
+            {
+              fieldName: "CreationDate_1552494094382"
+            },
+            {
+              fieldName: "Creator_1552494094382"
+            },
+            {
+              fieldName: "EditDate_1552494094382"
+            },
+            {
+              fieldName: "Editor_1552494094382"
+            }
+          ],
+          description:
+            "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>contest\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>candidate</b> received the most votes in jurisdictionname.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>numvotes<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />percvote%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
+          expressionInfos: [
+            {
+              name: "expr0",
+              title: "Banner Color",
+              expression:
+                "if ($feature.party == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.party == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.party == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.party == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.party == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.party == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
+              returnType: "string"
+            }
+          ]
+        }
+      },
+      tables: {}
+    };
+
+    const expectedAdminLayerInfosResults: any = {
+      "0": {
+        geometryField: {
+          name: "ElectionResults_20190425_2115_55512.Shape"
+        },
+        viewLayerDefinition: {
+          table: {
+            sourceLayerId: 0,
+            sourceLayerFields: [
+              {
+                source: "jurisdictionname"
+              },
+              {
+                source: "jurisdictiontype"
+              },
+              {
+                source: "regvoters"
+              },
+              {
+                source: "ballotscast"
+              },
+              {
+                source: "ballotsnotcast"
+              },
+              {
+                source: "GlobalID"
+              },
+              {
+                source: "CreationDate"
+              },
+              {
+                source: "Creator"
+              },
+              {
+                source: "EditDate"
+              },
+              {
+                source: "Editor"
+              }
+            ],
+            relatedTables: [
+              {
+                name: "ElectionResults_1552494094382_join",
+                sourceServiceName: "ElectionResults_20190425_2115_55512",
+                sourceLayerId: 1,
+                topFilter: {
+                  orderByFields: "numvotes DESC",
+                  groupByFields: "jurisdictionname,contest"
+                },
+                sourceLayerFields: [
+                  {
+                    source: "contest"
+                  },
+                  {
+                    source: "category"
+                  },
+                  {
+                    source: "jurisdictionname"
+                  },
+                  {
+                    source: "candidate"
+                  },
+                  {
+                    source: "party"
+                  },
+                  {
+                    source: "numvotes"
+                  },
+                  {
+                    source: "percvote"
+                  },
+                  {
+                    source: "GlobalID"
+                  },
+                  {
+                    source: "CreationDate"
+                  },
+                  {
+                    source: "Creator"
+                  },
+                  {
+                    source: "EditDate"
+                  },
+                  {
+                    source: "Editor"
+                  }
+                ],
+                parentKeyFields: ["jurisdictionname"],
+                keyFields: ["jurisdictionname"]
+              }
+            ]
+          }
+        }
+      },
+      "1": {
+        geometryField: null,
+        viewLayerDefinition: {
+          table: {
+            name: "ElectionResults_1552493773603_target",
+            sourceServiceName: "ElectionResults_20190425_2115_55512",
+            sourceLayerId: 1,
+            sourceLayerFields: [
+              {
+                source: "contest"
+              },
+              {
+                source: "category"
+              },
+              {
+                source: "jurisdictionname"
+              },
+              {
+                source: "candidate"
+              },
+              {
+                source: "party"
+              },
+              {
+                source: "numvotes"
+              },
+              {
+                source: "percvote"
+              },
+              {
+                source: "GlobalID"
+              },
+              {
+                source: "CreationDate"
+              },
+              {
+                source: "Creator"
+              },
+              {
+                source: "EditDate"
+              },
+              {
+                source: "Editor"
+              }
+            ],
+            relatedTables: [
+              {
+                name: "ElectionResults_1552493773603_join",
+                sourceServiceName: "ElectionResults_20190425_2115_55512",
+                sourceLayerId: 0,
+                sourceLayerFields: [
+                  {
+                    source: "jurisdictionname"
+                  },
+                  {
+                    source: "jurisdictiontype"
+                  },
+                  {
+                    source: "regvoters"
+                  },
+                  {
+                    source: "ballotscast"
+                  },
+                  {
+                    source: "ballotsnotcast"
+                  },
+                  {
+                    source: "GlobalID"
+                  },
+                  {
+                    source: "CreationDate"
+                  },
+                  {
+                    source: "Creator"
+                  },
+                  {
+                    source: "EditDate"
+                  },
+                  {
+                    source: "Editor"
+                  }
+                ],
+                type: "INNER",
+                parentKeyFields: ["jurisdictionname"],
+                keyFields: ["jurisdictionname"]
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    const results: any = deTemplatizeFieldInfos(
+      fieldInfos,
+      popupInfos,
+      adminLayerInfos,
+      settings
+    );
+    expect(results.fieldInfos).toEqual(expectedFieldInfosResults);
+    expect(results.popupInfos).toEqual(expectedPopupResult);
+    expect(results.adminLayerInfos).toEqual(expectedAdminLayerInfosResults);
+  });
+});
