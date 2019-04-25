@@ -2311,7 +2311,12 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
       itemTemplate.properties.tables = null;
 
       mFeatureService
-        .addFeatureServiceLayersAndTables(itemTemplate, {}, MOCK_USER_REQOPTS)
+        .addFeatureServiceLayersAndTables(
+          itemTemplate,
+          {},
+          MOCK_USER_REQOPTS,
+          {}
+        )
         .then(() => done(), error => done.fail(error));
     });
 
@@ -3773,7 +3778,7 @@ describe("Module `solution`: generation, publication, and cloning of a solution 
   describe("supporting routine: getLayers", () => {
     it("should handle an empty layer list", done => {
       mFeatureService
-        .getLayers(orgUrl, [], [], MOCK_USER_REQOPTS)
+        .getLayers(orgUrl, [], MOCK_USER_REQOPTS)
         .then(() => done(), () => done.fail());
     });
   });

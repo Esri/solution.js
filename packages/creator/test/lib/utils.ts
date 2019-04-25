@@ -50,11 +50,12 @@ export const ArcgisRestSuccessFailStruct = {
 
 export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   return (
-    error &&
-    typeof error.success === "boolean" &&
-    error.success === false &&
-    typeof error.error === "object" &&
-    error.error.name === "ArcGISRequestError"
+    (error &&
+      typeof error.success === "boolean" &&
+      error.success === false &&
+      typeof error.error === "object" &&
+      error.error.name === "ArcGISRequestError") ||
+    (error && typeof error.success === "boolean" && error.success === false)
   );
 }
 

@@ -739,7 +739,9 @@ export function postProcessFields(
   const layersAndTables: any[] = layers.concat(tables);
 
   layersAndTables.forEach((item: any) => {
-    fieldInfos[item.id]["newFields"] = item.fields;
+    if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
+      fieldInfos[item.id]["newFields"] = item.fields;
+    }
   });
 
   settingsKeys.forEach((k: any) => {

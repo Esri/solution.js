@@ -20,6 +20,7 @@ import * as mCommon from "../itemTypes/common";
 import * as objectUtils from "../utils/object-helpers";
 import { IStringValuePair, ITemplate } from "../interfaces";
 import * as adlib from "adlib";
+import { join } from "path";
 
 //#endregion
 
@@ -309,7 +310,7 @@ export function _templatizeRelationshipFields(
   layer: any,
   itemID: string
 ): void {
-  if (layer.relationships) {
+  if (layer && layer.relationships) {
     const relationships: any[] = layer.relationships;
     relationships.forEach(r => {
       if (r.keyField && r.hasOwnProperty("relatedTableId")) {
@@ -329,9 +330,19 @@ export function _templatizeRelationshipFields(
  * @param basePath path used to de-templatize while deploying
  */
 export function _templatizeEditFieldsInfo(layer: any, basePath: string): void {
-  const editFieldsInfo: any = layer.editFieldsInfo || {};
-  const keys: string[] = Object.keys(editFieldsInfo) || [];
-  keys.forEach(k => _templatizeProperty(editFieldsInfo, k, basePath));
+  const editFieldsInfo: any = layer.editFieldsInfo;
+  if (editFieldsInfo) {
+    const keys: string[] = Object.keys(editFieldsInfo);
+    if (keys.length > 0) {
+      const _editFieldsInfo: any = {};
+      keys.forEach(
+        (k): any => {
+          _editFieldsInfo[_templatize(basePath, k)] = editFieldsInfo[k];
+        }
+      );
+      layer.editFieldsInfo = _editFieldsInfo;
+    }
+  }
 }
 
 /**
@@ -354,8 +365,8 @@ export function _templatizePopupInfo(
   // from the associated layer json
   if (fieldNames && layerDefinition.popupInfo) {
     const popupInfo: any = layerDefinition.popupInfo || {};
-    _templatizeFieldName(popupInfo, "title", fieldNames, basePath);
-    _templatizeFieldName(popupInfo, "description", fieldNames, basePath);
+    _templatizeName(popupInfo, "title", fieldNames, basePath);
+    _templatizeName(popupInfo, "description", fieldNames, basePath);
 
     const fieldInfos: any[] = popupInfo.fieldInfos || [];
     _templatizePopupInfoFieldInfos(fieldInfos, layer, itemID, basePath);
@@ -364,10 +375,16 @@ export function _templatizePopupInfo(
     _templatizeExpressionInfos(expressionInfos, fieldNames, basePath);
 
     const popupElements: any[] = popupInfo.popupElements || [];
-    _templatizePopupElements(popupElements, basePath);
+    _templatizePopupElements(
+      popupElements,
+      basePath,
+      layer,
+      itemID,
+      fieldNames
+    );
 
     const mediaInfos: any = popupInfo.mediaInfos || {};
-    _templatizeMediaInfos(mediaInfos, fieldNames, basePath);
+    _templatizeMediaInfos(mediaInfos, fieldNames, basePath, layer, itemID);
   }
 }
 
@@ -380,7 +397,7 @@ export function _templatizePopupInfo(
  * @param fieldNames array for field names for the layer
  * @param basePath path used to de-templatize while deploying
  */
-export function _templatizeFieldName(
+export function _templatizeName(
   object: any,
   property: string,
   fieldNames: string[],
@@ -390,7 +407,7 @@ export function _templatizeFieldName(
     fieldNames.forEach(name => {
       // Only test and replace instance of the name so any enclosing characters
       // will be retained
-      const regEx = new RegExp("(" + name + ")", "gm");
+      const regEx = new RegExp("(\\b" + name + "\\b)", "gm");
       if (regEx.test(object[property])) {
         object[property] = object[property].replace(
           regEx,
@@ -417,35 +434,54 @@ export function _templatizePopupInfoFieldInfos(
   basePath: string
 ): void {
   fieldInfos.forEach((f: any) => {
-    if (f.fieldName.indexOf("relationships/") > -1) {
-      const rels = f.fieldName.split("/");
-      const relationshipId = rels[1];
-
-      const relatedTables: any[] = objectUtils.getProp(
-        layer,
-        layer.isView
-          ? "adminLayerInfo.viewLayerDefinition.table.relatedTables"
-          : "relationships"
-      );
-
-      const relatedTable: any = relatedTables[relationshipId];
-
-      const _basePath: string =
-        itemID +
-        ".fieldInfos.layer" +
-        relatedTable[layer.isView ? "sourceLayerId" : "relatedTableId"] +
-        ".fields";
-
-      rels[2] = _templatize(_basePath, rels[2]);
-      f.fieldName = rels.join("/");
-    } else {
-      // do not need to templatize expression references as the expression
-      // itself will be templatized
-      if (f.fieldName.indexOf("expression/") === -1) {
-        _templatizeProperty(f, "fieldName", basePath);
-      }
-    }
+    f.fieldName = _templatizeFieldName(f.fieldName, layer, itemID, basePath);
   });
+}
+
+/**
+ * templatize field name when referenced like this: {{fieldName}}
+ * checks each field name from the layer
+ *
+ * @param name the field name to templatize
+ * @param layer json of layer being cloned
+ * @param itemID id of the item that contains the current layer
+ * @param basePath path used to de-templatize while deploying
+ */
+export function _templatizeFieldName(
+  name: string,
+  layer: any,
+  itemID: string,
+  basePath: string
+): string {
+  if (name.indexOf("relationships/") > -1) {
+    const rels = name.split("/");
+    const relationshipId = rels[1];
+
+    const relatedTables: any = objectUtils.getProp(
+      layer,
+      layer.isView
+        ? "adminLayerInfo.viewLayerDefinition.table.relatedTables"
+        : "relationships"
+    );
+
+    const relatedTable: any = relatedTables[relationshipId];
+
+    const _basePath: string =
+      itemID +
+      ".fieldInfos.layer" +
+      relatedTable[layer.isView ? "sourceLayerId" : "relatedTableId"] +
+      ".fields";
+
+    rels[2] = _templatize(_basePath, rels[2]);
+    name = rels.join("/");
+  } else {
+    // do not need to templatize expression references as the expression
+    // itself will be templatized
+    if (name.indexOf("expression/") === -1) {
+      name = _templatize(basePath, name);
+    }
+  }
+  return name;
 }
 
 /**
@@ -476,12 +512,18 @@ export function _templatizeExpressionInfos(
  */
 export function _templatizePopupElements(
   popupElelments: any[],
-  basePath: string
+  basePath: string,
+  layer: any,
+  itemID: string,
+  fieldNames: any
 ): void {
   popupElelments.forEach((pe: any) => {
     if (pe.hasOwnProperty("fieldInfos")) {
-      const infos: any[] = pe.fieldInfos || [];
-      infos.forEach(fi => _templatizeProperty(fi, "fieldName", basePath));
+      _templatizePopupInfoFieldInfos(pe.fieldInfos, layer, itemID, basePath);
+    }
+
+    if (pe.hasOwnProperty("mediaInfos")) {
+      _templatizeMediaInfos(pe.mediaInfos, fieldNames, basePath, layer, itemID);
     }
   });
 }
@@ -496,22 +538,37 @@ export function _templatizePopupElements(
 export function _templatizeMediaInfos(
   mediaInfos: any,
   fieldNames: string[],
-  basePath: string
+  basePath: string,
+  layer: any,
+  itemId: string
 ): void {
   // templatize various properties of mediaInfos
   const props: string[] = ["title", "caption"];
-  props.forEach(p => _templatizeFieldName(mediaInfos, p, fieldNames, basePath));
+  props.forEach(p => _templatizeName(mediaInfos, p, fieldNames, basePath));
 
-  if (mediaInfos.hasOwnProperty("value")) {
-    const v: any = mediaInfos.value;
+  mediaInfos.forEach((mi: any) => {
+    if (mi.hasOwnProperty("value")) {
+      const v: any = mi.value;
 
-    const vfields: any[] = objectUtils.getProp(v, "fields") || [];
-    vfields.forEach(f => _templatizeProperty(vfields, f, basePath));
+      const vfields: any[] = v.fields || [];
+      v.fields = vfields.map(f =>
+        _templatizeFieldName(f, layer, itemId, basePath)
+      );
 
-    if (v.hasOwnProperty("normalizeField")) {
-      _templatizeProperty(v, "normalizeField", basePath);
+      if (v.hasOwnProperty("normalizeField")) {
+        _templatizeProperty(v, "normalizeField", basePath);
+      }
+
+      if (v.hasOwnProperty("tooltipField")) {
+        v.tooltipField = _templatizeFieldName(
+          v.tooltipField,
+          layer,
+          itemId,
+          basePath
+        );
+      }
     }
-  }
+  });
 }
 
 /**
@@ -526,20 +583,28 @@ export function _templatizeDefinitionEditor(
   basePath: string,
   fieldNames: string[]
 ): void {
-  const defEditor: any = layer.definitionEditor || {};
-  const parameters: any[] = objectUtils.getProp(defEditor, "inputs.parameters");
+  if (layer) {
+    const defEditor: any = layer.definitionEditor || {};
+    if (defEditor) {
+      const inputs: any[] = defEditor.inputs;
+      if (inputs) {
+        inputs.forEach(i => {
+          if (i.parameters) {
+            i.parameters.forEach((p: any) => {
+              _templatizeProperty(p, "fieldName", basePath);
+            });
+          }
+        });
+      }
 
-  if (parameters) {
-    parameters.forEach(p => _templatizeProperty(p, "fieldName", basePath));
-    defEditor.inputs.parameters = parameters;
-  }
-
-  if (defEditor.hasOwnProperty("parameterizedExpression")) {
-    defEditor.parameterizedExpression = _templatizeSimpleName(
-      defEditor.parameterizedExpression || "",
-      basePath,
-      fieldNames
-    );
+      if (defEditor.hasOwnProperty("parameterizedExpression")) {
+        defEditor.parameterizedExpression = _templatizeSimpleName(
+          defEditor.parameterizedExpression || "",
+          basePath,
+          fieldNames
+        );
+      }
+    }
   }
 }
 
@@ -555,7 +620,7 @@ export function _templatizeDefinitionExpression(
   basePath: string,
   fieldNames: string[]
 ): void {
-  if (layer.hasOwnProperty("definitionExpression")) {
+  if (layer && layer.hasOwnProperty("definitionExpression")) {
     layer.definitionExpression = _templatizeSimpleName(
       layer.definitionExpression || "",
       basePath,
@@ -579,10 +644,7 @@ export function _templatizeSimpleName(
   fieldNames.forEach(name => {
     const regEx = new RegExp("\\b" + name + "\\b", "gm");
     if (expression && regEx.test(expression)) {
-      expression = expression.replace(
-        regEx,
-        String(_templatize(basePath, name))
-      );
+      expression = expression.replace(regEx, _templatize(basePath, name));
     }
   });
   return expression;
@@ -600,15 +662,19 @@ export function _templatizeDrawingInfo(
   basePath: string,
   fieldNames: string[]
 ): void {
-  const drawingInfo: any = layer.drawingInfo || {};
+  if (layer) {
+    const drawingInfo: any = layer.drawingInfo;
 
-  // templatize the renderer fields
-  const renderer: any = drawingInfo.renderer || {};
-  _templatizeRenderer(renderer, basePath, fieldNames);
+    if (drawingInfo) {
+      // templatize the renderer fields
+      const renderer: any = drawingInfo.renderer || {};
+      _templatizeRenderer(renderer, basePath, fieldNames);
 
-  // templatize the labelingInfo
-  const labelingInfo: any = drawingInfo.labelingInfo || [];
-  _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
+      // templatize the labelingInfo
+      const labelingInfo: any = drawingInfo.labelingInfo || [];
+      _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
+    }
+  }
 }
 
 /**
@@ -628,13 +694,11 @@ export function _templatizeRenderer(
     case "uniqueValue":
     case "predominance":
     case "simple":
+    case "heatmap":
       _templatizeGenRenderer(renderer, basePath, fieldNames);
       break;
     case "temporal":
       _templatizeTemporalRenderer(renderer, basePath, fieldNames);
-      break;
-    case "heatmap":
-      _templatizeProperty(renderer, "field", basePath);
       break;
     default:
       break;
@@ -656,7 +720,9 @@ export function _templatizeGenRenderer(
   if (renderer) {
     // update authoringInfo
     const authoringInfo: any = renderer.authoringInfo;
-    _templatizeAuthoringInfo(authoringInfo, basePath, fieldNames);
+    if (authoringInfo) {
+      _templatizeAuthoringInfo(authoringInfo, basePath, fieldNames);
+    }
 
     const props: string[] = ["field", "normalizationField"];
     props.forEach(p => _templatizeProperty(renderer, p, basePath));
@@ -665,34 +731,46 @@ export function _templatizeGenRenderer(
     fieldNameProps.forEach(fnP => _templatizeProperty(renderer, fnP, basePath));
 
     // When an attribute name is specified, it's enclosed in square brackets
-    let rExp: string = renderer.rotationExpression || "";
-    fieldNames.forEach(name => {
-      const regEx = new RegExp("(\\[" + name + "\\])", "gm");
-      if (rExp && regEx.test(rExp)) {
-        rExp = rExp.replace(regEx, "[" + _templatize(basePath, name) + "]");
-      }
-    });
+    const rExp: string = renderer.rotationExpression;
+    if (rExp) {
+      fieldNames.forEach(name => {
+        const regEx = new RegExp("(\\[" + name + "\\])", "gm");
+        if (regEx.test(rExp)) {
+          renderer.rotationExpression = rExp.replace(
+            regEx,
+            "[" + _templatize(basePath, name) + "]"
+          );
+        }
+      });
+    }
 
     // update valueExpression
-    let vExp: string = renderer.valueExpression || "";
-    fieldNames.forEach(name => {
-      vExp = _templatizeArcadeExpressions(vExp, name, basePath);
-    });
+    if (renderer.valueExpression) {
+      fieldNames.forEach(name => {
+        renderer.valueExpression = _templatizeArcadeExpressions(
+          renderer.valueExpression,
+          name,
+          basePath
+        );
+      });
+    }
 
     // update visualVariables
-    const visualVariables: any[] = renderer.visualVariables || [];
-    visualVariables.forEach(v => {
-      props.forEach(p => _templatizeProperty(v, p, basePath));
-      if (v.valueExpression) {
-        fieldNames.forEach(name => {
-          v.valueExpression = _templatizeArcadeExpressions(
-            v.valueExpression,
-            name,
-            basePath
-          );
-        });
-      }
-    });
+    const visualVariables: any[] = renderer.visualVariables;
+    if (visualVariables) {
+      visualVariables.forEach(v => {
+        props.forEach(p => _templatizeProperty(v, p, basePath));
+        if (v.valueExpression) {
+          fieldNames.forEach(name => {
+            v.valueExpression = _templatizeArcadeExpressions(
+              v.valueExpression,
+              name,
+              basePath
+            );
+          });
+        }
+      });
+    }
   }
 }
 
@@ -710,11 +788,13 @@ export function _templatizeTemporalRenderer(
 ): void {
   const renderers: any[] = [
     renderer.latestObservationRenderer,
-    renderer.observationalRenderer,
+    renderer.observationRenderer,
     renderer.trackRenderer
   ];
 
-  renderers.forEach(r => _templatizeGenRenderer(r, basePath, fieldNames));
+  renderers.forEach(r => {
+    _templatizeRenderer(r, basePath, fieldNames);
+  });
 }
 
 /**
@@ -739,8 +819,8 @@ export function _templatizeAuthoringInfo(
     props.forEach(p => _templatizeProperty(field2, p, basePath));
 
     const fields: any[] = authoringInfo.fields;
-    if (fields && Array.isArray(fields)) {
-      fields.forEach(f => _templatize(basePath, f));
+    if (fields) {
+      authoringInfo.fields = fields.map(f => _templatize(basePath, f));
     }
 
     const vProps: string[] = ["endTime", "field", "startTime"];
@@ -770,35 +850,48 @@ export function _templatizeArcadeExpressions(
 ): string {
   const t = _templatize(basePath, fieldName);
 
-  // test for . notation
-  let exp: string = "(?:[$]feature.)(" + fieldName + ")\\b";
-  let regEx = new RegExp(exp, "gm");
-  if (text && regEx.test(text)) {
-    text = text.replace(regEx, "$feature." + t);
-  }
+  if (text) {
+    // test for $feature. notation
+    // captures VOTED_DEM_2012 from $feature.VOTED_DEM_2012
+    let exp: string = "(?:\\$feature\\.)(" + fieldName + ")\\b";
+    let regEx = new RegExp(exp, "gm");
+    text = regEx.test(text) ? text.replace(regEx, "$feature." + t) : text;
 
-  // test for [] notation
-  // captures VOTED_DEM_2012 from $feature["VOTED_DEM_2012"]
-  exp = '(?:[$]feature\\[\\")(' + fieldName + ')(?:\\"\\])';
-  regEx = new RegExp(exp, "gm");
-  if (text && regEx.test(text)) {
-    text = text.replace(regEx, "$feature[" + t + "]");
-  }
+    // test for $feature[] notation
+    // captures VOTED_DEM_2012 from $feature["VOTED_DEM_2012"]
+    // captures VOTED_DEM_2012 from $feature['VOTED_DEM_2012']
+    // captures VOTED_DEM_2012 from $feature[VOTED_DEM_2012]
+    exp = "(?:[$]feature)(\\[\\\"?\\'?)" + fieldName + "(\\\"?\\'?\\])";
+    regEx = new RegExp(exp, "gm");
+    let result = regEx.exec(text);
+    if (result) {
+      text = text.replace(regEx, "$feature" + result[1] + t + result[2]);
+    }
 
-  // test for [] with join case
-  // captures VOTED_DEM_2016 from $feature["COUNTY_ID.VOTED_DEM_2016"]
-  // (?:[$]feature\[\")(?:\w+\.)(VOTED_DEM_2012)(?:\"\])
-  exp = '(?:[$]feature\\[\\")(?:\\w+\\.)(' + fieldName + ')(?:\\"\\])';
-  regEx = new RegExp(exp, "gm");
-  if (text && regEx.test(text)) {
-    // need the joinKey also
-    const keyExp =
-      '(?:[$]feature\\[\\")(\\w+\\.)(?:' + fieldName + ')(?:\\"\\])';
-    const joinKeyEx = new RegExp(keyExp, "gm");
-    const joinKey: string[] = joinKeyEx.exec(text);
-    text = text.replace(regEx, "$feature[" + joinKey[0] + "." + t + "]");
-  }
+    // test for $feature[] with join case
+    // captures VOTED_DEM_2016 from $feature["COUNTY_ID.VOTED_DEM_2016"]
+    exp =
+      "(?:[$]feature)(\\[\\\"?\\'?)(\\w+)[.]" + fieldName + "(\\\"?\\'?\\])";
+    regEx = new RegExp(exp, "gm");
+    result = regEx.exec(text);
+    if (result && result.length > 3) {
+      // TODO result[2] is the table name...this needs to be templatized as well
+      text = text.replace(
+        regEx,
+        "$feature" + result[1] + result[2] + "." + t + result[3]
+      );
+    }
 
+    // test for "fieldName"
+    // captures fieldName from "var names = ["fieldName", "fieldName2"]..."
+    // captures fieldName from "var names = ['fieldName', 'fieldName2']..."
+    exp = "(\\\"?\\'?)+" + fieldName + "(\\\"?\\'?)+";
+    regEx = new RegExp(exp, "gm");
+    result = regEx.exec(text);
+    if (result) {
+      text = text.replace(regEx, result[1] + t + result[2]);
+    }
+  }
   return text;
 }
 
@@ -820,25 +913,36 @@ export function _templatizeLabelingInfo(
       fieldInfos.forEach(fi => _templatizeProperty(fi, "fieldName", basePath));
     }
 
-    let labelExp: string = li.labelExpression || "";
-    let labelExpInfo: any = li.labelExpressionInfo || "";
+    const labelExp: string = li.labelExpression || "";
+    const labelExpInfo: any = li.labelExpressionInfo || {};
     fieldNames.forEach(n => {
-      const t: string = String(_templatize(basePath, n));
+      const t: string = _templatize(basePath, n);
 
-      let regEx = new RegExp("(\\[" + n + "\\])", "gm");
-      if (regEx.test(labelExp)) {
-        labelExp = labelExp.replace(regEx, "[" + t + "]");
+      // check for [fieldName] or ["fieldName"]
+      const regExBracket = new RegExp('(\\[\\"*)+(' + n + ')(\\"*\\])+', "gm");
+      let result = regExBracket.exec(labelExp);
+      if (result) {
+        li.labelExpression = labelExp.replace(
+          regExBracket,
+          result[1] + t + result[3]
+        );
       }
 
       if (labelExpInfo.value) {
-        regEx = new RegExp("(\\{" + n + "\\})", "gm");
-        if (regEx.test(labelExpInfo)) {
-          labelExpInfo = labelExpInfo.replace(regEx, "{" + t + "}");
-        }
+        let v = labelExpInfo.value;
+        // check for {fieldName}
+        const regExCurly = new RegExp("(\\{" + n + "\\})", "gm");
+        v = regExCurly.test(v) ? v.replace(regExCurly, "{" + t + "}") : v;
+
+        // check for [fieldName] or ["fieldName"]
+        result = regExBracket.exec(v);
+        v = result ? v.replace(regExBracket, result[1] + t + result[3]) : v;
+
+        li.labelExpressionInfo.value = v;
       }
 
       if (labelExpInfo.expression) {
-        labelExpInfo.expression = _templatizeArcadeExpressions(
+        li.labelExpressionInfo.expression = _templatizeArcadeExpressions(
           labelExpInfo.expression,
           n,
           basePath
@@ -863,7 +967,7 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
     if (attributeKeys.length > 0) {
       const _attributes: any = {};
       attributeKeys.forEach(k => {
-        _attributes[String(_templatize(basePath, k))] = attributes[k];
+        _attributes[_templatize(basePath, k)] = attributes[k];
       });
       t.prototype.attributes = _attributes;
     }
@@ -876,14 +980,11 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
  * @param basePath path used to de-templatize while deploying
  * @param value to be converted to lower case for lookup while deploying
  */
-export function _templatize(
-  basePath: string,
-  value: string
-): string | string[] {
+export function _templatize(basePath: string, value: string): string {
   if (value.startsWith("{{")) {
     return value;
   } else {
-    return mCommon.templatize(basePath, String(value).toLowerCase());
+    return String(mCommon.templatize(basePath, String(value).toLowerCase()));
   }
 }
 
@@ -900,7 +1001,12 @@ export function _cacheFieldInfo(
   prop: string,
   fieldInfos: any
 ): void {
-  if (layer.hasOwnProperty(prop)) {
+  if (
+    layer &&
+    layer.hasOwnProperty(prop) &&
+    fieldInfos &&
+    fieldInfos.hasOwnProperty(layer.id)
+  ) {
     fieldInfos[layer.id][prop] = layer[prop];
     layer[prop] = null;
   }
