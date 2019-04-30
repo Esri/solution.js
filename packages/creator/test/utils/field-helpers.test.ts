@@ -60,7 +60,8 @@ describe("_templatizeAdminLayerInfoFields", () => {
   it("works", () => {
     // Test empty object does not fail
     let layer: any = {};
-    _templatizeAdminLayerInfoFields(layer, basePath, itemId);
+    let dependencies: any[] = [];
+    _templatizeAdminLayerInfoFields(layer, dependencies);
     expect(layer).toEqual({});
 
     // Test source layer fields updates
@@ -69,6 +70,8 @@ describe("_templatizeAdminLayerInfoFields", () => {
       adminLayerInfo: {
         viewLayerDefinition: {
           table: {
+            sourceServiceName: "Table",
+            sourceLayerId: 0,
             sourceLayerFields: [
               {
                 name: "A",
@@ -83,11 +86,19 @@ describe("_templatizeAdminLayerInfoFields", () => {
         }
       }
     };
-    _templatizeAdminLayerInfoFields(layer, basePath, itemId);
+    dependencies = [
+      {
+        name: "Table",
+        id: "cd766cba0dd44ec080420acc10990282"
+      }
+    ];
+    _templatizeAdminLayerInfoFields(layer, dependencies);
     expect(layer).toEqual({
       adminLayerInfo: {
         viewLayerDefinition: {
           table: {
+            sourceServiceName: "Table",
+            sourceLayerId: 0,
             sourceLayerFields: [
               {
                 name: "A",
@@ -109,8 +120,21 @@ describe("_templatizeAdminLayerInfoFields", () => {
       adminLayerInfo: {
         viewLayerDefinition: {
           table: {
+            sourceServiceName: "Table",
+            sourceLayerId: 0,
+            sourceLayerFields: [
+              {
+                name: "A",
+                source: "A"
+              },
+              {
+                name: "B",
+                source: "B"
+              }
+            ],
             relatedTables: [
               {
+                sourceServiceName: "Table",
                 sourceLayerId: 1,
                 topFilter: {
                   orderByFields: "AA DESC",
@@ -134,13 +158,26 @@ describe("_templatizeAdminLayerInfoFields", () => {
         }
       }
     };
-    _templatizeAdminLayerInfoFields(layer, basePath, itemId);
+    _templatizeAdminLayerInfoFields(layer, dependencies);
     expect(layer).toEqual({
       adminLayerInfo: {
         viewLayerDefinition: {
           table: {
+            sourceServiceName: "Table",
+            sourceLayerId: 0,
+            sourceLayerFields: [
+              {
+                name: "A",
+                source: "{{" + basePath + ".a}}"
+              },
+              {
+                name: "B",
+                source: "{{" + basePath + ".b}}"
+              }
+            ],
             relatedTables: [
               {
+                sourceServiceName: "Table",
                 sourceLayerId: 1,
                 topFilter: {
                   orderByFields: "{{" + relatedBasePath + ".aa}} DESC",
@@ -186,6 +223,7 @@ describe("_templatizeRelationshipFields", () => {
     // Test
     const id = "1";
     layer = {
+      id: "0",
       relationships: [
         {
           relatedTableId: id,
@@ -195,10 +233,11 @@ describe("_templatizeRelationshipFields", () => {
     };
     _templatizeRelationshipFields(layer, itemId);
     expect(layer).toEqual({
+      id: "0",
       relationships: [
         {
           relatedTableId: id,
-          keyField: "{{" + itemId + ".fieldInfos.layer" + id + ".fields.aa}}"
+          keyField: "{{" + itemId + ".fieldInfos.layer0.fields.aa}}"
         }
       ]
     });
@@ -224,13 +263,16 @@ describe("_templatizeEditFieldsInfo", () => {
     // test with editFieldsInfo
     layer = {
       editFieldsInfo: {
-        CreateDate: null,
-        EditDate: null
+        createDate: "CreateDate",
+        editDate: "EditDate"
       }
     };
-    const expected: any = { editFieldsInfo: {} };
-    expected.editFieldsInfo["{{" + basePath + ".createdate}}"] = null;
-    expected.editFieldsInfo["{{" + basePath + ".editdate}}"] = null;
+    const expected: any = {
+      editFieldsInfo: {
+        createDate: "{{" + basePath + ".createdate}}",
+        editDate: "{{" + basePath + ".editdate}}"
+      }
+    };
     _templatizeEditFieldsInfo(layer, basePath);
     expect(layer).toEqual(expected);
   });
@@ -1189,6 +1231,27 @@ describe("_templatizeArcadeExpressions", () => {
     const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP"];
     text =
       "Round((($feature.POP_16UP - $feature.EMP_CY)/$feature.POP_16UP)*100,2) + '%'";
+    fieldNames.forEach((name: string) => {
+      text = _templatizeArcadeExpressions(text, name, basePath);
+    });
+    expect(text).toEqual(
+      "Round((($feature.{{" +
+        basePath +
+        ".pop_16up}} - $feature.{{" +
+        basePath +
+        ".emp_cy}})/$feature.{{" +
+        basePath +
+        ".pop_16up}})*100,2) + '%'"
+    );
+
+    text =
+      "Round((($feature.{{" +
+      basePath +
+      ".pop_16up}} - $feature.{{" +
+      basePath +
+      ".emp_cy}})/$feature.{{" +
+      basePath +
+      ".pop_16up}})*100,2) + '%'";
     fieldNames.forEach((name: string) => {
       text = _templatizeArcadeExpressions(text, name, basePath);
     });

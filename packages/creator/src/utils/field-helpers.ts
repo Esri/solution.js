@@ -21,6 +21,7 @@ import * as objectUtils from "../utils/object-helpers";
 import { IStringValuePair, ITemplate } from "../interfaces";
 import * as adlib from "adlib";
 import { join } from "path";
+import { IDependency } from "../itemTypes/featureservice";
 
 //#endregion
 
@@ -40,22 +41,24 @@ import { join } from "path";
 export function templatizeLayerFieldReferences(
   layerDefinition: any,
   itemID: string,
-  layer: any
+  layer: any,
+  dependencies: IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
-  const path: string =
-    itemID + ".fieldInfos.layer" + layerDefinition.id + ".fields";
+  const path: string = itemID + ".fieldInfos.layer" + layer.id + ".fields";
 
   // Get the field names for various tests
   const fieldNames: string[] = layer.fields.map((f: any) => f.name);
 
   // Update the layerDefinition
-  _templatizeAdminLayerInfoFields(layerDefinition, path, itemID);
-  _templatizePopupInfo(layerDefinition, layer, path, itemID, fieldNames);
+  if (layerDefinition) {
+    _templatizeAdminLayerInfoFields(layerDefinition, dependencies);
+    _templatizePopupInfo(layerDefinition, layer, path, itemID, fieldNames);
+  }
 
   // Update the layer json
   _templatizeProperty(layer, "displayField", path);
-  _templatizeAdminLayerInfoFields(layer, path, itemID);
+  _templatizeAdminLayerInfoFields(layer, dependencies);
   _templatizeRelationshipFields(layer, itemID);
   _templatizeEditFieldsInfo(layer, path);
   _templatizeDefinitionEditor(layer, path, fieldNames);
@@ -83,6 +86,8 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
   const props: string[] = [
     "displayField",
     "editFieldsInfo",
+    "hasStaticData",
+    "editorTrackingInfo",
     "templates",
     "relationships",
     "drawingInfo"
@@ -215,45 +220,63 @@ export function _templatizeProperty(
  */
 export function _templatizeAdminLayerInfoFields(
   layer: any,
-  basePath: string,
-  itemID: string
+  dependencies: IDependency[]
 ): void {
   // templatize the source layer fields
-  const sourceLayerFields =
-    objectUtils.getProp(
-      layer,
-      "adminLayerInfo.viewLayerDefinition.table.sourceLayerFields"
-    ) || [];
+  const table = objectUtils.getProp(
+    layer,
+    "adminLayerInfo.viewLayerDefinition.table"
+  );
 
-  _templatizeAdminSourceLayerFields(sourceLayerFields, basePath);
+  if (table) {
+    let id: string = _getDependantItemId(table.sourceServiceName, dependencies);
+    const path: string =
+      id + ".fieldInfos.layer" + table.sourceLayerId + ".fields";
 
-  // templatize the releated table fields
-  const relatedTables =
-    objectUtils.getProp(
-      layer,
-      "adminLayerInfo.viewLayerDefinition.table.relatedTables"
-    ) || [];
+    _templatizeAdminSourceLayerFields(table.sourceLayerFields || [], path);
 
-  if (relatedTables.length > 0) {
-    relatedTables.forEach((t: any) => {
-      const relatedPath =
-        itemID + ".fieldInfos.layer" + t.sourceLayerId + ".fields";
+    // templatize the releated table fields
+    const relatedTables =
+      objectUtils.getProp(
+        layer,
+        "adminLayerInfo.viewLayerDefinition.table.relatedTables"
+      ) || [];
 
-      _templatizeTopFilter(t.topFilter || {}, relatedPath);
+    if (relatedTables.length > 0) {
+      relatedTables.forEach((t: any) => {
+        id = _getDependantItemId(t.sourceServiceName, dependencies);
+        const relatedPath: string =
+          id + ".fieldInfos.layer" + t.sourceLayerId + ".fields";
 
-      _templatizeAdminSourceLayerFields(t.sourceLayerFields || [], relatedPath);
+        _templatizeTopFilter(t.topFilter || {}, relatedPath);
 
-      const parentKeyFields: any[] = t.parentKeyFields || [];
-      t.parentKeyFields = parentKeyFields.map((f: any) => {
-        return _templatize(basePath, f);
+        _templatizeAdminSourceLayerFields(
+          t.sourceLayerFields || [],
+          relatedPath
+        );
+
+        const parentKeyFields: any[] = t.parentKeyFields || [];
+        t.parentKeyFields = parentKeyFields.map((f: any) => {
+          return _templatize(path, f);
+        });
+
+        const keyFields: any[] = t.keyFields || [];
+        t.keyFields = keyFields.map((f: any) => {
+          return _templatize(relatedPath, f);
+        });
       });
-
-      const keyFields: any[] = t.keyFields || [];
-      t.keyFields = keyFields.map((f: any) => {
-        return _templatize(relatedPath, f);
-      });
-    });
+    }
   }
+}
+
+export function _getDependantItemId(
+  lookupName: string,
+  dependencies: IDependency[]
+): string | undefined {
+  const deps = dependencies.filter(
+    dependency => dependency.name === lookupName
+  );
+  return deps.length === 1 ? deps[0].id : undefined;
 }
 
 /**
@@ -313,10 +336,9 @@ export function _templatizeRelationshipFields(
   if (layer && layer.relationships) {
     const relationships: any[] = layer.relationships;
     relationships.forEach(r => {
-      if (r.keyField && r.hasOwnProperty("relatedTableId")) {
-        // template path will need to retain relatedTableId
+      if (r.keyField) {
         const basePath: string =
-          itemID + ".fieldInfos.layer" + r.relatedTableId + ".fields";
+          itemID + ".fieldInfos.layer" + layer.id + ".fields";
         _templatizeProperty(r, "keyField", basePath);
       }
     });
@@ -334,13 +356,11 @@ export function _templatizeEditFieldsInfo(layer: any, basePath: string): void {
   if (editFieldsInfo) {
     const keys: string[] = Object.keys(editFieldsInfo);
     if (keys.length > 0) {
-      const _editFieldsInfo: any = {};
       keys.forEach(
         (k): any => {
-          _editFieldsInfo[_templatize(basePath, k)] = editFieldsInfo[k];
+          _templatizeProperty(editFieldsInfo, k, basePath);
         }
       );
-      layer.editFieldsInfo = _editFieldsInfo;
     }
   }
 }
@@ -885,7 +905,7 @@ export function _templatizeArcadeExpressions(
     // test for "fieldName"
     // captures fieldName from "var names = ["fieldName", "fieldName2"]..."
     // captures fieldName from "var names = ['fieldName', 'fieldName2']..."
-    exp = "(\\\"?\\'?)+" + fieldName + "(\\\"?\\'?)+";
+    exp = "(\\\"|\\')+" + fieldName + "(\\\"|\\')+";
     regEx = new RegExp(exp, "gm");
     result = regEx.exec(text);
     if (result) {

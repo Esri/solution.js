@@ -226,19 +226,16 @@ export function templatizeData(
     itemTemplate.properties.service.serviceItemId
   );
 
-  _items.forEach((item: any) => {
+  jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
-    const matchingItems = jsonItems.filter(jsonItem => {
+    const matchingItems = _items.filter(item => {
       return jsonItem.id === item.id;
     });
 
     // templatize the source service json
-    if (matchingItems.length === 1) {
-      const jsonItem: any = matchingItems[0];
-      templatizeLayer(jsonItem, jsonItem, itemTemplate, dependencies);
-    }
-
-    templatizeLayer(item, matchingItems[0], itemTemplate, dependencies);
+    const _item: any =
+      matchingItems.length === 1 ? matchingItems[0] : undefined;
+    templatizeLayer(_item, jsonItem, itemTemplate, dependencies);
   });
 }
 
@@ -248,22 +245,31 @@ export function templatizeLayer(
   itemTemplate: ITemplate,
   dependencies: IDependency[]
 ): void {
-  if (item.hasOwnProperty("serviceItemId")) {
-    item["serviceItemId"] = mCommon.templatize(item["serviceItemId"]);
-  }
-
-  if (item.hasOwnProperty("adminLayerInfo")) {
-    item.adminLayerInfo = templatizeAdminLayerInfo(
-      item,
-      dependencies,
-      itemTemplate.itemId
-    );
-  }
   fieldUtils.templatizeLayerFieldReferences(
     item,
     itemTemplate.itemId,
-    sourceItem
+    sourceItem,
+    dependencies
   );
+
+  const updates: any[] = [sourceItem];
+  if (item) {
+    updates.push(item);
+  }
+
+  updates.forEach(update => {
+    if (update.hasOwnProperty("serviceItemId")) {
+      update["serviceItemId"] = mCommon.templatize(update["serviceItemId"]);
+    }
+
+    if (update.hasOwnProperty("adminLayerInfo")) {
+      update.adminLayerInfo = templatizeAdminLayerInfo(
+        update,
+        dependencies,
+        itemTemplate.itemId
+      );
+    }
+  });
 }
 
 /**
@@ -298,7 +304,10 @@ export function templatizeAdminLayerInfo(
     if (viewDef.table) {
       processAdminObject(viewDef.table, dependencies);
 
-      if (viewDef.table.hasOwnProperty("sourceServiceName")) {
+      if (
+        viewDef.table.hasOwnProperty("sourceServiceName") &&
+        layer.isMultiServicesView
+      ) {
         if (adminLayerInfo.geometryField && adminLayerInfo.geometryField.name) {
           adminLayerInfo.geometryField.name =
             viewDef.table.sourceServiceName +
