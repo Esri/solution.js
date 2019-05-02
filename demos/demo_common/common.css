@@ -1,0 +1,40 @@
+/* Copyright (c) 2018 Esri
+ * Apache-2.0 */
+html {
+  font-family: Arial;
+}
+.section {
+  margin: 8px 0 8px 0;
+  border: 1px solid gray;
+  padding: 8px;
+}
+.section-title {
+  font-size: larger;
+  margin-bottom: 12px;
+}
+ul {
+  margin: 0;
+  margin-top: 0.25em;
+}
+.solutionList {
+  list-style-type: none;
+}
+li {
+  margin-top: 0.25em;
+}
+a {
+  color: dodgerblue;
+}
+a:link {
+  color: dodgerblue;
+}
+#progressBarContainer {
+  width: 100%;
+  height: 8px;
+  margin-top: 8px;
+}
+#progressBar {
+  width: 0%;
+  height: 100%;
+  background-color: dodgerblue;
+}

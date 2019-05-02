@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset=utf-8>
+  <!--
+   | Copyright 2018 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <title>Clone solution template</title>
+  <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
+</head>
+<body>
+  <h3>Clone solution template</h3>
+  <div id="page" style="display:none">
+
+    <div class="section">
+      <div class="section-title">Credentials in destination organization</div>
+      <label for="destUsername">Username:</label> <input type="text" id="destUsername">
+      <label for="destPassword">Password:</label> <input type="password" id="destPassword">
+      <label for="destPortal">Portal:</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+    </div>
+
+    <div id="availableSolutions" class="section">
+      <div class="section-title">Available Solutions</div>
+      <img id="fetchingSolutions" src="../demo_common/images/loading.gif"/>
+      <div id="solutionsResults" style="display:none">
+        <div id="solutionsDisplay"></div>
+      </div>
+    </div>
+
+    <div id="display" class="section" style="display:none">
+      <div class="section-title">Details of selected Solution</div>
+      <img id="fetchingDetails" src="../demo_common/images/loading.gif"/>
+      <div id="detailsResults" style="display:none">
+        <div id="detailsDisplay"></div>
+        <br>
+        <button id="createBtn" onclick="deploySolutionFcn()">Create solution in your organization</button>
+        using name <input type="text" id="solutionNameField" style="width:256px">
+      </div>
+    </div>
+
+    <div id="create" class="section" style="display:none">
+      <div class="section-title">Details of your Solution <span id="solutionName"></span></div>
+      <img id="creating" src="../demo_common/images/loading.gif"/>
+      <div id="createResults" style="display:none">
+        <div id="createDisplay"></div>
+      </div>
+      <div id="progressBarContainer"><div id="progressBar"></div></div>
+    </div>
+
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Cfetch%2CPromise"></script>
+  <script src="../lib/require_2.3.6.min.js"></script>
+  <script>
+  var showSolutionFcn = deploySolutionFcn = null;
+  var currentSolutionId, currentSolutionName, currentSolutionItems;
+
+  /**
+   * Shows the currently-selected solution.
+   * @param event Radio-button click event
+   */
+  function onRadioClicked(event) {
+    // Save id & name of the selected solution so that we can build it
+    var currentSolutionParts = event.value.split('|');
+    currentSolutionId = currentSolutionParts[0];
+    currentSolutionName = event.value.substr(currentSolutionId.length + 1);
+    document.getElementById('solutionNameField').value = currentSolutionName;
+
+    // Show the hierarchy of the selected solution
+    showSolutionFcn(currentSolutionId);
+  }
+
+  requirejs.config({
+    baseUrl: './',
+    paths: {  // for the benefit of called libraries
+      // common dependencies
+      '@esri/arcgis-rest-auth': '../deploy/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        '../deploy/node_modules/@esri/arcgis-rest-feature-service-admin/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': '../deploy/node_modules/@esri/arcgis-rest-groups/dist/umd/groups.umd',
+      '@esri/arcgis-rest-sharing': '../deploy/node_modules/@esri/arcgis-rest-sharing/dist/umd/sharing.umd',
+      // local dependencies
+      '@esri/arcgis-rest-items': '../deploy/node_modules/@esri/arcgis-rest-items/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': '../deploy/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd',
+      '@esri/solution-creator': '../deploy/node_modules/@esri/solution-creator/dist/umd/creator.umd'
+    }
+  });
+
+  requirejs([
+    '@esri/arcgis-rest-items',
+    '@esri/arcgis-rest-request',
+    '@esri/solution-creator',
+    '../demo_common/common',
+    '../demo_common/progress',
+    '../demo_common/polyfills'
+  ], function (
+    arcgisRestItems,
+    arcgisRestRequest,
+    arcgisSolution,
+    demoCommon,
+    progress
+  ) {
+    showSolutionFcn = demoCommon.showPublishedSolutionHierarchy.bind(demoCommon);
+    deploySolutionFcn = deploySolutionItem;
+
+    document.getElementById('page').style.display = 'block';
+
+    // Fetch and list solutions
+    demoCommon.showAvailableSolutions();
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+    /**
+     * Creates the items described in a solution in the user's organization.
+     */
+    function deploySolutionItem() {
+      var startTime = Date.now();
+      document.getElementById('createBtn').disabled = 'disabled';
+      document.getElementById('create').style.display = 'block';
+      document.getElementById('availableSolutions').style.display = 'none';
+
+      progress.init('progressBarContainer', 'progressBar');
+      progress.show();
+
+      // Prepare credentials for destination
+      destinationRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('destUsername').value, document.getElementById('destPassword').value,
+        document.getElementById('destPortal').value + '/sharing/rest');
+
+      // Get the destination organization URL for creating links to deployed items
+      arcgisRestRequest.getPortal(null, destinationRequestOptions)
+      .then(
+        portalResponse => {
+          currentSolutionName = document.getElementById('solutionNameField').value || currentSolutionName;
+          const settings = {
+            solutionName: currentSolutionName,
+            folderId: null,  // Have deploySolutionItem create the folder for us
+            organization: {
+              orgUrl: 'https://' + portalResponse.urlKey + '.' + portalResponse.customBaseUrl,
+              portalBaseUrl: 'https://' + portalResponse.portalHostname
+            }
+          };
+          var solutionTemplateItemDef = arcgisRestItems.getItem(currentSolutionId, destinationRequestOptions);
+          var solutionTemplateItemDataDef = arcgisRestItems.getItemData(currentSolutionId, destinationRequestOptions);
+
+          // Await the template info
+          Promise.all([  // TODO IE11 does not support Promise
+            solutionTemplateItemDef,
+            solutionTemplateItemDataDef
+          ])
+          .then(
+            function (responses) {
+              var templateItem = responses[0];
+              var templateItemData = responses[1];
+
+              // Get the total estimated cost of creating these items
+              console.log("totalEstimatedDeploymentCostFactor for " + templateItemData.templates.length +
+                " items: " + arcgisSolution.getEstimatedDeploymentCost(templateItemData.templates));
+              var progressCallback = _createProgressCallback(
+                arcgisSolution.getEstimatedDeploymentCost(templateItemData.templates));
+
+              // Deploy!
+              arcgisSolution.deploySolutionItem({
+                item: templateItem,
+                data: templateItemData
+              }, destinationRequestOptions, settings, progressCallback)
+              .then(
+                function (deployedSolution) {  //???
+                  // Report the results
+                  document.getElementById('solutionName').innerHTML = '"' + currentSolutionName + '"';
+                  document.getElementById('creating').style.display = 'none';
+                  document.getElementById('createResults').style.display = 'block';
+                  progress.hide();
+                  var endTime = Date.now();
+                  console.log('completed in ' + (endTime - startTime) / 1000 + ' seconds');
+
+                  document.getElementById('createDisplay').innerHTML =
+                  '<ul class="solutionList"><li><a href="' + deployedSolution.url + '" target="_blank">' +
+                    currentSolutionName + '</a></li></ul><br>' +
+                    demoCommon.createHierarchyDisplay(deployedSolution,
+                      arcgisSolution.getItemHierarchy(deployedSolution),
+                      true, settings.organization.orgUrl + '/home/');
+                }
+              );
+            }
+          );
+        }
+      );
+    }
+
+    function _createProgressCallback (totalEstimatedDeploymentCostFactor) {
+      let stepsReported = 0;
+      let percentFactor = 100 / totalEstimatedDeploymentCostFactor;
+      return function (update) {
+        var percentDone = (++stepsReported * percentFactor).toFixed(0);
+        console.log(percentDone + "% done: " + JSON.stringify(update));
+        progress.set(percentDone);
+      };
+    }
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset=utf-8>
+  <!--
+   | Copyright 2019 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <title>Publish solution template</title>
+  <link rel="stylesheet" type="text/css" href="../demo_common/common.css">
+</head>
+<body>
+  <h3>Publish solution template</h3>
+  <div id="page" style="display:none">
+
+    <div class="section">
+      <div class="section-title">Credentials in source organization for Solution items</div>
+      <label for="srcUsername">Username:</label> <input type="text" id="srcUsername">
+      <label for="srcPassword">Password:</label> <input type="password" id="srcPassword">
+      <label for="srcPortal">Portal:</label>
+      <input type="text" id="srcPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+      <br/><br/>
+      <div class="section-title">Credentials in destination organization for Solution template</div>
+      <label for="destUsername">Username:</label> <input type="text" id="destUsername">
+      <label for="destPassword">Password:</label> <input type="password" id="destPassword">
+      <label for="destPortal">Portal:</label>
+      <input type="text" id="destPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
+    </div>
+
+    <div class="section">
+      <div class="section-title">Currently supported item types</div>
+      <div id="supportedItemTypes"></div>
+      <div class="section-title">Drag & drop URLs of top-level items to package into a single Solution
+        (their dependencies are automatically included)</div>
+      <div><i>e.g., https://myorg.maps.arcgis.com/home/item.html?id=1af7db9a03b54d5793d6f79ce12ef030</i></div>
+      <div><i>Please only use drag & drop; editing the contents of the box below will not work</i></div>
+
+      <textarea id="itemLinksText" rows="2" cols="115" ondrop="onDrop(event)"></textarea>
+
+      <br/><br/>
+      <label for="solutionName">Name for published Solution:</label>
+      <input type="text" id="solutionName" style="width:300px" placeholder="Solution"><br>
+      <label for="solutionVersion">Version for published Solution:</label>
+      <input type="text" id="solutionVersion" placeholder="1.0"><br>
+      <br/>
+      <button id="clearBtn" onclick="clearList()">Clear list</button>
+      <button id="createBtn" onclick="createSolutionFcn()">Create solution</button>
+    </div>
+
+    <div id="display" class="section" style="display:none">
+      <img id="creating" src="../demo_common/images/loading.gif"/>
+      <div class="section-title">Published Solution details</div>
+      <div id="detailsResults" style="display:none">
+        <div id="detailsDisplay"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es5%2Cfetch%2CPromise"></script>
+  <script src="../lib/require_2.3.6.min.js"></script>
+  <script>
+  var createSolutionFcn = publishSolutionFcn = null;
+
+  function clearList() {
+    document.getElementById('itemLinksText').textContent = '';
+    document.getElementById('itemLinksText').rows = 2;
+
+    document.getElementById('display').style.display = 'none';
+    document.getElementById('detailsResults').style.display = 'none';
+    document.getElementById('detailsDisplay').innerHTML = '';
+  }
+
+  // -----------------
+  // https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API
+  // "Any copyright is dedicated to the Public Domain. http://creativecommons.org/publicdomain/zero/1.0/"
+  function contains(list, value) {
+    for( var i = 0; i < list.length; ++i ) {
+      if(list[i] === value) return true;
+    }
+    return false;
+  }
+  // -----------------
+
+  function onDrop(event) {
+    if (contains(event.dataTransfer.types, 'text/uri-list')) {
+      var data = event.dataTransfer.getData('text/uri-list');
+      if (event.target.textContent.length > 0) {
+        event.target.textContent += '\n';
+      }
+      event.target.textContent += data;
+      event.target.rows++;
+    }
+    event.preventDefault();
+  }
+
+  requirejs.config({
+    baseUrl: './',
+    paths: {  // for the benefit of called libraries
+      // common dependencies
+      '@esri/arcgis-rest-auth': '../publish/node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd',
+      '@esri/arcgis-rest-feature-service-admin':
+        '../publish/node_modules/@esri/arcgis-rest-feature-service-admin/dist/umd/feature-service-admin.umd',
+      '@esri/arcgis-rest-groups': '../publish/node_modules/@esri/arcgis-rest-groups/dist/umd/groups.umd',
+      '@esri/arcgis-rest-sharing': '../publish/node_modules/@esri/arcgis-rest-sharing/dist/umd/sharing.umd',
+      // local dependencies
+      '@esri/arcgis-rest-items': '../publish/node_modules/@esri/arcgis-rest-items/dist/umd/items.umd',
+      '@esri/arcgis-rest-request': '../publish/node_modules/@esri/arcgis-rest-request/dist/umd/request.umd',
+      '@esri/solution-creator': '../publish/node_modules/@esri/solution-creator/dist/umd/creator.umd'
+    }
+  });
+
+  requirejs([
+    '@esri/arcgis-rest-request',
+    '@esri/solution-creator',
+    '../demo_common/common',
+    '../demo_common/polyfills'
+  ], function (
+    arcgisRestRequest,
+    arcgisSolution,
+    demoCommon
+  ) {
+    createSolutionFcn = createSolutionItem;
+    var requestOptions, templatesList, solutionName;
+
+    document.getElementById('supportedItemTypes').innerHTML =
+      arcgisSolution.getSupportedItemTypes().join(", ") + "<br><br>";
+
+    document.getElementById('page').style.display = 'block';
+
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+    /**
+     * Gets the selected source item from the UI.
+     */
+    function getCheckedItem() {
+      var selection;
+      Array.prototype.slice.call(document.getElementsByTagName('input')).forEach(function (item) {
+        if (item.type === 'radio' && item.checked) {
+          selection = item;
+        }
+      });
+      return selection;
+    }
+
+    /**
+     * Creates a solution from a set of existing AGOL items
+     */
+    function createSolutionItem() {
+      document.getElementById('display').style.display = 'block';
+
+      // Prepare credentials for source
+      sourceRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('srcUsername').value, document.getElementById('srcPassword').value,
+        document.getElementById('srcPortal').value + '/sharing/rest');
+
+      // Prepare credentials for destination
+      destinationRequestOptions = demoCommon.getRequestOptions(
+        document.getElementById('destUsername').value, document.getElementById('destPassword').value,
+        document.getElementById('destPortal').value + '/sharing/rest');
+
+      // Get the source's organization URL for creating links to source items
+      arcgisRestRequest.getPortal(null, sourceRequestOptions)
+      .then(
+        function (response) {
+          var orgUrl = 'https://' + response.urlKey + '.' + response.customBaseUrl + '/home/';
+          var portalUrl = 'https://' + response.portalHostname + '/';
+
+          // Get the items to include in the solution, then generate the solution
+          var urlsList = document.getElementById('itemLinksText').textContent.split('\n');
+          var solutionRootIds = urlsList.map(
+            function (line) {
+              var urlSplit = line.split('/home/item.html?id=');
+              if (urlSplit.length === 2) {
+                return urlSplit[1];
+              }
+              return null;
+            }
+          ).filter(
+            function (id) {
+              return id;
+            }
+          );
+
+          // Get the items forming the solution
+          arcgisSolution.createSolutionItem(
+            (document.getElementById('solutionName').value || 'Solution'),
+            (document.getElementById('solutionVersion').value || '1.0'),
+            solutionRootIds, sourceRequestOptions, destinationRequestOptions)
+          .then(
+            solutionTemplate => {
+              templatesList = solutionTemplate.data.templates;
+
+              // Display the Solution
+              document.getElementById('detailsDisplay').innerHTML =
+                demoCommon.createItemLinksDisplay(solutionTemplate.item.id, orgUrl, portalUrl) +
+                '<br>Published Solution item hierarchy:' +
+                demoCommon.createHierarchyDisplay(solutionTemplate.data.templates,
+                  arcgisSolution.getItemHierarchy(solutionTemplate.data.templates));
+            },
+            error => {
+              document.getElementById('detailsDisplay').innerHTML = JSON.stringify(error);
+            }
+          )
+          .finally(
+            () => {
+              document.getElementById('creating').style.display = 'none';
+              document.getElementById('detailsResults').style.display = 'block';
+            }
+          );
+
+        },
+        function (error) {
+          console.warn(JSON.stringify(error));
+          document.getElementById('create').style.display = 'none';
+          alert('Please refresh page and provide credentials');
+        }
+      );
+    }
+
+    //----------------------------------------------------------------------------------------------------------------//
+
+  });
+  </script>
+</body>
+</html>
