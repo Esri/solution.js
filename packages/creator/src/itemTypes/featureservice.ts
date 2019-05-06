@@ -17,7 +17,7 @@
 import * as adlib from "adlib";
 import * as featureServiceAdmin from "@esri/arcgis-rest-feature-service-admin";
 import * as items from "@esri/arcgis-rest-items";
-import { request } from "@esri/arcgis-rest-request";
+import { request, IParams } from "@esri/arcgis-rest-request";
 import { IUserRequestOptions } from "@esri/arcgis-rest-auth";
 
 import * as mCommon from "./common";
@@ -43,9 +43,6 @@ export function convertItemToTemplate(
   return new Promise((resolve, reject) => {
     // Update the estimated cost factor to deploy this item
     itemTemplate.estimatedDeploymentCostFactor = 3;
-
-    // Common templatizations: extent, item id, item dependency ids
-    mCommon.doCommonTemplatizations(itemTemplate);
 
     fleshOutFeatureService(itemTemplate, requestOptions).then(
       () => {
@@ -211,12 +208,14 @@ export function templatizeData(
   itemTemplate: ITemplate,
   dependencies: IDependency[]
 ): void {
-  const data: any = itemTemplate.data || {};
+  // Common templatizations: extent, item id, item dependency ids
+  mCommon.doCommonTemplatizations(itemTemplate);
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
   const jsonItems: any[] = jsonLayers.concat(jsonTables);
 
+  const data: any = itemTemplate.data || {};
   const layers: any[] = data.layers || [];
   const tables: any[] = data.tables || [];
   const _items: any[] = layers.concat(tables);
@@ -245,6 +244,7 @@ export function templatizeLayer(
   itemTemplate: ITemplate,
   dependencies: IDependency[]
 ): void {
+  // Templatize all properties that contain field references
   fieldUtils.templatizeLayerFieldReferences(
     item,
     itemTemplate.itemId,
@@ -291,8 +291,6 @@ export function templatizeAdminLayerInfo(
 
   objectUtils.deleteProp(adminLayerInfo, "xssTrustedFields");
   objectUtils.deleteProp(adminLayerInfo, "tableName");
-
-  // TODO figure out how to deal with shape field
 
   // Remove unnecessary properties and templatize key properties from viewLayerDefinition
   if (adminLayerInfo.viewLayerDefinition) {
@@ -389,25 +387,11 @@ export function createItemFromTemplate(
     });
 
   return new Promise((resolve, reject) => {
-    const createOptions = {
-      item: itemTemplate.item,
-      folderId: settings.folderId,
-      params: {
-        isView: Boolean(itemTemplate.properties.service.isView)
-      },
-      preserveLayerIds: true,
-      ...requestOptions
-    };
-
-    const popupInfos: any = itemTemplate.data
-      ? cachePopupInfos(itemTemplate.data)
-      : {};
-
-    createOptions.item = setItemProperties(
-      createOptions.item,
+    // Get the options used to create the new feature service
+    const createOptions: any = getCreateServiceOptions(
       itemTemplate,
-      ["sourceSchemaChangesAllowed", "serviceDescription", "copyrightText"],
-      settings.isPortal
+      settings,
+      requestOptions
     );
 
     // Create the item
@@ -418,56 +402,27 @@ export function createItemFromTemplate(
       });
     featureServiceAdmin.createFeatureService(createOptions).then(
       createResponse => {
-        // Add the new item to the settings list
-        settings[itemTemplate.itemId] = {
-          id: createResponse.serviceItemId,
-          url: createResponse.serviceurl,
-          name: createResponse.name
-        };
-        itemTemplate.itemId = itemTemplate.item.id =
-          createResponse.serviceItemId;
-        itemTemplate = adlib.adlib(itemTemplate, settings);
-        itemTemplate.item.url = createResponse.serviceurl;
+        // Get the source service item ID so we can handle editFieldsInfo
+        const sourceServiceItemId: string = itemTemplate.itemId;
 
-        // Update item using a unique name because createFeatureService doesn't provide a way to specify
-        // snippet, description, etc.
-        const updateOptions: items.IItemUpdateRequestOptions = {
-          item: {
-            id: itemTemplate.itemId,
-            title: itemTemplate.item.title,
-            snippet: itemTemplate.item.snippet,
-            description: itemTemplate.item.description,
-            accessInfo: itemTemplate.item.accessInfo,
-            licenseInfo: itemTemplate.item.licenseInfo,
-            text: itemTemplate.data,
-            tags: itemTemplate.item.tags
-          },
-          ...requestOptions
-        };
+        // Detemplatize what we can now that the service has been created
+        itemTemplate = updateSettingsAndTemplate(
+          itemTemplate,
+          settings,
+          createResponse
+        );
 
-        items.updateItem(updateOptions).then(
+        // Add the feature service's layers and tables to it
+        addFeatureServiceLayersAndTables(
+          itemTemplate,
+          sourceServiceItemId,
+          settings,
+          requestOptions,
+          progressCallback
+        ).then(
           () => {
-            // Add the feature service's layers and tables to it
-            addFeatureServiceLayersAndTables(
-              itemTemplate,
-              settings,
-              requestOptions,
-              popupInfos,
-              progressCallback
-            ).then(
-              () => {
-                mCommon.finalCallback(itemTemplate.key, true, progressCallback);
-                resolve(itemTemplate);
-              },
-              e => {
-                mCommon.finalCallback(
-                  itemTemplate.key,
-                  false,
-                  progressCallback
-                );
-                reject(mCommon.fail(e));
-              }
-            );
+            mCommon.finalCallback(itemTemplate.key, true, progressCallback);
+            resolve(itemTemplate);
           },
           e => {
             mCommon.finalCallback(itemTemplate.key, false, progressCallback);
@@ -483,15 +438,60 @@ export function createItemFromTemplate(
   });
 }
 
+export function getCreateServiceOptions(
+  itemTemplate: ITemplate,
+  settings: any,
+  requestOptions: IUserRequestOptions
+): any {
+  const params: IParams = {};
+  const createOptions = {
+    item: itemTemplate.item,
+    folderId: settings.folderId,
+    params: params,
+    preserveLayerIds: true,
+    ...requestOptions
+  };
+
+  const itemKeys: string[] = Object.keys(itemTemplate.item);
+  const serviceKeys: string[] = Object.keys(itemTemplate.properties.service);
+  const missingKeys: string[] = serviceKeys.filter(
+    key => itemKeys.indexOf(key) === -1
+  );
+
+  // seems like this should be done in the template
+  const skipParams: string[] = [
+    "serviceItemId",
+    "layers",
+    "tables",
+    "currentVersion",
+    "hasViews",
+    "size"
+  ];
+  missingKeys.forEach(k => {
+    if (skipParams.indexOf(k) === -1) {
+      createOptions.params[k] = itemTemplate.properties.service[k];
+      createOptions.item[k] = itemTemplate.properties.service[k];
+    }
+  });
+
+  createOptions.item = setItemProperties(
+    createOptions.item,
+    itemTemplate,
+    settings.isPortal
+  );
+
+  return createOptions;
+}
+
 export function setItemProperties(
   item: any,
   itemTemplate: ITemplate,
-  properties: string[],
   isPortal: boolean
 ): any {
   if (itemTemplate.data) {
     // Get the items data
     item.text = itemTemplate.data;
+    delete itemTemplate.data;
   }
 
   // Make the item name unique
@@ -519,46 +519,42 @@ export function setItemProperties(
       })
     : capabilities;
 
-  properties.forEach((p: string) => {
-    item[p] = objectUtils.getProp(itemTemplate, "properties.service." + p);
-  });
   return item;
 }
 
-/**
- * Removes and caches the current popupInfo from layers in the template.
- * Popup info will be added after the service is created.
- *
- * Some popupInfo causes createService to fail...for example:
- * https://localdeployment.maps.arcgis.com/home/item.html?id=a009c140ad5442abaac377bedf1c6b39
- *
- * @param layers Array of layers from the template.
- * @return IPopupInfos key value pair object with the layer id as the key and popupinfo as the value.
- * @protected
- */
-export function cachePopupInfos(data: any): IPopupInfos {
-  const popupInfos: IPopupInfos = {
-    layers: {},
-    tables: {}
+export function updateSettingsAndTemplate(
+  itemTemplate: ITemplate,
+  settings: any,
+  createResponse: any
+): any {
+  // Add the new item to the settings list
+  settings[itemTemplate.itemId] = {
+    id: createResponse.serviceItemId,
+    url: createResponse.serviceurl,
+    name: createResponse.name
   };
-  if (data.layers && Array.isArray(data.layers) && data.layers.length > 0) {
-    data.layers.forEach((layer: any) => {
-      if (layer.hasOwnProperty("popupInfo")) {
-        popupInfos.layers[layer.id] = layer.popupInfo;
-        layer.popupInfo = {};
-      }
-    });
-  }
 
-  if (data.tables && Array.isArray(data.tables) && data.tables.length > 0) {
-    data.tables.forEach((table: any) => {
-      if (table.hasOwnProperty("popupInfo")) {
-        popupInfos.tables[table.id] = table.popupInfo;
-        table.popupInfo = {};
-      }
-    });
+  // Update the item template now that the new service has been created
+  itemTemplate.itemId = itemTemplate.item.id = createResponse.serviceItemId;
+  itemTemplate = adlib.adlib(itemTemplate, settings);
+  itemTemplate.item.url = createResponse.serviceurl;
+  return itemTemplate;
+}
+
+export function cachePopupInfo(
+  itemTemplate: ITemplate,
+  popupInfos: IPopupInfos,
+  type: "layers" | "tables",
+  id: number
+): void {
+  const _items: any[] = itemTemplate.item.text[type];
+  if (_items && Array.isArray(_items)) {
+    const layer = _items.filter((l: any) => l.id === id);
+    if (layer && layer.length === 1 && layer[0].hasOwnProperty("popupInfo")) {
+      popupInfos[type][id] = layer[0].popupInfo;
+      layer[0].popupInfo = {};
+    }
   }
-  return popupInfos;
 }
 
 /**
@@ -573,17 +569,24 @@ export function cachePopupInfos(data: any): IPopupInfos {
  */
 export function addFeatureServiceLayersAndTables(
   itemTemplate: ITemplate,
+  sourceServiceItemId: string,
   settings: any,
   requestOptions: IUserRequestOptions,
-  popupInfos: any,
   progressCallback?: (update: IProgressUpdate) => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     // Sort layers and tables by id so that they're added with the same ids
     const properties: any = itemTemplate.properties as IFeatureServiceProperties;
     const layersAndTables: any[] = [];
-
+    // Hold a hash of various properties that contain field references
+    const fieldInfos: any = {};
+    const adminLayerInfos: any = {};
+    const popupInfos: IPopupInfos = {
+      layers: {},
+      tables: {}
+    };
     (properties.layers || []).forEach(function(layer: any) {
+      cachePopupInfo(itemTemplate, popupInfos, "layers", layer.id);
       layersAndTables[layer.id] = {
         item: layer,
         type: "layer"
@@ -591,21 +594,19 @@ export function addFeatureServiceLayersAndTables(
     });
 
     (properties.tables || []).forEach(function(table: any) {
+      cachePopupInfo(itemTemplate, popupInfos, "tables", table.id);
       layersAndTables[table.id] = {
         item: table,
         type: "table"
       };
     });
 
-    // Hold a hash of relationships
-    const fieldInfos: any = {};
-    const adminLayerInfos: any = {};
-
     // Add the service's layers and tables to it
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(
         itemTemplate.itemId,
         itemTemplate.item.url,
+        sourceServiceItemId,
         layersAndTables,
         settings,
         requestOptions,
@@ -632,7 +633,9 @@ export function addFeatureServiceLayersAndTables(
               requestOptions,
               itemTemplate.key,
               progressCallback
-            ),
+            )
+          ];
+          const _updates = updates.concat(
             postProcess({
               message: "updated layer definition",
               objects: layerInfos.fieldInfos,
@@ -640,12 +643,23 @@ export function addFeatureServiceLayersAndTables(
               requestOptions,
               progressCallback
             })
-          ];
-
-          Promise.all(updates).then(
-            () => resolve(),
-            e => reject(mCommon.fail(e))
           );
+
+          _updates
+            .reduce((promiseChain, currentTask) => {
+              return promiseChain.then((chainResults: any) =>
+                currentTask.then((currentResult: any) => [
+                  ...chainResults,
+                  currentResult
+                ])
+              );
+            }, Promise.resolve([]))
+            .then(resolve());
+
+          // Promise.all(updates).then(
+          //   () => resolve(),
+          //   e => reject(mCommon.fail(e))
+          // );
         },
         e => reject(mCommon.fail(e))
       );
@@ -664,9 +678,9 @@ export function updatePopupInfo(
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const itemLayers: any[] =
-      objectUtils.getProp(itemTemplate, "data.layers") || [];
+      objectUtils.getProp(itemTemplate, "item.text.layers") || [];
     const itemTables: any[] =
-      objectUtils.getProp(itemTemplate, "data.tables") || [];
+      objectUtils.getProp(itemTemplate, "item.text.tables") || [];
     const layersAndTables: any[] = itemLayers.concat(itemTables);
 
     layersAndTables.forEach((item: any) => {
@@ -680,8 +694,11 @@ export function updatePopupInfo(
           : false;
 
       if (type) {
-        if (itemTemplate.data && Array.isArray(itemTemplate.data[type])) {
-          const objects = itemTemplate.data[type].filter((o: any) => {
+        if (
+          itemTemplate.item.text &&
+          Array.isArray(itemTemplate.item.text[type])
+        ) {
+          const objects = itemTemplate.item.text[type].filter((o: any) => {
             return o.id === id;
           });
           if (objects.length === 1) {
@@ -694,7 +711,7 @@ export function updatePopupInfo(
     const updateOptions: items.IItemUpdateRequestOptions = {
       item: {
         id: itemTemplate.itemId,
-        text: itemTemplate.data
+        text: itemTemplate.item.text
       },
       ...requestOptions
     };
@@ -712,47 +729,42 @@ export function updatePopupInfo(
   });
 }
 
-export function getAddToDefArgs(layerInfos: any): IPostProcessArgs[] {
-  const args: IPostProcessArgs[] = [];
-  const _fieldInfos = layerInfos.fieldInfos;
-  const addObjects: any = {};
-  const fieldInfosKeys = Object.keys(_fieldInfos);
-
-  fieldInfosKeys.forEach((k: any) => {
-    const fieldInfoKeys = Object.keys(_fieldInfos[k]);
-    fieldInfoKeys.forEach((_k: any) => {
-      if (Object.keys(addObjects).indexOf(_k) === -1) {
-        addObjects[_k] = [];
-      }
-      addObjects[_k].push(_fieldInfos[k][_k]);
-      console.log(_fieldInfos[k][_k]);
-    });
-  });
-
-  return args;
-}
-
-//
+/**
+ * Capture the names of fields for each layer or table after it has been
+ * added to the definition
+ *
+ * @param itemTemplate Item to be created
+ * @param fieldInfos Hash map of properties that contain field references
+ * @param popupInfos Hash map of a layers popupInfo
+ * @param adminLayerInfos Hash map of a layers adminLayerInfo
+ * @return An object with detemplatized field references
+ * @protected
+ */
 export function postProcessFields(
   itemTemplate: ITemplate,
   fieldInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
   settings: any
-) {
+): any {
   const id = itemTemplate.itemId;
   const settingsKeys = Object.keys(settings);
 
+  // concat any layers and tables to process
   const layers = objectUtils.getProp(itemTemplate, "properties.layers") || [];
   const tables = objectUtils.getProp(itemTemplate, "properties.tables") || [];
   const layersAndTables: any[] = layers.concat(tables);
 
+  // Set the newFields property for the fieldInfos...this will contain all fields
+  // as they are after being added to the definition.
+  // This allows us to handle any potential field name changes after deploy to portal
   layersAndTables.forEach((item: any) => {
     if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
       fieldInfos[item.id]["newFields"] = item.fields;
     }
   });
 
+  // Add the fieldInfos to the settings object to be used while detemplatizing
   settingsKeys.forEach((k: any) => {
     if (id === settings[k].id) {
       settings[k]["fieldInfos"] = fieldUtils.getFieldSettings(fieldInfos);
@@ -826,6 +838,7 @@ export function postProcess(args: IPostProcessArgs): Array<Promise<void>> {
 function updateFeatureServiceDefinition(
   serviceItemId: string,
   serviceUrl: string,
+  sourceServiceItemId: string,
   listToAdd: any[],
   settings: any,
   requestOptions: IUserRequestOptions,
@@ -842,9 +855,14 @@ function updateFeatureServiceDefinition(
 
       const item = toAdd.item;
       const originalId = item.id;
-      delete item.serviceItemId; // Updated by updateFeatureServiceDefinition
 
-      fieldInfos = fieldUtils.cacheFieldInfos(item, fieldInfos);
+      fieldInfos = fieldUtils.cacheFieldInfos(
+        item,
+        fieldInfos,
+        sourceServiceItemId
+      );
+
+      delete item.serviceItemId; // Updated by updateFeatureServiceDefinition
 
       // when the item is a view we need to grab the supporting fieldInfos
       if (itemTemplate.properties.service.isView) {
@@ -880,6 +898,7 @@ function updateFeatureServiceDefinition(
           updateFeatureServiceDefinition(
             serviceItemId,
             serviceUrl,
+            sourceServiceItemId,
             listToAdd,
             settings,
             requestOptions,
@@ -920,17 +939,6 @@ export interface IFeatureServiceProperties {
    * Description for each table
    */
   tables: any[];
-}
-
-/**
- * Storage of a one-way relationship.
- * @protected
- */
-export interface IRelationship {
-  /**
-   * Relationship id and the ids of the items that it is related to.
-   */
-  [id: string]: string[];
 }
 
 /**

@@ -1432,12 +1432,12 @@ describe("cacheFieldInfos", () => {
 
     // test with undefined layer
     let layer;
-    cacheFieldInfos(layer, fieldInfos);
+    cacheFieldInfos(layer, fieldInfos, undefined);
     expect(layer).toBeUndefined();
 
     // test without
     layer = {};
-    cacheFieldInfos(layer, fieldInfos);
+    cacheFieldInfos(layer, fieldInfos, "");
     expect(layer).toEqual({});
 
     layer = {
@@ -1472,7 +1472,7 @@ describe("cacheFieldInfos", () => {
       }
     };
 
-    cacheFieldInfos(layer, fieldInfos);
+    cacheFieldInfos(layer, fieldInfos, "cd766cba0dd44ec080420acc10990282");
     expect(layer).toEqual({
       id: "23",
       fields: [
@@ -1486,7 +1486,7 @@ describe("cacheFieldInfos", () => {
         }
       ],
       displayField: null,
-      editFieldsInfo: null,
+      editFieldsInfo: ["CreateDate"],
       templates: null,
       relationships: null,
       drawingInfo: null

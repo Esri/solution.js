@@ -20,7 +20,6 @@ import * as mCommon from "../itemTypes/common";
 import * as objectUtils from "../utils/object-helpers";
 import { IStringValuePair, ITemplate } from "../interfaces";
 import * as adlib from "adlib";
-import { join } from "path";
 import { IDependency } from "../itemTypes/featureservice";
 
 //#endregion
@@ -36,7 +35,6 @@ import { IDependency } from "../itemTypes/featureservice";
  * @param itemID The id for the item that contains this layer.
  * @param layer JSON return from the layer being templatized.
  * @return An updated instance of the layer
- * @protected
  */
 export function templatizeLayerFieldReferences(
   layerDefinition: any,
@@ -60,11 +58,12 @@ export function templatizeLayerFieldReferences(
   _templatizeProperty(layer, "displayField", path);
   _templatizeAdminLayerInfoFields(layer, dependencies);
   _templatizeRelationshipFields(layer, itemID);
-  _templatizeEditFieldsInfo(layer, path);
   _templatizeDefinitionEditor(layer, path, fieldNames);
   _templatizeDefinitionExpression(layer, path, fieldNames);
   _templatizeDrawingInfo(layer, path, fieldNames);
   _templatizeTemplates(layer, path);
+  _templatizeEditFieldsInfo(layer, path);
+  _templatizeTypeTemplates(layer, path);
 }
 
 /**
@@ -74,7 +73,11 @@ export function templatizeLayerFieldReferences(
  * @param fieldInfos the object that stores the cached field infos
  * @return An updated instance of the fieldInfos
  */
-export function cacheFieldInfos(layer: any, fieldInfos: any): any {
+export function cacheFieldInfos(
+  layer: any,
+  fieldInfos: any,
+  serviceItemId: string
+): any {
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
@@ -86,14 +89,13 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
   const props: string[] = [
     "displayField",
     "editFieldsInfo",
-    "hasStaticData",
-    "editorTrackingInfo",
+    "types",
     "templates",
     "relationships",
     "drawingInfo"
   ];
   props.forEach(prop => {
-    _cacheFieldInfo(layer, prop, fieldInfos);
+    _cacheFieldInfo(layer, prop, fieldInfos, serviceItemId);
   });
 
   return fieldInfos;
@@ -108,7 +110,6 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
  *
  * @param fieldInfos The object that stores the cached layer properties and name mapping
  * @return The settings object that will be used to de-templatize the field references.
- * @protected
  */
 export function getFieldSettings(fieldInfos: any): any {
   const settings: any = {};
@@ -131,7 +132,6 @@ export function getFieldSettings(fieldInfos: any): any {
  *
  * @param itemTemplate The current itemTemplate being processed.
  * @param settings The settings object used to de-templatize the various templates within the item.
- * @protected
  */
 export function updateSettingsFieldInfos(
   itemTemplate: ITemplate,
@@ -161,7 +161,6 @@ export function updateSettingsFieldInfos(
  * @param adminLayerInfos The object from the adminLayerInfo property for the layer
  * @param settings The settings object that has all of the mappings for de-templatizing.
  * @return An object that contains updated instances of popupInfos, fieldInfos, and adminLayerInfos
- * @protected
  */
 export function deTemplatizeFieldInfos(
   fieldInfos: any,
@@ -180,6 +179,12 @@ export function deTemplatizeFieldInfos(
     if (fieldInfos[id].hasOwnProperty("adminLayerInfo")) {
       adminLayerInfos[id].viewLayerDefinition.table.relatedTables =
         fieldInfos[id].adminLayerInfo;
+    }
+
+    if (fieldInfos[id].hasOwnProperty("types")) {
+      fieldInfos[id].types = JSON.parse(
+        adlib.adlib(JSON.stringify(fieldInfos[id].types), settings)
+      );
     }
   });
 
@@ -347,11 +352,12 @@ export function _templatizeRelationshipFields(
 
 /**
  * templatize the editFieldsInfo
+ * this needs to be added to the definition while adding the layer and then updated afterwards
  *
  * @param layer the layer that has the editFieldsInfo to templatize
  * @param basePath path used to de-templatize while deploying
  */
-export function _templatizeEditFieldsInfo(layer: any, basePath: string): void {
+export function _templatizeEditFieldsInfo(layer: any, basePath: string): any {
   const editFieldsInfo: any = layer.editFieldsInfo;
   if (editFieldsInfo) {
     const keys: string[] = Object.keys(editFieldsInfo);
@@ -475,25 +481,27 @@ export function _templatizeFieldName(
 ): string {
   if (name.indexOf("relationships/") > -1) {
     const rels = name.split("/");
-    const relationshipId = rels[1];
+    const relationshipId: any = rels[1];
 
-    const relatedTables: any = objectUtils.getProp(
+    const adminRelatedTables: any = objectUtils.getProp(
       layer,
-      layer.isView
-        ? "adminLayerInfo.viewLayerDefinition.table.relatedTables"
-        : "relationships"
+      "adminLayerInfo.viewLayerDefinition.table.relatedTables"
     );
 
-    const relatedTable: any = relatedTables[relationshipId];
+    const relatedTables: any[] = layer.relationships || adminRelatedTables;
 
-    const _basePath: string =
-      itemID +
-      ".fieldInfos.layer" +
-      relatedTable[layer.isView ? "sourceLayerId" : "relatedTableId"] +
-      ".fields";
+    if (relatedTables && relatedTables.length > parseInt(relationshipId, 10)) {
+      const relatedTable: any = relatedTables[relationshipId];
 
-    rels[2] = _templatize(_basePath, rels[2]);
-    name = rels.join("/");
+      const _basePath: string =
+        itemID +
+        ".fieldInfos.layer" +
+        relatedTable[layer.isView ? "sourceLayerId" : "relatedTableId"] +
+        ".fields";
+
+      rels[2] = _templatize(_basePath, rels[2]);
+      name = rels.join("/");
+    }
   } else {
     // do not need to templatize expression references as the expression
     // itself will be templatized
@@ -981,17 +989,51 @@ export function _templatizeLabelingInfo(
 export function _templatizeTemplates(layer: any, basePath: string): void {
   const templates: any[] = layer.templates || [];
   templates.forEach(t => {
-    const attributes: any =
-      objectUtils.getProp(t, "prototype.attributes") || {};
-    const attributeKeys: string[] = Object.keys(attributes);
-    if (attributeKeys.length > 0) {
-      const _attributes: any = {};
-      attributeKeys.forEach(k => {
-        _attributes[_templatize(basePath, k)] = attributes[k];
-      });
+    const attributes: any = objectUtils.getProp(t, "prototype.attributes");
+    const _attributes: any = _templatizeKeys(attributes, basePath);
+    if (_attributes) {
       t.prototype.attributes = _attributes;
     }
   });
+}
+
+export function _templatizeTypeTemplates(layer: any, basePath: string): void {
+  const types: any[] = layer.types;
+  if (types && Array.isArray(types) && types.length > 0) {
+    types.forEach((type: any) => {
+      const domains: any = _templatizeKeys(type.domains, basePath);
+      if (domains) {
+        type.domains = domains;
+      }
+
+      const templates: any[] = type.templates;
+      if (templates && templates.length > 0) {
+        templates.forEach((t: any) => {
+          const attributes = objectUtils.getProp(t, "prototype.attributes");
+          const _attributes: any = _templatizeKeys(attributes, basePath);
+          if (_attributes) {
+            t.prototype.attributes = _attributes;
+          }
+        });
+      }
+    });
+  }
+}
+
+export function _templatizeKeys(obj: any, basePath: string): any {
+  let _obj: any;
+
+  if (obj) {
+    _obj = {};
+    const objKeys: string[] = Object.keys(obj);
+    if (objKeys && objKeys.length > 0) {
+      objKeys.forEach(k => {
+        _obj[_templatize(basePath, k)] = obj[k];
+      });
+    }
+  }
+
+  return _obj;
 }
 
 /**
@@ -1019,7 +1061,8 @@ export function _templatize(basePath: string, value: string): string {
 export function _cacheFieldInfo(
   layer: any,
   prop: string,
-  fieldInfos: any
+  fieldInfos: any,
+  sourceServiceItemId: string
 ): void {
   if (
     layer &&
@@ -1027,8 +1070,31 @@ export function _cacheFieldInfo(
     fieldInfos &&
     fieldInfos.hasOwnProperty(layer.id)
   ) {
-    fieldInfos[layer.id][prop] = layer[prop];
-    layer[prop] = null;
+    // editFieldsInfo does not come through unless its with the layer
+    // when it's being added
+    if (prop === "editFieldsInfo") {
+      const fieldHashMap: any = {};
+      layer.fields.forEach((f: any) => {
+        fieldHashMap[f.name.toLowerCase()] = f.name;
+      });
+
+      const infos: any = {};
+      infos["layer" + layer.id] = {
+        fields: fieldHashMap
+      };
+      const settings: any = {};
+      settings[sourceServiceItemId] = {
+        fieldInfos: infos
+      };
+      fieldInfos[layer.id][prop] = layer[prop];
+
+      // Set editFieldsInfo as detemplatized version with origional field names
+      // they will be updated after the layer has been added
+      layer[prop] = adlib.adlib(layer[prop], settings);
+    } else {
+      fieldInfos[layer.id][prop] = layer[prop];
+      layer[prop] = null;
+    }
   }
 }
 
