@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "strictNullChecks": true              /* Enable strict null checks. */
+  },
   "extends": "../../tsconfig.json",
   "include": [
       "src/**/*.ts"
