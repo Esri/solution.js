@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "strictNullChecks": true              /* Enable strict null checks. */
+    "strictNullChecks": true,           /* Enable strict null checks. */
+    "removeComments": true,             /* To reduce output size */
+    "forceConsistentCasingInFileNames": true   /* To reduce issues when working with different OSes */
   },
   "extends": "../../tsconfig.json",
   "include": [
