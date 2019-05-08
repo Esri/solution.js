@@ -1,4 +1,4 @@
-/*
+/* @license
  | Copyright 2018 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,16 @@
  | limitations under the License.
  */
 
+/**
+ * Manages the highest-level of Solution creation and deployment.
+ *
+ * @module Solution
+ */
+
 import * as auth from "@esri/arcgis-rest-auth";
+import * as portal from "@esri/arcgis-rest-portal";
+import * as generalHelpers from "./generalHelpers";
+import * as restHelpers from "./restHelpers";
 
 export interface IPortalSubset {
   name: string;
@@ -24,7 +33,7 @@ export interface IPortalSubset {
   urlKey: string;
 }
 
-export function convertGroupIntoSolution(
+export function createSolution(
   groupId: string,
   destUrl: string,
   userSession: auth.UserSession
@@ -46,14 +55,15 @@ export function convertGroupIntoSolution(
 
     // Create solution item using internal representation & and the data JSON
 
-    resolve("convertGroupIntoSolution");
+    resolve("createSolution");
   });
 }
 
-export function deploySolutionToGroup(
+export function deploySolution(
   itemInfo: any,
   portalSubset: IPortalSubset,
-  userSession: auth.UserSession
+  userSession: auth.UserSession,
+  progressCallback: (percentDone: number) => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
 
@@ -70,6 +80,7 @@ export function deploySolutionToGroup(
       , categories : List String
       , deployCommonId : String
       , deployVersion : Float
+      , deployPercentage : Int
       }
 
     portalSubset:
@@ -96,24 +107,78 @@ export function deploySolutionToGroup(
         refreshTokenTTL: this.refreshTokenTTL
       }    
     */
+    const sourceId = itemInfo.id;
+    let percentDone = 1;  // Let the caller know that we've started
+    progressCallback(percentDone);
 
-    // Fetch solution item & its data infos
+    // Fetch solution item's data info (partial item info is supplied via function's parameters)
+    const itemDataParam: portal.IItemDataOptions = {
+      authentication: userSession
+    }
+    const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
 
-    // Create an internal representation of the solution item using the solution item info
+    // Create a folder to hold the deployed solution
+    const folderName = itemInfo.title + " (" + generalHelpers.getUTCTimestamp() + ")";
+    const folderCreationParam = {
+      title: folderName,
+      authentication: userSession
+    };
+    const folderCreationDef = portal.createFolder(folderCreationParam);
 
-    // Create a group to hold the deployed solution
+    // Await completion of async actions
+    Promise.all([  // TODO IE11 does not support Promise
+      solutionItemDataDef,
+      folderCreationDef
+    ])
+    .then(
+      responses => {
+        const itemData = responses[0];
+        const folderResponse = responses[1];
 
-    // Using the contents of its data section, create an ordered graph of solution contents
+        percentDone = 50;
+        progressCallback(percentDone);
 
-    // For each solution content item in order from no dependency to dependent,
-    //   * replace template symbols using template dictionary
-    //   * create item in destination group
-    //   * add created item's id into the template dictionary
 
-    // Update solution item's data JSON using template dictionary
 
-    // Create solution item using internal representation & and the updated data JSON
 
-    resolve("deploySolutionToGroup");
+        // Using the contents of its data section, create an ordered graph of solution contents
+
+        // For each solution content item in order from no dependency to dependent,
+        //   * replace template symbols using template dictionary
+        //   * create item in destination group
+        //   * add created item's id into the template dictionary
+
+        // Update solution item's data JSON using template dictionary
+
+
+
+
+        // Create solution item using internal representation & and the updated data JSON
+        restHelpers.createItemWithData(
+          {
+            type: "Solution",
+            typeKeywords: ["Solution", "Deployed"],
+            ...itemInfo
+          },
+          itemData, 
+          {
+            authentication: userSession
+          },
+          folderResponse.folder.id
+        )
+        .then(
+          response => {
+            progressCallback(100);
+            resolve(response.id);
+          },
+          error => {
+            console.error("createItemWithData", error);
+          }
+        )
+      },
+      error => {
+        console.error("Promise.all(solutionItemDataDef,folderCreationDef)", error);
+      }
+    );
   });
 }
