@@ -24,6 +24,7 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as generalHelpers from "./generalHelpers";
 import * as restHelpers from "./restHelpers";
+import * as templatization from "./templatization";
 
 export interface IPortalSubset {
   name: string;
@@ -61,6 +62,7 @@ export function createSolution(
 
 export function deploySolution(
   itemInfo: any,
+  settings: any,
   portalSubset: IPortalSubset,
   userSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
@@ -134,6 +136,7 @@ export function deploySolution(
       responses => {
         const itemData = responses[0];
         const folderResponse = responses[1];
+        settings.folderId = folderResponse.folder.id;
 
         percentDone = 50;
         progressCallback(percentDone);
@@ -148,11 +151,10 @@ export function deploySolution(
         //   * create item in destination group
         //   * add created item's id into the template dictionary
 
-        // Update solution item's data JSON using template dictionary
 
 
 
-
+        // Update solution item's data JSON using template dictionary, and then
         // Create solution item using internal representation & and the updated data JSON
         restHelpers.createItemWithData(
           {
@@ -160,11 +162,11 @@ export function deploySolution(
             typeKeywords: ["Solution", "Deployed"],
             ...itemInfo
           },
-          itemData, 
+          templatization.replaceInTemplate(itemData, settings),
           {
             authentication: userSession
           },
-          folderResponse.folder.id
+          settings.folderId
         )
         .then(
           response => {
