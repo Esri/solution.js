@@ -22,7 +22,9 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as deployItems from "./deployItems";
 import * as generalHelpers from "./generalHelpers";
+import * as interfaces from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as templatization from "./templatization";
 
@@ -62,53 +64,12 @@ export function createSolution(
 
 export function deploySolution(
   itemInfo: any,
-  settings: any,
+  templateDictionary: any,
   portalSubset: IPortalSubset,
   userSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-
-    /*
-    itemInfo: 
-      { id : String
-      , title : String
-      , snippet : String
-      , description : String
-      , itemUrl : String
-      , thumbnailUrl : String
-      , tryitUrl : String
-      , tags : List String
-      , categories : List String
-      , deployCommonId : String
-      , deployVersion : Float
-      , deployPercentage : Int
-      }
-
-    portalSubset:
-      {
-        fullName: string;
-        username: string;
-        thumbnailUrl: string;
-        privileges: string[];
-      }
-
-    userSession:
-      {
-        clientId: this.clientId,
-        refreshToken: this.refreshToken,
-        refreshTokenExpires: this.refreshTokenExpires,
-        username: this.username,
-        password: this.password,
-        token: this.token,
-        tokenExpires: this.tokenExpires,
-        portal: this.portal,
-        ssl: this.ssl,
-        tokenDuration: this.tokenDuration,
-        redirectUri: this.redirectUri,
-        refreshTokenTTL: this.refreshTokenTTL
-      }    
-    */
     const sourceId = itemInfo.id;
     let percentDone = 1;  // Let the caller know that we've started
     progressCallback(percentDone);
@@ -136,42 +97,52 @@ export function deploySolution(
       responses => {
         const itemData = responses[0];
         const folderResponse = responses[1];
-        settings.folderId = folderResponse.folder.id;
+        templateDictionary.folderId = folderResponse.folder.id;
 
-        percentDone = 50;
-        progressCallback(percentDone);
-
-
-
-
-        // Using the contents of its data section, create an ordered graph of solution contents
-
-        // For each solution content item in order from no dependency to dependent,
-        //   * replace template symbols using template dictionary
-        //   * create item in destination group
-        //   * add created item's id into the template dictionary
-
-
-
-
-        // Update solution item's data JSON using template dictionary, and then
-        // Create solution item using internal representation & and the updated data JSON
-        restHelpers.createItemWithData(
-          {
-            type: "Solution",
-            typeKeywords: ["Solution", "Deployed"],
-            ...itemInfo
+        let totalEstimatedCost = (itemData as interfaces.ISolutionItemData).templates.reduce(
+          (accumulatedEstimatedCost: number, template: interfaces.IItemTemplate) => {
+            return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
           },
-          templatization.replaceInTemplate(itemData, settings),
-          {
-            authentication: userSession
-          },
-          settings.folderId
+          1  // for a non-zero total
+        );
+        totalEstimatedCost +=
+          (1 + 1) /  // folder & solution item creation
+          totalEstimatedCost;  // included items
+        const progressPercentStep = 100 / totalEstimatedCost;
+        console.log("totalEstimatedCost, progressPercentStep", totalEstimatedCost, progressPercentStep);
+        progressCallback(percentDone += progressPercentStep);  // for folder creation
+
+        // Handle the contained item templates
+        deployItems.deployItems(itemData.templates, templateDictionary, userSession,
+          () => {
+            progressCallback(percentDone += progressPercentStep);  // progress tick
+          }          
         )
         .then(
-          response => {
-            progressCallback(100);
-            resolve(response.id);
+          updatedTemplateDictionary => {
+            // Update solution item's data JSON using template dictionary, and then
+            // Create solution item using internal representation & and the updated data JSON
+            restHelpers.createItemWithData(
+              {
+                type: "Solution",
+                typeKeywords: ["Solution", "Deployed"],
+                ...itemInfo
+              },
+              templatization.replaceInTemplate(itemData, updatedTemplateDictionary),
+              {
+                authentication: userSession
+              },
+              templateDictionary.folderId
+            )
+            .then(
+              response => {
+                progressCallback(100);
+                resolve(response.id);
+              },
+              error => {
+                console.error("createItemWithData", error);
+              }
+            )
           },
           error => {
             console.error("createItemWithData", error);
