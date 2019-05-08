@@ -1469,7 +1469,8 @@ describe("cacheFieldInfos", () => {
         renderer: {
           type: "simple"
         }
-      }
+      },
+      type: "layer"
     };
 
     cacheFieldInfos(layer, fieldInfos, "cd766cba0dd44ec080420acc10990282");
@@ -1489,11 +1490,13 @@ describe("cacheFieldInfos", () => {
       editFieldsInfo: ["CreateDate"],
       templates: null,
       relationships: null,
-      drawingInfo: null
+      drawingInfo: null,
+      type: "layer"
     });
 
     expect(fieldInfos).toEqual({
       "23": {
+        id: "23",
         sourceFields: [
           {
             name: "A",
@@ -1521,7 +1524,8 @@ describe("cacheFieldInfos", () => {
           renderer: {
             type: "simple"
           }
-        }
+        },
+        type: "layer"
       }
     });
   });

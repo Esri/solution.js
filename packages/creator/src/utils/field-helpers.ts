@@ -81,7 +81,9 @@ export function cacheFieldInfos(
   // cache the source fields as they are in the original source
   if (layer && layer.fields) {
     fieldInfos[layer.id] = {
-      sourceFields: JSON.parse(JSON.stringify(layer.fields))
+      sourceFields: JSON.parse(JSON.stringify(layer.fields)),
+      type: layer.type,
+      id: layer.id
     };
   }
 
