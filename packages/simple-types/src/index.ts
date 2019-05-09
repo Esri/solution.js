@@ -17,7 +17,7 @@
 /**
  * Manages the highest-level of Solution creation and deployment.
  *
- * @module Solution
+ * @module simple-types
  */
 
 import * as auth from "@esri/arcgis-rest-auth";

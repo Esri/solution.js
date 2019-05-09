@@ -21,11 +21,29 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as simpleTypes from "@esri/solution-simple-types";
+import * as solutionSimpleTypes from "@esri/solution-simple-types";
 import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
 import * as restHelpers from "./restHelpers";
 import * as templatization from "./templatization";
+
+/**
+ * Structure for mapping from item type to module with type-specific template-handling code
+ */
+interface IItemTypeModuleMap {
+  [itemType: string]: interfaces.IItemJson;
+}
+
+/**
+ * Mapping from item type to module with type-specific template-handling code
+ */
+const moduleMap: IItemTypeModuleMap = {
+  "dashboard": solutionSimpleTypes,
+  // "feature service": solutionFeatureService,
+  "group": solutionSimpleTypes,
+  "web map": solutionSimpleTypes,
+  "web mapping application": solutionSimpleTypes
+};
 
 /**
  *
@@ -116,24 +134,20 @@ function createItemFromTemplateWhenReady(
     Promise.all(awaitDependencies).then(
       () => {
         console.log("create item #" + itemId);
-        for(let i = 0; i < template!.estimatedDeploymentCostFactor; ++i) {
-          progressTickCallback();
-        }
-        templateDictionary[itemId].id = itemId;
 
-        /*
-        const moduleName = "@esri/solution-simple-types";
-        import(moduleName)
-        .then(
-          myModule => {
-            console.log("Called module " + (myModule as interfaces.IItemJson).toJSON(moduleName));
-          },
-          error => {
-            console.warn("Unable to import module " + moduleName + ": " + JSON.stringify(error));
+        const itemHandler:interfaces.IItemJson = moduleMap[template!.item.type.toLowerCase()];
+        if (!itemHandler) {
+          console.warn(
+            "Unimplemented item type " + template!.item.type + " for " + itemId
+          );
+        } else {
+          for(let i = 0; i < template!.estimatedDeploymentCostFactor; ++i) {
+            progressTickCallback();
           }
-        )
-        */
+          templateDictionary[itemId].id = itemId;
 
+          console.log("Called module " + itemHandler.toJSON(template!.item.type));
+        }
 
 
         resolve(template || undefined);
