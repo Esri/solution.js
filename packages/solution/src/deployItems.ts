@@ -1,17 +1,17 @@
-/*
- | Copyright 2018 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
+/** @license
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 /**
@@ -20,8 +20,21 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as portal from "@esri/arcgis-rest-portal";
+import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
+import * as restHelpers from "./restHelpers";
+import * as templatization from "./templatization";
 
+/**
+ *
+ * @param templates A collection of AGO item templates
+ * @param templateDictionary Hash of facts: org URL, adlib replacements
+ * @param userSession Options for the request
+ * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @return A promise that will resolve with the item's template (which is simply returned if it's
+ *         already in the templates list
+ */
 export function deployItems(
   templates: interfaces.IItemTemplate[],
   templateDictionary: any,
@@ -30,33 +43,166 @@ export function deployItems(
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     if (templates.length > 0) {
-      // Create an ordered graph of the templates
+      // Create an ordered graph of the templates so that dependencies are created
+      // before the items that need them
       const cloneOrderChecklist: string[] = topologicallySortItems(templates);
 
-
-      let order = 0;
-      console.log("Cloning order:");
-      cloneOrderChecklist.map(
-        templateId => {
-          console.log("  " + (++order) + ". " + templateId);
-          progressTickCallback();
-        }
-      );
-
-
-
-      // For each item in order from no dependency to dependent,
+      // For each item in order from no dependencies to dependent on other items,
       //   * replace template symbols using template dictionary
       //   * create item in destination group
       //   * add created item's id into the template dictionary
+      const awaitAllItems = [] as Array<Promise<interfaces.IItemTemplate>>;
+      cloneOrderChecklist.forEach(id =>
+        awaitAllItems.push(
+          createItemFromTemplateWhenReady(
+            id,
+            templates,
+            templateDictionary,
+            userSession,
+            progressTickCallback
+          )
+        )
+      );
 
-
-
-
-      resolve(templateDictionary);
+      // Wait until all items have been created
+      Promise.all(awaitAllItems).then(
+        clonedSolutionItems => {
+          resolve(clonedSolutionItems);
+        },
+        generalHelpers.fail
+      );
     }
     resolve(templateDictionary);
   });
+}
+
+
+/**
+ * Fetches an AGO item and converts it into a template after its dependencies have been fetched and
+ * converted.
+ *
+ * @param itemId AGO id of solution template item to deploy
+ * @param templates A collection of AGO item templates
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param userSession Options for the request
+ * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @return A promise that will resolve with the item's template (which is simply returned if it's
+ *         already in the templates list
+ * @protected
+ */
+function createItemFromTemplateWhenReady(
+  itemId: string,
+  templates: interfaces.IItemTemplate[],
+  templateDictionary: any,
+  userSession: auth.UserSession,
+  progressTickCallback: () => void
+): Promise<interfaces.IItemTemplate> {
+  console.log("enqueue item #" + itemId);
+  templateDictionary[itemId] = {};
+  const itemDef = new Promise<interfaces.IItemTemplate>((resolve, reject) => {
+    const template = findTemplateInList(templates, itemId);
+    if (!template) {
+      reject(generalHelpers.fail());
+    }
+
+    // Wait until all of the item's dependencies are deployed
+    const awaitDependencies = [] as Array<Promise<interfaces.IItemTemplate>>;
+    console.log("item #" + itemId + " depends on:");
+    (template!.dependencies || []).forEach(dependencyId => {
+      awaitDependencies.push(templateDictionary[dependencyId].def)
+      console.log("    " + dependencyId);}
+    );
+    Promise.all(awaitDependencies).then(
+      () => {
+        console.log("create item #" + itemId);
+        for(let i = 0; i < template!.estimatedDeploymentCostFactor; ++i) {
+          progressTickCallback();
+        }
+        templateDictionary[itemId].id = itemId;
+
+        /*
+        const moduleName = "@esri/solution-simple-types";
+        import(moduleName)
+        .then(
+          myModule => {
+            console.log("Called module " + (myModule as interfaces.IItemJson).toJSON(moduleName));
+          },
+          error => {
+            console.warn("Unable to import module " + moduleName + ": " + JSON.stringify(error));
+          }
+        )
+        */
+
+
+
+        resolve(template || undefined);
+
+
+        /*
+
+        createItemWithDataAndResourcesPartial = createItemWithDataAndResources(userSession)
+
+        map item type to package
+        package.fromJSON(
+          templatization.replaceInTemplate(template, templateDictionary),
+          createItemWithDataAndResourcesPartial
+        )
+
+
+
+
+
+        /*
+        // Prepare template
+        let itemTemplate = mClassifier.initItemTemplateFromJSON(
+          findTemplateInList(templates, itemId)
+        );
+
+        // Interpolate it
+        itemTemplate.dependencies = itemTemplate.dependencies
+          ? (mCommon.templatize(itemTemplate.dependencies) as string[])
+          : [];
+
+        itemTemplate = templatization.replaceInTemplate(itemTemplate, templateDictionary),
+        */
+
+
+
+        /*restHelpers.createItemWithDataAndResources(
+          {
+            ...itemInfo
+          },
+          templatization.replaceInTemplate(itemData, updatedTemplateDictionary),
+          {
+            authentication: userSession
+          },
+          templateDictionary.folderId
+        )*/
+
+
+        /*
+        // Deploy it
+        itemTemplate.fcns
+          .createItemFromTemplate(
+            itemTemplate,
+            templateDictionary,
+            userSession,
+            progressTickCallback
+          )
+          .then(
+            itemClone => resolve(itemClone),
+            generalHelpers.fail
+          )
+          */
+
+      },
+      generalHelpers.fail
+    );
+  });
+
+  // Save the deferred for the use of items that depend on this item being created first
+  templateDictionary[itemId].def = itemDef;
+  return itemDef;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

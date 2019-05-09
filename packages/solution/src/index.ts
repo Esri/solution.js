@@ -1,17 +1,17 @@
-/* @license
- | Copyright 2018 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
+/** @license
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 /**
@@ -99,27 +99,20 @@ export function deploySolution(
         const folderResponse = responses[1];
         templateDictionary.folderId = folderResponse.folder.id;
 
-        let totalEstimatedCost = (itemData as interfaces.ISolutionItemData).templates.reduce(
-          (accumulatedEstimatedCost: number, template: interfaces.IItemTemplate) => {
-            return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
-          },
-          1  // for a non-zero total
-        );
-        totalEstimatedCost +=
-          (1 + 1) /  // folder & solution item creation
-          totalEstimatedCost;  // included items
+        const totalEstimatedCost = estimateDeploymentCost((itemData as interfaces.ISolutionItemData).templates)
+          + 3;    // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log("totalEstimatedCost, progressPercentStep", totalEstimatedCost, progressPercentStep);
-        progressCallback(percentDone += progressPercentStep);  // for folder creation
+        progressCallback(percentDone += 2 * progressPercentStep);  // for data fetch and folder creation
 
         // Handle the contained item templates
         deployItems.deployItems(itemData.templates, templateDictionary, userSession,
           () => {
-            progressCallback(percentDone += progressPercentStep);  // progress tick
-          }          
+            progressCallback(percentDone += progressPercentStep);  // progress tick callback from deployItems
+          }
         )
         .then(
-          updatedTemplateDictionary => {
+          clonedSolutionItems => {
             // Update solution item's data JSON using template dictionary, and then
             // Create solution item using internal representation & and the updated data JSON
             restHelpers.createItemWithData(
@@ -128,7 +121,7 @@ export function deploySolution(
                 typeKeywords: ["Solution", "Deployed"],
                 ...itemInfo
               },
-              templatization.replaceInTemplate(itemData, updatedTemplateDictionary),
+              templatization.replaceInTemplate(itemData, templateDictionary),
               {
                 authentication: userSession
               },
@@ -136,6 +129,7 @@ export function deploySolution(
             )
             .then(
               response => {
+                console.log(JSON.stringify(templateDictionary,null,2));
                 progressCallback(100);
                 resolve(response.id);
               },
@@ -154,4 +148,14 @@ export function deploySolution(
       }
     );
   });
+}
+
+function estimateDeploymentCost (
+  templates: interfaces.IItemTemplate[]
+): number {
+  return templates.reduce(
+    (accumulatedEstimatedCost: number, template: interfaces.IItemTemplate) => {
+      return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
+    }, 0
+  );
 }
