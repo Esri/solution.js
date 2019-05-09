@@ -1,4 +1,4 @@
-/*
+/* @license
  | Copyright 2018 Esri
  |
  | Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,25 +14,23 @@
  | limitations under the License.
  */
 
-export interface IItemTemplate {
-  itemId: string,
-  type: string,
-  key: string,
-  dependencies: string[],
-  estimatedDeploymentCostFactor: number,
-  properties: any,
-  item: any,
-  data: any,
-  resources: any
+/**
+ * Manages the highest-level of Solution creation and deployment.
+ *
+ * @module Solution
+ */
+
+import * as auth from "@esri/arcgis-rest-auth";
+import * as portal from "@esri/arcgis-rest-portal";
+
+export function toJSON(
+    argIn: string
+): string {
+    return argIn + " to JSON";
 }
 
-export interface ISolutionItemData {
-  metadata: any,
-  templates: IItemTemplate[]
+export function fromJSON(
+    argIn: string
+): string {
+    return argIn + " from JSON";
 }
-
-export interface IItemJson {
-  toJSON(argIn: string): string;
-  fromJSON(argIn: string): string;
-}
-

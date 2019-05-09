@@ -21,6 +21,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as simpleTypes from "@esri/solution-simple-types";
 import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
 import * as restHelpers from "./restHelpers";
