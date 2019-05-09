@@ -12,6 +12,14 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.1",
+    "@esri/arcgis-rest-feature-layer": "^2.0.1",
+    "@esri/arcgis-rest-geocoding": "^2.0.1",
+    "@esri/arcgis-rest-portal": "^2.0.1",
+    "@esri/arcgis-rest-request": "^2.0.1",
+    "@esri/arcgis-rest-routing": "^2.0.1",
+    "@esri/arcgis-rest-service-admin": "^2.0.1",
+    "@esri/arcgis-rest-types": "^2.0.1",
     "rollup": "^1.6.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^5.0.1",
@@ -22,14 +30,6 @@
     "rollup-plugin-uglify": "^6.0.2"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^2.0.1",
-    "@esri/arcgis-rest-feature-layer": "^2.0.1",
-    "@esri/arcgis-rest-geocoding": "^2.0.1",
-    "@esri/arcgis-rest-portal": "^2.0.1",
-    "@esri/arcgis-rest-request": "^2.0.1",
-    "@esri/arcgis-rest-routing": "^2.0.1",
-    "@esri/arcgis-rest-service-admin": "^2.0.1",
-    "@esri/arcgis-rest-types": "^2.0.1",
     "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },
