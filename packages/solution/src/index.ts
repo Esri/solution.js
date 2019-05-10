@@ -21,12 +21,11 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
+import * as common from "@esri/solution-common";
 import * as deployItems from "./deployItems";
-import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
-import * as restHelpers from "./restHelpers";
-import * as templatization from "./templatization";
+import * as portal from "@esri/arcgis-rest-portal";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 export interface IPortalSubset {
   name: string;
@@ -81,7 +80,7 @@ export function deploySolution(
     const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
 
     // Create a folder to hold the deployed solution
-    const folderName = itemInfo.title + " (" + generalHelpers.getUTCTimestamp() + ")";
+    const folderName = itemInfo.title + " (" + common.getUTCTimestamp() + ")";
     const folderCreationParam = {
       title: folderName,
       authentication: userSession
@@ -99,7 +98,7 @@ export function deploySolution(
         const folderResponse = responses[1];
         templateDictionary.folderId = folderResponse.folder.id;
 
-        const totalEstimatedCost = estimateDeploymentCost((itemData as interfaces.ISolutionItemData).templates)
+        const totalEstimatedCost = estimateDeploymentCost((itemData as common.ISolutionItemData).templates)
           + 3;    // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log("totalEstimatedCost, progressPercentStep", totalEstimatedCost, progressPercentStep);
@@ -115,13 +114,13 @@ export function deploySolution(
           clonedSolutionItems => {
             // Update solution item's data JSON using template dictionary, and then
             // Create solution item using internal representation & and the updated data JSON
-            restHelpers.createItemWithData(
+            common.createItemWithData(
               {
                 type: "Solution",
                 typeKeywords: ["Solution", "Deployed"],
                 ...itemInfo
               },
-              templatization.replaceInTemplate(itemData, templateDictionary),
+              common.replaceInTemplate(itemData, templateDictionary),
               {
                 authentication: userSession
               },
@@ -150,11 +149,20 @@ export function deploySolution(
   });
 }
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Accumulates the estimated deployment cost of a set of templates.
+ *
+ * @param templates Templates to examine
+ * @return Sum of estimated deployment costs
+ * @protected
+ */
 function estimateDeploymentCost (
-  templates: interfaces.IItemTemplate[]
+  templates: common.IItemTemplate[]
 ): number {
   return templates.reduce(
-    (accumulatedEstimatedCost: number, template: interfaces.IItemTemplate) => {
+    (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
       return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
     }, 0
   );

@@ -16,34 +16,25 @@
 
 /**
  * Manages deployment of items via the REST API.
- *
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
-import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
-import * as restHelpers from "./restHelpers";
-import * as templatization from "./templatization";
-
-/**
- * Structure for mapping from item type to module with type-specific template-handling code
- */
-interface IItemTypeModuleMap {
-  [itemType: string]: interfaces.IItemJson;
-}
 
 /**
  * Mapping from item type to module with type-specific template-handling code
  */
-const moduleMap: IItemTypeModuleMap = {
+const moduleMap: common.IItemTypeModuleMap = {
   "dashboard": solutionSimpleTypes,
   // "feature service": solutionFeatureService,
   "group": solutionSimpleTypes,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  *
@@ -55,7 +46,7 @@ const moduleMap: IItemTypeModuleMap = {
  *         already in the templates list
  */
 export function deployItems(
-  templates: interfaces.IItemTemplate[],
+  templates: common.IItemTemplate[],
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
@@ -70,7 +61,7 @@ export function deployItems(
       //   * replace template symbols using template dictionary
       //   * create item in destination group
       //   * add created item's id into the template dictionary
-      const awaitAllItems = [] as Array<Promise<interfaces.IItemTemplate>>;
+      const awaitAllItems = [] as Array<Promise<common.IItemTemplate>>;
       cloneOrderChecklist.forEach(id =>
         awaitAllItems.push(
           createItemFromTemplateWhenReady(
@@ -88,81 +79,11 @@ export function deployItems(
         clonedSolutionItems => {
           resolve(clonedSolutionItems);
         },
-        generalHelpers.fail
+        common.fail
       );
     }
     resolve(templateDictionary);
   });
-}
-
-
-/**
- * Fetches an AGO item and converts it into a template after its dependencies have been fetched and
- * converted.
- *
- * @param itemId AGO id of solution template item to deploy
- * @param templates A collection of AGO item templates
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- * @param userSession Options for the request
- * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
- * @return A promise that will resolve with the item's template (which is simply returned if it's
- *         already in the templates list
- * @protected
- */
-function createItemFromTemplateWhenReady(
-  itemId: string,
-  templates: interfaces.IItemTemplate[],
-  templateDictionary: any,
-  userSession: auth.UserSession,
-  progressTickCallback: () => void
-): Promise<interfaces.IItemTemplate> {
-  console.log("enqueue item #" + itemId);
-  templateDictionary[itemId] = {};
-  const itemDef = new Promise<interfaces.IItemTemplate>((resolve, reject) => {
-    const template = findTemplateInList(templates, itemId);
-    if (!template) {
-      reject(generalHelpers.fail());
-    }
-
-    // Wait until all of the item's dependencies are deployed
-    const awaitDependencies = [] as Array<Promise<interfaces.IItemTemplate>>;
-    console.log("item #" + itemId + " depends on:");
-    (template!.dependencies || []).forEach(dependencyId => {
-      awaitDependencies.push(templateDictionary[dependencyId].def)
-      console.log("    " + dependencyId);
-    }
-    );
-    Promise.all(awaitDependencies).then(
-      () => {
-        console.log("create item #" + itemId);
-
-        const itemHandler: interfaces.IItemJson = moduleMap[template!.item.type.toLowerCase()];
-        if (!itemHandler) {
-          console.warn("Unimplemented item type " + template!.item.type + " for " + itemId);
-          resolve(undefined);
-        } else {
-          // Delegate the creation of the template
-          itemHandler.fromJSON(template!, templateDictionary, userSession, progressTickCallback)
-            .then(
-              newItem => {
-                // Update the template dictionary with the new id
-                templateDictionary[itemId].id = newItem.itemId;
-
-                resolve(newItem);
-              },
-              () => {
-                resolve(undefined);
-              }
-            );
-        }
-      },
-      generalHelpers.fail
-    );
-  });
-
-  // Save the deferred for the use of items that depend on this item being created first
-  templateDictionary[itemId].def = itemDef;
-  return itemDef;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -192,6 +113,72 @@ enum SortVisitColor {
 }
 
 /**
+ * Fetches an AGO item and converts it into a template after its dependencies have been fetched and
+ * converted.
+ *
+ * @param itemId AGO id of solution template item to deploy
+ * @param templates A collection of AGO item templates
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param userSession Options for the request
+ * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @return A promise that will resolve with the item's template (which is simply returned if it's
+ *         already in the templates list
+ * @protected
+ */
+function createItemFromTemplateWhenReady(
+  itemId: string,
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+  userSession: auth.UserSession,
+  progressTickCallback: () => void
+): Promise<common.IItemTemplate> {
+  templateDictionary[itemId] = {};
+  const itemDef = new Promise<common.IItemTemplate>((resolve, reject) => {
+    const template = findTemplateInList(templates, itemId);
+    if (!template) {
+      reject(common.fail());
+    }
+
+    // Wait until all of the item's dependencies are deployed
+    const awaitDependencies = [] as Array<Promise<common.IItemTemplate>>;
+    (template!.dependencies || []).forEach(dependencyId => {
+      awaitDependencies.push(templateDictionary[dependencyId].def)
+      console.log("    " + dependencyId);
+    }
+    );
+    Promise.all(awaitDependencies).then(
+      () => {
+        const itemHandler: common.IItemJson = moduleMap[template!.type.toLowerCase()];
+        if (!itemHandler) {
+          console.warn("Unimplemented item type (package level) " + template!.type + " for " + template!.itemId);
+          resolve(undefined);
+        } else {
+          // Delegate the creation of the template
+          itemHandler.fromJSON(template!, templateDictionary, userSession, progressTickCallback)
+            .then(
+              newItem => {
+                if (newItem) {
+                  // Update the template dictionary with the new id
+                  templateDictionary[itemId].id = newItem.itemId;
+                }
+                resolve(newItem);
+              },
+              () => {
+                resolve(undefined);
+              }
+            );
+        }
+      },
+      common.fail
+    );
+  });
+
+  // Save the deferred for the use of items that depend on this item being created first
+  templateDictionary[itemId].def = itemDef;
+  return itemDef;
+}
+
+/**
  * Finds index of template by id in a list of templates.
  *
  * @param templates A collection of AGO item templates to search
@@ -200,7 +187,7 @@ enum SortVisitColor {
  * @protected
  */
 function findTemplateIndexInSolution(
-  templates: interfaces.IItemTemplate[],
+  templates: common.IItemTemplate[],
   id: string
 ): number {
   const baseId = id;
@@ -215,11 +202,12 @@ function findTemplateIndexInSolution(
  * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
  * @return Matching template or null
+ * @protected
  */
 export function findTemplateInList(
-  templates: interfaces.IItemTemplate[],
+  templates: common.IItemTemplate[],
   id: string
-): interfaces.IItemTemplate | null {
+): common.IItemTemplate | null {
   const childId = findTemplateIndexInSolution(templates, id);
   return childId >= 0 ? templates[childId] : null;
 }
@@ -234,7 +222,7 @@ export function findTemplateInList(
  * @protected
  */
 function topologicallySortItems(
-  templates: interfaces.IItemTemplate[]
+  templates: common.IItemTemplate[]
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615

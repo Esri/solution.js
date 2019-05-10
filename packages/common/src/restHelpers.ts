@@ -20,8 +20,10 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as generalHelpers from "./generalHelpers";
+import * as portal from "@esri/arcgis-rest-portal";
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Publishes an item and its data as an AGOL item.

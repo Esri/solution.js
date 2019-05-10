@@ -16,10 +16,13 @@
 
 /**
  * Provides common functions.
- *
  */
 
-export function fail(e?: any): any {
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function fail(
+  e?: any
+): any {
   if (e) {
     return { success: false, error: e.error || e };
   } else {
@@ -36,7 +39,10 @@ export function fail(e?: any): any {
  *             in obj
  * @return Value at end of path
  */
-export function getProp(obj: { [index: string]: any }, path: string): any {
+export function getProp(
+  obj: { [index: string]: any }, 
+  path: string
+): any {
   return path.split(".").reduce(function(prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
@@ -49,7 +55,8 @@ export function getProp(obj: { [index: string]: any }, path: string): any {
  * @return Timestamp
  * @protected
  */
-export function getUTCTimestamp(): string {
+export function getUTCTimestamp(
+): string {
   const now = new Date();
   return (
     padPositiveNum(now.getUTCFullYear(), 4) +
@@ -64,7 +71,20 @@ export function getUTCTimestamp(): string {
   );
 }
 
-function padPositiveNum(n: number, totalSize: number): string {
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Pads the string representation of a number to a minimum width.
+ * 
+ * @param n Number to pad
+ * @param totalSize Desired *minimum* width of number after padding with zeroes
+ * @return Number converted to string and padded as needed
+ * @protected
+ */
+function padPositiveNum(
+  n: number, 
+  totalSize: number
+): string {
   let numStr = n.toString();
   const numPads = totalSize - numStr.length;
   if (numPads > 0) {
