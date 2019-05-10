@@ -129,87 +129,32 @@ function createItemFromTemplateWhenReady(
     console.log("item #" + itemId + " depends on:");
     (template!.dependencies || []).forEach(dependencyId => {
       awaitDependencies.push(templateDictionary[dependencyId].def)
-      console.log("    " + dependencyId);}
+      console.log("    " + dependencyId);
+    }
     );
     Promise.all(awaitDependencies).then(
       () => {
         console.log("create item #" + itemId);
 
-        const itemHandler:interfaces.IItemJson = moduleMap[template!.item.type.toLowerCase()];
+        const itemHandler: interfaces.IItemJson = moduleMap[template!.item.type.toLowerCase()];
         if (!itemHandler) {
-          console.warn(
-            "Unimplemented item type " + template!.item.type + " for " + itemId
-          );
+          console.warn("Unimplemented item type " + template!.item.type + " for " + itemId);
+          resolve(undefined);
         } else {
-          for(let i = 0; i < template!.estimatedDeploymentCostFactor; ++i) {
-            progressTickCallback();
-          }
-          templateDictionary[itemId].id = itemId;
+          // Delegate the creation of the template
+          itemHandler.fromJSON(template!, templateDictionary, userSession, progressTickCallback)
+            .then(
+              newItem => {
+                // Update the template dictionary with the new id
+                templateDictionary[itemId].id = newItem.itemId;
 
-          console.log("Called module " + itemHandler.toJSON(template!.item.type));
+                resolve(newItem);
+              },
+              () => {
+                resolve(undefined);
+              }
+            );
         }
-
-
-        resolve(template || undefined);
-
-
-        /*
-
-        createItemWithDataAndResourcesPartial = createItemWithDataAndResources(userSession)
-
-        map item type to package
-        package.fromJSON(
-          templatization.replaceInTemplate(template, templateDictionary),
-          createItemWithDataAndResourcesPartial
-        )
-
-
-
-
-
-        /*
-        // Prepare template
-        let itemTemplate = mClassifier.initItemTemplateFromJSON(
-          findTemplateInList(templates, itemId)
-        );
-
-        // Interpolate it
-        itemTemplate.dependencies = itemTemplate.dependencies
-          ? (mCommon.templatize(itemTemplate.dependencies) as string[])
-          : [];
-
-        itemTemplate = templatization.replaceInTemplate(itemTemplate, templateDictionary),
-        */
-
-
-
-        /*restHelpers.createItemWithDataAndResources(
-          {
-            ...itemInfo
-          },
-          templatization.replaceInTemplate(itemData, updatedTemplateDictionary),
-          {
-            authentication: userSession
-          },
-          templateDictionary.folderId
-        )*/
-
-
-        /*
-        // Deploy it
-        itemTemplate.fcns
-          .createItemFromTemplate(
-            itemTemplate,
-            templateDictionary,
-            userSession,
-            progressTickCallback
-          )
-          .then(
-            itemClone => resolve(itemClone),
-            generalHelpers.fail
-          )
-          */
-
       },
       generalHelpers.fail
     );
@@ -325,12 +270,12 @@ function topologicallySortItems(
   // we just want relative ordering
 
   const verticesToVisit: ISortVertex = {};
-  templates.forEach(function(template) {
+  templates.forEach(function (template) {
     verticesToVisit[template.itemId] = SortVisitColor.White; // not yet visited
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  templates.forEach(function(template) {
+  templates.forEach(function (template) {
     if (verticesToVisit[template.itemId] === SortVisitColor.White) {
       // if not yet visited
       visit(template.itemId);
@@ -344,7 +289,7 @@ function topologicallySortItems(
     // Visit dependents if not already visited
     const template = findTemplateInList(templates, vertexId);
     const dependencies: string[] = template && template.dependencies ? template.dependencies : [];
-    dependencies.forEach(function(dependencyId) {
+    dependencies.forEach(function (dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {
         // if not yet visited
         visit(dependencyId);

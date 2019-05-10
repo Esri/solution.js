@@ -14,8 +14,6 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
-
 export interface IItemTemplate {
   itemId: string,
   type: string,
@@ -33,13 +31,8 @@ export interface ISolutionItemData {
   templates: IItemTemplate[]
 }
 
-
 export interface IItemJson {
   toJSON(argIn: string): string;
-  fromJSON(
-    template: IItemTemplate,
-    templateDictionary: any,
-    userSession: auth.UserSession,
-    progressTickCallback: () => void
-  ): Promise<IItemTemplate>;
+  fromJSON(argIn: string): string;
 }
+
