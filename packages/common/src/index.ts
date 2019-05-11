@@ -40,9 +40,12 @@ export interface ISolutionItemData {
 }
 
 
-export interface IItemJson {
-  toJSON(argIn: string): string;
-  fromJSON(
+export interface IItemTemplateConversions {
+  convertItemToTemplate(
+    itemInfo: any,
+    userSession: auth.UserSession
+  ): Promise<IItemTemplate>;
+  createItemFromTemplate(
     template: IItemTemplate,
     templateDictionary: any,
     userSession: auth.UserSession,
@@ -54,5 +57,5 @@ export interface IItemJson {
  * Structure for mapping from item type to module with type-specific template-handling code
  */
 export interface IItemTypeModuleMap {
-  [itemType: string]: IItemJson;
+  [itemType: string]: IItemTemplateConversions;
 }

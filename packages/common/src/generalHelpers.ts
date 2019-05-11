@@ -31,7 +31,7 @@ export function fail(
 }
 
 /**
- * Get a property out of a deeply nested object
+ * Gets a property out of a deeply nested object.
  * Does not handle anything but nested object graph
  *
  * @param obj Object to retrieve value from

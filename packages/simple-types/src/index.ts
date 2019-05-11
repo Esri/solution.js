@@ -40,20 +40,23 @@ const moduleMap: common.IItemTypeModuleMap = {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function toJSON(
-  argIn: string
-): string {
-  return argIn + " to JSON";
+export function convertItemToTemplate(
+  itemInfo: any,
+  userSession: auth.UserSession
+): Promise<common.IItemTemplate> {
+  return new Promise(resolve => {
+    resolve(undefined);
+  });
 }
 
-export function fromJSON(
+export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    const itemHandler: common.IItemJson = moduleMap[template.type.toLowerCase()];
+    const itemHandler: common.IItemTemplateConversions = moduleMap[template.type.toLowerCase()];
     if (!itemHandler) {
       console.warn("Unimplemented item type (module level) " + template.type + " for " + template.itemId);
       resolve(undefined);

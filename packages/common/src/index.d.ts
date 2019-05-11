@@ -17,10 +17,10 @@ export interface ISolutionItemData {
     metadata: any;
     templates: IItemTemplate[];
 }
-export interface IItemJson {
-    toJSON(argIn: string): string;
-    fromJSON(template: IItemTemplate, templateDictionary: any, userSession: auth.UserSession, progressTickCallback: () => void): Promise<IItemTemplate>;
+export interface IItemTemplateConversions {
+    convertItemToTemplate(itemInfo: any, userSession: auth.UserSession): Promise<IItemTemplate>;
+    createItemFromTemplate(template: IItemTemplate, templateDictionary: any, userSession: auth.UserSession, progressTickCallback: () => void): Promise<IItemTemplate>;
 }
 export interface IItemTypeModuleMap {
-    [itemType: string]: IItemJson;
+    [itemType: string]: IItemTemplateConversions;
 }

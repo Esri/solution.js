@@ -113,8 +113,7 @@ enum SortVisitColor {
 }
 
 /**
- * Fetches an AGO item and converts it into a template after its dependencies have been fetched and
- * converted.
+ * Creates an item from a template once the item's dependencies have been created.
  *
  * @param itemId AGO id of solution template item to deploy
  * @param templates A collection of AGO item templates
@@ -148,13 +147,13 @@ function createItemFromTemplateWhenReady(
     );
     Promise.all(awaitDependencies).then(
       () => {
-        const itemHandler: common.IItemJson = moduleMap[template!.type.toLowerCase()];
+        const itemHandler: common.IItemTemplateConversions = moduleMap[template!.type.toLowerCase()];
         if (!itemHandler) {
           console.warn("Unimplemented item type (package level) " + template!.type + " for " + template!.itemId);
           resolve(undefined);
         } else {
           // Delegate the creation of the template
-          itemHandler.fromJSON(template!, templateDictionary, userSession, progressTickCallback)
+          itemHandler.createItemFromTemplate(template!, templateDictionary, userSession, progressTickCallback)
             .then(
               newItem => {
                 if (newItem) {
@@ -213,7 +212,7 @@ export function findTemplateInList(
 }
 
 /**
- * Topologically sort a list of items into a build list.
+ * Topologically sorts a list of items into a build list.
  *
  * @param templates A collection of AGO item templates
  * @return List of ids of items in the order in which they need to be built so that dependencies

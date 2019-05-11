@@ -26,13 +26,16 @@ import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function toJSON(
-  argIn: string
-): string {
-  return argIn + " to JSON";
+export function convertItemToTemplate(
+  itemInfo: any,
+  userSession: auth.UserSession
+): Promise<common.IItemTemplate> {
+  return new Promise(resolve => {
+    resolve(undefined);
+  });
 }
 
-export function fromJSON(
+export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   userSession: auth.UserSession,
