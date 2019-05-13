@@ -15,14 +15,14 @@
  */
 
 /**
- * Manages the highest-level of Solution creation and deployment.
+ * Manages the deployment of a Solution.
  *
- * @module solution
+ * @module deployer
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as deployItems from "./deployItems";
+import * as deployItems from "./deploySolutionItems";
 import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -33,32 +33,6 @@ export interface IPortalSubset {
   restUrl: string;
   portalUrl: string;
   urlKey: string;
-}
-
-export function createSolution(
-  groupId: string,
-  destUrl: string,
-  userSession: auth.UserSession
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-
-    // Fetch group item info
-
-    // Create an internal representation of the new solution item using group item info
-
-    // Fetch group contents
-
-    // For each group content item,
-    //   * fetch item & data infos
-    //   * create item & data JSONs
-    //   * extract dependency ids & add them into list of group contents
-    //   * templatize select components in item & data JSONs (e.g., extents)
-    //   * add JSONs into items list in solution item representation
-
-    // Create solution item using internal representation & and the data JSON
-
-    resolve("createSolution");
-  });
 }
 
 export function deploySolution(
@@ -105,7 +79,7 @@ export function deploySolution(
         progressCallback(percentDone += 2 * progressPercentStep);  // for data fetch and folder creation
 
         // Handle the contained item templates
-        deployItems.deployItems(itemData.templates, templateDictionary, userSession,
+        deployItems.deploySolutionItems(itemData.templates, templateDictionary, userSession,
           () => {
             progressCallback(percentDone += progressPercentStep);  // progress tick callback from deployItems
           }

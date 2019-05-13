@@ -1,5 +1,5 @@
 {
-  "name": "@esri/solution-solution",
+  "name": "@esri/solution-deployer",
   "version": "0.0.1",
   "description": "to do",
   "main": "dist/node/index.js",

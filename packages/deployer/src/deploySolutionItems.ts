@@ -16,6 +16,8 @@
 
 /**
  * Manages deployment of items via the REST API.
+ *
+ * @module deployItems
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
@@ -45,7 +47,7 @@ const moduleMap: common.IItemTypeModuleMap = {
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
  */
-export function deployItems(
+export function deploySolutionItems(
   templates: common.IItemTemplate[],
   templateDictionary: any,
   userSession: auth.UserSession,

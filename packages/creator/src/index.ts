@@ -1,19 +1,64 @@
-/*
- | Copyright 2018 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
+/** @license
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
-export * from "./interfaces";
-export * from "./solution";
-export * from "./viewing";
+/**
+ * Manages the creation of a Solution item.
+ *
+ * @module creator
+ */
+
+import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
+import * as createSolutionItem from "./createSolutionItem";
+import * as portal from "@esri/arcgis-rest-portal";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export interface IPortalSubset {
+  name: string;
+  id: string;
+  restUrl: string;
+  portalUrl: string;
+  urlKey: string;
+}
+
+export function createSolution(
+  groupId: string,
+  destUrl: string,
+  userSession: auth.UserSession
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+
+    // Fetch group item info
+
+    // Create an internal representation of the new solution item using group item info
+
+    // Fetch group contents
+
+    // For each group content item,
+    //   * fetch item & data infos
+    //   * create item & data JSONs
+    //   * extract dependency ids & add them into list of group contents
+    //   * templatize select components in item & data JSONs (e.g., extents)
+    //   * add JSONs into items list in solution item representation
+
+    // Create solution item using internal representation & and the data JSON
+
+    resolve("createSolution");
+  });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
