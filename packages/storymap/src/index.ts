@@ -53,5 +53,22 @@ export function createItemFromTemplate(
 export function isAStoryMap(
   template: common.IItemTemplate,
 ): boolean {
-  return false;  //???
+  const url = common.getProp(template, "item.url");
+  if (!url) {
+    return false;
+  } else if (template.type === "StoryMap") {
+    return true;
+  }
+
+  return [
+    /\/apps\/Cascade\//i,
+    /\/apps\/MapJournal\//i,
+    /\/apps\/MapSeries\//i,
+    /\/apps\/MapTour\//i,
+    /\/apps\/Shortlist\//i,
+    /\/apps\/StoryMap\//i,
+    /\/apps\/StoryMapBasic\//i,
+    /\/apps\/StorytellingSwipe\//i
+  ].some(pattern => pattern.test(url));
 }
+
