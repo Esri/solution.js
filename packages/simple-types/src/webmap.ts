@@ -17,7 +17,7 @@
 /**
  * Manages the creation and deployment of simple item types.
  *
- * @module simple-types
+ * @module webmap
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
@@ -42,6 +42,7 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
+    console.log("createItemFromTemplate for a webmap");
     resolve(template);
   });
 }

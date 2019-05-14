@@ -23,15 +23,19 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
+import * as solutionStoryMap from "@esri/solution-storymap";
 
 /**
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
   "dashboard": solutionSimpleTypes,
-  // "feature service": solutionFeatureService,
+  "feature service": solutionFeatureLayer,
+  "form": solutionSimpleTypes,
   "group": solutionSimpleTypes,
+  "storymap": solutionStoryMap,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
@@ -135,6 +139,7 @@ function createItemFromTemplateWhenReady(
 ): Promise<common.IItemTemplate> {
   templateDictionary[itemId] = {};
   const itemDef = new Promise<common.IItemTemplate>((resolve, reject) => {
+    // Acquire the template out of the list of templates
     const template = findTemplateInList(templates, itemId);
     if (!template) {
       reject(common.fail());
@@ -149,12 +154,22 @@ function createItemFromTemplateWhenReady(
     );
     Promise.all(awaitDependencies).then(
       () => {
-        const itemHandler: common.IItemTemplateConversions = moduleMap[template!.type.toLowerCase()];
+        // Find the conversion handler for this item type
+        const templateType = template!.type.toLowerCase();
+        let itemHandler: common.IItemTemplateConversions = moduleMap[templateType];
         if (!itemHandler) {
           console.warn("Unimplemented item type (package level) " + template!.type + " for " + template!.itemId);
           resolve(undefined);
+
         } else {
-          // Delegate the creation of the template
+          // Distinguish between original and next-gen StoryMaps
+          if (templateType === "web mapping application") {
+            if (solutionStoryMap.isAStoryMap(template!)) {
+              itemHandler = solutionStoryMap;
+            }
+          }
+
+          // Delegate the creation of the template to the handler
           itemHandler.createItemFromTemplate(template!, templateDictionary, userSession, progressTickCallback)
             .then(
               newItem => {
