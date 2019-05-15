@@ -23,8 +23,86 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Publishes a feature service as an AGOL item; it does not include its layers and tables
+ *
+ * @param itemInfo Item's `item` section
+ * @param requestOptions Options for the request
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder
+ * @param access Access to set for item: "public", "org", "private"
+ * @return A promise that will resolve with an object reporting success and the Solution id
+ */
+export function createFeatureService(
+  itemInfo: any,
+  dataInfo: any,
+  requestOptions: auth.IUserRequestOptions,
+  folderId: string | undefined,
+  access = "private"
+): Promise<serviceAdmin.ICreateServiceResult> {
+  return new Promise((resolve, reject) => {
+
+    // Create item
+    const createOptions: serviceAdmin.ICreateServiceOptions = {
+      item: {
+        ...itemInfo,
+        data: dataInfo
+      },
+      folderId,
+      ...requestOptions
+    };
+
+    // Make the item name unique
+    createOptions.item.name = itemInfo.name + "_" + generalHelpers.getUTCTimestamp();
+
+    serviceAdmin.createFeatureService(createOptions).then(
+      createResponse => {
+        // Update item because createFeatureService doesn't provide a way to specify
+        // snippet, description, etc.
+        const updateOptions: portal.IUpdateItemOptions = {
+          item: {
+            id: createResponse.serviceItemId,
+            title: itemInfo.title,
+            snippet: itemInfo.snippet,
+            description: itemInfo.description,
+            accessInfo: itemInfo.accessInfo,
+            licenseInfo: itemInfo.licenseInfo,
+            text: itemInfo.data
+          },
+          ...requestOptions
+        };
+
+        portal.updateItem(updateOptions).then(
+          () => {
+            if (access !== "private") {
+              // Set access if it is not AGOL default
+              // Set the access manually since the access value in createItem appears to be ignored
+              const accessOptions: portal.ISetAccessOptions = {
+                id: createResponse.serviceItemId,
+                access: (access === "public" ? "public" : "org"),  // need to use constants rather than string
+                ...requestOptions
+              };
+              portal.setItemAccess(accessOptions).then(
+                () => {
+                  resolve(createResponse);
+                },
+                e => reject(generalHelpers.fail(e))
+              );
+            } else {
+              resolve(createResponse);
+            }
+          },
+          e => reject(generalHelpers.fail(e))
+        );
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
 
 /**
  * Publishes an item and its data as an AGOL item.
@@ -46,7 +124,7 @@ export function createItemWithData(
 ): Promise<portal.ICreateItemResponse> {
   return new Promise((resolve, reject) => {
 
-    // Create item and add its optional data section
+    // Create item
     const createOptions: portal.ICreateItemOptions = {
       item: {
         ...itemInfo,
@@ -57,21 +135,20 @@ export function createItemWithData(
     };
 
     portal.createItemInFolder(createOptions).then(
-      createResults => {
-
+      createResponse => {
         if (access !== "private") {
           // Set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
           const accessOptions: portal.ISetAccessOptions = {
-            id: createResults.id,
+            id: createResponse.id,
             access: (access === "public" ? "public" : "org"),  // need to use constants rather than string
             ...requestOptions
           };
           portal.setItemAccess(accessOptions).then(
             () => {
               resolve({
-                folder: createResults.folder,
-                id: createResults.id,
+                folder: createResponse.folder,
+                id: createResponse.id,
                 success: true
               });
             },
@@ -79,8 +156,8 @@ export function createItemWithData(
           );
         } else {
           resolve({
-            folder: createResults.folder,
-            id: createResults.id,
+            folder: createResponse.folder,
+            id: createResponse.id,
             success: true
           });
         }

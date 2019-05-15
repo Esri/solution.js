@@ -41,14 +41,14 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log("createItemFromTemplate for a " + template.type);
+    console.log("createItemFromTemplate for a " + template.type + " (" + template.itemId + ")");
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
     newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
 
     // Create the item, then update its URL with its new id
-    common.createItemWithData(newItemTemplate.item, newItemTemplate.data, 
+    common.createItemWithData(newItemTemplate.item, newItemTemplate.data,
       {authentication: userSession}, templateDictionary.folderId)
     .then(
       createResponse => {
@@ -56,17 +56,21 @@ export function createItemFromTemplate(
 
         if (createResponse.success) {
           common.updateItemURL(
-            createResponse.id, 
+            createResponse.id,
             common.replaceInTemplate(newItemTemplate.item.url, templateDictionary),
             {authentication: userSession}
           )
           .then(
             () => {
               progressTickCallback();
+
+              // Update the template dictionary with the new id
+              templateDictionary[template.itemId].id = createResponse.id;
+
               resolve(createResponse.id);
             },
             e => reject(common.fail(e))
-          );        
+          );
         } else {
           reject(common.fail());
         }

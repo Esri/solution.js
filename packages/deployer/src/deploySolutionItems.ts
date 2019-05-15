@@ -148,7 +148,6 @@ function createItemFromTemplateWhenReady(
     const awaitDependencies = [] as Array<Promise<string>>;
     (template!.dependencies || []).forEach(dependencyId => {
       awaitDependencies.push(templateDictionary[dependencyId].def)
-      console.log("    " + dependencyId);
     }
     );
     Promise.all(awaitDependencies).then(
@@ -171,16 +170,8 @@ function createItemFromTemplateWhenReady(
           // Delegate the creation of the template to the handler
           itemHandler.createItemFromTemplate(template!, templateDictionary, userSession, progressTickCallback)
             .then(
-              newItemId => {
-                if (newItemId) {
-                  // Update the template dictionary with the new id
-                  templateDictionary[itemId].id = newItemId;
-                }
-                resolve(newItemId);
-              },
-              () => {
-                resolve("");
-              }
+              newItemId => resolve(newItemId),
+              () => resolve("")
             );
         }
       },

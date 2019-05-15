@@ -75,7 +75,8 @@ export function deploySolution(
         const totalEstimatedCost = estimateDeploymentCost((itemData as common.ISolutionItemData).templates)
           + 3;    // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
-        console.log("totalEstimatedCost, progressPercentStep", totalEstimatedCost, progressPercentStep);
+        console.log("totalEstimatedCost, progressPercentStep", 
+          totalEstimatedCost.toString(), progressPercentStep.toFixed(2).toString());
         progressCallback(percentDone += 2 * progressPercentStep);  // for data fetch and folder creation
 
         // Handle the contained item templates

@@ -47,9 +47,9 @@ export function createItemFromTemplate(
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (template.type === "StoryMap") {
-      console.log("createItemFromTemplate for a next-gen storymap");
+      console.log("createItemFromTemplate for a " + template.type + " (" + template.itemId + ")");
     } else {
-      console.log("createItemFromTemplate for a first-gen storymap");
+      console.log("createItemFromTemplate for a " + template.type + " (StoryMap " + template.itemId + ")");
     }
     resolve("");
   });

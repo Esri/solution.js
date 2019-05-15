@@ -42,7 +42,37 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log("createItemFromTemplate for a feature-layer");
-    resolve("");
+    console.log("createItemFromTemplate for a " + template.type + " (" + template.itemId + ")");
+
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
+    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+
+    // Create the item, then update its URL with its new id
+    common.createFeatureService(newItemTemplate.item, newItemTemplate.data,
+      {authentication: userSession}, templateDictionary.folderId)
+    .then(
+      createResponse => {
+        progressTickCallback();
+
+        if (createResponse.success) {
+          // Update the template dictionary with the new id & url
+          templateDictionary[template.itemId] = {
+            id: createResponse.serviceItemId,
+            url: createResponse.serviceurl
+          };
+
+          // Add the feature service's layers and tables to it
+          resolve(createResponse.serviceItemId);
+
+
+
+
+        } else {
+          reject(common.fail());
+        }
+      },
+      e => reject(common.fail(e))
+    );
   });
 }
