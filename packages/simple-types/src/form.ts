@@ -31,6 +31,7 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise(resolve => {
+    console.log("convertItemToTemplate for a form");
     resolve(undefined);
   });
 }
@@ -42,7 +43,7 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    console.log("createItemFromTemplate for a for ");
+    console.log("createItemFromTemplate for a form");
     resolve(template);
   });
 }

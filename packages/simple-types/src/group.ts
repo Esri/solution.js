@@ -31,6 +31,7 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise(resolve => {
+    console.log("convertItemToTemplate for a group");
     resolve(undefined);
   });
 }

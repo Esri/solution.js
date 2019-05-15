@@ -29,7 +29,8 @@ export function convertItemToTemplate(
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise(resolve => {
+  return new Promise<common.IItemTemplate>(resolve => {
+    console.log("convertItemToTemplate for a feature-layer");
     resolve(undefined);
   });
 }

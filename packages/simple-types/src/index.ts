@@ -46,8 +46,15 @@ export function convertItemToTemplate(
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise(resolve => {
-    resolve(undefined);
+  return new Promise<common.IItemTemplate>(resolve => {
+    const itemHandler: common.IItemTemplateConversions = moduleMap[itemInfo.type.toLowerCase()];
+    if (!itemHandler) {
+      console.warn("Unimplemented item type (module level) " + itemInfo.type + " for " + itemInfo.itemId);
+      resolve(undefined);
+    } else {
+      console.log("jsonize item type " + itemInfo.type + " for " + itemInfo.itemId);
+      resolve(itemInfo);
+    }
   });
 }
 
@@ -60,7 +67,7 @@ export function createItemFromTemplate(
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const itemHandler: common.IItemTemplateConversions = moduleMap[template.type.toLowerCase()];
     if (!itemHandler) {
-      console.warn("Unimplemented item type (module level) " + template!.type + " for " + template.itemId);
+      console.warn("Unimplemented item type (module level) " + template.type + " for " + template.itemId);
       resolve(undefined);
     } else {
       console.log("deploy item type " + template.type + " for " + template.itemId);

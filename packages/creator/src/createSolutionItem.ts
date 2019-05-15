@@ -16,22 +16,26 @@
 
 /**
  * Manages deployment of items via the REST API.
- * 
+ *
  * @module createSolutionItem
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
+import * as solutionStoryMap from "@esri/solution-storymap";
 
 /**
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
   "dashboard": solutionSimpleTypes,
-  // "feature service": solutionFeatureService,
+  "feature service": solutionFeatureLayer,
+  "form": solutionSimpleTypes,
   "group": solutionSimpleTypes,
+  "storymap": solutionStoryMap,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
@@ -57,7 +61,15 @@ export function createSolutionItem(
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    resolve();
+    /*const itemHandler: common.IItemTemplateConversions = moduleMap[itemInfo.type.toLowerCase()];
+    if (!itemHandler) {
+      console.warn("Unimplemented item type (module level) " + itemInfo.type + " for " + itemInfo.itemId);
+      resolve(undefined);
+    } else {
+      console.log("jsonize item type " + itemInfo.type + " for " + itemInfo.itemId);
+      resolve(itemInfo);
+    }*/
+    resolve(undefined);
   });
 }
 
