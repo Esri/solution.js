@@ -22,21 +22,69 @@ export * from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export interface IItemTemplate {
-  itemId: string,
-  type: string,
-  key: string,
-  dependencies: string[],
-  estimatedDeploymentCostFactor: number,
-  properties: any,
-  item: any,
-  data: any,
-  resources: any
+/**
+ * A solution template AGO item
+ */
+export interface ISolutionItem {
+  /**
+   * Item base section JSON
+   */
+  item: any;
+  /**
+   * Item data section JSON
+   */
+  data: ISolutionItemData;
 }
 
 export interface ISolutionItemData {
-  metadata: any,
+  /**
+   * General information about the solution template
+   */
+  metadata: any;
+  /**
+   * The collection of templates
+   */
   templates: IItemTemplate[]
+}
+
+export interface IItemTemplate {
+  /**
+   * Item's AGO id
+   */
+  itemId: string;
+  /**
+   * AGO item type name
+   */
+  type: string;
+  /**
+   * Fairly unique identifier; set to 'i' + chars 2-8 of a random number in base 36
+   */
+  key: string;
+  /**
+   * Item base section JSON
+   */
+  item: any;
+  /**
+   * Item data section JSON
+   */
+  data: any;
+  /**
+   * References to item resources
+   */
+  resources: any[];
+  /**
+   * List of ids of AGO items needed by this item
+   */
+  dependencies: string[];
+  /**
+   * Miscellaneous item-specific properties
+   */
+  properties: any;
+  /**
+   * Estimated relative cost of deploying this item; corresponds to number of progressCallback
+   * function calls made during while deploying it
+   */
+  estimatedDeploymentCostFactor: number;
 }
 
 
@@ -50,7 +98,7 @@ export interface IItemTemplateConversions {
     templateDictionary: any,
     userSession: auth.UserSession,
     progressTickCallback: () => void
-  ): Promise<IItemTemplate>;
+  ): Promise<string>;
 }
 
 /**

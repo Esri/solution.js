@@ -29,7 +29,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise(resolve => {
+  return new Promise<common.IItemTemplate>(resolve => {
     if (itemInfo.type === "StoryMap") {
       console.log("convertItemToTemplate for a next-gen storymap");
     } else {
@@ -44,14 +44,14 @@ export function createItemFromTemplate(
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     if (template.type === "StoryMap") {
       console.log("createItemFromTemplate for a next-gen storymap");
     } else {
       console.log("createItemFromTemplate for a first-gen storymap");
     }
-    resolve(template);
+    resolve("");
   });
 }
 

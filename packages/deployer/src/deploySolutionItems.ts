@@ -33,8 +33,8 @@ import * as solutionStoryMap from "@esri/solution-storymap";
 const moduleMap: common.IItemTypeModuleMap = {
   "dashboard": solutionSimpleTypes,
   "feature service": solutionFeatureLayer,
-  "form": solutionSimpleTypes,
-  "group": solutionSimpleTypes,
+  // "form": solutionSimpleTypes,
+  // "group": solutionSimpleTypes,
   "storymap": solutionStoryMap,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
@@ -67,7 +67,7 @@ export function deploySolutionItems(
       //   * replace template symbols using template dictionary
       //   * create item in destination group
       //   * add created item's id into the template dictionary
-      const awaitAllItems = [] as Array<Promise<common.IItemTemplate>>;
+      const awaitAllItems = [] as Array<Promise<string>>;
       cloneOrderChecklist.forEach(id =>
         awaitAllItems.push(
           createItemFromTemplateWhenReady(
@@ -82,13 +82,12 @@ export function deploySolutionItems(
 
       // Wait until all items have been created
       Promise.all(awaitAllItems).then(
-        clonedSolutionItems => {
-          resolve(clonedSolutionItems);
+        clonedSolutionItemIds => {
+          resolve(clonedSolutionItemIds);
         },
         common.fail
       );
     }
-    resolve(templateDictionary);
   });
 }
 
@@ -136,9 +135,9 @@ function createItemFromTemplateWhenReady(
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
-): Promise<common.IItemTemplate> {
+): Promise<string> {
   templateDictionary[itemId] = {};
-  const itemDef = new Promise<common.IItemTemplate>((resolve, reject) => {
+  const itemDef = new Promise<string>((resolve, reject) => {
     // Acquire the template out of the list of templates
     const template = findTemplateInList(templates, itemId);
     if (!template) {
@@ -146,7 +145,7 @@ function createItemFromTemplateWhenReady(
     }
 
     // Wait until all of the item's dependencies are deployed
-    const awaitDependencies = [] as Array<Promise<common.IItemTemplate>>;
+    const awaitDependencies = [] as Array<Promise<string>>;
     (template!.dependencies || []).forEach(dependencyId => {
       awaitDependencies.push(templateDictionary[dependencyId].def)
       console.log("    " + dependencyId);
@@ -159,10 +158,10 @@ function createItemFromTemplateWhenReady(
         let itemHandler: common.IItemTemplateConversions = moduleMap[templateType];
         if (!itemHandler) {
           console.warn("Unimplemented item type (package level) " + template!.type + " for " + template!.itemId);
-          resolve(undefined);
+          resolve("");
 
         } else {
-          // Distinguish between original and next-gen StoryMaps
+          // Handle original Story Maps with next-gen Story Maps
           if (templateType === "web mapping application") {
             if (solutionStoryMap.isAStoryMap(template!)) {
               itemHandler = solutionStoryMap;
@@ -172,15 +171,15 @@ function createItemFromTemplateWhenReady(
           // Delegate the creation of the template to the handler
           itemHandler.createItemFromTemplate(template!, templateDictionary, userSession, progressTickCallback)
             .then(
-              newItem => {
-                if (newItem) {
+              newItemId => {
+                if (newItemId) {
                   // Update the template dictionary with the new id
-                  templateDictionary[itemId].id = newItem.itemId;
+                  templateDictionary[itemId].id = newItemId;
                 }
-                resolve(newItem);
+                resolve(newItemId);
               },
               () => {
-                resolve(undefined);
+                resolve("");
               }
             );
         }

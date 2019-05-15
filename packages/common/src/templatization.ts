@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+/**
+ * Provides common functions involving the adlib library.
+ *
+ * @module templatization
+ */
+
 import * as adlib from "adlib";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -23,4 +29,21 @@ export function replaceInTemplate(
   replacements: any
 ): any {
   return adlib.adlib(template, replacements);
+}
+
+export function templatizeId(
+  id: string,
+  suffix = ".id"
+): string | string[] {
+  if (id.startsWith("{{")) {
+    return id;  // already templatized
+  } else {
+    return "{{" + id + suffix + "}}";
+  }
+}
+
+export function templatizeIdList(ids: string[], suffix = ".id"): string[] {
+  return ids.map((id: string) => {
+    return templatizeId(id, suffix) as string;
+  });
 }

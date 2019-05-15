@@ -16,11 +16,40 @@
 
 /**
  * Provides common functions.
- * 
- * @module common
+ *
+ * @module generalHelpers
  */
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * ```js
+ * import { cloneObject } from "utils/object-helpers";
+ * const original = { foo: "bar" }
+ * const copy = cloneObject(original)
+ * copy.foo // "bar"
+ * copy === original // false
+ * ```
+ * Make a deep clone, including arrays. Does not handle functions!
+ */
+export function cloneObject(obj: { [index: string]: any }) {
+  let clone: { [index: string]: any } = {};
+  // first check array
+  if (Array.isArray(obj)) {
+    clone = obj.map(cloneObject);
+  } else if (typeof obj === "object") {
+    for (const i in obj) {
+      if (obj[i] != null && typeof obj[i] === "object") {
+        clone[i] = cloneObject(obj[i]);
+      } else {
+        clone[i] = obj[i];
+      }
+    }
+  } else {
+    clone = obj;
+  }
+  return clone;
+}
 
 export function fail(
   e?: any
@@ -42,7 +71,7 @@ export function fail(
  * @return Value at end of path
  */
 export function getProp(
-  obj: { [index: string]: any }, 
+  obj: { [index: string]: any },
   path: string
 ): any {
   return path.split(".").reduce(function(prev, curr) {
@@ -77,14 +106,14 @@ export function getUTCTimestamp(
 
 /**
  * Pads the string representation of a number to a minimum width.
- * 
+ *
  * @param n Number to pad
  * @param totalSize Desired *minimum* width of number after padding with zeroes
  * @return Number converted to string and padded as needed
  * @protected
  */
 function padPositiveNum(
-  n: number, 
+  n: number,
   totalSize: number
 ): string {
   let numStr = n.toString();

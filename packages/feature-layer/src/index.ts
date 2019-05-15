@@ -40,9 +40,9 @@ export function createItemFromTemplate(
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
     console.log("createItemFromTemplate for a feature-layer");
-    resolve(template);
+    resolve("");
   });
 }

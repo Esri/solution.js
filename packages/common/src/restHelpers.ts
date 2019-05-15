@@ -15,8 +15,9 @@
  */
 
 /**
- * Provides common functions involving the REST API.
+ * Provides common functions involving the arcgis-rest-js library.
  *
+ * @module restHelpers
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
@@ -85,6 +86,38 @@ export function createItemWithData(
         }
       },
       e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Updates the URL of an item.
+ *
+ * @param id AGOL id of item to update
+ * @param url URL to assign to item's base section
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when the item has been updated
+ */
+export function updateItemURL(
+  id: string,
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Update its URL
+    const options = {
+      item: {
+        id,
+        url
+      },
+      ...requestOptions
+    };
+
+    portal.updateItem(options).then(
+      () => {
+        resolve(id);
+      },
+      e => reject(fail(e))
     );
   });
 }

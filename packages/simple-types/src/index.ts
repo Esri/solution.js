@@ -22,23 +22,6 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as DashboardModule from "./dashboard";
-import * as FormModule from "./form";
-import * as GroupModule from "./group";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as WebMapModule from "./webmap";
-import * as WebMappingApplicationModule from "./webmappingapplication";
-
-/**
- * Mapping from item type to module with type-specific template-handling code
- */
-const moduleMap: common.IItemTypeModuleMap = {
-  "dashboard": DashboardModule,
-  "form": FormModule,
-  "group": GroupModule,
-  "web map": WebMapModule,
-  "web mapping application": WebMappingApplicationModule
-};
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -47,14 +30,7 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
-    const itemHandler: common.IItemTemplateConversions = moduleMap[itemInfo.type.toLowerCase()];
-    if (!itemHandler) {
-      console.warn("Unimplemented item type (module level) " + itemInfo.type + " for " + itemInfo.itemId);
-      resolve(undefined);
-    } else {
-      console.log("jsonize item type " + itemInfo.type + " for " + itemInfo.itemId);
-      resolve(itemInfo);
-    }
+    resolve(undefined);
   });
 }
 
@@ -63,15 +39,39 @@ export function createItemFromTemplate(
   templateDictionary: any,
   userSession: auth.UserSession,
   progressTickCallback: () => void
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
-    const itemHandler: common.IItemTemplateConversions = moduleMap[template.type.toLowerCase()];
-    if (!itemHandler) {
-      console.warn("Unimplemented item type (module level) " + template.type + " for " + template.itemId);
-      resolve(undefined);
-    } else {
-      console.log("deploy item type " + template.type + " for " + template.itemId);
-      resolve(template);
-    }
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    console.log("createItemFromTemplate for a " + template.type);
+
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
+    newItemTemplate = common.replaceInTemplate(newItemTemplate, templateDictionary);
+
+    // Create the item, then update its URL with its new id
+    common.createItemWithData(newItemTemplate.item, newItemTemplate.data, 
+      {authentication: userSession}, templateDictionary.folderId)
+    .then(
+      createResponse => {
+        progressTickCallback();
+
+        if (createResponse.success) {
+          common.updateItemURL(
+            createResponse.id, 
+            common.replaceInTemplate(newItemTemplate.item.url, templateDictionary),
+            {authentication: userSession}
+          )
+          .then(
+            () => {
+              progressTickCallback();
+              resolve(createResponse.id);
+            },
+            e => reject(common.fail(e))
+          );        
+        } else {
+          reject(common.fail());
+        }
+      },
+      e => reject(common.fail(e))
+    );
   });
 }

@@ -85,7 +85,9 @@ export function deploySolution(
           }
         )
         .then(
-          clonedSolutionItems => {
+          clonedSolutionItemIds => {
+            progressCallback(percentDone += progressPercentStep);  // for solution item creation
+
             // Update solution item's data JSON using template dictionary, and then
             // Create solution item using internal representation & and the updated data JSON
             common.createItemWithData(
