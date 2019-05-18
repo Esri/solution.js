@@ -20,6 +20,8 @@
  * @module deployItems
  */
 
+ /* tslint:disable:no-unnecessary-type-assertion */
+
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
