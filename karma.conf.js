@@ -15,7 +15,7 @@ module.exports = function(config) {
     files: ["packages/*/{src,test}/**/*.ts"],
 
     // list of files to exclude
-    exclude: [],
+    exclude: ["packages/*/{src,test}/**/*.d.ts"],
 
     karmaTypescriptConfig: {
       coverageOptions: {
@@ -54,7 +54,7 @@ module.exports = function(config) {
             .readdirSync("packages")
             .filter(p => p[0] !== ".")
             .reduce((alias, p) => {
-              alias[`@esri/hub-${p}`] = `packages/${p}/src/index.ts`;
+              alias[`@esri/solution-${p}`] = `packages/${p}/src/index.ts`;
               return alias;
             }, {})
         }
