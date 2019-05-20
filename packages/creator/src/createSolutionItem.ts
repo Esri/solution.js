@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages deployment of items via the REST API.
+ * Manages creation of a Solution item via the REST API.
  *
  * @module createSolutionItem
  */
@@ -31,11 +31,11 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  "dashboard": solutionSimpleTypes,
+  dashboard: solutionSimpleTypes,
   "feature service": solutionFeatureLayer,
-  "form": solutionSimpleTypes,
-  "group": solutionSimpleTypes,
-  "storymap": solutionStoryMap,
+  form: solutionSimpleTypes,
+  group: solutionSimpleTypes,
+  storymap: solutionStoryMap,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };

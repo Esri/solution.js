@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides common functions.
+ * Provides general helper functions.
  *
  * @module generalHelpers
  */
@@ -51,9 +51,7 @@ export function cloneObject(obj: { [index: string]: any }) {
   return clone;
 }
 
-export function fail(
-  e?: any
-): any {
+export function fail(e?: any): any {
   if (e) {
     return { success: false, error: e.error || e };
   } else {
@@ -70,10 +68,7 @@ export function fail(
  *             in obj
  * @return Value at end of path
  */
-export function getProp(
-  obj: { [index: string]: any },
-  path: string
-): any {
+export function getProp(obj: { [index: string]: any }, path: string): any {
   return path.split(".").reduce(function(prev, curr) {
     /* istanbul ignore next no need to test undefined scenario */
     return prev ? prev[curr] : undefined;
@@ -86,8 +81,7 @@ export function getProp(
  * @return Timestamp
  * @protected
  */
-export function getUTCTimestamp(
-): string {
+export function getUTCTimestamp(): string {
   const now = new Date();
   return (
     padPositiveNum(now.getUTCFullYear(), 4) +
@@ -112,10 +106,7 @@ export function getUTCTimestamp(
  * @return Number converted to string and padded as needed
  * @protected
  */
-function padPositiveNum(
-  n: number,
-  totalSize: number
-): string {
+function padPositiveNum(n: number, totalSize: number): string {
   let numStr = n.toString();
   const numPads = totalSize - numStr.length;
   if (numPads > 0) {
@@ -123,4 +114,3 @@ function padPositiveNum(
   }
   return numStr;
 }
-
