@@ -25,13 +25,11 @@ module.exports = function(config) {
             branches: 100,
             functions: 100,
             lines: 100,
-            // not sure why were getting stats for more than just the src/ directory
             excludes: [
               'packages/*/test/**/*.ts'
             ]
           }
-        },
-
+        }
       },
       reports: {
         "json": {
@@ -70,7 +68,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ["jasmine-diff", "dots", "karma-typescript", "coverage"],
+    reporters: ["spec", "karma-typescript"],
 
     // web server port
     port: 9876,
