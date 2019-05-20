@@ -15,7 +15,7 @@ module.exports = function(config) {
     files: ["packages/*/{src,test}/**/*.ts"],
 
     // list of files to exclude
-    exclude: [],
+    exclude: ["packages/*/{src,test}/**/*.d.ts"],
 
     karmaTypescriptConfig: {
       coverageOptions: {
