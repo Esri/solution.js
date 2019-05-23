@@ -226,53 +226,39 @@ export function copyFilesFromStorageItem(
   destinationRequestOptions: auth.IUserRequestOptions
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
-    // Separate metadata & thumbnail files from resource files
-    const updateOptions: portal.IUpdateItemOptions = {
-      item: {
-        id: destinationItemId
-      },
-      ...destinationRequestOptions
-    };
-    let needUpdate: boolean = false;
-
-    const resourceFilePaths = filePaths.filter(filePath => {
-      if (filePath.type === EFileType.Metadata) {
-        (updateOptions as any).item.metadata = filePath.url;
-        needUpdate = true;
-        return false;
-      } else if (filePath.type === EFileType.Thumbnail) {
-        (updateOptions as any).item.thumbnailurl = filePath.url;
-        needUpdate = true;
-        return false;
+    const awaitAllItems = filePaths.filter(filePath => {
+      switch (filePath.type) {
+        case EFileType.Resource:
+          return copyResource(
+            {
+              url: filePath.url,
+              requestOptions: storageRequestOptions
+            },
+            {
+              itemId: destinationItemId,
+              folder: filePath.folder,
+              filename: filePath.filename,
+              requestOptions: destinationRequestOptions
+            }
+          );
+        case EFileType.Metadata:
+          return copyMetadata(
+            {
+              url: filePath.url,
+              requestOptions: storageRequestOptions
+            },
+            {
+              itemId: destinationItemId,
+              requestOptions: destinationRequestOptions
+            }
+          );
+        case EFileType.Thumbnail:
+          return addThumbnailFromUrl(
+            filePath.url,
+            destinationItemId,
+            destinationRequestOptions
+          );
       }
-      // Resource file
-      return true;
-    });
-
-    // Update the destination item
-    const awaitAllItems: Array<Promise<any>> = [];
-
-    // Update metadata and/or thumbnail
-    if (needUpdate) {
-      awaitAllItems.push(portal.updateItem(updateOptions));
-    }
-
-    // Update resource(s)
-    resourceFilePaths.forEach(filePath => {
-      awaitAllItems.push(
-        copyResource(
-          {
-            url: filePath.url,
-            requestOptions: storageRequestOptions
-          },
-          {
-            itemId: destinationItemId,
-            folder: filePath.folder,
-            filename: filePath.filename,
-            requestOptions: destinationRequestOptions
-          }
-        )
-      );
     });
 
     // Wait until all files have been copied
@@ -443,6 +429,84 @@ export function generateResourceFilenameFromStorage(
   return { type, folder, filename };
 }
 
+export function getBlob(
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the blob from the URL
+    const blobRequestOptions = {
+      rawResponse: true,
+      ...requestOptions
+    } as request.IRequestOptions;
+    request.request(url, blobRequestOptions).then(
+      content => {
+        // Add it to the destination item
+        content.blob().then(
+          resolve,
+          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get response
+    );
+  });
+}
+
+export function addResourceFromBlob(
+  blob: any,
+  itemId: string,
+  folder: string,
+  filename: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const resourceFilename = folder ? folder + "/" + filename : filename;
+  const addRsrcOptions = {
+    id: itemId,
+    resource: blob,
+    name: filename,
+    ...requestOptions
+  };
+  if (folder) {
+    addRsrcOptions.params = {
+      resourcesPrefix: folder
+    };
+  }
+  return portal.addItemResource(addRsrcOptions);
+}
+
+export function addMetadataFromBlob(
+  blob: any,
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId
+    },
+    params: {
+      // Pass metadata in directly because item object is serialized, which discards a blob
+      metadata: blob
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
+
+export function addThumbnailFromUrl(
+  url: string,
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId,
+      thumbnailurl: url
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
+
 /**
  * Copies a resource from a URL to an item.
  *
@@ -465,38 +529,46 @@ export function copyResource(
     filename: string;
     requestOptions: auth.IUserRequestOptions;
   }
-): Promise<string> {
+): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    // Get the resource from the URL
-    const requestOptions = {
-      rawResponse: true,
-      ...source.requestOptions
-    } as request.IRequestOptions;
-    request.request(source.url, requestOptions).then(
-      content => {
-        // Add it to the destination item
-        content.blob().then(
-          (blob: any) => {
-            const resourceFilename = destination.folder
-              ? destination.folder + "/" + destination.filename
-              : destination.filename;
-            const addRsrcOptions = {
-              id: destination.itemId,
-              resource: blob,
-              name: destination.filename,
-              ...destination.requestOptions
-            };
-            if (destination.folder) {
-              addRsrcOptions.params = {
-                resourcesPrefix: destination.folder
-              };
-            }
-            portal.addItemResource(addRsrcOptions).then(
-              () => resolve(resourceFilename),
-              e => reject(generalHelpers.fail(e)) // unable to store copy of resource
-            );
-          },
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of resource
+    getBlob(source.url, source.requestOptions).then(
+      blob => {
+        addResourceFromBlob(
+          blob,
+          destination.itemId,
+          destination.folder,
+          destination.filename,
+          destination.requestOptions
+        ).then(
+          resolve,
+          e => reject(generalHelpers.fail(e)) // unable to get resource
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get resource
+    );
+  });
+}
+
+export function copyMetadata(
+  source: {
+    url: string;
+    requestOptions: auth.IUserRequestOptions;
+  },
+  destination: {
+    itemId: string;
+    requestOptions: auth.IUserRequestOptions;
+  }
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    getBlob(source.url, source.requestOptions).then(
+      blob => {
+        addMetadataFromBlob(
+          blob,
+          destination.itemId,
+          destination.requestOptions
+        ).then(
+          resolve,
+          e => reject(generalHelpers.fail(e)) // unable to get resource
         );
       },
       e => reject(generalHelpers.fail(e)) // unable to get resource
