@@ -45,7 +45,6 @@ export function createFeatureService(
   access = "private"
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
-
     // Create item
     const createOptions: serviceAdmin.ICreateServiceOptions = {
       item: {
@@ -57,7 +56,8 @@ export function createFeatureService(
     };
 
     // Make the item name unique
-    createOptions.item.name = itemInfo.name + "_" + generalHelpers.getUTCTimestamp();
+    createOptions.item.name =
+      itemInfo.name + "_" + generalHelpers.getUTCTimestamp();
 
     serviceAdmin.createFeatureService(createOptions).then(
       createResponse => {
@@ -83,7 +83,7 @@ export function createFeatureService(
               // Set the access manually since the access value in createItem appears to be ignored
               const accessOptions: portal.ISetAccessOptions = {
                 id: createResponse.serviceItemId,
-                access: (access === "public" ? "public" : "org"),  // need to use constants rather than string
+                access: access === "public" ? "public" : "org", // need to use constants rather than string
                 ...requestOptions
               };
               portal.setItemAccess(accessOptions).then(
@@ -123,7 +123,6 @@ export function createItemWithData(
   access = "private"
 ): Promise<portal.ICreateItemResponse> {
   return new Promise((resolve, reject) => {
-
     // Create item
     const createOptions: portal.ICreateItemOptions = {
       item: {
@@ -141,7 +140,7 @@ export function createItemWithData(
           // Set the access manually since the access value in createItem appears to be ignored
           const accessOptions: portal.ISetAccessOptions = {
             id: createResponse.id,
-            access: (access === "public" ? "public" : "org"),  // need to use constants rather than string
+            access: access === "public" ? "public" : "org", // need to use constants rather than string
             ...requestOptions
           };
           portal.setItemAccess(accessOptions).then(
@@ -194,7 +193,7 @@ export function updateItemURL(
       () => {
         resolve(id);
       },
-      e => reject(fail(e))
+      e => reject(generalHelpers.fail(e))
     );
   });
 }

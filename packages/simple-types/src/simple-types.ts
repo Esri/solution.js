@@ -36,8 +36,10 @@ export function convertItemToTemplate(
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,
+  resourceFilePaths: common.IDeployFileCopyPath[],
+  storageUserSession: auth.UserSession,
   templateDictionary: any,
-  userSession: auth.UserSession,
+  destinationUserSession: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -61,7 +63,7 @@ export function createItemFromTemplate(
       .createItemWithData(
         newItemTemplate.item,
         newItemTemplate.data,
-        { authentication: userSession },
+        { authentication: destinationUserSession },
         templateDictionary.folderId
       )
       .then(
@@ -69,25 +71,30 @@ export function createItemFromTemplate(
           progressTickCallback();
 
           if (createResponse.success) {
-            /*const resourcesDef = common.copyRegularResourceFromStorage("",//storageItemId,
-          "rsrcUrl",
-          createResponse.id, {authentication: userSession}, {authentication: userSession});
+            // Add the new item to the settings
+            templateDictionary[template.itemId] = {
+              id: createResponse.id
+            };
 
-          const thumbnailDef = common.copyThumbnailResourceFromStorage("",//storageItemId,
-          "rsrcUrl",
-          createResponse.id, template.type, {authentication: userSession}, {authentication: userSession});*/
+            // Copy resources, metadata, thumbnail
+            const resourcesDef = common.copyFilesFromStorageItem(
+              { authentication: storageUserSession },
+              resourceFilePaths,
+              createResponse.id,
+              { authentication: destinationUserSession }
+            );
 
+            // The item's URL includes its id, so it needs to be updated
             const updateUrlDef = common.updateItemURL(
               createResponse.id,
               common.replaceInTemplate(
                 newItemTemplate.item.url,
                 templateDictionary
               ),
-              { authentication: userSession }
+              { authentication: destinationUserSession }
             );
 
-            // Promise.all([resourcesDef, thumbnailDef, updateUrlDef])
-            Promise.all([updateUrlDef]).then(
+            Promise.all([resourcesDef, updateUrlDef]).then(
               () => {
                 progressTickCallback();
 

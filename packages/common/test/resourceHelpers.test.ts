@@ -23,55 +23,353 @@ import * as resourceHelpers from "../src/resourceHelpers";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `resoureHelpers`: common functions involving the management of item and group resources", () => {
+  describe("generateItemFilePaths", () => {
+    it("without resources", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames: string[] = [];
+      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceItemFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(2);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with one resource at top level", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["gtnp2.jpg"];
+      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceItemFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(3);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with one resource in folder", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["myFolder/gtnp2.jpg"];
+      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f_myFolder",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceItemFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(3);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with multiple resources", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail/thumbnail.png";
+      const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
+      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+          folder: "8f7ec78195d0479784036387d522e29f_myFolder",
+          filename: "gtnp2.jpg"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml"
+        },
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceItemFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(4);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("generateGroupFilePaths", () => {
+    it("for a group thumbnail", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "thumbnail.png";
+      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png"
+        }
+      ];
+
+      const actual = resourceHelpers.generateGroupFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("generateStorageFilePaths", () => {
+    it("without resources", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [];
+      const expected: resourceHelpers.IDeployFileCopyPath[] = [];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(0);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with a single top-level file resource", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
+      ];
+      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
+          folder: "",
+          filename: "gtnp2.jpg",
+          type: resourceHelpers.EFileType.Resource
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with a single file resource in a folder", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg"
+      ];
+      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg",
+          folder: "myFolder",
+          filename: "gtnp2.jpg",
+          type: resourceHelpers.EFileType.Resource
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with a metadata", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
+      ];
+      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
+          folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
+          filename: "metadata.xml",
+          type: resourceHelpers.EFileType.Metadata
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("with a thumbnail", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames: string[] = [
+        "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
+      ];
+      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+        {
+          url:
+            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
+          folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
+          filename: "thumbnail.png",
+          type: resourceHelpers.EFileType.Thumbnail
+        }
+      ];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+  });
 
   describe("generateSourceResourceUrl", () => {
-
-    // https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources?f=json
-
     it("top-level", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "gtnp2.jpg";
-      const expected = "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
+      const sourceResourceFilename = "gtnp2.jpg";
+      const expected =
+        "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
 
-      const actual = resourceHelpers.generateSourceResourceUrl(portalSharingUrl, itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateSourceResourceUrl(
+        portalSharingUrl,
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
     it("in folder", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "aFolder/git_merge.png";
-      const expected = "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
+      const sourceResourceFilename = "aFolder/git_merge.png";
+      const expected =
+        "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
 
-      const actual = resourceHelpers.generateSourceResourceUrl(portalSharingUrl, itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateSourceResourceUrl(
+        portalSharingUrl,
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
-
   });
 
   describe("generateSourceMetadataUrl", () => {
-
     it("item", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const expected = "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
+      const expected =
+        "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
 
-      const actual = resourceHelpers.generateSourceMetadataUrl(portalSharingUrl, itemId);
+      const actual = resourceHelpers.generateSourceMetadataUrl(
+        portalSharingUrl,
+        itemId
+      );
       expect(actual).toEqual(expected);
     });
-
   });
 
   describe("generateSourceThumbnailUrl", () => {
-
     it("item", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
-      const expected = "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
+      const expected =
+        "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
 
-      const actual = resourceHelpers.generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart);
+      const actual = resourceHelpers.generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      );
       expect(actual).toEqual(expected);
     });
 
@@ -79,44 +377,53 @@ describe("Module `resoureHelpers`: common functions involving the management of 
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "b6430e0ca08d4b1380f3a5908985da3c";
       const thumbnailUrlPart = "thumbnail1553812391084.png";
-      const expected = "https://www.arcgis.com/sharing/community/groups/b6430e0ca08d4b1380f3a5908985da3c/info/thumbnail1553812391084.png";
+      const isGroup = true;
+      const expected =
+        "https://www.arcgis.com/sharing/community/groups/b6430e0ca08d4b1380f3a5908985da3c/info/thumbnail1553812391084.png";
 
-      const actual = resourceHelpers.generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart, true);
+      const actual = resourceHelpers.generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        isGroup
+      );
       expect(actual).toEqual(expected);
     });
-
   });
 
-  describe("generateResourceStorageTag", () => {
-
+  describe("generateResourceStorageFilename", () => {
     it("top-level", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "gtnp2.jpg";
+      const sourceResourceFilename = "gtnp2.jpg";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f",
         filename: "gtnp2.jpg"
       };
 
-      const actual = resourceHelpers.generateResourceStorageTag(itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateResourceStorageFilename(
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
     it("in folder", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "aFolder/git_merge.png";
+      const sourceResourceFilename = "aFolder/git_merge.png";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_aFolder",
         filename: "git_merge.png"
       };
 
-      const actual = resourceHelpers.generateResourceStorageTag(itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateResourceStorageFilename(
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
-
   });
 
-  describe("generateMetadataStorageTag", () => {
-
+  describe("generateMetadataStorageFilename", () => {
     it("metadata", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const expected = {
@@ -124,97 +431,102 @@ describe("Module `resoureHelpers`: common functions involving the management of 
         filename: "metadata.xml"
       };
 
-      const actual = resourceHelpers.generateMetadataStorageTag(itemId);
+      const actual = resourceHelpers.generateMetadataStorageFilename(itemId);
       expect(actual).toEqual(expected);
     });
-
   });
 
-  describe("generateThumbnailStorageTag", () => {
-
+  describe("generateThumbnailStorageFilename", () => {
     it("without subpath", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "thumbnail1553812391084.png";
+      const sourceResourceFilename = "thumbnail1553812391084.png";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
         filename: "thumbnail1553812391084.png"
       };
 
-      const actual = resourceHelpers.generateThumbnailStorageTag(itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateThumbnailStorageFilename(
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
     it("with subpath", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceTag = "thumbnail/thumbnail.png";
+      const sourceResourceFilename = "thumbnail/thumbnail.png";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-        filename: "thumbnail%2Fthumbnail.png"
+        filename: "thumbnail.png"
       };
 
-      const actual = resourceHelpers.generateThumbnailStorageTag(itemId, sourceResourceTag);
+      const actual = resourceHelpers.generateThumbnailStorageFilename(
+        itemId,
+        sourceResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
-
   });
 
-  describe("generateResourceTagFromStorage", () => {
-
-    it("1", () => {
-      const storageResourceTag = "8f7ec78195d0479784036387d522e29f/gtnp2.jpg";
-      const expected = {
+  describe("generateResourceFilenameFromStorage", () => {
+    it("top-level image file", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f/gtnp2.jpg";
+      const expected: resourceHelpers.IDeployFilename = {
+        type: resourceHelpers.EFileType.Resource,
         folder: "",
         filename: "gtnp2.jpg"
       };
 
-      const actual = resourceHelpers.generateResourceTagFromStorage(storageResourceTag);
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
-    it("2", () => {
-      const storageResourceTag = "8f7ec78195d0479784036387d522e29f_aFolder/git_merge.png";
-      const expected = {
+    it("image file in folder", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_aFolder/git_merge.png";
+      const expected: resourceHelpers.IDeployFilename = {
+        type: resourceHelpers.EFileType.Resource,
         folder: "aFolder",
         filename: "git_merge.png"
       };
 
-      const actual = resourceHelpers.generateResourceTagFromStorage(storageResourceTag);
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
-    it("3", () => {
-      const storageResourceTag = "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml";
-      const expected = {
+    it("metadata file", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml";
+      const expected: resourceHelpers.IDeployFilename = {
+        type: resourceHelpers.EFileType.Metadata,
         folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
         filename: "metadata.xml"
       };
 
-      const actual = resourceHelpers.generateResourceTagFromStorage(storageResourceTag);
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
 
-    it("4", () => {
-      const storageResourceTag = "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail1553812391084.png";
-      const expected = {
+    it("thumbnail", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png";
+      const expected: resourceHelpers.IDeployFilename = {
+        type: resourceHelpers.EFileType.Thumbnail,
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-        filename: "thumbnail1553812391084.png"
+        filename: "thumbnail.png"
       };
 
-      const actual = resourceHelpers.generateResourceTagFromStorage(storageResourceTag);
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
       expect(actual).toEqual(expected);
     });
-
-    it("5", () => {
-      const storageResourceTag = "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail%2Fthumbnail.png";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
-        filename: "thumbnail/thumbnail.png"
-      };
-
-      const actual = resourceHelpers.generateResourceTagFromStorage(storageResourceTag);
-      expect(actual).toEqual(expected);
-    });
-
   });
-
 });

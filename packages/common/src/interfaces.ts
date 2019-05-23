@@ -19,8 +19,10 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import { IDeployFileCopyPath } from "./resourceHelpers";
 
 export * from "./generalHelpers";
+export * from "./resourceHelpers";
 export * from "./restHelpers";
 export * from "./templatization";
 
@@ -98,8 +100,10 @@ export interface IItemTemplateConversions {
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
+    resourceFilePaths: IDeployFileCopyPath[],
+    storageUserSession: auth.UserSession,
     templateDictionary: any,
-    userSession: auth.UserSession,
+    destinationUserSession: auth.UserSession,
     progressTickCallback: () => void
   ): Promise<string>;
 }

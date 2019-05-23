@@ -20,7 +20,7 @@
  * @module deployItems
  */
 
- /* tslint:disable:no-unnecessary-type-assertion */
+/* tslint:disable:no-unnecessary-type-assertion */
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
@@ -33,11 +33,11 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  "dashboard": solutionSimpleTypes,
+  dashboard: solutionSimpleTypes,
   "feature service": solutionFeatureLayer,
   // "form": solutionSimpleTypes,
   // "group": solutionSimpleTypes,
-  "storymap": solutionStoryMap,
+  storymap: solutionStoryMap,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
@@ -45,7 +45,10 @@ const moduleMap: common.IItemTypeModuleMap = {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
+ * Deploys a set of items defined by templates.
  *
+ * @param portalSharingUrl Server/sharing
+ * @param storageItemId Id of storage item
  * @param templates A collection of AGO item templates
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param userSession Options for the request
@@ -54,42 +57,51 @@ const moduleMap: common.IItemTypeModuleMap = {
  *         already in the templates list
  */
 export function deploySolutionItems(
+  portalSharingUrl: string,
+  storageItemId: string,
   templates: common.IItemTemplate[],
+  storageUserSession: auth.UserSession,
   templateDictionary: any,
-  userSession: auth.UserSession,
+  destinationUserSession: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    if (templates.length > 0) {
-      // Create an ordered graph of the templates so that dependencies are created
-      // before the items that need them
-      const cloneOrderChecklist: string[] = topologicallySortItems(templates);
+    // Create an ordered graph of the templates so that dependencies are created
+    // before the items that need them
+    const cloneOrderChecklist: string[] = topologicallySortItems(templates);
 
-      // For each item in order from no dependencies to dependent on other items,
-      //   * replace template symbols using template dictionary
-      //   * create item in destination group
-      //   * add created item's id into the template dictionary
-      const awaitAllItems = [] as Array<Promise<string>>;
-      cloneOrderChecklist.forEach(id =>
-        awaitAllItems.push(
-          createItemFromTemplateWhenReady(
-            id,
-            templates,
-            templateDictionary,
-            userSession,
-            progressTickCallback
-          )
+    // For each item in order from no dependencies to dependent on other items,
+    //   * replace template symbols using template dictionary
+    //   * create item in destination group
+    //   * add created item's id into the template dictionary
+    const awaitAllItems = [] as Array<Promise<string>>;
+    cloneOrderChecklist.forEach(id => {
+      // Get the item's template out of the list of templates
+      const template = findTemplateInList(templates, id);
+      if (!template) {
+        reject(common.fail());
+      }
+
+      awaitAllItems.push(
+        createItemFromTemplateWhenReady(
+          template!,
+          common.generateStorageFilePaths(
+            portalSharingUrl,
+            storageItemId,
+            template!.resources
+          ),
+          storageUserSession,
+          templateDictionary,
+          destinationUserSession,
+          progressTickCallback
         )
       );
+    });
 
-      // Wait until all items have been created
-      Promise.all(awaitAllItems).then(
-        clonedSolutionItemIds => {
-          resolve(clonedSolutionItemIds);
-        },
-        common.fail
-      );
-    }
+    // Wait until all items have been created
+    Promise.all(awaitAllItems).then(clonedSolutionItemIds => {
+      resolve(clonedSolutionItemIds);
+    }, common.fail);
   });
 }
 
@@ -122,8 +134,8 @@ enum SortVisitColor {
 /**
  * Creates an item from a template once the item's dependencies have been created.
  *
- * @param itemId AGO id of solution template item to deploy
- * @param templates A collection of AGO item templates
+ * @param template Template of item to deploy
+ * @param resourceFilePaths URL, folder, and filename for each item resource/metadata/thumbnail
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
  * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
@@ -132,57 +144,58 @@ enum SortVisitColor {
  * @protected
  */
 function createItemFromTemplateWhenReady(
-  itemId: string,
-  templates: common.IItemTemplate[],
+  template: common.IItemTemplate,
+  resourceFilePaths: common.IDeployFileCopyPath[],
+  storageUserSession: auth.UserSession,
   templateDictionary: any,
-  userSession: auth.UserSession,
+  destinationUserSession: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
-  templateDictionary[itemId] = {};
+  templateDictionary[template.itemId] = {};
   const itemDef = new Promise<string>((resolve, reject) => {
-    // Acquire the template out of the list of templates
-    const template = findTemplateInList(templates, itemId);
-    if (!template) {
-      reject(common.fail());
-    }
-
     // Wait until all of the item's dependencies are deployed
     const awaitDependencies = [] as Array<Promise<string>>;
-    (template!.dependencies || []).forEach(dependencyId => {
-      awaitDependencies.push(templateDictionary[dependencyId].def)
-    }
-    );
-    Promise.all(awaitDependencies).then(
-      () => {
-        // Find the conversion handler for this item type
-        const templateType = template!.type.toLowerCase();
-        let itemHandler: common.IItemTemplateConversions = moduleMap[templateType];
-        if (!itemHandler) {
-          console.warn("Unimplemented item type (package level) " + template!.type + " for " + template!.itemId);
-          resolve("");
-
-        } else {
-          // Handle original Story Maps with next-gen Story Maps
-          if (templateType === "web mapping application") {
-            if (solutionStoryMap.isAStoryMap(template!)) {
-              itemHandler = solutionStoryMap;
-            }
+    (template.dependencies || []).forEach(dependencyId => {
+      awaitDependencies.push(templateDictionary[dependencyId].def);
+    });
+    Promise.all(awaitDependencies).then(() => {
+      // Find the conversion handler for this item type
+      const templateType = template.type.toLowerCase();
+      let itemHandler: common.IItemTemplateConversions =
+        moduleMap[templateType];
+      if (!itemHandler) {
+        console.warn(
+          "Unimplemented item type (package level) " +
+            template.type +
+            " for " +
+            template.itemId
+        );
+        resolve("");
+      } else {
+        // Handle original Story Maps with next-gen Story Maps
+        if (templateType === "web mapping application") {
+          if (solutionStoryMap.isAStoryMap(template)) {
+            itemHandler = solutionStoryMap;
           }
-
-          // Delegate the creation of the template to the handler
-          itemHandler.createItemFromTemplate(template!, templateDictionary, userSession, progressTickCallback)
-            .then(
-              newItemId => resolve(newItemId),
-              () => resolve("")
-            );
         }
-      },
-      common.fail
-    );
+
+        // Delegate the creation of the template to the handler
+        itemHandler
+          .createItemFromTemplate(
+            template,
+            resourceFilePaths,
+            storageUserSession,
+            templateDictionary,
+            destinationUserSession,
+            progressTickCallback
+          )
+          .then(newItemId => resolve(newItemId), () => resolve(""));
+      }
+    }, common.fail);
   });
 
   // Save the deferred for the use of items that depend on this item being created first
-  templateDictionary[itemId].def = itemDef;
+  templateDictionary[template.itemId].def = itemDef;
   return itemDef;
 }
 
@@ -229,9 +242,7 @@ export function findTemplateInList(
  * @throws Error("Cyclical dependency graph detected")
  * @protected
  */
-function topologicallySortItems(
-  templates: common.IItemTemplate[]
-): string[] {
+function topologicallySortItems(templates: common.IItemTemplate[]): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
   // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8
@@ -266,12 +277,12 @@ function topologicallySortItems(
   // we just want relative ordering
 
   const verticesToVisit: ISortVertex = {};
-  templates.forEach(function (template) {
+  templates.forEach(function(template) {
     verticesToVisit[template.itemId] = SortVisitColor.White; // not yet visited
   });
 
   // Algorithm visits each vertex once. Don't need to record times or "from' nodes ("π" in pseudocode)
-  templates.forEach(function (template) {
+  templates.forEach(function(template) {
     if (verticesToVisit[template.itemId] === SortVisitColor.White) {
       // if not yet visited
       visit(template.itemId);
@@ -284,8 +295,9 @@ function topologicallySortItems(
 
     // Visit dependents if not already visited
     const template = findTemplateInList(templates, vertexId);
-    const dependencies: string[] = template && template.dependencies ? template.dependencies : [];
-    dependencies.forEach(function (dependencyId) {
+    const dependencies: string[] =
+      template && template.dependencies ? template.dependencies : [];
+    dependencies.forEach(function(dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {
         // if not yet visited
         visit(dependencyId);

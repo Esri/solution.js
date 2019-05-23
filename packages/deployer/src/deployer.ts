@@ -39,17 +39,20 @@ export function deploySolution(
   itemInfo: any,
   templateDictionary: any,
   portalSubset: IPortalSubset,
-  userSession: auth.UserSession,
+  destinationUserSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const sourceId = itemInfo.id;
     let percentDone = 1; // Let the caller know that we've started
     progressCallback(percentDone);
+    templateDictionary.organization = {
+      portalBaseUrl: portalSubset.portalUrl
+    };
 
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
     const itemDataParam: portal.IItemDataOptions = {
-      authentication: userSession
+      authentication: destinationUserSession
     };
     const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
 
@@ -57,7 +60,7 @@ export function deploySolution(
     const folderName = itemInfo.title + " (" + common.getUTCTimestamp() + ")";
     const folderCreationParam = {
       title: folderName,
-      authentication: userSession
+      authentication: destinationUserSession
     };
     const folderCreationDef = portal.createFolder(folderCreationParam);
 
@@ -87,9 +90,12 @@ export function deploySolution(
         // Handle the contained item templates
         deployItems
           .deploySolutionItems(
+            portalSubset.restUrl,
+            sourceId,
             itemData.templates,
+            destinationUserSession,
             templateDictionary,
-            userSession,
+            destinationUserSession,
             () => {
               progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
             }
@@ -109,7 +115,7 @@ export function deploySolution(
                   },
                   common.replaceInTemplate(itemData, templateDictionary),
                   {
-                    authentication: userSession
+                    authentication: destinationUserSession
                   },
                   templateDictionary.folderId
                 )
