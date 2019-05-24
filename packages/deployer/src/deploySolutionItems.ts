@@ -88,7 +88,7 @@ export function deploySolutionItems(
           common.generateStorageFilePaths(
             portalSharingUrl,
             storageItemId,
-            template!.resources
+            template!.resources || []
           ),
           storageUserSession,
           templateDictionary,
