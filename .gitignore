@@ -87,7 +87,6 @@ __*.*
 __*
 
 # Temporary build products
-packages/*/src/**/*.js
-packages/*/src/**/*.map
-packages/*/test/**/*.js
-packages/*/test/**/*.map
+packages/**/*.js
+packages/**/*.map
+packages/**/*.d.ts
