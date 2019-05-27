@@ -33,7 +33,7 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  // "dashboard": solutionSimpleTypes,
+  dashboard: solutionSimpleTypes,
   "feature layer": solutionFeatureLayer,
   "feature service": solutionFeatureLayer,
   // "form": solutionSimpleTypes,
