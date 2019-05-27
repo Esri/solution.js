@@ -20,7 +20,8 @@
     "@esri/arcgis-rest-routing": "^2.0.3",
     "@esri/arcgis-rest-service-admin": "^2.0.3",
     "@esri/arcgis-rest-types": "^2.0.3",
-    "@esri/solution-common": "^0.0.1"
+    "@esri/solution-common": "^0.0.1",
+    "@esri/solution-simple-types": "^0.0.1"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.0.3",
@@ -32,6 +33,7 @@
     "@esri/arcgis-rest-service-admin": "^2.0.3",
     "@esri/arcgis-rest-types": "^2.0.3",
     "@esri/solution-common": "^0.0.1",
+    "@esri/solution-simple-types": "^0.0.1",
     "rollup": "^1.6.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^5.0.1",

@@ -22,6 +22,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import * as simpleTypes from "@esri/solution-simple-types";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -56,6 +57,7 @@ export function createItemFromTemplate(
           template.itemId +
           ")"
       );
+      resolve("");
     } else {
       console.log(
         "createItemFromTemplate for a " +
@@ -64,8 +66,17 @@ export function createItemFromTemplate(
           template.itemId +
           ")"
       );
+      simpleTypes
+        .createItemFromTemplate(
+          template,
+          resourceFilePaths,
+          storageUserSession,
+          templateDictionary,
+          destinationUserSession,
+          progressTickCallback
+        )
+        .then(resolve, reject);
     }
-    resolve("");
   });
 }
 
