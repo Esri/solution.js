@@ -71,14 +71,12 @@ export function deploySolution(
       folderCreationDef
     ]).then(
       responses => {
-        const itemData = responses[0];
+        let itemData = responses[0] as common.ISolutionItemData;
         const folderResponse = responses[1];
         templateDictionary.folderId = folderResponse.folder.id;
 
         const totalEstimatedCost =
-          estimateDeploymentCost(
-            (itemData as common.ISolutionItemData).templates
-          ) + 3; // overhead for data fetch and folder & solution item creation
+          estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log(
           "totalEstimatedCost, progressPercentStep",
@@ -104,7 +102,30 @@ export function deploySolution(
             clonedSolutionItemIds => {
               progressCallback((percentDone += progressPercentStep)); // for solution item creation
 
-              // Update solution item's data JSON using template dictionary, and then
+              // Update solution item's data JSON using template dictionary, and then update the
+              // itemId & dependencies in each item template
+              itemData = common.replaceInTemplate(itemData, templateDictionary);
+              itemData.templates = itemData.templates.map(itemTemplate => {
+                // Update ids present in template dictionary
+                const itemId = common.getProp(
+                  templateDictionary,
+                  itemTemplate.itemId + ".id"
+                );
+                if (itemId) {
+                  itemTemplate.itemId = itemId;
+                }
+                itemTemplate.dependencies = itemTemplate.dependencies.map(
+                  id => {
+                    const dependId = common.getProp(
+                      templateDictionary,
+                      id + ".id"
+                    );
+                    return dependId ? dependId : id;
+                  }
+                );
+                return itemTemplate;
+              });
+
               // Create solution item using internal representation & and the updated data JSON
               common
                 .createItemWithData(
@@ -113,7 +134,7 @@ export function deploySolution(
                     typeKeywords: ["Solution", "Deployed"],
                     ...itemInfo
                   },
-                  common.replaceInTemplate(itemData, templateDictionary),
+                  itemData,
                   {
                     authentication: destinationUserSession
                   },
