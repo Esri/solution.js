@@ -41,8 +41,8 @@ export function deploySolution(
   portalSubset: IPortalSubset,
   destinationUserSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
     const sourceId = itemInfo.id;
     let percentDone = 1; // Let the caller know that we've started
     progressCallback(percentDone);
@@ -127,13 +127,14 @@ export function deploySolution(
               });
 
               // Create solution item using internal representation & and the updated data JSON
+              const baseItem: common.IItemTemplate = {
+                type: "Solution",
+                typeKeywords: ["Solution", "Deployed"],
+                ...itemInfo
+              };
               common
                 .createItemWithData(
-                  {
-                    type: "Solution",
-                    typeKeywords: ["Solution", "Deployed"],
-                    ...itemInfo
-                  },
+                  baseItem,
                   itemData,
                   {
                     authentication: destinationUserSession
@@ -142,9 +143,15 @@ export function deploySolution(
                 )
                 .then(
                   response => {
+                    baseItem.id = response.id;
+                    baseItem.itemId = response.id;
+                    baseItem.itemUrl = baseItem.itemUrl.replace(
+                      itemInfo.id,
+                      response.id
+                    );
                     console.log(JSON.stringify(templateDictionary, null, 2));
                     progressCallback(100);
-                    resolve(response.id);
+                    resolve(baseItem);
                   },
                   error => {
                     console.error("createItemWithData", error);

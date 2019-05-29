@@ -57,6 +57,10 @@ export interface IItemTemplate {
   /**
    * Item's AGO id
    */
+  id: string;
+  /**
+   * Item's AGO id
+   */
   itemId: string;
   /**
    * AGO item type name
@@ -70,6 +74,10 @@ export interface IItemTemplate {
    * Item base section JSON
    */
   item: any;
+  /**
+   * Item url
+   */
+  itemUrl: string;
   /**
    * Item data section JSON
    */
