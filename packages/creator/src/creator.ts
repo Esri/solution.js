@@ -37,26 +37,34 @@ export interface IPortalSubset {
 
 export function createSolution(
   groupId: string,
-  destUrl: string,
-  userSession: auth.UserSession
+  templateDictionary: any,
+  portalSubset: IPortalSubset,
+  destinationUserSession: auth.IUserRequestOptions
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     // Fetch group item info
+    common.getGroupContents(groupId, destinationUserSession).then(
+      groupMemberIds => {
+        console.log(JSON.stringify(groupMemberIds, null, 2));
 
-    // Create an internal representation of the new solution item using group item info
+        // Create new solution item using group item info
 
-    // Fetch group contents
+        // Fetch group contents
 
-    // For each group content item,
-    //   * fetch item & data infos
-    //   * create item & data JSONs
-    //   * extract dependency ids & add them into list of group contents
-    //   * templatize select components in item & data JSONs (e.g., extents)
-    //   * add JSONs into items list in solution item representation
+        // For each group content item,
+        //   * fetch item & data infos
+        //   * create item & data JSONs
+        //   * extract dependency ids & add them into list of group contents
+        //   * templatize select components in item & data JSONs (e.g., extents)
+        //   * copy item's resources, metadata, & thumbnail to solution item as resources
+        //   * add JSONs to solution item's data JSON accumulation
 
-    // Create solution item using internal representation & and the data JSON
+        // Update solution item with its data JSON
 
-    resolve("createSolution");
+        resolve("createSolution");
+      },
+      e => reject(common.fail(e))
+    );
   });
 }
 

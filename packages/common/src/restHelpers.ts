@@ -167,6 +167,83 @@ export function createItemWithData(
 }
 
 /**
+ * Gets the ids of the dependencies (contents) of an AGOL group.
+ *
+ * @param fullItem A group whose contents are sought
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve with list of dependent ids or an empty list
+ * @protected
+ */
+export function getGroupContents(
+  groupId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    const pagingRequest: portal.IGetGroupContentOptions = {
+      paging: {
+        start: 1,
+        num: 100
+      },
+      ...requestOptions
+    };
+
+    // Fetch group items
+    getGroupContentsTranche(groupId, pagingRequest).then(
+      contents => {
+        resolve(contents);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Gets the ids of a group's contents.
+ *
+ * @param groupId Group id
+ * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
+ *                      be modified by this routine
+ * @return A promise that will resolve with a list of the ids of the group's contents or an empty
+ *         list
+ * @protected
+ */
+export function getGroupContentsTranche(
+  groupId: string,
+  pagingRequest: portal.IGetGroupContentOptions
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    // Fetch group items
+    portal.getGroupContent(groupId, pagingRequest).then(
+      contents => {
+        if (contents.num > 0) {
+          // Extract the list of content ids from the JSON returned
+          const trancheIds: string[] = contents.items.map(
+            (item: any) => item.id
+          );
+
+          // Are there more contents to fetch?
+          if (contents.nextStart > 0) {
+            pagingRequest.paging.start = contents.nextStart;
+            getGroupContentsTranche(groupId, pagingRequest).then(
+              (allSubsequentTrancheIds: string[]) => {
+                // Append all of the following tranches to this tranche and return it
+                resolve(trancheIds.concat(allSubsequentTrancheIds));
+              },
+              e => reject(generalHelpers.fail(e))
+            );
+          } else {
+            resolve(trancheIds);
+          }
+        } else {
+          resolve([]);
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
  * Updates the URL of an item.
  *
  * @param id AGOL id of item to update
