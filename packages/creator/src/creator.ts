@@ -121,8 +121,16 @@ export function createSolution(
         //   * add JSONs to solution item's data JSON accumulation
 
         // Update solution item with its data JSON
-
-        resolve("createSolution");
+        const updateOptions: portal.IUpdateItemOptions = {
+          item: {
+            id: solutionItemId,
+            text: solutionData
+          },
+          ...requestOptions
+        };
+        portal
+          .updateItem(updateOptions)
+          .then(() => resolve(solutionItemId), reject);
       },
       e => reject(common.fail(e))
     );
