@@ -64,7 +64,7 @@ export function createSolution(
           snippet: groupItem.snippet,
           description: groupItem.description,
           tags: groupItem.tags,
-          thumbnail: groupItem.thumbnail
+          typeKeywords: ["Solution", "Template"]
         };
 
         // Create new solution item using group item info
