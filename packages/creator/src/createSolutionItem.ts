@@ -32,10 +32,15 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  */
 const moduleMap: common.IItemTypeModuleMap = {
   dashboard: solutionSimpleTypes,
+  "feature layer": solutionFeatureLayer,
   "feature service": solutionFeatureLayer,
-  form: solutionSimpleTypes,
-  group: solutionSimpleTypes,
-  storymap: solutionStoryMap,
+  // "form": solutionSimpleTypes,
+  // "group": solutionSimpleTypes,
+  // "openstreetmap": solutionStoryMap,
+  // "project package": solutionStoryMap,
+  // "storymap": solutionStoryMap,
+  table: solutionFeatureLayer,
+  vectortilelayer: solutionFeatureLayer,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
