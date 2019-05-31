@@ -143,7 +143,7 @@ export function createItemTemplate(
                   // Set the value keyed by the id to the created template, replacing the placeholder template
                   replaceTemplate(
                     existingTemplates,
-                    itemTemplate.id,
+                    itemTemplate.itemId,
                     itemTemplate
                   );
 

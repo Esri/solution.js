@@ -53,13 +53,21 @@ export function convertItemToTemplate(
       title: itemInfo.title,
       type: itemInfo.type,
       typeKeywords: itemInfo.typeKeywords,
-      url: itemInfo.url
+      url: common.templatize(itemInfo.url, itemTemplate.item.id, ".id")
     };
 
     // Templatize item info property values
-    itemTemplate.item.id = common.templatize(itemTemplate.item.id);
+    itemTemplate.item.id = common.templatize(
+      itemTemplate.item.id,
+      itemTemplate.item.id,
+      ".id"
+    );
     if (itemTemplate.item.item) {
-      itemTemplate.item.item = common.templatize(itemTemplate.item.item);
+      itemTemplate.item.item = common.templatize(
+        itemTemplate.item.item,
+        itemTemplate.item.item,
+        ".id"
+      );
     }
 
     if (itemInfo.type === "Form") {

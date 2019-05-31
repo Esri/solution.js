@@ -52,10 +52,6 @@ export interface IItemTemplate {
   /**
    * Item's AGO id
    */
-  id: string;
-  /**
-   * Item's AGO id
-   */
   itemId: string;
   /**
    * AGO item type name
@@ -69,10 +65,6 @@ export interface IItemTemplate {
    * Item base section JSON
    */
   item: any;
-  /**
-   * Item url
-   */
-  itemUrl: string;
   /**
    * Item data section JSON
    */
@@ -130,12 +122,12 @@ export function createPlaceholderTemplate(
   type = ""
 ): IItemTemplate {
   return {
-    id,
     itemId: id,
     type,
     key: createId(),
-    item: {},
-    itemUrl: "",
+    item: {
+      id
+    },
     data: {},
     resources: [],
     dependencies: [],

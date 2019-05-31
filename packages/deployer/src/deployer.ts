@@ -41,8 +41,8 @@ export function deploySolution(
   portalSubset: IPortalSubset,
   destinationUserSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
+): Promise<common.ISolutionItem> {
+  return new Promise<common.ISolutionItem>((resolve, reject) => {
     const sourceId = itemInfo.id;
     let percentDone = 1; // Let the caller know that we've started
     progressCallback(percentDone);
@@ -127,14 +127,14 @@ export function deploySolution(
               });
 
               // Create solution item using internal representation & and the updated data JSON
-              const baseItem: common.IItemTemplate = {
+              const updatedItemInfo = {
+                ...itemInfo,
                 type: "Solution",
-                typeKeywords: ["Solution", "Deployed"],
-                ...itemInfo
+                typeKeywords: ["Solution", "Deployed"]
               };
               common
                 .createItemWithData(
-                  baseItem,
+                  updatedItemInfo,
                   itemData,
                   {
                     authentication: destinationUserSession
@@ -143,15 +143,17 @@ export function deploySolution(
                 )
                 .then(
                   response => {
-                    baseItem.id = response.id;
-                    baseItem.itemId = response.id;
-                    baseItem.itemUrl = baseItem.itemUrl.replace(
+                    updatedItemInfo.id = response.id;
+                    updatedItemInfo.url = updatedItemInfo.url.replace(
                       itemInfo.id,
                       response.id
                     );
                     console.log(JSON.stringify(templateDictionary, null, 2));
                     progressCallback(100);
-                    resolve(baseItem);
+                    resolve({
+                      item: updatedItemInfo,
+                      data: itemData
+                    });
                   },
                   error => {
                     console.error("createItemWithData", error);

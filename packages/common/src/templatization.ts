@@ -24,26 +24,26 @@ import * as adlib from "adlib";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function replaceInTemplate(
-  template: any,
-  replacements: any
-): any {
+export function deTemplatize(
+  context: string,
+  term: string,
+  suffix = ""
+): string {
+  if (!context) {
+    return context;
+  }
+  const pattern = new RegExp("{{" + term + suffix + "}}", "g");
+  return context.replace(pattern, term);
+}
+
+export function replaceInTemplate(template: any, replacements: any): any {
   return adlib.adlib(template, replacements);
 }
 
-export function templatizeId(
-  id: string,
-  suffix = ".id"
-): string | string[] {
-  if (id.startsWith("{{")) {
-    return id;  // already templatized
-  } else {
-    return "{{" + id + suffix + "}}";
+export function templatize(context: string, term: string, suffix = ""): string {
+  if (!context) {
+    return context;
   }
-}
-
-export function templatizeIdList(ids: string[], suffix = ".id"): string[] {
-  return ids.map((id: string) => {
-    return templatizeId(id, suffix) as string;
-  });
+  const pattern = new RegExp(term, "g");
+  return context.replace(pattern, "{{" + term + suffix + "}}");
 }

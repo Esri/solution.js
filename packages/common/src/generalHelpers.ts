@@ -51,24 +51,6 @@ export function cloneObject(obj: { [index: string]: any }) {
   return clone;
 }
 
-export function deTemplatize(id: string | string[]): string | string[] {
-  if (Array.isArray(id)) {
-    return deTemplatizeList(id);
-  }
-
-  if (id && id.startsWith("{{")) {
-    return id.substring(2, id.indexOf("."));
-  } else {
-    return id;
-  }
-}
-
-function deTemplatizeList(ids: string[]): string[] {
-  return ids.map((id: string) => {
-    return deTemplatize(id) as string;
-  });
-}
-
 export function fail(e?: any): any {
   if (e) {
     return { success: false, error: e.error || e };
@@ -112,27 +94,6 @@ export function getUTCTimestamp(): string {
     padPositiveNum(now.getUTCSeconds(), 2) +
     padPositiveNum(now.getUTCMilliseconds(), 3)
   );
-}
-
-export function templatize(
-  id: string | string[],
-  param = "id"
-): string | string[] {
-  if (Array.isArray(id)) {
-    return templatizeList(id, param);
-  }
-
-  if (id && id.startsWith("{{")) {
-    return id;
-  } else {
-    return "{{" + id + "." + param + "}}";
-  }
-}
-
-export function templatizeList(ids: string[], param = "id"): string[] {
-  return ids.map((id: string) => {
-    return templatize(id, param) as string;
-  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
