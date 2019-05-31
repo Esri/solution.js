@@ -22,7 +22,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as createSolutionItem from "./createSolutionItem";
+import * as createSolutionTemplate from "./createSolutionTemplate";
 import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -112,29 +112,32 @@ export function createSolution(
         console.log("Created solution " + solutionItemId);
         console.log("Group members: " + JSON.stringify(groupContents, null, 2));
 
-        // For each group content item,
-        //   * fetch item & data infos
-        //   * create item & data JSONs
-        //   * extract dependency ids & add them into list of group contents
-        //   * templatize select components in item & data JSONs (e.g., extents)
-        //   * copy item's resources, metadata, & thumbnail to solution item as resources
-        //   * add JSONs to solution item's data JSON accumulation
-
-        // Update solution item with its data JSON
-        const updateOptions: portal.IUpdateItemOptions = {
-          item: {
-            id: solutionItemId,
-            text: solutionData
-          },
-          ...requestOptions
-        };
-        portal
-          .updateItem(updateOptions)
-          .then(() => resolve(solutionItemId), reject);
+        // Get the template information for the group contents, including their dependency items
+        createSolutionTemplate
+          .createSolutionTemplate(
+            groupContents,
+            destinationUserSession,
+            templateDictionary
+          )
+          .then(
+            (solutionTemplates: common.IItemTemplate[]) => {
+              // Update solution item with its data JSON
+              solutionData.templates = solutionTemplates;
+              const updateOptions: portal.IUpdateItemOptions = {
+                item: {
+                  id: solutionItemId,
+                  text: solutionData
+                },
+                ...requestOptions
+              };
+              portal
+                .updateItem(updateOptions)
+                .then(() => resolve(solutionItemId), reject);
+            },
+            e => reject(common.fail(e))
+          );
       },
       e => reject(common.fail(e))
     );
   });
 }
-
-// ------------------------------------------------------------------------------------------------------------------ //

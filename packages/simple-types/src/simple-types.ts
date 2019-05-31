@@ -22,6 +22,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -30,7 +31,57 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
-    resolve(undefined);
+    console.log(
+      "convertItemToTemplate for a " + itemInfo.type + " (" + itemInfo.id + ")"
+    );
+
+    // Init template
+    const itemTemplate = common.createPlaceholderTemplate(
+      itemInfo.id,
+      itemInfo.type
+    );
+    itemTemplate.estimatedDeploymentCostFactor = 3; // minimal set is starting, creating, done|failed
+    itemTemplate.item = {
+      ...itemTemplate.item,
+      categories: itemInfo.categories,
+      culture: itemInfo.culture,
+      description: itemInfo.description,
+      extent: itemInfo.extent,
+      licenseInfo: itemInfo.licenseInfo,
+      snippet: itemInfo.snippet,
+      tags: itemInfo.tags,
+      title: itemInfo.title,
+      type: itemInfo.type,
+      typeKeywords: itemInfo.typeKeywords,
+      url: itemInfo.url
+    };
+
+    // Templatize item info property values
+    itemTemplate.item.id = common.templatize(itemTemplate.item.id);
+    if (itemTemplate.item.item) {
+      itemTemplate.item.item = common.templatize(itemTemplate.item.item);
+    }
+
+    if (itemInfo.type === "Form") {
+      resolve(itemTemplate);
+    } else {
+      // Get item data
+      const itemDataParam: portal.IItemDataOptions = {
+        authentication: userSession
+      };
+      portal.getItemData(itemInfo.id, itemDataParam).then(
+        itemData => {
+          itemTemplate.data = itemData;
+
+          // Update dependencies
+
+          // Templatize item data property values
+
+          resolve(itemTemplate);
+        },
+        () => resolve(itemTemplate) // No data for item
+      );
+    }
   });
 }
 

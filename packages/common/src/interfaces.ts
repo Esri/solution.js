@@ -21,11 +21,6 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import { IDeployFileCopyPath } from "./resourceHelpers";
 
-export * from "./generalHelpers";
-export * from "./resourceHelpers";
-export * from "./restHelpers";
-export * from "./templatization";
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -121,4 +116,47 @@ export interface IItemTemplateConversions {
  */
 export interface IItemTypeModuleMap {
   [itemType: string]: IItemTemplateConversions;
+}
+
+/**
+ * Creates an empty template.
+ *
+ * @param id AGO id of item
+ * @param type AGO item type; defaults to ""
+ * @return Empty template containing supplied id, optional type, and a key created using the function createId()
+ */
+export function createPlaceholderTemplate(
+  id: string,
+  type = ""
+): IItemTemplate {
+  return {
+    id,
+    itemId: id,
+    type,
+    key: createId(),
+    item: {},
+    itemUrl: "",
+    data: {},
+    resources: [],
+    dependencies: [],
+    properties: {},
+    estimatedDeploymentCostFactor: 0
+  };
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Return a random number, prefixed with a string. Used for unique identifiers that do not require
+ * the rigor of a full UUID - i.e. node id's, process ids, etc.
+ * @param prefix String to prefix the random number with so the result is a valid javascript property
+ * @return 9-character string usable as a dotable property name
+ * @protected
+ */
+function createId(prefix: string = "i"): string {
+  // prepend some char so it's always a valid dotable property name
+  // get a random number, convert to base 36 representation, then grab chars 2-8
+  return `${prefix}${Math.random()
+    .toString(36)
+    .substr(2, 8)}`;
 }
