@@ -36,29 +36,17 @@ export function convertItemToTemplate(
     );
 
     // Init template
-    const itemTemplate = common.createPlaceholderTemplate(
-      itemInfo.id,
-      itemInfo.type
-    );
+    const itemTemplate = common.createInitializedTemplate(itemInfo);
     itemTemplate.estimatedDeploymentCostFactor = 3; // minimal set is starting, creating, done|failed
-    itemTemplate.item = {
-      ...itemTemplate.item,
-      categories: itemInfo.categories,
-      culture: itemInfo.culture,
-      description: itemInfo.description,
-      extent: itemInfo.extent,
-      licenseInfo: itemInfo.licenseInfo,
-      snippet: itemInfo.snippet,
-      tags: itemInfo.tags,
-      title: itemInfo.title,
-      type: itemInfo.type,
-      typeKeywords: itemInfo.typeKeywords,
-      url: common.templatize(itemInfo.url, itemTemplate.item.id, ".id")
-    };
 
     // Templatize item info property values
     itemTemplate.item.id = common.templatize(
       itemTemplate.item.id,
+      itemTemplate.item.id,
+      ".id"
+    );
+    itemTemplate.item.url = common.templatize(
+      itemTemplate.item.url,
       itemTemplate.item.id,
       ".id"
     );

@@ -110,6 +110,27 @@ export interface IItemTypeModuleMap {
   [itemType: string]: IItemTemplateConversions;
 }
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function createInitializedTemplate(itemInfo: any): IItemTemplate {
+  const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
+  itemTemplate.item = {
+    ...itemTemplate.item,
+    id: itemInfo.id,
+    categories: itemInfo.categories,
+    culture: itemInfo.culture,
+    description: itemInfo.description,
+    extent: itemInfo.extent,
+    licenseInfo: itemInfo.licenseInfo,
+    snippet: itemInfo.snippet,
+    tags: itemInfo.tags,
+    title: itemInfo.title,
+    typeKeywords: itemInfo.typeKeywords,
+    url: itemInfo.url
+  };
+  return itemTemplate;
+}
+
 /**
  * Creates an empty template.
  *
@@ -126,7 +147,8 @@ export function createPlaceholderTemplate(
     type,
     key: createId(),
     item: {
-      id
+      id,
+      type
     },
     data: {},
     resources: [],
