@@ -71,39 +71,41 @@ export function convertItemToTemplate(
     // Perform type-specific handling
     switch (itemInfo.type.toLowerCase()) {
       case "dashboard":
-        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemTemplate, userSession).then(resolve);
         break;
       case "code attachment":
         resolve(itemTemplate);
         break;
       case "feature service":
-        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemTemplate, userSession).then(resolve);
         break;
       case "form":
         resolve(itemTemplate);
         break;
       case "project package":
-        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemTemplate, userSession).then(resolve);
         break;
       case "workforce project":
-        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemTemplate, userSession).then(resolve);
         break;
       case "web map":
         /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemInfo, itemTemplate, userSession).then(
-          updatedItemTemplate =>
-            webmap
-              .convertItemToTemplate(updatedItemTemplate, userSession)
-              .then(resolve)
+        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
+          webmap
+            .convertItemToTemplate(updatedItemTemplate, userSession)
+            .then(resolve)
         );
         break;
       case "web mapping application":
         /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemInfo, itemTemplate, userSession).then(
-          updatedItemTemplate =>
-            webmappingapplication
-              .convertItemToTemplate(updatedItemTemplate, userSession)
-              .then(resolve)
+        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
+          webmappingapplication
+            .convertItemToTemplate(updatedItemTemplate, userSession)
+            .then(resolve)
         );
         break;
     }
@@ -111,7 +113,6 @@ export function convertItemToTemplate(
 }
 
 function insertItemData(
-  itemInfo: any,
   itemTemplate: common.IItemTemplate,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
@@ -120,7 +121,7 @@ function insertItemData(
     const itemDataParam: portal.IItemDataOptions = {
       authentication: userSession
     };
-    portal.getItemData(itemInfo.id, itemDataParam).then(
+    portal.getItemData(itemTemplate.itemId, itemDataParam).then(
       itemData => {
         itemTemplate.data = itemData;
         resolve(itemTemplate);
@@ -128,32 +129,6 @@ function insertItemData(
       () => resolve(itemTemplate)
     );
   });
-}
-
-function getItemData(
-  itemInfo: any,
-  itemTemplate: common.IItemTemplate,
-  userSession: auth.UserSession,
-  resolve: (
-    value?: common.IItemTemplate | PromiseLike<common.IItemTemplate> | undefined
-  ) => void
-) {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    authentication: userSession
-  };
-  portal.getItemData(itemInfo.id, itemDataParam).then(
-    itemData => {
-      itemTemplate.data = itemData;
-
-      // Update dependencies
-
-      // Templatize item data property values
-
-      resolve(itemTemplate);
-    },
-    () => resolve(itemTemplate) // No data for item
-  );
 }
 
 export function createItemFromTemplate(
