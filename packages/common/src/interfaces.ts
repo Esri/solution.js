@@ -90,6 +90,7 @@ export interface IItemTemplate {
 
 export interface IItemTemplateConversions {
   convertItemToTemplate(
+    solutionItemId: string,
     itemInfo: any,
     userSession: auth.UserSession
   ): Promise<IItemTemplate>;

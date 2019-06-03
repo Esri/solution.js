@@ -29,6 +29,7 @@ import * as webmappingapplication from "./webmappingapplication";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
+  solutionItemId: string,
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
@@ -42,6 +43,9 @@ export function convertItemToTemplate(
         itemInfo.id +
         ")"
     );
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: userSession
+    };
 
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedTemplate(
@@ -68,48 +72,75 @@ export function convertItemToTemplate(
       itemTemplate.item.extent = "{{initiative.extent:optional}}";
     }
 
+    // Request item resources
+    const resourcePromise = portal
+      .getItemResources(itemTemplate.itemId, requestOptions)
+      .then(
+        resourcesList => {
+          // Save resources
+          itemTemplate.resources = resourcesList;
+          const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+            "https://www.arcgis.com/sharing/",
+            itemTemplate.itemId,
+            itemTemplate.item.thumbnail,
+            resourcesList
+          );
+          return common.copyFilesToStorageItem(
+            requestOptions,
+            resourceItemFilePaths,
+            solutionItemId,
+            requestOptions
+          );
+        },
+        () => Promise.resolve([])
+      );
+
     // Perform type-specific handling
+    let itemDataPromise = Promise.resolve({});
     switch (itemInfo.type.toLowerCase()) {
       case "dashboard":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
+      case "feature service":
+      case "project package":
+      case "workforce project":
+      case "web map":
+      case "web mapping application":
+        itemDataPromise = getItemData(itemTemplate.itemId, userSession);
         break;
       case "code attachment":
-        resolve(itemTemplate);
-        break;
-      case "feature service":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
       case "form":
-        resolve(itemTemplate);
-        break;
-      case "project package":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
-      case "workforce project":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
-      case "web map":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
-          webmap
-            .convertItemToTemplate(updatedItemTemplate, userSession)
-            .then(resolve)
-        );
-        break;
-      case "web mapping application":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
-          webmappingapplication
-            .convertItemToTemplate(updatedItemTemplate, userSession)
-            .then(resolve)
-        );
         break;
     }
+
+    Promise.all([resourcePromise, itemDataPromise]).then(responses => {
+      const [itemResourceResponse, itemDataResponse] = responses;
+      itemTemplate.data = itemDataResponse;
+
+      switch (itemInfo.type.toLowerCase()) {
+        case "web map":
+          /* tslint:disable-next-line:no-floating-promises */
+          webmap.convertItemToTemplate(itemTemplate, userSession);
+          break;
+        case "web mapping application":
+          /* tslint:disable-next-line:no-floating-promises */
+          webmappingapplication.convertItemToTemplate(
+            itemTemplate,
+            userSession
+          );
+          break;
+      }
+    }, common.fail);
   });
+}
+
+function getItemData(
+  itemId: string,
+  userSession: auth.UserSession
+): Promise<any> {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    authentication: userSession
+  };
+  return portal.getItemData(itemId, itemDataParam);
 }
 
 function insertItemData(

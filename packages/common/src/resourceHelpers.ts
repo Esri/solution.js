@@ -108,10 +108,16 @@ export function generateSourceItemFilePaths(
     ...generateMetadataStorageFilename(itemId)
   });
 
-  filePaths.push({
-    url: generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart),
-    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-  });
+  if (thumbnailUrlPart) {
+    filePaths.push({
+      url: generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      ),
+      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    });
+  }
 
   return filePaths;
 }
@@ -129,6 +135,9 @@ export function generateGroupFilePaths(
   itemId: string,
   thumbnailUrlPart: string
 ): ISourceFileCopyPath[] {
+  if (!thumbnailUrlPart) {
+    return [];
+  }
   return [
     {
       url: generateSourceThumbnailUrl(

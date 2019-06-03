@@ -47,6 +47,7 @@ export function createInitializedTemplate(
     licenseInfo: itemInfo.licenseInfo,
     snippet: itemInfo.snippet,
     tags: itemInfo.tags,
+    thumbnail: itemInfo.thumbnail,
     title: itemInfo.title,
     typeKeywords: itemInfo.typeKeywords,
     url: itemInfo.url
