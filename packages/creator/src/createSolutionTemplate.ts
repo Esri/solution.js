@@ -38,6 +38,8 @@ const moduleMap: common.IItemTypeModuleMap = {
   "code attachment": solutionSimpleTypes,
   "feature service": solutionSimpleTypes,
   form: solutionSimpleTypes,
+  "project package": solutionSimpleTypes,
+  "workforce project": solutionSimpleTypes,
   // //???
 
   // "feature layer": solutionFeatureLayer,
@@ -109,7 +111,7 @@ export function createItemTemplate(
 ): Promise<common.IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Check if item and its dependents are already in list or are queued
-    if (findTemplateInList(existingTemplates, id)) {
+    if (common.findTemplateInList(existingTemplates, id)) {
       resolve(existingTemplates);
     } else {
       // Add the id as a placeholder to show that it is being fetched
@@ -157,7 +159,12 @@ export function createItemTemplate(
                       Promise<common.IItemTemplate[]>
                     > = [];
                     itemTemplate.dependencies.forEach(dependentId => {
-                      if (!findTemplateInList(existingTemplates, dependentId)) {
+                      if (
+                        !common.findTemplateInList(
+                          existingTemplates,
+                          dependentId
+                        )
+                      ) {
                         dependentDfds.push(
                           createItemTemplate(
                             dependentId,
@@ -185,38 +192,7 @@ export function createItemTemplate(
   });
 }
 
-/**
- * Finds index of template by id in a list of templates.
- *
- * @param templates A collection of AGO item templates to search
- * @param id AGO id of template to find
- * @return Id of matching template or -1 if not found
- * @protected
- */
-function findTemplateIndexInSolution(
-  templates: common.IItemTemplate[],
-  id: string
-): number {
-  const baseId = id;
-  return templates.findIndex(template => {
-    return baseId === template.itemId;
-  });
-}
-
-/**
- * Finds template by id in a list of templates.
- *
- * @param templates A collection of AGO item templates to search
- * @param id AGO id of template to find
- * @return Matching template or null
- */
-export function findTemplateInList(
-  templates: common.IItemTemplate[],
-  id: string
-): common.IItemTemplate | null {
-  const childId = findTemplateIndexInSolution(templates, id);
-  return childId >= 0 ? templates[childId] : null;
-}
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Replaces a template entry in a list of templates
@@ -227,12 +203,12 @@ export function findTemplateInList(
  * @return True if replacement was made
  * @protected
  */
-export function replaceTemplate(
+function replaceTemplate(
   templates: common.IItemTemplate[],
   id: string,
   template: common.IItemTemplate
 ): boolean {
-  const i = findTemplateIndexInSolution(templates, id);
+  const i = common.findTemplateIndexInList(templates, id);
   if (i >= 0) {
     templates[i] = template;
     return true;

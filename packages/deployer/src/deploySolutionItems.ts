@@ -82,7 +82,7 @@ export function deploySolutionItems(
     const awaitAllItems = [] as Array<Promise<string>>;
     cloneOrderChecklist.forEach(id => {
       // Get the item's template out of the list of templates
-      const template = findTemplateInList(templates, id);
+      const template = common.findTemplateInList(templates, id);
       if (!template) {
         reject(common.fail());
       }
@@ -205,40 +205,6 @@ function createItemFromTemplateWhenReady(
 }
 
 /**
- * Finds index of template by id in a list of templates.
- *
- * @param templates A collection of AGO item templates to search
- * @param id AGO id of template to find
- * @return Id of matching template or -1 if not found
- * @protected
- */
-function findTemplateIndexInSolution(
-  templates: common.IItemTemplate[],
-  id: string
-): number {
-  const baseId = id;
-  return templates.findIndex(template => {
-    return baseId === template.itemId;
-  });
-}
-
-/**
- * Finds template by id in a list of templates.
- *
- * @param templates A collection of AGO item templates to search
- * @param id AGO id of template to find
- * @return Matching template or null
- * @protected
- */
-export function findTemplateInList(
-  templates: common.IItemTemplate[],
-  id: string
-): common.IItemTemplate | null {
-  const childId = findTemplateIndexInSolution(templates, id);
-  return childId >= 0 ? templates[childId] : null;
-}
-
-/**
  * Topologically sorts a list of items into a build list.
  *
  * @param templates A collection of AGO item templates
@@ -299,7 +265,7 @@ function topologicallySortItems(templates: common.IItemTemplate[]): string[] {
     verticesToVisit[vertexId] = SortVisitColor.Gray; // visited, in progress
 
     // Visit dependents if not already visited
-    const template = findTemplateInList(templates, vertexId);
+    const template = common.findTemplateInList(templates, vertexId);
     const dependencies: string[] =
       template && template.dependencies ? template.dependencies : [];
     dependencies.forEach(function(dependencyId) {

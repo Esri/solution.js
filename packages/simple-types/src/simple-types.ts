@@ -23,6 +23,8 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as webmap from "./webmap";
+import * as webmappingapplication from "./webmappingapplication";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -32,53 +34,126 @@ export function convertItemToTemplate(
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     console.log(
-      "convertItemToTemplate for a " + itemInfo.type + " (" + itemInfo.id + ")"
+      "convertItemToTemplate for a " +
+        itemInfo.type +
+        " (" +
+        itemInfo.title +
+        ";" +
+        itemInfo.id +
+        ")"
     );
 
     // Init template
-    const itemTemplate = common.createInitializedTemplate(itemInfo);
-    itemTemplate.estimatedDeploymentCostFactor = 3; // minimal set is starting, creating, done|failed
+    const itemTemplate: common.IItemTemplate = common.createInitializedTemplate(
+      itemInfo
+    );
+    itemTemplate.estimatedDeploymentCostFactor = 1; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
-    itemTemplate.item.id = common.templatize(
+    itemTemplate.item.id = common.templatizeTerm(
       itemTemplate.item.id,
-      itemTemplate.item.id,
-      ".id"
-    );
-    itemTemplate.item.url = common.templatize(
-      itemTemplate.item.url,
       itemTemplate.item.id,
       ".id"
     );
     if (itemTemplate.item.item) {
-      itemTemplate.item.item = common.templatize(
+      itemTemplate.item.item = common.templatizeTerm(
         itemTemplate.item.item,
         itemTemplate.item.item,
         ".id"
       );
     }
 
-    if (itemInfo.type === "Form") {
-      resolve(itemTemplate);
-    } else {
-      // Get item data
-      const itemDataParam: portal.IItemDataOptions = {
-        authentication: userSession
-      };
-      portal.getItemData(itemInfo.id, itemDataParam).then(
-        itemData => {
-          itemTemplate.data = itemData;
+    // Use the initiative's extent
+    if (itemTemplate.item.extent) {
+      itemTemplate.item.extent = "{{initiative.extent:optional}}";
+    }
 
-          // Update dependencies
-
-          // Templatize item data property values
-
-          resolve(itemTemplate);
-        },
-        () => resolve(itemTemplate) // No data for item
-      );
+    // Perform type-specific handling
+    switch (itemInfo.type.toLowerCase()) {
+      case "dashboard":
+        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        break;
+      case "code attachment":
+        resolve(itemTemplate);
+        break;
+      case "feature service":
+        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        break;
+      case "form":
+        resolve(itemTemplate);
+        break;
+      case "project package":
+        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        break;
+      case "workforce project":
+        getItemData(itemInfo, itemTemplate, userSession, resolve);
+        break;
+      case "web map":
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemInfo, itemTemplate, userSession).then(
+          updatedItemTemplate =>
+            webmap
+              .convertItemToTemplate(updatedItemTemplate, userSession)
+              .then(resolve)
+        );
+        break;
+      case "web mapping application":
+        /* tslint:disable-next-line:no-floating-promises */
+        insertItemData(itemInfo, itemTemplate, userSession).then(
+          updatedItemTemplate =>
+            webmappingapplication
+              .convertItemToTemplate(updatedItemTemplate, userSession)
+              .then(resolve)
+        );
+        break;
     }
   });
+}
+
+function insertItemData(
+  itemInfo: any,
+  itemTemplate: common.IItemTemplate,
+  userSession: auth.UserSession
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>(resolve => {
+    // Get item data
+    const itemDataParam: portal.IItemDataOptions = {
+      authentication: userSession
+    };
+    portal.getItemData(itemInfo.id, itemDataParam).then(
+      itemData => {
+        itemTemplate.data = itemData;
+        resolve(itemTemplate);
+      },
+      () => resolve(itemTemplate)
+    );
+  });
+}
+
+function getItemData(
+  itemInfo: any,
+  itemTemplate: common.IItemTemplate,
+  userSession: auth.UserSession,
+  resolve: (
+    value?: common.IItemTemplate | PromiseLike<common.IItemTemplate> | undefined
+  ) => void
+) {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    authentication: userSession
+  };
+  portal.getItemData(itemInfo.id, itemDataParam).then(
+    itemData => {
+      itemTemplate.data = itemData;
+
+      // Update dependencies
+
+      // Templatize item data property values
+
+      resolve(itemTemplate);
+    },
+    () => resolve(itemTemplate) // No data for item
+  );
 }
 
 export function createItemFromTemplate(

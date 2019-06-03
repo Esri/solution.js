@@ -76,6 +76,49 @@ export function getProp(obj: { [index: string]: any }, path: string): any {
 }
 
 /**
+ * Return an array of values from an object, based on an array of property paths.
+ *
+ * @param obj object to retrive values from
+ * @param props Array of paths into the object e.g., "data.values.webmap", where "data" is a top-level property
+ * @return Array of the values plucked from the object; only defined values are returned
+ */
+export function getProps(obj: any, props: string[]): any {
+  return props.reduce(
+    (a, p) => {
+      const v = getProp(obj, p);
+      if (v) {
+        a.push(v);
+      }
+      return a;
+    },
+    [] as any[]
+  );
+}
+
+/**
+ * Does the model have any of a set of keywords
+ */
+export function hasAnyKeyword(model: any, keywords: string[]): boolean {
+  const typeKeywords =
+    getProp(model, "item.typeKeywords") || model.typeKeywords || [];
+  return keywords.reduce((a, kw) => {
+    if (!a) {
+      a = typeKeywords.includes(kw);
+    }
+    return a;
+  }, false);
+}
+
+/**
+ * Does the JSON object have a specific typeKeyword?
+ */
+export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
+  const typeKeywords =
+    getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
+  return typeKeywords.includes(keyword);
+}
+
+/**
  * Creates a timestamp string using the current date and time.
  *
  * @return Timestamp
@@ -103,7 +146,7 @@ export function getUTCTimestamp(): string {
  *
  * @param n Number to pad
  * @param totalSize Desired *minimum* width of number after padding with zeroes
- * @return Number converted to string and padded as needed
+ * @return Number converted to string and padded on the left as needed
  * @protected
  */
 function padPositiveNum(n: number, totalSize: number): string {
