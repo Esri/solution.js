@@ -26,7 +26,6 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
 import * as solutionStoryMap from "@esri/solution-storymap";
-import { getEstimatedDeploymentCost } from "./solution";
 
 /**
  * Mapping from item type to module with type-specific template-handling code
