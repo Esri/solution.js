@@ -51,7 +51,7 @@ export function convertItemToTemplate(
     const itemTemplate: common.IItemTemplate = common.createInitializedTemplate(
       itemInfo
     );
-    itemTemplate.estimatedDeploymentCostFactor = 1; // minimal set is starting, creating, done|failed
+    itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
     itemTemplate.item.id = common.templatizeTerm(
@@ -109,9 +109,10 @@ export function convertItemToTemplate(
         break;
     }
 
-    Promise.all([resourcePromise, itemDataPromise]).then(responses => {
-      const [savedResourceFilenames, itemDataResponse] = responses;
+    Promise.all([itemDataPromise, resourcePromise]).then(responses => {
+      const [itemDataResponse, savedResourceFilenames] = responses;
       itemTemplate.data = itemDataResponse;
+      itemTemplate.resources = savedResourceFilenames;
 
       switch (itemInfo.type.toLowerCase()) {
         case "web map":
@@ -129,36 +130,6 @@ export function convertItemToTemplate(
 
       resolve(itemTemplate);
     }, common.fail);
-  });
-}
-
-function getItemData(
-  itemId: string,
-  userSession: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    authentication: userSession
-  };
-  return portal.getItemData(itemId, itemDataParam);
-}
-
-function insertItemData(
-  itemTemplate: common.IItemTemplate,
-  userSession: auth.UserSession
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
-    // Get item data
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: userSession
-    };
-    portal.getItemData(itemTemplate.itemId, itemDataParam).then(
-      itemData => {
-        itemTemplate.data = itemData;
-        resolve(itemTemplate);
-      },
-      () => resolve(itemTemplate)
-    );
   });
 }
 
@@ -240,4 +211,17 @@ export function createItemFromTemplate(
         e => reject(common.fail(e))
       );
   });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+function getItemData(
+  itemId: string,
+  userSession: auth.UserSession
+): Promise<any> {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    authentication: userSession
+  };
+  return portal.getItemData(itemId, itemDataParam);
 }

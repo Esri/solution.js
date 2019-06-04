@@ -552,7 +552,7 @@ export function copyResource(
             const text = await new Response(blob).text();
             const json = JSON.parse(text);
             if (json.error) {
-              reject(generalHelpers.fail(json)); // unable to get resource
+              reject(); // unable to get resource
               return;
             }
           } catch (Ignore) {
