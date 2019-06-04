@@ -26,7 +26,6 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
 import * as solutionStoryMap from "@esri/solution-storymap";
-import { getEstimatedDeploymentCost } from "./solution";
 
 /**
  * Mapping from item type to module with type-specific template-handling code
@@ -65,6 +64,7 @@ const moduleMap: common.IItemTypeModuleMap = {
  * @return A promise without value
  */
 export function createSolutionTemplate(
+  solutionItemId: string,
   ids: string[],
   destinationUserSession: auth.UserSession,
   templateDictionary: any
@@ -79,9 +79,14 @@ export function createSolutionTemplate(
     // and calling this function recursively
     const getItemsPromise: Array<Promise<common.IItemTemplate[]>> = [];
 
-    ids.forEach(id => {
+    ids.forEach(itemId => {
       getItemsPromise.push(
-        createItemTemplate(id, requestOptions, solutionTemplates)
+        createItemTemplate(
+          solutionItemId,
+          itemId,
+          requestOptions,
+          solutionTemplates
+        )
       );
     });
     Promise.all(getItemsPromise).then(
@@ -98,24 +103,26 @@ export function createSolutionTemplate(
 /**
  * Creates template for an AGO item and its dependencies
  *
- * @param ids AGO id string
+ * @param solutionItemId The solution to contain the item
+ * @param itemId AGO id string
  * @param requestOptions Options for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
  * @return A promise that will resolve with the created template items
  * @protected
  */
 export function createItemTemplate(
-  id: string,
+  solutionItemId: string,
+  itemId: string,
   requestOptions: auth.IUserRequestOptions,
   existingTemplates: common.IItemTemplate[]
 ): Promise<common.IItemTemplate[]> {
   return new Promise((resolve, reject) => {
     // Check if item and its dependents are already in list or are queued
-    if (common.findTemplateInList(existingTemplates, id)) {
+    if (common.findTemplateInList(existingTemplates, itemId)) {
       resolve(existingTemplates);
     } else {
       // Add the id as a placeholder to show that it is being fetched
-      existingTemplates.push(common.createPlaceholderTemplate(id));
+      existingTemplates.push(common.createPlaceholderTemplate(itemId));
 
       // For each item,
       //   * fetch item & data infos
@@ -125,7 +132,7 @@ export function createItemTemplate(
       //   * copy item's resources, metadata, & thumbnail to solution item as resources
       //   * add JSONs to solution item's data JSON accumulation
       // Fetch the item
-      portal.getItem(id, requestOptions).then(
+      portal.getItem(itemId, requestOptions).then(
         itemInfo => {
           const itemHandler: common.IItemTemplateConversions =
             moduleMap[itemInfo.type.toLowerCase()];
@@ -139,7 +146,11 @@ export function createItemTemplate(
             resolve(existingTemplates);
           } else {
             itemHandler
-              .convertItemToTemplate(itemInfo, requestOptions.authentication)
+              .convertItemToTemplate(
+                solutionItemId,
+                itemInfo,
+                requestOptions.authentication
+              )
               .then(
                 itemTemplate => {
                   // Set the value keyed by the id to the created template, replacing the placeholder template
@@ -167,6 +178,7 @@ export function createItemTemplate(
                       ) {
                         dependentDfds.push(
                           createItemTemplate(
+                            solutionItemId,
                             dependentId,
                             requestOptions,
                             existingTemplates

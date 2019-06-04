@@ -29,6 +29,7 @@ import * as webmappingapplication from "./webmappingapplication";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
+  solutionItemId: string,
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
@@ -42,12 +43,15 @@ export function convertItemToTemplate(
         itemInfo.id +
         ")"
     );
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: userSession
+    };
 
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedTemplate(
       itemInfo
     );
-    itemTemplate.estimatedDeploymentCostFactor = 1; // minimal set is starting, creating, done|failed
+    itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
     itemTemplate.item.id = common.templatizeTerm(
@@ -64,70 +68,68 @@ export function convertItemToTemplate(
     }
 
     // Use the initiative's extent
-    if (itemTemplate.item.extent) {
-      itemTemplate.item.extent = "{{initiative.extent:optional}}";
-    }
+    // itemTemplate.item.extent = "{{initiative.extent:optional}}";
+
+    // Request item resources
+    const resourcePromise = portal
+      .getItemResources(itemTemplate.itemId, requestOptions)
+      .then(resourcesResponse => {
+        // Save resources to solution item
+        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
+          (resourceDetail: any) => resourceDetail.resource
+        );
+        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+          "https://www.arcgis.com/sharing/",
+          itemTemplate.itemId,
+          itemTemplate.item.thumbnail,
+          itemTemplate.resources
+        );
+        return common.copyFilesToStorageItem(
+          requestOptions,
+          resourceItemFilePaths,
+          solutionItemId,
+          requestOptions
+        );
+      })
+      .catch(() => Promise.resolve([]));
 
     // Perform type-specific handling
+    let itemDataPromise = Promise.resolve({});
     switch (itemInfo.type.toLowerCase()) {
       case "dashboard":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
+      case "feature service":
+      case "project package":
+      case "workforce project":
+      case "web map":
+      case "web mapping application":
+        itemDataPromise = getItemData(itemTemplate.itemId, userSession);
         break;
       case "code attachment":
-        resolve(itemTemplate);
-        break;
-      case "feature service":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
       case "form":
-        resolve(itemTemplate);
-        break;
-      case "project package":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
-      case "workforce project":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(resolve);
-        break;
-      case "web map":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
-          webmap
-            .convertItemToTemplate(updatedItemTemplate, userSession)
-            .then(resolve)
-        );
-        break;
-      case "web mapping application":
-        /* tslint:disable-next-line:no-floating-promises */
-        insertItemData(itemTemplate, userSession).then(updatedItemTemplate =>
-          webmappingapplication
-            .convertItemToTemplate(updatedItemTemplate, userSession)
-            .then(resolve)
-        );
         break;
     }
-  });
-}
 
-function insertItemData(
-  itemTemplate: common.IItemTemplate,
-  userSession: auth.UserSession
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
-    // Get item data
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: userSession
-    };
-    portal.getItemData(itemTemplate.itemId, itemDataParam).then(
-      itemData => {
-        itemTemplate.data = itemData;
-        resolve(itemTemplate);
-      },
-      () => resolve(itemTemplate)
-    );
+    Promise.all([itemDataPromise, resourcePromise]).then(responses => {
+      const [itemDataResponse, savedResourceFilenames] = responses;
+      itemTemplate.data = itemDataResponse;
+      itemTemplate.resources = savedResourceFilenames;
+
+      switch (itemInfo.type.toLowerCase()) {
+        case "web map":
+          /* tslint:disable-next-line:no-floating-promises */
+          webmap.convertItemToTemplate(itemTemplate, userSession);
+          break;
+        case "web mapping application":
+          /* tslint:disable-next-line:no-floating-promises */
+          webmappingapplication.convertItemToTemplate(
+            itemTemplate,
+            userSession
+          );
+          break;
+      }
+
+      resolve(itemTemplate);
+    }, common.fail);
   });
 }
 
@@ -209,4 +211,17 @@ export function createItemFromTemplate(
         e => reject(common.fail(e))
       );
   });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+function getItemData(
+  itemId: string,
+  userSession: auth.UserSession
+): Promise<any> {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    authentication: userSession
+  };
+  return portal.getItemData(itemId, itemDataParam);
 }

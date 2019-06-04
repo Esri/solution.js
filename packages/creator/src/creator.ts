@@ -115,6 +115,7 @@ export function createSolution(
         // Get the template information for the group contents, including their dependency items
         createSolutionTemplate
           .createSolutionTemplate(
+            solutionItemId,
             groupContents,
             destinationUserSession,
             templateDictionary

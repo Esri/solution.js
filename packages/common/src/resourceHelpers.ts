@@ -108,10 +108,16 @@ export function generateSourceItemFilePaths(
     ...generateMetadataStorageFilename(itemId)
   });
 
-  filePaths.push({
-    url: generateSourceThumbnailUrl(portalSharingUrl, itemId, thumbnailUrlPart),
-    ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-  });
+  if (thumbnailUrlPart) {
+    filePaths.push({
+      url: generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      ),
+      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    });
+  }
 
   return filePaths;
 }
@@ -129,6 +135,9 @@ export function generateGroupFilePaths(
   itemId: string,
   thumbnailUrlPart: string
 ): ISourceFileCopyPath[] {
+  if (!thumbnailUrlPart) {
+    return [];
+  }
   return [
     {
       url: generateSourceThumbnailUrl(
@@ -186,26 +195,31 @@ export function copyFilesToStorageItem(
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
-      const copyPromise = copyResource(
-        {
-          url: filePath.url,
-          requestOptions: sourceRequestOptions
-        },
-        {
-          itemId: storageItemId,
-          folder: filePath.folder,
-          filename: filePath.filename,
-          requestOptions: storageRequestOptions
-        }
-      );
-
-      // Ignore failures because the item may not have metadata or thumbnail
-      copyPromise.catch(() => null);
-      return copyPromise;
+      return new Promise<string>(resolveThisFile => {
+        copyResource(
+          {
+            url: filePath.url,
+            requestOptions: sourceRequestOptions
+          },
+          {
+            itemId: storageItemId,
+            folder: filePath.folder,
+            filename: filePath.filename,
+            requestOptions: storageRequestOptions
+          }
+        ).then(
+          // Ignore failures because the item may not have metadata or thumbnail
+          () => resolveThisFile(filePath.folder + "/" + filePath.filename),
+          () => resolveThisFile("")
+        );
+      });
     });
 
-    // Wait until all items have been copied
-    Promise.all(awaitAllItems).then(resolve, reject);
+    // Wait until all items have been copied, then return the successful copies
+    Promise.all(awaitAllItems).then(
+      copyResponses => resolve(copyResponses.filter(filename => filename)),
+      reject
+    );
   });
 }
 
@@ -532,7 +546,20 @@ export function copyResource(
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
     getBlob(source.url, source.requestOptions).then(
-      blob => {
+      async blob => {
+        if (blob.type === "text/plain") {
+          try {
+            const text = await new Response(blob).text();
+            const json = JSON.parse(text);
+            if (json.error) {
+              reject(); // unable to get resource
+              return;
+            }
+          } catch (Ignore) {
+            /* tslint:disable-next-line:no-empty */
+          }
+        }
+
         addResourceFromBlob(
           blob,
           destination.itemId,
