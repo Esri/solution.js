@@ -68,32 +68,30 @@ export function convertItemToTemplate(
     }
 
     // Use the initiative's extent
-    if (itemTemplate.item.extent) {
-      itemTemplate.item.extent = "{{initiative.extent:optional}}";
-    }
+    // itemTemplate.item.extent = "{{initiative.extent:optional}}";
 
     // Request item resources
     const resourcePromise = portal
       .getItemResources(itemTemplate.itemId, requestOptions)
-      .then(
-        resourcesList => {
-          // Save resources
-          itemTemplate.resources = resourcesList;
-          const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
-            "https://www.arcgis.com/sharing/",
-            itemTemplate.itemId,
-            itemTemplate.item.thumbnail,
-            resourcesList
-          );
-          return common.copyFilesToStorageItem(
-            requestOptions,
-            resourceItemFilePaths,
-            solutionItemId,
-            requestOptions
-          );
-        },
-        () => Promise.resolve([])
-      );
+      .then(resourcesResponse => {
+        // Save resources to solution item
+        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
+          (resourceDetail: any) => resourceDetail.resource
+        );
+        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+          "https://www.arcgis.com/sharing/",
+          itemTemplate.itemId,
+          itemTemplate.item.thumbnail,
+          itemTemplate.resources
+        );
+        return common.copyFilesToStorageItem(
+          requestOptions,
+          resourceItemFilePaths,
+          solutionItemId,
+          requestOptions
+        );
+      })
+      .catch(() => Promise.resolve([]));
 
     // Perform type-specific handling
     let itemDataPromise = Promise.resolve({});
@@ -112,7 +110,7 @@ export function convertItemToTemplate(
     }
 
     Promise.all([resourcePromise, itemDataPromise]).then(responses => {
-      const [itemResourceResponse, itemDataResponse] = responses;
+      const [savedResourceFilenames, itemDataResponse] = responses;
       itemTemplate.data = itemDataResponse;
 
       switch (itemInfo.type.toLowerCase()) {
@@ -128,6 +126,8 @@ export function convertItemToTemplate(
           );
           break;
       }
+
+      resolve(itemTemplate);
     }, common.fail);
   });
 }
