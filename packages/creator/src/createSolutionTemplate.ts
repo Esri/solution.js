@@ -73,11 +73,11 @@ export function createSolutionTemplate(
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
     };
-    const solutionTemplates: common.IItemTemplate[] = [];
+    let solutionTemplates: common.IItemTemplate[] = [];
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
-    const getItemsPromise: Array<Promise<common.IItemTemplate[]>> = [];
+    const getItemsPromise: Array<Promise<boolean>> = [];
 
     ids.forEach(itemId => {
       getItemsPromise.push(
@@ -92,6 +92,17 @@ export function createSolutionTemplate(
     });
     Promise.all(getItemsPromise).then(
       () => {
+        // Remove remant placeholder items from the templates list
+        const origLen = solutionTemplates.length;
+        solutionTemplates = solutionTemplates.filter(
+          template => template.type // `type` needs to be defined
+        );
+        console.log(
+          "removed " +
+            (solutionTemplates.length - origLen) +
+            " placeholder templates"
+        );
+
         resolve(solutionTemplates);
       },
       e => reject(common.fail(e))
@@ -117,15 +128,21 @@ export function createItemTemplate(
   itemId: string,
   requestOptions: auth.IUserRequestOptions,
   existingTemplates: common.IItemTemplate[]
-): Promise<common.IItemTemplate[]> {
+): Promise<boolean> {
   return new Promise((resolve, reject) => {
     // Check if item and its dependents are already in list or are queued
     if (common.findTemplateInList(existingTemplates, itemId)) {
-      resolve(existingTemplates);
+      resolve(true);
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
-      console.log("added placeholder template " + itemId);
+      console.log(
+        "added placeholder template " +
+          itemId +
+          " [" +
+          existingTemplates.length +
+          "]"
+      );
 
       // For each item,
       //   * fetch item & data infos
@@ -140,12 +157,6 @@ export function createItemTemplate(
         itemInfo => {
           // Check if this is the solution's thumbnail
           if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
-            // Remove this item from the templates list
-            existingTemplates = existingTemplates.filter(
-              template => template.itemId !== itemId
-            );
-            console.log("removed placeholder template " + itemId);
-
             // Set the thumbnail
             const thumbnailUrl =
               portalSharingUrl + "/content/items/" + itemId + "/data";
@@ -155,28 +166,27 @@ export function createItemTemplate(
                 blob =>
                   common
                     .addThumbnailFromBlob(blob, solutionItemId, requestOptions)
-                    .then(
-                      () => resolve(existingTemplates),
-                      () => resolve(existingTemplates)
-                    ),
-                () => resolve(existingTemplates)
+                    .then(() => resolve(true), () => resolve(true)),
+                () => resolve(true)
               );
           } else {
             const itemHandler: common.IItemTemplateConversions =
               moduleMap[itemInfo.type.toLowerCase()];
             if (!itemHandler) {
-              // Remove this item from the templates list
-              existingTemplates = existingTemplates.filter(
-                template => template.itemId !== itemId
-              );
               console.warn(
                 "Unimplemented item type (module level) " +
                   itemInfo.type +
                   " for " +
                   itemInfo.id
               );
-              console.log("removed placeholder template " + itemId);
-              resolve(existingTemplates);
+              console.log(
+                "removed placeholder template " +
+                  itemId +
+                  " [" +
+                  existingTemplates.length +
+                  "]"
+              );
+              resolve(true);
             } else {
               itemHandler
                 .convertItemToTemplate(
@@ -195,13 +205,11 @@ export function createItemTemplate(
 
                     // Trace item dependencies
                     if (itemTemplate.dependencies.length === 0) {
-                      resolve(existingTemplates);
+                      resolve(true);
                     } else {
                       // Get its dependencies, asking each to get its dependents via
                       // recursive calls to this function
-                      const dependentDfds: Array<
-                        Promise<common.IItemTemplate[]>
-                      > = [];
+                      const dependentDfds: Array<Promise<boolean>> = [];
                       console.log(
                         "item " +
                           itemId +
@@ -227,9 +235,7 @@ export function createItemTemplate(
                         }
                       });
                       Promise.all(dependentDfds).then(
-                        () => {
-                          resolve(existingTemplates);
-                        },
+                        () => resolve(true),
                         e => reject(common.fail(e))
                       );
                     }
@@ -262,13 +268,11 @@ export function createItemTemplate(
 
                     // Trace item dependencies
                     if (itemTemplate.dependencies.length === 0) {
-                      resolve(existingTemplates);
+                      resolve(true);
                     } else {
                       // Get its dependencies, asking each to get its dependents via
                       // recursive calls to this function
-                      const dependentDfds: Array<
-                        Promise<common.IItemTemplate[]>
-                      > = [];
+                      const dependentDfds: Array<Promise<boolean>> = [];
                       console.log(
                         "item " +
                           itemId +
@@ -294,9 +298,7 @@ export function createItemTemplate(
                         }
                       });
                       Promise.all(dependentDfds).then(
-                        () => {
-                          resolve(existingTemplates);
-                        },
+                        () => resolve(true),
                         e => reject(common.fail(e))
                       );
                     }
