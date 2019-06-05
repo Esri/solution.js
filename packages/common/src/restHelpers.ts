@@ -322,10 +322,10 @@ export function fleshOutFeatureService(
 
             resolve(itemTemplate);
           },
-          e => reject(fail(e))
+          e => reject(generalHelpers.fail(e))
         );
       },
-      (e: any) => reject(fail(e))
+      (e: any) => reject(generalHelpers.fail(e))
     );
   });
 }
