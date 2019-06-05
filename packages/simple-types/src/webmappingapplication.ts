@@ -47,7 +47,7 @@ export function convertItemToTemplate(
     }
 
     // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(itemTemplate.data);
+    itemTemplate.dependencies = extractDependencies(itemTemplate);
 
     // Templatize dependencies in the data section
     itemTemplate.dependencies.forEach(path => {
@@ -107,7 +107,7 @@ function extractDependencies(model: any): string[] {
  * Generic Web App Dependencies
  */
 function getGenericWebAppDependencies(model: any): string[] {
-  const props = ["source", "webmap", "itemId", "values.webmap", "values.group"];
+  const props = ["data.values.webmap", "data.values.group"];
   return common.getProps(model, props);
 }
 
