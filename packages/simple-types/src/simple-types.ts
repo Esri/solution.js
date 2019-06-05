@@ -35,13 +35,13 @@ export function convertItemToTemplate(
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     console.log(
-      "convertItemToTemplate for a " +
+      "converting " +
         itemInfo.type +
-        " (" +
+        ' "' +
         itemInfo.title +
-        ";" +
+        '" (' +
         itemInfo.id +
-        ")"
+        ")..."
     );
     const requestOptions: auth.IUserRequestOptions = {
       authentication: userSession
@@ -94,7 +94,7 @@ export function convertItemToTemplate(
       .catch(() => Promise.resolve([]));
 
     // Perform type-specific handling
-    let itemDataPromise = Promise.resolve({});
+    let dataPromise = Promise.resolve({});
     switch (itemInfo.type.toLowerCase()) {
       case "dashboard":
       case "feature service":
@@ -102,17 +102,25 @@ export function convertItemToTemplate(
       case "workforce project":
       case "web map":
       case "web mapping application":
-        itemDataPromise = getItemData(itemTemplate.itemId, userSession);
+        dataPromise = getItemData(itemTemplate.itemId, userSession);
         break;
       case "code attachment":
       case "form":
         break;
     }
 
-    Promise.all([itemDataPromise, resourcePromise]).then(responses => {
+    // Items without a data section return an error from the REST library, so we'll need to prevent it
+    // from killing off both promises. This means that there's no `reject` clause to handle, hence:
+    // tslint:disable-next-line:no-floating-promises
+    Promise.all([
+      dataPromise.catch(() => null),
+      resourcePromise.catch(() => null)
+    ]).then(responses => {
       const [itemDataResponse, savedResourceFilenames] = responses;
-      itemTemplate.data = itemDataResponse;
-      itemTemplate.resources = savedResourceFilenames;
+      itemTemplate.data = itemDataResponse ? itemDataResponse : [];
+      itemTemplate.resources = savedResourceFilenames
+        ? savedResourceFilenames
+        : [];
 
       switch (itemInfo.type.toLowerCase()) {
         case "web map":
@@ -128,8 +136,17 @@ export function convertItemToTemplate(
           break;
       }
 
+      console.log(
+        "converted " +
+          itemInfo.type +
+          ' "' +
+          itemInfo.title +
+          '" (' +
+          itemInfo.id +
+          ")"
+      );
       resolve(itemTemplate);
-    }, common.fail);
+    });
   });
 }
 

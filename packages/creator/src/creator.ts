@@ -42,7 +42,10 @@ export function createSolution(
   portalSubset: IPortalSubset,
   destinationUserSession: auth.UserSession
 ): Promise<string> {
-  console.log('Create solution "' + solutionName + '" from group ' + groupId);
+  console.log(
+    "==============================================================================="
+  );
+  console.log('Creating solution "' + solutionName + '" from group ' + groupId);
   return new Promise<string>((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
@@ -109,7 +112,9 @@ export function createSolution(
     Promise.all([solutionItemDef, groupContentsDef]).then(
       responses => {
         const [solutionItemId, groupContents] = responses;
-        console.log("Created solution " + solutionItemId);
+        console.log(
+          "Created solution template framework for " + solutionItemId
+        );
         console.log("Group members: " + JSON.stringify(groupContents, null, 2));
 
         // Get the template information for the group contents, including their dependency items

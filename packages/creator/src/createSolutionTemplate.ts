@@ -135,6 +135,7 @@ export function createItemTemplate(
       //   * copy item's resources, metadata, & thumbnail to solution item as resources
       //   * add JSONs to solution item's data JSON accumulation
       // Fetch the item
+      console.log("fetching item " + itemId);
       portal.getItem(itemId, requestOptions).then(
         itemInfo => {
           // Check if this is the solution's thumbnail
@@ -193,6 +194,12 @@ export function createItemTemplate(
                       const dependentDfds: Array<
                         Promise<common.IItemTemplate[]>
                       > = [];
+                      console.log(
+                        "item " +
+                          itemId +
+                          " has dependencies " +
+                          JSON.stringify(itemTemplate.dependencies)
+                      );
                       itemTemplate.dependencies.forEach(dependentId => {
                         if (
                           !common.findTemplateInList(
@@ -224,7 +231,71 @@ export function createItemTemplate(
             }
           }
         },
-        e => reject(common.fail(e))
+        () => {
+          // If item query fails, try URL for group base section
+          portal.getGroup(itemId, requestOptions).then(
+            itemInfo => {
+              resolve(existingTemplates);
+
+              /*
+              solutionSimpleTypes
+                .convertItemToTemplate(
+                  solutionItemId,
+                  itemInfo,
+                  requestOptions.authentication
+                )
+                .then(
+                  itemTemplate => {
+                    // Set the value keyed by the id to the created template, replacing the placeholder template
+                    replaceTemplate(
+                      existingTemplates,
+                      itemTemplate.itemId,
+                      itemTemplate
+                    );
+
+                    // Trace item dependencies
+                    if (itemTemplate.dependencies.length === 0) {
+                      resolve(existingTemplates);
+                    } else {
+                      // Get its dependencies, asking each to get its dependents via
+                      // recursive calls to this function
+                      const dependentDfds: Array<
+                        Promise<common.IItemTemplate[]>
+                      > = [];
+                      console.log("item " + itemId + " has dependencies " + JSON.stringify(itemTemplate.dependencies));
+                      itemTemplate.dependencies.forEach(dependentId => {
+                        if (
+                          !common.findTemplateInList(
+                            existingTemplates,
+                            dependentId
+                          )
+                        ) {
+                          dependentDfds.push(
+                            createItemTemplate(
+                              portalSharingUrl,
+                              solutionItemId,
+                              dependentId,
+                              requestOptions,
+                              existingTemplates
+                            )
+                          );
+                        }
+                      });
+                      Promise.all(dependentDfds).then(
+                        () => {
+                          resolve(existingTemplates);
+                        },
+                        e => reject(common.fail(e))
+                      );
+                    }
+                  },
+                  e => reject(common.fail(e))
+                );
+                */
+            },
+            e => reject(common.fail(e))
+          );
+        }
       );
     }
   });
