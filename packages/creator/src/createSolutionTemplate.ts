@@ -36,14 +36,13 @@ const moduleMap: common.IItemTypeModuleMap = {
   // //??? Temporary assignments
   "code attachment": solutionSimpleTypes,
   "feature service": solutionSimpleTypes,
-  form: solutionSimpleTypes,
   "project package": solutionSimpleTypes,
   "workforce project": solutionSimpleTypes,
   // //???
 
   // "feature layer": solutionFeatureLayer,
   // "feature service": solutionFeatureLayer,
-  // "form": solutionSimpleTypes,
+  form: solutionSimpleTypes,
   group: solutionSimpleTypes,
   // "openstreetmap": solutionStoryMap,
   // "project package": solutionStoryMap,

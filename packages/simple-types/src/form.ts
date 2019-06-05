@@ -16,38 +16,12 @@
 
 import * as common from "@esri/solution-common";
 
-/**
- * The relevant elements of a Dashboard widget.
- * @protected
- */
-interface IDashboardWidget {
-  /**
-   * AGOL item id for some widget types
-   */
-  itemId: string;
-  /**
-   * Dashboard widget type
-   */
-  type: string;
-}
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
   // Extract dependencies
-  const widgets: IDashboardWidget[] = common.getProp(
-    itemTemplate,
-    "data.widgets"
-  );
-  if (widgets) {
-    widgets.forEach((widget: any) => {
-      if (widget.type === "mapWidget") {
-        itemTemplate.dependencies.push(widget.itemId);
-      }
-    });
-  }
 
   return itemTemplate;
 }

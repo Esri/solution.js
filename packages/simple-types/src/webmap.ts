@@ -14,7 +14,6 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 
 /**
@@ -26,27 +25,22 @@ const WEBMAP_APP_URL_PART: string = "/home/webmap/viewer.html?webmap=";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate,
-  userSession: auth.UserSession
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
-    // Templatize the app URL
-    itemTemplate.item.url =
-      common.PLACEHOLDER_SERVER_NAME +
-      WEBMAP_APP_URL_PART +
-      itemTemplate.item.id; // templatized id
+  itemTemplate: common.IItemTemplate
+): common.IItemTemplate {
+  // Templatize the app URL
+  itemTemplate.item.url =
+    common.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + itemTemplate.item.id; // templatized id
 
-    // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(itemTemplate);
+  // Extract dependencies
+  itemTemplate.dependencies = extractDependencies(itemTemplate);
 
-    // Templatize the map layer ids after we've extracted them as dependencies
-    if (itemTemplate.data) {
-      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
-      templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
-    }
+  // Templatize the map layer ids after we've extracted them as dependencies
+  if (itemTemplate.data) {
+    templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
+    templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
+  }
 
-    resolve(itemTemplate);
-  });
+  return itemTemplate;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

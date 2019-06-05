@@ -14,68 +14,64 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate,
-  userSession: auth.UserSession
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
-    // Remove org base URL and app id, e.g.,
-    //   http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34a6b5ce80d17835eea21
-    // to
-    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
-    // Need to add placeholder server name because otherwise AGOL makes URL null
-    if (itemTemplate.item.url) {
-      const templatizedUrl = itemTemplate.item.url;
-      const iSep = templatizedUrl.indexOf("//");
-      itemTemplate.item.url =
-        common.PLACEHOLDER_SERVER_NAME + // add placeholder server name
-        templatizedUrl.substring(
-          templatizedUrl.indexOf("/", iSep + 2),
-          templatizedUrl.lastIndexOf("=") + 1
-        ) +
-        itemTemplate.item.id; // templatized id
-    }
+  itemTemplate: common.IItemTemplate
+): common.IItemTemplate {
+  // Remove org base URL and app id, e.g.,
+  //   http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34a6b5ce80d17835eea21
+  // to
+  //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
+  // Need to add placeholder server name because otherwise AGOL makes URL null
+  if (itemTemplate.item.url) {
+    const templatizedUrl = itemTemplate.item.url;
+    const iSep = templatizedUrl.indexOf("//");
+    itemTemplate.item.url =
+      common.PLACEHOLDER_SERVER_NAME + // add placeholder server name
+      templatizedUrl.substring(
+        templatizedUrl.indexOf("/", iSep + 2),
+        templatizedUrl.lastIndexOf("=") + 1
+      ) +
+      itemTemplate.item.id; // templatized id
+  }
 
-    // Set the folder
-    if (common.getProp(itemTemplate, "data.folderId")) {
-      itemTemplate.data.folderId = "{{folderId}}";
-    }
+  // Set the folder
+  if (common.getProp(itemTemplate, "data.folderId")) {
+    itemTemplate.data.folderId = "{{folderId}}";
+  }
 
-    // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(itemTemplate);
+  // Extract dependencies
+  itemTemplate.dependencies = extractDependencies(itemTemplate);
 
-    // Templatize dependencies in the data section
-    itemTemplate.dependencies.forEach(path => {
-      const propertyPath: string = itemTemplate.data[path] as string;
-      itemTemplate.data[path] = common.templatizeTerm(
-        propertyPath,
-        propertyPath,
-        ".id"
-      );
-    });
-
-    // Set the map or group after we've extracted them as dependencies
-    if (common.getProp(itemTemplate, "data.values.webmap")) {
-      itemTemplate.data.values.webmap = common.templatizeTerm(
-        itemTemplate.data.values.webmap,
-        itemTemplate.data.values.webmap,
-        ".id"
-      );
-    } else if (common.getProp(itemTemplate, "data.values.group")) {
-      itemTemplate.data.values.group = common.templatizeTerm(
-        itemTemplate.data.values.group,
-        itemTemplate.data.values.group,
-        ".id"
-      );
-    }
-
-    resolve(itemTemplate);
+  // Templatize dependencies in the data section
+  itemTemplate.dependencies.forEach(path => {
+    const propertyPath: string = itemTemplate.data[path] as string;
+    itemTemplate.data[path] = common.templatizeTerm(
+      propertyPath,
+      propertyPath,
+      ".id"
+    );
   });
+
+  // Set the map or group after we've extracted them as dependencies
+  if (common.getProp(itemTemplate, "data.values.webmap")) {
+    itemTemplate.data.values.webmap = common.templatizeTerm(
+      itemTemplate.data.values.webmap,
+      itemTemplate.data.values.webmap,
+      ".id"
+    );
+  } else if (common.getProp(itemTemplate, "data.values.group")) {
+    itemTemplate.data.values.group = common.templatizeTerm(
+      itemTemplate.data.values.group,
+      itemTemplate.data.values.group,
+      ".id"
+    );
+  }
+
+  return itemTemplate;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
