@@ -85,3 +85,8 @@ test.html
 # Tools, notes, outputs
 __*.*
 __*
+
+# Temporary build products
+packages/**/*.js
+packages/**/*.map
+packages/**/*.d.ts
