@@ -33,13 +33,26 @@ import * as interfaces from "./interfaces";
  */
 export const PLACEHOLDER_SERVER_NAME: string = "{{organization.portalBaseUrl}}";
 
-export function createInitializedTemplate(
+export function createInitializedGroupTemplate(
   itemInfo: any
 ): interfaces.IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
-    id: itemInfo.id,
+    description: itemInfo.description,
+    snippet: itemInfo.snippet,
+    tags: itemInfo.tags,
+    title: itemInfo.title
+  };
+  return itemTemplate;
+}
+
+export function createInitializedItemTemplate(
+  itemInfo: any
+): interfaces.IItemTemplate {
+  const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
+  itemTemplate.item = {
+    ...itemTemplate.item,
     categories: itemInfo.categories,
     culture: itemInfo.culture,
     description: itemInfo.description,

@@ -33,7 +33,7 @@ import * as solutionStoryMap from "@esri/solution-storymap";
 const moduleMap: common.IItemTypeModuleMap = {
   dashboard: solutionSimpleTypes,
 
-  // //???
+  // //??? Temporary assignments
   "code attachment": solutionSimpleTypes,
   "feature service": solutionSimpleTypes,
   form: solutionSimpleTypes,
@@ -44,7 +44,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   // "feature layer": solutionFeatureLayer,
   // "feature service": solutionFeatureLayer,
   // "form": solutionSimpleTypes,
-  // "group": solutionSimpleTypes,
+  group: solutionSimpleTypes,
   // "openstreetmap": solutionStoryMap,
   // "project package": solutionStoryMap,
   // "storymap": solutionStoryMap,
@@ -233,16 +233,15 @@ export function createItemTemplate(
         },
         () => {
           // If item query fails, try URL for group base section
+          console.log("fetching group " + itemId);
           portal.getGroup(itemId, requestOptions).then(
             itemInfo => {
-              resolve(existingTemplates);
-
-              /*
               solutionSimpleTypes
                 .convertItemToTemplate(
                   solutionItemId,
                   itemInfo,
-                  requestOptions.authentication
+                  requestOptions.authentication,
+                  true
                 )
                 .then(
                   itemTemplate => {
@@ -262,7 +261,12 @@ export function createItemTemplate(
                       const dependentDfds: Array<
                         Promise<common.IItemTemplate[]>
                       > = [];
-                      console.log("item " + itemId + " has dependencies " + JSON.stringify(itemTemplate.dependencies));
+                      console.log(
+                        "item " +
+                          itemId +
+                          " has dependencies " +
+                          JSON.stringify(itemTemplate.dependencies)
+                      );
                       itemTemplate.dependencies.forEach(dependentId => {
                         if (
                           !common.findTemplateInList(
@@ -291,7 +295,6 @@ export function createItemTemplate(
                   },
                   e => reject(common.fail(e))
                 );
-                */
             },
             e => reject(common.fail(e))
           );

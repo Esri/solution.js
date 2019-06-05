@@ -31,12 +31,13 @@ import * as webmappingapplication from "./webmappingapplication";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  userSession: auth.UserSession
+  userSession: auth.UserSession,
+  isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     console.log(
       "converting " +
-        itemInfo.type +
+        (isGroup ? "Group" : itemInfo.type) +
         ' "' +
         itemInfo.title +
         '" (' +
@@ -48,9 +49,9 @@ export function convertItemToTemplate(
     };
 
     // Init template
-    const itemTemplate: common.IItemTemplate = common.createInitializedTemplate(
-      itemInfo
-    );
+    const itemTemplate: common.IItemTemplate = isGroup
+      ? common.createInitializedGroupTemplate(itemInfo)
+      : common.createInitializedItemTemplate(itemInfo);
     itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
@@ -67,86 +68,99 @@ export function convertItemToTemplate(
       );
     }
 
-    // Use the initiative's extent
-    // itemTemplate.item.extent = "{{initiative.extent:optional}}";
+    if (!isGroup) {
+      // Use the initiative's extent
+      // if (itemTemplate.item.extent) {
+      //   itemTemplate.item.extent = "{{initiative.extent:optional}}";
+      // }
 
-    // Request item resources
-    const resourcePromise = portal
-      .getItemResources(itemTemplate.itemId, requestOptions)
-      .then(resourcesResponse => {
-        // Save resources to solution item
-        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
-          (resourceDetail: any) => resourceDetail.resource
-        );
-        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
-          "https://www.arcgis.com/sharing/",
-          itemTemplate.itemId,
-          itemTemplate.item.thumbnail,
-          itemTemplate.resources
-        );
-        return common.copyFilesToStorageItem(
-          requestOptions,
-          resourceItemFilePaths,
-          solutionItemId,
-          requestOptions
-        );
-      })
-      .catch(() => Promise.resolve([]));
-
-    // Perform type-specific handling
-    let dataPromise = Promise.resolve({});
-    switch (itemInfo.type.toLowerCase()) {
-      case "dashboard":
-      case "feature service":
-      case "project package":
-      case "workforce project":
-      case "web map":
-      case "web mapping application":
-        dataPromise = getItemData(itemTemplate.itemId, userSession);
-        break;
-      case "code attachment":
-      case "form":
-        break;
-    }
-
-    // Items without a data section return an error from the REST library, so we'll need to prevent it
-    // from killing off both promises. This means that there's no `reject` clause to handle, hence:
-    // tslint:disable-next-line:no-floating-promises
-    Promise.all([
-      dataPromise.catch(() => null),
-      resourcePromise.catch(() => null)
-    ]).then(responses => {
-      const [itemDataResponse, savedResourceFilenames] = responses;
-      itemTemplate.data = itemDataResponse ? itemDataResponse : [];
-      itemTemplate.resources = savedResourceFilenames
-        ? savedResourceFilenames
-        : [];
-
-      switch (itemInfo.type.toLowerCase()) {
-        case "web map":
-          /* tslint:disable-next-line:no-floating-promises */
-          webmap.convertItemToTemplate(itemTemplate, userSession);
-          break;
-        case "web mapping application":
-          /* tslint:disable-next-line:no-floating-promises */
-          webmappingapplication.convertItemToTemplate(
-            itemTemplate,
-            userSession
+      // Request item resources
+      const resourcePromise = portal
+        .getItemResources(itemTemplate.itemId, requestOptions)
+        .then(resourcesResponse => {
+          // Save resources to solution item
+          itemTemplate.resources = (resourcesResponse.resources as any[]).map(
+            (resourceDetail: any) => resourceDetail.resource
           );
+          const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+            "https://www.arcgis.com/sharing/",
+            itemTemplate.itemId,
+            itemTemplate.item.thumbnail,
+            itemTemplate.resources
+          );
+          return common.copyFilesToStorageItem(
+            requestOptions,
+            resourceItemFilePaths,
+            solutionItemId,
+            requestOptions
+          );
+        })
+        .catch(() => Promise.resolve([]));
+
+      // Perform type-specific handling
+      let dataPromise = Promise.resolve({});
+      switch (itemInfo.type.toLowerCase()) {
+        case "dashboard":
+        case "feature service":
+        case "project package":
+        case "workforce project":
+        case "web map":
+        case "web mapping application":
+          dataPromise = getItemData(itemTemplate.itemId, userSession);
+          break;
+        case "code attachment":
+        case "form":
           break;
       }
 
-      console.log(
-        "converted " +
-          itemInfo.type +
-          ' "' +
-          itemInfo.title +
-          '" (' +
-          itemInfo.id +
-          ")"
+      // Items without a data section return an error from the REST library, so we'll need to prevent it
+      // from killing off both promises. This means that there's no `reject` clause to handle, hence:
+      // tslint:disable-next-line:no-floating-promises
+      Promise.all([
+        dataPromise.catch(() => null),
+        resourcePromise.catch(() => null)
+      ]).then(responses => {
+        const [itemDataResponse, savedResourceFilenames] = responses;
+        itemTemplate.data = itemDataResponse ? itemDataResponse : [];
+        itemTemplate.resources = savedResourceFilenames
+          ? savedResourceFilenames
+          : [];
+
+        switch (itemInfo.type.toLowerCase()) {
+          case "web map":
+            /* tslint:disable-next-line:no-floating-promises */
+            webmap.convertItemToTemplate(itemTemplate, userSession);
+            break;
+          case "web mapping application":
+            /* tslint:disable-next-line:no-floating-promises */
+            webmappingapplication.convertItemToTemplate(
+              itemTemplate,
+              userSession
+            );
+            break;
+        }
+
+        console.log(
+          "converted " +
+            itemInfo.type +
+            ' "' +
+            itemInfo.title +
+            '" (' +
+            itemInfo.id +
+            ")"
+        );
+        resolve(itemTemplate);
+      });
+    } else {
+      // Get the group's items--its dependencies
+      common.getGroupContents(itemInfo.id, requestOptions).then(
+        groupContents => {
+          itemTemplate.dependencies = groupContents;
+          resolve(itemTemplate);
+        },
+        () => resolve(itemTemplate)
       );
-      resolve(itemTemplate);
-    });
+    }
   });
 }
 
