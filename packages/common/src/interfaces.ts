@@ -110,3 +110,33 @@ export interface IItemTemplateConversions {
 export interface IItemTypeModuleMap {
   [itemType: string]: IItemTemplateConversions;
 }
+
+/**
+ * A simple interface for a key value pair with string as the key
+ */
+export interface IStringValuePair {
+  [key: string]: any;
+}
+
+/**
+ * A simple interface for a key value pair with number as the key
+ */
+export interface INumberValuePair {
+  [key: number]: any;
+}
+
+/**
+ * Storage of dependencies.
+ */
+export interface IDependency {
+  /**
+   * Dependency item id for templatization.
+   */
+  id: string;
+
+  /**
+   * Dependency service name for name mapping.
+   * This is used to find appropriate source service name for views.
+   */
+  name: string;
+}

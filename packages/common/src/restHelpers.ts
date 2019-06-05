@@ -24,6 +24,8 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
+import { IDependency, IItemTemplate } from "./interfaces";
+import { request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -272,5 +274,139 @@ export function updateItemURL(
       },
       e => reject(generalHelpers.fail(e))
     );
+  });
+}
+
+/**
+ * Fills in missing data, including full layer and table definitions, in a feature services' definition.
+ *
+ * @param itemTemplate Feature service item, data, dependencies definition to be modified
+ * @param requestOptions Options for requesting information from AGOL
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function fleshOutFeatureService(
+  itemTemplate: IItemTemplate,
+  requestOptions: auth.IUserRequestOptions
+): Promise<IItemTemplate> {
+  return new Promise<IItemTemplate>((resolve, reject) => {
+    const properties: any = {
+      service: {},
+      layers: [],
+      tables: []
+    };
+
+    // To have enough information for reconstructing the service, we'll supplement
+    // the item and data sections with sections for the service, full layers, and
+    // full tables
+
+    // Get the service description
+    const serviceUrl = itemTemplate.item.url;
+    request(serviceUrl + "?f=json", requestOptions).then(
+      serviceData => {
+        properties.service = serviceData;
+        Promise.all([
+          getLayers(serviceUrl, serviceData["layers"], requestOptions),
+          getLayers(serviceUrl, serviceData["tables"], requestOptions)
+        ]).then(
+          results => {
+            properties.layers = results[0];
+            properties.tables = results[1];
+            itemTemplate.properties = properties;
+
+            itemTemplate.estimatedDeploymentCostFactor +=
+              properties.layers.length + // layers
+              _countRelationships(properties.layers) + // layer relationships
+              properties.tables.length + // tables & estimated single relationship for each
+              _countRelationships(properties.tables); // table relationships
+
+            resolve(itemTemplate);
+          },
+          e => reject(fail(e))
+        );
+      },
+      (e: any) => reject(fail(e))
+    );
+  });
+}
+
+export function _countRelationships(layers: any[]): number {
+  const reducer = (accumulator: number, currentLayer: any) =>
+    accumulator +
+    (currentLayer.relationships ? currentLayer.relationships.length : 0);
+
+  return layers.reduce(reducer, 0);
+}
+
+/**
+ * Gets the full definitions of the layers affiliated with a hosted service.
+ *
+ * @param serviceUrl URL to hosted service
+ * @param layerList List of layers at that service...must contain id
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve with a list of the layers from the admin api
+ */
+export function getLayers(
+  serviceUrl: string,
+  layerList: any[],
+  requestOptions: auth.IUserRequestOptions
+): Promise<any[]> {
+  return new Promise<any[]>((resolve, reject) => {
+    if (!Array.isArray(layerList) || layerList.length === 0) {
+      resolve([]);
+    }
+
+    // get the admin URL
+    serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
+
+    const requestsDfd: Array<Promise<any>> = [];
+    layerList.forEach(layer => {
+      requestsDfd.push(
+        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
+      );
+    });
+
+    // Wait until all layers are heard from
+    Promise.all(requestsDfd).then(
+      layers => resolve(layers),
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Gets the ids of the dependencies of an AGOL feature service item.
+ * Dependencies will only exist when the service is a view.
+ *
+ * @param itemTemplate Template of item to be created
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve a list of dependencies
+ */
+export function extractDependencies(
+  itemTemplate: IItemTemplate,
+  requestOptions?: auth.IUserRequestOptions
+): Promise<IDependency[]> {
+  const dependencies: any[] = [];
+  return new Promise((resolve, reject) => {
+    // Get service dependencies when the item is a view
+    if (itemTemplate.properties.service.isView) {
+      const url: string = itemTemplate.item.url;
+      request(url + "/sources?f=json", requestOptions).then(
+        response => {
+          if (response && response.services) {
+            response.services.forEach((layer: any) => {
+              dependencies.push({
+                id: layer.serviceItemId,
+                name: layer.name
+              });
+            });
+            resolve(dependencies);
+          }
+        },
+        e => reject(generalHelpers.fail(e))
+      );
+    } else {
+      resolve(dependencies);
+    }
   });
 }
