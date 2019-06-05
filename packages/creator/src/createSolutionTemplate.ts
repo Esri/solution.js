@@ -31,8 +31,6 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  dashboard: solutionSimpleTypes,
-
   // //??? Temporary assignments
   "code attachment": solutionSimpleTypes,
   "feature service": solutionSimpleTypes,
@@ -42,13 +40,15 @@ const moduleMap: common.IItemTypeModuleMap = {
 
   // "feature layer": solutionFeatureLayer,
   // "feature service": solutionFeatureLayer,
-  form: solutionSimpleTypes,
-  group: solutionSimpleTypes,
   // "openstreetmap": solutionStoryMap,
   // "project package": solutionStoryMap,
   // "storymap": solutionStoryMap,
   // table: solutionFeatureLayer,
   // vectortilelayer: solutionFeatureLayer,
+
+  dashboard: solutionSimpleTypes,
+  form: solutionSimpleTypes,
+  group: solutionSimpleTypes,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };
@@ -125,6 +125,7 @@ export function createItemTemplate(
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
+      console.log("added placeholder template " + itemId);
 
       // For each item,
       //   * fetch item & data infos
@@ -143,6 +144,9 @@ export function createItemTemplate(
             existingTemplates = existingTemplates.filter(
               template => template.itemId !== itemId
             );
+            console.log("removed placeholder template " + itemId);
+
+            // Set the thumbnail
             const thumbnailUrl =
               portalSharingUrl + "/content/items/" + itemId + "/data";
             common
@@ -161,12 +165,17 @@ export function createItemTemplate(
             const itemHandler: common.IItemTemplateConversions =
               moduleMap[itemInfo.type.toLowerCase()];
             if (!itemHandler) {
+              // Remove this item from the templates list
+              existingTemplates = existingTemplates.filter(
+                template => template.itemId !== itemId
+              );
               console.warn(
                 "Unimplemented item type (module level) " +
                   itemInfo.type +
                   " for " +
                   itemInfo.id
               );
+              console.log("removed placeholder template " + itemId);
               resolve(existingTemplates);
             } else {
               itemHandler

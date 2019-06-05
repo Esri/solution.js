@@ -79,6 +79,9 @@ export function deploySolution(
           estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log(
+          "Deploying solution " + itemInfo.title + " (" + itemInfo.id + ")"
+        );
+        console.log(
           "totalEstimatedCost, progressPercentStep",
           totalEstimatedCost.toString(),
           progressPercentStep.toFixed(2).toString()
