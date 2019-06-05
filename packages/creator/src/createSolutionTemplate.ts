@@ -31,24 +31,23 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
+  dashboard: solutionSimpleTypes,
+
   // //??? Temporary assignments
   "code attachment": solutionSimpleTypes,
-  "feature service": solutionSimpleTypes,
   "project package": solutionSimpleTypes,
   "workforce project": solutionSimpleTypes,
   // //???
 
-  // "feature layer": solutionFeatureLayer,
-  // "feature service": solutionFeatureLayer,
+  "feature layer": solutionFeatureLayer,
+  "feature service": solutionFeatureLayer,
+  form: solutionSimpleTypes,
+  group: solutionSimpleTypes,
   // "openstreetmap": solutionStoryMap,
   // "project package": solutionStoryMap,
   // "storymap": solutionStoryMap,
   // table: solutionFeatureLayer,
   // vectortilelayer: solutionFeatureLayer,
-
-  dashboard: solutionSimpleTypes,
-  form: solutionSimpleTypes,
-  group: solutionSimpleTypes,
   "web map": solutionSimpleTypes,
   "web mapping application": solutionSimpleTypes
 };

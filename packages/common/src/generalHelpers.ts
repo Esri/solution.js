@@ -96,6 +96,19 @@ export function getProps(obj: any, props: string[]): any {
 }
 
 /**
+ * Delete a property from an object
+ *
+ * @param obj object with property to delete
+ * @param prop property on object that should be deleted
+ *
+ */
+export function deleteProp(obj: any, prop: string): void {
+  if (obj && obj.hasOwnProperty(prop)) {
+    delete obj[prop];
+  }
+}
+
+/**
  * Does the model have any of a set of keywords
  */
 export function hasAnyKeyword(model: any, keywords: string[]): boolean {

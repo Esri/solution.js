@@ -20,20 +20,64 @@
  * @module feature-layer
  */
 
+//#region Imports ----------------------------------------------------------------------------------------------//
+
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import * as fsUtils from "./featureServiceHelpers";
 
-// ------------------------------------------------------------------------------------------------------------------ //
+//#endregion
 
+//#region Publish Process --------------------------------------------------------------------------------------//
+
+/**
+ * Fills in missing data, including full layer and table definitions, in a feature services' definition.
+ *
+ * @param itemInfo Feature service item
+ * @param userSession The session used to interact with the service the template is based on
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
 export function convertItemToTemplate(
+  solutionItemId: string,
   itemInfo: any,
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
     console.log("convertItemToTemplate for a feature-layer");
-    resolve(undefined);
+
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: userSession
+    };
+
+    // Init template
+    const template: common.IItemTemplate = common.createInitializedItemTemplate(
+      itemInfo
+    );
+
+    // Update the estimated cost factor to deploy this item
+    template.estimatedDeploymentCostFactor = 3;
+
+    common.fleshOutFeatureService(template, requestOptions).then(
+      itemTemplate => {
+        // Extract dependencies
+        common.extractDependencies(itemTemplate, requestOptions).then(
+          (dependencies: common.IDependency[]) => {
+            // set the dependencies as an array of IDs from the array of IDependency
+            itemTemplate.dependencies = dependencies.map((dep: any) => dep.id);
+
+            // resolve the template with templatized values
+            resolve(fsUtils.templatize(itemTemplate, dependencies));
+          },
+          (e: any) => reject(common.fail(e))
+        );
+      },
+      e => reject(common.fail(e))
+    );
   });
 }
+
+//#endregion
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,

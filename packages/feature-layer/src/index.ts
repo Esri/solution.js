@@ -21,3 +21,4 @@
  */
 
 export * from "./feature-layer";
+export * from "./featureServiceHelpers";
