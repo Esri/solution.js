@@ -98,7 +98,7 @@ export function createSolutionTemplate(
         );
         console.log(
           "removed " +
-            (solutionTemplates.length - origLen) +
+            (origLen - solutionTemplates.length) +
             " placeholder templates"
         );
 
