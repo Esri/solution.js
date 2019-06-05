@@ -473,7 +473,6 @@ export function addResourceFromBlob(
   filename: string,
   requestOptions: auth.IUserRequestOptions
 ): Promise<any> {
-  const resourceFilename = folder ? folder + "/" + filename : filename;
   const addRsrcOptions = {
     id: itemId,
     resource: blob,
@@ -500,6 +499,24 @@ export function addMetadataFromBlob(
     params: {
       // Pass metadata in directly because item object is serialized, which discards a blob
       metadata: blob
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
+
+export function addThumbnailFromBlob(
+  blob: any,
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId
+    },
+    params: {
+      // Pass image in directly because item object is serialized, which discards a blob
+      thumbnail: blob
     },
     ...requestOptions
   };

@@ -64,6 +64,7 @@ const moduleMap: common.IItemTypeModuleMap = {
  * @return A promise without value
  */
 export function createSolutionTemplate(
+  portalSharingUrl: string,
   solutionItemId: string,
   ids: string[],
   destinationUserSession: auth.UserSession,
@@ -82,6 +83,7 @@ export function createSolutionTemplate(
     ids.forEach(itemId => {
       getItemsPromise.push(
         createItemTemplate(
+          portalSharingUrl,
           solutionItemId,
           itemId,
           requestOptions,
@@ -111,6 +113,7 @@ export function createSolutionTemplate(
  * @protected
  */
 export function createItemTemplate(
+  portalSharingUrl: string,
   solutionItemId: string,
   itemId: string,
   requestOptions: auth.IUserRequestOptions,
@@ -134,68 +137,91 @@ export function createItemTemplate(
       // Fetch the item
       portal.getItem(itemId, requestOptions).then(
         itemInfo => {
-          const itemHandler: common.IItemTemplateConversions =
-            moduleMap[itemInfo.type.toLowerCase()];
-          if (!itemHandler) {
-            console.warn(
-              "Unimplemented item type (module level) " +
-                itemInfo.type +
-                " for " +
-                itemInfo.id
+          // Check if this is the solution's thumbnail
+          if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
+            // Remove this item from the templates list
+            existingTemplates = existingTemplates.filter(
+              template => template.itemId !== itemId
             );
-            resolve(existingTemplates);
-          } else {
-            itemHandler
-              .convertItemToTemplate(
-                solutionItemId,
-                itemInfo,
-                requestOptions.authentication
-              )
+            const thumbnailUrl =
+              portalSharingUrl + "/content/items/" + itemId + "/data";
+            common
+              .getBlob(thumbnailUrl, requestOptions)
               .then(
-                itemTemplate => {
-                  // Set the value keyed by the id to the created template, replacing the placeholder template
-                  replaceTemplate(
-                    existingTemplates,
-                    itemTemplate.itemId,
-                    itemTemplate
-                  );
-
-                  // Trace item dependencies
-                  if (itemTemplate.dependencies.length === 0) {
-                    resolve(existingTemplates);
-                  } else {
-                    // Get its dependencies, asking each to get its dependents via
-                    // recursive calls to this function
-                    const dependentDfds: Array<
-                      Promise<common.IItemTemplate[]>
-                    > = [];
-                    itemTemplate.dependencies.forEach(dependentId => {
-                      if (
-                        !common.findTemplateInList(
-                          existingTemplates,
-                          dependentId
-                        )
-                      ) {
-                        dependentDfds.push(
-                          createItemTemplate(
-                            solutionItemId,
-                            dependentId,
-                            requestOptions,
-                            existingTemplates
-                          )
-                        );
-                      }
-                    });
-                    Promise.all(dependentDfds).then(
-                      () => {
-                        resolve(existingTemplates);
-                      },
-                      e => reject(common.fail(e))
-                    );
-                  }
-                },
-                e => reject(common.fail(e))
+                blob =>
+                  common
+                    .addThumbnailFromBlob(blob, solutionItemId, requestOptions)
+                    .then(
+                      () => resolve(existingTemplates),
+                      () => resolve(existingTemplates)
+                    ),
+                () => resolve(existingTemplates)
               );
+          } else {
+            const itemHandler: common.IItemTemplateConversions =
+              moduleMap[itemInfo.type.toLowerCase()];
+            if (!itemHandler) {
+              console.warn(
+                "Unimplemented item type (module level) " +
+                  itemInfo.type +
+                  " for " +
+                  itemInfo.id
+              );
+              resolve(existingTemplates);
+            } else {
+              itemHandler
+                .convertItemToTemplate(
+                  solutionItemId,
+                  itemInfo,
+                  requestOptions.authentication
+                )
+                .then(
+                  itemTemplate => {
+                    // Set the value keyed by the id to the created template, replacing the placeholder template
+                    replaceTemplate(
+                      existingTemplates,
+                      itemTemplate.itemId,
+                      itemTemplate
+                    );
+
+                    // Trace item dependencies
+                    if (itemTemplate.dependencies.length === 0) {
+                      resolve(existingTemplates);
+                    } else {
+                      // Get its dependencies, asking each to get its dependents via
+                      // recursive calls to this function
+                      const dependentDfds: Array<
+                        Promise<common.IItemTemplate[]>
+                      > = [];
+                      itemTemplate.dependencies.forEach(dependentId => {
+                        if (
+                          !common.findTemplateInList(
+                            existingTemplates,
+                            dependentId
+                          )
+                        ) {
+                          dependentDfds.push(
+                            createItemTemplate(
+                              portalSharingUrl,
+                              solutionItemId,
+                              dependentId,
+                              requestOptions,
+                              existingTemplates
+                            )
+                          );
+                        }
+                      });
+                      Promise.all(dependentDfds).then(
+                        () => {
+                          resolve(existingTemplates);
+                        },
+                        e => reject(common.fail(e))
+                      );
+                    }
+                  },
+                  e => reject(common.fail(e))
+                );
+            }
           }
         },
         e => reject(common.fail(e))
