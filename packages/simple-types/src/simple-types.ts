@@ -22,6 +22,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import * as dashboard from "./dashboard";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
@@ -127,6 +128,10 @@ export function convertItemToTemplate(
           : [];
 
         switch (itemInfo.type.toLowerCase()) {
+          case "dashboard":
+            /* tslint:disable-next-line:no-floating-promises */
+            dashboard.convertItemToTemplate(itemTemplate, userSession);
+            break;
           case "web map":
             /* tslint:disable-next-line:no-floating-promises */
             webmap.convertItemToTemplate(itemTemplate, userSession);
