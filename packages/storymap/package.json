@@ -44,7 +44,6 @@
     "rollup-plugin-uglify": "^6.0.2"
   },
   "dependencies": {
-    "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },
   "scripts": {
