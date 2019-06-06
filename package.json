@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.0.1",
-  "description": "to do.",
+  "version": "1.0.0",
+  "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/fetch-mock": "^6.0.4",
@@ -118,6 +118,9 @@
     "c": "git-cz",
     "dev": "support/dev.sh"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
@@ -140,8 +143,7 @@
       "email": "dbouwman@esri.com"
     },
     {
-      "name": "John Gravois",
-      "email": "john@esri.com"
+      "name": "John Gravois"
     }
   ],
   "license": "Apache-2.0",

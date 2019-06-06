@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-feature-layer",
-  "version": "0.0.1",
-  "description": "to do",
+  "version": "1.0.0",
+  "description": "Manages the creation and deployment of feature layers and services.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",
@@ -20,7 +20,7 @@
     "@esri/arcgis-rest-routing": "^2.0.3",
     "@esri/arcgis-rest-service-admin": "^2.0.3",
     "@esri/arcgis-rest-types": "^2.0.3",
-    "@esri/solution-common": "^0.0.1"
+    "@esri/solution-common": "^1.0.0"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.0.3",
@@ -31,7 +31,7 @@
     "@esri/arcgis-rest-routing": "^2.0.3",
     "@esri/arcgis-rest-service-admin": "^2.0.3",
     "@esri/arcgis-rest-types": "^2.0.3",
-    "@esri/solution-common": "^0.0.1",
+    "@esri/solution-common": "^1.0.0",
     "rollup": "^1.6.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^5.0.1",
@@ -62,7 +62,27 @@
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },
-  "contributors": [],
+  "contributors": [
+    {
+      "name": "Mike Tschudi",
+      "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
+    },
+    {
+      "name": "John Hauck",
+      "email": "jhauck@esri.com"
+    },
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/Esri/solution.js/issues"
   },

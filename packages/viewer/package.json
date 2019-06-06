@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "to do",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
