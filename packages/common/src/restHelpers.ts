@@ -24,8 +24,13 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
-import { IDependency, IItemTemplate } from "./interfaces";
-import { request } from "@esri/arcgis-rest-request";
+import {
+  IDependency,
+  IItemTemplate,
+  IUpdate,
+  IPostProcessArgs
+} from "./interfaces";
+import { IParams, request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -42,64 +47,144 @@ import { request } from "@esri/arcgis-rest-request";
 export function createFeatureService(
   itemInfo: any,
   dataInfo: any,
+  serviceInfo: any,
   requestOptions: auth.IUserRequestOptions,
   folderId: string | undefined,
-  access = "private"
+  isPortal: boolean
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
-    const createOptions: serviceAdmin.ICreateServiceOptions = {
-      item: {
-        ...itemInfo,
-        data: dataInfo
-      },
+    const createOptions: serviceAdmin.ICreateServiceOptions = _getCreateServiceOptions(
+      itemInfo,
+      dataInfo,
+      serviceInfo,
       folderId,
-      ...requestOptions
-    };
-
-    // Make the item name unique
-    createOptions.item.name =
-      itemInfo.name + "_" + generalHelpers.getUTCTimestamp();
+      isPortal,
+      requestOptions
+    );
 
     serviceAdmin.createFeatureService(createOptions).then(
       createResponse => {
-        // Update item because createFeatureService doesn't provide a way to specify
-        // snippet, description, etc.
-        const updateOptions: portal.IUpdateItemOptions = {
-          item: {
-            id: createResponse.serviceItemId,
-            title: itemInfo.title,
-            snippet: itemInfo.snippet,
-            description: itemInfo.description,
-            accessInfo: itemInfo.accessInfo,
-            licenseInfo: itemInfo.licenseInfo,
-            text: itemInfo.data
-          },
-          ...requestOptions
-        };
+        resolve(createResponse);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
 
-        portal.updateItem(updateOptions).then(
-          () => {
-            if (access !== "private") {
-              // Set access if it is not AGOL default
-              // Set the access manually since the access value in createItem appears to be ignored
-              const accessOptions: portal.ISetAccessOptions = {
-                id: createResponse.serviceItemId,
-                access: access === "public" ? "public" : "org", // need to use constants rather than string
-                ...requestOptions
-              };
-              portal.setItemAccess(accessOptions).then(
-                () => {
-                  resolve(createResponse);
-                },
-                e => reject(generalHelpers.fail(e))
-              );
-            } else {
-              resolve(createResponse);
-            }
-          },
-          e => reject(generalHelpers.fail(e))
-        );
+export function _getCreateServiceOptions(
+  itemInfo: any,
+  dataInfo: any,
+  serviceInfo: any,
+  folderId: any,
+  isPortal: boolean,
+  requestOptions: auth.IUserRequestOptions
+): any {
+  const params: IParams = {
+    preserveLayerIds: true
+  };
+
+  const _item: serviceAdmin.ICreateServiceParams = {
+    ...itemInfo,
+    data: dataInfo,
+    name: itemInfo.name + "_" + generalHelpers.getUTCTimestamp()
+  };
+
+  const createOptions = {
+    item: _item,
+    folderId,
+    params,
+    preserveLayerIds: true,
+    ...requestOptions
+  };
+
+  createOptions.item = _setItemProperties(
+    createOptions.item,
+    dataInfo,
+    serviceInfo,
+    params,
+    isPortal
+  );
+
+  return createOptions;
+}
+
+export function _setItemProperties(
+  item: any,
+  data: any,
+  serviceInfo: any,
+  params: IParams,
+  isPortal: boolean
+): any {
+  if (data) {
+    // Get the items data
+    item.text = data;
+    // delete itemTemplate.data;
+  }
+
+  // Set the capabilities
+  const portalCapabilities = [
+    "Create",
+    "Query",
+    "Editing",
+    "Update",
+    "Delete",
+    "Uploads",
+    "Sync",
+    "Extract"
+  ];
+  const capabilities =
+    generalHelpers.getProp(serviceInfo, "service.capabilities") || [];
+
+  item.capabilities = isPortal
+    ? capabilities
+        .split(",")
+        .filter((c: any) => portalCapabilities.indexOf(c) > -1)
+        .join(",")
+    : capabilities;
+  if (serviceInfo.service.capabilities) {
+    serviceInfo.service.capabilities = item.capabilities;
+  }
+
+  // set create options item properties
+  const keyProperties: string[] = [
+    "name",
+    "isView",
+    "sourceSchemaChangesAllowed",
+    "isUpdatableView",
+    "capabilities",
+    "isMultiServicesView"
+  ];
+  const deleteKeys: string[] = ["layers", "tables", "fullExtent", "hasViews"];
+  const itemKeys: string[] = Object.keys(item);
+  const serviceKeys: string[] = Object.keys(serviceInfo.service);
+  serviceKeys.forEach(k => {
+    if (itemKeys.indexOf(k) === -1) {
+      params[k] = serviceInfo.service[k];
+      if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
+        item[k] = serviceInfo.service[k];
+      } else {
+        item[k] = serviceInfo.service[k];
+      }
+
+      if (deleteKeys.indexOf(k) > -1) {
+        delete item[k];
+        delete params[k];
+      }
+    }
+  });
+
+  return item;
+}
+
+export function addToServiceDefinition(
+  url: string,
+  options: any
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    serviceAdmin.addToServiceDefinition(url, options).then(
+      () => {
+        resolve();
       },
       e => reject(generalHelpers.fail(e))
     );
@@ -277,6 +362,46 @@ export function updateItemURL(
   });
 }
 
+export function updateItem(
+  serviceItemId: string,
+  itemInfo: any,
+  requestOptions: auth.IUserRequestOptions,
+  access?: string | undefined,
+  progressTickCallback?: () => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const updateOptions: any = {
+      item: itemInfo,
+      ...requestOptions
+    };
+
+    portal.updateItem(updateOptions).then(
+      () => {
+        if (access && access !== "private") {
+          // Set access if it is not AGOL default
+          // Set the access manually since the access value in createItem appears to be ignored
+          const accessOptions: portal.ISetAccessOptions = {
+            id: serviceItemId,
+            access: access === "public" ? "public" : "org", // need to use constants rather than string
+            ...requestOptions
+          };
+          portal.setItemAccess(accessOptions).then(
+            () => {
+              progressTickCallback && progressTickCallback();
+              resolve();
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        } else {
+          progressTickCallback && progressTickCallback();
+          resolve();
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
 /**
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
@@ -285,7 +410,7 @@ export function updateItemURL(
  * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
-export function fleshOutFeatureService(
+export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
   requestOptions: auth.IUserRequestOptions
 ): Promise<IItemTemplate> {
@@ -409,4 +534,157 @@ export function extractDependencies(
       resolve(dependencies);
     }
   });
+}
+
+/**
+ * Add additional options to a layers definition
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function getLayerUpdates(args: IPostProcessArgs): any[] {
+  const adminUrl: string = args.itemTemplate.item.url.replace(
+    "rest/services",
+    "rest/admin/services"
+  );
+
+  const updates: IUpdate[] = [];
+  const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
+  updates.push(refresh);
+  Object.keys(args.objects).forEach(id => {
+    const obj: any = Object.assign({}, args.objects[id]);
+    // These properties cannot be set in the update definition when working with portal
+    generalHelpers.deleteProps(obj, ["type", "id", "relationships"]);
+    // handle definition deletes
+    // removes previous editFieldsInfo fields if their names were changed
+    if (obj.hasOwnProperty("deleteFields")) {
+      updates.push(_getUpdate(adminUrl, id, obj, args, "delete"));
+      generalHelpers.deleteProp(obj, "deleteFields");
+      updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
+    }
+    // handle definition updates
+    updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+    updates.push(refresh);
+  });
+  if (!args.itemTemplate.properties.service.isView) {
+    const relUpdates: any = _getRelationshipUpdates({
+      message: "updated layer relationships",
+      objects: args.objects,
+      itemTemplate: args.itemTemplate,
+      requestOptions: args.requestOptions,
+      progressTickCallback: args.progressTickCallback
+    });
+    if (relUpdates.layers.length > 0) {
+      updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
+      updates.push(refresh);
+    }
+  }
+  return updates;
+}
+
+/**
+ * Get refresh, add, update, or delete definition info
+ *
+ * @param url the base admin url for the service
+ * @param id the id of the layer
+ * @param obj parameters for the request
+ * @param args various arguments to help support the request
+ * @param type type of update the request will handle
+ * @return IUpdate that has the request url and arguments
+ * @protected
+ */
+export function _getUpdate(
+  url: string,
+  id: any,
+  obj: any,
+  args: any,
+  type: "delete" | "update" | "add" | "refresh"
+): IUpdate {
+  const ops: any = {
+    delete: {
+      url: url + "/" + id + "/deleteFromDefinition",
+      params: {
+        deleteFromDefinition: {
+          fields:
+            obj && obj.hasOwnProperty("deleteFields") ? obj.deleteFields : []
+        }
+      }
+    },
+    update: {
+      url: url + "/" + id + "/updateDefinition",
+      params: {
+        updateDefinition: obj
+      }
+    },
+    add: {
+      url: url + "/addToDefinition",
+      params: {
+        addToDefinition: obj
+      }
+    },
+    refresh: {
+      url: url + "/refresh",
+      params: {
+        f: "json"
+      }
+    }
+  };
+
+  return {
+    url: ops[type].url,
+    params: ops[type].params,
+    args: args
+  };
+}
+
+/**
+ * Add additional options to a layers definition
+ *
+ * @param update will contain either add, update, or delete from service definition call
+ * @return A promise that will resolve when service definition call has completed
+ * @protected
+ */
+export function getRequest(update: IUpdate): Promise<void> {
+  return new Promise((resolveFn, rejectFn) => {
+    const options: any = {
+      params: update.params,
+      ...update.args.requestOptions
+    };
+    request(update.url, options).then(
+      () => {
+        update.args.progressTickCallback &&
+          update.args.progressTickCallback({
+            processId: update.args.itemTemplate.key,
+            status: update.args.message
+          });
+        resolveFn();
+      },
+      (e: any) => rejectFn(e)
+    );
+  });
+}
+
+/**
+ * Add relationships to all layers in one call to retain fully functioning composite relationships
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @return Any relationships that should be updated for the service
+ * @protected
+ */
+export function _getRelationshipUpdates(args: IPostProcessArgs): any {
+  const rels: any = {
+    layers: []
+  };
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    if (obj.relationships && obj.relationships.length > 0) {
+      rels.layers.push({
+        id: obj.id,
+        relationships: obj.relationships
+      });
+    }
+    generalHelpers.deleteProp(obj, "relationships");
+  });
+  return rels;
 }

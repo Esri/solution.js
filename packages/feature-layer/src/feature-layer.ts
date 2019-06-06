@@ -58,7 +58,7 @@ export function convertItemToTemplate(
     // Update the estimated cost factor to deploy this item
     template.estimatedDeploymentCostFactor = 3;
 
-    common.fleshOutFeatureService(template, requestOptions).then(
+    common.getServiceLayersAndTables(template, requestOptions).then(
       itemTemplate => {
         // Extract dependencies
         common.extractDependencies(itemTemplate, requestOptions).then(
@@ -79,6 +79,19 @@ export function convertItemToTemplate(
 
 //#endregion
 
+//#region Deploy Process ---------------------------------------------------------------------------------------//
+
+/**
+ * Creates an item in a specified folder (except for Group item type).
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param settings Hash mapping property names to replacement values
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve with the id of the created item
+ * @protected
+ */
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
@@ -95,12 +108,15 @@ export function createItemFromTemplate(
         template.itemId +
         ")"
     );
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: destinationUserSession
+    };
 
-    // Replace the templatized symbols in a copy of the template
     let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
+
+    // cache the popup info to be added later
+    const popupInfos: fsUtils.IPopupInfos = fsUtils.cachePopupInfos(
+      newItemTemplate.data
     );
 
     // Create the item, then update its URL with its new id
@@ -108,22 +124,48 @@ export function createItemFromTemplate(
       .createFeatureService(
         newItemTemplate.item,
         newItemTemplate.data,
-        { authentication: destinationUserSession },
-        templateDictionary.folderId
+        newItemTemplate.properties,
+        requestOptions,
+        templateDictionary.folderId,
+        templateDictionary.isPortal
       )
       .then(
         createResponse => {
           progressTickCallback();
 
           if (createResponse.success) {
-            // Update the template dictionary with the new id & url
-            templateDictionary[template.itemId] = {
-              id: createResponse.serviceItemId,
-              url: createResponse.serviceurl
-            };
+            // Detemplatize what we can now that the service has been created
+            newItemTemplate = fsUtils.updateTemplate(
+              newItemTemplate,
+              templateDictionary,
+              createResponse
+            );
 
-            // Add the feature service's layers and tables to it
-            resolve(createResponse.serviceItemId);
+            // Add the layers and tables to the feature service
+            fsUtils
+              .addFeatureServiceLayersAndTables(
+                newItemTemplate,
+                templateDictionary,
+                popupInfos,
+                requestOptions,
+                progressTickCallback
+              )
+              .then(
+                () => {
+                  // Update the item with snippet, description, popupInfo, ect.
+                  common
+                    .updateItem(
+                      createResponse.serviceItemId,
+                      newItemTemplate.item,
+                      requestOptions
+                    )
+                    .then(
+                      () => resolve(createResponse.serviceItemId),
+                      (e: any) => common.fail(e)
+                    );
+                },
+                e => common.fail(e)
+              );
           } else {
             reject(common.fail());
           }
@@ -132,3 +174,5 @@ export function createItemFromTemplate(
       );
   });
 }
+
+//#endregion

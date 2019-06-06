@@ -140,3 +140,56 @@ export interface IDependency {
    */
   name: string;
 }
+
+/**
+ * Storage of update info
+ * @protected
+ */
+export interface IUpdate {
+  /**
+   * url for the update request
+   */
+  url: string;
+
+  /**
+   * object to update the layers definition
+   */
+  params: any;
+
+  /**
+   * arguments for post processing functions
+   */
+  args: IPostProcessArgs;
+}
+
+/**
+ * Storage of arguments for post processing functions
+ * @protected
+ */
+export interface IPostProcessArgs {
+  /**
+   * Status message to show after the layerDefinition is updated.
+   */
+  message: string;
+
+  /**
+   * Key objects to add to the layerDefinition.
+   */
+  objects: any;
+
+  /**
+   * Template of item to be created
+   */
+
+  itemTemplate: any;
+
+  /**
+   * Options for the request
+   */
+  requestOptions: auth.IUserRequestOptions;
+
+  /**
+   * Callback for IProgressUpdate
+   */
+  progressTickCallback: any;
+}

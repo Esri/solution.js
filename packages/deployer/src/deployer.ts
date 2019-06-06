@@ -64,16 +64,22 @@ export function deploySolution(
     };
     const folderCreationDef = portal.createFolder(folderCreationParam);
 
+    // Determine if we are deploying to portal
+    const portalDef = portal.getPortal(undefined, destinationUserSession);
+
     // Await completion of async actions
     Promise.all([
       // TODO IE11 does not support Promise
       solutionItemDataDef,
-      folderCreationDef
+      folderCreationDef,
+      portalDef
     ]).then(
       responses => {
         let itemData = responses[0] as common.ISolutionItemData;
         const folderResponse = responses[1];
         templateDictionary.folderId = folderResponse.folder.id;
+        const portalResponse = responses[2];
+        templateDictionary.isPortal = portalResponse.isPortal;
 
         const totalEstimatedCost =
           estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
@@ -147,7 +153,7 @@ export function deploySolution(
                 .then(
                   response => {
                     updatedItemInfo.id = response.id;
-                    updatedItemInfo.url = updatedItemInfo.url.replace(
+                    updatedItemInfo.itemUrl = updatedItemInfo.itemUrl.replace(
                       itemInfo.id,
                       response.id
                     );

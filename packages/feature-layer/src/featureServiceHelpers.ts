@@ -26,9 +26,11 @@ import {
   INumberValuePair,
   IStringValuePair,
   IItemTemplate,
-  IDependency
+  IDependency,
+  IUpdate
 } from "@esri/solution-common/src/interfaces";
 import * as common from "@esri/solution-common";
+import * as auth from "@esri/arcgis-rest-auth";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -203,6 +205,33 @@ export function _cachePopupInfo(
 }
 
 /**
+ * Creates an item in a specified folder (except for Group item type).
+ *
+ * @param itemTemplate Item to be created; n.b.: this item is modified
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @param createResponse Response from create service
+ * @return An updated instance of the template
+ * @protected
+ */
+export function updateTemplate(
+  itemTemplate: common.IItemTemplate,
+  templateDictionary: any,
+  createResponse: any
+): common.IItemTemplate {
+  // Add the new item to the template dictionary
+  templateDictionary[itemTemplate.itemId] = {
+    id: createResponse.serviceItemId,
+    url: createResponse.serviceurl,
+    name: createResponse.name
+  };
+  // Update the item template now that the new service has been created
+  itemTemplate.itemId = itemTemplate.item.id = createResponse.serviceItemId;
+  itemTemplate = common.replaceInTemplate(itemTemplate, templateDictionary);
+  itemTemplate.item.url = createResponse.serviceurl;
+  return itemTemplate;
+}
+
+/**
  * Create the name mapping object that will allow for all templatized field
  * references to be de-templatized.
  * This also removes the stored sourceFields and newFields arrays from fieldInfos.
@@ -325,6 +354,300 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
     });
   });
   return layersAndTables;
+}
+
+/**
+ * Adds the layers and tables of a feature service to it and restores their relationships.
+ *
+ * @param itemTemplate Feature service
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
+ *            service)
+ * @param popupInfos the cached popup info from the layers
+ * @param requestOptions Options for the request
+ * @param progressTickCallback
+ * @return A promise that will resolve when all layers and tables have been added
+ * @protected
+ */
+export function addFeatureServiceLayersAndTables(
+  itemTemplate: common.IItemTemplate,
+  templateDictionary: any,
+  popupInfos: IPopupInfos,
+  requestOptions: auth.IUserRequestOptions,
+  progressTickCallback?: () => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    // Create a hash of various properties that contain field references
+    const fieldInfos: any = {};
+    const adminLayerInfos: any = {};
+    // Add the service's layers and tables to it
+    const layersAndTables: any[] = getLayersAndTables(itemTemplate);
+    if (layersAndTables.length > 0) {
+      updateFeatureServiceDefinition(
+        itemTemplate.item.url,
+        layersAndTables,
+        templateDictionary,
+        requestOptions,
+        itemTemplate.key,
+        adminLayerInfos,
+        fieldInfos,
+        itemTemplate,
+        progressTickCallback
+      ).then(
+        () => {
+          // Detemplatize field references and update the layer properties
+          updateLayerFieldReferences(
+            itemTemplate,
+            fieldInfos,
+            popupInfos,
+            adminLayerInfos,
+            templateDictionary,
+            requestOptions,
+            progressTickCallback
+          ).then(
+            r => {
+              // Update relationships and layer definitions
+              const updates: IUpdate[] = common.getLayerUpdates({
+                message: "updated layer definition",
+                objects: r.layerInfos.fieldInfos,
+                itemTemplate: r.itemTemplate,
+                requestOptions,
+                progressTickCallback
+              });
+              // Process the updates sequentially
+              updates
+                .reduce((prev, update) => {
+                  return prev.then(() => {
+                    return common.getRequest(update);
+                  });
+                }, Promise.resolve())
+                .then(() => resolve(), (e: any) => reject(common.fail(e)));
+            },
+            e => reject(common.fail(e))
+          );
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve();
+    }
+  });
+}
+
+/**
+ * Updates a feature service with a list of layers and/or tables.
+ *
+ * @param serviceUrl URL of feature service
+ * @param listToAdd List of layers and/or tables to add
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
+ *            service)
+ * @param requestOptions Options for requesting information from AGOL
+ * @param key
+ * @param adminLayerInfos Hash map of a layers adminLayerInfo
+ * @param fieldInfos Hash map of properties that contain field references
+ * @param itemTemplate
+ * @param progressTickCallback
+ * @return A promise that will resolve when the feature service has been updated
+ * @protected
+ */
+export function updateFeatureServiceDefinition(
+  serviceUrl: string,
+  listToAdd: any[],
+  templateDictionary: any,
+  requestOptions: auth.IUserRequestOptions,
+  key: string,
+  adminLayerInfos: any,
+  fieldInfos: any,
+  itemTemplate: common.IItemTemplate,
+  progressTickCallback?: () => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const options: any = {
+      layers: [],
+      tables: [],
+      ...requestOptions
+    };
+    listToAdd.forEach(toAdd => {
+      const item = toAdd.item;
+      const originalId = item.id;
+      fieldInfos = cacheFieldInfos(item, fieldInfos);
+      // when the item is a view we need to grab the supporting fieldInfos
+      if (itemTemplate.properties.service.isView) {
+        adminLayerInfos[originalId] = item.adminLayerInfo;
+        // need to update adminLayerInfo before adding to the service def
+        // bring over the fieldInfos from the source layer
+        updateSettingsFieldInfos(itemTemplate, templateDictionary);
+        // update adminLayerInfo before add to definition with view source fieldInfo settings
+        item.adminLayerInfo = common.replaceInTemplate(
+          item.adminLayerInfo,
+          templateDictionary
+        );
+      }
+      if (templateDictionary.isPortal) {
+        // When deploying to portal we need to adjust the uniquie ID field up front
+        if (item.uniqueIdField && item.uniqueIdField.name) {
+          item.uniqueIdField.name = String(
+            item.uniqueIdField.name
+          ).toLocaleLowerCase();
+        }
+      }
+      if (toAdd.type === "layer") {
+        options.layers.push(item);
+      } else {
+        // Portal will fail if the geometryField is null
+        if (item.adminLayerInfo) {
+          common.deleteProp(item.adminLayerInfo, "geometryField");
+        }
+        options.tables.push(item);
+      }
+    });
+
+    common.addToServiceDefinition(serviceUrl, options).then(
+      () => {
+        progressTickCallback && progressTickCallback();
+        resolve();
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
+/**
+ * Updates a feature service with a list of layers and/or tables.
+ *
+ * @param itemTemplate
+ * @param fieldInfos Hash map of properties that contain field references
+ * @param popupInfos Hash map of a layers popupInfo
+ * @param adminLayerInfos Hash map of a layers adminLayerInfo
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @param requestOptions Options for requesting information from AGOL
+ * @param progressTickCallback
+ * @return A promise that will resolve when the feature service has been updated
+ * @protected
+ */
+export function updateLayerFieldReferences(
+  itemTemplate: common.IItemTemplate,
+  fieldInfos: any,
+  popupInfos: IPopupInfos,
+  adminLayerInfos: any,
+  templateDictionary: any,
+  requestOptions: auth.IUserRequestOptions,
+  progressTickCallback?: () => void
+): Promise<any> {
+  return new Promise((resolveFn, rejectFn) => {
+    // Will need to do some post processing for fields
+    // to handle any potential field name changes when deploying to portal
+    postProcessFields(
+      itemTemplate,
+      fieldInfos,
+      popupInfos,
+      adminLayerInfos,
+      templateDictionary,
+      requestOptions
+    ).then(
+      (layerInfos: any) => {
+        // Update the items text with detemplatized popupInfo
+        updatePopupInfo(itemTemplate, layerInfos.popupInfos);
+        resolveFn({
+          itemTemplate,
+          layerInfos
+        });
+      },
+      e => rejectFn(e)
+    );
+  });
+}
+
+/**
+ * Update the names of fields for each layer or table after it has been
+ * added to the definition
+ *
+ * @param itemTemplate Item to be created
+ * @param fieldInfos Hash map of properties that contain field references
+ * @param popupInfos Hash map of a layers popupInfo
+ * @param adminLayerInfos Hash map of a layers adminLayerInfo
+ * @param templateDictionary
+ * @param requestOptions
+ * @return An object with detemplatized field references
+ * @protected
+ */
+export function postProcessFields(
+  itemTemplate: common.IItemTemplate,
+  fieldInfos: any,
+  popupInfos: any,
+  adminLayerInfos: any,
+  templateDictionary: any,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise((resolveFn, rejectFn) => {
+    const id = itemTemplate.itemId;
+    const settingsKeys = Object.keys(templateDictionary);
+    // concat any layers and tables to process
+    const url: string = itemTemplate.item.url;
+    const serviceData: any = itemTemplate.properties;
+    Promise.all([
+      common.getLayers(url, serviceData["layers"], requestOptions),
+      common.getLayers(url, serviceData["tables"], requestOptions)
+    ]).then(
+      results => {
+        const layers: any[] = results[0] || [];
+        const tables: any[] = results[1] || [];
+        const layersAndTables: any[] = layers.concat(tables);
+        // Set the newFields property for the fieldInfos...this will contain all fields
+        // as they are after being added to the definition.
+        // This allows us to handle any potential field name changes after deploy to portal
+        layersAndTables.forEach((item: any) => {
+          if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
+            fieldInfos[item.id]["newFields"] = item.fields;
+            fieldInfos[item.id]["sourceSchemaChangesAllowed"] =
+              item.sourceSchemaChangesAllowed;
+            if (item.editFieldsInfo) {
+              // more than case change when deployed to protal so keep track of the new names
+              fieldInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
+                JSON.stringify(item.editFieldsInfo)
+              );
+            }
+          }
+        });
+        // Add the fieldInfos to the settings object to be used while detemplatizing
+        settingsKeys.forEach((k: any) => {
+          if (id === templateDictionary[k].id) {
+            templateDictionary[k]["fieldInfos"] = getFieldSettings(fieldInfos);
+          }
+        });
+        // update the fieldInfos object with current field names
+        resolveFn(
+          deTemplatizeFieldInfos(
+            fieldInfos,
+            popupInfos,
+            adminLayerInfos,
+            templateDictionary
+          )
+        );
+      },
+      e => rejectFn(e)
+    );
+  });
+}
+
+/**
+ * Add popup info back to the layer item
+ *
+ * @param itemTemplate
+ * @param popupInfos popup info to be added back to the layer
+ * @protected
+ */
+export function updatePopupInfo(
+  itemTemplate: common.IItemTemplate,
+  popupInfos: any
+): void {
+  ["layers", "tables"].forEach(type => {
+    const _items: any[] = common.getProp(itemTemplate, "item.text." + type);
+    if (_items && Array.isArray(_items)) {
+      _items.forEach((item: any) => {
+        item.popupInfo = common.getProp(popupInfos, type + "." + item.id) || {};
+      });
+    }
+  });
 }
 
 //#endregion
