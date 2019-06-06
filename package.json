@@ -44,7 +44,7 @@
     "prettier": "^1.17.0",
     "resolve": "^1.5.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.66.4",
+    "rollup": "^0.68.0",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-json": "^2.3.0",
