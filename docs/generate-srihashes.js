@@ -8,17 +8,13 @@ const OUTPUT = join(process.cwd(), "docs", "src", `srihashes.json`);
 const version = require(join(process.cwd(), "lerna.json")).version;
 
 const packages = [
-  "auth",
   "common",
-  "feature-service",
-  "feature-service-admin",
-  "geocoder",
-  "groups",
-  "items",
-  "request",
-  "routing",
-  "sharing",
-  "users"
+  "creator",
+  "deployer",
+  "feature-layer",
+  "simple-types",
+  "storymap",
+  "viewer"
 ];
 
 const promises = [];
