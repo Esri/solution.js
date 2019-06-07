@@ -50,8 +50,7 @@ export function createFeatureService(
   serviceInfo: any,
   requestOptions: auth.IUserRequestOptions,
   folderId: string | undefined,
-  isPortal: boolean,
-  newItemID: string
+  isPortal: boolean
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
@@ -61,7 +60,6 @@ export function createFeatureService(
       serviceInfo,
       folderId,
       isPortal,
-      newItemID,
       requestOptions
     );
 
@@ -80,29 +78,16 @@ export function _getCreateServiceOptions(
   serviceInfo: any,
   folderId: any,
   isPortal: boolean,
-  newItemID: string,
   requestOptions: auth.IUserRequestOptions
 ): any {
   const params: IParams = {
     preserveLayerIds: true
   };
 
-  // Retain the existing title but swap with name if it's missing
-  itemInfo.title = itemInfo.title || itemInfo.name;
-
-  // Need to set the service name: name + "_" + newItemId
-  const baseName: string = itemInfo.name || itemInfo.title;
-  // If the name already contains a GUID replace it with the newItemID
-  const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-  let name: string = baseName + "_" + newItemID;
-  if (regEx.exec(baseName)) {
-    name = baseName.replace(regEx, newItemID);
-  }
-  itemInfo.name = name;
-
   const _item: serviceAdmin.ICreateServiceParams = {
     ...itemInfo,
-    data: dataInfo
+    data: dataInfo,
+    name: itemInfo.name + "_" + generalHelpers.getUTCTimestamp()
   };
 
   const createOptions = {

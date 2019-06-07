@@ -119,95 +119,55 @@ export function createItemFromTemplate(
       newItemTemplate.data
     );
 
+    // Create the item, then update its URL with its new id
     common
-      .createItemWithData(
+      .createFeatureService(
         newItemTemplate.item,
         newItemTemplate.data,
-        { authentication: destinationUserSession },
-        templateDictionary.folderId
+        newItemTemplate.properties,
+        requestOptions,
+        templateDictionary.folderId,
+        templateDictionary.isPortal
       )
       .then(
-        createItemResponse => {
+        createResponse => {
           progressTickCallback();
 
-          if (createItemResponse.success) {
-            // Add the new item to the settings
-            templateDictionary[template.itemId] = {
-              id: createItemResponse.id
-            };
-
-            // Copy resources, metadata, thumbnail
-            const resourcesDef = common.copyFilesFromStorageItem(
-              { authentication: storageUserSession },
-              resourceFilePaths,
-              createItemResponse.id,
-              { authentication: destinationUserSession }
+          if (createResponse.success) {
+            // Detemplatize what we can now that the service has been created
+            newItemTemplate = fsUtils.updateTemplate(
+              newItemTemplate,
+              templateDictionary,
+              createResponse
             );
 
-            // The item's URL includes its id, so it needs to be updated
-            const updateUrlDef = common.updateItemURL(
-              createItemResponse.id,
-              common.replaceInTemplate(
-                newItemTemplate.item.url,
-                templateDictionary
-              ),
-              { authentication: destinationUserSession }
-            );
-
-            // Create the item, then update its URL with its new id
-            common
-              .createFeatureService(
-                newItemTemplate.item,
-                newItemTemplate.data,
-                newItemTemplate.properties,
+            // Add the layers and tables to the feature service
+            fsUtils
+              .addFeatureServiceLayersAndTables(
+                newItemTemplate,
+                templateDictionary,
+                popupInfos,
                 requestOptions,
-                templateDictionary.folderId,
-                templateDictionary.isPortal,
-                createItemResponse.id
+                progressTickCallback
               )
               .then(
-                (createResponse: any) => {
-                  progressTickCallback();
-
-                  if (createResponse.success) {
-                    // Detemplatize what we can now that the service has been created
-                    newItemTemplate = fsUtils.updateTemplate(
-                      newItemTemplate,
-                      templateDictionary,
-                      createResponse
+                () => {
+                  // Update the item with snippet, description, popupInfo, ect.
+                  common
+                    .updateItem(
+                      createResponse.serviceItemId,
+                      newItemTemplate.item,
+                      requestOptions
+                    )
+                    .then(
+                      () => resolve(createResponse.serviceItemId),
+                      (e: any) => common.fail(e)
                     );
-
-                    // Add the layers and tables to the feature service
-                    fsUtils
-                      .addFeatureServiceLayersAndTables(
-                        newItemTemplate,
-                        templateDictionary,
-                        popupInfos,
-                        requestOptions,
-                        progressTickCallback
-                      )
-                      .then(
-                        () => {
-                          // Update the item with snippet, description, popupInfo, ect.
-                          common
-                            .updateItem(
-                              createResponse.serviceItemId,
-                              newItemTemplate.item,
-                              requestOptions
-                            )
-                            .then(
-                              () => resolve(createResponse.serviceItemId),
-                              (e: any) => common.fail(e)
-                            );
-                        },
-                        e => common.fail(e)
-                      );
-                  } else {
-                    reject(common.fail());
-                  }
                 },
-                e => reject(common.fail(e))
+                e => common.fail(e)
               );
+          } else {
+            reject(common.fail());
           }
         },
         e => reject(common.fail(e))
