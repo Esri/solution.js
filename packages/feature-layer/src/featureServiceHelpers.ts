@@ -761,8 +761,11 @@ export function _templatizeLayerFieldReferences(
     _templatizePopupInfo(dataItem, layer, path, itemID, fieldNames);
   }
 
+  // TODO confirm these are automatically handled when deploying to portal
+  // I believe thats why they were removed
+  // _templatizeKeyProperties(layer, path);
+
   // Update the layer
-  _templatizeKeyProperties(layer, path);
   _templatizeAdminLayerInfoFields(layer, dependencies);
   _templatizeRelationshipFields(layer, itemID);
   _templatizeDefinitionEditor(layer, path, fieldNames);
