@@ -114,7 +114,7 @@
     "prerelease:prepare": "git fetch --all && npm run clean && lerna bootstrap && npm test",
     "release:prepare": "lerna publish --skip-git --skip-npm --yes && node ./support/changelog.js",
     "release:review": "git --no-pager diff --word-diff",
-    "release:publish": "./support/publish.sh",
+    "release:publish": "bash ./support/publish.sh",
     "c": "git-cz",
     "dev": "support/dev.sh"
   },
