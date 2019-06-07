@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-feature-layer",
   "version": "1.0.0",
-  "description": "Manages the creation and deployment of feature layers and services.",
+  "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",

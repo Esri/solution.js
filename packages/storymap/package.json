@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-storymap",
   "version": "1.0.0",
-  "description": "Manages the creation and deployment of Story Map item types.",
+  "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",

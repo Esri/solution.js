@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-creator",
   "version": "1.0.0",
-  "description": "Manages the creation of a Solution item.",
+  "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",

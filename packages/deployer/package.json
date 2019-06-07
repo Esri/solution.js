@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-deployer",
   "version": "1.0.0",
-  "description": "Manages the deployment of a Solution.",
+  "description": "Manages the deployment of a Solution for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",
