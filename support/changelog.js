@@ -14,7 +14,7 @@ const _ = require("lodash");
  * v*.*.* and update the contents of CHANGELOG.md to prepare for a new release.
  */
 
-const repo = "https://github.com/Esri/arcgis-rest-js";
+const repo = "https://github.com/Esri/solution.js";
 
 function getTags() {
   return new Promise((resolve, reject) => {

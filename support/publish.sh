@@ -26,22 +26,22 @@ git commit -am "v$VERSION" --no-verify --amend
 # tag this version
 git tag v$VERSION
 
-# push everything up to this point to master
-git push https://github.com/Esri/arcgis-rest-js.git master
+# push everything up to this point to develop
+git push https://github.com/Esri/solution.js.git develop
 
 # push the new tag, not the old tags
-git push https://github.com/Esri/arcgis-rest-js.git v$VERSION
+git push https://github.com/Esri/solution.js.git v$VERSION
 
 
 # create a ZIP archive of the dist files
-TEMP_FOLDER=arcgis-rest-js-v$VERSION;
+TEMP_FOLDER=solution.js-v$VERSION;
 mkdir $TEMP_FOLDER
 cp packages/*/dist/umd/* $TEMP_FOLDER
 zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
 
 # Run gh-release to create a new release with our changelog changes and ZIP archive
-gh-release --t v$VERSION --repo arcgis-rest-js --owner Esri -a $TEMP_FOLDER.zip
+gh-release --t v$VERSION --repo solution.js --owner Esri -a $TEMP_FOLDER.zip
 
 # Delete the ZIP archive
 rm $TEMP_FOLDER.zip

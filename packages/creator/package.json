@@ -11,24 +11,53 @@
   "files": [
     "dist/**"
   ],
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.3",
+    "@esri/arcgis-rest-feature-layer": "^2.0.3",
+    "@esri/arcgis-rest-geocoding": "^2.0.3",
+    "@esri/arcgis-rest-portal": "^2.0.3",
+    "@esri/arcgis-rest-request": "^2.0.3",
+    "@esri/arcgis-rest-routing": "^2.0.3",
+    "@esri/arcgis-rest-service-admin": "^2.0.3",
+    "@esri/arcgis-rest-types": "^2.0.3",
+    "@esri/solution-common": "^0.0.1",
+    "@esri/solution-feature-layer": "^0.0.1",
+    "@esri/solution-simple-types": "^0.0.1",
+    "@esri/solution-storymap": "^0.0.1"
+  },
+  "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.3",
+    "@esri/arcgis-rest-feature-layer": "^2.0.3",
+    "@esri/arcgis-rest-geocoding": "^2.0.3",
+    "@esri/arcgis-rest-portal": "^2.0.3",
+    "@esri/arcgis-rest-request": "^2.0.3",
+    "@esri/arcgis-rest-routing": "^2.0.3",
+    "@esri/arcgis-rest-service-admin": "^2.0.3",
+    "@esri/arcgis-rest-types": "^2.0.3",
+    "@esri/solution-common": "^0.0.1",
+    "@esri/solution-feature-layer": "^0.0.1",
+    "@esri/solution-simple-types": "^0.0.1",
+    "@esri/solution-storymap": "^0.0.1",
+    "rollup": "^1.6.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-filesize": "^5.0.1",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript2": "^0.20.1",
+    "rollup-plugin-uglify": "^6.0.2"
+  },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^1.17.1",
-    "@esri/arcgis-rest-common-types": "^1.17.1",
-    "@esri/arcgis-rest-feature-service-admin": "^1.17.1",
-    "@esri/arcgis-rest-groups": "^1.17.1",
-    "@esri/arcgis-rest-items": "^1.17.1",
-    "@esri/arcgis-rest-request": "^1.17.1",
-    "@esri/arcgis-rest-sharing": "^1.17.1",
     "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },
   "scripts": {
     "prepare": "npm run build",
     "build": "npm run build:node && npm run build:umd && npm run build:esm",
-    "build:esm": "tsc -p ./tsconfig.json --module es2015 --outDir ./dist/esm --declaration",
+    "build:esm": "tsc -p ./tsconfig.json --module esnext --outDir ./dist/esm --declaration",
     "build:umd": "rollup -c ../../umd-base-profile.js && rollup -c ../../umd-production-profile.js",
     "build:node": "tsc -p ./tsconfig.json --module commonjs --outDir ./dist/node",
-    "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
+    "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ../../umd-base-profile.js",
     "dev:node": "tsc -w --module commonjs --outDir ./dist/node"
   },
@@ -51,6 +80,5 @@
     "arcgis",
     "esri",
     "ES6"
-  ],
-  "devDependencies": {}
+  ]
 }
