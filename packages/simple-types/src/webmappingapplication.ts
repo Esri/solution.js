@@ -77,6 +77,7 @@ export function convertItemToTemplate(
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,
+  newItemTemplate: common.IItemTemplate,
   templateDictionary: any,
   destinationUserSession: auth.UserSession
 ): Promise<void> {
@@ -97,7 +98,7 @@ export function createItemFromTemplate(
                 templateDictionary
               ) +
               "/sharing/rest/content/items/" +
-              template.itemId +
+              newItemTemplate.itemId +
               "/package"
           },
           {},

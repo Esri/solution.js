@@ -205,6 +205,7 @@ export function createItemFromTemplate(
 
           if (createResponse.success) {
             // Add the new item to the settings
+            newItemTemplate.itemId = createResponse.id;
             templateDictionary[template.itemId] = {
               id: createResponse.id
             };
@@ -232,6 +233,7 @@ export function createItemFromTemplate(
             if (template.type.toLowerCase() === "web mapping application") {
               customProcDef = webmappingapplication.createItemFromTemplate(
                 template,
+                newItemTemplate,
                 templateDictionary,
                 destinationUserSession
               );
