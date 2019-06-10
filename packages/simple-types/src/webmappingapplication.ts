@@ -83,7 +83,13 @@ export function createItemFromTemplate(
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
-    if (template.item.typeKeywords.indexOf("Web AppBuilder") >= 0) {
+    if (
+      common.hasAnyKeyword(template.item.typeKeywords, [
+        "WAB2D",
+        "WAB3D",
+        "Web AppBuilder"
+      ])
+    ) {
       console.log("createItemFromTemplate for a Code Attachment");
       common
         .createItemWithData(
@@ -122,7 +128,7 @@ export function createItemFromTemplate(
  * @return A promise that will resolve with list of dependent ids
  * @protected
  */
-function extractDependencies(model: any): string[] {
+export function extractDependencies(model: any): string[] {
   let processor = getGenericWebAppDependencies;
 
   /*
@@ -141,7 +147,7 @@ function extractDependencies(model: any): string[] {
 /**
  * Generic Web App Dependencies
  */
-function getGenericWebAppDependencies(model: any): string[] {
+export function getGenericWebAppDependencies(model: any): string[] {
   const props = ["data.values.webmap", "data.values.group"];
   return common.getProps(model, props);
 }
