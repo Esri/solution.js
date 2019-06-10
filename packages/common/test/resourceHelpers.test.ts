@@ -22,7 +22,7 @@ import * as resourceHelpers from "../src/resourceHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `resoureHelpers`: common functions involving the management of item and group resources", () => {
+describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   describe("generateItemFilePaths", () => {
     it("without resources", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
