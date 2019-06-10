@@ -47,7 +47,7 @@ The API contains two primary modules:
 
 #### Additional information
 
-The API documentation is published at https://esri.github.io/arcgis-clone-js/ ([source code](./docs/src)).
+The API documentation is published at https://esri.github.io/solution.js/ ([source code](./docs/src)).
 
 Background information about the library is available in [background info](./docs/Background.md)).
 

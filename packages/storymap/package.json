@@ -1,0 +1,99 @@
+{
+  "name": "@esri/solution-storymap",
+  "version": "0.1.1",
+  "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
+  "main": "dist/node/index.js",
+  "unpkg": "dist/umd/common.umd.js",
+  "module": "dist/esm/index.js",
+  "js:next": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "license": "Apache-2.0",
+  "files": [
+    "dist/**"
+  ],
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.3",
+    "@esri/arcgis-rest-feature-layer": "^2.0.3",
+    "@esri/arcgis-rest-geocoding": "^2.0.3",
+    "@esri/arcgis-rest-portal": "^2.0.3",
+    "@esri/arcgis-rest-request": "^2.0.3",
+    "@esri/arcgis-rest-routing": "^2.0.3",
+    "@esri/arcgis-rest-service-admin": "^2.0.3",
+    "@esri/arcgis-rest-types": "^2.0.3",
+    "@esri/solution-common": "^0.1.0",
+    "@esri/solution-simple-types": "^0.1.0"
+  },
+  "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.3",
+    "@esri/arcgis-rest-feature-layer": "^2.0.3",
+    "@esri/arcgis-rest-geocoding": "^2.0.3",
+    "@esri/arcgis-rest-portal": "^2.0.3",
+    "@esri/arcgis-rest-request": "^2.0.3",
+    "@esri/arcgis-rest-routing": "^2.0.3",
+    "@esri/arcgis-rest-service-admin": "^2.0.3",
+    "@esri/arcgis-rest-types": "^2.0.3",
+    "@esri/solution-common": "^0.1.1",
+    "@esri/solution-simple-types": "^0.1.1",
+    "rollup": "^1.6.0",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-filesize": "^5.0.1",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-terser": "^4.0.4",
+    "rollup-plugin-typescript2": "^0.20.1",
+    "rollup-plugin-uglify": "^6.0.2"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
+  },
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run build:node && npm run build:umd && npm run build:esm",
+    "build:esm": "tsc -p ./tsconfig.json --module esnext --outDir ./dist/esm --declaration",
+    "build:umd": "rollup -c ../../umd-base-profile.js && rollup -c ../../umd-production-profile.js",
+    "build:node": "tsc -p ./tsconfig.json --module commonjs --outDir ./dist/node",
+    "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
+    "dev:umd": "rollup -w -c ../../umd-base-profile.js",
+    "dev:node": "tsc -w --module commonjs --outDir ./dist/node"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Esri/solution.js.git"
+  },
+  "contributors": [
+    {
+      "name": "Mike Tschudi",
+      "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
+    },
+    {
+      "name": "John Hauck",
+      "email": "jhauck@esri.com"
+    },
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Esri/solution.js/issues"
+  },
+  "homepage": "https://github.com/Esri/solution.js#readme",
+  "keywords": [
+    "typescript",
+    "promise",
+    "fetch",
+    "arcgis",
+    "esri",
+    "ES6"
+  ]
+}

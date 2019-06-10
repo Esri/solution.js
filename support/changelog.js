@@ -14,7 +14,7 @@ const _ = require("lodash");
  * v*.*.* and update the contents of CHANGELOG.md to prepare for a new release.
  */
 
-const repo = "https://github.com/Esri/arcgis-rest-js";
+const repo = "https://github.com/Esri/solution.js";
 
 function getTags() {
   return new Promise((resolve, reject) => {
@@ -67,21 +67,21 @@ function getCommitData(from, to) {
       author: { name: authorName, email: authorEmail }
     };
 
-    const cmd = `git log ${from}..${to} --pretty=format:'${JSON.stringify(
-      defaultFormat
-    )},'`;
+    const outputFormat = JSON.stringify(defaultFormat).replace(/\"/g, "\\\"");
+    const cmd = `git log ${from}..${to} --pretty=format:${outputFormat},`;
 
     exec(cmd, (err, stdout, stderr) => {
       if (err) return reject(err);
       if (stderr) return reject(stderr);
-      /*
-       order commits from most recent to least recent
 
-       graveyard
-       .replace(/"returns"/g, "returns")
-       .replace(/\\/g, "\\\\")
-       */
-      const commits = JSON.parse("[" + stdout.slice(0, -1)/*.replace()*/ + "]").reverse();
+      // Commits cannot have a double quote or backslash
+      stdout = stdout
+        .replace(/Revert "Local tests pass; TravisCI fails; attempt remedy"/g, 'Revert Local tests pass; TravisCI fails; attempt remedy')
+        .replace(/Restored test coverage for src\\ & src\\utils\\/g, 'Restored test coverage for src & src utils');
+
+      // Remove comma from final entry, make the entries a list, and parse
+      // Order commits from most recent to least recent
+      const commits = JSON.parse("[" + stdout.slice(0, -1) + "]").reverse();
       const today = new Date();
       resolve({
         previousVersion: /v\d\.\d\.\d/.test(from)

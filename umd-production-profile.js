@@ -1,5 +1,4 @@
 import config from './umd-base-profile.js';
-// import { uglify } from "rollup-plugin-uglify";
 import { terser } from "rollup-plugin-terser";
 import filesize from "rollup-plugin-filesize";
 
