@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.0.1",
-  "description": "to do.",
+  "version": "0.1.1",
+  "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
     "@types/fetch-mock": "^6.0.4",
@@ -44,7 +44,7 @@
     "prettier": "^1.17.0",
     "resolve": "^1.5.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.66.4",
+    "rollup": "^0.68.0",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-filesize": "^5.0.1",
     "rollup-plugin-json": "^2.3.0",
@@ -67,6 +67,7 @@
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",
+    "js-yaml": "^3.13.1",
     "tslib": "^1.8.1"
   },
   "lint-staged": {
@@ -113,9 +114,12 @@
     "prerelease:prepare": "git fetch --all && npm run clean && lerna bootstrap && npm test",
     "release:prepare": "lerna publish --skip-git --skip-npm --yes && node ./support/changelog.js",
     "release:review": "git --no-pager diff --word-diff",
-    "release:publish": "./support/publish.sh",
+    "release:publish": "bash ./support/publish.sh",
     "c": "git-cz",
     "dev": "support/dev.sh"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -139,8 +143,7 @@
       "email": "dbouwman@esri.com"
     },
     {
-      "name": "John Gravois",
-      "email": "john@esri.com"
+      "name": "John Gravois"
     }
   ],
   "license": "Apache-2.0",

@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.0.1",
-  "description": "to do",
+  "version": "0.1.1",
+  "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
   "module": "dist/esm/index.js",
@@ -60,7 +60,27 @@
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },
-  "contributors": [],
+  "contributors": [
+    {
+      "name": "Mike Tschudi",
+      "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
+    },
+    {
+      "name": "John Hauck",
+      "email": "jhauck@esri.com"
+    },
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/Esri/solution.js/issues"
   },

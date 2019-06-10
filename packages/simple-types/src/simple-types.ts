@@ -158,6 +158,7 @@ export function convertItemToTemplate(
       // Get the group's items--its dependencies
       common.getGroupContents(itemInfo.id, requestOptions).then(
         groupContents => {
+          itemTemplate.type = "Group";
           itemTemplate.dependencies = groupContents;
           resolve(itemTemplate);
         },
