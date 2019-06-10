@@ -110,7 +110,6 @@ export function convertItemToTemplate(
         case "web mapping application":
           dataPromise = getItemData(itemTemplate.itemId, userSession);
           break;
-        case "code attachment":
         case "form":
           break;
       }
