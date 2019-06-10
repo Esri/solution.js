@@ -153,7 +153,7 @@ export function deploySolution(
                 .then(
                   response => {
                     updatedItemInfo.id = response.id;
-                    updatedItemInfo.itemUrl = updatedItemInfo.itemUrl.replace(
+                    updatedItemInfo.url = updatedItemInfo.url.replace(
                       itemInfo.id,
                       response.id
                     );

@@ -34,7 +34,6 @@ import * as solutionStoryMap from "@esri/solution-storymap";
  */
 const moduleMap: common.IItemTypeModuleMap = {
   // //??? Temporary assignments
-  "code attachment": solutionSimpleTypes,
   "project package": solutionSimpleTypes,
   "workforce project": solutionSimpleTypes,
   // //???

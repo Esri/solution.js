@@ -14,6 +14,7 @@
  | limitations under the License.
  */
 
+import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -72,6 +73,43 @@ export function convertItemToTemplate(
   }
 
   return itemTemplate;
+}
+
+export function createItemFromTemplate(
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  destinationUserSession: auth.UserSession
+): Promise<void> {
+  return new Promise<void>(resolve => {
+    // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
+    if (template.item.typeKeywords.indexOf("Web AppBuilder") >= 0) {
+      console.log("createItemFromTemplate for a Code Attachment");
+      common
+        .createItemWithData(
+          {
+            tags: template.item.tags,
+            title: template.item.title,
+            type: "Code Attachment",
+            typeKeywords: ["Code", "Javascript", "Web Mapping Application"],
+            url:
+              common.replaceInTemplate(
+                common.PLACEHOLDER_SERVER_NAME,
+                templateDictionary
+              ) +
+              "/sharing/rest/content/items/" +
+              template.itemId +
+              "/package"
+          },
+          {},
+          { authentication: destinationUserSession },
+          templateDictionary.folderId
+        )
+        .then(() => resolve(), () => resolve());
+    } else {
+      // Otherwise, nothing extra needed
+      resolve();
+    }
+  });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

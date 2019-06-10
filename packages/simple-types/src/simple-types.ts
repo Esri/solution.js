@@ -227,7 +227,19 @@ export function createItemFromTemplate(
               { authentication: destinationUserSession }
             );
 
-            Promise.all([resourcesDef, updateUrlDef]).then(
+            // Check for extra processing for web mapping application
+            let customProcDef: Promise<void>;
+            if (template.type.toLowerCase() === "web mapping application") {
+              customProcDef = webmappingapplication.createItemFromTemplate(
+                template,
+                templateDictionary,
+                destinationUserSession
+              );
+            } else {
+              customProcDef = Promise.resolve();
+            }
+
+            Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
               () => {
                 progressTickCallback();
 
