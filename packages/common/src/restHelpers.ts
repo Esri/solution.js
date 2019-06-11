@@ -84,10 +84,12 @@ export function _getCreateServiceOptions(
     preserveLayerIds: true
   };
 
+  const name: string = itemInfo.name || itemInfo.title;
+
   const _item: serviceAdmin.ICreateServiceParams = {
     ...itemInfo,
     data: dataInfo,
-    name: itemInfo.name + "_" + generalHelpers.getUTCTimestamp()
+    name: name + "_" + generalHelpers.getUTCTimestamp()
   };
 
   const createOptions = {

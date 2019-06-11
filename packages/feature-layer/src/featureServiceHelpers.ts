@@ -225,10 +225,8 @@ export function updateTemplate(
     name: createResponse.name
   };
   // Update the item template now that the new service has been created
-  itemTemplate.itemId = itemTemplate.item.id = createResponse.serviceItemId;
-  itemTemplate = common.replaceInTemplate(itemTemplate, templateDictionary);
-  itemTemplate.item.url = createResponse.serviceurl;
-  return itemTemplate;
+  itemTemplate.itemId = createResponse.serviceItemId;
+  return common.replaceInTemplate(itemTemplate, templateDictionary);
 }
 
 /**
@@ -606,6 +604,18 @@ export function postProcessFields(
                 JSON.stringify(item.editFieldsInfo)
               );
             }
+
+            // fields that are marked as visible false on a view are all set to
+            // visible true when added with the layer definition
+            // update the field visibility to match that of the source
+            if (item.isView) {
+              const fieldUpdates: any[] = _getFieldVisibilityUpdates(
+                fieldInfos[item.id]
+              );
+              if (fieldUpdates.length > 0) {
+                fieldInfos[item.id].fields = fieldUpdates;
+              }
+            }
           }
         });
         // Add the fieldInfos to the settings object to be used while detemplatizing
@@ -627,6 +637,37 @@ export function postProcessFields(
       e => rejectFn(e)
     );
   });
+}
+
+/**
+ * Update a views field visibility to match that of the source
+ *  Fields that are marked as visible false on a view are all set to
+ *  visible true when added with the layer definition
+ *
+ * @param fieldInfo current layers or tables fieldInfo
+ * @return Array of fields that should not be visible in the view
+ * @protected
+ */
+export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
+  const sourceFields: any = fieldInfo["sourceFields"].reduce(
+    (hash: any, f: any) => {
+      hash[String(f.name).toLocaleLowerCase()] = f.visible;
+      return hash;
+    },
+    {}
+  );
+  const visibilityUpdates: any[] = [];
+  fieldInfo["newFields"].forEach((f: any) => {
+    const name: string = String(f.name).toLocaleLowerCase();
+    // only add fields that are not visible
+    if (sourceFields.hasOwnProperty(name) && !sourceFields[name]) {
+      visibilityUpdates.push({
+        name: name,
+        visible: sourceFields[name]
+      });
+    }
+  });
+  return visibilityUpdates;
 }
 
 /**
@@ -762,7 +803,6 @@ export function _templatizeLayerFieldReferences(
   }
 
   // Update the layer
-  _templatizeKeyProperties(layer, path);
   _templatizeAdminLayerInfoFields(layer, dependencies);
   _templatizeRelationshipFields(layer, itemID);
   _templatizeDefinitionEditor(layer, path, fieldNames);

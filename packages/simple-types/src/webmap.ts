@@ -91,7 +91,7 @@ function templatizeWebmapLayerIdsAndUrls(layerList = [] as any[]): void {
     .forEach((layer: any) => {
       const layerId = layer.url.substr((layer.url as string).lastIndexOf("/"));
       layer.url =
-        common.templatizeTerm(layer.url, layer.itemId, ".url") + layerId;
+        common.templatizeTerm(layer.itemId, layer.itemId, ".url") + layerId;
       layer.itemId = common.templatizeTerm(layer.itemId, layer.itemId, ".id");
     });
 }
