@@ -110,7 +110,6 @@ export function convertItemToTemplate(
         case "web mapping application":
           dataPromise = getItemData(itemTemplate.itemId, userSession);
           break;
-        case "code attachment":
         case "form":
           break;
       }
@@ -206,6 +205,7 @@ export function createItemFromTemplate(
 
           if (createResponse.success) {
             // Add the new item to the settings
+            newItemTemplate.itemId = createResponse.id;
             templateDictionary[template.itemId] = {
               id: createResponse.id
             };
@@ -228,7 +228,20 @@ export function createItemFromTemplate(
               { authentication: destinationUserSession }
             );
 
-            Promise.all([resourcesDef, updateUrlDef]).then(
+            // Check for extra processing for web mapping application
+            let customProcDef: Promise<void>;
+            if (template.type.toLowerCase() === "web mapping application") {
+              customProcDef = webmappingapplication.createItemFromTemplate(
+                template,
+                newItemTemplate,
+                templateDictionary,
+                destinationUserSession
+              );
+            } else {
+              customProcDef = Promise.resolve();
+            }
+
+            Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
               () => {
                 progressTickCallback();
 

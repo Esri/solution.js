@@ -34,7 +34,6 @@ const moduleMap: common.IItemTypeModuleMap = {
   dashboard: solutionSimpleTypes,
 
   // //??? Temporary assignments
-  "code attachment": solutionSimpleTypes,
   "project package": solutionSimpleTypes,
   "workforce project": solutionSimpleTypes,
   // //???
@@ -91,7 +90,7 @@ export function createSolutionTemplate(
     });
     Promise.all(getItemsPromise).then(
       () => {
-        // Remove remant placeholder items from the templates list
+        // Remove remnant placeholder items from the templates list
         const origLen = solutionTemplates.length;
         solutionTemplates = solutionTemplates.filter(
           template => template.type // `type` needs to be defined
@@ -177,13 +176,6 @@ export function createItemTemplate(
                   itemInfo.type +
                   " for " +
                   itemInfo.id
-              );
-              console.log(
-                "removed placeholder template " +
-                  itemId +
-                  " [" +
-                  existingTemplates.length +
-                  "]"
               );
               resolve(true);
             } else {
