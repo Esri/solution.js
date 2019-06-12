@@ -50,7 +50,7 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
+import * as restHelpers from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -443,29 +443,6 @@ export function generateResourceFilenameFromStorage(
   return { type, folder, filename };
 }
 
-export function getBlob(
-  url: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    // Get the blob from the URL
-    const blobRequestOptions = {
-      rawResponse: true,
-      ...requestOptions
-    } as request.IRequestOptions;
-    request.request(url, blobRequestOptions).then(
-      content => {
-        // Add it to the destination item
-        content.blob().then(
-          resolve,
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get response
-    );
-  });
-}
-
 export function addResourceFromBlob(
   blob: any,
   itemId: string,
@@ -562,7 +539,7 @@ export function copyResource(
   }
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    getBlob(source.url, source.requestOptions).then(
+    restHelpers.getBlob(source.url, source.requestOptions).then(
       async blob => {
         if (blob.type === "text/plain") {
           try {
@@ -604,7 +581,7 @@ export function copyMetadata(
   }
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    getBlob(source.url, source.requestOptions).then(
+    restHelpers.getBlob(source.url, source.requestOptions).then(
       blob => {
         addMetadataFromBlob(
           blob,

@@ -30,7 +30,7 @@ import {
   IUpdate,
   IPostProcessArgs
 } from "./interfaces";
-import { IParams, request } from "@esri/arcgis-rest-request";
+import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -253,6 +253,66 @@ export function createItemWithData(
       e => reject(generalHelpers.fail(e))
     );
   });
+}
+
+export function getBlob(
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the blob from the URL
+    const blobRequestOptions = {
+      ...requestOptions,
+      rawResponse: true
+    } as IRequestOptions;
+    request(url, blobRequestOptions).then(
+      content => {
+        // Extract the blob from the response
+        content.blob().then(
+          resolve,
+          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get response
+    );
+  });
+}
+
+export function getItemBlob(
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const url = `${portal.getPortalUrl(
+    requestOptions
+  )}/content/items/${itemId}/data`;
+  return getBlob(url, requestOptions);
+}
+
+export function getItemData(
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    ...requestOptions
+  };
+  return portal.getItemData(itemId, itemDataParam);
+}
+
+export function getItemRelatedItems(
+  itemId: string,
+  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
+  direction: "forward" | "reverse",
+  requestOptions: auth.IUserRequestOptions
+): Promise<portal.IGetRelatedItemsResponse> {
+  // Get item related items
+  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
+    id: itemId,
+    relationshipType,
+    direction,
+    ...requestOptions
+  };
+  return portal.getRelatedItems(itemRelatedItemsParam);
 }
 
 /**

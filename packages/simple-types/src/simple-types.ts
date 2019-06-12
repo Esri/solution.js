@@ -111,14 +111,15 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = getItemData(itemTemplate.itemId, userSession);
+          dataPromise = common.getItemData(itemTemplate.itemId, requestOptions);
           break;
         case "form":
-          relatedPromise = getItemRelatedItems(
+          dataPromise = common.getItemBlob(itemTemplate.itemId, requestOptions);
+          relatedPromise = common.getItemRelatedItems(
             itemTemplate.itemId,
             "Survey2Service",
             "forward",
-            userSession
+            requestOptions
           );
           break;
       }
@@ -152,6 +153,9 @@ export function convertItemToTemplate(
                 relatedItem => relatedItem.id
               )
             );
+
+            // Store the form's data in the solution
+
             form.convertItemToTemplate(itemTemplate);
             break;
           case "web map":
@@ -281,33 +285,4 @@ export function createItemFromTemplate(
         e => reject(common.fail(e))
       );
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-export function getItemData(
-  itemId: string,
-  userSession: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    authentication: userSession
-  };
-  return portal.getItemData(itemId, itemDataParam);
-}
-
-export function getItemRelatedItems(
-  itemId: string,
-  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
-  direction: "forward" | "reverse",
-  userSession: auth.UserSession
-): Promise<portal.IGetRelatedItemsResponse> {
-  // Get item related items
-  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
-    id: itemId,
-    relationshipType,
-    direction,
-    authentication: userSession
-  };
-  return portal.getRelatedItems(itemRelatedItemsParam);
 }
