@@ -21,10 +21,10 @@ module.exports = function(config) {
       coverageOptions: {
         threshold: {
           global: {
-            statements: 100,
-            branches: 100,
-            functions: 100,
-            lines: 100,
+            statements: 5,
+            branches: 5,
+            functions: 5,
+            lines: 5,
             excludes: [
               'packages/*/test/**/*.ts'
             ]
@@ -68,8 +68,14 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    // reporters: ["spec", "karma-typescript", "coverage"],
-    reporters: ["spec", "coverage"],
+    reporters: ["spec", "karma-typescript", "coverage"],
+    coverageReporter: {
+      // specify a common output directory
+      dir: 'coverage',
+      reporters: [
+        { type: 'lcov', subdir: 'lcov' }
+      ]
+    },
 
     // web server port
     port: 9876,

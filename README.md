@@ -6,7 +6,7 @@
 [travis-url]: https://travis-ci.org/Esri/solution.js
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/solution.js
-[license-img]: https://img.shields.io/badge/license-Apache%202.0-green.svg
+[license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
 ## Solution.js
