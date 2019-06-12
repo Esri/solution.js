@@ -101,6 +101,9 @@ export function convertItemToTemplate(
 
       // Perform type-specific handling
       let dataPromise = Promise.resolve({});
+      let relatedPromise = Promise.resolve(
+        {} as portal.IGetRelatedItemsResponse
+      );
       switch (itemInfo.type.toLowerCase()) {
         case "dashboard":
         case "feature service":
@@ -111,6 +114,12 @@ export function convertItemToTemplate(
           dataPromise = getItemData(itemTemplate.itemId, userSession);
           break;
         case "form":
+          relatedPromise = getItemRelatedItems(
+            itemTemplate.itemId,
+            "Survey2Service",
+            "forward",
+            userSession
+          );
           break;
       }
 
@@ -118,20 +127,31 @@ export function convertItemToTemplate(
       // from killing off both promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
-        dataPromise.catch(() => null),
-        resourcePromise.catch(() => null)
+        dataPromise.catch(() => ({})),
+        resourcePromise.catch(() => [] as string[]),
+        relatedPromise.catch(
+          () =>
+            ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
+        )
       ]).then(responses => {
-        const [itemDataResponse, savedResourceFilenames] = responses;
-        itemTemplate.data = itemDataResponse ? itemDataResponse : [];
-        itemTemplate.resources = savedResourceFilenames
-          ? savedResourceFilenames
-          : [];
+        const [
+          itemDataResponse,
+          savedResourceFilenames,
+          relatedItemsResponse
+        ] = responses;
+        itemTemplate.data = itemDataResponse;
+        itemTemplate.resources = savedResourceFilenames;
 
         switch (itemInfo.type.toLowerCase()) {
           case "dashboard":
             dashboard.convertItemToTemplate(itemTemplate);
             break;
           case "form":
+            itemTemplate.dependencies = itemTemplate.dependencies.concat(
+              relatedItemsResponse.relatedItems.map(
+                relatedItem => relatedItem.id
+              )
+            );
             form.convertItemToTemplate(itemTemplate);
             break;
           case "web map":
@@ -185,7 +205,9 @@ export function createItemFromTemplate(
     );
 
     // Replace the templatized symbols in a copy of the template
-    let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(
+      template
+    ) as common.IItemTemplate;
     newItemTemplate = common.replaceInTemplate(
       newItemTemplate,
       templateDictionary
@@ -263,7 +285,7 @@ export function createItemFromTemplate(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-function getItemData(
+export function getItemData(
   itemId: string,
   userSession: auth.UserSession
 ): Promise<any> {
@@ -272,4 +294,20 @@ function getItemData(
     authentication: userSession
   };
   return portal.getItemData(itemId, itemDataParam);
+}
+
+export function getItemRelatedItems(
+  itemId: string,
+  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
+  direction: "forward" | "reverse",
+  userSession: auth.UserSession
+): Promise<portal.IGetRelatedItemsResponse> {
+  // Get item related items
+  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
+    id: itemId,
+    relationshipType,
+    direction,
+    authentication: userSession
+  };
+  return portal.getRelatedItems(itemRelatedItemsParam);
 }
