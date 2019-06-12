@@ -62,7 +62,8 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      "**/*.ts": ["karma-typescript"] // *.tsx for React Jsx
+      "packages/*/src/**/*.ts": ["karma-typescript", "coverage"],
+      "packages/*/test/**/*.ts": ["karma-typescript"]
     },
 
     // test results reporter to use
