@@ -349,17 +349,21 @@ export function generateSourceThumbnailUrl(
  *
  * @param itemId Id of item
  * @param sourceResourceFilename Either filename or folder/filename to resource
- * @return Folder and filename for storage; folder is the itemID; file is URI-encoded sourceResourceFilename
+ * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
+ * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
+ * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
+ * file is sourceResourceFilename
  * @see generateResourceFilenameFromStorage
  */
 export function generateResourceStorageFilename(
   itemId: string,
-  sourceResourceFilename: string
+  sourceResourceFilename: string,
+  storageFolder = ""
 ): {
   folder: string;
   filename: string;
 } {
-  let folder = itemId;
+  let folder = itemId + (storageFolder ? "_" + storageFolder : "");
   let filename = sourceResourceFilename;
   const sourceResourceFilenameParts = sourceResourceFilename.split("/");
   if (sourceResourceFilenameParts.length > 1) {
