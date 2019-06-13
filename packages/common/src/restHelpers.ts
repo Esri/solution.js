@@ -135,8 +135,10 @@ export function _setItemProperties(
     "Sync",
     "Extract"
   ];
+
   const capabilities =
-    generalHelpers.getProp(serviceInfo, "service.capabilities") || [];
+    generalHelpers.getProp(serviceInfo, "service.capabilities") ||
+    (isPortal ? "" : []);
 
   item.capabilities = isPortal
     ? capabilities
