@@ -111,6 +111,53 @@ export function _getCreateServiceOptions(
   return createOptions;
 }
 
+/**
+ * Creates a folder using numeric suffix to ensure uniqueness.
+ * @param folderTitleRoot Folder title, used as-is if possible and with suffix otherwise
+ * @param userSession Credentials for creating folder
+ * @param suffix Current suffix level; '0' means no suffix
+ * @return Id of created folder
+ */
+export function createUniqueFolder(
+  folderTitleRoot: string,
+  userSession: auth.UserSession,
+  suffix = 0
+): Promise<portal.IAddFolderResponse> {
+  return new Promise<portal.IAddFolderResponse>((resolve, reject) => {
+    const folderName =
+      folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+    const folderCreationParam = {
+      title: folderName,
+      authentication: userSession
+    };
+    portal.createFolder(folderCreationParam).then(
+      ok => resolve(ok),
+      err => {
+        // If the name already exists, we'll try again
+        const errorDetails = generalHelpers.getProp(
+          err,
+          "response.error.details"
+        ) as string[];
+        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+          const nameNotAvailMsg =
+            "Folder title '" + folderName + "' not available.";
+          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            createUniqueFolder(folderTitleRoot, userSession, suffix + 1).then(
+              resolve,
+              reject
+            );
+          } else {
+            reject(err);
+          }
+        } else {
+          // Otherwise, error out
+          reject(err);
+        }
+      }
+    );
+  });
+}
+
 export function _setItemProperties(
   item: any,
   data: any,
@@ -135,8 +182,10 @@ export function _setItemProperties(
     "Sync",
     "Extract"
   ];
+
   const capabilities =
-    generalHelpers.getProp(serviceInfo, "service.capabilities") || [];
+    generalHelpers.getProp(serviceInfo, "service.capabilities") ||
+    (isPortal ? "" : []);
 
   item.capabilities = isPortal
     ? capabilities

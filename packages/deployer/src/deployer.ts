@@ -56,13 +56,15 @@ export function deploySolution(
     };
     const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
 
-    // Create a folder to hold the deployed solution
-    const folderName = itemInfo.title + " (" + common.getUTCTimestamp() + ")";
-    const folderCreationParam = {
-      title: folderName,
-      authentication: destinationUserSession
-    };
-    const folderCreationDef = portal.createFolder(folderCreationParam);
+    // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
+    // suffix if the folder exists, e.g.,
+    //   * Manage Right of Way Activities
+    //   * Manage Right of Way Activities 1
+    //   * Manage Right of Way Activities 2
+    const folderCreationDef = common.createUniqueFolder(
+      itemInfo.title,
+      destinationUserSession
+    );
 
     // Determine if we are deploying to portal
     const portalDef = portal.getPortal(undefined, destinationUserSession);
@@ -85,7 +87,15 @@ export function deploySolution(
           estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log(
-          "Deploying solution " + itemInfo.title + " (" + itemInfo.id + ")"
+          "Deploying solution " +
+            itemInfo.title +
+            " (" +
+            itemInfo.id +
+            ") into folder " +
+            folderResponse.folder.title +
+            " (" +
+            folderResponse.folder.id +
+            ")"
         );
         console.log(
           "totalEstimatedCost, progressPercentStep",
