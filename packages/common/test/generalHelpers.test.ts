@@ -26,7 +26,8 @@ import {
   deleteProp,
   deleteProps,
   hasAnyKeyword,
-  hasTypeKeyword
+  hasTypeKeyword,
+  getUTCTimestamp
 } from "../src/generalHelpers";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
@@ -331,6 +332,15 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const keyword: string = "B";
       const expected: boolean = true;
       expect(hasTypeKeyword(model, keyword)).toBe(expected);
+    });
+  });
+
+  describe("getUTCTimestamp", () => {
+    it("can get a well formed timestamp", () => {
+      const timestamp: string = getUTCTimestamp();
+      const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
+      const regEx = new RegExp(exp, "gm");
+      expect(regEx.test(timestamp)).toBe(true);
     });
   });
 });
