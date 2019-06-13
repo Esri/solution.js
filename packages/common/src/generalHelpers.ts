@@ -32,7 +32,7 @@
  * ```
  * Make a deep clone, including arrays. Does not handle functions!
  */
-export function cloneObject(obj: { [index: string]: any }) {
+export function cloneObject(obj: { [index: string]: any }): any {
   let clone: { [index: string]: any } = {};
   // first check array
   if (Array.isArray(obj)) {

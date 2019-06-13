@@ -35,7 +35,8 @@ import {
   getLayerUpdates,
   _getUpdate,
   getRequest,
-  _getRelationshipUpdates
+  _getRelationshipUpdates,
+  createUniqueFolder
 } from "../src/restHelpers";
 import {
   TOMORROW,
@@ -47,6 +48,7 @@ import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
+import * as portal from "@esri/arcgis-rest-portal";
 
 let itemTemplate: IItemTemplate;
 
@@ -1025,4 +1027,147 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
   });
+
+  describe("createUniqueFolder", () => {
+    it("folder doesn't already exist", done => {
+      const folderTitleRoot = "folder name";
+      const suffix = 0;
+      const expectedSuccess = successfulFolderCreation(folderTitleRoot, suffix);
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        JSON.stringify(expectedSuccess)
+      );
+      createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION).then(
+        (response: portal.IAddFolderResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("initial version of folder exists", done => {
+      const folderTitleRoot = "folder name";
+      const expectedSuffix = 1;
+      const expectedSuccess = successfulFolderCreation(
+        folderTitleRoot,
+        expectedSuffix
+      );
+
+      let suffix = 0;
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        () => {
+          const response =
+            suffix === expectedSuffix
+              ? JSON.stringify(
+                  successfulFolderCreation(folderTitleRoot, suffix)
+                )
+              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
+          ++suffix;
+          return response;
+        }
+      );
+      createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION).then(
+        (response: portal.IAddFolderResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("two versions of folder exist", done => {
+      const folderTitleRoot = "folder name";
+      const expectedSuffix = 2;
+      const expectedSuccess = successfulFolderCreation(
+        folderTitleRoot,
+        expectedSuffix
+      );
+
+      let suffix = 0;
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        () => {
+          const response =
+            suffix === expectedSuffix
+              ? JSON.stringify(
+                  successfulFolderCreation(folderTitleRoot, suffix)
+                )
+              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
+          ++suffix;
+          return response;
+        }
+      );
+      createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION).then(
+        (response: portal.IAddFolderResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        },
+        done.fail
+      );
+    });
+
+    it("three versions of folder exist", done => {
+      const folderTitleRoot = "folder name";
+      const expectedSuffix = 3;
+      const expectedSuccess = successfulFolderCreation(
+        folderTitleRoot,
+        expectedSuffix
+      );
+
+      let suffix = 0;
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        () => {
+          const response =
+            suffix === expectedSuffix
+              ? JSON.stringify(
+                  successfulFolderCreation(folderTitleRoot, suffix)
+                )
+              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
+          ++suffix;
+          return response;
+        }
+      );
+      createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION).then(
+        (response: portal.IAddFolderResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        },
+        done.fail
+      );
+    });
+  });
 });
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+function successfulFolderCreation(
+  folderTitleRoot: string,
+  suffix: number
+): any {
+  const folderName =
+    folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+  return {
+    success: true,
+    folder: {
+      id: "fld1234567890",
+      title: folderName,
+      username: "casey"
+    }
+  };
+}
+
+function failedFolderCreation(folderTitleRoot: string, suffix: number): any {
+  const folderName =
+    folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+  return {
+    error: {
+      code: 400,
+      message: "Unable to create folder.",
+      details: ["Folder title '" + folderName + "' not available."]
+    }
+  };
+}
