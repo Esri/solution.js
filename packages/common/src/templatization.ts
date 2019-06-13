@@ -58,6 +58,7 @@ export function createInitializedItemTemplate(
     description: itemInfo.description,
     extent: itemInfo.extent,
     licenseInfo: itemInfo.licenseInfo,
+    name: itemInfo.name,
     snippet: itemInfo.snippet,
     tags: itemInfo.tags,
     thumbnail: itemInfo.thumbnail,

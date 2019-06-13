@@ -143,6 +143,7 @@ export function convertItemToTemplate(
         itemTemplate.data = itemDataResponse;
         itemTemplate.resources = savedResourceFilenames;
 
+        let wrapupPromise = Promise.resolve();
         switch (itemInfo.type.toLowerCase()) {
           case "dashboard":
             dashboard.convertItemToTemplate(itemTemplate);
@@ -154,9 +155,21 @@ export function convertItemToTemplate(
               )
             );
 
-            // Store the form's data in the solution
-
+            // Store the form's data in the solution resources, not in template
+            itemTemplate.data = {};
             form.convertItemToTemplate(itemTemplate);
+
+            const storageName = common.generateResourceStorageFilename(
+              itemTemplate.itemId,
+              itemTemplate.item.name
+            );
+            wrapupPromise = common.addResourceFromBlob(
+              itemDataResponse,
+              solutionItemId,
+              storageName.folder,
+              storageName.filename,
+              requestOptions
+            );
             break;
           case "web map":
             webmap.convertItemToTemplate(itemTemplate);
@@ -166,16 +179,33 @@ export function convertItemToTemplate(
             break;
         }
 
-        console.log(
-          "converted " +
-            itemInfo.type +
-            ' "' +
-            itemInfo.title +
-            '" (' +
-            itemInfo.id +
-            ")"
+        wrapupPromise.then(
+          () => {
+            console.log(
+              "converted " +
+                itemInfo.type +
+                ' "' +
+                itemInfo.title +
+                '" (' +
+                itemInfo.id +
+                ")"
+            );
+            resolve(itemTemplate);
+          },
+          err => {
+            console.log(
+              "unable to convert " +
+                itemInfo.type +
+                ' "' +
+                itemInfo.title +
+                '" (' +
+                itemInfo.id +
+                "): " +
+                JSON.stringify(err, null, 2)
+            );
+            resolve(itemTemplate);
+          }
         );
-        resolve(itemTemplate);
       });
     } else {
       // Get the group's items--its dependencies
