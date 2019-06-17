@@ -161,7 +161,8 @@ export function convertItemToTemplate(
 
             const storageName = common.generateResourceStorageFilename(
               itemTemplate.itemId,
-              itemTemplate.item.name
+              itemTemplate.item.name,
+              "info_form"
             );
             wrapupPromise = common.addResourceFromBlob(
               itemDataResponse,
@@ -266,7 +267,7 @@ export function createItemFromTemplate(
               id: createResponse.id
             };
 
-            // Copy resources, metadata, thumbnail
+            // Copy resources, metadata, thumbnail, form
             const resourcesDef = common.copyFilesFromStorageItem(
               { authentication: storageUserSession },
               resourceFilePaths,
