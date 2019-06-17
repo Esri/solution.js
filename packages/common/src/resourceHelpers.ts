@@ -61,8 +61,9 @@ export interface ISourceFileCopyPath {
 }
 
 export enum EFileType {
-  Resource,
+  Form,
   Metadata,
+  Resource,
   Thumbnail
 }
 
@@ -76,104 +77,135 @@ export interface IDeployFileCopyPath extends IDeployFilename {
   url: string;
 }
 
-/**
- * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
- * and thumbnail of an item.
- *
- * @param portalSharingUrl Server/sharing
- * @param itemId Id of item
- * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
- * @return List of item files' URLs and folder/filenames for storing the files
- */
-export function generateSourceItemFilePaths(
-  portalSharingUrl: string,
+export function addMetadataFromBlob(
+  blob: any,
   itemId: string,
-  thumbnailUrlPart: string,
-  resourceFilenames: string[]
-): ISourceFileCopyPath[] {
-  const filePaths = resourceFilenames.map(resourceFilename => {
-    return {
-      url: generateSourceResourceUrl(
-        portalSharingUrl,
-        itemId,
-        resourceFilename
-      ),
-      ...generateResourceStorageFilename(itemId, resourceFilename)
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId
+    },
+    params: {
+      // Pass metadata in via params because item object is serialized, which discards a blob
+      metadata: blob
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
+
+export function addResourceFromBlob(
+  blob: any,
+  itemId: string,
+  folder: string,
+  filename: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const addRsrcOptions = {
+    id: itemId,
+    resource: blob,
+    name: filename,
+    ...requestOptions
+  };
+  if (folder) {
+    addRsrcOptions.params = {
+      resourcesPrefix: folder
     };
-  });
+  }
+  return portal.addItemResource(addRsrcOptions);
+}
 
-  filePaths.push({
-    url: generateSourceMetadataUrl(portalSharingUrl, itemId),
-    ...generateMetadataStorageFilename(itemId)
-  });
+export function addThumbnailFromBlob(
+  blob: any,
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId
+    },
+    params: {
+      // Pass image in directly because item object is serialized, which discards a blob
+      thumbnail: blob
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
 
-  if (thumbnailUrlPart) {
-    filePaths.push({
-      url: generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart
-      ),
-      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+export function addThumbnailFromUrl(
+  url: string,
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: {
+      id: itemId,
+      thumbnailurl: url
+    },
+    ...requestOptions
+  };
+  return portal.updateItem(updateOptions);
+}
+
+/**
+ * Copies the files described by a list of full URLs and folder/filename combinations for
+ * the resources, metadata, and thumbnail of an item or group to an item.
+ *
+ * @param storageRequestOptions Options for requesting information from the storage
+ * @param filePaths List of item files' URLs and folder/filenames for storing the files
+ * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
+ * @param destinationRequestOptions Options for writing information to destination
+ * @return A promise which resolves to a boolean indicating if the copies were successful
+ */
+export function copyFilesFromStorageItem(
+  storageRequestOptions: auth.IUserRequestOptions,
+  filePaths: IDeployFileCopyPath[],
+  destinationItemId: string,
+  destinationRequestOptions: auth.IUserRequestOptions
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    const awaitAllItems = filePaths.filter(filePath => {
+      switch (filePath.type) {
+        case EFileType.Form:
+          return Promise.resolve();
+
+        case EFileType.Metadata:
+          return copyMetadata(
+            {
+              url: filePath.url,
+              requestOptions: storageRequestOptions
+            },
+            {
+              itemId: destinationItemId,
+              requestOptions: destinationRequestOptions
+            }
+          );
+        case EFileType.Resource:
+          return copyResource(
+            {
+              url: filePath.url,
+              requestOptions: storageRequestOptions
+            },
+            {
+              itemId: destinationItemId,
+              folder: filePath.folder,
+              filename: filePath.filename,
+              requestOptions: destinationRequestOptions
+            }
+          );
+        case EFileType.Thumbnail:
+          return addThumbnailFromUrl(
+            filePath.url,
+            destinationItemId,
+            destinationRequestOptions
+          );
+      }
     });
-  }
 
-  return filePaths;
-}
-
-/**
- * Generates the full URL and storage folder/filename for storing the thumbnail of a group.
- *
- * @param portalSharingUrl Server/sharing
- * @param itemId Id of item
- * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @return List of item files' URLs and folder/filenames for storing the files
- */
-export function generateGroupFilePaths(
-  portalSharingUrl: string,
-  itemId: string,
-  thumbnailUrlPart: string
-): ISourceFileCopyPath[] {
-  if (!thumbnailUrlPart) {
-    return [];
-  }
-  return [
-    {
-      url: generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        true
-      ),
-      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    }
-  ];
-}
-
-/**
- * Generates a list of full URLs and folder/filename combinations used to store the resources, metadata,
- * and thumbnail of an item.
- *
- * @param portalSharingUrl Server/sharing
- * @param storageItemId Id of storage item
- * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
- * @return List of item files' URLs and folder/filenames for storing the files
- */
-export function generateStorageFilePaths(
-  portalSharingUrl: string,
-  storageItemId: string,
-  resourceFilenames: string[]
-): IDeployFileCopyPath[] {
-  return resourceFilenames.map(resourceFilename => {
-    return {
-      url: generateSourceResourceUrl(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilename
-      ),
-      ...generateResourceFilenameFromStorage(resourceFilename)
-    };
+    // Wait until all files have been copied
+    Promise.all(awaitAllItems).then(() => resolve(true), reject);
   });
 }
 
@@ -223,154 +255,115 @@ export function copyFilesToStorageItem(
   });
 }
 
-/**
- * Copies the files described by a list of full URLs and folder/filename combinations for
- * the resources, metadata, and thumbnail of an item or group to an item.
- *
- * @param storageRequestOptions Options for requesting information from the storage
- * @param filePaths List of item files' URLs and folder/filenames for storing the files
- * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destinationRequestOptions Options for writing information to destination
- * @return A promise which resolves to a boolean indicating if the copies were successful
- */
-export function copyFilesFromStorageItem(
-  storageRequestOptions: auth.IUserRequestOptions,
-  filePaths: IDeployFileCopyPath[],
-  destinationItemId: string,
-  destinationRequestOptions: auth.IUserRequestOptions
-): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    const awaitAllItems = filePaths.filter(filePath => {
-      switch (filePath.type) {
-        case EFileType.Resource:
-          return copyResource(
-            {
-              url: filePath.url,
-              requestOptions: storageRequestOptions
-            },
-            {
-              itemId: destinationItemId,
-              folder: filePath.folder,
-              filename: filePath.filename,
-              requestOptions: destinationRequestOptions
-            }
-          );
-        case EFileType.Metadata:
-          return copyMetadata(
-            {
-              url: filePath.url,
-              requestOptions: storageRequestOptions
-            },
-            {
-              itemId: destinationItemId,
-              requestOptions: destinationRequestOptions
-            }
-          );
-        case EFileType.Thumbnail:
-          return addThumbnailFromUrl(
-            filePath.url,
-            destinationItemId,
-            destinationRequestOptions
-          );
-      }
-    });
-
-    // Wait until all files have been copied
-    Promise.all(awaitAllItems).then(() => resolve(true), reject);
+export function copyMetadata(
+  source: {
+    url: string;
+    requestOptions: auth.IUserRequestOptions;
+  },
+  destination: {
+    itemId: string;
+    requestOptions: auth.IUserRequestOptions;
+  }
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    restHelpers.getBlob(source.url, source.requestOptions).then(
+      blob => {
+        addMetadataFromBlob(
+          blob,
+          destination.itemId,
+          destination.requestOptions
+        ).then(
+          resolve,
+          e => reject(generalHelpers.fail(e)) // unable to get resource
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get resource
+    );
   });
 }
 
 /**
- * Generates the URL for reading an item's resource given the filename of the resource.
+ * Copies a resource from a URL to an item.
  *
- * @param sourcePortalSharingUrl Server/sharing
- * @param itemId Id of item
- * @param sourceResourceFilename Either filename or folder/filename to resource
- * @return URL string
+ * @param source.url URL to source resource
+ * @param source.requestOptions Options for requesting information from source
+ * @param destination.itemId Id of item to receive copy of resource/metadata/thumbnail
+ * @param destination.folderName Folder in destination for resource/metadata/thumbnail; defaults to top level
+ * @param destination.filename Filename in destination for resource/metadata/thumbnail
+ * @param destination.requestOptions Options for writing information to destination
+ * @return A promise which resolves to the filename under which the resource/metadata/thumbnail is stored
  */
-export function generateSourceResourceUrl(
-  sourcePortalSharingUrl: string,
-  itemId: string,
-  sourceResourceFilename: string
-): string {
-  return (
-    sourcePortalSharingUrl +
-    "/content/items/" +
-    itemId +
-    "/resources/" +
-    sourceResourceFilename
-  );
+export function copyResource(
+  source: {
+    url: string;
+    requestOptions: auth.IUserRequestOptions;
+  },
+  destination: {
+    itemId: string;
+    folder: string;
+    filename: string;
+    requestOptions: auth.IUserRequestOptions;
+  }
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    restHelpers.getBlob(source.url, source.requestOptions).then(
+      async blob => {
+        if (blob.type === "text/plain") {
+          try {
+            const text = await new Response(blob).text();
+            const json = JSON.parse(text);
+            if (json.error) {
+              reject(); // unable to get resource
+              return;
+            }
+          } catch (Ignore) {
+            /* tslint:disable-next-line:no-empty */
+          }
+        }
+
+        addResourceFromBlob(
+          blob,
+          destination.itemId,
+          destination.folder,
+          destination.filename,
+          destination.requestOptions
+        ).then(
+          resolve,
+          e => reject(generalHelpers.fail(e)) // unable to get resource
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get resource
+    );
+  });
 }
 
 /**
- * Generates the URL for reading an item's metadata.
+ * Generates the full URL and storage folder/filename for storing the thumbnail of a group.
  *
- * @param sourcePortalSharingUrl Server/sharing
- * @param itemId Id of item
- * @return URL string
- */
-export function generateSourceMetadataUrl(
-  sourcePortalSharingUrl: string,
-  itemId: string
-): string {
-  return (
-    sourcePortalSharingUrl +
-    "/content/items/" +
-    itemId +
-    "/info/metadata/metadata.xml"
-  );
-}
-
-/**
- * Generates the URL for reading an item's thumbnail.
- *
- * @param sourcePortalSharingUrl Server/sharing
+ * @param portalSharingUrl Server/sharing
  * @param itemId Id of item
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @return URL string
+ * @return List of item files' URLs and folder/filenames for storing the files
  */
-export function generateSourceThumbnailUrl(
-  sourcePortalSharingUrl: string,
+export function generateGroupFilePaths(
+  portalSharingUrl: string,
   itemId: string,
-  thumbnailUrlPart: string,
-  isGroup = false
-): string {
-  return (
-    sourcePortalSharingUrl +
-    (isGroup ? "/community/groups/" : "/content/items/") +
-    itemId +
-    "/info/" +
-    thumbnailUrlPart
-  );
-}
-
-/**
- * Generates a folder and filename for storing a copy of an item's resource in a storage item.
- *
- * @param itemId Id of item
- * @param sourceResourceFilename Either filename or folder/filename to resource
- * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
- * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
- * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
- * file is sourceResourceFilename
- * @see generateResourceFilenameFromStorage
- */
-export function generateResourceStorageFilename(
-  itemId: string,
-  sourceResourceFilename: string,
-  storageFolder = ""
-): {
-  folder: string;
-  filename: string;
-} {
-  let folder = itemId + (storageFolder ? "_" + storageFolder : "");
-  let filename = sourceResourceFilename;
-  const sourceResourceFilenameParts = sourceResourceFilename.split("/");
-  if (sourceResourceFilenameParts.length > 1) {
-    folder += "_" + sourceResourceFilenameParts[0];
-    filename = sourceResourceFilenameParts[1];
+  thumbnailUrlPart: string
+): ISourceFileCopyPath[] {
+  if (!thumbnailUrlPart) {
+    return [];
   }
-  return { folder, filename };
+  return [
+    {
+      url: generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart,
+        true
+      ),
+      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    }
+  ];
 }
 
 /**
@@ -388,31 +381,6 @@ export function generateMetadataStorageFilename(
 } {
   const folder = itemId + "_info_metadata";
   const filename = "metadata.xml";
-  return { folder, filename };
-}
-
-/**
- * Generates a folder and filename for storing a copy of an item's thumbnail in a storage item.
- *
- * @param itemId Id of item
- * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
- * @return Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
- * file is URI-encoded thumbnailUrlPart
- * @see generateResourceFilenameFromStorage
- */
-export function generateThumbnailStorageFilename(
-  itemId: string,
-  thumbnailUrl: string
-): {
-  folder: string;
-  filename: string;
-} {
-  const folder = itemId + "_info_thumbnail";
-  const thumbnailUrlParts = thumbnailUrl.split("/");
-  const filename =
-    thumbnailUrlParts.length === 1
-      ? thumbnailUrlParts[0]
-      : thumbnailUrlParts[1];
   return { folder, filename };
 }
 
@@ -447,156 +415,192 @@ export function generateResourceFilenameFromStorage(
   return { type, folder, filename };
 }
 
-export function addResourceFromBlob(
-  blob: any,
+/**
+ * Generates a folder and filename for storing a copy of an item's resource in a storage item.
+ *
+ * @param itemId Id of item
+ * @param sourceResourceFilename Either filename or folder/filename to resource
+ * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
+ * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
+ * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
+ * file is sourceResourceFilename
+ * @see generateResourceFilenameFromStorage
+ */
+export function generateResourceStorageFilename(
   itemId: string,
-  folder: string,
-  filename: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const addRsrcOptions = {
-    id: itemId,
-    resource: blob,
-    name: filename,
-    ...requestOptions
-  };
-  if (folder) {
-    addRsrcOptions.params = {
-      resourcesPrefix: folder
-    };
+  sourceResourceFilename: string,
+  storageFolder = ""
+): {
+  folder: string;
+  filename: string;
+} {
+  let folder = itemId + (storageFolder ? "_" + storageFolder : "");
+  let filename = sourceResourceFilename;
+  const sourceResourceFilenameParts = sourceResourceFilename.split("/");
+  if (sourceResourceFilenameParts.length > 1) {
+    folder += "_" + sourceResourceFilenameParts[0];
+    filename = sourceResourceFilenameParts[1];
   }
-  return portal.addItemResource(addRsrcOptions);
-}
-
-export function addMetadataFromBlob(
-  blob: any,
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
-    item: {
-      id: itemId
-    },
-    params: {
-      // Pass metadata in directly because item object is serialized, which discards a blob
-      metadata: blob
-    },
-    ...requestOptions
-  };
-  return portal.updateItem(updateOptions);
-}
-
-export function addThumbnailFromBlob(
-  blob: any,
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
-    item: {
-      id: itemId
-    },
-    params: {
-      // Pass image in directly because item object is serialized, which discards a blob
-      thumbnail: blob
-    },
-    ...requestOptions
-  };
-  return portal.updateItem(updateOptions);
-}
-
-export function addThumbnailFromUrl(
-  url: string,
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
-    item: {
-      id: itemId,
-      thumbnailurl: url
-    },
-    ...requestOptions
-  };
-  return portal.updateItem(updateOptions);
+  return { folder, filename };
 }
 
 /**
- * Copies a resource from a URL to an item.
+ * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
+ * and thumbnail of an item.
  *
- * @param source.url URL to source resource
- * @param source.requestOptions Options for requesting information from source
- * @param destination.itemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destination.folderName Folder in destination for resource/metadata/thumbnail; defaults to top level
- * @param destination.filename Filename in destination for resource/metadata/thumbnail
- * @param destination.requestOptions Options for writing information to destination
- * @return A promise which resolves to the filename under which the resource/metadata/thumbnail is stored
+ * @param portalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
+ * @return List of item files' URLs and folder/filenames for storing the files
  */
-export function copyResource(
-  source: {
-    url: string;
-    requestOptions: auth.IUserRequestOptions;
-  },
-  destination: {
-    itemId: string;
-    folder: string;
-    filename: string;
-    requestOptions: auth.IUserRequestOptions;
-  }
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.requestOptions).then(
-      async blob => {
-        if (blob.type === "text/plain") {
-          try {
-            const text = await new Response(blob).text();
-            const json = JSON.parse(text);
-            if (json.error) {
-              reject(); // unable to get resource
-              return;
-            }
-          } catch (Ignore) {
-            /* tslint:disable-next-line:no-empty */
-          }
-        }
+export function generateSourceItemFilePaths(
+  portalSharingUrl: string,
+  itemId: string,
+  thumbnailUrlPart: string,
+  resourceFilenames: string[]
+): ISourceFileCopyPath[] {
+  const filePaths = resourceFilenames.map(resourceFilename => {
+    return {
+      url: generateSourceResourceUrl(
+        portalSharingUrl,
+        itemId,
+        resourceFilename
+      ),
+      ...generateResourceStorageFilename(itemId, resourceFilename)
+    };
+  });
 
-        addResourceFromBlob(
-          blob,
-          destination.itemId,
-          destination.folder,
-          destination.filename,
-          destination.requestOptions
-        ).then(
-          resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get resource
-    );
+  filePaths.push({
+    url: generateSourceMetadataUrl(portalSharingUrl, itemId),
+    ...generateMetadataStorageFilename(itemId)
+  });
+
+  if (thumbnailUrlPart) {
+    filePaths.push({
+      url: generateSourceThumbnailUrl(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      ),
+      ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
+    });
+  }
+
+  return filePaths;
+}
+
+/**
+ * Generates the URL for reading an item's metadata.
+ *
+ * @param sourcePortalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @return URL string
+ */
+export function generateSourceMetadataUrl(
+  sourcePortalSharingUrl: string,
+  itemId: string
+): string {
+  return (
+    sourcePortalSharingUrl +
+    "/content/items/" +
+    itemId +
+    "/info/metadata/metadata.xml"
+  );
+}
+
+/**
+ * Generates the URL for reading an item's resource given the filename of the resource.
+ *
+ * @param sourcePortalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @param sourceResourceFilename Either filename or folder/filename to resource
+ * @return URL string
+ */
+export function generateSourceResourceUrl(
+  sourcePortalSharingUrl: string,
+  itemId: string,
+  sourceResourceFilename: string
+): string {
+  return (
+    sourcePortalSharingUrl +
+    "/content/items/" +
+    itemId +
+    "/resources/" +
+    sourceResourceFilename
+  );
+}
+
+/**
+ * Generates the URL for reading an item's thumbnail.
+ *
+ * @param sourcePortalSharingUrl Server/sharing
+ * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @return URL string
+ */
+export function generateSourceThumbnailUrl(
+  sourcePortalSharingUrl: string,
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup = false
+): string {
+  return (
+    sourcePortalSharingUrl +
+    (isGroup ? "/community/groups/" : "/content/items/") +
+    itemId +
+    "/info/" +
+    thumbnailUrlPart
+  );
+}
+
+/**
+ * Generates a list of full URLs and folder/filename combinations used to store the resources, metadata,
+ * and thumbnail of an item.
+ *
+ * @param portalSharingUrl Server/sharing
+ * @param storageItemId Id of storage item
+ * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
+ * @return List of item files' URLs and folder/filenames for storing the files
+ */
+export function generateStorageFilePaths(
+  portalSharingUrl: string,
+  storageItemId: string,
+  resourceFilenames: string[]
+): IDeployFileCopyPath[] {
+  return resourceFilenames.map(resourceFilename => {
+    return {
+      url: generateSourceResourceUrl(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilename
+      ),
+      ...generateResourceFilenameFromStorage(resourceFilename)
+    };
   });
 }
 
-export function copyMetadata(
-  source: {
-    url: string;
-    requestOptions: auth.IUserRequestOptions;
-  },
-  destination: {
-    itemId: string;
-    requestOptions: auth.IUserRequestOptions;
-  }
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.requestOptions).then(
-      blob => {
-        addMetadataFromBlob(
-          blob,
-          destination.itemId,
-          destination.requestOptions
-        ).then(
-          resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get resource
-    );
-  });
+/**
+ * Generates a folder and filename for storing a copy of an item's thumbnail in a storage item.
+ *
+ * @param itemId Id of item
+ * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @return Folder and filename for storage; folder is the itemID suffixed with "_info_thumbnail";
+ * file is URI-encoded thumbnailUrlPart
+ * @see generateResourceFilenameFromStorage
+ */
+export function generateThumbnailStorageFilename(
+  itemId: string,
+  thumbnailUrl: string
+): {
+  folder: string;
+  filename: string;
+} {
+  const folder = itemId + "_info_thumbnail";
+  const thumbnailUrlParts = thumbnailUrl.split("/");
+  const filename =
+    thumbnailUrlParts.length === 1
+      ? thumbnailUrlParts[0]
+      : thumbnailUrlParts[1];
+  return { folder, filename };
 }
