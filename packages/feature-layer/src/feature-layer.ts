@@ -44,8 +44,6 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    console.log("convertItemToTemplate for a feature-layer");
-
     const requestOptions: auth.IUserRequestOptions = {
       authentication: userSession
     };
@@ -140,7 +138,6 @@ export function createItemFromTemplate(
               templateDictionary,
               createResponse
             );
-
             // Add the layers and tables to the feature service
             fsUtils
               .addFeatureServiceLayersAndTables(
@@ -161,10 +158,10 @@ export function createItemFromTemplate(
                     )
                     .then(
                       () => resolve(createResponse.serviceItemId),
-                      (e: any) => common.fail(e)
+                      (e: any) => reject(common.fail(e))
                     );
                 },
-                e => common.fail(e)
+                e => reject(common.fail(e))
               );
           } else {
             reject(common.fail());

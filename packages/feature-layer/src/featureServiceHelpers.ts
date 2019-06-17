@@ -464,6 +464,7 @@ export function updateFeatureServiceDefinition(
       tables: [],
       ...requestOptions
     };
+
     listToAdd.forEach(toAdd => {
       const item = toAdd.item;
       const originalId = item.id;
@@ -498,7 +499,6 @@ export function updateFeatureServiceDefinition(
         options.tables.push(item);
       }
     });
-
     common.addToServiceDefinition(serviceUrl, options).then(
       () => {
         progressTickCallback && progressTickCallback();
@@ -581,6 +581,7 @@ export function postProcessFields(
     const settingsKeys = Object.keys(templateDictionary);
     // concat any layers and tables to process
     const url: string = itemTemplate.item.url;
+
     const serviceData: any = itemTemplate.properties;
     Promise.all([
       common.getLayers(url, serviceData["layers"], requestOptions),
@@ -618,12 +619,14 @@ export function postProcessFields(
             }
           }
         });
+
         // Add the fieldInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
           if (id === templateDictionary[k].id) {
             templateDictionary[k]["fieldInfos"] = getFieldSettings(fieldInfos);
           }
         });
+
         // update the fieldInfos object with current field names
         resolveFn(
           deTemplatizeFieldInfos(
@@ -649,24 +652,27 @@ export function postProcessFields(
  * @protected
  */
 export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
-  const sourceFields: any = fieldInfo["sourceFields"].reduce(
-    (hash: any, f: any) => {
-      hash[String(f.name).toLocaleLowerCase()] = f.visible;
-      return hash;
-    },
-    {}
-  );
   const visibilityUpdates: any[] = [];
-  fieldInfo["newFields"].forEach((f: any) => {
-    const name: string = String(f.name).toLocaleLowerCase();
-    // only add fields that are not visible
-    if (sourceFields.hasOwnProperty(name) && !sourceFields[name]) {
-      visibilityUpdates.push({
-        name: name,
-        visible: sourceFields[name]
-      });
-    }
-  });
+  if (fieldInfo && fieldInfo["sourceFields"] && fieldInfo["newFields"]) {
+    const sourceFields: any = fieldInfo["sourceFields"].reduce(
+      (hash: any, f: any) => {
+        hash[String(f.name).toLocaleLowerCase()] = f.visible;
+        return hash;
+      },
+      {}
+    );
+
+    fieldInfo["newFields"].forEach((f: any) => {
+      const name: string = String(f.name).toLocaleLowerCase();
+      // only add fields that are not visible
+      if (sourceFields.hasOwnProperty(name) && !sourceFields[name]) {
+        visibilityUpdates.push({
+          name: f.name,
+          visible: sourceFields[name]
+        });
+      }
+    });
+  }
   return visibilityUpdates;
 }
 
@@ -812,19 +818,6 @@ export function _templatizeLayerFieldReferences(
   _templatizeTypeTemplates(layer, path);
   _templatizeTimeInfo(layer, path);
   _templatizeDefinitionQuery(layer, path, fieldNames);
-}
-
-/**
- *
- * Templatize field names referenced by key properties
- *
- * @param layer JSON return from the layer being templatized.
- * @param basePath path used to de-templatize while deploying
- * @return An updated instance of the layer
- */
-export function _templatizeKeyProperties(layer: any, path: string): void {
-  const props: string[] = ["displayField", "globalIdField", "typeIdField"];
-  props.forEach(p => _templatizeProperty(layer, p, path));
 }
 
 /**
@@ -1761,6 +1754,13 @@ export function _templatizeDefinitionQuery(
   if (layer && layer.hasOwnProperty("viewDefinitionQuery")) {
     layer.viewDefinitionQuery = _templatizeSimpleName(
       layer.viewDefinitionQuery || "",
+      basePath,
+      fieldNames
+    );
+  }
+  if (layer && layer.hasOwnProperty("definitionQuery")) {
+    layer.definitionQuery = _templatizeSimpleName(
+      layer.definitionQuery || "",
       basePath,
       fieldNames
     );

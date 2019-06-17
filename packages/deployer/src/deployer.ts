@@ -167,7 +167,6 @@ export function deploySolution(
                       itemInfo.id,
                       response.id
                     );
-                    // console.log(JSON.stringify(templateDictionary, null, 2));
                     progressCallback(100);
                     resolve({
                       item: updatedItemInfo,
