@@ -156,6 +156,17 @@ export function convertItemToTemplate(
             );
 
             // Store the form's data in the solution resources, not in template
+            common
+              .copyBlobToStorageItem(
+                itemTemplate.data,
+                solutionItemId,
+                requestOptions
+              )
+              .then(
+                ok => console.log(JSON.stringify(ok, null, 2)),
+                err => console.log(JSON.stringify(err, null, 2))
+              );
+
             itemTemplate.data = {};
             form.convertItemToTemplate(itemTemplate);
 
