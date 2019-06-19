@@ -131,7 +131,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         properties,
         MOCK_USER_REQOPTS,
         "aabb123456",
-        true
+        true,
+        "sol1234567890"
       ).then(
         () => done.fail(),
         error => {
@@ -183,18 +184,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         tables: []
       };
 
-      const item: any = {
-        id: "0",
-        name: "A"
-      };
-
       createFeatureService(
-        item,
+        {
+          id: "0",
+          name: "A"
+        },
         {},
         properties,
         sessionWithMockedTime,
         "aabb123456",
-        true
+        true,
+        "sol1234567890"
       ).then(
         () => {
           done();
@@ -212,19 +212,21 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           password: "123456"
         })
       };
-
+      itemTemplate.item.name = "A";
       const options: any = _getCreateServiceOptions(
         itemTemplate.item,
         itemTemplate.data,
         itemTemplate.properties,
         "aabb123456",
         false,
-        requestOptions
+        requestOptions,
+        "sol1234567890"
       );
 
       expect(options).toEqual({
         item: {
-          name: options.item.name, // just pull from the object as it will have a timestamp
+          name: "A_sol1234567890",
+          title: "A",
           capabilities: [],
           data: {},
           text: {}
@@ -252,12 +254,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemTemplate.properties,
         "aabb123456",
         true,
-        requestOptions
+        requestOptions,
+        "sol1234567890"
       );
 
       expect(options).toEqual({
         item: {
-          name: options.item.name, // just pull from the object as it will have a timestamp
+          name: "undefined_sol1234567890",
+          title: undefined,
           capabilities: "",
           data: {},
           text: {}
@@ -296,7 +300,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           tables: []
         },
         type: "",
-        item: {},
+        item: {
+          name: "A"
+        },
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
@@ -309,12 +315,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemTemplate.properties,
         "aabb123456",
         false,
-        requestOptions
+        requestOptions,
+        "sol1234567890"
       );
 
       expect(options).toEqual({
         item: {
-          name: options.item.name, // just pull from the object as it will have a timestamp
+          name: "A_sol1234567890",
+          title: "A",
           somePropNotInItem: true,
           capabilities: ["Query"],
           data: {},
@@ -368,12 +376,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemTemplate.properties,
         "aabb123456",
         true, // isPortal
-        requestOptions
+        requestOptions,
+        "sol1234567890"
       );
 
       expect(options).toEqual({
         item: {
-          name: options.item.name, // just pull from the object as it will have a timestamp
+          name: options.item.name,
+          title: undefined,
           somePropNotInItem: true,
           capabilities: "Query",
           data: {},
@@ -385,6 +395,70 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           somePropNotInItem: true,
           preserveLayerIds: true,
           isView: true
+        },
+        preserveLayerIds: true,
+        ...requestOptions
+      });
+    });
+
+    it("can get options for HOSTED service with values when name contains quid", () => {
+      const requestOptions: IUserRequestOptions = {
+        authentication: new UserSession({
+          username: "jsmith",
+          password: "123456"
+        })
+      };
+
+      itemTemplate = {
+        itemId: "",
+        key: "",
+        properties: {
+          service: {
+            somePropNotInItem: true, // should be added to item and params
+            hasViews: true, // should be skipped
+            capabilities: ["Query"] // should be added to item and params
+          },
+          layers: [
+            {
+              fields: []
+            }
+          ],
+          tables: []
+        },
+        type: "",
+        item: {
+          name: "A_0a25612a2fc54f6e8828c679e2300a49",
+          title: "A"
+        },
+        data: {},
+        resources: [],
+        estimatedDeploymentCostFactor: 0,
+        dependencies: []
+      };
+
+      const options: any = _getCreateServiceOptions(
+        itemTemplate.item,
+        itemTemplate.data,
+        itemTemplate.properties,
+        "aabb123456",
+        false,
+        requestOptions,
+        "1b25612a2fc54f6e8828c679e2300a49"
+      );
+
+      expect(options).toEqual({
+        item: {
+          name: "A_1b25612a2fc54f6e8828c679e2300a49",
+          title: "A",
+          somePropNotInItem: true,
+          capabilities: ["Query"],
+          data: {},
+          text: {}
+        },
+        folderId: "aabb123456",
+        params: {
+          somePropNotInItem: true,
+          preserveLayerIds: true
         },
         preserveLayerIds: true,
         ...requestOptions

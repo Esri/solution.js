@@ -104,74 +104,97 @@ export function deploySolution(
         );
         progressCallback((percentDone += 2 * progressPercentStep)); // for data fetch and folder creation
 
-        // Handle the contained item templates
-        deployItems
-          .deploySolutionItems(
-            portalSubset.restUrl,
-            sourceId,
-            itemData.templates,
-            destinationUserSession,
-            templateDictionary,
-            destinationUserSession,
-            () => {
-              progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
-            }
+        const updateItemInfo = {
+          ...itemInfo,
+          type: "Solution",
+          typeKeywords: ["Solution"]
+        };
+        common
+          .createItemWithData(
+            updateItemInfo,
+            {},
+            {
+              authentication: destinationUserSession
+            },
+            templateDictionary.folderId
           )
           .then(
-            clonedSolutionItemIds => {
-              progressCallback((percentDone += progressPercentStep)); // for solution item creation
-
-              // Update solution item's data JSON using template dictionary, and then update the
-              // itemId & dependencies in each item template
-              itemData = common.replaceInTemplate(itemData, templateDictionary);
-              itemData.templates = itemData.templates.map(itemTemplate => {
-                // Update ids present in template dictionary
-                const itemId = common.getProp(
-                  templateDictionary,
-                  itemTemplate.itemId + ".id"
-                );
-                if (itemId) {
-                  itemTemplate.itemId = itemId;
+            updateResponse => {
+              const oldID: string = itemInfo.id;
+              const newId: string = updateResponse.id;
+              ["thumbnailUrl", "tryitUrl", "url"].forEach(p => {
+                if (itemInfo[p] && itemInfo[p].indexOf(oldID) > -1) {
+                  itemInfo[p] = itemInfo[p].replace(oldID, newId);
                 }
-                itemTemplate.dependencies = itemTemplate.dependencies.map(
-                  id => {
-                    const dependId = common.getProp(
-                      templateDictionary,
-                      id + ".id"
-                    );
-                    return dependId ? dependId : id;
-                  }
-                );
-                return itemTemplate;
               });
-
-              // Create solution item using internal representation & and the updated data JSON
-              const updatedItemInfo = {
-                ...itemInfo,
-                type: "Solution",
-                typeKeywords: ["Solution", "Deployed"]
-              };
-              common
-                .createItemWithData(
-                  updatedItemInfo,
-                  itemData,
-                  {
-                    authentication: destinationUserSession
-                  },
-                  templateDictionary.folderId
+              itemInfo.id = newId;
+              templateDictionary.solutionItemId = newId;
+              // Handle the contained item templates
+              deployItems
+                .deploySolutionItems(
+                  portalSubset.restUrl,
+                  sourceId,
+                  itemData.templates,
+                  destinationUserSession,
+                  templateDictionary,
+                  destinationUserSession,
+                  () => {
+                    progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
+                  }
                 )
                 .then(
-                  response => {
-                    updatedItemInfo.id = response.id;
-                    updatedItemInfo.url = updatedItemInfo.url.replace(
-                      itemInfo.id,
-                      response.id
+                  clonedSolutionItemIds => {
+                    progressCallback((percentDone += progressPercentStep)); // for solution item creation
+
+                    // Update solution item's data JSON using template dictionary, and then update the
+                    // itemId & dependencies in each item template
+                    itemData = common.replaceInTemplate(
+                      itemData,
+                      templateDictionary
                     );
-                    progressCallback(100);
-                    resolve({
-                      item: updatedItemInfo,
-                      data: itemData
-                    });
+                    itemData.templates = itemData.templates.map(
+                      itemTemplate => {
+                        // Update ids present in template dictionary
+                        const itemId = common.getProp(
+                          templateDictionary,
+                          itemTemplate.itemId + ".id"
+                        );
+                        if (itemId) {
+                          itemTemplate.itemId = itemId;
+                        }
+                        itemTemplate.dependencies = itemTemplate.dependencies.map(
+                          id => {
+                            const dependId = common.getProp(
+                              templateDictionary,
+                              id + ".id"
+                            );
+                            return dependId ? dependId : id;
+                          }
+                        );
+                        return itemTemplate;
+                      }
+                    );
+
+                    // Create solution item using internal representation & and the updated data JSON
+                    itemInfo.data = itemData;
+                    itemInfo.typeKeywords = ["Solution", "Deployed"];
+                    const updatedItemInfo: portal.IUpdateItemOptions = {
+                      item: itemInfo,
+                      authentication: destinationUserSession,
+                      folderId: templateDictionary.folderId
+                    };
+                    portal.updateItem(updatedItemInfo).then(
+                      () => {
+                        progressCallback(100);
+                        resolve({
+                          item: updatedItemInfo,
+                          data: itemData
+                        });
+                      },
+                      error => {
+                        console.error("updateItem", error);
+                      }
+                    );
                   },
                   error => {
                     console.error("createItemWithData", error);

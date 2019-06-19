@@ -125,7 +125,8 @@ export function createItemFromTemplate(
         newItemTemplate.properties,
         requestOptions,
         templateDictionary.folderId,
-        templateDictionary.isPortal
+        templateDictionary.isPortal,
+        templateDictionary.solutionItemId
       )
       .then(
         createResponse => {

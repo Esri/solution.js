@@ -50,7 +50,8 @@ export function createFeatureService(
   serviceInfo: any,
   requestOptions: auth.IUserRequestOptions,
   folderId: string | undefined,
-  isPortal: boolean
+  isPortal: boolean,
+  solutionItemId: string
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
@@ -60,7 +61,8 @@ export function createFeatureService(
       serviceInfo,
       folderId,
       isPortal,
-      requestOptions
+      requestOptions,
+      solutionItemId
     );
 
     serviceAdmin.createFeatureService(createOptions).then(
@@ -78,18 +80,28 @@ export function _getCreateServiceOptions(
   serviceInfo: any,
   folderId: any,
   isPortal: boolean,
-  requestOptions: auth.IUserRequestOptions
+  requestOptions: auth.IUserRequestOptions,
+  solutionItemId: string
 ): any {
   const params: IParams = {
     preserveLayerIds: true
   };
 
-  const name: string = itemInfo.name || itemInfo.title;
+  // Retain the existing title but swap with name if it's missing
+  itemInfo.title = itemInfo.title || itemInfo.name;
+
+  // Need to set the service name: name + "_" + newItemId
+  const baseName: string = itemInfo.name || itemInfo.title;
+
+  // If the name already contains a GUID replace it with the newItemID
+  const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
+  itemInfo.name = regEx.exec(baseName)
+    ? baseName.replace(regEx, solutionItemId)
+    : baseName + "_" + solutionItemId;
 
   const _item: serviceAdmin.ICreateServiceParams = {
     ...itemInfo,
-    data: dataInfo,
-    name: name + "_" + generalHelpers.getUTCTimestamp()
+    data: dataInfo
   };
 
   const createOptions = {
