@@ -110,7 +110,7 @@ export function createItemFromTemplate(
       authentication: destinationUserSession
     };
 
-    let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
     // cache the popup info to be added later
     const popupInfos: fsUtils.IPopupInfos = fsUtils.cachePopupInfos(
