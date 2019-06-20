@@ -83,7 +83,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Dashboard":
-      item = getAGOLItemFundamentals(type, "dsh", url || null);
+      item = getAGOLItemFundamentals(type, "dsh", url || undefined);
       break;
 
     case "Desktop Add In":
@@ -135,7 +135,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Web Map":
-      item = getAGOLItemFundamentals(type, "map", url || null);
+      item = getAGOLItemFundamentals(type, "map", url || undefined);
       break;
 
     case "Web Mapping Application":
