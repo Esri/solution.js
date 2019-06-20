@@ -17,3 +17,15 @@
 /**
  * Provides tests for common functions involving the management of item and group resources.
  */
+
+import * as simpleTypes from "../src/simple-types";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
+  describe("placeholder", () => {
+    it("top-level", () => {
+      expect("a").toEqual("a");
+    });
+  });
+});
