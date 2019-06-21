@@ -58,6 +58,12 @@ export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   );
 }
 
+/**
+ * Replaces the browser clock with a mock clock.
+ *
+ * @param now Time to use to set Jasmine clock
+ * @note Be sure to call `jasmine.clock().uninstall()` after using this function in a test
+ */
 export function setMockDateTime(now: number): number {
   jasmine.clock().install();
   jasmine.clock().mockDate(new Date(now));

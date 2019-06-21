@@ -36,7 +36,6 @@ import {
   TOMORROW,
   createMockSettings,
   createRuntimeMockUserSession,
-  setMockDateTime,
   checkForArcgisRestSuccessRequestError
 } from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
