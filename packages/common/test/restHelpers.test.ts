@@ -197,9 +197,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "sol1234567890"
       ).then(
         () => {
+          jasmine.clock().uninstall();
           done();
         },
-        () => done.fail()
+        () => {
+          jasmine.clock().uninstall();
+          done.fail();
+        }
       );
     });
   });
