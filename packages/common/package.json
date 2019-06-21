@@ -18,8 +18,7 @@
     "@esri/arcgis-rest-portal": "^2.0.3",
     "@esri/arcgis-rest-request": "^2.0.3",
     "@esri/arcgis-rest-routing": "^2.0.3",
-    "@esri/arcgis-rest-service-admin": "^2.0.3",
-    "@esri/arcgis-rest-types": "^2.0.3"
+    "@esri/arcgis-rest-service-admin": "^2.0.3"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.0.3",
@@ -29,7 +28,6 @@
     "@esri/arcgis-rest-request": "^2.0.3",
     "@esri/arcgis-rest-routing": "^2.0.3",
     "@esri/arcgis-rest-service-admin": "^2.0.3",
-    "@esri/arcgis-rest-types": "^2.0.3",
     "rollup": "^1.6.0",
     "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-filesize": "^5.0.1",
@@ -41,6 +39,7 @@
     "typescript": "^3.4.5"
   },
   "dependencies": {
+    "@esri/arcgis-rest-types": "^2.0.3",
     "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },
