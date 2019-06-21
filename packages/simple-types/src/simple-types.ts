@@ -27,6 +27,7 @@ import * as form from "./form";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
+import * as workforce from "./workforce";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -140,6 +141,8 @@ export function convertItemToTemplate(
           case "web mapping application":
             webmappingapplication.convertItemToTemplate(itemTemplate);
             break;
+          case "workforce project":
+            workforce.convertItemToTemplate(itemTemplate);
         }
 
         console.log(
