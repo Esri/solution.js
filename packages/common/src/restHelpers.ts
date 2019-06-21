@@ -34,6 +34,20 @@ import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export function addToServiceDefinition(
+  url: string,
+  options: any
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    serviceAdmin.addToServiceDefinition(url, options).then(
+      () => {
+        resolve();
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
 /**
  * Publishes a feature service as an AGOL item; it does not include its layers and tables
  *
@@ -68,186 +82,6 @@ export function createFeatureService(
     serviceAdmin.createFeatureService(createOptions).then(
       createResponse => {
         resolve(createResponse);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-export function _getCreateServiceOptions(
-  itemInfo: any,
-  dataInfo: any,
-  serviceInfo: any,
-  folderId: any,
-  isPortal: boolean,
-  requestOptions: auth.IUserRequestOptions,
-  solutionItemId: string
-): any {
-  const params: IParams = {
-    preserveLayerIds: true
-  };
-
-  // Retain the existing title but swap with name if it's missing
-  itemInfo.title = itemInfo.title || itemInfo.name;
-
-  // Need to set the service name: name + "_" + newItemId
-  const baseName: string = itemInfo.name || itemInfo.title;
-
-  // If the name already contains a GUID replace it with the newItemID
-  const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-  itemInfo.name = regEx.exec(baseName)
-    ? baseName.replace(regEx, solutionItemId)
-    : baseName + "_" + solutionItemId;
-
-  const _item: serviceAdmin.ICreateServiceParams = {
-    ...itemInfo,
-    data: dataInfo
-  };
-
-  const createOptions = {
-    item: _item,
-    folderId,
-    params,
-    preserveLayerIds: true,
-    ...requestOptions
-  };
-
-  createOptions.item = _setItemProperties(
-    createOptions.item,
-    dataInfo,
-    serviceInfo,
-    params,
-    isPortal
-  );
-
-  return createOptions;
-}
-
-/**
- * Creates a folder using numeric suffix to ensure uniqueness.
- * @param folderTitleRoot Folder title, used as-is if possible and with suffix otherwise
- * @param userSession Credentials for creating folder
- * @param suffix Current suffix level; '0' means no suffix
- * @return Id of created folder
- */
-export function createUniqueFolder(
-  folderTitleRoot: string,
-  userSession: auth.UserSession,
-  suffix = 0
-): Promise<portal.IAddFolderResponse> {
-  return new Promise<portal.IAddFolderResponse>((resolve, reject) => {
-    const folderName =
-      folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
-    const folderCreationParam = {
-      title: folderName,
-      authentication: userSession
-    };
-    portal.createFolder(folderCreationParam).then(
-      ok => resolve(ok),
-      err => {
-        // If the name already exists, we'll try again
-        const errorDetails = generalHelpers.getProp(
-          err,
-          "response.error.details"
-        ) as string[];
-        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-          const nameNotAvailMsg =
-            "Folder title '" + folderName + "' not available.";
-          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
-            createUniqueFolder(folderTitleRoot, userSession, suffix + 1).then(
-              resolve,
-              reject
-            );
-          } else {
-            reject(err);
-          }
-        } else {
-          // Otherwise, error out
-          reject(err);
-        }
-      }
-    );
-  });
-}
-
-export function _setItemProperties(
-  item: any,
-  data: any,
-  serviceInfo: any,
-  params: IParams,
-  isPortal: boolean
-): any {
-  if (data) {
-    // Get the items data
-    item.text = data;
-    // delete itemTemplate.data;
-  }
-
-  // Set the capabilities
-  const portalCapabilities = [
-    "Create",
-    "Query",
-    "Editing",
-    "Update",
-    "Delete",
-    "Uploads",
-    "Sync",
-    "Extract"
-  ];
-
-  const capabilities =
-    generalHelpers.getProp(serviceInfo, "service.capabilities") ||
-    (isPortal ? "" : []);
-
-  item.capabilities = isPortal
-    ? capabilities
-        .split(",")
-        .filter((c: any) => portalCapabilities.indexOf(c) > -1)
-        .join(",")
-    : capabilities;
-  if (serviceInfo.service.capabilities) {
-    serviceInfo.service.capabilities = item.capabilities;
-  }
-
-  // set create options item properties
-  const keyProperties: string[] = [
-    "name",
-    "isView",
-    "sourceSchemaChangesAllowed",
-    "isUpdatableView",
-    "capabilities",
-    "isMultiServicesView"
-  ];
-  const deleteKeys: string[] = ["layers", "tables", "fullExtent", "hasViews"];
-  const itemKeys: string[] = Object.keys(item);
-  const serviceKeys: string[] = Object.keys(serviceInfo.service);
-  serviceKeys.forEach(k => {
-    if (itemKeys.indexOf(k) === -1) {
-      params[k] = serviceInfo.service[k];
-      if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
-        item[k] = serviceInfo.service[k];
-      } else {
-        item[k] = serviceInfo.service[k];
-      }
-
-      if (deleteKeys.indexOf(k) > -1) {
-        delete item[k];
-        delete params[k];
-      }
-    }
-  });
-
-  return item;
-}
-
-export function addToServiceDefinition(
-  url: string,
-  options: any
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    serviceAdmin.addToServiceDefinition(url, options).then(
-      () => {
-        resolve();
       },
       e => reject(generalHelpers.fail(e))
     );
@@ -316,6 +150,90 @@ export function createItemWithData(
   });
 }
 
+/**
+ * Creates a folder using numeric suffix to ensure uniqueness.
+ * @param folderTitleRoot Folder title, used as-is if possible and with suffix otherwise
+ * @param userSession Credentials for creating folder
+ * @param suffix Current suffix level; '0' means no suffix
+ * @return Id of created folder
+ */
+export function createUniqueFolder(
+  folderTitleRoot: string,
+  userSession: auth.UserSession,
+  suffix = 0
+): Promise<portal.IAddFolderResponse> {
+  return new Promise<portal.IAddFolderResponse>((resolve, reject) => {
+    const folderName =
+      folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+    const folderCreationParam = {
+      title: folderName,
+      authentication: userSession
+    };
+    portal.createFolder(folderCreationParam).then(
+      ok => resolve(ok),
+      err => {
+        // If the name already exists, we'll try again
+        const errorDetails = generalHelpers.getProp(
+          err,
+          "response.error.details"
+        ) as string[];
+        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+          const nameNotAvailMsg =
+            "Folder title '" + folderName + "' not available.";
+          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            createUniqueFolder(folderTitleRoot, userSession, suffix + 1).then(
+              resolve,
+              reject
+            );
+          } else {
+            reject(err);
+          }
+        } else {
+          // Otherwise, error out
+          reject(err);
+        }
+      }
+    );
+  });
+}
+
+/**
+ * Gets the ids of the dependencies of an AGOL feature service item.
+ * Dependencies will only exist when the service is a view.
+ *
+ * @param itemTemplate Template of item to be created
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve a list of dependencies
+ */
+export function extractDependencies(
+  itemTemplate: IItemTemplate,
+  requestOptions?: auth.IUserRequestOptions
+): Promise<IDependency[]> {
+  const dependencies: any[] = [];
+  return new Promise((resolve, reject) => {
+    // Get service dependencies when the item is a view
+    if (itemTemplate.properties.service.isView) {
+      const url: string = itemTemplate.item.url;
+      request(url + "/sources?f=json", requestOptions).then(
+        response => {
+          if (response && response.services) {
+            response.services.forEach((layer: any) => {
+              dependencies.push({
+                id: layer.serviceItemId,
+                name: layer.name
+              });
+            });
+            resolve(dependencies);
+          }
+        },
+        e => reject(generalHelpers.fail(e))
+      );
+    } else {
+      resolve(dependencies);
+    }
+  });
+}
+
 export function getBlob(
   url: string,
   requestOptions: auth.IUserRequestOptions
@@ -337,43 +255,6 @@ export function getBlob(
       e => reject(generalHelpers.fail(e)) // unable to get response
     );
   });
-}
-
-export function getItemBlob(
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const url = `${portal.getPortalUrl(
-    requestOptions
-  )}/content/items/${itemId}/data`;
-  return getBlob(url, requestOptions);
-}
-
-export function getItemData(
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    ...requestOptions
-  };
-  return portal.getItemData(itemId, itemDataParam);
-}
-
-export function getItemRelatedItems(
-  itemId: string,
-  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
-  direction: "forward" | "reverse",
-  requestOptions: auth.IUserRequestOptions
-): Promise<portal.IGetRelatedItemsResponse> {
-  // Get item related items
-  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
-    id: itemId,
-    relationshipType,
-    direction,
-    ...requestOptions
-  };
-  return portal.getRelatedItems(itemRelatedItemsParam);
 }
 
 /**
@@ -453,74 +334,141 @@ export function getGroupContentsTranche(
   });
 }
 
-/**
- * Updates the URL of an item.
- *
- * @param id AGOL id of item to update
- * @param url URL to assign to item's base section
- * @param requestOptions Options for the request
- * @return A promise that will resolve when the item has been updated
- */
-export function updateItemURL(
-  id: string,
-  url: string,
+export function getItemBlob(
+  itemId: string,
   requestOptions: auth.IUserRequestOptions
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Update its URL
-    const options = {
-      item: {
-        id,
-        url
-      },
-      ...requestOptions
-    };
+): Promise<any> {
+  const url = `${portal.getPortalUrl(
+    requestOptions
+  )}/content/items/${itemId}/data`;
+  return getBlob(url, requestOptions);
+}
 
-    portal.updateItem(options).then(
-      () => {
-        resolve(id);
-      },
+export function getItemData(
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  // Get item data
+  const itemDataParam: portal.IItemDataOptions = {
+    ...requestOptions
+  };
+  return portal.getItemData(itemId, itemDataParam);
+}
+
+export function getItemRelatedItems(
+  itemId: string,
+  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
+  direction: "forward" | "reverse",
+  requestOptions: auth.IUserRequestOptions
+): Promise<portal.IGetRelatedItemsResponse> {
+  // Get item related items
+  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
+    id: itemId,
+    relationshipType,
+    direction,
+    ...requestOptions
+  };
+  return portal.getRelatedItems(itemRelatedItemsParam);
+}
+
+export function getLayers(
+  serviceUrl: string,
+  layerList: any[],
+  requestOptions: auth.IUserRequestOptions
+): Promise<any[]> {
+  return new Promise<any[]>((resolve, reject) => {
+    if (!Array.isArray(layerList) || layerList.length === 0) {
+      resolve([]);
+    }
+
+    // get the admin URL
+    serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
+
+    const requestsDfd: Array<Promise<any>> = [];
+    layerList.forEach(layer => {
+      requestsDfd.push(
+        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
+      );
+    });
+
+    // Wait until all layers are heard from
+    Promise.all(requestsDfd).then(
+      layers => resolve(layers),
       e => reject(generalHelpers.fail(e))
     );
   });
 }
 
-export function updateItem(
-  serviceItemId: string,
-  itemInfo: any,
-  requestOptions: auth.IUserRequestOptions,
-  access?: string | undefined,
-  progressTickCallback?: () => void
-): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const updateOptions: any = {
-      item: itemInfo,
-      ...requestOptions
-    };
+/**
+ * Add additional options to a layers definition
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @return A promise that will resolve when fullItem has been updated
+ * @protected
+ */
+export function getLayerUpdates(args: IPostProcessArgs): any[] {
+  const adminUrl: string = args.itemTemplate.item.url.replace(
+    "rest/services",
+    "rest/admin/services"
+  );
 
-    portal.updateItem(updateOptions).then(
+  const updates: IUpdate[] = [];
+  const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
+  updates.push(refresh);
+  Object.keys(args.objects).forEach(id => {
+    const obj: any = Object.assign({}, args.objects[id]);
+    // These properties cannot be set in the update definition when working with portal
+    generalHelpers.deleteProps(obj, ["type", "id", "relationships"]);
+    // handle definition deletes
+    // removes previous editFieldsInfo fields if their names were changed
+    if (obj.hasOwnProperty("deleteFields")) {
+      updates.push(_getUpdate(adminUrl, id, obj, args, "delete"));
+      generalHelpers.deleteProp(obj, "deleteFields");
+      updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
+    }
+    // handle definition updates
+    updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
+    updates.push(refresh);
+  });
+  if (!args.itemTemplate.properties.service.isView) {
+    const relUpdates: any = _getRelationshipUpdates({
+      message: "updated layer relationships",
+      objects: args.objects,
+      itemTemplate: args.itemTemplate,
+      requestOptions: args.requestOptions,
+      progressTickCallback: args.progressTickCallback
+    });
+    if (relUpdates.layers.length > 0) {
+      updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
+      updates.push(refresh);
+    }
+  }
+  return updates;
+}
+
+/**
+ * Add additional options to a layers definition
+ *
+ * @param update will contain either add, update, or delete from service definition call
+ * @return A promise that will resolve when service definition call has completed
+ * @protected
+ */
+export function getRequest(update: IUpdate): Promise<void> {
+  return new Promise((resolveFn, rejectFn) => {
+    const options: any = {
+      params: update.params,
+      ...update.args.requestOptions
+    };
+    request(update.url, options).then(
       () => {
-        if (access && access !== "private") {
-          // Set access if it is not AGOL default
-          // Set the access manually since the access value in createItem appears to be ignored
-          const accessOptions: portal.ISetAccessOptions = {
-            id: serviceItemId,
-            access: access === "public" ? "public" : "org", // need to use constants rather than string
-            ...requestOptions
-          };
-          portal.setItemAccess(accessOptions).then(
-            () => {
-              progressTickCallback && progressTickCallback();
-              resolve();
-            },
-            e => reject(generalHelpers.fail(e))
-          );
-        } else {
-          progressTickCallback && progressTickCallback();
-          resolve();
-        }
+        update.args.progressTickCallback &&
+          update.args.progressTickCallback({
+            processId: update.args.itemTemplate.key,
+            status: update.args.message
+          });
+        resolveFn();
       },
-      e => reject(generalHelpers.fail(e))
+      (e: any) => rejectFn(e)
     );
   });
 }
@@ -578,6 +526,80 @@ export function getServiceLayersAndTables(
   });
 }
 
+export function updateItem(
+  serviceItemId: string,
+  itemInfo: any,
+  requestOptions: auth.IUserRequestOptions,
+  access?: string | undefined,
+  progressTickCallback?: () => void
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const updateOptions: any = {
+      item: itemInfo,
+      ...requestOptions
+    };
+
+    portal.updateItem(updateOptions).then(
+      () => {
+        if (access && access !== "private") {
+          // Set access if it is not AGOL default
+          // Set the access manually since the access value in createItem appears to be ignored
+          const accessOptions: portal.ISetAccessOptions = {
+            id: serviceItemId,
+            access: access === "public" ? "public" : "org", // need to use constants rather than string
+            ...requestOptions
+          };
+          portal.setItemAccess(accessOptions).then(
+            () => {
+              progressTickCallback && progressTickCallback();
+              resolve();
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        } else {
+          progressTickCallback && progressTickCallback();
+          resolve();
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Updates the URL of an item.
+ *
+ * @param id AGOL id of item to update
+ * @param url URL to assign to item's base section
+ * @param requestOptions Options for the request
+ * @return A promise that will resolve when the item has been updated
+ */
+export function updateItemURL(
+  id: string,
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Update its URL
+    const options = {
+      item: {
+        id,
+        url
+      },
+      ...requestOptions
+    };
+
+    portal.updateItem(options).then(
+      () => {
+        resolve(id);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
 export function _countRelationships(layers: any[]): number {
   const reducer = (accumulator: number, currentLayer: any) =>
     accumulator +
@@ -594,116 +616,78 @@ export function _countRelationships(layers: any[]): number {
  * @param requestOptions Options for the request
  * @return A promise that will resolve with a list of the layers from the admin api
  */
-export function getLayers(
-  serviceUrl: string,
-  layerList: any[],
-  requestOptions: auth.IUserRequestOptions
-): Promise<any[]> {
-  return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
-      resolve([]);
-    }
 
-    // get the admin URL
-    serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
+export function _getCreateServiceOptions(
+  itemInfo: any,
+  dataInfo: any,
+  serviceInfo: any,
+  folderId: any,
+  isPortal: boolean,
+  requestOptions: auth.IUserRequestOptions,
+  solutionItemId: string
+): any {
+  const params: IParams = {
+    preserveLayerIds: true
+  };
 
-    const requestsDfd: Array<Promise<any>> = [];
-    layerList.forEach(layer => {
-      requestsDfd.push(
-        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
-      );
-    });
+  // Retain the existing title but swap with name if it's missing
+  itemInfo.title = itemInfo.title || itemInfo.name;
 
-    // Wait until all layers are heard from
-    Promise.all(requestsDfd).then(
-      layers => resolve(layers),
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
+  // Need to set the service name: name + "_" + newItemId
+  const baseName: string = itemInfo.name || itemInfo.title;
 
-/**
- * Gets the ids of the dependencies of an AGOL feature service item.
- * Dependencies will only exist when the service is a view.
- *
- * @param itemTemplate Template of item to be created
- * @param requestOptions Options for the request
- * @return A promise that will resolve a list of dependencies
- */
-export function extractDependencies(
-  itemTemplate: IItemTemplate,
-  requestOptions?: auth.IUserRequestOptions
-): Promise<IDependency[]> {
-  const dependencies: any[] = [];
-  return new Promise((resolve, reject) => {
-    // Get service dependencies when the item is a view
-    if (itemTemplate.properties.service.isView) {
-      const url: string = itemTemplate.item.url;
-      request(url + "/sources?f=json", requestOptions).then(
-        response => {
-          if (response && response.services) {
-            response.services.forEach((layer: any) => {
-              dependencies.push({
-                id: layer.serviceItemId,
-                name: layer.name
-              });
-            });
-            resolve(dependencies);
-          }
-        },
-        e => reject(generalHelpers.fail(e))
-      );
-    } else {
-      resolve(dependencies);
-    }
-  });
-}
+  // If the name already contains a GUID replace it with the newItemID
+  const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
+  itemInfo.name = regEx.exec(baseName)
+    ? baseName.replace(regEx, solutionItemId)
+    : baseName + "_" + solutionItemId;
 
-/**
- * Add additional options to a layers definition
- *
- * @param args The IPostProcessArgs for the request(s)
- * @return A promise that will resolve when fullItem has been updated
- * @protected
- */
-export function getLayerUpdates(args: IPostProcessArgs): any[] {
-  const adminUrl: string = args.itemTemplate.item.url.replace(
-    "rest/services",
-    "rest/admin/services"
+  const _item: serviceAdmin.ICreateServiceParams = {
+    ...itemInfo,
+    data: dataInfo
+  };
+
+  const createOptions = {
+    item: _item,
+    folderId,
+    params,
+    preserveLayerIds: true,
+    ...requestOptions
+  };
+
+  createOptions.item = _setItemProperties(
+    createOptions.item,
+    dataInfo,
+    serviceInfo,
+    params,
+    isPortal
   );
 
-  const updates: IUpdate[] = [];
-  const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
-  updates.push(refresh);
-  Object.keys(args.objects).forEach(id => {
-    const obj: any = Object.assign({}, args.objects[id]);
-    // These properties cannot be set in the update definition when working with portal
-    generalHelpers.deleteProps(obj, ["type", "id", "relationships"]);
-    // handle definition deletes
-    // removes previous editFieldsInfo fields if their names were changed
-    if (obj.hasOwnProperty("deleteFields")) {
-      updates.push(_getUpdate(adminUrl, id, obj, args, "delete"));
-      generalHelpers.deleteProp(obj, "deleteFields");
-      updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
+  return createOptions;
+}
+
+/**
+ * Add relationships to all layers in one call to retain fully functioning composite relationships
+ *
+ * @param args The IPostProcessArgs for the request(s)
+ * @return Any relationships that should be updated for the service
+ * @protected
+ */
+export function _getRelationshipUpdates(args: IPostProcessArgs): any {
+  const rels: any = {
+    layers: []
+  };
+  Object.keys(args.objects).forEach((k: any) => {
+    const obj: any = args.objects[k];
+    if (obj.relationships && obj.relationships.length > 0) {
+      rels.layers.push({
+        id: obj.id,
+        relationships: obj.relationships
+      });
     }
-    // handle definition updates
-    updates.push(_getUpdate(adminUrl, id, obj, args, "update"));
-    updates.push(refresh);
+    generalHelpers.deleteProp(obj, "relationships");
   });
-  if (!args.itemTemplate.properties.service.isView) {
-    const relUpdates: any = _getRelationshipUpdates({
-      message: "updated layer relationships",
-      objects: args.objects,
-      itemTemplate: args.itemTemplate,
-      requestOptions: args.requestOptions,
-      progressTickCallback: args.progressTickCallback
-    });
-    if (relUpdates.layers.length > 0) {
-      updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
-      updates.push(refresh);
-    }
-  }
-  return updates;
+  return rels;
 }
 
 /**
@@ -761,53 +745,72 @@ export function _getUpdate(
   };
 }
 
-/**
- * Add additional options to a layers definition
- *
- * @param update will contain either add, update, or delete from service definition call
- * @return A promise that will resolve when service definition call has completed
- * @protected
- */
-export function getRequest(update: IUpdate): Promise<void> {
-  return new Promise((resolveFn, rejectFn) => {
-    const options: any = {
-      params: update.params,
-      ...update.args.requestOptions
-    };
-    request(update.url, options).then(
-      () => {
-        update.args.progressTickCallback &&
-          update.args.progressTickCallback({
-            processId: update.args.itemTemplate.key,
-            status: update.args.message
-          });
-        resolveFn();
-      },
-      (e: any) => rejectFn(e)
-    );
-  });
-}
+export function _setItemProperties(
+  item: any,
+  data: any,
+  serviceInfo: any,
+  params: IParams,
+  isPortal: boolean
+): any {
+  if (data) {
+    // Get the items data
+    item.text = data;
+    // delete itemTemplate.data;
+  }
 
-/**
- * Add relationships to all layers in one call to retain fully functioning composite relationships
- *
- * @param args The IPostProcessArgs for the request(s)
- * @return Any relationships that should be updated for the service
- * @protected
- */
-export function _getRelationshipUpdates(args: IPostProcessArgs): any {
-  const rels: any = {
-    layers: []
-  };
-  Object.keys(args.objects).forEach((k: any) => {
-    const obj: any = args.objects[k];
-    if (obj.relationships && obj.relationships.length > 0) {
-      rels.layers.push({
-        id: obj.id,
-        relationships: obj.relationships
-      });
+  // Set the capabilities
+  const portalCapabilities = [
+    "Create",
+    "Query",
+    "Editing",
+    "Update",
+    "Delete",
+    "Uploads",
+    "Sync",
+    "Extract"
+  ];
+
+  const capabilities =
+    generalHelpers.getProp(serviceInfo, "service.capabilities") ||
+    (isPortal ? "" : []);
+
+  item.capabilities = isPortal
+    ? capabilities
+        .split(",")
+        .filter((c: any) => portalCapabilities.indexOf(c) > -1)
+        .join(",")
+    : capabilities;
+  if (serviceInfo.service.capabilities) {
+    serviceInfo.service.capabilities = item.capabilities;
+  }
+
+  // set create options item properties
+  const keyProperties: string[] = [
+    "name",
+    "isView",
+    "sourceSchemaChangesAllowed",
+    "isUpdatableView",
+    "capabilities",
+    "isMultiServicesView"
+  ];
+  const deleteKeys: string[] = ["layers", "tables", "fullExtent", "hasViews"];
+  const itemKeys: string[] = Object.keys(item);
+  const serviceKeys: string[] = Object.keys(serviceInfo.service);
+  serviceKeys.forEach(k => {
+    if (itemKeys.indexOf(k) === -1) {
+      params[k] = serviceInfo.service[k];
+      if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
+        item[k] = serviceInfo.service[k];
+      } else {
+        item[k] = serviceInfo.service[k];
+      }
+
+      if (deleteKeys.indexOf(k) > -1) {
+        delete item[k];
+        delete params[k];
+      }
     }
-    generalHelpers.deleteProp(obj, "relationships");
   });
-  return rels;
+
+  return item;
 }
