@@ -251,9 +251,7 @@ export function createItemFromTemplate(
     );
 
     // Replace the templatized symbols in a copy of the template
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(
-      template
-    ) as common.IItemTemplate;
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
     newItemTemplate = common.replaceInTemplate(
       newItemTemplate,
       templateDictionary
