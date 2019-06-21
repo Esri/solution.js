@@ -44,8 +44,6 @@ export function convertItemToTemplate(
   userSession: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    console.log("convertItemToTemplate for a feature-layer");
-
     const requestOptions: auth.IUserRequestOptions = {
       authentication: userSession
     };
@@ -112,7 +110,7 @@ export function createItemFromTemplate(
       authentication: destinationUserSession
     };
 
-    let newItemTemplate = common.cloneObject(template) as common.IItemTemplate;
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
     // cache the popup info to be added later
     const popupInfos: fsUtils.IPopupInfos = fsUtils.cachePopupInfos(
@@ -127,7 +125,8 @@ export function createItemFromTemplate(
         newItemTemplate.properties,
         requestOptions,
         templateDictionary.folderId,
-        templateDictionary.isPortal
+        templateDictionary.isPortal,
+        templateDictionary.solutionItemId
       )
       .then(
         createResponse => {
@@ -140,7 +139,6 @@ export function createItemFromTemplate(
               templateDictionary,
               createResponse
             );
-
             // Add the layers and tables to the feature service
             fsUtils
               .addFeatureServiceLayersAndTables(
@@ -161,10 +159,10 @@ export function createItemFromTemplate(
                     )
                     .then(
                       () => resolve(createResponse.serviceItemId),
-                      (e: any) => common.fail(e)
+                      (e: any) => reject(common.fail(e))
                     );
                 },
-                e => common.fail(e)
+                e => reject(common.fail(e))
               );
           } else {
             reject(common.fail());
