@@ -101,6 +101,9 @@ export function convertItemToTemplate(
 
       // Perform type-specific handling
       let dataPromise = Promise.resolve({});
+      let relatedPromise = Promise.resolve(
+        {} as portal.IGetRelatedItemsResponse
+      );
       switch (itemInfo.type.toLowerCase()) {
         case "dashboard":
         case "feature service":
@@ -108,9 +111,16 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = getItemData(itemTemplate.itemId, userSession);
+          dataPromise = common.getItemData(itemTemplate.itemId, requestOptions);
           break;
         case "form":
+          dataPromise = common.getItemBlob(itemTemplate.itemId, requestOptions);
+          relatedPromise = common.getItemRelatedItems(
+            itemTemplate.itemId,
+            "Survey2Service",
+            "forward",
+            requestOptions
+          );
           break;
       }
 
@@ -118,21 +128,60 @@ export function convertItemToTemplate(
       // from killing off both promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
-        dataPromise.catch(() => null),
-        resourcePromise.catch(() => null)
+        dataPromise.catch(() => ({})),
+        resourcePromise.catch(() => [] as string[]),
+        relatedPromise.catch(
+          () =>
+            ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
+        )
       ]).then(responses => {
-        const [itemDataResponse, savedResourceFilenames] = responses;
-        itemTemplate.data = itemDataResponse ? itemDataResponse : [];
-        itemTemplate.resources = savedResourceFilenames
-          ? savedResourceFilenames
-          : [];
+        const [
+          itemDataResponse,
+          savedResourceFilenames,
+          relatedItemsResponse
+        ] = responses;
+        itemTemplate.data = itemDataResponse;
+        itemTemplate.resources = savedResourceFilenames;
 
+        let wrapupPromise = Promise.resolve();
         switch (itemInfo.type.toLowerCase()) {
           case "dashboard":
             dashboard.convertItemToTemplate(itemTemplate);
             break;
           case "form":
+            itemTemplate.dependencies = itemTemplate.dependencies.concat(
+              relatedItemsResponse.relatedItems.map(
+                relatedItem => relatedItem.id
+              )
+            );
+
+            // Store the form's data in the solution resources, not in template
+            common
+              .copyBlobToStorageItem(
+                itemTemplate.data,
+                solutionItemId,
+                requestOptions
+              )
+              .then(
+                ok => console.log(JSON.stringify(ok, null, 2)),
+                err => console.log(JSON.stringify(err, null, 2))
+              );
+
+            itemTemplate.data = {};
             form.convertItemToTemplate(itemTemplate);
+
+            const storageName = common.generateResourceStorageFilename(
+              itemTemplate.itemId,
+              itemTemplate.item.name,
+              "info_form"
+            );
+            wrapupPromise = common.addResourceFromBlob(
+              itemDataResponse,
+              solutionItemId,
+              storageName.folder,
+              storageName.filename,
+              requestOptions
+            );
             break;
           case "web map":
             webmap.convertItemToTemplate(itemTemplate);
@@ -142,16 +191,33 @@ export function convertItemToTemplate(
             break;
         }
 
-        console.log(
-          "converted " +
-            itemInfo.type +
-            ' "' +
-            itemInfo.title +
-            '" (' +
-            itemInfo.id +
-            ")"
+        wrapupPromise.then(
+          () => {
+            console.log(
+              "converted " +
+                itemInfo.type +
+                ' "' +
+                itemInfo.title +
+                '" (' +
+                itemInfo.id +
+                ")"
+            );
+            resolve(itemTemplate);
+          },
+          err => {
+            console.log(
+              "unable to convert " +
+                itemInfo.type +
+                ' "' +
+                itemInfo.title +
+                '" (' +
+                itemInfo.id +
+                "): " +
+                JSON.stringify(err, null, 2)
+            );
+            resolve(itemTemplate);
+          }
         );
-        resolve(itemTemplate);
       });
     } else {
       // Get the group's items--its dependencies
@@ -210,7 +276,7 @@ export function createItemFromTemplate(
               id: createResponse.id
             };
 
-            // Copy resources, metadata, thumbnail
+            // Copy resources, metadata, thumbnail, form
             const resourcesDef = common.copyFilesFromStorageItem(
               { authentication: storageUserSession },
               resourceFilePaths,
@@ -259,17 +325,4 @@ export function createItemFromTemplate(
         e => reject(common.fail(e))
       );
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-function getItemData(
-  itemId: string,
-  userSession: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    authentication: userSession
-  };
-  return portal.getItemData(itemId, itemDataParam);
 }
