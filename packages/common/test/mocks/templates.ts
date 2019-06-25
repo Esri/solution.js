@@ -16,8 +16,8 @@
 
 // This file contains examples of templates of AGOL items.
 
-import * as mFeatureService from "../../../feature-layer/src/feature-layer";
-import * as fsUtils from "../../../feature-layer/src/featureServiceHelpers";
+// import * as mFeatureService from "../../../feature-layer/src/feature-layer";
+// import * as fsUtils from "../../../feature-layer/src/featureServiceHelpers";
 import * as mInterfaces from "../../src/interfaces";
 import * as mockItems from "../mocks/agolItems";
 
@@ -236,7 +236,7 @@ export function getFeatureServiceTemplatePartNoRelationships(): any {
   return templatePart;
 }
 
-export function getFourItemFeatureServiceTemplatePart(): any {
+/* export function getFourItemFeatureServiceTemplatePart(): any {
   const templatePart: any = getItemTemplatePart("Feature Service");
 
   // Update data section
@@ -284,7 +284,7 @@ export function getFourItemFeatureServiceTemplatePart(): any {
   templatePart.properties.layers.push(layer3);
 
   return templatePart;
-}
+} */
 
 export function getGroupTemplatePart(dependencies = [] as string[]): any {
   return {
@@ -373,7 +373,7 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup(): mInterfaces.I
   const template: mInterfaces.IItemTemplate[] = [
     getItemTemplatePart(
       "Web Mapping Application",
-      null,
+      undefined,
       "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
     )
   ];

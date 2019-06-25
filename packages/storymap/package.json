@@ -20,8 +20,8 @@
     "@esri/arcgis-rest-routing": "^2.0.3",
     "@esri/arcgis-rest-service-admin": "^2.0.3",
     "@esri/arcgis-rest-types": "^2.0.3",
-    "@esri/solution-common": "^0.1.0",
-    "@esri/solution-simple-types": "^0.1.0"
+    "@esri/solution-common": "^0.1.1",
+    "@esri/solution-simple-types": "^0.1.1"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.0.3",
@@ -41,7 +41,8 @@
     "rollup-plugin-node-resolve": "^4.0.1",
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript2": "^0.20.1",
-    "rollup-plugin-uglify": "^6.0.2"
+    "rollup-plugin-uglify": "^6.0.2",
+    "typescript": "^3.4.5"
   },
   "dependencies": {
     "tslib": "^1.9.3"
