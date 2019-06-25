@@ -4,7 +4,7 @@
   "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@types/es6-promise": "0.0.32",
-    "@types/fetch-mock": "^6.0.4",
+    "@types/fetch-mock": "^7.3.1",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^6.14.4",
     "acetate": "^2.0.8",

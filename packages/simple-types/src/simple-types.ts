@@ -141,7 +141,7 @@ export function convertItemToTemplate(
           relatedItemsResponse
         ] = responses;
         itemTemplate.data = itemDataResponse;
-        itemTemplate.resources = savedResourceFilenames;
+        itemTemplate.resources = savedResourceFilenames as any[];
 
         let wrapupPromise = Promise.resolve();
         switch (itemInfo.type.toLowerCase()) {
