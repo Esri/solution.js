@@ -83,13 +83,7 @@ export function createItemFromTemplate(
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
-    if (
-      common.hasAnyKeyword(template.item.typeKeywords, [
-        "WAB2D",
-        "WAB3D",
-        "Web AppBuilder"
-      ])
-    ) {
+    if (common.hasAnyKeyword(template, ["WAB2D", "WAB3D", "Web AppBuilder"])) {
       console.log("createItemFromTemplate for a Code Attachment");
       common
         .createItemWithData(
