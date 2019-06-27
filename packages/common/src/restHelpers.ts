@@ -526,6 +526,31 @@ export function getServiceLayersAndTables(
   });
 }
 
+export function shareItem(
+  groupId: string,
+  id: string,
+  destinationUserSession: auth.UserSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: destinationUserSession
+    };
+
+    const shareOptions: portal.IGroupSharingOptions = {
+      groupId,
+      id,
+      ...requestOptions
+    };
+
+    portal.shareItemWithGroup(shareOptions).then(
+      (shareResponse: any) => {
+        resolve();
+      },
+      (e: any) => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
 export function updateItem(
   serviceItemId: string,
   itemInfo: any,

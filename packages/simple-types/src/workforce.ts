@@ -14,130 +14,107 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-
-// ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
-  // Extract dependencies
-  itemTemplate.dependencies = extractDependencies(itemTemplate);
+  // Key properties that contain item IDs for the workforce project type
+  const keyProperties: string[] = [
+    "groupId",
+    "workerWebMapId",
+    "dispatcherWebMapId",
+    "dispatchers",
+    "assignments",
+    "workers",
+    "tracks"
+  ];
 
-  // templatize key properties
-  return _templatize(itemTemplate);
+  // The templates data to process
+  const data: any = itemTemplate.data;
+
+  if (data) {
+    // Extract dependencies
+    itemTemplate.dependencies = extractDependencies(data, keyProperties);
+
+    // templatize key properties
+    itemTemplate.data = _templatize(data, keyProperties);
+  }
+
+  return itemTemplate;
 }
 
 export function extractDependencies(
-  itemTemplate: common.IItemTemplate
+  data: any,
+  keyProperties: string[]
 ): string[] {
   const deps: string[] = [];
-  const data: any = itemTemplate.data;
-  if (data) {
-    const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-    // get the ids for the service dependencies
-    // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
-    const keyProperties: string[] = [
-      "workerWebMapId",
-      "dispatcherWebMapId",
-      "dispatchers",
-      "assignments",
-      "workers",
-      "tracks"
-    ];
-    keyProperties.forEach(p => {
-      if (common.getProp(data, p + ".serviceItemId")) {
-        if (deps.indexOf(data[p].serviceItemId) === -1) {
-          deps.push(data[p].serviceItemId);
-        }
-      } else if (/[0-9A-F]{32}/gim.test(data[p])) {
-        if (deps.indexOf(data[p]) === -1) {
-          deps.push(data[p]);
-        }
+  // get the ids for the service dependencies
+  // "workerWebMapId" and "dispatcherWebMapId" are already IDs and don't have a serviceItemId
+  keyProperties.forEach(p => {
+    if (common.getProp(data, p + ".serviceItemId")) {
+      if (deps.indexOf(data[p].serviceItemId) === -1) {
+        deps.push(data[p].serviceItemId);
       }
-    });
-  }
+    } else if (/[0-9A-F]{32}/gim.test(data[p])) {
+      if (deps.indexOf(data[p]) === -1) {
+        deps.push(data[p]);
+      }
+    }
+  });
   return deps;
 }
 
 export function _templatize(
-  itemTemplate: common.IItemTemplate
+  data: any,
+  keyProperties: string[]
 ): common.IItemTemplate {
-  const itemId: string = itemTemplate.itemId;
-  if (itemTemplate.data) {
-    const data: any = itemTemplate.data;
-
-    // templatize properties with id and url
-    let keyProperties: string[] = [
-      "dispatchers",
-      "assignments",
-      "workers",
-      "tracks"
-    ];
-    keyProperties.forEach(p => {
-      if (common.getProp(data, p)) {
+  keyProperties.forEach(p => {
+    if (common.getProp(data, p)) {
+      if (common.getProp(data[p], "serviceItemId")) {
+        // templatize properties with id and url
         const id: string = data[p].serviceItemId;
         data[p].serviceItemId = common.templatizeTerm(id, id, ".id");
 
-        const layerId = data[p].url.substr(
-          (data[p].url as string).lastIndexOf("/")
-        );
-        data[p].url = common.templatizeTerm(id, id, ".url") + layerId;
-      }
-    });
-
-    // templatize simple id properties
-    keyProperties = [
-      "folderId",
-      "groupId",
-      "workerWebMapId",
-      "dispatcherWebMapId"
-    ];
-    keyProperties.forEach(p => {
-      if (common.getProp(data, p)) {
-        data[p] = common.templatizeTerm(data[p], data[p], "." + p);
-      }
-    });
-
-    // templatize app integrations
-    const templatizeUrlTemplate = function(item: any) {
-      let ids: string[];
-      if (common.getProp(item, "urlTemplate")) {
-        ids = item.urlTemplate.match(/itemID=[0-9A-F]{32}/gim) || [];
-        ids.forEach(id => {
-          id = id.replace("itemID=", "");
-          item.urlTemplate = item.urlTemplate.replace(
-            id,
-            common.templatizeTerm(id, id, ".id")
+        if (common.getProp(data[p], "url")) {
+          const layerId = data[p].url.substr(
+            (data[p].url as string).lastIndexOf("/")
           );
-        });
+          data[p].url = common.templatizeTerm(id, id, ".url") + layerId;
+        }
+      } else {
+        // templatize simple id properties
+        data[p] = common.templatizeTerm(data[p], data[p], ".id");
       }
-    };
-
-    const integrations: any[] = data.assignmentIntegrations || [];
-    integrations.forEach(i => {
-      templatizeUrlTemplate(i);
-      if (common.getProp(i, "assignmentTypes")) {
-        const assignmentTypes: string[] = i.assignmentTypes || [];
-        assignmentTypes.forEach((assignType: any) => {
-          templatizeUrlTemplate(assignType);
-        });
-      }
-    });
-  }
-  return itemTemplate;
-}
-
-export function createItemFromTemplate(
-  template: common.IItemTemplate,
-  newItemTemplate: common.IItemTemplate,
-  templateDictionary: any,
-  destinationUserSession: auth.UserSession
-): Promise<void> {
-  return new Promise<void>(resolve => {
-    resolve();
+    }
   });
-}
 
-// ------------------------------------------------------------------------------------------------------------------ //
+  data["folderId"] = "{{folderId}}";
+
+  // templatize app integrations
+  const templatizeUrlTemplate = function(item: any) {
+    let ids: string[];
+    if (common.getProp(item, "urlTemplate")) {
+      ids = item.urlTemplate.match(/itemID=[0-9A-F]{32}/gim) || [];
+      ids.forEach(id => {
+        id = id.replace("itemID=", "");
+        item.urlTemplate = item.urlTemplate.replace(
+          id,
+          common.templatizeTerm(id, id, ".id")
+        );
+      });
+    }
+  };
+
+  const integrations: any[] = data.assignmentIntegrations || [];
+  integrations.forEach(i => {
+    templatizeUrlTemplate(i);
+    if (common.getProp(i, "assignmentTypes")) {
+      const assignmentTypes: string[] = i.assignmentTypes || [];
+      assignmentTypes.forEach((assignType: any) => {
+        templatizeUrlTemplate(assignType);
+      });
+    }
+  });
+  return data;
+}
