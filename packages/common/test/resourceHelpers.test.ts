@@ -19,11 +19,83 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
+
+const TINY_PNG_BYTES = [
+  137,
+  80,
+  78,
+  71,
+  13,
+  10,
+  26,
+  10,
+  0,
+  0,
+  0,
+  13,
+  73,
+  72,
+  68,
+  82,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  8,
+  6,
+  0,
+  0,
+  0,
+  31,
+  21,
+  196,
+  137,
+  0,
+  0,
+  0,
+  13,
+  73,
+  68,
+  65,
+  84,
+  24,
+  87,
+  99,
+  96,
+  88,
+  244,
+  226,
+  63,
+  0,
+  4,
+  186,
+  2,
+  138,
+  87,
+  137,
+  99,
+  50,
+  0,
+  0,
+  0,
+  0,
+  73,
+  69,
+  78,
+  68,
+  174,
+  66,
+  96,
+  130
+];
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -47,27 +119,43 @@ describe("Module `resourceHelpers`: common functions involving the management of
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   };
 
+  const SERVER_INFO = {
+    currentVersion: 10.1,
+    fullVersion: "10.1",
+    soapUrl: "http://server/arcgis/services",
+    secureSoapUrl: "https://server/arcgis/services",
+    owningSystemUrl: "https://www.arcgis.com",
+    authInfo: {
+      isTokenBasedSecurity: true,
+      tokenServicesUrl: "https://server/arcgis/tokens",
+      shortLivedTokenValidity: 60
+    }
+  };
+
   afterEach(() => {
     fetchMock.restore();
   });
 
   describe("addMetadataFromBlob", () => {
-    // Blob() is only available in the browser
     if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
       it("has metadata", done => {
         const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
         const itemId = "itm1234567890";
-        const fetchUrl =
+        const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expected = { success: true, id: itemId };
 
-        fetchMock.post(fetchUrl, expected);
+        fetchMock.post(updateUrl, expected);
         resourceHelpers
           .addMetadataFromBlob(blob, itemId, MOCK_USER_REQOPTS)
           .then((response: any) => {
             expect(response).toEqual(expected);
-            const options: RequestInit = fetchMock.lastOptions(fetchUrl);
-            expect(typeof options.body).toEqual("object");
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
             done();
           }, done.fail);
       });
@@ -75,18 +163,18 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("addResourceFromBlob", () => {
-    // Blob() is only available in the browser
     if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
       it("has filename without folder", done => {
         const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
         const itemId = "itm1234567890";
         const folder = "";
         const filename = "aFilename";
-        const fetchUrl =
+        const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
 
-        fetchMock.post(fetchUrl, expected);
+        fetchMock.post(updateUrl, expected);
         resourceHelpers
           .addResourceFromBlob(
             blob,
@@ -97,9 +185,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
           )
           .then((response: any) => {
             expect(response).toEqual(expected);
-            const options: RequestInit = fetchMock.lastOptions(fetchUrl);
-            expect(typeof options.body).toEqual("object");
-            const form = options.body as FormData;
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
+            const form = fetchBody as FormData;
             expect(form.get("fileName")).toEqual(filename);
             done();
           }, done.fail);
@@ -110,11 +201,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const itemId = "itm1234567890";
         const folder = "aFolder";
         const filename = "aFilename";
-        const fetchUrl =
+        const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
 
-        fetchMock.post(fetchUrl, expected);
+        fetchMock.post(updateUrl, expected);
         resourceHelpers
           .addResourceFromBlob(
             blob,
@@ -125,9 +216,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
           )
           .then((response: any) => {
             expect(response).toEqual(expected);
-            const options: RequestInit = fetchMock.lastOptions(fetchUrl);
-            expect(typeof options.body).toEqual("object");
-            const form = options.body as FormData;
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
+            const form = fetchBody as FormData;
             expect(form.get("resourcesPrefix")).toEqual(folder);
             expect(form.get("fileName")).toEqual(filename);
             done();
@@ -137,22 +231,25 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("addThumbnailFromBlob", () => {
-    // Blob() is only available in the browser
     if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
       it("has thumbnail", done => {
         const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
         const itemId = "itm1234567890";
-        const fetchUrl =
+        const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expected = { success: true, id: itemId };
 
-        fetchMock.post(fetchUrl, expected);
+        fetchMock.post(updateUrl, expected);
         resourceHelpers
           .addThumbnailFromBlob(blob, itemId, MOCK_USER_REQOPTS)
           .then((response: any) => {
             expect(response).toEqual(expected);
-            const options: RequestInit = fetchMock.lastOptions(fetchUrl);
-            expect(typeof options.body).toEqual("object");
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
             done();
           }, done.fail);
       });
@@ -160,52 +257,296 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("addThumbnailFromUrl", () => {
-    it("does something", done => {
+    it("has thumbnail", done => {
       const thumbnailUrl = "https://myserver/images/thumbnail.png";
       const itemId = "itm1234567890";
-      const fetchUrl =
+      const updateUrl =
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-      const expected = { success: true, id: itemId };
+      const expectedUpdate = { success: true, id: itemId };
 
-      fetchMock.post(fetchUrl, expected);
+      fetchMock.post(updateUrl, expectedUpdate);
       resourceHelpers
         .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_REQOPTS)
         .then((response: any) => {
-          expect(response).toEqual(expected);
-          const options: RequestInit = fetchMock.lastOptions(fetchUrl);
-          expect(options.body).toContain("f=json");
-          expect(options.body).toContain("id=itm1234567890");
-          expect(options.body).toContain(
+          expect(response).toEqual(expectedUpdate);
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(
+            updateUrl
+          );
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toContain("f=json");
+          expect(fetchBody).toContain("id=itm1234567890");
+          expect(fetchBody).toContain(
             "thumbnailurl=" + encodeURIComponent(thumbnailUrl)
           );
-          expect(options.body).toContain("token=fake-token");
+          expect(fetchBody).toContain("token=fake-token");
           done();
         }, done.fail);
     });
   });
 
-  xdescribe("copyFilesFromStorageItem", () => {
-    xit("does something", () => {
-      console.log("copyFilesFromStorageItem");
+  describe("copyFilesFromStorageItem", () => {
+    it("empty files list", done => {
+      const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const filePaths: resourceHelpers.IDeployFileCopyPath[] = [] as resourceHelpers.IDeployFileCopyPath[];
+      const destinationItemId: string = "itm1234567890";
+      const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const expected = true;
+
+      resourceHelpers
+        .copyFilesFromStorageItem(
+          storageRequestOptions,
+          filePaths,
+          destinationItemId,
+          destinationRequestOptions
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          done();
+        }, done.fail);
     });
+
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("single metadata file to copy", done => {
+        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+          {
+            type: resourceHelpers.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/doc/metadata.xml";
+        const expectedFetch =
+          "<meta><value1>a</value1><value2>b</value2></meta>";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch)
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageRequestOptions,
+            filePaths,
+            destinationItemId,
+            destinationRequestOptions
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+    }
+
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("single resource file to copy", done => {
+        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+          {
+            type: resourceHelpers.EFileType.Resource,
+            folder: "storageFolder",
+            filename: "storageFilename",
+            url: "https://myserver/images/resource.png"
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/images/resource.png";
+        const expectedFetch = new Blob(
+          [new Uint8Array(TINY_PNG_BYTES).buffer],
+          { type: "image/png" }
+        );
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch)
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageRequestOptions,
+            filePaths,
+            destinationItemId,
+            destinationRequestOptions
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+    }
+
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("single thumbnail file to copy", done => {
+        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+          {
+            type: resourceHelpers.EFileType.Thumbnail,
+            folder: "",
+            filename: "",
+            url: "https://myserver/images/thumbnail.png" // Thumbnail uses only URL
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const expectedUpdate = true;
+
+        fetchMock.post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageRequestOptions,
+            filePaths,
+            destinationItemId,
+            destinationRequestOptions
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
-  xdescribe("copyFilesToStorageItem", () => {
-    xit("does something", () => {
-      console.log("copyFilesToStorageItem");
+  describe("copyFilesToStorageItem", () => {
+    it("empty files list", done => {
+      const sourceRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const filePaths: resourceHelpers.ISourceFileCopyPath[] = [] as resourceHelpers.ISourceFileCopyPath[];
+      const storageItemId: string = "itm1234567890";
+      const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const expected = true;
+
+      resourceHelpers
+        .copyFilesToStorageItem(
+          sourceRequestOptions,
+          filePaths,
+          storageItemId,
+          storageRequestOptions
+        )
+        .then((response: any) => {
+          expect(response).toEqual(expected);
+          done();
+        }, done.fail);
     });
+
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("single file to copy", done => {
+        const sourceRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const filePaths: resourceHelpers.ISourceFileCopyPath[] = [
+          {
+            folder: "storageFolder",
+            filename: "storageFilename",
+            url: "https://myserver/images/thumbnail.png"
+          }
+        ];
+        const storageItemId: string = "itm1234567890";
+        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/images/thumbnail.png";
+        const expectedFetch = new Blob(
+          [new Uint8Array(TINY_PNG_BYTES).buffer],
+          { type: "image/png" }
+        );
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch)
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesToStorageItem(
+            sourceRequestOptions,
+            filePaths,
+            storageItemId,
+            storageRequestOptions
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
-  xdescribe("copyMetadata", () => {
-    xit("does something", () => {
-      console.log("copyMetadata");
-    });
+  describe("copyMetadata", () => {
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("copies metadata.xml", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const expected = { success: true, id: destination.itemId };
+
+        fetchMock.post(fetchUrl, expected).post(updateUrl, expected);
+        resourceHelpers
+          .copyMetadata(source, destination)
+          .then((response: any) => {
+            expect(response).toEqual(expected);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
-  xdescribe("copyResource", () => {
-    xit("does something", () => {
-      console.log("copyResource");
-    });
+  describe("copyResource", () => {
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("copies resource", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          folder: "storageFolder",
+          filename: "storageFilename",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+        const expected = { success: true, id: destination.itemId };
+
+        fetchMock.post(fetchUrl, expected).post(updateUrl, expected);
+        resourceHelpers
+          .copyResource(source, destination)
+          .then((response: any) => {
+            expect(response).toEqual(expected);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("generateGroupFilePaths", () => {

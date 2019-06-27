@@ -176,7 +176,7 @@ export function copyFilesFromStorageItem(
   destinationRequestOptions: auth.IUserRequestOptions
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
-    const awaitAllItems = filePaths.filter(filePath => {
+    const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
         case EFileType.Form:
           return Promise.resolve();
@@ -234,8 +234,8 @@ export function copyFilesToStorageItem(
   filePaths: ISourceFileCopyPath[],
   storageItemId: string,
   storageRequestOptions: auth.IUserRequestOptions
-): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
       return new Promise<string>(resolveThisFile => {
         copyResource(
@@ -257,11 +257,8 @@ export function copyFilesToStorageItem(
       });
     });
 
-    // Wait until all items have been copied, then return the successful copies
-    Promise.all(awaitAllItems).then(
-      copyResponses => resolve(copyResponses.filter(filename => filename)),
-      reject
-    );
+    // Wait until all items have been copied
+    Promise.all(awaitAllItems).then(() => resolve(true), reject);
   });
 }
 
