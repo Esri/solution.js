@@ -68,6 +68,20 @@ export function get400FailureResponse(): any {
   };
 }
 
+export function getItemTemplate(): any {
+  return {
+    itemId: "",
+    type: "",
+    key: "",
+    item: {},
+    data: {},
+    resources: [],
+    properties: {},
+    dependencies: [],
+    estimatedDeploymentCostFactor: 0
+  };
+}
+
 export function getAGOLItem(type?: string, url = ""): any {
   let item: any = get400FailureResponse();
 
@@ -154,6 +168,9 @@ export function getAGOLItem(type?: string, url = ""): any {
     case "Unsupported":
       item = getAGOLItemFundamentals(type, "uns");
       break;
+
+    case "Group":
+      item = getAGOLGroup();
   }
 
   return item;
@@ -467,8 +484,16 @@ export function getAGOLItemData(type?: string): any {
           {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
+            // placeholder urlTemplates until I get an legitimate one
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt=Workforce"
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce",
+            assignmentTypes: [
+              {
+                // placeholder urlTemplates until I get an legitimate one
+                urlTemplate:
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce"
+              }
+            ]
           }
         ]
       };

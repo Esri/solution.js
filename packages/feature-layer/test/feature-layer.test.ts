@@ -424,7 +424,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(r => {
         expect(r).toEqual("svc1234567890");
@@ -566,7 +566,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         settings,
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(r => {
         expect(r).toEqual("svc1234567890");
@@ -670,7 +670,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -755,7 +755,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -836,7 +836,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -917,7 +917,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -1018,7 +1018,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -1119,7 +1119,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });
@@ -1215,7 +1215,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         {},
         MOCK_USER_SESSION,
         function() {
-          console.log("progressTick");
+          const a = "progressTick";
         }
       ).then(done.fail, done);
     });

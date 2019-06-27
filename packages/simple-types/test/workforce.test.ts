@@ -41,7 +41,8 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         "abc302ec12b74d2f9f2b3cc549420086",
         "abc4494043c3459faabcfd0e1ab557fc",
         "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
-        "abc64329e69144c59f69f3f3e0d45269"
+        "abc64329e69144c59f69f3f3e0d45269",
+        "abc715c2df2b466da05577776e82d044"
       ];
 
       const newItemTemplate = convertItemToTemplate(itemTemplate);
@@ -60,18 +61,13 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
       );
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
-      // placeholder urlTemplate until I get an legitimate one
-      itemTemplate.data.assignmentIntegrations[0].urlTemplate =
-        "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce";
-
       itemTemplate.item = {
         id: "abc0cab401af4828a25cc6eaeb59fb69"
       };
 
       const expectedTemplateData: any = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.workerWebMapId}}",
-        dispatcherWebMapId:
-          "{{abc26a244163430590151395821fb845.dispatcherWebMapId}}",
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
         dispatchers: {
           serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
           url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
@@ -91,14 +87,20 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
           updateInterval: 300
         },
         version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.groupId}}",
-        folderId: "{{abc8483e025c47338d43df308c117308.folderId}}",
+        groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
+        folderId: "{{folderId}}",
         assignmentIntegrations: [
           {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
+            assignmentTypes: [
+              {
+                urlTemplate:
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+              }
+            ]
           }
         ]
       };
