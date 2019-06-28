@@ -119,30 +119,34 @@ export function createItemWithData(
 
     portal.createItemInFolder(createOptions).then(
       createResponse => {
-        if (access !== "private") {
-          // Set access if it is not AGOL default
-          // Set the access manually since the access value in createItem appears to be ignored
-          const accessOptions: portal.ISetAccessOptions = {
-            id: createResponse.id,
-            access: access === "public" ? "public" : "org", // need to use constants rather than string
-            ...requestOptions
-          };
-          portal.setItemAccess(accessOptions).then(
-            () => {
-              resolve({
-                folder: createResponse.folder,
-                id: createResponse.id,
-                success: true
-              });
-            },
-            e => reject(generalHelpers.fail(e))
-          );
+        if (createResponse.success) {
+          if (access !== "private") {
+            // Set access if it is not AGOL default
+            // Set the access manually since the access value in createItem appears to be ignored
+            const accessOptions: portal.ISetAccessOptions = {
+              id: createResponse.id,
+              access: access === "public" ? "public" : "org", // need to use constants rather than string
+              ...requestOptions
+            };
+            portal.setItemAccess(accessOptions).then(
+              () => {
+                resolve({
+                  folder: createResponse.folder,
+                  id: createResponse.id,
+                  success: true
+                });
+              },
+              e => reject(generalHelpers.fail(e))
+            );
+          } else {
+            resolve({
+              folder: createResponse.folder,
+              id: createResponse.id,
+              success: true
+            });
+          }
         } else {
-          resolve({
-            folder: createResponse.folder,
-            id: createResponse.id,
-            success: true
-          });
+          reject(generalHelpers.fail());
         }
       },
       e => reject(generalHelpers.fail(e))
@@ -520,6 +524,31 @@ export function getServiceLayersAndTables(
           },
           e => reject(generalHelpers.fail(e))
         );
+      },
+      (e: any) => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+export function shareItem(
+  groupId: string,
+  id: string,
+  destinationUserSession: auth.UserSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: destinationUserSession
+    };
+
+    const shareOptions: portal.IGroupSharingOptions = {
+      groupId,
+      id,
+      ...requestOptions
+    };
+
+    portal.shareItemWithGroup(shareOptions).then(
+      (shareResponse: any) => {
+        resolve();
       },
       (e: any) => reject(generalHelpers.fail(e))
     );
