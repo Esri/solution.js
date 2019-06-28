@@ -685,95 +685,108 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
 
-    it("should handle workforce project", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
-
-      itemTemplate.item = {
-        id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Workforce Project",
-        title: "Dam Inspection Assignments"
-      };
-      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      const expectedTemplateData: any = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
-        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
-        dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
-        },
-        assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
-        },
-        workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
-        },
-        tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-          url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
-          enabled: true,
-          updateInterval: 300
-        },
-        version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
-        folderId: "{{folderId}}",
-        assignmentIntegrations: [
-          {
-            id: "default-navigator",
-            prompt: "Navigate to Assignment",
-            urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
-            assignmentTypes: [
-              {
-                urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
-              }
-            ]
-          }
-        ]
-      };
-
-      const resourcesResponse: any = {
-        total: 0,
-        start: 1,
-        num: 0,
-        nextStart: -1,
-        resources: []
-      };
-      const dataResponse: any = mockItems.getAGOLItemData("Workforce Project");
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-          resourcesResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          []
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
-          dataResponse
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-          {}
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("should handle workforce project", done => {
+        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+          "Workforce Project",
+          null
         );
 
-      convertItemToTemplate(
-        itemTemplate.item.id,
-        itemTemplate.item,
-        MOCK_USER_SESSION
-      ).then(newItemTemplate => {
-        expect(newItemTemplate.data).toEqual(expectedTemplateData);
-        done();
-      }, done.fail);
-    });
+        itemTemplate.item = {
+          id: "abc0cab401af4828a25cc6eaeb59fb69",
+          type: "Workforce Project",
+          title: "Dam Inspection Assignments"
+        };
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+
+        const expectedTemplateData: any = {
+          workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
+          dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+          dispatchers: {
+            serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
+            url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+          },
+          assignments: {
+            serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
+            url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+          },
+          workers: {
+            serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
+            url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+          },
+          tracks: {
+            serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
+            url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+            enabled: true,
+            updateInterval: 300
+          },
+          version: "1.2.0",
+          groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
+          folderId: "{{folderId}}",
+          assignmentIntegrations: [
+            {
+              id: "default-navigator",
+              prompt: "Navigate to Assignment",
+              urlTemplate:
+                "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
+              assignmentTypes: [
+                {
+                  urlTemplate:
+                    "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+                }
+              ]
+            }
+          ]
+        };
+
+        const resourcesResponse: any = {
+          total: 0,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          resources: []
+        };
+        const dataResponse: any = mockItems.getAGOLItemData(
+          "Workforce Project"
+        );
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            resourcesResponse
+          )
+          .post(
+            "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            {}
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/addResources",
+            { success: true, id: itemTemplate.itemId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            []
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
+            dataResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            {}
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          expect(newItemTemplate.data).toEqual(expectedTemplateData);
+          done();
+        }, done.fail);
+      });
+    }
 
     it("should handle a group", done => {
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
