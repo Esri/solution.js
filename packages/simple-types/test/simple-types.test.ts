@@ -969,6 +969,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
+      itemTemplate.type = "Web Map";
+      itemTemplate.item = {
+        id: itemId,
+        type: itemTemplate.type
+      };
 
       const expected: any = {};
       expected[itemId] = newItemID;
@@ -999,6 +1004,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
+      itemTemplate.type = "Web Map";
+      itemTemplate.item = {
+        id: itemId,
+        type: itemTemplate.type
+      };
 
       const expected: any = {};
       expected[itemId] = newItemID;
