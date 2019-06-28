@@ -192,6 +192,7 @@ export function convertItemToTemplate(
             break;
           case "workforce project":
             workforce.convertItemToTemplate(itemTemplate);
+            break;
         }
 
         wrapupPromise.then(
