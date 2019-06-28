@@ -68,6 +68,20 @@ export function get400FailureResponse(): any {
   };
 }
 
+export function getItemTemplate(): any {
+  return {
+    itemId: "",
+    type: "",
+    key: "",
+    item: {},
+    data: {},
+    resources: [],
+    properties: {},
+    dependencies: [],
+    estimatedDeploymentCostFactor: 0
+  };
+}
+
 export function getAGOLItem(type?: string, url = ""): any {
   let item: any = get400FailureResponse();
 
@@ -148,11 +162,15 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Workforce Project":
+      item = getAGOLItemFundamentals(type, type);
       break;
 
     case "Unsupported":
       item = getAGOLItemFundamentals(type, "uns");
       break;
+
+    case "Group":
+      item = getAGOLGroup();
   }
 
   return item;
@@ -434,6 +452,51 @@ export function getAGOLItemData(type?: string): any {
       break;
 
     case "Workforce Project":
+      data = {
+        workerWebMapId: "abc116555b16437f8435e079033128d0",
+        dispatcherWebMapId: "abc26a244163430590151395821fb845",
+        dispatchers: {
+          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
+          url:
+            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+        },
+        assignments: {
+          serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
+          url:
+            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/assignments_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+        },
+        workers: {
+          serviceItemId: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+          url:
+            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/workers_47bb15c2df2b466da05577776e82d044/FeatureServer/0"
+        },
+        tracks: {
+          serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
+          url:
+            "https://services123.arcgis.com/org1234567890/arcgis/rest/services/location_47bb15c2df2b466da05577776e82d044/FeatureServer/0",
+          enabled: true,
+          updateInterval: 300
+        },
+        version: "1.2.0",
+        groupId: "abc715c2df2b466da05577776e82d044",
+        folderId: "abc8483e025c47338d43df308c117308",
+        assignmentIntegrations: [
+          {
+            id: "default-navigator",
+            prompt: "Navigate to Assignment",
+            // placeholder urlTemplates until I get an legitimate one
+            urlTemplate:
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce",
+            assignmentTypes: [
+              {
+                // placeholder urlTemplates until I get an legitimate one
+                urlTemplate:
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID=cad3483e025c47338d43df308c117308},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID=bad3483e025c47338d43df308c117308}://Workforce"
+              }
+            ]
+          }
+        ]
+      };
       break;
 
     case "Unsupported":
