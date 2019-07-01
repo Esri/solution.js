@@ -89,7 +89,7 @@
     "test:node": "jasmine --config=jasmine.json",
     "test:node:debug": "inspect jasmine --config=jasmine.json",
     "test:ci": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run test:firefox && npm run coveralls",
-    "test:all": "npm run test:node && npm run test:firefox && npm run test:chrome",
+    "test:all": "npm run test:node && npm run test:chrome && npm run test:firefox",
     "coveralls": "cat coverage/lcov/lcov.info | node node_modules/coveralls/bin/coveralls",
     "docs:build": "rimraf docs/build && npm run docs:typedoc && npm run docs:build:acetate && npm run docs:build:sass && npm run docs:build:images && npm run docs:build:js",
     "docs:build:acetate": "ENV=prod acetate build --config docs/acetate.config.js",

@@ -56,6 +56,7 @@ Background information about the library is available in [background info](./doc
 Currently, the item types that can be converted into a template are:
 
 * Dashboard
+* Feature Collection
 * Feature Service (Hosted only and Hosted Feature Layer Views)
 * Web Map
 * Web Mapping Application
@@ -68,7 +69,6 @@ Planned item types are:
 * Desktop Add In
 * Desktop Application Template
 * Document Link
-* Feature Collection
 * Form
 * Geoprocessing Package
 * Geoprocessing Sample
@@ -92,13 +92,30 @@ Afterward, for a list of all available commands run `npm run`.
 
 Some useful commands include:
 
-* `lerna run build` creates node, umd, and esm output for each package
-* `npm run lint` to lint the TypeScript files
-* `npm test` runs tests test:node and test:chrome to confirm that the API is functioning as expected.
-* `npm run test:chrome` runs karma in the ChromeHeadlessCI browser
-* `npm run test:firefox` runs karma in the Firefox browser
-* `npm run test:node` runs ts-node and jasmine
-* `npm run docs:serve` creates documentation about the API and its internal functions
+* building
+	* `npm run build` creates symlinks among packages and creates node, umd, and esm outputs for each package
+	* `npm run clean` deletes .d.ts, .js, .js.map, .rpt2_cache, and dist/ files
+	* `npm run lint` lints the TypeScript files
+	* `npm run lint:fix` lints the TypeScript files and fixes
+	* `npm run prettify` beautifies TypeScript files
+	* `npm run coveralls` updates code coverage info
+
+* testing
+	* `npm run test` lints, then runs tests test:node and test:chrome to confirm that the API is functioning as expected
+	* `npm run test:chrome` runs karma in the Chrome browser
+	* `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests
+	* `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
+	* `npm run test:firefox` runs karma in the Firefox browser
+	* `npm run test:node` runs ts-node and jasmine
+	* `npm run test:ci` lints, then runs test:node, test:chrome:ci, test:firefox, and coveralls
+	* `npm run test:all` runs test:node, test:chrome:, test:firefox
+
+
+* publishing
+	* `npm run prerelease:prepare` fetch, clean, link packages, and test
+	* `npm run release:prepare` prepares for publication and creates a changelog
+	* `npm run release:review` assembles git changes
+	* `npm run release:publish` publishes a version
 
 ### Frequently Asked Questions
 
