@@ -64,8 +64,9 @@ export function createSolutionTemplate(
   portalSharingUrl: string,
   solutionItemId: string,
   ids: string[],
+  templateDictionary: any,
   destinationUserSession: auth.UserSession,
-  templateDictionary: any
+  progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
@@ -87,6 +88,7 @@ export function createSolutionTemplate(
           solutionTemplates
         )
       );
+      progressTickCallback();
     });
     Promise.all(getItemsPromise).then(
       () => {
