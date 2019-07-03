@@ -17,3 +17,132 @@
 /**
  * Provides tests for functions involving the adlib library.
  */
+
+import * as interfaces from "../src/interfaces";
+import * as templatization from "../src/templatization";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `templatization`: common functions involving the adlib library", () => {
+  describe("findTemplateIndexInList", () => {
+    it("should handle an empty list", () => {
+      const templates: interfaces.IItemTemplate[] = [];
+      const id: string = "";
+      const expected: number = -1;
+
+      const actual = templatization.findTemplateIndexInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle list without the sought item", () => {
+      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const id: string = "xyz";
+      const expected: number = -1;
+
+      const actual = templatization.findTemplateIndexInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle list with the sought item", () => {
+      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const id: string = "def";
+      const expected: number = 1;
+
+      const actual = templatization.findTemplateIndexInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("findTemplateIndexInList", () => {
+    it("should handle an empty list", () => {
+      const templates: interfaces.IItemTemplate[] = [];
+      const id: string = "";
+      const expected: interfaces.IItemTemplate = null;
+
+      const actual = templatization.findTemplateInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle list without the sought item", () => {
+      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const id: string = "xyz";
+      const expected: interfaces.IItemTemplate = null;
+
+      const actual = templatization.findTemplateInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle list with the sought item", () => {
+      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const id: string = "def";
+      const expected: interfaces.IItemTemplate = createItemTemplateList([
+        "def"
+      ])[0];
+
+      const actual = templatization.findTemplateInList(templates, id);
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("templatizeTerm", () => {
+    it("should handle undefined context", () => {
+      const context: string = undefined;
+      const term: string = "aTerm";
+      const suffix: string = undefined;
+      const expected: string = context;
+
+      const actual = templatization.templatizeTerm(context, term, suffix);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle default suffix", () => {
+      const context: string = "a sentence with aTerm in it";
+      const term: string = "aTerm";
+      const suffix: string = undefined;
+      const expected: string = "a sentence with {{aTerm}} in it";
+
+      const actual = templatization.templatizeTerm(context, term, suffix);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle supplied suffix", () => {
+      const context: string = "a sentence with aTerm in it";
+      const term: string = "aTerm";
+      const suffix: string = ".id";
+      const expected: string = "a sentence with {{aTerm.id}} in it";
+
+      const actual = templatization.templatizeTerm(context, term, suffix);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle multiple occurrences of term", () => {
+      const context: string =
+        "a sentence with multiple aTerms in it: aTerm, aTerm";
+      const term: string = "aTerm";
+      const suffix: string = ".id";
+      const expected: string =
+        "a sentence with multiple {{aTerm.id}}s in it: {{aTerm.id}}, {{aTerm.id}}";
+
+      const actual = templatization.templatizeTerm(context, term, suffix);
+      expect(actual).toEqual(expected);
+    });
+  });
+});
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+function createItemTemplateList(itemIds: string[]): interfaces.IItemTemplate[] {
+  return itemIds.map(itemId => {
+    return {
+      itemId: itemId,
+      type: "",
+      key: "",
+      item: "",
+      data: "",
+      resources: [] as any[],
+      dependencies: [] as string[],
+      properties: "",
+      estimatedDeploymentCostFactor: 0
+    };
+  });
+}
