@@ -96,18 +96,6 @@ export function createPlaceholderTemplate(
   };
 }
 
-export function deTemplatizeTerm(
-  context: string,
-  term: string,
-  suffix = ""
-): string {
-  if (!context) {
-    return context;
-  }
-  const pattern = new RegExp("{{" + term + suffix + "}}", "g");
-  return context.replace(pattern, term);
-}
-
 /**
  * Finds index of template by id in a list of templates.
  *
