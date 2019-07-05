@@ -3,7 +3,6 @@
   "version": "0.1.1",
   "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
-    "@types/es6-promise": "0.0.32",
     "@types/fetch-mock": "^7.3.1",
     "@types/jasmine": "^2.8.2",
     "@types/node": "^6.14.4",
@@ -56,7 +55,7 @@
     "shelljs": "^0.7.8",
     "slug": "^0.9.1",
     "sri-toolbox": "0.2.0",
-    "ts-node": "^3.3.0",
+    "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
@@ -69,7 +68,7 @@
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",
     "js-yaml": "^3.13.1",
-    "tslib": "^1.8.1"
+    "tslib": "^1.9.3"
   },
   "lint-staged": {
     "*.ts": [
@@ -89,7 +88,7 @@
     "test:node": "jasmine --config=jasmine.json",
     "test:node:debug": "inspect jasmine --config=jasmine.json",
     "test:ci": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run test:firefox && npm run coveralls",
-    "test:all": "npm run test:node && npm run test:firefox && npm run test:chrome",
+    "test:all": "npm run test:node && npm run test:chrome && npm run test:firefox",
     "coveralls": "cat coverage/lcov/lcov.info | node node_modules/coveralls/bin/coveralls",
     "docs:build": "rimraf docs/build && npm run docs:typedoc && npm run docs:build:acetate && npm run docs:build:sass && npm run docs:build:images && npm run docs:build:js",
     "docs:build:acetate": "ENV=prod acetate build --config docs/acetate.config.js",

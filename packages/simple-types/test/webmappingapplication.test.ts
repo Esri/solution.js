@@ -18,11 +18,34 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
+import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 import * as webmappingapplication from "../src/webmappingapplication";
+
+import { TOMORROW } from "./lib/utils";
+import * as fetchMock from "fetch-mock";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `webmappingapplication`: manages the creation and deployment of web mapping application item types", () => {
+  // Set up a UserSession to use in all of these tests
+  const MOCK_USER_SESSION = new auth.UserSession({
+    clientId: "clientId",
+    redirectUri: "https://example-app.com/redirect-uri",
+    token: "fake-token",
+    tokenExpires: TOMORROW,
+    refreshToken: "refreshToken",
+    refreshTokenExpires: TOMORROW,
+    refreshTokenTTL: 1440,
+    username: "casey",
+    password: "123456",
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  });
+
+  afterEach(() => {
+    fetchMock.restore();
+  });
+
   describe("getWABDependencies", () => {
     it("handles no keywords", () => {
       const model = {
@@ -169,6 +192,168 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const expected = ["abc"];
       const actual = webmappingapplication.getWABDependencies(model);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("create Code Attachment", () => {
+    it("doesn't create a corresponding Code Attachment when it deploys a non-WAB app", done => {
+      const originalTemplate = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: ["Map", "Mapping Site", "Online Map"]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const newlyCreatedItem = {
+        itemId: "wab1234567890",
+        type: "Web Mapping Application",
+        key: "ijklmnop",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: ["Map", "Mapping Site", "Online Map"]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const templateDictionary = {
+        folderId: "fld1234567890"
+      };
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+      const expected = {
+        success: true,
+        id: "cda1234567890",
+        folder: "fld1234567890"
+      };
+      fetchMock.post(createUrl, expected);
+
+      // Function doesn't reject, so,
+      // tslint:disable-next-line:no-floating-promises
+      webmappingapplication
+        .fineTuneCreatedItem(
+          originalTemplate,
+          newlyCreatedItem,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const calls = fetchMock.calls(createUrl);
+          expect(calls.length).toEqual(0);
+          done();
+        });
+    });
+
+    it("creates a corresponding Code Attachment when it deploys a WAB app", done => {
+      const originalTemplate = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const newlyCreatedItem = {
+        itemId: "wab1234567890",
+        type: "Web Mapping Application",
+        key: "ijklmnop",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const templateDictionary = {
+        folderId: "fld1234567890"
+      };
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expected = {
+        success: true,
+        id: "cda1234567890",
+        folder: "fld1234567890"
+      };
+      fetchMock.post(createUrl, expected);
+
+      // Function doesn't reject, so,
+      // tslint:disable-next-line:no-floating-promises
+      webmappingapplication
+        .fineTuneCreatedItem(
+          originalTemplate,
+          newlyCreatedItem,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const calls = fetchMock.calls(createUrl);
+          expect(calls.length).toEqual(1);
+          done();
+        });
     });
   });
 });

@@ -75,21 +75,26 @@ export function convertItemToTemplate(
   return itemTemplate;
 }
 
-export function createItemFromTemplate(
-  template: common.IItemTemplate,
-  newItemTemplate: common.IItemTemplate,
+export function fineTuneCreatedItem(
+  originalTemplate: common.IItemTemplate,
+  newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
   destinationUserSession: auth.UserSession
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
-    if (common.hasAnyKeyword(template, ["WAB2D", "WAB3D", "Web AppBuilder"])) {
-      console.log("createItemFromTemplate for a Code Attachment");
+    if (
+      common.hasAnyKeyword(originalTemplate, [
+        "WAB2D",
+        "WAB3D",
+        "Web AppBuilder"
+      ])
+    ) {
       common
         .createItemWithData(
           {
-            tags: template.item.tags,
-            title: template.item.title,
+            tags: originalTemplate.item.tags,
+            title: originalTemplate.item.title,
             type: "Code Attachment",
             typeKeywords: ["Code", "Javascript", "Web Mapping Application"],
             url:
@@ -98,7 +103,7 @@ export function createItemFromTemplate(
                 templateDictionary
               ) +
               "/sharing/rest/content/items/" +
-              newItemTemplate.itemId +
+              newlyCreatedItem.itemId +
               "/package"
           },
           {},

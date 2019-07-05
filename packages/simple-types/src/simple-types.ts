@@ -316,7 +316,7 @@ export function createItemFromTemplate(
               // Check for extra processing for web mapping application
               let customProcDef: Promise<void>;
               if (template.type.toLowerCase() === "web mapping application") {
-                customProcDef = webmappingapplication.createItemFromTemplate(
+                customProcDef = webmappingapplication.fineTuneCreatedItem(
                   template,
                   newItemTemplate,
                   templateDictionary,
