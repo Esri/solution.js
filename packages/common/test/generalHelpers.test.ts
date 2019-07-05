@@ -304,6 +304,24 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expected: boolean = true;
       expect(hasAnyKeyword(model, keywords)).toBe(expected);
     });
+
+    it("can handle an actual set of keywords from model.item.typeKeywords", () => {
+      const model: any = {
+        item: {
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "source-ed27522a057b466587ddd2ffabd33661",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        }
+      };
+      const keywords: string[] = ["WAB2D", "WAB3D", "Web AppBuilder"];
+      const expected: boolean = true;
+      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+    });
   });
 
   describe("hasTypeKeyword", () => {
