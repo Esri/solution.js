@@ -40,12 +40,16 @@ export function createSolution(
   groupId: string,
   templateDictionary: any,
   portalSubset: IPortalSubset,
-  destinationUserSession: auth.UserSession
+  destinationUserSession: auth.UserSession,
+  progressCallback: (percentDone: number) => void
 ): Promise<string> {
   console.log(
     "==============================================================================="
   );
   console.log('Creating solution "' + solutionName + '" from group ' + groupId);
+  let percentDone = 1; // Let the caller know that we've started
+  progressCallback(percentDone);
+
   return new Promise<string>((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
@@ -60,6 +64,7 @@ export function createSolution(
     const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
       portal.getGroup(groupId, requestOptions).then(groupItem => {
         console.log("Group " + JSON.stringify(groupItem, null, 2));
+        progressCallback((percentDone += 2));
 
         const solutionItem: any = {
           type: "Solution",
@@ -79,6 +84,8 @@ export function createSolution(
             undefined
           )
           .then(updateResponse => {
+            progressCallback((percentDone += 2));
+
             if (groupItem.thumbnail) {
               // Copy the group's thumbnail to the new item; need to add token to thumbnail because requestOptions
               // only applies to updating solution item, not fetching group thumbnail image
@@ -116,6 +123,8 @@ export function createSolution(
           "Created solution template framework for " + solutionItemId
         );
         console.log("Group members: " + JSON.stringify(groupContents, null, 2));
+        progressCallback((percentDone += 2));
+        const progressPercentStep = (100 - 7) / (groupContents.length + 1); // '7' for previously-reported progress
 
         // Get the template information for the group contents, including their dependency items
         createSolutionTemplate
@@ -123,11 +132,16 @@ export function createSolution(
             portalSubset.restUrl,
             solutionItemId,
             groupContents,
+            templateDictionary,
             destinationUserSession,
-            templateDictionary
+            () => {
+              progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
+            }
           )
           .then(
             (solutionTemplates: common.IItemTemplate[]) => {
+              progressCallback(98);
+
               // Update solution item with its data JSON
               solutionData.templates = solutionTemplates;
               const updateOptions: portal.IUpdateItemOptions = {
@@ -137,9 +151,10 @@ export function createSolution(
                 },
                 ...requestOptions
               };
-              portal
-                .updateItem(updateOptions)
-                .then(() => resolve(solutionItemId), reject);
+              portal.updateItem(updateOptions).then(() => {
+                progressCallback(0);
+                resolve(solutionItemId);
+              }, reject);
             },
             e => reject(common.fail(e))
           );

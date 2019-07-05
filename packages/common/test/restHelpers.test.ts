@@ -38,7 +38,9 @@ import {
   _getRelationshipUpdates,
   createUniqueFolder,
   getItemData,
-  getItemRelatedItems
+  getItemRelatedItems,
+  getBlob,
+  getItemBlob
 } from "../src/restHelpers";
 import {
   TOMORROW,
@@ -51,6 +53,81 @@ import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
+
+const TINY_PNG_BYTES = [
+  137,
+  80,
+  78,
+  71,
+  13,
+  10,
+  26,
+  10,
+  0,
+  0,
+  0,
+  13,
+  73,
+  72,
+  68,
+  82,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  8,
+  6,
+  0,
+  0,
+  0,
+  31,
+  21,
+  196,
+  137,
+  0,
+  0,
+  0,
+  13,
+  73,
+  68,
+  65,
+  84,
+  24,
+  87,
+  99,
+  96,
+  88,
+  244,
+  226,
+  63,
+  0,
+  4,
+  186,
+  2,
+  138,
+  87,
+  137,
+  99,
+  50,
+  0,
+  0,
+  0,
+  0,
+  73,
+  69,
+  78,
+  68,
+  174,
+  66,
+  96,
+  130
+];
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 let itemTemplate: IItemTemplate;
 
@@ -1219,6 +1296,56 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         done.fail
       );
     });
+
+    it("can handle abbreviated error", done => {
+      const folderTitleRoot = "My Folder";
+      const userSession = MOCK_USER_SESSION;
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
+      const expectedCreate = {
+        error: {
+          code: 400,
+          message: "Unable to create folder.",
+          details: [] as any[]
+        }
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      createUniqueFolder(folderTitleRoot, userSession).then(
+        () => done.fail,
+        response => {
+          expect(response.success).toBeUndefined();
+          expect(response.message).toEqual("400: Unable to create folder.");
+          done();
+        }
+      );
+    });
+
+    it("can handle extended error", done => {
+      const folderTitleRoot = "My Folder";
+      const userSession = MOCK_USER_SESSION;
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
+      const expectedCreate = {
+        error: {
+          code: 400,
+          message: "Unable to create folder.",
+          details: ["Folder title '" + folderTitleRoot + "' not available."]
+        }
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      createUniqueFolder(folderTitleRoot, userSession).then(
+        () => done.fail,
+        response => {
+          expect(response.success).toBeUndefined();
+          expect(response.message).toEqual("400: Unable to create folder.");
+          done();
+        }
+      );
+    });
   });
 
   describe("getItemData", () => {
@@ -1439,6 +1566,229 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }, done.fail);
     });
   });
+
+  describe("createItemWithData", () => {
+    it("can handle private specification", done => {
+      const itemInfo: any = {};
+      const dataInfo: any = {};
+      const requestOptions = MOCK_USER_REQOPTS;
+      const folderId = "fld1234567890";
+      const access = "private";
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      createItemWithData(
+        itemInfo,
+        dataInfo,
+        requestOptions,
+        folderId,
+        access
+      ).then(
+        (response: portal.ICreateItemResponse) => {
+          expect(response).toEqual(expectedCreate);
+          done();
+        },
+        () => done.fail
+      );
+    });
+
+    it("can handle org specification", done => {
+      const itemInfo: any = {};
+      const dataInfo: any = {};
+      const requestOptions = MOCK_USER_REQOPTS;
+      const folderId = "fld1234567890";
+      const access = "org";
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId
+      };
+      const shareUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+      const expectedShare = {
+        notSharedWith: [] as string[],
+        itemId: expectedCreate.id
+      };
+      fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
+
+      createItemWithData(
+        itemInfo,
+        dataInfo,
+        requestOptions,
+        folderId,
+        access
+      ).then(
+        (response: portal.ICreateItemResponse) => {
+          expect(response).toEqual(expectedCreate);
+          done();
+        },
+        () => done.fail
+      );
+    });
+
+    it("can handle public specification", done => {
+      const itemInfo: any = {};
+      const dataInfo: any = {};
+      const requestOptions = MOCK_USER_REQOPTS;
+      const folderId = "fld1234567890";
+      const access = "public";
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId
+      };
+      const shareUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+      const expectedShare = {
+        notSharedWith: [] as string[],
+        itemId: expectedCreate.id
+      };
+      fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
+
+      createItemWithData(
+        itemInfo,
+        dataInfo,
+        requestOptions,
+        folderId,
+        access
+      ).then(
+        (response: portal.ICreateItemResponse) => {
+          expect(response).toEqual(expectedCreate);
+          done();
+        },
+        () => done.fail
+      );
+    });
+
+    it("can handle failure to change created item's access", done => {
+      const itemInfo: any = {};
+      const dataInfo: any = {};
+      const requestOptions = MOCK_USER_REQOPTS;
+      const folderId = "fld1234567890";
+      const access = "public";
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expectedCreate = {
+        success: true,
+        id: "itm1234567980",
+        folder: folderId
+      };
+      const shareUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+      const expectedShare = {
+        error: {
+          code: 400,
+          messageCode: "CONT_0001",
+          message: "Item does not exist or is inaccessible.",
+          details: [] as any[]
+        }
+      };
+      fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
+
+      createItemWithData(
+        itemInfo,
+        dataInfo,
+        requestOptions,
+        folderId,
+        access
+      ).then(
+        () => done.fail,
+        response => {
+          expect(response.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
+  if (typeof window !== "undefined") {
+    // Blobs are only available in the browser
+
+    describe("getBlob", () => {
+      it("can get a blob from a URL", done => {
+        const url: string = "https://myserver/images/thumbnail.png";
+        const requestOptions = MOCK_USER_REQOPTS;
+
+        const getUrl = "https://myserver/images/thumbnail.png";
+        const expected = new Blob([new Uint8Array(TINY_PNG_BYTES).buffer], {
+          type: "image/png"
+        });
+        const expectedGet = new Response(expected);
+        fetchMock.post(getUrl, expectedGet);
+
+        getBlob(url, requestOptions).then(response => {
+          expect(response).toEqual(expected);
+          done();
+        }, done.fail);
+      });
+
+      /*
+      it("can handle inability to get a blob out of a response", done => {
+        const url: string = "https://myserver/images/thumbnail.png";
+        const requestOptions = MOCK_USER_REQOPTS;
+
+        const getUrl = "https://myserver/images/thumbnail.png";
+        const expectedGet = new Response();
+        fetchMock.post(getUrl, expectedGet);
+
+        getBlob(
+          url,
+          requestOptions
+        ).then(
+          () => done.fail,
+          response => {
+            console.warn("getBlob1", JSON.stringify(response,null,2));
+            // expect(response).toEqual(expected);
+            done();
+          }
+        );
+      });
+      */
+    });
+
+    describe("getItemBlob", () => {
+      it("can get a blob stored in the data section of an item", done => {
+        const itemId: string = "blb1234567890";
+        const requestOptions = MOCK_USER_REQOPTS;
+
+        const getUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/blb1234567890/data";
+        const expected = new Blob([new Uint8Array(TINY_PNG_BYTES).buffer], {
+          type: "image/png"
+        });
+        const expectedGet = new Response(expected);
+        fetchMock.post(getUrl, expectedGet);
+
+        getItemBlob(itemId, requestOptions).then(response => {
+          expect(response).toEqual(expected);
+          done();
+        }, done.fail);
+      });
+    });
+  }
+
+  /*
+  describe("getGroupContentsTranche", () => {
+    it("can handle failure", done => {
+
+
+    });
+  });
+  */
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
