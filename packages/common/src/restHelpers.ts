@@ -841,5 +841,14 @@ export function _setItemProperties(
     }
   });
 
+  // Enable editor tracking on layer with related tables is not supported.
+  if (
+    item.isMultiServicesView &&
+    generalHelpers.getProp(item, "editorTrackingInfo.enableEditorTracking")
+  ) {
+    item.editorTrackingInfo.enableEditorTracking = false;
+    params["editorTrackingInfo"] = item.editorTrackingInfo;
+  }
+
   return item;
 }

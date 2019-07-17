@@ -196,7 +196,13 @@ function createItemFromTemplateWhenReady(
             destinationUserSession,
             progressTickCallback
           )
-          .then(newItemId => resolve(newItemId), () => resolve(""));
+          .then(
+            newItemId => resolve(newItemId),
+            e => {
+              console.error(e);
+              reject(common.fail(e));
+            }
+          );
       }
     }, common.fail);
   });
