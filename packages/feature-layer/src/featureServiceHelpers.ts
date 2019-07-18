@@ -688,7 +688,7 @@ export function updatePopupInfo(
   popupInfos: any
 ): void {
   ["layers", "tables"].forEach(type => {
-    const _items: any[] = common.getProp(itemTemplate, "item.text." + type);
+    const _items: any[] = common.getProp(itemTemplate, "data." + type);
     if (_items && Array.isArray(_items)) {
       _items.forEach((item: any) => {
         item.popupInfo = common.getProp(popupInfos, type + "." + item.id) || {};

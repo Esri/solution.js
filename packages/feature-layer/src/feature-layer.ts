@@ -163,6 +163,7 @@ export function createItemFromTemplate(
                     .updateItem(
                       createResponse.serviceItemId,
                       newItemTemplate.item,
+                      newItemTemplate.data,
                       requestOptions
                     )
                     .then(

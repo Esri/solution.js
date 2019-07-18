@@ -558,6 +558,7 @@ export function shareItem(
 export function updateItem(
   serviceItemId: string,
   itemInfo: any,
+  data: any,
   requestOptions: auth.IUserRequestOptions,
   access?: string | undefined,
   progressTickCallback?: () => void
@@ -565,6 +566,9 @@ export function updateItem(
   return new Promise((resolve, reject) => {
     const updateOptions: any = {
       item: itemInfo,
+      params: {
+        text: data
+      },
       ...requestOptions
     };
 
