@@ -2313,9 +2313,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const popupInfos = cachePopupInfos(itemTemplate.data);
 
-      delete itemTemplate.data;
-      itemTemplate.item.text = dataNoProp;
-
       const expected: any = {
         layers: [
           {
@@ -2344,8 +2341,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
 
       updatePopupInfo(itemTemplate, popupInfos);
-
-      expect(itemTemplate.item.text).toEqual(expected);
+      expect(itemTemplate.data).toEqual(expected);
     });
   });
 

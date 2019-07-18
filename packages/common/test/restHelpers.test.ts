@@ -634,6 +634,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       updateItem(
         "svc1234567890",
         itemTemplate.item,
+        itemTemplate.data,
         MOCK_USER_REQOPTS,
         undefined,
         progressTickCallback
@@ -657,6 +658,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       updateItem(
         "svc1234567890",
         itemTemplate.item,
+        itemTemplate.data,
         MOCK_USER_REQOPTS,
         undefined,
         progressTickCallback
@@ -683,6 +685,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       updateItem(
         "svc1234567890",
         itemTemplate.item,
+        itemTemplate.data,
         MOCK_USER_REQOPTS,
         "public",
         progressTickCallback
@@ -709,6 +712,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       updateItem(
         "svc1234567890",
         itemTemplate.item,
+        itemTemplate.data,
         MOCK_USER_REQOPTS,
         "org",
         progressTickCallback
@@ -735,6 +739,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       updateItem(
         "svc1234567890",
         itemTemplate.item,
+        itemTemplate.data,
         MOCK_USER_REQOPTS,
         "org",
         progressTickCallback

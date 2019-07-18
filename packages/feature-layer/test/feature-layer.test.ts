@@ -161,6 +161,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token",
+          "{}"
+        )
         .post(
           "https://www.arcgis.com/sharing/rest/generateToken",
           '{"token":"abc123"}'
