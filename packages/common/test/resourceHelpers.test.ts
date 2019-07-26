@@ -429,7 +429,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const filePaths: resourceHelpers.ISourceFileCopyPath[] = [] as resourceHelpers.ISourceFileCopyPath[];
       const storageItemId: string = "itm1234567890";
       const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
-      const expected = true;
+      const expected: string[] = [];
 
       resourceHelpers
         .copyFilesToStorageItem(
@@ -466,7 +466,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         );
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
-        const expectedUpdate = true;
+        const expectedUpdate: string[] = ["storageFolder/storageFilename"];
 
         fetchMock
           .post(serverInfoUrl, expectedServerInfo)

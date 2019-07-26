@@ -234,8 +234,8 @@ export function copyFilesToStorageItem(
   filePaths: ISourceFileCopyPath[],
   storageItemId: string,
   storageRequestOptions: auth.IUserRequestOptions
-): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
       return new Promise<string>(resolveThisFile => {
         copyResource(
@@ -258,7 +258,7 @@ export function copyFilesToStorageItem(
     });
 
     // Wait until all items have been copied
-    Promise.all(awaitAllItems).then(() => resolve(true), reject);
+    Promise.all(awaitAllItems).then(r => resolve(r), reject);
   });
 }
 
@@ -575,16 +575,18 @@ export function generateStorageFilePaths(
   storageItemId: string,
   resourceFilenames: string[]
 ): IDeployFileCopyPath[] {
-  return resourceFilenames.map(resourceFilename => {
-    return {
-      url: generateSourceResourceUrl(
-        portalSharingUrl,
-        storageItemId,
-        resourceFilename
-      ),
-      ...generateResourceFilenameFromStorage(resourceFilename)
-    };
-  });
+  return resourceFilenames && resourceFilenames.map
+    ? resourceFilenames.map(resourceFilename => {
+        return {
+          url: generateSourceResourceUrl(
+            portalSharingUrl,
+            storageItemId,
+            resourceFilename
+          ),
+          ...generateResourceFilenameFromStorage(resourceFilename)
+        };
+      })
+    : [];
 }
 
 /**
