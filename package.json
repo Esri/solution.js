@@ -25,13 +25,14 @@
     "handlebars": "^4.1.2",
     "husky": "^0.14.3",
     "inspect-process": "^0.5.0",
-    "jasmine": "^2.8.0",
-    "jasmine-core": "^2.8.0",
+    "jasmine": "^3.4.0",
+    "jasmine-core": "^3.4.0",
     "karma": "^4.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-firefox-launcher": "^1.1.0",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^1.1.1",
+    "karma-jasmine-diff-reporter": "^1.1.1",
     "karma-safari-launcher": "^1.0.0",
     "karma-spec-reporter": "0.0.32",
     "karma-typescript": "^4.0.0",
@@ -59,15 +60,14 @@
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
-    "typedoc": "^0.14.2",
-    "typescript": "^3.5.2"
+    "typedoc": "^0.15.0",
+    "typescript": "^3.5.3"
   },
   "dependencies": {
     "@types/adlib": "^3.0.1",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",
-    "js-yaml": "^3.13.1",
     "tslib": "^1.9.3"
   },
   "lint-staged": {
@@ -79,7 +79,7 @@
   },
   "scripts": {
     "build": "lerna run build",
-    "clean": "rm -f packages/*/src/*.d.ts && rm -f packages/*/src/*.js && rm -f packages/*/src/*.js.map && rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
+    "clean": "rm -f packages/*/src/**/*.d.ts && rm -f packages/*/src/**/*.js && rm -f packages/*/src/**/*.js.map && rm -f packages/*/test/**/*.d.ts && rm -f packages/*/test/**/*.js && rm -f packages/*/test/**/*.js.map && rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "test": "npm run lint && npm run test:node && npm run test:chrome",
     "test:chrome:debug": "karma start --auto-watch --no-single-run --browsers=Chrome",
     "test:chrome": "karma start --single-run --browsers=Chrome",
