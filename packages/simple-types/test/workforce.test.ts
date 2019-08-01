@@ -18,11 +18,44 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import { convertItemToTemplate } from "../src/workforce";
+import { convertItemToTemplate, fineTuneCreatedItem } from "../src/workforce";
 
 import { IItemTemplate } from "../../common/src/interfaces";
-
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as mockSolutions from "../../common/test/mocks/templates";
+import * as fetchMock from "fetch-mock";
+import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+
+import {
+  TOMORROW,
+  createMockSettings,
+  createRuntimeMockUserSession,
+  checkForArcgisRestSuccessRequestError
+} from "../../common/test/mocks/utils";
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
+
+// Set up a UserSession to use in all these tests
+const MOCK_USER_SESSION = new UserSession({
+  clientId: "clientId",
+  redirectUri: "https://example-app.com/redirect-uri",
+  token: "fake-token",
+  tokenExpires: TOMORROW,
+  refreshToken: "refreshToken",
+  refreshTokenExpires: TOMORROW,
+  refreshTokenTTL: 1440,
+  username: "casey",
+  password: "123456",
+  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+});
+
+const MOCK_USER_REQOPTS: IUserRequestOptions = {
+  authentication: MOCK_USER_SESSION
+};
+
+afterEach(() => {
+  fetchMock.restore();
+});
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -107,6 +140,204 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
 
       const newItemTemplate = convertItemToTemplate(itemTemplate);
       expect(newItemTemplate.data).toEqual(expectedTemplateData);
+    });
+  });
+
+  describe("fineTuneCreatedItem", () => {
+    it("should update dispatchers service", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+      const addUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {
+          features: []
+        })
+        .post(addUrl, {
+          addResults: [{}]
+        });
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+        expect(r).toEqual({ success: true });
+        done();
+      }, done.fail);
+    });
+
+    it("should handle error on update dispatchers", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, mockItems.get400Failure());
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+        done.fail,
+        done
+      );
+    });
+
+    it("should handle error on getUser", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+
+      fetchMock.get(userUrl, mockItems.get400Failure());
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+        done.fail,
+        done
+      );
+    });
+
+    it("should not update dispatchers service if it contains records", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {
+          features: [{}]
+        });
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+        expect(r).toEqual({
+          success: true
+        });
+        done();
+      }, done.fail);
+    });
+
+    it("should handle failure to add features", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+      const addUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {
+          features: []
+        })
+        .post(addUrl, {});
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+        done.fail,
+        e => {
+          expect(e).toEqual({
+            success: false,
+            error: { success: false, message: "Failed to add dispatch record." }
+          });
+          done();
+        }
+      );
+    });
+
+    it("should have success === false when query does not return a features property", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {});
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+        expect(r).toEqual({
+          success: false
+        });
+        done();
+      }, done.fail);
+    });
+
+    it("should have success === false when dispatchers does not have url", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {});
+
+      delete itemTemplate.data.dispatchers.url;
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+        expect(r).toEqual({
+          success: false
+        });
+        done();
+      }, done.fail);
     });
   });
 });

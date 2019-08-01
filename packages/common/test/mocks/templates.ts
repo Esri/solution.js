@@ -190,6 +190,14 @@ export function getItemTemplatePart(
       break;
 
     case "Workforce Project":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        "wfp",
+        dependencies,
+        url
+      );
+      templatePart.data = getItemTemplateData(type);
+      templatePart.resources = [];
       break;
 
     case "Unsupported":
@@ -670,6 +678,45 @@ export function getItemTemplateData(type?: string): any {
       break;
 
     case "Workforce Project":
+      data = {
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+        dispatchers: {
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}"
+        },
+        assignments: {
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}"
+        },
+        workers: {
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}"
+        },
+        tracks: {
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
+          url: "{{abc64329e69144c59f69f3f3e0d45269.url}}",
+          enabled: true,
+          updateInterval: 300
+        },
+        version: "1.2.0",
+        groupId: "{{abc715c2df2b466da05577776e82d044.groupId}}",
+        folderId: "{{abc8483e025c47338d43df308c117308.folderId}}",
+        assignmentIntegrations: [
+          {
+            id: "default-navigator",
+            prompt: "Navigate to Assignment",
+            urlTemplate:
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}://Workforce",
+            assignmentTypes: [
+              {
+                urlTemplate:
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}://Workforce"
+              }
+            ]
+          }
+        ]
+      };
       break;
 
     case "Unknown":
