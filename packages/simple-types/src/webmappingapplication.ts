@@ -97,6 +97,8 @@ export function fineTuneCreatedItem(
             title: originalTemplate.item.title,
             type: "Code Attachment",
             typeKeywords: ["Code", "Javascript", "Web Mapping Application"],
+            relationshipType: "WMA2Code",
+            originItemId: newlyCreatedItem.itemId,
             url:
               common.replaceInTemplate(
                 common.PLACEHOLDER_SERVER_NAME,
