@@ -97,6 +97,16 @@ const TINY_PNG_BYTES = [
   130
 ];
 
+const SERVER_REST_INFO = {
+  currentVersion: 10.1,
+  fullVersion: "10.1",
+  soapUrl: "https://services123.arcgis.com/org1234567890/arcgis/rest/services",
+  secureSoapUrl:
+    "https://services123.arcgis.com/org1234567890/arcgis/rest/services",
+  owningSystemUrl: "https://myorg.maps..arcgis.com",
+  authInfo: {}
+};
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
@@ -329,6 +339,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", SERVER_REST_INFO)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
@@ -372,6 +383,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", SERVER_REST_INFO)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
@@ -469,6 +481,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate: string[] = ["storageFolder/storageFilename"];
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", SERVER_REST_INFO)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
