@@ -213,6 +213,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -237,6 +239,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       delete itemTemplate.item.item;
 
       fetchMock
+        .get(itemDataUrl, "{}")
         .post(url + "?f=json", itemTemplate.properties.service)
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
@@ -260,6 +263,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -284,6 +289,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       delete itemTemplate.item.item;
 
       fetchMock
+        .get(itemDataUrl, "{}")
         .post(url + "?f=json", mockItems.get400Failure())
         .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
