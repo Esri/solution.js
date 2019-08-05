@@ -173,17 +173,13 @@ const MOCK_USER_REQOPTS: IUserRequestOptions = {
   authentication: MOCK_USER_SESSION
 };
 
-const SERVER_REST_INFO = {
+const SERVER_INFO = {
   currentVersion: 10.1,
   fullVersion: "10.1",
-  soapUrl: "https://services123.arcgis.com/org1234567890/arcgis/rest/services",
-  secureSoapUrl:
-    "https://services123.arcgis.com/org1234567890/arcgis/rest/services",
-  owningSystemUrl: "https://myorg.maps..arcgis.com",
-  authInfo: {
-    isTokenBasedSecurity: false,
-    tokenServicesUrl: "https://myserver/arcgis/tokens"
-  }
+  soapUrl: "http://server/arcgis/services",
+  secureSoapUrl: "https://server/arcgis/services",
+  owningSystemUrl: "https://www.arcgis.com",
+  authInfo: {}
 };
 
 afterEach(() => {
@@ -1742,12 +1738,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const requestOptions = MOCK_USER_REQOPTS;
 
         const getUrl = "https://myserver/images/thumbnail.png";
+        const expectedServerInfo = SERVER_INFO;
         const expected = new Blob([new Uint8Array(TINY_PNG_BYTES).buffer], {
           type: "image/png"
         });
         const expectedGet = new Response(expected);
         fetchMock
-          .post(getUrl + "/rest/info", SERVER_REST_INFO)
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(getUrl + "/rest/info", expectedServerInfo)
           .post(getUrl, expectedGet);
 
         getBlob(url, requestOptions).then(response => {
