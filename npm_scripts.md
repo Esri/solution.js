@@ -35,6 +35,7 @@ Key:
 ### Publish
 
 1. npm run **release:prepare** (git)
-    * type in new version (arrowing tends to fail)
-	* updates versions
-2. npm run **release:publish** (git) -- commits new version and publishes to github
+    * Type in new version (arrowing tends to fail)
+	* updates top-level package.json version
+2. Update package package.json versions
+3. npm run **release:publish** (git) -- commits new version and publishes to github
