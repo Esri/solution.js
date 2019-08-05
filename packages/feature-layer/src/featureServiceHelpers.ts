@@ -83,6 +83,12 @@ export function templatize(
     ".id"
   );
 
+  itemTemplate.properties.service.fullExtent = "{{initiative.extent:optional}}";
+  itemTemplate.properties.service.initialExtent =
+    "{{initiative.extent:optional}}";
+  itemTemplate.properties.service.spatialReference =
+    "{{initiative.spatialReference:optional}}";
+
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
     const matchingItems = _items.filter(item => {
@@ -774,6 +780,10 @@ export function _templatizeLayer(
 
     if (update.hasOwnProperty("adminLayerInfo")) {
       update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies);
+    }
+
+    if (update.hasOwnProperty("extent")) {
+      update.extent = "{{initiative.extent:optional}}";
     }
   });
 }

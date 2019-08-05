@@ -82,6 +82,13 @@ export function deploySolution(
         templateDictionary.folderId = folderResponse.folder.id;
         const portalResponse = responses[2];
         templateDictionary.isPortal = portalResponse.isPortal;
+        templateDictionary.initiative = Object.assign(
+          templateDictionary.initiative || {},
+          {
+            extent: portalResponse.defaultExtent,
+            spatialReference: portalResponse.defaultExtent.spatialReference
+          }
+        );
 
         const totalEstimatedCost =
           estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation

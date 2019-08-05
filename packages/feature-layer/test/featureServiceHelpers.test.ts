@@ -145,7 +145,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "",
         properties: {
           service: {
-            serviceItemId: "{{DEF456.id}}"
+            serviceItemId: "{{DEF456.id}}",
+            fullExtent: "{{initiative.extent:optional}}",
+            initialExtent: "{{initiative.extent:optional}}",
+            spatialReference: "{{initiative.spatialReference:optional}}"
           },
           layers: [
             {
@@ -256,6 +259,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
+            fullExtent: "{{initiative.extent:optional}}",
+            initialExtent: "{{initiative.extent:optional}}",
+            spatialReference: "{{initiative.spatialReference:optional}}",
             layers: [
               {
                 id: 0,
