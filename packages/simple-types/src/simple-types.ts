@@ -322,6 +322,11 @@ export function createItemFromTemplate(
                   templateDictionary,
                   destinationUserSession
                 );
+              } else if (template.type.toLowerCase() === "workforce project") {
+                customProcDef = workforce.fineTuneCreatedItem(
+                  newItemTemplate,
+                  destinationUserSession
+                );
               } else {
                 customProcDef = Promise.resolve();
               }

@@ -1123,6 +1123,59 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
 
+    it("should create and fine tune workforce project", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+      const addUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          { success: true }
+        )
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {
+          features: []
+        })
+        .post(addUrl, {
+          addResults: [{}]
+        });
+
+      createItemFromTemplate(
+        itemTemplate,
+        [],
+        MOCK_USER_SESSION,
+        {},
+        MOCK_USER_SESSION,
+        function() {
+          const a: any = "A";
+        }
+      ).then(r => {
+        expect(r).toEqual(newItemID);
+        done();
+      }, done.fail);
+    });
+
     it("should create group", done => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";

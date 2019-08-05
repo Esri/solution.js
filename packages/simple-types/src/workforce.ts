@@ -15,7 +15,18 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as auth from "@esri/arcgis-rest-auth";
+import { queryFeatures, addFeatures } from "@esri/arcgis-rest-feature-layer";
 
+//#region Publish Process ---------------------------------------------------------------------------------------//
+
+/**
+ * Templatize source item
+ *
+ * @param itemTemplate template for the workforce project item
+ * @return templatized itemTemplate
+ * @protected
+ */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
@@ -44,6 +55,13 @@ export function convertItemToTemplate(
   return itemTemplate;
 }
 
+/**
+ * Gets the ids of the dependencies of the workforce project.
+ *
+ * @param data itemTemplate data
+ * @param keyProperties workforce project properties that contain references to dependencies
+ * @return a list of dependency IDs
+ */
 export function extractDependencies(
   data: any,
   keyProperties: string[]
@@ -65,6 +83,13 @@ export function extractDependencies(
   return deps;
 }
 
+/**
+ * Templatizes key item properties.
+ *
+ * @param data itemTemplate data
+ * @param keyProperties workforce project properties that should be templatized
+ * @return an updated data object to be stored in the template
+ */
 export function _templatize(
   data: any,
   keyProperties: string[]
@@ -118,3 +143,105 @@ export function _templatize(
   });
   return data;
 }
+
+//#endregion
+
+//#region Deploy Process ---------------------------------------------------------------------------------------//
+
+/**
+ * Updates the dispatchers service to include the current user as a dispatcher
+ *
+ * @param newlyCreatedItem Item to be created; n.b.: this item is modified
+ * @param destinationUserSession The session used to create the new item(s)
+ * @return A promise that will resolve with { "success" === true || false }
+ * @protected
+ */
+export function fineTuneCreatedItem(
+  newlyCreatedItem: common.IItemTemplate,
+  destinationUserSession: auth.UserSession
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    destinationUserSession.getUser().then(
+      user => {
+        _updateDispatchers(
+          common.getProp(newlyCreatedItem, "data.dispatchers"),
+          user.username || "",
+          user.fullName || "",
+          destinationUserSession
+        ).then(
+          results => {
+            resolve({ success: results });
+          },
+          e => reject(common.fail(e))
+        );
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
+export function _updateDispatchers(
+  dispatchers: any,
+  name: string,
+  fullName: string,
+  destinationUserSession: auth.UserSession
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    if (dispatchers && dispatchers.url) {
+      queryFeatures({
+        url: dispatchers.url,
+        where: "userId = '" + name + "'",
+        authentication: destinationUserSession
+      }).then(
+        (results: any) => {
+          if (results && results.features) {
+            if (results.features.length === 0) {
+              addFeatures({
+                url: dispatchers.url,
+                features: [
+                  {
+                    attributes: {
+                      name: fullName,
+                      userId: name
+                    }
+                  }
+                ],
+                authentication: destinationUserSession
+              }).then(
+                addResults => {
+                  if (addResults && addResults.addResults) {
+                    resolve(true);
+                  } else {
+                    reject(
+                      common.fail({
+                        success: false,
+                        message: "Failed to add dispatch record."
+                      })
+                    );
+                  }
+                },
+                e =>
+                  reject(
+                    common.fail({
+                      success: false,
+                      message: "Failed to add dispatch record.",
+                      error: e
+                    })
+                  )
+              );
+            } else {
+              resolve(true);
+            }
+          } else {
+            resolve(false);
+          }
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(false);
+    }
+  });
+}
+
+//#endregion
