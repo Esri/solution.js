@@ -58,7 +58,7 @@ function getCommitData(from, to) {
     const authorName = "%an";
     const authorEmail = "%ae";
     const date = "%aI";
-    const subject = "%s";
+    const subject = "%f";
     const defaultFormat = {
       hash,
       shortHash,
