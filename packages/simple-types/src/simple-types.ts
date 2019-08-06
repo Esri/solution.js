@@ -354,7 +354,7 @@ export function createItemFromTemplate(
         title => {
           // Set the item title with a valid name for the ORG
           newItemTemplate.item.title = title;
-
+          newItemTemplate.item.access = "private";
           portal
             .createGroup({
               group: newItemTemplate.item,
