@@ -46,6 +46,101 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     fetchMock.restore();
   });
 
+  describe("convertItemToTemplate", () => {
+    it("just webmap data", () => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: { values: { webmap: "myMapId" } },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: { values: { webmap: "{{myMapId.id}}" } },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const actual = webmappingapplication.convertItemToTemplate(model);
+      expect(actual).toEqual(expected);
+    });
+    it("just group data", () => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: { values: { group: "myGroupId" } },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: { values: { group: "{{myGroupId.id}}" } },
+        resources: [] as any[],
+        dependencies: ["myGroupId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const actual = webmappingapplication.convertItemToTemplate(model);
+      expect(actual).toEqual(expected);
+    });
+    it("neither webmap nor group", () => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{itm1234567890.id}}",
+          title: "Voting Centers",
+          url:
+            "http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=itm1234567890"
+        } as any,
+        data: {
+          folderId: "fld1234567890"
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{itm1234567890.id}}",
+          title: "Voting Centers",
+          url:
+            "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{itm1234567890.id}}"
+        } as any,
+        data: {
+          folderId: "{{folderId}}"
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as any[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const actual = webmappingapplication.convertItemToTemplate(model);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("getWABDependencies", () => {
     it("handles no keywords", () => {
       const model = {
@@ -354,6 +449,95 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           expect(calls.length).toEqual(1);
           done();
         });
+    });
+
+    it("handles fineTuneCreatedItem failure", done => {
+      const originalTemplate = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const newlyCreatedItem = {
+        itemId: "wab1234567890",
+        type: "Web Mapping Application",
+        key: "ijklmnop",
+        item: {
+          tags: [
+            "Early Voting",
+            "Voting",
+            "Polling Places",
+            "Ballots",
+            "Secretary of State",
+            "Voting Centers"
+          ],
+          title: "Voting Centers",
+          typeKeywords: [
+            "Map",
+            "Mapping Site",
+            "Online Map",
+            "WAB2D",
+            "Web AppBuilder"
+          ]
+        } as any,
+        data: {} as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      } as common.IItemTemplate;
+      const templateDictionary = {
+        folderId: "fld1234567890"
+      };
+
+      const createUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+      const expected = {
+        success: false
+      };
+      fetchMock.post(createUrl, expected);
+
+      webmappingapplication
+        .fineTuneCreatedItem(
+          originalTemplate,
+          newlyCreatedItem,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => {
+            const calls = fetchMock.calls(createUrl);
+            expect(calls.length).toEqual(1);
+            done();
+          },
+          () => {
+            const calls = fetchMock.calls(createUrl);
+            expect(calls.length).toEqual(1);
+            done();
+          }
+        );
     });
   });
 });
