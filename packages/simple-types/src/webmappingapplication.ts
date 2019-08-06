@@ -47,16 +47,6 @@ export function convertItemToTemplate(
   // Extract dependencies
   itemTemplate.dependencies = extractDependencies(itemTemplate);
 
-  // Templatize dependencies in the data section
-  itemTemplate.dependencies.forEach(path => {
-    const propertyPath: string = itemTemplate.data[path] as string;
-    itemTemplate.data[path] = common.templatizeTerm(
-      propertyPath,
-      propertyPath,
-      ".id"
-    );
-  });
-
   // Set the map or group after we've extracted them as dependencies
   if (common.getProp(itemTemplate, "data.values.webmap")) {
     itemTemplate.data.values.webmap = common.templatizeTerm(
