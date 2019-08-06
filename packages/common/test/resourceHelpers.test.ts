@@ -125,11 +125,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     soapUrl: "http://server/arcgis/services",
     secureSoapUrl: "https://server/arcgis/services",
     owningSystemUrl: "https://www.arcgis.com",
-    authInfo: {
-      isTokenBasedSecurity: true,
-      tokenServicesUrl: "https://server/arcgis/tokens",
-      shortLivedTokenValidity: 60
-    }
+    authInfo: {}
   };
 
   afterEach(() => {
@@ -329,6 +325,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
@@ -372,6 +369,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
@@ -469,6 +467,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate: string[] = ["storageFolder/storageFilename"];
 
         fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch)
           .post(updateUrl, expectedUpdate);
