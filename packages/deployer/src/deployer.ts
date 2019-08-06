@@ -193,8 +193,9 @@ export function deploySolution(
                     portal.updateItem(updatedItemInfo).then(
                       () => {
                         progressCallback(100);
+                        delete updatedItemInfo.item.data;
                         resolve({
-                          item: updatedItemInfo,
+                          item: updatedItemInfo.item,
                           data: itemData
                         });
                       },
