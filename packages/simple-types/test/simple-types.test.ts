@@ -47,6 +47,79 @@ const MOCK_USER_SESSION = new UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
+const TINY_PNG_BYTES = [
+  137,
+  80,
+  78,
+  71,
+  13,
+  10,
+  26,
+  10,
+  0,
+  0,
+  0,
+  13,
+  73,
+  72,
+  68,
+  82,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  1,
+  8,
+  6,
+  0,
+  0,
+  0,
+  31,
+  21,
+  196,
+  137,
+  0,
+  0,
+  0,
+  13,
+  73,
+  68,
+  65,
+  84,
+  24,
+  87,
+  99,
+  96,
+  88,
+  244,
+  226,
+  63,
+  0,
+  4,
+  186,
+  2,
+  138,
+  87,
+  137,
+  99,
+  50,
+  0,
+  0,
+  0,
+  0,
+  73,
+  69,
+  78,
+  68,
+  174,
+  66,
+  96,
+  130
+];
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -757,7 +830,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             resourcesResponse
           )
           .post(
-            "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             {}
           )
           .post(
@@ -967,11 +1040,131 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         MOCK_USER_SESSION,
         true
       ).then(newItemTemplate => {
-        delete newItemTemplate.key;
+        delete newItemTemplate.key; // key is randomly generated, and so is not testable
         expect(newItemTemplate).toEqual(expectedTemplate);
         done();
       }, done.fail);
     });
+
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      it("should handle item resource", done => {
+        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
+        itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
+        itemTemplate.item.thumbnail = "thumbnail/banner.png";
+
+        const expectedFetch = new Blob(
+          [new Uint8Array(TINY_PNG_BYTES).buffer],
+          { type: "image/png" }
+        );
+
+        const expectedTemplate: any = {
+          itemId: "map1234567890",
+          type: "Web Map",
+          item: {
+            id: "{{map1234567890.id}}",
+            type: "Web Map",
+            categories: [],
+            culture: "en-us",
+            description: "Description of an AGOL item",
+            extent: [],
+            licenseInfo: null,
+            name: "Name of an AGOL item",
+            snippet: "Snippet of an AGOL item",
+            tags: ["test"],
+            thumbnail: "thumbnail/banner.png",
+            title: "An AGOL item",
+            typeKeywords: ["JavaScript"],
+            url:
+              "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
+          },
+          data: {},
+          resources: [
+            "map1234567890_image/banner.png",
+            "map1234567890_info_metadata/metadata.xml",
+            "map1234567890_info_thumbnail/banner.png"
+          ],
+          dependencies: [],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            {
+              total: 1,
+              start: 1,
+              num: 1,
+              nextStart: -1,
+              resources: [
+                {
+                  resource: "image/banner.png",
+                  created: 1522711362000,
+                  size: 56945
+                }
+              ]
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/resources/image/banner.png",
+            expectedFetch
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              itemTemplate.itemId +
+              "/addResources",
+            {
+              success: true,
+              itemId: itemTemplate.itemId,
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/info/thumbnail/banner.png",
+            expectedFetch
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/data?f=json&num=1000&token=fake-token",
+            {}
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0036",
+                message: "Item info file does not exist or is inaccessible.",
+                details: ["Error getting Item Info from DataStore"]
+              }
+            }
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
+      });
+    }
   });
 
   describe("createItemFromTemplate", () => {
