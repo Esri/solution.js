@@ -63,13 +63,6 @@ export function convertItemToTemplate(
       itemTemplate.item.id,
       ".id"
     );
-    if (itemTemplate.item.item) {
-      itemTemplate.item.item = common.templatizeTerm(
-        itemTemplate.item.item,
-        itemTemplate.item.item,
-        ".id"
-      );
-    }
 
     if (!isGroup) {
       // Use the initiative's extent
