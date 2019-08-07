@@ -38,7 +38,7 @@ export function convertItemToTemplate(
   isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
-    console.log(
+    /* console.log(
       "converting " +
         (isGroup ? "Group" : itemInfo.type) +
         ' "' +
@@ -46,7 +46,7 @@ export function convertItemToTemplate(
         '" (' +
         itemInfo.id +
         ")..."
-    );
+    ); */
     const requestOptions: auth.IUserRequestOptions = {
       authentication: userSession
     };
@@ -190,7 +190,7 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            console.log(
+            /* console.log(
               "converted " +
                 itemInfo.type +
                 ' "' +
@@ -198,7 +198,7 @@ export function convertItemToTemplate(
                 '" (' +
                 itemInfo.id +
                 ")"
-            );
+            ); */
             resolve(itemTemplate);
           },
           err => {
@@ -247,13 +247,13 @@ export function createItemFromTemplate(
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const isGroup: boolean = template.type.toLowerCase() === "group";
-    console.log(
+    /* console.log(
       "createItemFromTemplate for a " +
         (isGroup ? "Group" : template.type) +
         " (" +
         template.itemId +
         ")"
-    );
+    ); */
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
