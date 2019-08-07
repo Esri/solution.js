@@ -79,7 +79,7 @@ export function convertItemToTemplate(
             (resourceDetail: any) => resourceDetail.resource
           );
           const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
-            "https://www.arcgis.com/sharing/",
+            userSession.portal,
             itemTemplate.itemId,
             itemTemplate.item.thumbnail,
             itemTemplate.resources
@@ -135,7 +135,9 @@ export function convertItemToTemplate(
           relatedItemsResponse
         ] = responses;
         itemTemplate.data = itemDataResponse;
-        itemTemplate.resources = savedResourceFilenames as any[];
+        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
+          item => !!item
+        );
 
         let wrapupPromise = Promise.resolve();
         switch (itemInfo.type.toLowerCase()) {
