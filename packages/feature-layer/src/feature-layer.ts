@@ -107,13 +107,13 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log(
+    /* console.log(
       "createItemFromTemplate for a " +
         template.type +
         " (" +
         template.itemId +
         ")"
-    );
+    ); */
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
     };
