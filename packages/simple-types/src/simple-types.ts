@@ -38,7 +38,7 @@ export function convertItemToTemplate(
   isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
-    console.log(
+    /* console.log(
       "converting " +
         (isGroup ? "Group" : itemInfo.type) +
         ' "' +
@@ -46,7 +46,7 @@ export function convertItemToTemplate(
         '" (' +
         itemInfo.id +
         ")..."
-    );
+    ); */
     const requestOptions: auth.IUserRequestOptions = {
       authentication: userSession
     };
@@ -63,13 +63,6 @@ export function convertItemToTemplate(
       itemTemplate.item.id,
       ".id"
     );
-    if (itemTemplate.item.item) {
-      itemTemplate.item.item = common.templatizeTerm(
-        itemTemplate.item.item,
-        itemTemplate.item.item,
-        ".id"
-      );
-    }
 
     if (!isGroup) {
       // Use the initiative's extent
@@ -86,7 +79,7 @@ export function convertItemToTemplate(
             (resourceDetail: any) => resourceDetail.resource
           );
           const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
-            "https://www.arcgis.com/sharing/",
+            userSession.portal,
             itemTemplate.itemId,
             itemTemplate.item.thumbnail,
             itemTemplate.resources
@@ -126,7 +119,7 @@ export function convertItemToTemplate(
       }
 
       // Items without a data section return an error from the REST library, so we'll need to prevent it
-      // from killing off both promises. This means that there's no `reject` clause to handle, hence:
+      // from killing off all promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
         dataPromise.catch(() => ({})),
@@ -142,7 +135,9 @@ export function convertItemToTemplate(
           relatedItemsResponse
         ] = responses;
         itemTemplate.data = itemDataResponse;
-        itemTemplate.resources = savedResourceFilenames as any[];
+        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
+          item => !!item
+        );
 
         let wrapupPromise = Promise.resolve();
         switch (itemInfo.type.toLowerCase()) {
@@ -197,7 +192,7 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            console.log(
+            /* console.log(
               "converted " +
                 itemInfo.type +
                 ' "' +
@@ -205,7 +200,7 @@ export function convertItemToTemplate(
                 '" (' +
                 itemInfo.id +
                 ")"
-            );
+            ); */
             resolve(itemTemplate);
           },
           err => {
@@ -254,13 +249,13 @@ export function createItemFromTemplate(
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const isGroup: boolean = template.type.toLowerCase() === "group";
-    console.log(
+    /* console.log(
       "createItemFromTemplate for a " +
         (isGroup ? "Group" : template.type) +
         " (" +
         template.itemId +
         ")"
-    );
+    ); */
 
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);

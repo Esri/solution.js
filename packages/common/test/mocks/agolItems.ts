@@ -122,6 +122,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Form":
+      item = getAGOLItemFundamentals(type, "frm", url || undefined);
       break;
 
     case "Geoprocessing Package":
