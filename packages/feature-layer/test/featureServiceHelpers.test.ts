@@ -86,6 +86,21 @@ let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".fieldInfos.layer0.fields";
 
+const _initiative: any = {
+  orgExtent: {
+    xmin: 0,
+    ymin: 0,
+    xmax: 1,
+    ymax: 1,
+    spatialReference: {
+      wkid: 102100
+    }
+  },
+  spatialReference: {
+    wkid: 102100
+  }
+};
+
 beforeEach(() => {
   itemTemplate = {
     itemId: "",
@@ -147,8 +162,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           service: {
             serviceItemId: "{{DEF456.id}}",
             fullExtent: "{{initiative.extent:optional}}",
-            initialExtent: "{{initiative.extent:optional}}",
-            spatialReference: "{{initiative.spatialReference:optional}}"
+            initialExtent: "{{initiative.extent:optional}}"
           },
           layers: [
             {
@@ -261,7 +275,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
             fullExtent: "{{initiative.extent:optional}}",
             initialExtent: "{{initiative.extent:optional}}",
-            spatialReference: "{{initiative.spatialReference:optional}}",
             layers: [
               {
                 id: 0,
@@ -2020,6 +2033,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
 
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
@@ -2036,7 +2052,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
-        url: expectedUrl
+        url: expectedUrl,
+        initiative: _initiative
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2069,6 +2086,206 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         MOCK_USER_REQOPTS
       ).then(e => done.fail, done);
+    });
+
+    it("should handle error on getLayersAndTables", done => {
+      const expectedId: string = "SVC1234567890";
+      const id: string = "{{" + expectedId + ".id}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = mockSolutions.getItemTemplatePart(
+        "Feature Service",
+        [],
+        expectedUrl
+      );
+      itemTemplate.itemId = expectedId;
+      itemTemplate.item.id = id;
+      itemTemplate.estimatedDeploymentCostFactor = 0;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      itemTemplate.properties.layers = [];
+      itemTemplate.properties.tables = [];
+      delete itemTemplate.item.item;
+
+      const settings = createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl,
+        initiative: _initiative
+      };
+
+      addFeatureServiceLayersAndTables(
+        itemTemplate,
+        settings,
+        {
+          layers: [],
+          tables: []
+        },
+        MOCK_USER_REQOPTS
+      ).then(() => done(), done.fail);
+    });
+
+    it("should handle error on updateLayerFieldReferences", done => {
+      const expectedId: string = "SVC1234567890";
+      const id: string = "{{" + expectedId + ".id}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+      const layerDefQuery: string =
+        "status = '{{" +
+        expectedId +
+        ".fieldInfos.layer0.fields.boardreview}}'";
+      const tableDefQuery: string =
+        "status = '{{" +
+        expectedId +
+        ".fieldInfos.layer1.fields.boardreview}}'";
+
+      itemTemplate = mockSolutions.getItemTemplatePart(
+        "Feature Service",
+        [],
+        expectedUrl
+      );
+      itemTemplate.itemId = expectedId;
+      itemTemplate.item.id = id;
+      itemTemplate.estimatedDeploymentCostFactor = 0;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      itemTemplate.properties.layers[0].serviceItemId = id;
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].serviceItemId = id;
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+      delete itemTemplate.item.item;
+
+      const settings = createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl,
+        initiative: _initiative
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(adminUrl + "/0?f=json", mockItems.get400Failure())
+        .post(adminUrl + "/1?f=json", mockItems.get400Failure())
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success": "true"}'
+        );
+
+      addFeatureServiceLayersAndTables(
+        itemTemplate,
+        settings,
+        {
+          layers: [],
+          tables: []
+        },
+        MOCK_USER_REQOPTS
+      ).then(() => done.fail(), done);
+    });
+
+    it("should handle error on layer updates", done => {
+      const expectedId: string = "SVC1234567890";
+      const id: string = "{{" + expectedId + ".id}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+      const layerDefQuery: string =
+        "status = '{{" +
+        expectedId +
+        ".fieldInfos.layer0.fields.boardreview}}'";
+      const tableDefQuery: string =
+        "status = '{{" +
+        expectedId +
+        ".fieldInfos.layer1.fields.boardreview}}'";
+
+      itemTemplate = mockSolutions.getItemTemplatePart(
+        "Feature Service",
+        [],
+        expectedUrl
+      );
+      itemTemplate.itemId = expectedId;
+      itemTemplate.item.id = id;
+      itemTemplate.estimatedDeploymentCostFactor = 0;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      itemTemplate.properties.layers[0].serviceItemId = id;
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].serviceItemId = id;
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+      delete itemTemplate.item.item;
+
+      const settings = createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
+        url: expectedUrl,
+        initiative: _initiative
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(adminUrl + "/refresh", mockItems.get400Failure())
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success": "true"}'
+        );
+
+      addFeatureServiceLayersAndTables(
+        itemTemplate,
+        settings,
+        {
+          layers: [],
+          tables: []
+        },
+        MOCK_USER_REQOPTS
+      ).then(() => done.fail(), done);
     });
   });
 
@@ -2184,6 +2401,48 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         error => done.fail(error)
       );
+    });
+
+    it("should handle error", done => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = mockSolutions.getItemTemplatePart("Feature Service");
+      itemTemplate.item.url = url;
+
+      const settings = createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[itemTemplate.itemId] = {
+        id: itemTemplate.itemId,
+        url: url
+      };
+
+      const requestOptions: IUserRequestOptions = {
+        authentication: new UserSession({
+          username: "jsmith",
+          password: "123456"
+        })
+      };
+      const adminLayerInfos: any = {};
+
+      fetchMock
+        .post(adminUrl + "/0?f=json", mockItems.get400Failure())
+        .post(adminUrl + "/1?f=json", mockItems.get400Failure())
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          '{"token":"abc123"}'
+        );
+
+      postProcessFields(
+        itemTemplate,
+        {},
+        {},
+        adminLayerInfos,
+        settings,
+        requestOptions
+      ).then(done.fail, done);
     });
   });
 

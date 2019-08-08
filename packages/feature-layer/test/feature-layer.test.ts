@@ -80,6 +80,21 @@ const MOCK_USER_REQOPTS: IUserRequestOptions = {
   authentication: MOCK_USER_SESSION
 };
 
+const _initiative: any = {
+  orgExtent: {
+    xmin: 0,
+    ymin: 0,
+    xmax: 1,
+    ymax: 1,
+    spatialReference: {
+      wkid: 102100
+    }
+  },
+  spatialReference: {
+    wkid: 102100
+  }
+};
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -248,6 +263,31 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "https://www.arcgis.com/sharing/rest/generateToken",
           '{"token":"abc123"}'
         );
+
+      convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
+        r => {
+          done.fail();
+        },
+        done
+      );
+    });
+
+    it("should handle error on getItemData", done => {
+      const id: string = "SVC1234567890";
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const itemDataUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
+
+      itemTemplate = mockSolutions.getItemTemplatePart(
+        "Feature Service",
+        [],
+        url
+      );
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = id;
+
+      fetchMock.get(itemDataUrl, mockItems.get400Failure());
 
       convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
         r => {
@@ -431,7 +471,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        { initiative: _initiative },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -527,6 +567,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         id: expectedId,
         url: expectedUrl
       };
+
+      settings.initiative = _initiative;
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -677,7 +719,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        { initiative: _initiative },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -762,7 +804,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        { initiative: _initiative },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -843,7 +885,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        { initiative: _initiative },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -884,6 +926,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
 
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
@@ -924,7 +969,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        { initiative: _initiative },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -1144,19 +1189,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-
-      const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
-      const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
-      const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",

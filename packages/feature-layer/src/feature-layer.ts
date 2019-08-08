@@ -107,13 +107,13 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log(
+    /*console.log(
       "createItemFromTemplate for a " +
         template.type +
         " (" +
         template.itemId +
         ")"
-    );
+    );*/
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
     };
@@ -127,15 +127,7 @@ export function createItemFromTemplate(
 
     // Create the item, then update its URL with its new id
     common
-      .createFeatureService(
-        newItemTemplate.item,
-        newItemTemplate.data,
-        newItemTemplate.properties,
-        requestOptions,
-        templateDictionary.folderId,
-        templateDictionary.isPortal,
-        templateDictionary.solutionItemId
-      )
+      .createFeatureService(newItemTemplate, requestOptions, templateDictionary)
       .then(
         createResponse => {
           progressTickCallback();
