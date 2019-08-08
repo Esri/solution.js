@@ -45,6 +45,11 @@ export function convertItemToTemplate(
     widgets.forEach((widget: any) => {
       if (widget.type === "mapWidget") {
         itemTemplate.dependencies.push(widget.itemId);
+        widget.itemId = common.templatizeTerm(
+          widget.itemId,
+          widget.itemId,
+          ".id"
+        );
       }
     });
   }
