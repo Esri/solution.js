@@ -119,7 +119,7 @@ export function convertItemToTemplate(
       }
 
       // Items without a data section return an error from the REST library, so we'll need to prevent it
-      // from killing off both promises. This means that there's no `reject` clause to handle, hence:
+      // from killing off all promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
         dataPromise.catch(() => ({})),

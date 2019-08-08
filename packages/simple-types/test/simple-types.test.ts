@@ -120,6 +120,14 @@ const TINY_PNG_BYTES = [
   130
 ];
 
+const noResourcesResponse: any = {
+  total: 0,
+  start: 1,
+  num: 0,
+  nextStart: -1,
+  resources: []
+};
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -621,7 +629,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          []
+          noResourcesResponse
         );
 
       convertItemToTemplate(
@@ -743,7 +751,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          []
+          noResourcesResponse
         );
 
       convertItemToTemplate(
@@ -813,13 +821,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           ]
         };
 
-        const resourcesResponse: any = {
-          total: 0,
-          start: 1,
-          num: 0,
-          nextStart: -1,
-          resources: []
-        };
         const dataResponse: any = mockItems.getAGOLItemData(
           "Workforce Project"
         );
@@ -827,7 +828,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-            resourcesResponse
+            noResourcesResponse
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
@@ -836,10 +837,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/addResources",
             { success: true, id: itemTemplate.itemId }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-            []
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
@@ -1031,7 +1028,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          []
+          noResourcesResponse
         );
 
       convertItemToTemplate(
@@ -1144,6 +1141,92 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0036",
+                message: "Item info file does not exist or is inaccessible.",
+                details: ["Error getting Item Info from DataStore"]
+              }
+            }
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
+      });
+
+      it("should handle dashboard et al. item types", done => {
+        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.itemId = "dsh1234567890";
+        itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
+        itemTemplate.item.thumbnail = null;
+        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
+
+        const expectedTemplate: any = {
+          itemId: "dsh1234567890",
+          type: "Dashboard",
+          item: {
+            id: "{{dsh1234567890.id}}",
+            type: "Dashboard",
+            categories: [],
+            culture: "en-us",
+            description: "Description of an AGOL item",
+            extent: [],
+            licenseInfo: null,
+            name: "Name of an AGOL item",
+            snippet: "Snippet of an AGOL item",
+            tags: ["test"],
+            thumbnail: null,
+            title: "An AGOL item",
+            typeKeywords: ["JavaScript"],
+            url: ""
+          },
+          data: {},
+          resources: [],
+          dependencies: [],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/data?f=json&num=1000&token=fake-token",
+            blob
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0036",
+                message: "Item info file does not exist or is inaccessible.",
+                details: ["Error getting Item Info from DataStore"]
+              }
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              itemTemplate.itemId +
+              "/addResources",
             {
               error: {
                 code: 400,
