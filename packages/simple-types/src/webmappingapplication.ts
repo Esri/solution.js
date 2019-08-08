@@ -48,6 +48,20 @@ export function convertItemToTemplate(
   itemTemplate.dependencies = extractDependencies(itemTemplate);
 
   // Set the map or group after we've extracted them as dependencies
+  if (common.getProp(itemTemplate, "data.map.appProxy.mapItemId")) {
+    itemTemplate.data.map.appProxy.mapItemId = common.templatizeTerm(
+      itemTemplate.data.map.appProxy.mapItemId,
+      itemTemplate.data.map.appProxy.mapItemId,
+      ".id"
+    );
+  }
+  if (common.getProp(itemTemplate, "data.map.itemId")) {
+    itemTemplate.data.map.itemId = common.templatizeTerm(
+      itemTemplate.data.map.itemId,
+      itemTemplate.data.map.itemId,
+      ".id"
+    );
+  }
   if (common.getProp(itemTemplate, "data.values.webmap")) {
     itemTemplate.data.values.webmap = common.templatizeTerm(
       itemTemplate.data.values.webmap,
