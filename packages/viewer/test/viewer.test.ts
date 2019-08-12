@@ -17,3 +17,14 @@
 /**
  * Provides tests for functions involving access to the solution's contents.
  */
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `viewer`", () => {
+  describe("getSolutionHierarchy", () => {
+    xit("getSolutionHierarchy", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+});

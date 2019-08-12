@@ -161,13 +161,20 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     });
   });
 
-  describe("getWABDependencies", () => {
+  describe("fineTuneCreatedItem", () => {
+    xit("fineTuneCreatedItem", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_extractDependencies", () => {
     it("handles no keywords", () => {
       const model = {
         data: { values: { prop1: "1", prop2: "2", webmap: "myMapId" } }
       };
       const expected = ["myMapId"];
-      const actual = webmappingapplication.extractDependencies(model);
+      const actual = webmappingapplication._extractDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -177,7 +184,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { prop1: "1", prop2: "2", webmap: "myMapId" } }
       };
       const expected = ["myMapId"];
-      const actual = webmappingapplication.extractDependencies(model);
+      const actual = webmappingapplication._extractDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -187,7 +194,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { map: { itemId: "abc" } }
       };
       const expected = ["abc"];
-      const actual = webmappingapplication.extractDependencies(model);
+      const actual = webmappingapplication._extractDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -197,44 +204,44 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { map: { itemId: "abc" } }
       };
       const expected = ["abc"];
-      const actual = webmappingapplication.extractDependencies(model);
+      const actual = webmappingapplication._extractDependencies(model);
       expect(actual).toEqual(expected);
     });
   });
 
-  describe("getGenericWebAppDependencies", () => {
+  describe("_getGenericWebAppDependencies", () => {
     it("handles null", () => {
       const model: any = null;
       const expected = [] as string[];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles empty model", () => {
       const model = {};
       const expected = [] as string[];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model without data", () => {
       const model = { data: {} };
       const expected = [] as string[];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model without values", () => {
       const model = { data: { values: {} } };
       const expected = [] as string[];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model without webmap or group", () => {
       const model = { data: { values: { prop1: "1", prop2: "2" } } };
       const expected = [] as string[];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -243,7 +250,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { prop1: "1", prop2: "2", webmap: "myMapId" } }
       };
       const expected = ["myMapId"];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -252,7 +259,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { prop1: "1", prop2: "2", group: "myGroupId" } }
       };
       const expected = ["myGroupId"];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
 
@@ -268,44 +275,44 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         }
       };
       const expected = ["myMapId", "myGroupId"];
-      const actual = webmappingapplication.getGenericWebAppDependencies(model);
+      const actual = webmappingapplication._getGenericWebAppDependencies(model);
       expect(actual).toEqual(expected);
     });
   });
 
-  describe("getWABDependencies", () => {
+  describe("_getWABDependencies", () => {
     it("handles null", () => {
       const model: any = null;
       const expected = [] as string[];
-      const actual = webmappingapplication.getWABDependencies(model);
+      const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles empty model", () => {
       const model = {};
       const expected = [] as string[];
-      const actual = webmappingapplication.getWABDependencies(model);
+      const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model without data", () => {
       const model = { data: {} };
       const expected = [] as string[];
-      const actual = webmappingapplication.getWABDependencies(model);
+      const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model with similar but unmatching path", () => {
       const model = { data: { itemId: "abc" } };
       const expected = [] as string[];
-      const actual = webmappingapplication.getWABDependencies(model);
+      const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
 
     it("handles model with matching path", () => {
       const model = { data: { map: { itemId: "abc" } } };
       const expected = ["abc"];
-      const actual = webmappingapplication.getWABDependencies(model);
+      const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
   });
