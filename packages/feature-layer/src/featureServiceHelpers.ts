@@ -86,8 +86,6 @@ export function templatize(
   itemTemplate.properties.service.fullExtent = "{{initiative.extent:optional}}";
   itemTemplate.properties.service.initialExtent =
     "{{initiative.extent:optional}}";
-  itemTemplate.properties.service.spatialReference =
-    "{{initiative.spatialReference:optional}}";
 
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
@@ -556,7 +554,7 @@ export function updateLayerFieldReferences(
           layerInfos
         });
       },
-      e => rejectFn(e)
+      e => rejectFn(common.fail(e))
     );
   });
 }
@@ -643,7 +641,7 @@ export function postProcessFields(
           )
         );
       },
-      e => rejectFn(e)
+      e => rejectFn(common.fail(e))
     );
   });
 }

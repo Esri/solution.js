@@ -31,6 +31,7 @@ import {
   IPostProcessArgs
 } from "./interfaces";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
+import { replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -59,29 +60,24 @@ export function addToServiceDefinition(
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
-  itemInfo: any,
-  dataInfo: any,
-  serviceInfo: any,
+  newItemTemplate: IItemTemplate,
   requestOptions: auth.IUserRequestOptions,
-  folderId: string | undefined,
-  isPortal: boolean,
-  solutionItemId: string
+  templateDictionary: any
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
-    const createOptions: serviceAdmin.ICreateServiceOptions = _getCreateServiceOptions(
-      itemInfo,
-      dataInfo,
-      serviceInfo,
-      folderId,
-      isPortal,
+    _getCreateServiceOptions(
+      newItemTemplate,
       requestOptions,
-      solutionItemId
-    );
-
-    serviceAdmin.createFeatureService(createOptions).then(
-      createResponse => {
-        resolve(createResponse);
+      templateDictionary
+    ).then(
+      createOptions => {
+        serviceAdmin.createFeatureService(createOptions).then(
+          createResponse => {
+            resolve(createResponse);
+          },
+          e => reject(generalHelpers.fail(e))
+        );
       },
       e => reject(generalHelpers.fail(e))
     );
@@ -234,6 +230,93 @@ export function extractDependencies(
       );
     } else {
       resolve(dependencies);
+    }
+  });
+}
+
+export function getExtent(
+  extent: any,
+  portalSR: any,
+  serviceSR: any,
+  geometryServiceUrl: string,
+  requestOptions: IRequestOptions
+): Promise<any> {
+  const _requestOptions: any = Object.assign({}, requestOptions);
+  return new Promise<any>((resolve, reject) => {
+    if (portalSR.wkid === serviceSR.wkid) {
+      resolve(extent);
+    } else {
+      _requestOptions.params = {
+        f: "json",
+        inSR: portalSR.wkid,
+        outSR: serviceSR.wkid,
+        extentOfInterest: JSON.stringify(extent)
+      };
+      request(
+        geometryServiceUrl + "/findTransformations",
+        _requestOptions
+      ).then(
+        response => {
+          const transformations =
+            response && response.transformations
+              ? response.transformations
+              : undefined;
+          let transformation: any;
+          if (transformations && transformations.length > 0) {
+            // if a forward single transformation is found use that...otherwise check for and use composite
+            transformation = transformations[0].wkid
+              ? transformations[0].wkid
+              : transformations[0].geoTransforms
+              ? transformations[0]
+              : undefined;
+          }
+
+          _requestOptions.params = {
+            f: "json",
+            outSR: serviceSR.wkid,
+            inSR: extent.spatialReference.wkid,
+            geometries: {
+              geometryType: "esriGeometryPolygon",
+              geometries: [
+                {
+                  rings: [
+                    [
+                      [extent.xmin, extent.ymin],
+                      [extent.xmin, extent.ymax],
+                      [extent.xmax, extent.ymax],
+                      [extent.xmax, extent.ymin],
+                      [extent.xmin, extent.ymin]
+                    ]
+                  ]
+                }
+              ]
+            },
+            transformation: transformation
+          };
+          request(geometryServiceUrl + "/project", _requestOptions).then(
+            projectResponse => {
+              const projectGeom: any =
+                projectResponse.geometries.length > 0
+                  ? projectResponse.geometries[0]
+                  : undefined;
+              if (projectGeom && projectGeom.rings) {
+                const ring: any = projectGeom.rings[0];
+                resolve({
+                  xmin: ring[0][0],
+                  ymin: ring[0][1],
+                  xmax: ring[2][0],
+                  ymax: ring[2][1],
+                  spatialReference: serviceSR
+                });
+              } else {
+                resolve(undefined);
+              }
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        },
+        e => reject(generalHelpers.fail(e))
+      );
     }
   });
 }
@@ -651,52 +734,77 @@ export function _countRelationships(layers: any[]): number {
  */
 
 export function _getCreateServiceOptions(
-  itemInfo: any,
-  dataInfo: any,
-  serviceInfo: any,
-  folderId: any,
-  isPortal: boolean,
+  newItemTemplate: IItemTemplate,
   requestOptions: auth.IUserRequestOptions,
-  solutionItemId: string
-): any {
-  const params: IParams = {
-    preserveLayerIds: true
-  };
+  templateDictionary: any
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const itemInfo: any = newItemTemplate.item;
+    const dataInfo: any = newItemTemplate.data;
+    const serviceInfo: any = newItemTemplate.properties;
+    const folderId: any = templateDictionary.folderId;
+    const isPortal: boolean = templateDictionary.isPortal;
+    const solutionItemId: string = templateDictionary.solutionItemId;
 
-  // Retain the existing title but swap with name if it's missing
-  itemInfo.title = itemInfo.title || itemInfo.name;
+    const params: IParams = {
+      preserveLayerIds: true
+    };
 
-  // Need to set the service name: name + "_" + newItemId
-  const baseName: string = itemInfo.name || itemInfo.title;
+    // Retain the existing title but swap with name if it's missing
+    itemInfo.title = itemInfo.title || itemInfo.name;
 
-  // If the name already contains a GUID replace it with the newItemID
-  const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
-  itemInfo.name = regEx.exec(baseName)
-    ? baseName.replace(regEx, solutionItemId)
-    : baseName + "_" + solutionItemId;
+    // Need to set the service name: name + "_" + newItemId
+    const baseName: string = itemInfo.name || itemInfo.title;
 
-  const _item: serviceAdmin.ICreateServiceParams = {
-    ...itemInfo,
-    data: dataInfo
-  };
+    // If the name already contains a GUID replace it with the newItemID
+    const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
+    itemInfo.name = regEx.exec(baseName)
+      ? baseName.replace(regEx, solutionItemId)
+      : baseName + "_" + solutionItemId;
 
-  const createOptions = {
-    item: _item,
-    folderId,
-    params,
-    preserveLayerIds: true,
-    ...requestOptions
-  };
+    const _item: serviceAdmin.ICreateServiceParams = {
+      ...itemInfo,
+      data: dataInfo
+    };
 
-  createOptions.item = _setItemProperties(
-    createOptions.item,
-    dataInfo,
-    serviceInfo,
-    params,
-    isPortal
-  );
+    const createOptions = {
+      item: _item,
+      folderId,
+      params,
+      preserveLayerIds: true,
+      ...requestOptions
+    };
 
-  return createOptions;
+    createOptions.item = _setItemProperties(
+      createOptions.item,
+      dataInfo,
+      serviceInfo,
+      params,
+      isPortal
+    );
+
+    getExtent(
+      templateDictionary.initiative.orgExtent,
+      templateDictionary.initiative.spatialReference,
+      serviceInfo.service.spatialReference,
+      templateDictionary.geometryServiceUrl,
+      requestOptions
+    ).then(
+      extent => {
+        templateDictionary.initiative.extent = extent;
+        createOptions.item = replaceInTemplate(
+          createOptions.item,
+          templateDictionary
+        );
+        createOptions.params = replaceInTemplate(
+          createOptions.params,
+          templateDictionary
+        );
+        resolve(createOptions);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
 }
 
 /**

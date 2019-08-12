@@ -127,15 +127,7 @@ export function createItemFromTemplate(
 
     // Create the item, then update its URL with its new id
     common
-      .createFeatureService(
-        newItemTemplate.item,
-        newItemTemplate.data,
-        newItemTemplate.properties,
-        requestOptions,
-        templateDictionary.folderId,
-        templateDictionary.isPortal,
-        templateDictionary.solutionItemId
-      )
+      .createFeatureService(newItemTemplate, requestOptions, templateDictionary)
       .then(
         createResponse => {
           progressTickCallback();

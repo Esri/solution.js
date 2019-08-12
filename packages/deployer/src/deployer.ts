@@ -82,10 +82,12 @@ export function deploySolution(
         templateDictionary.folderId = folderResponse.folder.id;
         const portalResponse = responses[2];
         templateDictionary.isPortal = portalResponse.isPortal;
+        templateDictionary.geometryServiceUrl =
+          portalResponse.helperServices.geometry.url;
         templateDictionary.initiative = Object.assign(
           templateDictionary.initiative || {},
           {
-            extent: portalResponse.defaultExtent,
+            orgExtent: portalResponse.defaultExtent,
             spatialReference: portalResponse.defaultExtent.spatialReference
           }
         );

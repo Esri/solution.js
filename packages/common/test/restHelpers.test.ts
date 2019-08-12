@@ -32,6 +32,7 @@ import {
   _countRelationships,
   getLayers,
   extractDependencies,
+  getExtent,
   getLayerUpdates,
   _getUpdate,
   getRequest,
@@ -53,6 +54,7 @@ import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
+import { IRequestOptions } from "@esri/arcgis-rest-request";
 
 const TINY_PNG_BYTES = [
   137,
@@ -182,6 +184,50 @@ const SERVER_INFO = {
   authInfo: {}
 };
 
+const portalSR: any = {
+  wkid: 1
+};
+const serviceSR: any = {
+  wkid: 2
+};
+
+const extent: any = {
+  xmin: 0,
+  ymin: 0,
+  xmax: 1,
+  ymax: 1,
+  spatialReference: portalSR
+};
+
+const expectedExtent: any = {
+  xmin: 1.1,
+  ymin: 1.2,
+  xmax: 1.5,
+  ymax: 1.6,
+  spatialReference: serviceSR
+};
+
+const geometryServiceUrl: string = "http://utility/geomServer";
+
+const geometry: any = {
+  rings: [[[1.1, 1.2], [1.3, 1.4], [1.5, 1.6]]]
+};
+
+const initiative: any = {
+  orgExtent: {
+    xmin: 0,
+    ymin: 0,
+    xmax: 1,
+    ymax: 1,
+    spatialReference: {
+      wkid: 102100
+    }
+  },
+  spatialReference: {
+    wkid: 102100
+  }
+};
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -213,14 +259,22 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         name: "A"
       };
 
-      createFeatureService(
+      const template: any = {
         item,
-        {},
-        properties,
+        data: {},
+        properties
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: true,
+        solutionItemId: "sol1234567890"
+      };
+
+      createFeatureService(
+        template,
         MOCK_USER_REQOPTS,
-        "aabb123456",
-        true,
-        "sol1234567890"
+        templateDictionary
       ).then(
         () => done.fail(),
         error => {
@@ -262,7 +316,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         service: {
           somePropNotInItem: true,
           isView: true,
-          capabilities: "Query"
+          capabilities: "Query",
+          spatialReference: {
+            wkid: 102100
+          }
         },
         layers: [
           {
@@ -272,17 +329,25 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         tables: []
       };
 
-      createFeatureService(
-        {
+      const template: any = {
+        item: {
           id: "0",
           name: "A"
         },
-        {},
-        properties,
+        data: {},
+        properties
+      };
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: true,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
+      createFeatureService(
+        template,
         sessionWithMockedTime,
-        "aabb123456",
-        true,
-        "sol1234567890"
+        templateDictionary
       ).then(
         () => {
           jasmine.clock().uninstall();
@@ -296,43 +361,218 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("getExtent", () => {
+    it("can handle unmatched wkid", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {
+          transformations: [
+            {
+              wkid: 3
+            }
+          ]
+        })
+        .post(geometryServiceUrl + "/project", {
+          geometries: [geometry]
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        expect(_extent).toEqual(expectedExtent);
+        done();
+      }, done.fail);
+    });
+
+    it("can handle unmatched wkid and geoTransforms", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {
+          transformations: [
+            {
+              geoTransforms: 3
+            }
+          ]
+        })
+        .post(geometryServiceUrl + "/project", {
+          geometries: [geometry]
+        });
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        expect(_extent).toEqual(expectedExtent);
+        done();
+      }, done.fail);
+    });
+
+    it("can handle unmatched wkid and no transformations", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {})
+        .post(geometryServiceUrl + "/project", {
+          geometries: [geometry]
+        });
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        expect(_extent).toEqual(expectedExtent);
+        done();
+      }, done.fail);
+    });
+
+    it("can handle unmatched wkid and unexpected transformations", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {
+          transformations: [{}]
+        })
+        .post(geometryServiceUrl + "/project", {
+          geometries: [geometry]
+        });
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        expect(_extent).toEqual(expectedExtent);
+        done();
+      }, done.fail);
+    });
+
+    it("can handle unmatched wkid and no geom in response", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {
+          transformations: [
+            {
+              wkid: 3
+            }
+          ]
+        })
+        .post(geometryServiceUrl + "/project", {
+          geometries: []
+        });
+
+      const expected: any = undefined;
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        expect(_extent).toEqual(expected);
+        done();
+      }, done.fail);
+    });
+
+    it("can handle unmatched wkid and failure on project", done => {
+      fetchMock
+        .post(geometryServiceUrl + "/findTransformations", {
+          transformations: [
+            {
+              wkid: 3
+            }
+          ]
+        })
+        .post(geometryServiceUrl + "/project", mockItems.get400Failure());
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        done.fail();
+      }, done);
+    });
+
+    it("can handle unmatched wkid and failure on findTransformations", done => {
+      fetchMock.post(
+        geometryServiceUrl + "/findTransformations",
+        mockItems.get400Failure()
+      );
+
+      getExtent(
+        extent,
+        portalSR,
+        serviceSR,
+        geometryServiceUrl,
+        MOCK_USER_REQOPTS
+      ).then(_extent => {
+        done.fail();
+      }, done);
+    });
+  });
+
   describe("_getCreateServiceOptions", () => {
-    it("can get options for HOSTED empty service", () => {
+    it("can get options for HOSTED empty service", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
           password: "123456"
         })
       };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
       itemTemplate.item.name = "A";
-      const options: any = _getCreateServiceOptions(
-        itemTemplate.item,
-        itemTemplate.data,
-        itemTemplate.properties,
-        "aabb123456",
-        false,
-        requestOptions,
-        "sol1234567890"
-      );
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
 
-      expect(options).toEqual({
-        item: {
-          name: "A_sol1234567890",
-          title: "A",
-          capabilities: [],
-          data: {},
-          text: {}
-        },
-        folderId: "aabb123456",
-        params: {
-          preserveLayerIds: true
-        },
-        preserveLayerIds: true,
-        ...requestOptions
-      });
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(options => {
+        expect(options).toEqual({
+          item: {
+            name: "A_sol1234567890",
+            title: "A",
+            capabilities: [],
+            data: {},
+            text: {},
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          folderId: "aabb123456",
+          params: {
+            preserveLayerIds: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          preserveLayerIds: true,
+          ...requestOptions
+        });
+        done();
+      }, done.fail);
     });
 
-    it("can get options for PORTAL empty service", () => {
+    it("can get options for PORTAL empty service", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
@@ -340,34 +580,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
       };
 
-      const options: any = _getCreateServiceOptions(
-        itemTemplate.item,
-        itemTemplate.data,
-        itemTemplate.properties,
-        "aabb123456",
-        true,
-        requestOptions,
-        "sol1234567890"
-      );
-
-      expect(options).toEqual({
-        item: {
-          name: "undefined_sol1234567890",
-          title: undefined,
-          capabilities: "",
-          data: {},
-          text: {}
-        },
+      const templateDictionary: any = {
         folderId: "aabb123456",
-        params: {
-          preserveLayerIds: true
-        },
-        preserveLayerIds: true,
-        ...requestOptions
-      });
+        isPortal: true,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(options => {
+        expect(options).toEqual({
+          item: {
+            name: "undefined_sol1234567890",
+            title: undefined,
+            capabilities: "",
+            data: {},
+            text: {},
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          folderId: "aabb123456",
+          params: {
+            preserveLayerIds: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          preserveLayerIds: true,
+          ...requestOptions
+        });
+        done();
+      }, done.fail);
     });
 
-    it("can get options for HOSTED service with values", () => {
+    it("can get options for HOSTED service with values", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
@@ -382,7 +636,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           service: {
             somePropNotInItem: true, // should be added to item and params
             hasViews: true, // should be skipped
-            capabilities: ["Query"] // should be added to item and params
+            capabilities: ["Query"], // should be added to item and params
+            spatialReference: {
+              wkid: 102100
+            }
           },
           layers: [
             {
@@ -401,36 +658,46 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         dependencies: []
       };
 
-      const options: any = _getCreateServiceOptions(
-        itemTemplate.item,
-        itemTemplate.data,
-        itemTemplate.properties,
-        "aabb123456",
-        false,
-        requestOptions,
-        "sol1234567890"
-      );
-
-      expect(options).toEqual({
-        item: {
-          name: "A_sol1234567890",
-          title: "A",
-          somePropNotInItem: true,
-          capabilities: ["Query"],
-          data: {},
-          text: {}
-        },
+      const templateDictionary: any = {
         folderId: "aabb123456",
-        params: {
-          somePropNotInItem: true,
-          preserveLayerIds: true
-        },
-        preserveLayerIds: true,
-        ...requestOptions
-      });
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(options => {
+        expect(options).toEqual({
+          item: {
+            name: "A_sol1234567890",
+            title: "A",
+            somePropNotInItem: true,
+            capabilities: ["Query"],
+            data: {},
+            text: {},
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          folderId: "aabb123456",
+          params: {
+            somePropNotInItem: true,
+            preserveLayerIds: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          preserveLayerIds: true,
+          ...requestOptions
+        });
+        done();
+      }, done.fail);
     });
 
-    it("can get options for PORTAL service with values and unsupported capabilities", () => {
+    it("can get options for PORTAL service with values and unsupported capabilities", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
@@ -445,7 +712,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           service: {
             somePropNotInItem: true, // should be added to item and params
             isView: true,
-            capabilities: "Query,CanEatWithChopsticks" // should be added to item and params
+            capabilities: "Query,CanEatWithChopsticks", // should be added to item and params
+            spatialReference: {
+              wkid: 102100
+            }
           },
           layers: [
             {
@@ -462,38 +732,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         dependencies: []
       };
 
-      const options: any = _getCreateServiceOptions(
-        itemTemplate.item,
-        itemTemplate.data,
-        itemTemplate.properties,
-        "aabb123456",
-        true, // isPortal
-        requestOptions,
-        "sol1234567890"
-      );
-
-      expect(options).toEqual({
-        item: {
-          name: options.item.name,
-          title: undefined,
-          somePropNotInItem: true,
-          capabilities: "Query",
-          data: {},
-          text: {},
-          isView: true
-        },
+      const templateDictionary: any = {
         folderId: "aabb123456",
-        params: {
-          somePropNotInItem: true,
+        isPortal: true,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(options => {
+        expect(options).toEqual({
+          item: {
+            name: options.item.name,
+            title: undefined,
+            somePropNotInItem: true,
+            capabilities: "Query",
+            data: {},
+            text: {},
+            isView: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          folderId: "aabb123456",
+          params: {
+            somePropNotInItem: true,
+            preserveLayerIds: true,
+            isView: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
           preserveLayerIds: true,
-          isView: true
-        },
-        preserveLayerIds: true,
-        ...requestOptions
-      });
+          ...requestOptions
+        });
+        done();
+      }, done.fail);
     });
 
-    it("can get options for HOSTED service with values when name contains quid", () => {
+    it("can get options for HOSTED service with values when name contains quid", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
@@ -508,7 +788,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           service: {
             somePropNotInItem: true, // should be added to item and params
             hasViews: true, // should be skipped
-            capabilities: ["Query"] // should be added to item and params
+            capabilities: ["Query"], // should be added to item and params
+            spatialReference: {
+              wkid: 102100
+            }
           },
           layers: [
             {
@@ -528,33 +811,43 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         dependencies: []
       };
 
-      const options: any = _getCreateServiceOptions(
-        itemTemplate.item,
-        itemTemplate.data,
-        itemTemplate.properties,
-        "aabb123456",
-        false,
-        requestOptions,
-        "1b25612a2fc54f6e8828c679e2300a49"
-      );
-
-      expect(options).toEqual({
-        item: {
-          name: "A_1b25612a2fc54f6e8828c679e2300a49",
-          title: "A",
-          somePropNotInItem: true,
-          capabilities: ["Query"],
-          data: {},
-          text: {}
-        },
+      const templateDictionary: any = {
         folderId: "aabb123456",
-        params: {
-          somePropNotInItem: true,
-          preserveLayerIds: true
-        },
-        preserveLayerIds: true,
-        ...requestOptions
-      });
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        initiative: initiative
+      };
+
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(options => {
+        expect(options).toEqual({
+          item: {
+            name: "A_sol1234567890",
+            title: "A",
+            somePropNotInItem: true,
+            capabilities: ["Query"],
+            data: {},
+            text: {},
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          folderId: "aabb123456",
+          params: {
+            somePropNotInItem: true,
+            preserveLayerIds: true,
+            spatialReference: {
+              wkid: 102100
+            }
+          },
+          preserveLayerIds: true,
+          ...requestOptions
+        });
+        done();
+      }, done.fail);
     });
   });
 
