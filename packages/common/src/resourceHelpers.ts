@@ -155,6 +155,7 @@ export function copyBlobToStorageItem(
   storageRequestOptions: auth.IUserRequestOptions
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
+    console.warn("========== TODO ==========");
     resolve();
   });
 }
