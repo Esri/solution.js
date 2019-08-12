@@ -24,9 +24,10 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import { IItemTemplate } from "../../common/src/interfaces";
 
-const dashboardTemplate: IItemTemplate = mockItems.getItemTemplate();
+let dashboardTemplate: IItemTemplate;
 
 beforeEach(() => {
+  dashboardTemplate = mockItems.getItemTemplate();
   dashboardTemplate.item = mockItems.getAGOLItem("Dashboard");
   dashboardTemplate.data = mockItems.getAGOLItemData("Dashboard");
 });
