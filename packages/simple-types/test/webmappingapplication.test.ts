@@ -53,7 +53,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
-        data: { values: { webmap: "myMapId" } },
+        data: {
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          }
+        },
         resources: [] as any[],
         dependencies: [] as string[],
         properties: {} as any,
@@ -64,7 +74,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
-        data: { values: { webmap: "{{myMapId.id}}" } },
+        data: {
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          }
+        },
         resources: [] as any[],
         dependencies: ["myMapId"],
         properties: {} as any,
