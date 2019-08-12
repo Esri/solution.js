@@ -234,6 +234,29 @@ export function extractDependencies(
   });
 }
 
+export function getBlob(
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the blob from the URL
+    const blobRequestOptions = {
+      ...requestOptions,
+      rawResponse: true
+    } as IRequestOptions;
+    request(url, blobRequestOptions).then(
+      content => {
+        // Extract the blob from the response
+        content.blob().then(
+          resolve,
+          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get response
+    );
+  });
+}
+
 export function getExtent(
   extent: any,
   portalSR: any,
@@ -318,29 +341,6 @@ export function getExtent(
         e => reject(generalHelpers.fail(e))
       );
     }
-  });
-}
-
-export function getBlob(
-  url: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    // Get the blob from the URL
-    const blobRequestOptions = {
-      ...requestOptions,
-      rawResponse: true
-    } as IRequestOptions;
-    request(url, blobRequestOptions).then(
-      content => {
-        // Extract the blob from the response
-        content.blob().then(
-          resolve,
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get response
-    );
   });
 }
 

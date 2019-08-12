@@ -93,7 +93,7 @@ export function deploySolution(
         );
 
         const totalEstimatedCost =
-          estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
+          _estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
         const progressPercentStep = 100 / totalEstimatedCost;
         console.log(
           "Deploying solution " +
@@ -235,7 +235,9 @@ export function deploySolution(
  * @return Sum of estimated deployment costs
  * @protected
  */
-function estimateDeploymentCost(templates: common.IItemTemplate[]): number {
+export function _estimateDeploymentCost(
+  templates: common.IItemTemplate[]
+): number {
   return templates.reduce(
     (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
       return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;

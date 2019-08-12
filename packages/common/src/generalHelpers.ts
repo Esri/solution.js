@@ -51,6 +51,32 @@ export function cloneObject(obj: { [index: string]: any }): any {
   return clone;
 }
 
+/**
+ * Delete a property from an object
+ *
+ * @param obj object with property to delete
+ * @param prop property on object that should be deleted
+ *
+ */
+export function deleteProp(obj: any, prop: string): void {
+  if (obj && obj.hasOwnProperty(prop)) {
+    delete obj[prop];
+  }
+}
+
+/**
+ * Delete properties from an object
+ *
+ * @param obj object with properties to delete
+ * @param props array of properties on object that should be deleted
+ *
+ */
+export function deleteProps(obj: any, props: string[]): void {
+  props.forEach(prop => {
+    deleteProp(obj, prop);
+  });
+}
+
 export function fail(e?: any): any {
   if (e) {
     return { success: false, error: e.error || e };
@@ -96,29 +122,24 @@ export function getProps(obj: any, props: string[]): any {
 }
 
 /**
- * Delete a property from an object
+ * Creates a timestamp string using the current date and time.
  *
- * @param obj object with property to delete
- * @param prop property on object that should be deleted
- *
+ * @return Timestamp
+ * @protected
  */
-export function deleteProp(obj: any, prop: string): void {
-  if (obj && obj.hasOwnProperty(prop)) {
-    delete obj[prop];
-  }
-}
-
-/**
- * Delete properties from an object
- *
- * @param obj object with properties to delete
- * @param props array of properties on object that should be deleted
- *
- */
-export function deleteProps(obj: any, props: string[]): void {
-  props.forEach(prop => {
-    deleteProp(obj, prop);
-  });
+export function getUTCTimestamp(): string {
+  const now = new Date();
+  return (
+    _padPositiveNum(now.getUTCFullYear(), 4) +
+    _padPositiveNum(now.getUTCMonth() + 1, 2) +
+    _padPositiveNum(now.getUTCDate(), 2) +
+    "_" +
+    _padPositiveNum(now.getUTCHours(), 2) +
+    _padPositiveNum(now.getUTCMinutes(), 2) +
+    "_" +
+    _padPositiveNum(now.getUTCSeconds(), 2) +
+    _padPositiveNum(now.getUTCMilliseconds(), 3)
+  );
 }
 
 /**
@@ -144,27 +165,6 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
   return typeKeywords.includes(keyword);
 }
 
-/**
- * Creates a timestamp string using the current date and time.
- *
- * @return Timestamp
- * @protected
- */
-export function getUTCTimestamp(): string {
-  const now = new Date();
-  return (
-    padPositiveNum(now.getUTCFullYear(), 4) +
-    padPositiveNum(now.getUTCMonth() + 1, 2) +
-    padPositiveNum(now.getUTCDate(), 2) +
-    "_" +
-    padPositiveNum(now.getUTCHours(), 2) +
-    padPositiveNum(now.getUTCMinutes(), 2) +
-    "_" +
-    padPositiveNum(now.getUTCSeconds(), 2) +
-    padPositiveNum(now.getUTCMilliseconds(), 3)
-  );
-}
-
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -175,7 +175,7 @@ export function getUTCTimestamp(): string {
  * @return Number converted to string and padded on the left as needed
  * @protected
  */
-function padPositiveNum(n: number, totalSize: number): string {
+export function _padPositiveNum(n: number, totalSize: number): string {
   let numStr = n.toString();
   const numPads = totalSize - numStr.length;
   if (numPads > 0) {

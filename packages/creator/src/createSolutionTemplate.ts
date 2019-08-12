@@ -54,65 +54,6 @@ const moduleMap: common.IItemTypeModuleMap = {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Creates a solution template.
- *
- * @param ids List of AGO id strings
- * @param destinationRequestOptions Options for creating solution item in AGO
- * @return A promise without value
- */
-export function createSolutionTemplate(
-  portalSharingUrl: string,
-  solutionItemId: string,
-  ids: string[],
-  templateDictionary: any,
-  destinationUserSession: auth.UserSession,
-  progressTickCallback: () => void
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
-    };
-    let solutionTemplates: common.IItemTemplate[] = [];
-
-    // Handle a list of one or more AGO ids by stepping through the list
-    // and calling this function recursively
-    const getItemsPromise: Array<Promise<boolean>> = [];
-
-    ids.forEach(itemId => {
-      getItemsPromise.push(
-        createItemTemplate(
-          portalSharingUrl,
-          solutionItemId,
-          itemId,
-          requestOptions,
-          solutionTemplates
-        )
-      );
-      progressTickCallback();
-    });
-    Promise.all(getItemsPromise).then(
-      () => {
-        // Remove remnant placeholder items from the templates list
-        const origLen = solutionTemplates.length;
-        solutionTemplates = solutionTemplates.filter(
-          template => template.type // `type` needs to be defined
-        );
-        console.log(
-          "removed " +
-            (origLen - solutionTemplates.length) +
-            " placeholder templates"
-        );
-
-        resolve(solutionTemplates);
-      },
-      e => reject(common.fail(e))
-    );
-  });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
  * Creates template for an AGO item and its dependencies
  *
  * @param solutionItemId The solution to contain the item
@@ -190,7 +131,7 @@ export function createItemTemplate(
                 .then(
                   itemTemplate => {
                     // Set the value keyed by the id to the created template, replacing the placeholder template
-                    replaceTemplate(
+                    _replaceTemplate(
                       existingTemplates,
                       itemTemplate.itemId,
                       itemTemplate
@@ -253,7 +194,7 @@ export function createItemTemplate(
                 .then(
                   itemTemplate => {
                     // Set the value keyed by the id to the created template, replacing the placeholder template
-                    replaceTemplate(
+                    _replaceTemplate(
                       existingTemplates,
                       itemTemplate.itemId,
                       itemTemplate
@@ -307,6 +248,63 @@ export function createItemTemplate(
   });
 }
 
+/**
+ * Creates a solution template.
+ *
+ * @param ids List of AGO id strings
+ * @param destinationRequestOptions Options for creating solution item in AGO
+ * @return A promise without value
+ */
+export function createSolutionTemplate(
+  portalSharingUrl: string,
+  solutionItemId: string,
+  ids: string[],
+  templateDictionary: any,
+  destinationUserSession: auth.UserSession,
+  progressTickCallback: () => void
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const requestOptions: auth.IUserRequestOptions = {
+      authentication: destinationUserSession
+    };
+    let solutionTemplates: common.IItemTemplate[] = [];
+
+    // Handle a list of one or more AGO ids by stepping through the list
+    // and calling this function recursively
+    const getItemsPromise: Array<Promise<boolean>> = [];
+
+    ids.forEach(itemId => {
+      getItemsPromise.push(
+        createItemTemplate(
+          portalSharingUrl,
+          solutionItemId,
+          itemId,
+          requestOptions,
+          solutionTemplates
+        )
+      );
+      progressTickCallback();
+    });
+    Promise.all(getItemsPromise).then(
+      () => {
+        // Remove remnant placeholder items from the templates list
+        const origLen = solutionTemplates.length;
+        solutionTemplates = solutionTemplates.filter(
+          template => template.type // `type` needs to be defined
+        );
+        console.log(
+          "removed " +
+            (origLen - solutionTemplates.length) +
+            " placeholder templates"
+        );
+
+        resolve(solutionTemplates);
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -318,7 +316,7 @@ export function createItemTemplate(
  * @return True if replacement was made
  * @protected
  */
-function replaceTemplate(
+export function _replaceTemplate(
   templates: common.IItemTemplate[],
   id: string,
   template: common.IItemTemplate
