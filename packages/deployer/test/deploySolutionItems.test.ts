@@ -17,3 +17,28 @@
 /**
  * Provides tests for functions involving deployment of items via the REST API.
  */
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `deploySolutionItems`", () => {
+  describe("deploySolutionItems", () => {
+    xit("deploySolutionItems", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_createItemFromTemplateWhenReady", () => {
+    xit("_createItemFromTemplateWhenReady", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_topologicallySortItems", () => {
+    xit("_topologicallySortItems", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+});

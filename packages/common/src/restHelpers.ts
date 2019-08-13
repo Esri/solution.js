@@ -234,6 +234,29 @@ export function extractDependencies(
   });
 }
 
+export function getBlob(
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the blob from the URL
+    const blobRequestOptions = {
+      ...requestOptions,
+      rawResponse: true
+    } as IRequestOptions;
+    request(url, blobRequestOptions).then(
+      content => {
+        // Extract the blob from the response
+        content.blob().then(
+          resolve,
+          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get response
+    );
+  });
+}
+
 export function getExtent(
   extent: any,
   portalSR: any,
@@ -321,29 +344,6 @@ export function getExtent(
   });
 }
 
-export function getBlob(
-  url: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    // Get the blob from the URL
-    const blobRequestOptions = {
-      ...requestOptions,
-      rawResponse: true
-    } as IRequestOptions;
-    request(url, blobRequestOptions).then(
-      content => {
-        // Extract the blob from the response
-        content.blob().then(
-          resolve,
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get response
-    );
-  });
-}
-
 /**
  * Gets the ids of the dependencies (contents) of an AGOL group.
  *
@@ -366,55 +366,9 @@ export function getGroupContents(
     };
 
     // Fetch group items
-    getGroupContentsTranche(groupId, pagingRequest).then(
+    _getGroupContentsTranche(groupId, pagingRequest).then(
       contents => {
         resolve(contents);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-/**
- * Gets the ids of a group's contents.
- *
- * @param groupId Group id
- * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
- *                      be modified by this routine
- * @return A promise that will resolve with a list of the ids of the group's contents or an empty
- *         list
- * @protected
- */
-export function getGroupContentsTranche(
-  groupId: string,
-  pagingRequest: portal.IGetGroupContentOptions
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    // Fetch group items
-    portal.getGroupContent(groupId, pagingRequest).then(
-      contents => {
-        if (contents.num > 0) {
-          // Extract the list of content ids from the JSON returned
-          const trancheIds: string[] = contents.items.map(
-            (item: any) => item.id
-          );
-
-          // Are there more contents to fetch?
-          if (contents.nextStart > 0) {
-            pagingRequest.paging.start = contents.nextStart;
-            getGroupContentsTranche(groupId, pagingRequest).then(
-              (allSubsequentTrancheIds: string[]) => {
-                // Append all of the following tranches to this tranche and return it
-                resolve(trancheIds.concat(allSubsequentTrancheIds));
-              },
-              e => reject(generalHelpers.fail(e))
-            );
-          } else {
-            resolve(trancheIds);
-          }
-        } else {
-          resolve([]);
-        }
       },
       e => reject(generalHelpers.fail(e))
     );
@@ -801,6 +755,52 @@ export function _getCreateServiceOptions(
           templateDictionary
         );
         resolve(createOptions);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Gets the ids of a group's contents.
+ *
+ * @param groupId Group id
+ * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
+ *                      be modified by this routine
+ * @return A promise that will resolve with a list of the ids of the group's contents or an empty
+ *         list
+ * @protected
+ */
+export function _getGroupContentsTranche(
+  groupId: string,
+  pagingRequest: portal.IGetGroupContentOptions
+): Promise<string[]> {
+  return new Promise((resolve, reject) => {
+    // Fetch group items
+    portal.getGroupContent(groupId, pagingRequest).then(
+      contents => {
+        if (contents.num > 0) {
+          // Extract the list of content ids from the JSON returned
+          const trancheIds: string[] = contents.items.map(
+            (item: any) => item.id
+          );
+
+          // Are there more contents to fetch?
+          if (contents.nextStart > 0) {
+            pagingRequest.paging.start = contents.nextStart;
+            _getGroupContentsTranche(groupId, pagingRequest).then(
+              (allSubsequentTrancheIds: string[]) => {
+                // Append all of the following tranches to this tranche and return it
+                resolve(trancheIds.concat(allSubsequentTrancheIds));
+              },
+              e => reject(generalHelpers.fail(e))
+            );
+          } else {
+            resolve(trancheIds);
+          }
+        } else {
+          resolve([]);
+        }
       },
       e => reject(generalHelpers.fail(e))
     );

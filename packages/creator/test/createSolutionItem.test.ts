@@ -17,3 +17,28 @@
 /**
  * Provides tests for functions involving the creation of a Solution item.
  */
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `createSolutionTemplate`", () => {
+  describe("createItemTemplate", () => {
+    xit("createItemTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("createSolutionTemplate", () => {
+    xit("createSolutionTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_replaceTemplate", () => {
+    xit("_replaceTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+});

@@ -45,7 +45,7 @@ export function convertItemToTemplate(
   }
 
   // Extract dependencies
-  itemTemplate.dependencies = extractDependencies(itemTemplate);
+  itemTemplate.dependencies = _extractDependencies(itemTemplate);
 
   // Set the map or group after we've extracted them as dependencies
   if (common.getProp(itemTemplate, "data.map.appProxy.mapItemId")) {
@@ -133,8 +133,8 @@ export function fineTuneCreatedItem(
  * @return A promise that will resolve with list of dependent ids
  * @protected
  */
-export function extractDependencies(model: any): string[] {
-  let processor = getGenericWebAppDependencies;
+export function _extractDependencies(model: any): string[] {
+  let processor = _getGenericWebAppDependencies;
 
   /*
   if (common.hasTypeKeyword(model, "Story Map")) {
@@ -143,7 +143,7 @@ export function extractDependencies(model: any): string[] {
   */
 
   if (common.hasAnyKeyword(model, ["WAB2D", "WAB3D", "Web AppBuilder"])) {
-    processor = getWABDependencies;
+    processor = _getWABDependencies;
   }
 
   return processor(model);
@@ -152,7 +152,7 @@ export function extractDependencies(model: any): string[] {
 /**
  * Generic Web App Dependencies
  */
-export function getGenericWebAppDependencies(model: any): string[] {
+export function _getGenericWebAppDependencies(model: any): string[] {
   const props = ["data.values.webmap", "data.values.group"];
   return common.getProps(model, props);
 }
@@ -160,7 +160,7 @@ export function getGenericWebAppDependencies(model: any): string[] {
 /**
  * Return a list of items this site depends on
  */
-export function getWABDependencies(model: any): string[] {
+export function _getWABDependencies(model: any): string[] {
   const deps = [];
   const v = common.getProp(model, "data.map.itemId");
   if (v) {

@@ -17,3 +17,14 @@
 /**
  * Provides tests for functions involving the creation of a Solution item.
  */
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `creator`", () => {
+  describe("createSolution", () => {
+    xit("createSolution", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+});

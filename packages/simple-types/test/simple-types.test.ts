@@ -135,425 +135,6 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
-  describe("getGroupTitle", () => {
-    it("handle error in get", done => {
-      const name: string = "Dam Inspection Assignments";
-      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      fetchMock.get(
-        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
-        mockItems.get400Failure()
-      );
-
-      getGroupTitle(name, id).then(r => {
-        done.fail();
-      }, done);
-    });
-
-    it("should handle error when the current title is not available", done => {
-      const name: string = "Dam Inspection Assignments";
-      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      const emptySearchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: []
-      };
-
-      const searchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: [
-          {
-            id: "9402a6f176f54415ad4b8cb07598f42d",
-            title: "Dam Inspection Assignments",
-            isInvitationOnly: true,
-            owner: "LocalGovDeployment",
-            snippet: null,
-            tags: ["workforce"],
-            phone: null,
-            sortField: "title",
-            sortOrder: "asc",
-            isViewOnly: true,
-            thumbnail: "thumbnail1552926199126.png",
-            created: 1550876175000,
-            modified: 1553045146000,
-            access: "public",
-            capabilities: [],
-            isFav: false,
-            isReadOnly: false,
-            protected: true,
-            autoJoin: false,
-            notificationsEnabled: false,
-            provider: null,
-            providerGroupName: null,
-            leavingDisallowed: false,
-            hiddenMembers: false,
-            displaySettings: {
-              itemTypes: ""
-            }
-          }
-        ]
-      };
-
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
-          searchResult
-        )
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
-          mockItems.get400Failure()
-        );
-
-      getGroupTitle(name, id).then(r => {
-        done.fail();
-      }, done);
-    });
-
-    it("return a valid title", done => {
-      const name: string = "Dam Inspection Assignments";
-      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      const searchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: []
-      };
-
-      fetchMock.get(
-        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
-        searchResult
-      );
-
-      getGroupTitle(name, id).then(response => {
-        expect(response).toEqual(name);
-        done();
-      }, done.fail);
-    });
-
-    it("return a valid title when the current title is not available", done => {
-      const name: string = "Dam Inspection Assignments";
-      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      const emptySearchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: []
-      };
-
-      const searchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: [
-          {
-            id: "9402a6f176f54415ad4b8cb07598f42d",
-            title: "Dam Inspection Assignments",
-            isInvitationOnly: true,
-            owner: "LocalGovDeployment",
-            snippet: null,
-            tags: ["workforce"],
-            phone: null,
-            sortField: "title",
-            sortOrder: "asc",
-            isViewOnly: true,
-            thumbnail: "thumbnail1552926199126.png",
-            created: 1550876175000,
-            modified: 1553045146000,
-            access: "public",
-            capabilities: [],
-            isFav: false,
-            isReadOnly: false,
-            protected: true,
-            autoJoin: false,
-            notificationsEnabled: false,
-            provider: null,
-            providerGroupName: null,
-            leavingDisallowed: false,
-            hiddenMembers: false,
-            displaySettings: {
-              itemTypes: ""
-            }
-          }
-        ]
-      };
-
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
-          searchResult
-        )
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
-          emptySearchResult
-        );
-
-      getGroupTitle(name, id).then(response => {
-        expect(response).toEqual(name + "_" + id);
-        done();
-      }, done.fail);
-    });
-
-    it("return a valid title when the current title is not available and the title_guid is also not available", done => {
-      const name: string = "Dam Inspection Assignments";
-      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      const emptySearchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: []
-      };
-
-      const searchResult: any = {
-        query: "Dam Inspection Assignments",
-        total: 12,
-        start: 1,
-        num: 10,
-        nextStart: 11,
-        results: [
-          {
-            id: "9402a6f176f54415ad4b8cb07598f42d",
-            title: "Dam Inspection Assignments",
-            isInvitationOnly: true,
-            owner: "LocalGovDeployment",
-            snippet: null,
-            tags: ["workforce"],
-            phone: null,
-            sortField: "title",
-            sortOrder: "asc",
-            isViewOnly: true,
-            thumbnail: "thumbnail1552926199126.png",
-            created: 1550876175000,
-            modified: 1553045146000,
-            access: "public",
-            capabilities: [],
-            isFav: false,
-            isReadOnly: false,
-            protected: true,
-            autoJoin: false,
-            notificationsEnabled: false,
-            provider: null,
-            providerGroupName: null,
-            leavingDisallowed: false,
-            hiddenMembers: false,
-            displaySettings: {
-              itemTypes: ""
-            }
-          },
-          {
-            id: "344e78e37d344295b8e41dca42a1acd7",
-            title:
-              "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d",
-            isInvitationOnly: true,
-            owner: "LocalGovDeployJohnH",
-            snippet: null,
-            tags: ["workforce"],
-            phone: null,
-            sortField: "title",
-            sortOrder: "asc",
-            isViewOnly: true,
-            thumbnail: null,
-            created: 1561585706097,
-            modified: 1561585706098,
-            access: "public",
-            capabilities: [],
-            isFav: false,
-            isReadOnly: false,
-            protected: false,
-            autoJoin: false,
-            notificationsEnabled: false,
-            provider: null,
-            providerGroupName: null,
-            leavingDisallowed: false,
-            hiddenMembers: false,
-            displaySettings: {
-              itemTypes: ""
-            }
-          }
-        ]
-      };
-
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
-          searchResult
-        )
-        .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
-          searchResult
-        )
-        .get("*", emptySearchResult);
-
-      getGroupTitle(name, id).then(response => {
-        // this should have a current time stamp appended after "title"_"id"_
-        expect(response).toContain(
-          "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69_"
-        );
-        done();
-      }, done.fail);
-    });
-  });
-
-  describe("updateGroup", () => {
-    it("should handle error", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
-      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
-
-      const groupResponse: any = {
-        id: "4c9e145c5d6c431c9d50b9f15ed34042",
-        title:
-          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-        isInvitationOnly: true,
-        owner: "LocalGovDeployJohnH",
-        description:
-          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-        snippet: null,
-        tags: ["workforce"],
-        phone: null,
-        sortField: "title",
-        sortOrder: "asc",
-        isViewOnly: true,
-        thumbnail: null,
-        created: 1561667160000,
-        modified: 1561667160000,
-        access: "public",
-        capabilities: [],
-        isFav: false,
-        isReadOnly: false,
-        protected: false,
-        autoJoin: false,
-        notificationsEnabled: false,
-        provider: null,
-        providerGroupName: null,
-        leavingDisallowed: false,
-        hiddenMembers: false,
-        displaySettings: {
-          itemTypes: ""
-        },
-        userMembership: {
-          username: "LocalGovDeployJohnH",
-          memberType: "owner",
-          applications: 0
-        },
-        collaborationInfo: {}
-      };
-
-      fetchMock
-        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
-          results: []
-        })
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {}
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
-          groupResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
-          mockItems.get400Failure()
-        );
-
-      updateGroup(itemTemplate, MOCK_USER_SESSION, {
-        abc0cab401af4828a25cc6eaeb59fb69: {
-          id: "abc2cab401af4828a25cc6eaeb59fb69"
-        }
-      }).then(() => {
-        done.fail();
-      }, done);
-    });
-
-    it("should share dependencies with group", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
-      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
-
-      const groupResponse: any = {
-        id: "4c9e145c5d6c431c9d50b9f15ed34042",
-        title:
-          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-        isInvitationOnly: true,
-        owner: "LocalGovDeployJohnH",
-        description:
-          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-        snippet: null,
-        tags: ["workforce"],
-        phone: null,
-        sortField: "title",
-        sortOrder: "asc",
-        isViewOnly: true,
-        thumbnail: null,
-        created: 1561667160000,
-        modified: 1561667160000,
-        access: "public",
-        capabilities: [],
-        isFav: false,
-        isReadOnly: false,
-        protected: false,
-        autoJoin: false,
-        notificationsEnabled: false,
-        provider: null,
-        providerGroupName: null,
-        leavingDisallowed: false,
-        hiddenMembers: false,
-        displaySettings: {
-          itemTypes: ""
-        },
-        userMembership: {
-          username: "LocalGovDeployJohnH",
-          memberType: "owner",
-          applications: 0
-        },
-        collaborationInfo: {}
-      };
-
-      fetchMock
-        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
-          results: []
-        })
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {}
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
-          groupResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
-          { notSharedWith: [], itemId: "6cf74cfc328c4ae49083666aaa2ed525" }
-        );
-
-      updateGroup(itemTemplate, MOCK_USER_SESSION, {
-        abc0cab401af4828a25cc6eaeb59fb69: {
-          id: "abc2cab401af4828a25cc6eaeb59fb69"
-        }
-      }).then(() => {
-        done();
-      }, done.fail);
-    });
-  });
-
   describe("convertItemToTemplate", () => {
     it("should handle error on getResources", done => {
       const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
@@ -1247,6 +828,163 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           done();
         }, done.fail);
       });
+
+      it("should handle form item type", done => {
+        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.itemId = "frm1234567890";
+        itemTemplate.item = mockItems.getAGOLItem("Form", null);
+        itemTemplate.item.thumbnail = null;
+        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
+
+        const expectedTemplate: any = {
+          itemId: "frm1234567890",
+          type: "Form",
+          item: {
+            id: "{{frm1234567890.id}}",
+            type: "Form",
+            categories: [],
+            culture: "en-us",
+            description: "Description of an AGOL item",
+            extent: [],
+            licenseInfo: null,
+            name: "Name of an AGOL item",
+            snippet: "Snippet of an AGOL item",
+            tags: ["test"],
+            thumbnail: null,
+            title: "An AGOL item",
+            typeKeywords: ["JavaScript"],
+            url: ""
+          },
+          data: {},
+          resources: ["frm1234567890_info_metadata/metadata.xml"],
+          dependencies: ["srv1234567890"],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/data",
+            blob
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+            {
+              total: 1,
+              relatedItems: [
+                {
+                  id: "srv1234567890",
+                  owner: MOCK_USER_SESSION.username,
+                  created: 1496669828000,
+                  modified: 1529597563000,
+                  guid: null,
+                  name: "OpioidIncidents",
+                  title: "OpioidIncidents",
+                  type: "Feature Service",
+                  typeKeywords: [
+                    "ArcGIS Server",
+                    "Data",
+                    "Feature Access",
+                    "Feature Service",
+                    "Multilayer",
+                    "Service",
+                    "source-1e900c4d6b8846c6b4871592933a0863",
+                    "Hosted Service"
+                  ],
+                  description:
+                    "Overdoses, fatalities, and other drug related incidents.",
+                  tags: [
+                    "Opioids",
+                    "Public Health",
+                    "Public Safety",
+                    "Health",
+                    "Deaths",
+                    "Overdoses",
+                    "Drug Seizures",
+                    "Police",
+                    "Fire Service",
+                    "Law Enforcement"
+                  ],
+                  snippet:
+                    "Overdoses, fatalities, and other drug related incidents.",
+                  thumbnail: "thumbnail/OpioidIncidents.png",
+                  documentation: null,
+                  extent: [[-131.0, 16.0], [-57.0, 58.0]],
+                  categories: [],
+                  spatialReference: null,
+                  accessInformation: "Esri",
+                  licenseInfo: null,
+                  culture: "en-us",
+                  properties: null,
+                  url:
+                    "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/OpioidIncidents/FeatureServer",
+                  proxyFilter: null,
+                  access: "public",
+                  size: 49152,
+                  appCategories: [],
+                  industries: [],
+                  languages: [],
+                  largeThumbnail: null,
+                  banner: null,
+                  screenshots: [],
+                  listed: false,
+                  numComments: 0,
+                  numRatings: 0,
+                  avgRating: 0,
+                  numViews: 740,
+                  scoreCompleteness: 68,
+                  groupDesignations: null
+                }
+              ]
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0036",
+                message: "Item info file does not exist or is inaccessible.",
+                details: ["Error getting Item Info from DataStore"]
+              }
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              itemTemplate.itemId +
+              "/addResources",
+            {
+              success: true,
+              itemId: itemTemplate.itemId,
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            }
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
+      });
     }
   });
 
@@ -1759,9 +1497,422 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     //   });
   });
 
-  describe("placeholder", () => {
-    it("top-level", () => {
-      expect("a").toEqual("a");
+  describe("getGroupTitle", () => {
+    it("handle error in get", done => {
+      const name: string = "Dam Inspection Assignments";
+      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+        mockItems.get400Failure()
+      );
+
+      getGroupTitle(name, id).then(r => {
+        done.fail();
+      }, done);
+    });
+
+    it("should handle error when the current title is not available", done => {
+      const name: string = "Dam Inspection Assignments";
+      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const emptySearchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
+
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: [
+          {
+            id: "9402a6f176f54415ad4b8cb07598f42d",
+            title: "Dam Inspection Assignments",
+            isInvitationOnly: true,
+            owner: "LocalGovDeployment",
+            snippet: null,
+            tags: ["workforce"],
+            phone: null,
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: true,
+            thumbnail: "thumbnail1552926199126.png",
+            created: 1550876175000,
+            modified: 1553045146000,
+            access: "public",
+            capabilities: [],
+            isFav: false,
+            isReadOnly: false,
+            protected: true,
+            autoJoin: false,
+            notificationsEnabled: false,
+            provider: null,
+            providerGroupName: null,
+            leavingDisallowed: false,
+            hiddenMembers: false,
+            displaySettings: {
+              itemTypes: ""
+            }
+          }
+        ]
+      };
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          searchResult
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
+          mockItems.get400Failure()
+        );
+
+      getGroupTitle(name, id).then(r => {
+        done.fail();
+      }, done);
+    });
+
+    it("return a valid title", done => {
+      const name: string = "Dam Inspection Assignments";
+      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
+
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+        searchResult
+      );
+
+      getGroupTitle(name, id).then(response => {
+        expect(response).toEqual(name);
+        done();
+      }, done.fail);
+    });
+
+    it("return a valid title when the current title is not available", done => {
+      const name: string = "Dam Inspection Assignments";
+      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const emptySearchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
+
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: [
+          {
+            id: "9402a6f176f54415ad4b8cb07598f42d",
+            title: "Dam Inspection Assignments",
+            isInvitationOnly: true,
+            owner: "LocalGovDeployment",
+            snippet: null,
+            tags: ["workforce"],
+            phone: null,
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: true,
+            thumbnail: "thumbnail1552926199126.png",
+            created: 1550876175000,
+            modified: 1553045146000,
+            access: "public",
+            capabilities: [],
+            isFav: false,
+            isReadOnly: false,
+            protected: true,
+            autoJoin: false,
+            notificationsEnabled: false,
+            provider: null,
+            providerGroupName: null,
+            leavingDisallowed: false,
+            hiddenMembers: false,
+            displaySettings: {
+              itemTypes: ""
+            }
+          }
+        ]
+      };
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          searchResult
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
+          emptySearchResult
+        );
+
+      getGroupTitle(name, id).then(response => {
+        expect(response).toEqual(name + "_" + id);
+        done();
+      }, done.fail);
+    });
+
+    it("return a valid title when the current title is not available and the title_guid is also not available", done => {
+      const name: string = "Dam Inspection Assignments";
+      const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const emptySearchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: []
+      };
+
+      const searchResult: any = {
+        query: "Dam Inspection Assignments",
+        total: 12,
+        start: 1,
+        num: 10,
+        nextStart: 11,
+        results: [
+          {
+            id: "9402a6f176f54415ad4b8cb07598f42d",
+            title: "Dam Inspection Assignments",
+            isInvitationOnly: true,
+            owner: "LocalGovDeployment",
+            snippet: null,
+            tags: ["workforce"],
+            phone: null,
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: true,
+            thumbnail: "thumbnail1552926199126.png",
+            created: 1550876175000,
+            modified: 1553045146000,
+            access: "public",
+            capabilities: [],
+            isFav: false,
+            isReadOnly: false,
+            protected: true,
+            autoJoin: false,
+            notificationsEnabled: false,
+            provider: null,
+            providerGroupName: null,
+            leavingDisallowed: false,
+            hiddenMembers: false,
+            displaySettings: {
+              itemTypes: ""
+            }
+          },
+          {
+            id: "344e78e37d344295b8e41dca42a1acd7",
+            title:
+              "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d",
+            isInvitationOnly: true,
+            owner: "LocalGovDeployJohnH",
+            snippet: null,
+            tags: ["workforce"],
+            phone: null,
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: true,
+            thumbnail: null,
+            created: 1561585706097,
+            modified: 1561585706098,
+            access: "public",
+            capabilities: [],
+            isFav: false,
+            isReadOnly: false,
+            protected: false,
+            autoJoin: false,
+            notificationsEnabled: false,
+            provider: null,
+            providerGroupName: null,
+            leavingDisallowed: false,
+            hiddenMembers: false,
+            displaySettings: {
+              itemTypes: ""
+            }
+          }
+        ]
+      };
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          searchResult
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
+          searchResult
+        )
+        .get("*", emptySearchResult);
+
+      getGroupTitle(name, id).then(response => {
+        // this should have a current time stamp appended after "title"_"id"_
+        expect(response).toContain(
+          "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69_"
+        );
+        done();
+      }, done.fail);
+    });
+  });
+
+  describe("updateGroup", () => {
+    it("should handle error", done => {
+      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
+
+      const groupResponse: any = {
+        id: "4c9e145c5d6c431c9d50b9f15ed34042",
+        title:
+          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
+        isInvitationOnly: true,
+        owner: "LocalGovDeployJohnH",
+        description:
+          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
+        snippet: null,
+        tags: ["workforce"],
+        phone: null,
+        sortField: "title",
+        sortOrder: "asc",
+        isViewOnly: true,
+        thumbnail: null,
+        created: 1561667160000,
+        modified: 1561667160000,
+        access: "public",
+        capabilities: [],
+        isFav: false,
+        isReadOnly: false,
+        protected: false,
+        autoJoin: false,
+        notificationsEnabled: false,
+        provider: null,
+        providerGroupName: null,
+        leavingDisallowed: false,
+        hiddenMembers: false,
+        displaySettings: {
+          itemTypes: ""
+        },
+        userMembership: {
+          username: "LocalGovDeployJohnH",
+          memberType: "owner",
+          applications: 0
+        },
+        collaborationInfo: {}
+      };
+
+      fetchMock
+        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
+          results: []
+        })
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          {}
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          groupResponse
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
+          mockItems.get400Failure()
+        );
+
+      updateGroup(itemTemplate, MOCK_USER_SESSION, {
+        abc0cab401af4828a25cc6eaeb59fb69: {
+          id: "abc2cab401af4828a25cc6eaeb59fb69"
+        }
+      }).then(() => {
+        done.fail();
+      }, done);
+    });
+
+    it("should share dependencies with group", done => {
+      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
+
+      const groupResponse: any = {
+        id: "4c9e145c5d6c431c9d50b9f15ed34042",
+        title:
+          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
+        isInvitationOnly: true,
+        owner: "LocalGovDeployJohnH",
+        description:
+          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
+        snippet: null,
+        tags: ["workforce"],
+        phone: null,
+        sortField: "title",
+        sortOrder: "asc",
+        isViewOnly: true,
+        thumbnail: null,
+        created: 1561667160000,
+        modified: 1561667160000,
+        access: "public",
+        capabilities: [],
+        isFav: false,
+        isReadOnly: false,
+        protected: false,
+        autoJoin: false,
+        notificationsEnabled: false,
+        provider: null,
+        providerGroupName: null,
+        leavingDisallowed: false,
+        hiddenMembers: false,
+        displaySettings: {
+          itemTypes: ""
+        },
+        userMembership: {
+          username: "LocalGovDeployJohnH",
+          memberType: "owner",
+          applications: 0
+        },
+        collaborationInfo: {}
+      };
+
+      fetchMock
+        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
+          results: []
+        })
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          {}
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          groupResponse
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
+          { notSharedWith: [], itemId: "6cf74cfc328c4ae49083666aaa2ed525" }
+        );
+
+      updateGroup(itemTemplate, MOCK_USER_SESSION, {
+        abc0cab401af4828a25cc6eaeb59fb69: {
+          id: "abc2cab401af4828a25cc6eaeb59fb69"
+        }
+      }).then(() => {
+        done();
+      }, done.fail);
     });
   });
 });

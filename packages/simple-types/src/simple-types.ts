@@ -411,6 +411,28 @@ export function createItemFromTemplate(
   });
 }
 
+export function getGroupTitle(name: string, id: string): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    portal.searchGroups(name).then(
+      searchResult => {
+        // if we find a group call the func again with a new name
+        const results: any[] = common.getProp(searchResult, "results");
+        if (results && results.length > 0) {
+          getGroupTitle(name + "_" + id, common.getUTCTimestamp()).then(
+            title => {
+              resolve(title);
+            },
+            e => reject(common.fail(e))
+          );
+        } else {
+          resolve(name);
+        }
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
 export function updateGroup(
   newItemTemplate: common.IItemTemplate,
   destinationUserSession: auth.UserSession,
@@ -431,28 +453,6 @@ export function updateGroup(
     Promise.all(defArray).then(
       a => {
         resolve();
-      },
-      e => reject(common.fail(e))
-    );
-  });
-}
-
-export function getGroupTitle(name: string, id: string): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    portal.searchGroups(name).then(
-      searchResult => {
-        // if we find a group call the func again with a new name
-        const results: any[] = common.getProp(searchResult, "results");
-        if (results && results.length > 0) {
-          getGroupTitle(name + "_" + id, common.getUTCTimestamp()).then(
-            title => {
-              resolve(title);
-            },
-            e => reject(common.fail(e))
-          );
-        } else {
-          resolve(name);
-        }
       },
       e => reject(common.fail(e))
     );

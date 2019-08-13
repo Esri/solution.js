@@ -143,6 +143,20 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
   });
 
+  describe("_extractDependencies", () => {
+    xit("_extractDependencies", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatize", () => {
+    xit("_templatize", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
   describe("fineTuneCreatedItem", () => {
     it("should update dispatchers service", done => {
       const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
@@ -338,6 +352,13 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         });
         done();
       }, done.fail);
+    });
+  });
+
+  describe("_updateDispatchers", () => {
+    xit("_updateDispatchers", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
     });
   });
 });

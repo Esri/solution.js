@@ -75,7 +75,7 @@ export function deploySolutionItems(
   return new Promise((resolve, reject) => {
     // Create an ordered graph of the templates so that dependencies are created
     // before the items that need them
-    const cloneOrderChecklist: string[] = topologicallySortItems(templates);
+    const cloneOrderChecklist: string[] = _topologicallySortItems(templates);
 
     // For each item in order from no dependencies to dependent on other items,
     //   * replace template symbols using template dictionary
@@ -90,7 +90,7 @@ export function deploySolutionItems(
       }
 
       awaitAllItems.push(
-        createItemFromTemplateWhenReady(
+        _createItemFromTemplateWhenReady(
           template!,
           common.generateStorageFilePaths(
             portalSharingUrl,
@@ -150,7 +150,7 @@ enum SortVisitColor {
  *         already in the templates list
  * @protected
  */
-function createItemFromTemplateWhenReady(
+export function _createItemFromTemplateWhenReady(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
   storageUserSession: auth.UserSession,
@@ -221,7 +221,9 @@ function createItemFromTemplateWhenReady(
  * @throws Error("Cyclical dependency graph detected")
  * @protected
  */
-function topologicallySortItems(templates: common.IItemTemplate[]): string[] {
+export function _topologicallySortItems(
+  templates: common.IItemTemplate[]
+): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
   // Introduction to Algorithms (3rd ed.), The MIT Press, ISBN 978-0-262-03384-8

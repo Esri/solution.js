@@ -24,6 +24,27 @@ import * as templatization from "../src/templatization";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
+  describe("createInitializedGroupTemplate", () => {
+    xit("createInitializedGroupTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("createInitializedItemTemplate", () => {
+    xit("createInitializedItemTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("createPlaceholderTemplate", () => {
+    xit("createPlaceholderTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
   describe("findTemplateIndexInList", () => {
     it("should handle an empty list", () => {
       const templates: interfaces.IItemTemplate[] = [];
@@ -53,7 +74,7 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
-  describe("findTemplateIndexInList", () => {
+  describe("findTemplateInList", () => {
     it("should handle an empty list", () => {
       const templates: interfaces.IItemTemplate[] = [];
       const id: string = "";
@@ -81,6 +102,13 @@ describe("Module `templatization`: common functions involving the adlib library"
 
       const actual = templatization.findTemplateInList(templates, id);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("replaceInTemplate", () => {
+    xit("replaceInTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
     });
   });
 
@@ -125,6 +153,20 @@ describe("Module `templatization`: common functions involving the adlib library"
 
       const actual = templatization.templatizeTerm(context, term, suffix);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("_createId", () => {
+    xit("_createId", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_getRandomNumberInRange", () => {
+    xit("_getRandomNumberInRange", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
     });
   });
 });

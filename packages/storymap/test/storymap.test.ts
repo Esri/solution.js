@@ -17,3 +17,28 @@
 /**
  * Provides tests for functions involving the creation and deployment of Story Map item types.
  */
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `storymap`", () => {
+  describe("convertItemToTemplate", () => {
+    xit("convertItemToTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("createItemFromTemplate", () => {
+    xit("createItemFromTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("createItemFromTemplate", () => {
+    xit("createItemFromTemplate", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+});

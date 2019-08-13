@@ -1,5 +1,5 @@
 /** @license
- * Copyright 2018 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,14 @@
  */
 
 /**
- * Provides tests for functions involving the deployment of a Solution.
+ * Provides tests for functions involving the creation of a Solution item.
  */
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `deploySolution`", () => {
-  describe("deploySolution", () => {
-    xit("deploySolution", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_estimateDeploymentCost", () => {
-    xit("_estimateDeploymentCost", done => {
+describe("Module `form`", () => {
+  describe("convertItemToTemplate", () => {
+    xit("convertItemToTemplate", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });

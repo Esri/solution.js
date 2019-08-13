@@ -32,12 +32,12 @@ export function convertItemToTemplate(
     common.PLACEHOLDER_SERVER_NAME + WEBMAP_APP_URL_PART + itemTemplate.item.id; // templatized id
 
   // Extract dependencies
-  itemTemplate.dependencies = extractDependencies(itemTemplate);
+  itemTemplate.dependencies = _extractDependencies(itemTemplate);
 
   // Templatize the map layer ids after we've extracted them as dependencies
   if (itemTemplate.data) {
-    templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
-    templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
+    _templatizeWebmapLayerIdsAndUrls(itemTemplate.data.operationalLayers);
+    _templatizeWebmapLayerIdsAndUrls(itemTemplate.data.tables);
   }
 
   return itemTemplate;
@@ -52,13 +52,15 @@ export function convertItemToTemplate(
  * @return List of dependencies
  * @protected
  */
-function extractDependencies(itemTemplate: common.IItemTemplate): string[] {
+export function _extractDependencies(
+  itemTemplate: common.IItemTemplate
+): string[] {
   let dependencies: string[] = [];
 
   if (itemTemplate.data) {
     dependencies = [
-      ...getWebmapLayerIds(itemTemplate.data.operationalLayers),
-      ...getWebmapLayerIds(itemTemplate.data.tables)
+      ..._getWebmapLayerIds(itemTemplate.data.operationalLayers),
+      ..._getWebmapLayerIds(itemTemplate.data.tables)
     ];
   }
 
@@ -72,7 +74,7 @@ function extractDependencies(itemTemplate: common.IItemTemplate): string[] {
  * @return List containing id of each layer or table that has an itemId
  * @protected
  */
-function getWebmapLayerIds(layerList = [] as any[]): string[] {
+export function _getWebmapLayerIds(layerList = [] as any[]): string[] {
   return layerList.reduce(
     (ids: string[], layer: any) => {
       const itemId = layer.itemId as string;
@@ -85,7 +87,9 @@ function getWebmapLayerIds(layerList = [] as any[]): string[] {
   );
 }
 
-function templatizeWebmapLayerIdsAndUrls(layerList = [] as any[]): void {
+export function _templatizeWebmapLayerIdsAndUrls(
+  layerList = [] as any[]
+): void {
   layerList
     .filter((layer: any) => !!layer.itemId)
     .forEach((layer: any) => {

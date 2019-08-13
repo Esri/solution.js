@@ -367,4 +367,25 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       expect(actual).toEqual(expected);
     });
   });
+
+  describe("_extractDependencies", () => {
+    xit("_extractDependencies", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_getWebmapLayerIds", () => {
+    xit("_getWebmapLayerIds", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatizeWebmapLayerIdsAndUrls", () => {
+    xit("_templatizeWebmapLayerIdsAndUrls", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
 });

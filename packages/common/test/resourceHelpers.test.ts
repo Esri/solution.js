@@ -280,6 +280,16 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  describe("copyBlobToStorageItem", () => {
+    if (typeof window !== "undefined") {
+      // Blobs are only available in the browser
+      xit("copyBlobToStorageItem", done => {
+        console.warn("========== TODO ==========");
+        done.fail();
+      });
+    }
+  });
+
   describe("copyFilesFromStorageItem", () => {
     it("empty files list", done => {
       const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;

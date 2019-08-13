@@ -46,7 +46,7 @@ export function convertItemToTemplate(
 
   if (data) {
     // Extract dependencies
-    itemTemplate.dependencies = extractDependencies(data, keyProperties);
+    itemTemplate.dependencies = _extractDependencies(data, keyProperties);
 
     // templatize key properties
     itemTemplate.data = _templatize(data, keyProperties);
@@ -62,7 +62,7 @@ export function convertItemToTemplate(
  * @param keyProperties workforce project properties that contain references to dependencies
  * @return a list of dependency IDs
  */
-export function extractDependencies(
+export function _extractDependencies(
   data: any,
   keyProperties: string[]
 ): string[] {
