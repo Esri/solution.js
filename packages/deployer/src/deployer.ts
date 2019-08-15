@@ -82,7 +82,13 @@ export function deploySolution(
         templateDictionary.folderId = folderResponse.folder.id;
         const portalResponse = responses[2];
         templateDictionary.isPortal = portalResponse.isPortal;
-        templateDictionary.geometryServiceUrl =
+        templateDictionary.organization.geocodeServerUrl =
+          portalResponse.helperServices.geocode[0].url;
+        templateDictionary.organization.naServerUrl =
+          portalResponse.helperServices.route.url;
+        templateDictionary.organization.printServiceUrl =
+          portalResponse.helperServices.printTask.url;
+        templateDictionary.organization.geometryServerUrl =
           portalResponse.helperServices.geometry.url;
         templateDictionary.initiative = Object.assign(
           templateDictionary.initiative || {},

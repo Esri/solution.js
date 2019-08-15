@@ -33,6 +33,34 @@ import * as interfaces from "./interfaces";
  */
 export const PLACEHOLDER_SERVER_NAME: string = "{{organization.portalBaseUrl}}";
 
+/**
+ * A parameterized geometry server name
+ * @protected
+ */
+export const PLACEHOLDER_GEOMETRY_SERVER_NAME: string =
+  "{{organization.geometryServerUrl}}";
+
+/**
+ * A parameterized geocode server name
+ * @protected
+ */
+export const PLACEHOLDER_GEOCODE_SERVER_NAME: string =
+  "{{organization.geocodeServerUrl}}";
+
+/**
+ * A parameterized network analyst server name
+ * @protected
+ */
+export const PLACEHOLDER_NA_SERVER_NAME: string =
+  "{{organization.naServerUrl}}";
+
+/**
+ * A parameterized network analyst server name
+ * @protected
+ */
+export const PLACEHOLDER_PRINT_SERVER_NAME: string =
+  "{{organization.printServerUrl}}";
+
 export function createInitializedGroupTemplate(
   itemInfo: any
 ): interfaces.IItemTemplate {

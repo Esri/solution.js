@@ -16,67 +16,324 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import { request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
-  itemTemplate: common.IItemTemplate
-): common.IItemTemplate {
-  // Remove org base URL and app id, e.g.,
-  //   http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34a6b5ce80d17835eea21
-  // to
-  //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
-  // Need to add placeholder server name because otherwise AGOL makes URL null
-  if (itemTemplate.item.url) {
-    const templatizedUrl = itemTemplate.item.url;
-    const iSep = templatizedUrl.indexOf("//");
-    itemTemplate.item.url =
-      common.PLACEHOLDER_SERVER_NAME + // add placeholder server name
-      templatizedUrl.substring(
-        templatizedUrl.indexOf("/", iSep + 2),
-        templatizedUrl.lastIndexOf("=") + 1
-      ) +
-      itemTemplate.item.id; // templatized id
-  }
+  itemTemplate: common.IItemTemplate,
+  requestOptions: auth.IUserRequestOptions
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    // Remove org base URL and app id, e.g.,
+    //   http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34a6b5ce80d17835eea21
+    // to
+    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
+    // Need to add placeholder server name because otherwise AGOL makes URL null
+    let portalUrl: string = "";
+    if (itemTemplate.item.url) {
+      const templatizedUrl = itemTemplate.item.url;
+      const iSep = templatizedUrl.indexOf("//");
+      itemTemplate.item.url =
+        common.PLACEHOLDER_SERVER_NAME + // add placeholder server name
+        templatizedUrl.substring(
+          templatizedUrl.indexOf("/", iSep + 2),
+          templatizedUrl.lastIndexOf("=") + 1
+        ) +
+        itemTemplate.item.id; // templatized id
 
-  // Set the folder
-  if (common.getProp(itemTemplate, "data.folderId")) {
-    itemTemplate.data.folderId = "{{folderId}}";
-  }
+      portalUrl = templatizedUrl.replace(
+        templatizedUrl.substring(templatizedUrl.indexOf("/", iSep + 2)),
+        ""
+      );
+    }
 
-  // Extract dependencies
-  itemTemplate.dependencies = _extractDependencies(itemTemplate);
+    // Extract dependencies
+    itemTemplate.dependencies = _extractDependencies(itemTemplate);
 
-  // Set the map or group after we've extracted them as dependencies
-  if (common.getProp(itemTemplate, "data.map.appProxy.mapItemId")) {
-    itemTemplate.data.map.appProxy.mapItemId = common.templatizeTerm(
-      itemTemplate.data.map.appProxy.mapItemId,
-      itemTemplate.data.map.appProxy.mapItemId,
-      ".id"
-    );
-  }
-  if (common.getProp(itemTemplate, "data.map.itemId")) {
-    itemTemplate.data.map.itemId = common.templatizeTerm(
-      itemTemplate.data.map.itemId,
-      itemTemplate.data.map.itemId,
-      ".id"
-    );
-  }
-  if (common.getProp(itemTemplate, "data.values.webmap")) {
-    itemTemplate.data.values.webmap = common.templatizeTerm(
-      itemTemplate.data.values.webmap,
-      itemTemplate.data.values.webmap,
-      ".id"
-    );
-  } else if (common.getProp(itemTemplate, "data.values.group")) {
-    itemTemplate.data.values.group = common.templatizeTerm(
-      itemTemplate.data.values.group,
-      itemTemplate.data.values.group,
-      ".id"
-    );
-  }
+    // Set the folder
+    if (common.getProp(itemTemplate, "data.folderId")) {
+      itemTemplate.data.folderId = "{{folderId}}";
+    }
 
-  return itemTemplate;
+    // Set the map or group after we've extracted them as dependencies
+    if (common.getProp(itemTemplate, "data.map.appProxy.mapItemId")) {
+      itemTemplate.data.map.appProxy.mapItemId = common.templatizeTerm(
+        itemTemplate.data.map.appProxy.mapItemId,
+        itemTemplate.data.map.appProxy.mapItemId,
+        ".id"
+      );
+    }
+    if (common.getProp(itemTemplate, "data.map.itemId")) {
+      itemTemplate.data.map.itemId = common.templatizeTerm(
+        itemTemplate.data.map.itemId,
+        itemTemplate.data.map.itemId,
+        ".id"
+      );
+    }
+    if (common.getProp(itemTemplate, "data.appItemId")) {
+      itemTemplate.data.appItemId = common.templatizeTerm(
+        itemTemplate.data.appItemId,
+        itemTemplate.data.appItemId,
+        ".id"
+      );
+    }
+    if (common.getProp(itemTemplate, "data.values.webmap")) {
+      itemTemplate.data.values.webmap = common.templatizeTerm(
+        itemTemplate.data.values.webmap,
+        itemTemplate.data.values.webmap,
+        ".id"
+      );
+    } else if (common.getProp(itemTemplate, "data.values.group")) {
+      itemTemplate.data.values.group = common.templatizeTerm(
+        itemTemplate.data.values.group,
+        itemTemplate.data.values.group,
+        ".id"
+      );
+    }
+
+    setValues(
+      itemTemplate,
+      [
+        "data.logo",
+        "data.map.portalUrl",
+        "data.portalUrl",
+        "data.httpProxy.url"
+      ],
+      common.PLACEHOLDER_SERVER_NAME
+    );
+
+    common.setProp(
+      itemTemplate,
+      "data.geometryService",
+      common.PLACEHOLDER_GEOMETRY_SERVER_NAME
+    );
+
+    templatizeDatasources(itemTemplate, requestOptions, portalUrl).then(
+      () => {
+        templatizeWidgets(
+          itemTemplate,
+          requestOptions,
+          portalUrl,
+          "data.widgetPool.widgets"
+        ).then(
+          _itemTemplate => {
+            templatizeWidgets(
+              _itemTemplate,
+              requestOptions,
+              portalUrl,
+              "data.widgetOnScreen.widgets"
+            ).then(
+              updatedItemTemplate => {
+                resolve(updatedItemTemplate);
+              },
+              e => reject(common.fail(e))
+            );
+          },
+          e => reject(common.fail(e))
+        );
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
+export function templatizeDatasources(
+  itemTemplate: common.IItemTemplate,
+  requestOptions: auth.IUserRequestOptions,
+  portalUrl: string
+) {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    const dataSources: any = common.getProp(
+      itemTemplate,
+      "data.dataSource.dataSources"
+    );
+    if (dataSources) {
+      Object.keys(dataSources).forEach(k => {
+        const ds: any = dataSources[k];
+        common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
+        if (common.getProp(ds, "itemId")) {
+          ds.itemId = common.templatizeTerm(ds.itemId, ds.itemId, ".id");
+        }
+        if (common.getProp(ds, "url")) {
+          const urlResults: any = findUrls(
+            ds.url,
+            portalUrl,
+            [],
+            [],
+            requestOptions
+          );
+          handleServiceRequests(
+            urlResults.serviceRequests,
+            urlResults.requestUrls,
+            urlResults.testString
+          ).then(
+            response => {
+              ds.url = response;
+              resolve();
+            },
+            e => {
+              reject(common.fail(e));
+            }
+          );
+        }
+      });
+    }
+  });
+}
+
+export function templatizeWidgets(
+  itemTemplate: common.IItemTemplate,
+  requestOptions: auth.IUserRequestOptions,
+  portalUrl: string,
+  widgetPath: string
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    // update widgets
+    const widgets: any[] = common.getProp(itemTemplate, widgetPath);
+    let serviceRequests: any[] = [];
+    let requestUrls: string[] = [];
+
+    widgets.forEach(widget => {
+      if (common.getProp(widget, "icon")) {
+        setValues(widget, ["icon"], common.PLACEHOLDER_SERVER_NAME);
+      }
+      const config: any = widget.config;
+      if (config) {
+        const sConfig: string = JSON.stringify(config);
+        const urlResults: any = findUrls(
+          sConfig,
+          portalUrl,
+          requestUrls,
+          serviceRequests,
+          requestOptions
+        );
+
+        widget.config = JSON.parse(urlResults.testString);
+        serviceRequests = urlResults.serviceRequests;
+        requestUrls = urlResults.requestUrls;
+      }
+    });
+
+    const sWidgets: string = JSON.stringify(widgets);
+    handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
+      response => {
+        common.setProp(itemTemplate, widgetPath, JSON.parse(response));
+        resolve(itemTemplate);
+      },
+      e => common.fail(e)
+    );
+  });
+}
+
+export function handleServiceRequests(
+  serviceRequests: any[],
+  requestUrls: string[],
+  objString: string
+) {
+  return new Promise<string>((resolve, reject) => {
+    if (serviceRequests && serviceRequests.length > 0) {
+      let i: number = 0;
+      Promise.all(serviceRequests).then(
+        serviceResponses => {
+          serviceResponses.forEach(serviceResponse => {
+            if (common.getProp(serviceResponse, "serviceItemId")) {
+              const serviceTemplate: string =
+                "{{" +
+                serviceResponse.serviceItemId +
+                ".url}}/" +
+                (serviceResponse.hasOwnProperty("id")
+                  ? serviceResponse.id
+                  : "");
+              objString = replaceUrl(
+                objString,
+                requestUrls[i],
+                serviceTemplate
+              );
+            }
+            i++;
+          });
+          resolve(objString);
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(objString);
+    }
+  });
+}
+
+export function findUrls(
+  testString: string,
+  portalUrl: string,
+  requestUrls: string[],
+  serviceRequests: any[],
+  requestOptions: auth.IUserRequestOptions
+) {
+  const options: any = {
+    f: "json",
+    requestOptions
+  };
+  // test for URLs
+  const results = testString.match(/(\bhttps?:\/\/[-A-Z0-9\/._]*)/gim);
+  if (results && results.length) {
+    results.forEach((url: string) => {
+      if (url.indexOf("NAServer") > -1) {
+        testString = replaceUrl(
+          testString,
+          url,
+          common.PLACEHOLDER_NA_SERVER_NAME
+        );
+      } else if (url.indexOf("GeocodeServer") > -1) {
+        testString = replaceUrl(
+          testString,
+          url,
+          common.PLACEHOLDER_GEOCODE_SERVER_NAME
+        );
+      } else if (portalUrl && url.indexOf(portalUrl) > -1) {
+        testString = replaceUrl(
+          testString,
+          url,
+          common.PLACEHOLDER_SERVER_NAME
+        );
+      } else if (url.indexOf("FeatureServer") > -1) {
+        if (requestUrls.indexOf(url) === -1) {
+          requestUrls.push(url);
+          serviceRequests.push(request(url, options));
+        }
+      }
+    });
+  }
+  return {
+    testString,
+    requestUrls,
+    serviceRequests
+  };
+}
+
+export function replaceUrl(obj: string, url: string, newUrl: string) {
+  const re = new RegExp(url, "gmi");
+  return obj.replace(re, newUrl);
+}
+
+export function setValues(
+  itemTemplate: common.IItemTemplate,
+  paths: string[],
+  base: string
+) {
+  paths.forEach(path => {
+    const url: string = common.getProp(itemTemplate, path);
+    if (url) {
+      const subString: string = url.substring(
+        url.indexOf("/", url.indexOf("//") + 2)
+      );
+      common.setProp(
+        itemTemplate,
+        path,
+        subString !== url ? base + subString : base
+      );
+    }
+  });
 }
 
 export function fineTuneCreatedItem(
@@ -165,6 +422,15 @@ export function _getWABDependencies(model: any): string[] {
   const v = common.getProp(model, "data.map.itemId");
   if (v) {
     deps.push(v);
+  }
+  const dataSources = common.getProp(model, "data.dataSource.dataSources");
+  if (dataSources) {
+    Object.keys(dataSources).forEach(k => {
+      const ds: any = dataSources[k];
+      if (ds.itemId) {
+        deps.push(ds.itemId);
+      }
+    });
   }
   return deps;
 }

@@ -140,6 +140,7 @@ export function convertItemToTemplate(
         );
 
         let wrapupPromise = Promise.resolve();
+        let webappPromise = Promise.resolve(itemTemplate);
         switch (itemInfo.type.toLowerCase()) {
           case "dashboard":
             dashboard.convertItemToTemplate(itemTemplate);
@@ -183,7 +184,10 @@ export function convertItemToTemplate(
             webmap.convertItemToTemplate(itemTemplate);
             break;
           case "web mapping application":
-            webmappingapplication.convertItemToTemplate(itemTemplate);
+            webappPromise = webmappingapplication.convertItemToTemplate(
+              itemTemplate,
+              requestOptions
+            );
             break;
           case "workforce project":
             workforce.convertItemToTemplate(itemTemplate);
@@ -201,7 +205,10 @@ export function convertItemToTemplate(
                 itemInfo.id +
                 ")"
             ); */
-            resolve(itemTemplate);
+            webappPromise.then(
+              _itemTemplate => resolve(_itemTemplate),
+              e => common.fail(e)
+            );
           },
           err => {
             console.log(
