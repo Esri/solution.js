@@ -905,7 +905,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .post(geometryServiceUrl + "/project", {
           geometries: [geometry]
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
@@ -930,7 +932,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .post(geometryServiceUrl + "/project", {
           geometries: []
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       const expected: any = undefined;
 
