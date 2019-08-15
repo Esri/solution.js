@@ -149,17 +149,6 @@ export function addThumbnailFromUrl(
   return portal.updateItem(updateOptions);
 }
 
-export function copyBlobToStorageItem(
-  blob: any,
-  storageItemId: string,
-  storageRequestOptions: auth.IUserRequestOptions
-): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    console.warn("========== TODO ==========");
-    resolve();
-  });
-}
-
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
  * the resources, metadata, and thumbnail of an item or group to an item.
