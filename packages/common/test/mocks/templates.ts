@@ -163,6 +163,17 @@ export function getItemTemplatePart(
     case "Project Template":
       break;
 
+    case "StoryMap":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        "sto",
+        dependencies,
+        url || "https://storymaps.arcgis.com/stories/{{sto1234567890.id}}"
+      );
+      templatePart.data = getItemTemplateData(type);
+      templatePart.resources = [];
+      break;
+
     case "Web Map":
       templatePart = getItemTemplateFundamentals(
         type,
@@ -590,6 +601,14 @@ export function getItemTemplateData(type?: string): any {
       break;
 
     case "Project Template":
+      break;
+
+    case "StoryMap":
+      data = {
+        root: "n-guGGJg",
+        nodes: {},
+        resources: {}
+      };
       break;
 
     case "Web Map":
