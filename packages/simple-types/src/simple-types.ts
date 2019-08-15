@@ -123,7 +123,7 @@ export function convertItemToTemplate(
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
         dataPromise.catch(() => ({})),
-        resourcePromise.catch(() => [] as string[]),
+        resourcePromise,
         relatedPromise.catch(
           () =>
             ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
