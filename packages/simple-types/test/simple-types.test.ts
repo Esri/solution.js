@@ -30,7 +30,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import { IItemTemplate } from "../../common/src/interfaces";
 import * as resourceHelpers from "../../common/src/resourceHelpers";
 
-import { TOMORROW } from "../../common/test/mocks/utils";
+import { TOMORROW, create404Error } from "../../common/test/mocks/utils";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 
 // Set up a UserSession to use in all these tests
@@ -855,7 +855,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             typeKeywords: ["JavaScript"],
             url: ""
           },
-          data: {},
+          data: null,
           resources: ["frm1234567890_info_metadata/metadata.xml"],
           dependencies: ["srv1234567890"],
           properties: {},
@@ -986,6 +986,38 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
       });
     }
+
+    it("should catch errors", done => {
+      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      itemTemplate.item = mockItems.getAGOLItem("Form", null);
+      itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
+      itemTemplate.item.thumbnail = null;
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
+          create404Error()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
+          create404Error()
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+          create404Error()
+        );
+
+      convertItemToTemplate(
+        itemTemplate.item.id,
+        itemTemplate.item,
+        MOCK_USER_SESSION
+      ).then(newItemTemplate => {
+        expect(newItemTemplate.data).toEqual(null);
+        expect(newItemTemplate.resources).toEqual([]);
+        expect(newItemTemplate.dependencies).toEqual([]);
+        done();
+      }, done.fail);
+    });
   });
 
   describe("createItemFromTemplate", () => {

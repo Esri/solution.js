@@ -58,32 +58,10 @@ export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   );
 }
 
-/**
- * Replaces the browser clock with a mock clock.
- *
- * @param now Time to use to set Jasmine clock
- * @note Be sure to call `jasmine.clock().uninstall()` after using this function in a test
- */
-export function setMockDateTime(now: number): number {
-  jasmine.clock().install();
-  jasmine.clock().mockDate(new Date(now));
-  return now;
-}
-
-export function createRuntimeMockUserSession(now: number): UserSession {
-  const tomorrow = new Date(now + 86400000);
-  return new UserSession({
-    clientId: "clientId",
-    redirectUri: "https://example-app.com/redirect-uri",
-    token: "fake-token",
-    tokenExpires: tomorrow,
-    refreshToken: "refreshToken",
-    refreshTokenExpires: tomorrow,
-    refreshTokenTTL: 1440,
-    username: "casey",
-    password: "123456",
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
-  });
+export function create404Error(errorMessage = "404 error"): any {
+  return () => {
+    throw new Error(errorMessage);
+  };
 }
 
 export function createMockSettings(
@@ -102,6 +80,22 @@ export function createMockSettings(
   };
 
   return settings;
+}
+
+export function createRuntimeMockUserSession(now: number): UserSession {
+  const tomorrow = new Date(now + 86400000);
+  return new UserSession({
+    clientId: "clientId",
+    redirectUri: "https://example-app.com/redirect-uri",
+    token: "fake-token",
+    tokenExpires: tomorrow,
+    refreshToken: "refreshToken",
+    refreshTokenExpires: tomorrow,
+    refreshTokenTTL: 1440,
+    username: "casey",
+    password: "123456",
+    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  });
 }
 
 export function jsonClone(obj: any) {
@@ -131,4 +125,16 @@ export function removeItemFcns(
 export function removeNameField(layerOrTable: any): any {
   layerOrTable.name = null;
   return layerOrTable;
+}
+
+/**
+ * Replaces the browser clock with a mock clock.
+ *
+ * @param now Time to use to set Jasmine clock
+ * @note Be sure to call `jasmine.clock().uninstall()` after using this function in a test
+ */
+export function setMockDateTime(now: number): number {
+  jasmine.clock().install();
+  jasmine.clock().mockDate(new Date(now));
+  return now;
 }
