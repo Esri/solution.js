@@ -855,7 +855,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             typeKeywords: ["JavaScript"],
             url: ""
           },
-          data: {},
+          data: null,
           resources: ["frm1234567890_info_metadata/metadata.xml"],
           dependencies: ["srv1234567890"],
           properties: {},

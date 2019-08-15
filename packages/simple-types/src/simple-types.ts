@@ -122,7 +122,7 @@ export function convertItemToTemplate(
       // from killing off all promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
-        dataPromise.catch(() => ({})),
+        dataPromise.catch(() => null),
         resourcePromise,
         relatedPromise.catch(
           () =>
@@ -152,21 +152,23 @@ export function convertItemToTemplate(
             );
 
             // Store the form's data in the solution resources, not in template
-            itemTemplate.data = {};
+            itemTemplate.data = null;
             form.convertItemToTemplate(itemTemplate);
 
-            const storageName = common.generateResourceStorageFilename(
-              itemTemplate.itemId,
-              itemTemplate.item.name,
-              "info_form"
-            );
-            wrapupPromise = common.addResourceFromBlob(
-              itemDataResponse,
-              solutionItemId,
-              storageName.folder,
-              storageName.filename,
-              requestOptions
-            );
+            if (itemDataResponse) {
+              const storageName = common.generateResourceStorageFilename(
+                itemTemplate.itemId,
+                itemTemplate.item.name,
+                "info_form"
+              );
+              wrapupPromise = common.addResourceFromBlob(
+                itemDataResponse,
+                solutionItemId,
+                storageName.folder,
+                storageName.filename,
+                requestOptions
+              );
+            }
             break;
           case "web map":
             webmap.convertItemToTemplate(itemTemplate);
