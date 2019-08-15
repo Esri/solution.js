@@ -861,7 +861,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .post(geometryServiceUrl + "/project", {
           geometries: [geometry]
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
@@ -880,7 +882,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations", {})
         .post(geometryServiceUrl + "/project", {
           geometries: [geometry]
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
@@ -901,7 +905,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .post(geometryServiceUrl + "/project", {
           geometries: [geometry]
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
@@ -926,7 +932,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         })
         .post(geometryServiceUrl + "/project", {
           geometries: []
-        });
+        })
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       const expected: any = undefined;
 
@@ -951,7 +959,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           ]
         })
-        .post(geometryServiceUrl + "/project", mockItems.get400Failure());
+        .post(geometryServiceUrl + "/project", mockItems.get400Failure())
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
@@ -965,10 +975,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can handle unmatched wkid and failure on findTransformations", done => {
-      fetchMock.post(
-        geometryServiceUrl + "/findTransformations",
-        mockItems.get400Failure()
-      );
+      fetchMock
+        .post(
+          geometryServiceUrl + "/findTransformations",
+          mockItems.get400Failure()
+        )
+        .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
+        .post(geometryServiceUrl + "/project/rest/info", "{}");
 
       getExtent(
         extent,
