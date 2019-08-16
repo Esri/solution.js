@@ -196,7 +196,10 @@ export function convertItemToTemplate(
             ); */
             webappPromise.then(
               _itemTemplate => resolve(_itemTemplate),
-              e => common.fail(e)
+              e => {
+                console.error(e);
+                resolve(itemTemplate);
+              }
             );
           },
           err => {

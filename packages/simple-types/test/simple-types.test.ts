@@ -986,6 +986,164 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
       });
     }
+
+    it("should handle web mapping application", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+
+      itemTemplate.item = {
+        id: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Web Mapping Application",
+        title: "Voting Centers",
+        url:
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+      };
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.data = {
+        appItemId: "myAppItemId",
+        values: {
+          webmap: "myMapId"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "mapItemId"
+          },
+          itemId: "mapItemId"
+        },
+        folderId: "folderId"
+      };
+      const expected = {
+        itemId: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          title: "Voting Centers",
+          id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+          type: "Web Mapping Application",
+          categories: undefined,
+          culture: undefined,
+          description: undefined,
+          extent: undefined,
+          tags: undefined,
+          thumbnail: undefined,
+          typeKeywords: undefined,
+          url:
+            "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+          licenseInfo: undefined,
+          name: undefined,
+          snippet: undefined
+        } as any,
+        data: {
+          appItemId: "{{myAppItemId.id}}",
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          },
+          folderId: "{{folderId}}"
+        },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 2
+      };
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+          []
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
+          itemTemplate.data
+        );
+
+      convertItemToTemplate(
+        itemTemplate.item.id,
+        itemTemplate.item,
+        MOCK_USER_SESSION
+      ).then(
+        actual => {
+          actual.key = "abcdefgh";
+          expect(actual).toEqual(expected);
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
+
+    it("should handle error on web mapping application", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+
+      itemTemplate.item = {
+        id: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Web Mapping Application",
+        title: "Voting Centers",
+        url:
+          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+      };
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const data: any = {
+        appItemId: "myAppItemId",
+        values: {
+          webmap: "myMapId"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "mapItemId"
+          },
+          itemId: "mapItemId"
+        },
+        folderId: "folderId",
+        dataSource: {
+          dataSources: {
+            external_123456789: {
+              type: "source type",
+              portalUrl: "https://fake.maps.arcgis.com/",
+              itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+              isDynamic: false,
+              label: "Point layer",
+              url: "https://fake.com/arcgis/rest/services/test/FeatureServer/0"
+            }
+          },
+          settings: {}
+        }
+      };
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+          []
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
+          data
+        )
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          mockItems.get400FailureResponse()
+        );
+
+      convertItemToTemplate(
+        itemTemplate.item.id,
+        itemTemplate.item,
+        MOCK_USER_SESSION
+      ).then(
+        () => {
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
   });
 
   describe("createItemFromTemplate", () => {
@@ -1495,6 +1653,168 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     //       done.fail();
     //     }, done);
     //   });
+
+    it("should handle web mapping application", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        licenseInfo: undefined,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = {
+        appItemId: "{{myAppItemId.id}}",
+        values: {
+          webmap: "{{myMapId.id}}"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "{{mapItemId.id}}"
+          },
+          itemId: "{{mapItemId.id}}"
+        },
+        folderId: "{{folderId}}"
+      };
+      itemTemplate.dependencies = ["myMapId"];
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      fetchMock
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        );
+
+      createItemFromTemplate(
+        itemTemplate,
+        [],
+        MOCK_USER_SESSION,
+        {},
+        MOCK_USER_SESSION,
+        function() {
+          const tick = 0;
+        }
+      ).then(
+        actual => {
+          expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
+
+    it("should handle error web mapping application", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        licenseInfo: undefined,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = {
+        appItemId: "{{myAppItemId.id}}",
+        values: {
+          webmap: "{{myMapId.id}}"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "{{mapItemId.id}}"
+          },
+          itemId: "{{mapItemId.id}}"
+        },
+        folderId: "{{folderId}}"
+      };
+      itemTemplate.dependencies = ["myMapId"];
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      fetchMock
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderId/addItem",
+          { success: true, id: "abc2cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/update",
+          mockItems.get400FailureResponse()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          mockItems.get400FailureResponse()
+        );
+
+      createItemFromTemplate(
+        itemTemplate,
+        [],
+        MOCK_USER_SESSION,
+        {
+          folderId: "folderId",
+          abc0cab401af4828a25cc6eaeb59fb69: {
+            id: "abc1cab401af4828a25cc6eaeb59fb69"
+          }
+        },
+        MOCK_USER_SESSION,
+        function() {
+          const tick = 0;
+        }
+      ).then(
+        actual => {
+          done.fail();
+        },
+        e => done()
+      );
+    });
   });
 
   describe("getGroupTitle", () => {

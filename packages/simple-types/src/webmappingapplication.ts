@@ -148,7 +148,7 @@ export function templatizeDatasources(
       itemTemplate,
       "data.dataSource.dataSources"
     );
-    if (dataSources) {
+    if (dataSources && Object.keys(dataSources).length > 0) {
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
@@ -170,14 +170,18 @@ export function templatizeDatasources(
           ).then(
             response => {
               ds.url = response;
-              resolve();
+              resolve(itemTemplate);
             },
             e => {
               reject(common.fail(e));
             }
           );
+        } else {
+          resolve(itemTemplate);
         }
       });
+    } else {
+      resolve(itemTemplate);
     }
   });
 }
@@ -190,7 +194,7 @@ export function templatizeWidgets(
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // update widgets
-    const widgets: any[] = common.getProp(itemTemplate, widgetPath);
+    const widgets: any[] = common.getProp(itemTemplate, widgetPath) || [];
     let serviceRequests: any[] = [];
     let requestUrls: string[] = [];
 
@@ -221,7 +225,7 @@ export function templatizeWidgets(
         common.setProp(itemTemplate, widgetPath, JSON.parse(response));
         resolve(itemTemplate);
       },
-      e => common.fail(e)
+      e => reject(common.fail(e))
     );
   });
 }

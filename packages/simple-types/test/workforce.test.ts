@@ -298,6 +298,40 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
       );
     });
 
+    it("should handle error on add dispatcher features", done => {
+      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+      const addUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+
+      fetchMock
+        .get(userUrl, {
+          username: "MrClaypool",
+          fullName: "Mr Claypool"
+        })
+        .get(queryUrl, {
+          features: []
+        })
+        .post(addUrl, mockItems.get400Failure());
+
+      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+        r => {
+          done.fail();
+        },
+        e => {
+          done();
+        }
+      );
+    });
+
     it("should have success === false when query does not return a features property", done => {
       const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
