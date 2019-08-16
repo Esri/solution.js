@@ -106,7 +106,8 @@ export function addResourceFromBlob(
     id: itemId,
     resource: blob,
     name: filename,
-    ...requestOptions
+    ...requestOptions,
+    params: {}
   };
   if (folder) {
     addRsrcOptions.params = {
@@ -305,7 +306,7 @@ export function copyResource(
   return new Promise<any>((resolve, reject) => {
     restHelpers.getBlob(source.url, source.requestOptions).then(
       async blob => {
-        if (blob.type === "text/plain") {
+        if (blob.type === "text/plain" || blob.type === "application/json") {
           try {
             const text = await new Response(blob).text();
             const json = JSON.parse(text);
@@ -314,7 +315,8 @@ export function copyResource(
               return;
             }
           } catch (Ignore) {
-            /* tslint:disable-next-line:no-empty */
+            reject(); // unable to get resource
+            return;
           }
         }
 

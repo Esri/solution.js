@@ -37,7 +37,7 @@ export function convertItemToTemplate(
   userSession: auth.UserSession,
   isGroup = false
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
     /* console.log(
       "converting " +
         (isGroup ? "Group" : itemInfo.type) +
@@ -158,8 +158,11 @@ export function convertItemToTemplate(
             if (itemDataResponse) {
               const storageName = common.generateResourceStorageFilename(
                 itemTemplate.itemId,
-                itemTemplate.item.name,
+                "formData",
                 "info_form"
+              );
+              itemTemplate.resources.push(
+                storageName.folder + "/" + storageName.filename
               );
               wrapupPromise = common.addResourceFromBlob(
                 itemDataResponse,
@@ -195,7 +198,7 @@ export function convertItemToTemplate(
             resolve(itemTemplate);
           },
           err => {
-            console.log(
+            /* console.log(
               "unable to convert " +
                 itemInfo.type +
                 ' "' +
@@ -204,8 +207,8 @@ export function convertItemToTemplate(
                 itemInfo.id +
                 "): " +
                 JSON.stringify(err, null, 2)
-            );
-            resolve(itemTemplate);
+            ); */
+            reject(common.fail(err.response));
           }
         );
       });
