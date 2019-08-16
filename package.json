@@ -40,7 +40,7 @@
     "karma-typescript-es6-transform": "^4.0.0",
     "lerna": "^3.16.4",
     "lint-staged": "^4.3.0",
-    "marked": "^0.6.0",
+    "marked": "^0.7.0",
     "minimatch": "^3.0.4",
     "node-sass": "^4.9.0",
     "onchange": "^6.0.0",
