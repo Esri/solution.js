@@ -37,7 +37,7 @@ export function convertItemToTemplate(
   userSession: auth.UserSession,
   isGroup = false
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
     /* console.log(
       "converting " +
         (isGroup ? "Group" : itemInfo.type) +
@@ -122,8 +122,8 @@ export function convertItemToTemplate(
       // from killing off all promises. This means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
-        dataPromise.catch(() => ({})),
-        resourcePromise.catch(() => [] as string[]),
+        dataPromise.catch(() => null),
+        resourcePromise,
         relatedPromise.catch(
           () =>
             ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
@@ -153,21 +153,26 @@ export function convertItemToTemplate(
             );
 
             // Store the form's data in the solution resources, not in template
-            itemTemplate.data = {};
+            itemTemplate.data = null;
             form.convertItemToTemplate(itemTemplate);
 
-            const storageName = common.generateResourceStorageFilename(
-              itemTemplate.itemId,
-              itemTemplate.item.name,
-              "info_form"
-            );
-            wrapupPromise = common.addResourceFromBlob(
-              itemDataResponse,
-              solutionItemId,
-              storageName.folder,
-              storageName.filename,
-              requestOptions
-            );
+            if (itemDataResponse) {
+              const storageName = common.generateResourceStorageFilename(
+                itemTemplate.itemId,
+                "formData",
+                "info_form"
+              );
+              itemTemplate.resources.push(
+                storageName.folder + "/" + storageName.filename
+              );
+              wrapupPromise = common.addResourceFromBlob(
+                itemDataResponse,
+                solutionItemId,
+                storageName.folder,
+                storageName.filename,
+                requestOptions
+              );
+            }
             break;
           case "web map":
             webmap.convertItemToTemplate(itemTemplate);
@@ -203,7 +208,7 @@ export function convertItemToTemplate(
             );
           },
           err => {
-            console.log(
+            /* console.log(
               "unable to convert " +
                 itemInfo.type +
                 ' "' +
@@ -212,8 +217,8 @@ export function convertItemToTemplate(
                 itemInfo.id +
                 "): " +
                 JSON.stringify(err, null, 2)
-            );
-            resolve(itemTemplate);
+            ); */
+            reject(common.fail(err.response));
           }
         );
       });
