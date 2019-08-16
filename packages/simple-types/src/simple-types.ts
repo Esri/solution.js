@@ -197,7 +197,6 @@ export function convertItemToTemplate(
             webappPromise.then(
               _itemTemplate => resolve(_itemTemplate),
               e => {
-                console.error(e);
                 resolve(itemTemplate);
               }
             );
