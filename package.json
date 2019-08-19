@@ -55,7 +55,7 @@
     "rollup-plugin-terser": "^4.0.4",
     "rollup-plugin-typescript2": "^0.21.0",
     "rollup-plugin-uglify": "^3.0.0",
-    "semantic-release": "^15.13.19",
+    "semantic-release": "^15.13.21",
     "shelljs": "^0.7.8",
     "slug": "^0.9.1",
     "sri-toolbox": "0.2.0",

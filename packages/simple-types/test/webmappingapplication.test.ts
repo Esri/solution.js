@@ -24,6 +24,9 @@ import * as webmappingapplication from "../src/webmappingapplication";
 
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
+import * as mockItems from "../../common/test/mocks/agolItems";
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -47,13 +50,14 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("convertItemToTemplate", () => {
-    it("just webmap data", () => {
+    it("just webmap data", done => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
+          appItemId: "myAppItemId",
           values: {
             webmap: "myMapId"
           },
@@ -75,6 +79,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
+          appItemId: "{{myAppItemId.id}}",
           values: {
             webmap: "{{myMapId.id}}"
           },
@@ -90,10 +95,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      const actual = webmappingapplication.convertItemToTemplate(model);
-      expect(actual).toEqual(expected);
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
     });
-    it("just group data", () => {
+    it("just group data", done => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -116,10 +128,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      const actual = webmappingapplication.convertItemToTemplate(model);
-      expect(actual).toEqual(expected);
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
     });
-    it("neither webmap nor group", () => {
+    it("neither webmap nor group", done => {
       const model = {
         itemId: "itm1234567890",
         type: "Web Mapping Application",
@@ -156,8 +175,683 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      const actual = webmappingapplication.convertItemToTemplate(model);
-      expect(actual).toEqual(expected);
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => {
+            done.fail(e);
+          }
+        );
+    });
+    it("webmap data with external dataSources", done => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer",
+                url:
+                  "https://fake.com/arcgis/rest/services/test/FeatureServer/0"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: {
+          appItemId: "{{myAppItemId.id}}",
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "{{organization.portalBaseUrl}}",
+                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.id}}",
+                isDynamic: false,
+                label: "Point layer",
+                url: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/0"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      fetchMock.post(
+        "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+        layer0
+      );
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+    it("error with webmap data with external dataSources", done => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer",
+                url:
+                  "https://fake.com/arcgis/rest/services/test/FeatureServer/0"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      fetchMock.post(
+        "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+        mockItems.get400Failure()
+      );
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            done.fail();
+          },
+          e => done()
+        );
+    });
+    it("webmap data with external dataSources without url", done => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: { title: "Voting Centers" } as any,
+        data: {
+          appItemId: "{{myAppItemId.id}}",
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "{{organization.portalBaseUrl}}",
+                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.id}}",
+                isDynamic: false,
+                label: "Point layer"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+    it("webmap data with widgetPool widgets", done => {
+      const model = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
+        } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "http://path/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "https://path/FeatureServer/1"
+                  },
+                  somePortalPath: {
+                    s: "https://somepath/"
+                  },
+                  geocodeProps: {
+                    service: "http://path/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://path/NAServer"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.id}}"
+        },
+        data: {
+          appItemId: "{{myAppItemId.id}}",
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "{{organization.portalBaseUrl}}/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  somePortalPath: {
+                    s: "{{organization.portalBaseUrl}}"
+                  },
+                  geocodeProps: {
+                    service: "{{organization.geocodeServerUrl}}"
+                  },
+                  routeProps: {
+                    service: "{{organization.naServerUrl}}"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+
+      fetchMock
+        .post("https://path/FeatureServer/1", layer1)
+        .post("http://path/FeatureServer/1", layer1);
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+    it("webmap data with widgetPool and widgetOnScreen widgets", done => {
+      const model = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
+        } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "http://path/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "https://path/FeatureServer/1"
+                  },
+                  geocodeProps: {
+                    service: "http://path/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://path/NAServer"
+                  }
+                }
+              }
+            ]
+          },
+          widgetOnScreen: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "http://path/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "https://path/FeatureServer/1"
+                  },
+                  geocodeProps: {
+                    service: "http://path/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://path/NAServer"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.id}}"
+        },
+        data: {
+          appItemId: "{{myAppItemId.id}}",
+          values: {
+            webmap: "{{myMapId.id}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.id}}"
+            },
+            itemId: "{{mapItemId.id}}"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "{{organization.portalBaseUrl}}/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  geocodeProps: {
+                    service: "{{organization.geocodeServerUrl}}"
+                  },
+                  routeProps: {
+                    service: "{{organization.naServerUrl}}"
+                  }
+                }
+              }
+            ]
+          },
+          widgetOnScreen: {
+            widgets: [
+              {
+                icon: "{{organization.portalBaseUrl}}/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                  },
+                  geocodeProps: {
+                    service: "{{organization.geocodeServerUrl}}"
+                  },
+                  routeProps: {
+                    service: "{{organization.naServerUrl}}"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: ["myMapId"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+
+      fetchMock
+        .post("https://path/FeatureServer/1", layer1)
+        .post("http://path/FeatureServer/1", layer1);
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          actual => {
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+    it("error with widgetPool widgets", done => {
+      const model = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
+        } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "http://path/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "https://path/FeatureServer/1"
+                  },
+                  geocodeProps: {
+                    service: "http://path/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://path/NAServer"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+
+      fetchMock
+        .post("https://path/FeatureServer/1", layer1)
+        .post("http://path/FeatureServer/1", mockItems.get400Failure());
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          () => {
+            done.fail();
+          },
+          e => done()
+        );
+    });
+    it("error with widgetOnScreen widgets", done => {
+      const model = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          title: "Voting Centers",
+          url:
+            "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
+        } as any,
+        data: {
+          appItemId: "myAppItemId",
+          values: {
+            webmap: "myMapId"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "mapItemId"
+            },
+            itemId: "mapItemId"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetOnScreen: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl: "http://path/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl: "https://path/FeatureServer/1"
+                  },
+                  geocodeProps: {
+                    service: "http://path/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://path/NAServer"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+
+      fetchMock
+        .post("https://path/FeatureServer/1", layer1)
+        .post("http://path/FeatureServer/1", mockItems.get400Failure());
+
+      webmappingapplication
+        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .then(
+          () => {
+            done.fail();
+          },
+          e => done()
+        );
     });
   });
 
@@ -204,6 +898,34 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { map: { itemId: "abc" } }
       };
       const expected = ["abc"];
+      const actual = webmappingapplication._extractDependencies(model);
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles external data sources", () => {
+      const model = {
+        typeKeywords: ["Government", "Web AppBuilder"],
+        data: {
+          map: {
+            itemId: "abc"
+          },
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer",
+                url:
+                  "https://fake.com/arcgis/rest/services/test/FeatureServer/0"
+              }
+            },
+            settings: {}
+          }
+        }
+      };
+      const expected = ["abc", "2ea59a64b34646f8972a71c7d536e4a3"];
       const actual = webmappingapplication._extractDependencies(model);
       expect(actual).toEqual(expected);
     });

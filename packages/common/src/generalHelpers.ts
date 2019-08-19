@@ -122,6 +122,31 @@ export function getProps(obj: any, props: string[]): any {
 }
 
 /**
+ * Sets a deeply nested property of an object.
+ * Does nothing if the full path does not exist.
+ *
+ * @param obj Object to set value of
+ * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
+ *             in obj
+ * @param value The value to set at the end of the path
+ */
+export function setProp(obj: any, path: any, value: any) {
+  if (getProp(obj, path)) {
+    if (typeof path === "string") {
+      path = path.split(".");
+    }
+    path.reduce((a: any, b: any, c: any) => {
+      if (c === path.length - 1) {
+        a[b] = value;
+        return value;
+      } else {
+        return a[b];
+      }
+    }, obj);
+  }
+}
+
+/**
  * Creates a timestamp string using the current date and time.
  *
  * @return Timestamp
