@@ -43,9 +43,6 @@ export function createSolution(
   destinationUserSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
-  console.log(
-    "==============================================================================="
-  );
   let percentDone = 1; // Let the caller know that we've started
   progressCallback(percentDone);
 
@@ -62,12 +59,12 @@ export function createSolution(
     // Fetch group item info and use it to create the solution item
     const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
       portal.getGroup(groupId, requestOptions).then(groupItem => {
-        console.log(
+        /* console.log(
           'Creating solution "' +
             (solutionName || groupItem.title) +
             '" from group ' +
             groupId
-        );
+        ); */
         progressCallback((percentDone += 2));
 
         const solutionItem: any = {
@@ -123,10 +120,10 @@ export function createSolution(
     Promise.all([solutionItemDef, groupContentsDef]).then(
       responses => {
         const [solutionItemId, groupContents] = responses;
-        console.log(
+        /* console.log(
           "Created solution template framework for " + solutionItemId
         );
-        console.log("Group members: " + JSON.stringify(groupContents, null, 2));
+        console.log("Group members: " + JSON.stringify(groupContents, null, 2)); */
         progressCallback((percentDone += 2));
         const progressPercentStep = (100 - 7) / (groupContents.length + 1); // '7' for previously-reported progress
 

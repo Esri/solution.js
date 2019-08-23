@@ -77,13 +77,13 @@ export function createItemTemplate(
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
-      console.log(
+      /* console.log(
         "added placeholder template " +
           itemId +
           " [" +
           existingTemplates.length +
           "]"
-      );
+      ); */
 
       // For each item,
       //   * fetch item & data infos
@@ -93,7 +93,7 @@ export function createItemTemplate(
       //   * copy item's resources, metadata, & thumbnail to solution item as resources
       //   * add JSONs to solution item's data JSON accumulation
       // Fetch the item
-      console.log("fetching item " + itemId);
+      /* console.log("fetching item " + itemId); */
       portal.getItem(itemId, requestOptions).then(
         itemInfo => {
           // Check if this is the solution's thumbnail
@@ -144,12 +144,12 @@ export function createItemTemplate(
                       // Get its dependencies, asking each to get its dependents via
                       // recursive calls to this function
                       const dependentDfds: Array<Promise<boolean>> = [];
-                      console.log(
+                      /* console.log(
                         "item " +
                           itemId +
                           " has dependencies " +
                           JSON.stringify(itemTemplate.dependencies)
-                      );
+                      ); */
                       itemTemplate.dependencies.forEach(dependentId => {
                         if (
                           !common.findTemplateInList(
@@ -181,7 +181,7 @@ export function createItemTemplate(
         },
         () => {
           // If item query fails, try URL for group base section
-          console.log("fetching group " + itemId);
+          /* console.log("fetching group " + itemId); */
           portal.getGroup(itemId, requestOptions).then(
             itemInfo => {
               solutionSimpleTypes
@@ -207,12 +207,12 @@ export function createItemTemplate(
                       // Get its dependencies, asking each to get its dependents via
                       // recursive calls to this function
                       const dependentDfds: Array<Promise<boolean>> = [];
-                      console.log(
+                      /* console.log(
                         "item " +
                           itemId +
                           " has dependencies " +
                           JSON.stringify(itemTemplate.dependencies)
-                      );
+                      ); */
                       itemTemplate.dependencies.forEach(dependentId => {
                         if (
                           !common.findTemplateInList(
@@ -292,11 +292,11 @@ export function createSolutionTemplate(
         solutionTemplates = solutionTemplates.filter(
           template => template.type // `type` needs to be defined
         );
-        console.log(
+        /* console.log(
           "removed " +
             (origLen - solutionTemplates.length) +
             " placeholder templates"
-        );
+        ); */
 
         resolve(solutionTemplates);
       },
