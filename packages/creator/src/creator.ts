@@ -46,7 +46,6 @@ export function createSolution(
   console.log(
     "==============================================================================="
   );
-  console.log('Creating solution "' + solutionName + '" from group ' + groupId);
   let percentDone = 1; // Let the caller know that we've started
   progressCallback(percentDone);
 
@@ -63,12 +62,17 @@ export function createSolution(
     // Fetch group item info and use it to create the solution item
     const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
       portal.getGroup(groupId, requestOptions).then(groupItem => {
-        console.log("Group " + JSON.stringify(groupItem, null, 2));
+        console.log(
+          'Creating solution "' +
+            (solutionName || groupItem.title) +
+            '" from group ' +
+            groupId
+        );
         progressCallback((percentDone += 2));
 
         const solutionItem: any = {
           type: "Solution",
-          title: groupItem.title,
+          title: solutionName || groupItem.title,
           snippet: groupItem.snippet,
           description: groupItem.description,
           tags: groupItem.tags,
