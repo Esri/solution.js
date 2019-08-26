@@ -106,7 +106,10 @@ beforeEach(() => {
     itemId: "",
     key: "",
     properties: {
-      service: {},
+      service: {
+        fullExtent: {},
+        initialExtent: {}
+      },
       layers: [
         {
           fields: []
@@ -161,8 +164,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{DEF456.id}}",
-            fullExtent: "{{initiative.extent:optional}}",
-            initialExtent: "{{initiative.extent:optional}}"
+            fullExtent: "{{ABC123.fullExtent}}",
+            initialExtent: "{{ABC123.initialExtent}}"
           },
           layers: [
             {
@@ -194,6 +197,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            fullExtent: {},
+            initialExtent: {},
             layers: [
               {
                 id: 0,
@@ -273,8 +278,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
-            fullExtent: "{{initiative.extent:optional}}",
-            initialExtent: "{{initiative.extent:optional}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.fullExtent}}",
+            initialExtent: "{{ab766cba0dd44ec080420acc10990282.initialExtent}}",
             layers: [
               {
                 id: 0,
@@ -315,7 +320,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
-          extent: "{{initiative.extent:optional}}",
+          extent: {}, // only set through createSolutionTemplate
           id: "{{ab766cba0dd44ec080420acc10990282.id}}",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}"
         },
@@ -596,7 +601,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemId: "DDDEEEFFF456",
         key: "",
         properties: {
-          service: {},
+          service: {
+            fullExtent: {},
+            initialExtent: {}
+          },
           layers: [
             {
               fields: []

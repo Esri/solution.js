@@ -259,20 +259,20 @@ export function getBlob(
 
 export function getExtent(
   extent: any,
-  portalSR: any,
-  serviceSR: any,
+  inSR: any,
+  outSR: any,
   geometryServiceUrl: string,
   requestOptions: IRequestOptions
 ): Promise<any> {
   const _requestOptions: any = Object.assign({}, requestOptions);
   return new Promise<any>((resolve, reject) => {
-    if (portalSR.wkid === serviceSR.wkid) {
+    if (inSR.wkid === outSR.wkid) {
       resolve(extent);
     } else {
       _requestOptions.params = {
         f: "json",
-        inSR: portalSR.wkid,
-        outSR: serviceSR.wkid,
+        inSR: inSR.wkid,
+        outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
       };
       request(
@@ -296,7 +296,7 @@ export function getExtent(
 
           _requestOptions.params = {
             f: "json",
-            outSR: serviceSR.wkid,
+            outSR: outSR.wkid,
             inSR: extent.spatialReference.wkid,
             geometries: {
               geometryType: "esriGeometryPolygon",
@@ -329,7 +329,7 @@ export function getExtent(
                   ymin: ring[0][1],
                   xmax: ring[2][0],
                   ymax: ring[2][1],
-                  spatialReference: serviceSR
+                  spatialReference: outSR
                 });
               } else {
                 resolve(undefined);
@@ -608,7 +608,6 @@ export function updateItem(
       },
       ...requestOptions
     };
-
     portal.updateItem(updateOptions).then(
       () => {
         if (access && access !== "private") {
@@ -699,6 +698,7 @@ export function _getCreateServiceOptions(
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
     const solutionItemId: string = templateDictionary.solutionItemId;
+    const itemId: string = newItemTemplate.itemId;
 
     const params: IParams = {
       preserveLayerIds: true
@@ -737,15 +737,17 @@ export function _getCreateServiceOptions(
       isPortal
     );
 
+    // project the portals extent to match that of the service
     getExtent(
-      templateDictionary.initiative.orgExtent,
+      templateDictionary.initiative.defaultExtent,
       templateDictionary.initiative.spatialReference,
       serviceInfo.service.spatialReference,
       templateDictionary.geometryServiceUrl,
       requestOptions
     ).then(
       extent => {
-        templateDictionary.initiative.extent = extent;
+        templateDictionary[itemId].initialExtent = extent;
+        templateDictionary[itemId].fullExtent = extent;
         createOptions.item = replaceInTemplate(
           createOptions.item,
           templateDictionary
@@ -934,7 +936,7 @@ export function _setItemProperties(
     "capabilities",
     "isMultiServicesView"
   ];
-  const deleteKeys: string[] = ["layers", "tables", "fullExtent", "hasViews"];
+  const deleteKeys: string[] = ["layers", "tables", "hasViews"];
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {

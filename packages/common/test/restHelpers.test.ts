@@ -214,7 +214,8 @@ const geometry: any = {
 };
 
 const initiative: any = {
-  orgExtent: {
+  orgExtent: [[0, 0], [1, 1]],
+  defaultExtent: {
     xmin: 0,
     ymin: 0,
     xmax: 1,
@@ -365,6 +366,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       const template: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
         item: {
           id: "0",
           name: "A"
@@ -376,7 +378,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
 
       createFeatureService(
@@ -1806,13 +1809,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
 
       itemTemplate.item.name = "A";
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
+      itemTemplate.itemId = "ab766cba0dd44ec080420acc10990282";
 
       _getCreateServiceOptions(
         itemTemplate,
@@ -1856,8 +1861,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
+
+      itemTemplate.itemId = "ab766cba0dd44ec080420acc10990282";
 
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
@@ -1902,7 +1910,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       itemTemplate = {
-        itemId: "",
+        itemId: "ab766cba0dd44ec080420acc10990282",
         key: "",
         properties: {
           service: {
@@ -1934,7 +1942,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
 
       _getCreateServiceOptions(
@@ -1978,7 +1987,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       itemTemplate = {
-        itemId: "",
+        itemId: "ab766cba0dd44ec080420acc10990282",
         key: "",
         properties: {
           service: {
@@ -2008,7 +2017,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
 
       _getCreateServiceOptions(
@@ -2054,7 +2064,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       itemTemplate = {
-        itemId: "",
+        itemId: "ab766cba0dd44ec080420acc10990282",
         key: "",
         properties: {
           service: {
@@ -2087,7 +2097,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
       };
 
       _getCreateServiceOptions(

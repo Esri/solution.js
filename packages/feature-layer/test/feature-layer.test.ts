@@ -81,7 +81,8 @@ const MOCK_USER_REQOPTS: IUserRequestOptions = {
 };
 
 const _initiative: any = {
-  orgExtent: {
+  orgExtent: [[0, 0], [1, 1]],
+  defaultExtent: {
     xmin: 0,
     ymin: 0,
     xmax: 1,
@@ -471,7 +472,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        { initiative: _initiative },
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -610,7 +614,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/move",
           '{"success": true, "folderId": 1245}'
         );
-
       createItemFromTemplate(
         itemTemplate,
         [],
@@ -659,6 +662,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.fullExtent = {};
+      itemTemplate.properties.service.initialExtent = {};
 
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
@@ -719,7 +724,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        { initiative: _initiative },
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -804,7 +812,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        { initiative: _initiative },
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -885,7 +896,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        { initiative: _initiative },
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -969,7 +983,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        { initiative: _initiative },
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";
@@ -1010,6 +1027,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.fullExtent = {};
+      itemTemplate.properties.service.initialExtent = {};
 
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
@@ -1070,7 +1089,10 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         itemTemplate,
         [],
         MOCK_USER_SESSION,
-        {},
+        {
+          initiative: _initiative,
+          SVC1234567890: {}
+        },
         MOCK_USER_SESSION,
         function() {
           const a = "progressTick";

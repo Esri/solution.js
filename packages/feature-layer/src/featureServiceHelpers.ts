@@ -49,23 +49,10 @@ export function templatize(
   dependencies: common.IDependency[]
 ): common.IItemTemplate {
   // Common templatizations
-  itemTemplate.item.url = common.templatizeTerm(
-    itemTemplate.item.id,
-    itemTemplate.item.id,
-    ".url"
-  );
+  const id: string = common.cloneObject(itemTemplate.item.id);
 
-  // Templatize item info property values
-  itemTemplate.item.id = common.templatizeTerm(
-    itemTemplate.item.id,
-    itemTemplate.item.id,
-    ".id"
-  );
-
-  // Use the initiative's extent
-  if (itemTemplate.item.extent) {
-    itemTemplate.item.extent = "{{initiative.extent:optional}}";
-  }
+  itemTemplate.item.url = _templatize(id, "url");
+  itemTemplate.item.id = _templatize(id, "id");
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
@@ -77,15 +64,25 @@ export function templatize(
   const _items: any[] = layers.concat(tables);
 
   // templatize the service references serviceItemId
-  itemTemplate.properties.service.serviceItemId = common.templatizeTerm(
+  itemTemplate.properties.service.serviceItemId = _templatize(
     itemTemplate.properties.service.serviceItemId,
-    itemTemplate.properties.service.serviceItemId,
-    ".id"
+    "id"
   );
 
-  itemTemplate.properties.service.fullExtent = "{{initiative.extent:optional}}";
-  itemTemplate.properties.service.initialExtent =
-    "{{initiative.extent:optional}}";
+  if (common.getProp(itemTemplate, "properties.service.fullExtent")) {
+    itemTemplate.properties.service.fullExtent = common.templatizeTerm(
+      id,
+      id,
+      ".fullExtent"
+    );
+  }
+  if (common.getProp(itemTemplate, "properties.service.initialExtent")) {
+    itemTemplate.properties.service.initialExtent = common.templatizeTerm(
+      id,
+      id,
+      ".initialExtent"
+    );
+  }
 
   jsonItems.forEach((jsonItem: any) => {
     // get the source service json for the given data item
@@ -223,11 +220,14 @@ export function updateTemplate(
   createResponse: any
 ): common.IItemTemplate {
   // Add the new item to the template dictionary
-  templateDictionary[itemTemplate.itemId] = {
-    id: createResponse.serviceItemId,
-    url: createResponse.serviceurl,
-    name: createResponse.name
-  };
+  templateDictionary[itemTemplate.itemId] = Object.assign(
+    templateDictionary[itemTemplate.itemId] || {},
+    {
+      id: createResponse.serviceItemId,
+      url: createResponse.serviceurl,
+      name: createResponse.name
+    }
+  );
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
   return common.replaceInTemplate(itemTemplate, templateDictionary);
@@ -772,16 +772,20 @@ export function _templatizeLayer(
   }
 
   updates.forEach(update => {
+    if (update.hasOwnProperty("extent")) {
+      update.extent = common.templatizeTerm(
+        update["serviceItemId"],
+        update["serviceItemId"],
+        ".fullExtent"
+      );
+    }
+
     if (update.hasOwnProperty("serviceItemId")) {
       update["serviceItemId"] = _templatize(update["serviceItemId"], "id");
     }
 
     if (update.hasOwnProperty("adminLayerInfo")) {
       update.adminLayerInfo = _templatizeAdminLayerInfo(update, dependencies);
-    }
-
-    if (update.hasOwnProperty("extent")) {
-      update.extent = "{{initiative.extent:optional}}";
     }
   });
 }
