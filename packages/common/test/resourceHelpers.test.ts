@@ -21,81 +21,9 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as resourceHelpers from "../src/resourceHelpers";
 
+import { getAnImageResponse } from "./mocks/agolItems";
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
-
-const TINY_PNG_BYTES = [
-  137,
-  80,
-  78,
-  71,
-  13,
-  10,
-  26,
-  10,
-  0,
-  0,
-  0,
-  13,
-  73,
-  72,
-  68,
-  82,
-  0,
-  0,
-  0,
-  1,
-  0,
-  0,
-  0,
-  1,
-  8,
-  6,
-  0,
-  0,
-  0,
-  31,
-  21,
-  196,
-  137,
-  0,
-  0,
-  0,
-  13,
-  73,
-  68,
-  65,
-  84,
-  24,
-  87,
-  99,
-  96,
-  88,
-  244,
-  226,
-  63,
-  0,
-  4,
-  186,
-  2,
-  138,
-  87,
-  137,
-  99,
-  50,
-  0,
-  0,
-  0,
-  0,
-  73,
-  69,
-  78,
-  68,
-  174,
-  66,
-  96,
-  130
-];
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -360,10 +288,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/resource.png";
-        const expectedFetch = new Blob(
-          [new Uint8Array(TINY_PNG_BYTES).buffer],
-          { type: "image/png" }
-        );
+        const expectedFetch = getAnImageResponse();
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate = true;
@@ -458,10 +383,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/thumbnail.png";
-        const expectedFetch = new Blob(
-          [new Uint8Array(TINY_PNG_BYTES).buffer],
-          { type: "image/png" }
-        );
+        const expectedFetch = getAnImageResponse();
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate: string[] = ["storageFolder/storageFilename"];

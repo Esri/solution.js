@@ -49,85 +49,12 @@ import {
   setMockDateTime,
   checkForArcgisRestSuccessRequestError
 } from "../test/mocks/utils";
+import { getAnImageResponse } from "./mocks/agolItems";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
-import { IRequestOptions } from "@esri/arcgis-rest-request";
-
-const TINY_PNG_BYTES = [
-  137,
-  80,
-  78,
-  71,
-  13,
-  10,
-  26,
-  10,
-  0,
-  0,
-  0,
-  13,
-  73,
-  72,
-  68,
-  82,
-  0,
-  0,
-  0,
-  1,
-  0,
-  0,
-  0,
-  1,
-  8,
-  6,
-  0,
-  0,
-  0,
-  31,
-  21,
-  196,
-  137,
-  0,
-  0,
-  0,
-  13,
-  73,
-  68,
-  65,
-  84,
-  24,
-  87,
-  99,
-  96,
-  88,
-  244,
-  226,
-  63,
-  0,
-  4,
-  186,
-  2,
-  138,
-  87,
-  137,
-  99,
-  50,
-  0,
-  0,
-  0,
-  0,
-  73,
-  69,
-  78,
-  68,
-  174,
-  66,
-  96,
-  130
-];
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -785,9 +712,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         const getUrl = "https://myserver/images/thumbnail.png";
         const expectedServerInfo = SERVER_INFO;
-        const expected = new Blob([new Uint8Array(TINY_PNG_BYTES).buffer], {
-          type: "image/png"
-        });
+        const expected = getAnImageResponse();
         const expectedGet = new Response(expected);
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
@@ -1015,9 +940,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         const getUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/blb1234567890/data";
-        const expected = new Blob([new Uint8Array(TINY_PNG_BYTES).buffer], {
-          type: "image/png"
-        });
+        const expected = getAnImageResponse();
         const expectedGet = new Response(expected);
         fetchMock.post(getUrl, expectedGet);
 

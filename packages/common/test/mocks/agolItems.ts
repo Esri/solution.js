@@ -97,7 +97,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Dashboard":
-      item = getAGOLItemFundamentals(type, "dsh", url || undefined);
+      item = getAGOLItemFundamentals(type, url || undefined);
       break;
 
     case "Desktop Add In":
@@ -115,14 +115,13 @@ export function getAGOLItem(type?: string, url = ""): any {
     case "Feature Service":
       item = getAGOLItemFundamentals(
         type,
-        "svc",
         url ||
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
       );
       break;
 
     case "Form":
-      item = getAGOLItemFundamentals(type, "frm", url || undefined);
+      item = getAGOLItemFundamentals(type, url || undefined);
       break;
 
     case "Geoprocessing Package":
@@ -150,24 +149,23 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Web Map":
-      item = getAGOLItemFundamentals(type, "map", url || undefined);
+      item = getAGOLItemFundamentals(type, url || undefined);
       break;
 
     case "Web Mapping Application":
       item = getAGOLItemFundamentals(
         type,
-        "wma",
         url ||
           "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
       );
       break;
 
     case "Workforce Project":
-      item = getAGOLItemFundamentals(type, type);
+      item = getAGOLItemFundamentals(type);
       break;
 
     case "Unsupported":
-      item = getAGOLItemFundamentals(type, "uns");
+      item = getAGOLItemFundamentals(type);
       break;
 
     case "Group":
@@ -178,7 +176,7 @@ export function getAGOLItem(type?: string, url = ""): any {
 }
 
 export function getSolutionItem(): any {
-  return getAGOLItemFundamentals("Solution", "sol");
+  return getAGOLItemFundamentals("Solution");
 }
 
 export function getItemWithoutItemProp(): any {
@@ -190,7 +188,6 @@ export function getItemWithoutItemProp(): any {
 export function getTrimmedAGOLItem(): any {
   const item = getAGOLItemFundamentals(
     "Web Mapping Application",
-    "wma",
     "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"
   );
 
@@ -616,7 +613,21 @@ export function getAGOLGroup(): any {
   };
 }
 
-export function getAGOLGroupContentsList(numToPutIntoGroup: number): any {
+export function getAGOLItemWithId(
+  type: string,
+  idOffset: number,
+  url = ""
+): any {
+  const item = getAGOLItem(type);
+  item.id = item.item =
+    getItemTypeAbbrev(type) + 1234567890 + idOffset.toString(16).toLowerCase();
+  return item;
+}
+
+export function getAGOLGroupContentsList(
+  type: string,
+  numToPutIntoGroup: number
+): any {
   const group = {
     total: 0,
     start: 1,
@@ -625,7 +636,8 @@ export function getAGOLGroupContentsList(numToPutIntoGroup: number): any {
     items: [] as string[]
   };
   while (group.items.length < numToPutIntoGroup) {
-    group.items.push("itm" + group.items.length);
+    group.items.push(getAGOLItemWithId(type, group.total++));
+    group.num++;
   }
   return group;
 }
@@ -943,11 +955,111 @@ export function getAnImageResponse(): any {
 
 // -- Internals ------------------------------------------------------------------------------------------------------//
 
-function getAGOLItemFundamentals(
-  type: string,
-  typePrefix: string,
-  url = ""
-): any {
+function getItemTypeAbbrev(type: string): string {
+  // Supported item types
+  let abbrev = "xxx";
+  switch (type) {
+    case "ArcGIS Pro Add In":
+      abbrev = "xxx";
+      break;
+
+    case "Code Attachment":
+      abbrev = "xxx";
+      break;
+
+    case "Code Sample":
+      abbrev = "xxx";
+      break;
+
+    case "Dashboard":
+      abbrev = "dsh";
+      break;
+
+    case "Desktop Add In":
+      abbrev = "xxx";
+      break;
+
+    case "Desktop Application Template":
+      abbrev = "xxx";
+      break;
+
+    case "Document Link":
+      abbrev = "xxx";
+      break;
+
+    case "Feature Collection":
+      abbrev = "xxx";
+      break;
+
+    case "Feature Service":
+      abbrev = "svc";
+      break;
+
+    case "Form":
+      abbrev = "frm";
+      break;
+
+    case "Geoprocessing Package":
+      abbrev = "xxx";
+      break;
+
+    case "Geoprocessing Sample":
+      abbrev = "xxx";
+      break;
+
+    case "Layer Package":
+      abbrev = "xxx";
+      break;
+
+    case "Map Template":
+      abbrev = "xxx";
+      break;
+
+    case "Operation View":
+      abbrev = "xxx";
+      break;
+
+    case "Pro Map":
+      abbrev = "xxx";
+      break;
+
+    case "Project Package":
+      abbrev = "xxx";
+      break;
+
+    case "Project Template":
+      abbrev = "xxx";
+      break;
+
+    case "Solution":
+      abbrev = "sol";
+      break;
+
+    case "Web Map":
+      abbrev = "map";
+      break;
+
+    case "Web Mapping Application":
+      abbrev = "wma";
+      break;
+
+    case "Workforce Project":
+      abbrev = "xxx";
+      break;
+
+    case "Unsupported":
+      abbrev = "uns";
+      break;
+
+    case "Group":
+      abbrev = "grp";
+  }
+
+  return abbrev;
+}
+
+function getAGOLItemFundamentals(type: string, url = ""): any {
+  const typePrefix = getItemTypeAbbrev(type);
   return {
     id: typePrefix + "1234567890",
     item: typePrefix + "1234567890",
