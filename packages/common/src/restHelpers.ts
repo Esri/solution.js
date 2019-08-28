@@ -23,6 +23,7 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import {
   IDependency,
@@ -30,7 +31,6 @@ import {
   IUpdate,
   IPostProcessArgs
 } from "./interfaces";
-import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
 import { replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -214,7 +214,7 @@ export function extractDependencies(
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView) {
       const url: string = itemTemplate.item.url;
-      request(url + "/sources?f=json", requestOptions).then(
+      request.request(url + "/sources?f=json", requestOptions).then(
         response => {
           if (response && response.services) {
             response.services.forEach((layer: any) => {
@@ -243,8 +243,8 @@ export function getBlob(
     const blobRequestOptions = {
       ...requestOptions,
       rawResponse: true
-    } as IRequestOptions;
-    request(url, blobRequestOptions).then(
+    } as request.IRequestOptions;
+    request.request(url, blobRequestOptions).then(
       content => {
         // Extract the blob from the response
         content.blob().then(
@@ -262,7 +262,7 @@ export function getExtent(
   inSR: any,
   outSR: any,
   geometryServiceUrl: string,
-  requestOptions: IRequestOptions
+  requestOptions: request.IRequestOptions
 ): Promise<any> {
   const _requestOptions: any = Object.assign({}, requestOptions);
   return new Promise<any>((resolve, reject) => {
@@ -275,71 +275,72 @@ export function getExtent(
         outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
       };
-      request(
-        geometryServiceUrl + "/findTransformations",
-        _requestOptions
-      ).then(
-        response => {
-          const transformations =
-            response && response.transformations
-              ? response.transformations
-              : undefined;
-          let transformation: any;
-          if (transformations && transformations.length > 0) {
-            // if a forward single transformation is found use that...otherwise check for and use composite
-            transformation = transformations[0].wkid
-              ? transformations[0].wkid
-              : transformations[0].geoTransforms
-              ? transformations[0]
-              : undefined;
-          }
+      request
+        .request(geometryServiceUrl + "/findTransformations", _requestOptions)
+        .then(
+          response => {
+            const transformations =
+              response && response.transformations
+                ? response.transformations
+                : undefined;
+            let transformation: any;
+            if (transformations && transformations.length > 0) {
+              // if a forward single transformation is found use that...otherwise check for and use composite
+              transformation = transformations[0].wkid
+                ? transformations[0].wkid
+                : transformations[0].geoTransforms
+                ? transformations[0]
+                : undefined;
+            }
 
-          _requestOptions.params = {
-            f: "json",
-            outSR: outSR.wkid,
-            inSR: extent.spatialReference.wkid,
-            geometries: {
-              geometryType: "esriGeometryPolygon",
-              geometries: [
-                {
-                  rings: [
-                    [
-                      [extent.xmin, extent.ymin],
-                      [extent.xmin, extent.ymax],
-                      [extent.xmax, extent.ymax],
-                      [extent.xmax, extent.ymin],
-                      [extent.xmin, extent.ymin]
+            _requestOptions.params = {
+              f: "json",
+              outSR: outSR.wkid,
+              inSR: extent.spatialReference.wkid,
+              geometries: {
+                geometryType: "esriGeometryPolygon",
+                geometries: [
+                  {
+                    rings: [
+                      [
+                        [extent.xmin, extent.ymin],
+                        [extent.xmin, extent.ymax],
+                        [extent.xmax, extent.ymax],
+                        [extent.xmax, extent.ymin],
+                        [extent.xmin, extent.ymin]
+                      ]
                     ]
-                  ]
-                }
-              ]
-            },
-            transformation: transformation
-          };
-          request(geometryServiceUrl + "/project", _requestOptions).then(
-            projectResponse => {
-              const projectGeom: any =
-                projectResponse.geometries.length > 0
-                  ? projectResponse.geometries[0]
-                  : undefined;
-              if (projectGeom && projectGeom.rings) {
-                const ring: any = projectGeom.rings[0];
-                resolve({
-                  xmin: ring[0][0],
-                  ymin: ring[0][1],
-                  xmax: ring[2][0],
-                  ymax: ring[2][1],
-                  spatialReference: outSR
-                });
-              } else {
-                resolve(undefined);
-              }
-            },
-            e => reject(generalHelpers.fail(e))
-          );
-        },
-        e => reject(generalHelpers.fail(e))
-      );
+                  }
+                ]
+              },
+              transformation: transformation
+            };
+            request
+              .request(geometryServiceUrl + "/project", _requestOptions)
+              .then(
+                projectResponse => {
+                  const projectGeom: any =
+                    projectResponse.geometries.length > 0
+                      ? projectResponse.geometries[0]
+                      : undefined;
+                  if (projectGeom && projectGeom.rings) {
+                    const ring: any = projectGeom.rings[0];
+                    resolve({
+                      xmin: ring[0][0],
+                      ymin: ring[0][1],
+                      xmax: ring[2][0],
+                      ymax: ring[2][1],
+                      spatialReference: outSR
+                    });
+                  } else {
+                    resolve(undefined);
+                  }
+                },
+                e => reject(generalHelpers.fail(e))
+              );
+          },
+          e => reject(generalHelpers.fail(e))
+        );
     }
   });
 }
@@ -385,6 +386,17 @@ export function getItemBlob(
   return getBlob(url, requestOptions);
 }
 
+export function getItem(
+  itemId: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  // Get item data
+  const itemParam: request.IRequestOptions = {
+    ...requestOptions
+  };
+  return portal.getItem(itemId, itemParam);
+}
+
 export function getItemData(
   itemId: string,
   requestOptions: auth.IUserRequestOptions
@@ -428,7 +440,10 @@ export function getLayers(
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
       requestsDfd.push(
-        request(serviceUrl + "/" + layer["id"] + "?f=json", requestOptions)
+        request.request(
+          serviceUrl + "/" + layer["id"] + "?f=json",
+          requestOptions
+        )
       );
     });
 
@@ -500,7 +515,7 @@ export function getRequest(update: IUpdate): Promise<void> {
       params: update.params,
       ...update.args.requestOptions
     };
-    request(update.url, options).then(
+    request.request(update.url, options).then(
       () => {
         update.args.progressTickCallback &&
           update.args.progressTickCallback({
@@ -539,7 +554,7 @@ export function getServiceLayersAndTables(
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
-    request(serviceUrl + "?f=json", requestOptions).then(
+    request.request(serviceUrl + "?f=json", requestOptions).then(
       serviceData => {
         properties.service = serviceData;
         Promise.all([
@@ -700,7 +715,7 @@ export function _getCreateServiceOptions(
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
-    const params: IParams = {
+    const params: request.IParams = {
       preserveLayerIds: true
     };
 
@@ -892,7 +907,7 @@ export function _setItemProperties(
   item: any,
   data: any,
   serviceInfo: any,
-  params: IParams,
+  params: request.IParams,
   isPortal: boolean
 ): any {
   if (data) {
