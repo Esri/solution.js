@@ -18,6 +18,8 @@
  * Provides tests for functions involving the deployment of a Solution.
  */
 
+import * as deployer from "../src/deployer";
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `deploySolution`", () => {
@@ -25,6 +27,65 @@ describe("Module `deploySolution`", () => {
     xit("deploySolution", done => {
       console.warn("========== TODO ==========");
       done.fail();
+    });
+  });
+
+  describe("_checkedReplaceAll", () => {
+    it("_checkedReplaceAll no template", () => {
+      const template: string = null;
+      const oldValue = "onm";
+      const newValue = "ONM";
+      const expectedResult = template;
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll no matches", () => {
+      const template = "abcdefghijklmnopqrstuvwxyz";
+      const oldValue = "onm";
+      const newValue = "ONM";
+      const expectedResult = template;
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll one match", () => {
+      const template = "abcdefghijklmnopqrstuvwxyz";
+      const oldValue = "mno";
+      const newValue = "MNO";
+      const expectedResult = "abcdefghijklMNOpqrstuvwxyz";
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll two matches", () => {
+      const template = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+      const oldValue = "mno";
+      const newValue = "MNO";
+      const expectedResult =
+        "abcdefghijklMNOpqrstuvwxyzabcdefghijklMNOpqrstuvwxyz";
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
     });
   });
 
