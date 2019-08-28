@@ -19,7 +19,7 @@
     "@esri/arcgis-rest-request": "^2.3.0",
     "@esri/arcgis-rest-routing": "^2.3.0",
     "@esri/arcgis-rest-service-admin": "^2.3.0",
-    "@esri/solution-common": "^0.3.2"
+    "@esri/solution-common": "^0.4.1"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.3.0",
