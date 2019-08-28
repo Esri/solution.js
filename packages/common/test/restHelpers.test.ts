@@ -38,6 +38,7 @@ import {
   getRequest,
   _getRelationshipUpdates,
   createUniqueFolder,
+  getItem,
   getItemData,
   getItemRelatedItems,
   getBlob,
@@ -951,6 +952,74 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
     });
   }
+
+  describe("getItem", () => {
+    it("item doesn't allow access", done => {
+      const itemId = "itm1234567890";
+      const expected = {
+        name: "ArcGISAuthError",
+        message:
+          "GWM_0003: You do not have permissions to access this resource or perform this operation.",
+        originalMessage:
+          "You do not have permissions to access this resource or perform this operation.",
+        code: "GWM_0003",
+        response: {
+          error: {
+            code: 403,
+            messageCode: "GWM_0003",
+            message:
+              "You do not have permissions to access this resource or perform this operation.",
+            details: [] as any[]
+          }
+        },
+        url:
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        options: {
+          httpMethod: "GET",
+          params: {
+            f: "json"
+          },
+          authentication: {
+            clientId: "clientId",
+            refreshToken: "refreshToken",
+            refreshTokenExpires: "2019-06-13T19:35:21.995Z",
+            username: "casey",
+            password: "123456",
+            token: "fake-token",
+            tokenExpires: "2019-06-13T19:35:21.995Z",
+            portal: "https://myorg.maps.arcgis.com/sharing/rest",
+            tokenDuration: 20160,
+            redirectUri: "https://example-app.com/redirect-uri",
+            refreshTokenTTL: 1440
+          },
+          headers: {}
+        }
+      };
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        JSON.stringify(expected)
+      );
+      getItem(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+        expect(response).toEqual(expected);
+        done();
+      }, done.fail);
+    });
+
+    it("item is accessible", done => {
+      const itemId = "itm1234567890";
+      const expected = { values: { a: 1, b: "c" } };
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        JSON.stringify(expected)
+      );
+      getItem(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+        expect(response).toEqual(expected);
+        done();
+      }, done.fail);
+    });
+  });
 
   describe("getItemData", () => {
     it("item doesn't allow access", done => {
