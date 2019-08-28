@@ -35,15 +35,30 @@ export interface IPortalSubset {
   urlKey: string;
 }
 
+export interface ISolutionInfoCard {
+  id: string;
+  title: string;
+  snippet: string;
+  description: string;
+  url: string;
+  thumbnailUrl: string;
+  tryitUrl: string;
+  created: number;
+  tags: string[];
+  categories: string;
+  deployCommonId: string;
+  deployVersion: number;
+}
+
 export function deploySolution(
-  itemInfo: any,
+  itemInfoCard: ISolutionInfoCard,
   templateDictionary: any,
   portalSubset: IPortalSubset,
   destinationUserSession: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
-    const sourceId = itemInfo.id;
+    const sourceId = itemInfoCard.id;
     let percentDone = 1; // Let the caller know that we've started
     progressCallback(percentDone);
     templateDictionary.organization = {
@@ -66,7 +81,7 @@ export function deploySolution(
     //   * Manage Right of Way Activities 1
     //   * Manage Right of Way Activities 2
     const folderCreationDef = common.createUniqueFolder(
-      itemInfo.title,
+      itemInfoCard.title,
       destinationUserSession
     );
 
@@ -81,9 +96,14 @@ export function deploySolution(
       portalDef
     ]).then(
       responses => {
+        const item = { ...itemInfoCard } as any;
+        delete item.deployCommonId;
+        delete item.deployVersion;
         let itemData = responses[0] as common.ISolutionItemData;
+
         const folderResponse = responses[1];
         templateDictionary.folderId = folderResponse.folder.id;
+
         const portalResponse = responses[2];
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization.geocodeServerUrl =
@@ -124,9 +144,9 @@ export function deploySolution(
               const progressPercentStep = 100 / totalEstimatedCost;
               console.log(
                 "Deploying solution " +
-                  itemInfo.title +
+                  item.title +
                   " (" +
-                  itemInfo.id +
+                  item.id +
                   ") into folder " +
                   folderResponse.folder.title +
                   " (" +
@@ -141,7 +161,7 @@ export function deploySolution(
               progressCallback((percentDone += 2 * progressPercentStep)); // for data fetch and folder creation
 
               const updateItemInfo = {
-                ...itemInfo,
+                ...item,
                 type: "Solution",
                 typeKeywords: ["Solution"]
               };
@@ -156,15 +176,23 @@ export function deploySolution(
                 )
                 .then(
                   updateResponse => {
-                    const oldID: string = itemInfo.id;
-                    const newId: string = updateResponse.id;
-                    ["thumbnailUrl", "tryitUrl", "url"].forEach(p => {
-                      if (itemInfo[p] && itemInfo[p].indexOf(oldID) > -1) {
-                        itemInfo[p] = itemInfo[p].replace(oldID, newId);
-                      }
-                    });
-                    itemInfo.id = newId;
-                    templateDictionary.solutionItemId = newId;
+                    const oldID: string = sourceId;
+                    const newID: string = updateResponse.id;
+                    console.log("Solution " + newID + " created");
+                    templateDictionary.solutionItemId = newID;
+                    item.id = newID;
+                    item.thumbnailUrl = _checkedReplaceAll(
+                      item.thumbnailUrl,
+                      oldID,
+                      newID
+                    );
+                    item.tryitUrl = _checkedReplaceAll(
+                      item.tryitUrl,
+                      oldID,
+                      newID
+                    );
+                    item.url = _checkedReplaceAll(item.url, oldID, newID);
+
                     // Handle the contained item templates
                     deployItems
                       .deploySolutionItems(
@@ -216,10 +244,10 @@ export function deploySolution(
                           );
 
                           // Create solution item using internal representation & and the updated data JSON
-                          itemInfo.data = itemData;
-                          itemInfo.typeKeywords = ["Solution", "Deployed"];
+                          item.data = itemData;
+                          item.typeKeywords = ["Solution", "Deployed"];
                           const updatedItemInfo: portal.IUpdateItemOptions = {
-                            item: itemInfo,
+                            item: item,
                             authentication: destinationUserSession,
                             folderId: templateDictionary.folderId
                           };
@@ -263,6 +291,21 @@ export function deploySolution(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+export function _checkedReplaceAll(
+  template: string,
+  oldValue: string,
+  newValue: string
+): string {
+  let newTemplate;
+  if (template && template.indexOf(oldValue) > -1) {
+    const re = new RegExp(oldValue, "g");
+    newTemplate = template.replace(re, newValue);
+  } else {
+    newTemplate = template;
+  }
+  return newTemplate;
+}
 
 /**
  * Accumulates the estimated deployment cost of a set of templates.
