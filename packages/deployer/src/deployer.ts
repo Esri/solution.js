@@ -260,31 +260,28 @@ export function deploySolution(
                                 data: itemData
                               });
                             },
-                            error => {
-                              console.error("updateItem", error);
+                            e => {
+                              reject(common.fail(e));
                             }
                           );
                         },
-                        error => {
-                          console.error("createItemWithData", error);
+                        e => {
+                          reject(common.fail(e));
                         }
                       );
                   },
-                  error => {
-                    console.error("createItemWithData", error);
+                  e => {
+                    reject(common.fail(e));
                   }
                 );
             },
-            error => {
-              console.error("getExtent", error);
+            e => {
+              reject(common.fail(e));
             }
           );
       },
-      error => {
-        console.error(
-          "Promise.all(solutionItemDataDef,folderCreationDef)",
-          error
-        );
+      e => {
+        reject(common.fail(e));
       }
     );
   });

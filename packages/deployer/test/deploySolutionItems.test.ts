@@ -18,13 +18,42 @@
  * Provides tests for functions involving deployment of items via the REST API.
  */
 
+import {
+  deploySolutionItems,
+  _createItemFromTemplateWhenReady
+} from "../src/deploySolutionItems";
+
+import {
+  createRuntimeMockUserSession,
+  PROGRESS_CALLBACK
+} from "../../common/test/mocks/utils";
+
+import { getItemTemplate } from "../../common/test/mocks/agolItems";
+
 // ------------------------------------------------------------------------------------------------------------------ //
+
+const now = new Date();
+const MOCK_USER_SESSION = createRuntimeMockUserSession(now.getDate());
 
 describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
-    xit("deploySolutionItems", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("can handle unimplemented item type gracefully", done => {
+      deploySolutionItems(
+        "",
+        "",
+        [getItemTemplate()],
+        MOCK_USER_SESSION,
+        {},
+        MOCK_USER_SESSION,
+        PROGRESS_CALLBACK
+      ).then(
+        () => {
+          done();
+        },
+        () => {
+          done.fail();
+        }
+      );
     });
   });
 

@@ -185,12 +185,7 @@ export function getItemWithoutItemProp(): any {
   return agolItem;
 }
 
-export function getTrimmedAGOLItem(): any {
-  const item = getAGOLItemFundamentals(
-    "Web Mapping Application",
-    "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc599252a7835eea21"
-  );
-
+export function getTrimmedAGOLItem(item: any): any {
   delete item.avgRating;
   delete item.created;
   delete item.guid;

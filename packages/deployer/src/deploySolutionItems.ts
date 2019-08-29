@@ -106,9 +106,12 @@ export function deploySolutionItems(
     });
 
     // Wait until all items have been created
-    Promise.all(awaitAllItems).then(clonedSolutionItemIds => {
-      resolve(clonedSolutionItemIds);
-    }, common.fail);
+    Promise.all(awaitAllItems).then(
+      clonedSolutionItemIds => {
+        resolve(clonedSolutionItemIds);
+      },
+      e => reject(common.fail(e))
+    );
   });
 }
 
@@ -199,7 +202,6 @@ export function _createItemFromTemplateWhenReady(
           .then(
             newItemId => resolve(newItemId),
             e => {
-              console.error(e);
               reject(common.fail(e));
             }
           );
