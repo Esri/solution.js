@@ -18,7 +18,6 @@
  * Provides tests for functions involving the deployment of a Solution.
  */
 
-import { deploySolution } from "../src/deployer";
 import {
   TOMORROW,
   PORTAL_SUBSET,
@@ -42,6 +41,7 @@ import {
 import * as fetchMock from "fetch-mock";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import * as templates from "../../common/test/mocks/templates";
+import * as deployer from "../src/deployer";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -230,7 +230,9 @@ describe("Module `deploySolution`", () => {
           title: "title",
           type: "Solution",
           typeKeywords: ["Solution", "Deployed"],
-          url: "https://www.arcgis.com/home/item.html?id=map1234567890"
+          url: "https://www.arcgis.com/home/item.html?id=map1234567890",
+          thumbnailUrl: undefined,
+          tryitUrl: undefined
         },
         data: {
           metadata: {
@@ -385,26 +387,87 @@ describe("Module `deploySolution`", () => {
         }
       };
 
-      deploySolution(
-        itemInfo.item,
-        templateDictionary,
-        portalSubset,
-        MOCK_USER_SESSION,
-        function(pd) {
-          const a = pd;
-        }
-      ).then(
-        function(actual) {
-          // not concerened with the def here
-          templateDictionary["svc1234567890"].def = {};
-          expect(templateDictionary).toEqual(expectedTemplate);
-          expect(actual).toEqual(expected);
-          done();
-        },
-        e => {
-          done.fail(e);
-        }
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          templateDictionary,
+          portalSubset,
+          MOCK_USER_SESSION,
+          function(pd) {
+            const a = pd;
+          }
+        )
+        .then(
+          function(actual) {
+            // not concerened with the def here
+            templateDictionary["svc1234567890"].def = {};
+            expect(templateDictionary).toEqual(expectedTemplate);
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => {
+            done.fail(e);
+          }
+        );
+    });
+  });
+
+  describe("_checkedReplaceAll", () => {
+    it("_checkedReplaceAll no template", () => {
+      const template: string = null;
+      const oldValue = "onm";
+      const newValue = "ONM";
+      const expectedResult = template;
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
       );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll no matches", () => {
+      const template = "abcdefghijklmnopqrstuvwxyz";
+      const oldValue = "onm";
+      const newValue = "ONM";
+      const expectedResult = template;
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll one match", () => {
+      const template = "abcdefghijklmnopqrstuvwxyz";
+      const oldValue = "mno";
+      const newValue = "MNO";
+      const expectedResult = "abcdefghijklMNOpqrstuvwxyz";
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
+    });
+
+    it("_checkedReplaceAll two matches", () => {
+      const template = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz";
+      const oldValue = "mno";
+      const newValue = "MNO";
+      const expectedResult =
+        "abcdefghijklMNOpqrstuvwxyzabcdefghijklMNOpqrstuvwxyz";
+
+      const actualResult = deployer._checkedReplaceAll(
+        template,
+        oldValue,
+        newValue
+      );
+      expect(actualResult).toEqual(expectedResult);
     });
   });
 
