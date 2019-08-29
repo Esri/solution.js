@@ -85,8 +85,9 @@ export function getTokenResponse(token: string = "fake-token") {
 }
 
 export function getTransformationsResponse(hasTransformation: boolean = false) {
-  // This should be extended to deal with optionally getting a transformation
-  return hasTransformation ? "" : '{"transformations":[]}';
+  return hasTransformation
+    ? '{"transformations":[{wkid: 4326}]}'
+    : '{"transformations":[]}';
 }
 
 export function getProjectResponse() {
