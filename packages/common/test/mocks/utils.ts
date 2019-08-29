@@ -76,6 +76,10 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest"
 };
 
+export const PROGRESS_CALLBACK = function(): void {
+  const tick = "tok";
+};
+
 export function getTokenResponse(token: string = "fake-token") {
   return { token: token };
 }

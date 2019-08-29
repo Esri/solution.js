@@ -19,7 +19,6 @@
  */
 
 import {
-  TOMORROW,
   PORTAL_SUBSET,
   getSuccessResponse,
   getCreateFolderResponse,
@@ -28,6 +27,7 @@ import {
   getPortalResponse,
   getTokenResponse,
   UTILITY_SERVER_INFO,
+  PROGRESS_CALLBACK,
   getCreateServiceResponse,
   createRuntimeMockUserSession
 } from "../../common/test/mocks/utils";
@@ -36,7 +36,9 @@ import {
   getAGOLLayerOrTable,
   getAGOLItem,
   getAGOLItemData,
-  getTrimmedAGOLItem
+  getTrimmedAGOLItem,
+  get400Failure,
+  get200Failure
 } from "../../common/test/mocks/agolItems";
 import * as fetchMock from "fetch-mock";
 import { UserSession } from "@esri/arcgis-rest-auth";
@@ -45,27 +47,15 @@ import * as deployer from "../src/deployer";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: PORTAL_SUBSET.portalUrl + "/sharing/rest"
+let MOCK_USER_SESSION: UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = createRuntimeMockUserSession(new Date().getDate());
 });
-// const now = new Date();
-// const MOCK_USER_SESSION = createRuntimeMockUserSession(now.getDate())
 
 describe("Module `deploySolution`", () => {
   describe("deploySolution", () => {
-    // it("can handle failure", done => {});
-
-    it("can deploy webmap", done => {
+    it("can deploy webmap with dependencies", done => {
       // get templates
       const featureServiceTemplate: any = templates.getItemTemplatePart(
         "Feature Service"
@@ -158,10 +148,7 @@ describe("Module `deploySolution`", () => {
           PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
           getCreateFolderResponse()
         )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          getTokenResponse()
-        )
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
         .post(
           "https://utility.arcgisonline.com/arcgis/rest/info",
           UTILITY_SERVER_INFO
@@ -393,9 +380,7 @@ describe("Module `deploySolution`", () => {
           templateDictionary,
           portalSubset,
           MOCK_USER_SESSION,
-          function(pd) {
-            const a = pd;
-          }
+          PROGRESS_CALLBACK
         )
         .then(
           function(actual) {
@@ -407,6 +392,446 @@ describe("Module `deploySolution`", () => {
           },
           e => {
             done.fail(e);
+          }
+        );
+    });
+
+    it("can handle error on createItemWithData", done => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([
+        templates.getItemTemplatePart("Feature Service")
+      ]);
+
+      const portalResponse: any = getPortalResponse();
+      const geometryServer: string = portalResponse.helperServices.geometry.url;
+
+      fetchMock
+        .get(
+          PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemInfo.item.id +
+            "/data?f=json&token=fake-token",
+          itemInfo.data
+        )
+        .get(
+          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          portalResponse
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          getCreateFolderResponse()
+        )
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/info",
+          UTILITY_SERVER_INFO
+        )
+        .post(
+          geometryServer + "/findTransformations",
+          getTransformationsResponse()
+        )
+        .post(geometryServer + "/project", getProjectResponse())
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          get200Failure()
+        );
+
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          {},
+          PORTAL_SUBSET,
+          MOCK_USER_SESSION,
+          PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
+    it("can handle error on get solution item", done => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([
+        templates.getItemTemplatePart("Feature Service")
+      ]);
+
+      const portalResponse: any = getPortalResponse();
+
+      fetchMock
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+        .get(
+          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          portalResponse
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          getCreateFolderResponse()
+        )
+        .get(
+          PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemInfo.item.id +
+            "/data?f=json&token=fake-token",
+          get400Failure()
+        );
+
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          {},
+          PORTAL_SUBSET,
+          MOCK_USER_SESSION,
+          PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
+    it("can handle error on project", done => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([
+        templates.getItemTemplatePart("Feature Service")
+      ]);
+
+      const portalResponse: any = getPortalResponse();
+      const geometryServer: string = portalResponse.helperServices.geometry.url;
+
+      fetchMock
+        .get(
+          PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemInfo.item.id +
+            "/data?f=json&token=fake-token",
+          itemInfo.data
+        )
+        .get(
+          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          portalResponse
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          getCreateFolderResponse()
+        )
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/info",
+          UTILITY_SERVER_INFO
+        )
+        .post(
+          geometryServer + "/findTransformations",
+          getTransformationsResponse()
+        )
+        .post(geometryServer + "/project", get400Failure());
+
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          {},
+          PORTAL_SUBSET,
+          MOCK_USER_SESSION,
+          PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
+    it("can handle error on updateItem", done => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([
+        templates.getItemTemplatePart("Feature Service")
+      ]);
+
+      const featureServerAdminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      // get mock items
+      const layer: any = getAGOLLayerOrTable(
+        0,
+        "ROW Permits",
+        "Feature Layer",
+        [
+          {
+            id: 0,
+            name: "",
+            relatedTableId: 1,
+            cardinality: "esriRelCardinalityOneToMany",
+            role: "esriRelRoleOrigin",
+            "": "globalid",
+            composite: true,
+            keyField: "globalid"
+          }
+        ],
+        true
+      );
+      const table: any = getAGOLLayerOrTable(
+        1,
+        "ROW Permit Comment",
+        "Table",
+        [
+          {
+            id: 0,
+            name: "",
+            relatedTableId: 1,
+            cardinality: "esriRelCardinalityOneToMany",
+            role: "esriRelRoleDestination",
+            "": "globalid",
+            composite: true,
+            keyField: "globalid"
+          }
+        ],
+        true
+      );
+
+      const portalResponse: any = getPortalResponse();
+      const geometryServer: string = portalResponse.helperServices.geometry.url;
+
+      fetchMock
+        .get(
+          PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemInfo.item.id +
+            "/data?f=json&token=fake-token",
+          itemInfo.data
+        )
+        .get(
+          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          portalResponse
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          getCreateFolderResponse()
+        )
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/info",
+          UTILITY_SERVER_INFO
+        )
+        .post(
+          geometryServer + "/findTransformations",
+          getTransformationsResponse()
+        )
+        .post(geometryServer + "/project", getProjectResponse())
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          getSuccessResponse({
+            id: "map1234567890",
+            folder: "44468da125a64526b359b70d8ba4a9dd"
+          })
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          getCreateServiceResponse()
+        )
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/move",
+          getSuccessResponse({
+            itemId: "svc1234567890",
+            owner: "casey",
+            folder: "44468da125a64526b359b70d8ba4a9dd"
+          })
+        )
+        .post(
+          featureServerAdminUrl + "/addToDefinition",
+          getSuccessResponse({
+            layers: [{ name: "ROW Permits", id: 0 }],
+            tables: [{ name: "ROW Permit Comment", id: 1 }]
+          })
+        )
+        .post(featureServerAdminUrl + "/0?f=json", layer)
+        .post(featureServerAdminUrl + "/1?f=json", table)
+        .post(featureServerAdminUrl + "/refresh", getSuccessResponse())
+        .post(
+          featureServerAdminUrl + "/0/updateDefinition",
+          getSuccessResponse()
+        )
+        .post(
+          featureServerAdminUrl + "/1/updateDefinition",
+          getSuccessResponse()
+        )
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          getSuccessResponse({ id: "svc1234567890" })
+        )
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/update",
+          get400Failure()
+        );
+
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          {},
+          PORTAL_SUBSET,
+          MOCK_USER_SESSION,
+          PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
+    });
+
+    it("can handle error on deploySolutionItems update", done => {
+      // get templates
+      const itemInfo: any = templates.getSolutionTemplateItem([
+        templates.getItemTemplatePart("Feature Service")
+      ]);
+
+      const featureServerAdminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      // get mock items
+      const layer: any = getAGOLLayerOrTable(
+        0,
+        "ROW Permits",
+        "Feature Layer",
+        [
+          {
+            id: 0,
+            name: "",
+            relatedTableId: 1,
+            cardinality: "esriRelCardinalityOneToMany",
+            role: "esriRelRoleOrigin",
+            "": "globalid",
+            composite: true,
+            keyField: "globalid"
+          }
+        ],
+        true
+      );
+      const table: any = getAGOLLayerOrTable(
+        1,
+        "ROW Permit Comment",
+        "Table",
+        [
+          {
+            id: 0,
+            name: "",
+            relatedTableId: 1,
+            cardinality: "esriRelCardinalityOneToMany",
+            role: "esriRelRoleDestination",
+            "": "globalid",
+            composite: true,
+            keyField: "globalid"
+          }
+        ],
+        true
+      );
+
+      const portalResponse: any = getPortalResponse();
+      const geometryServer: string = portalResponse.helperServices.geometry.url;
+
+      fetchMock
+        .get(
+          PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            itemInfo.item.id +
+            "/data?f=json&token=fake-token",
+          itemInfo.data
+        )
+        .get(
+          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          portalResponse
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+          getCreateFolderResponse()
+        )
+        .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+        .post(
+          "https://utility.arcgisonline.com/arcgis/rest/info",
+          UTILITY_SERVER_INFO
+        )
+        .post(
+          geometryServer + "/findTransformations",
+          getTransformationsResponse()
+        )
+        .post(geometryServer + "/project", getProjectResponse())
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          getSuccessResponse({
+            id: "map1234567890",
+            folder: "44468da125a64526b359b70d8ba4a9dd"
+          })
+        )
+        .post(
+          PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          getCreateServiceResponse()
+        )
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/move",
+          getSuccessResponse({
+            itemId: "svc1234567890",
+            owner: "casey",
+            folder: "44468da125a64526b359b70d8ba4a9dd"
+          })
+        )
+        .post(
+          featureServerAdminUrl + "/addToDefinition",
+          getSuccessResponse({
+            layers: [{ name: "ROW Permits", id: 0 }],
+            tables: [{ name: "ROW Permit Comment", id: 1 }]
+          })
+        )
+        .post(featureServerAdminUrl + "/0?f=json", layer)
+        .post(featureServerAdminUrl + "/1?f=json", table)
+        .post(featureServerAdminUrl + "/refresh", getSuccessResponse())
+        .post(
+          featureServerAdminUrl + "/0/updateDefinition",
+          getSuccessResponse()
+        )
+        .post(
+          featureServerAdminUrl + "/1/updateDefinition",
+          getSuccessResponse()
+        )
+        .post(
+          PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          get400Failure()
+        );
+
+      deployer
+        .deploySolution(
+          itemInfo.item,
+          {},
+          PORTAL_SUBSET,
+          MOCK_USER_SESSION,
+          PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
           }
         );
     });
