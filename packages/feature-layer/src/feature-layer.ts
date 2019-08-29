@@ -150,6 +150,11 @@ export function createItemFromTemplate(
               )
               .then(
                 () => {
+                  newItemTemplate = fsUtils.updateTemplate(
+                    newItemTemplate,
+                    templateDictionary,
+                    createResponse
+                  );
                   // Update the item with snippet, description, popupInfo, ect.
                   common
                     .updateItem(

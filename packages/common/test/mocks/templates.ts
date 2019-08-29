@@ -446,7 +446,7 @@ function createItemTemplateRelationship(
       ? "{{svc1234567890.fieldInfos.layer" + id + ".fields.globalid}}"
       : "{{svc1234567890.fieldInfos.layer" +
         relatedTableId +
-        ".fields.parentglobalid}}";
+        ".fields.globalid}}";
   return relationship;
 }
 

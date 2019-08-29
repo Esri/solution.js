@@ -2055,6 +2055,64 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         done();
       }, done.fail);
     });
+
+    it("can get options for HOSTED service with values and handle error on getExtent", done => {
+      const requestOptions: IUserRequestOptions = {
+        authentication: new UserSession({
+          username: "jsmith",
+          password: "123456"
+        })
+      };
+
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "",
+        properties: {
+          service: {
+            somePropNotInItem: true, // should be added to item and params
+            hasViews: true, // should be skipped
+            capabilities: ["Query"], // should be added to item and params
+            spatialReference: {
+              wkid: 4326
+            }
+          },
+          layers: [
+            {
+              fields: []
+            }
+          ],
+          tables: []
+        },
+        type: "",
+        item: {
+          name: "A"
+        },
+        data: {},
+        resources: [],
+        estimatedDeploymentCostFactor: 0,
+        dependencies: []
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {},
+        geometryServiceUrl: geometryServiceUrl
+      };
+
+      fetchMock.post(
+        geometryServiceUrl + "/findTransformations",
+        mockItems.get400Failure()
+      );
+
+      _getCreateServiceOptions(
+        itemTemplate,
+        requestOptions,
+        templateDictionary
+      ).then(done.fail, done);
+    });
   });
 
   describe("_getGroupContentsTranche", () => {
@@ -2079,9 +2137,61 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("_setItemProperties", () => {
-    xit("_setItemProperties", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("can get options for HOSTED empty service", () => {
+      const requestOptions: IUserRequestOptions = {
+        authentication: new UserSession({
+          username: "jsmith",
+          password: "123456"
+        })
+      };
+
+      const templateDictionary: any = {
+        folderId: "aabb123456",
+        isPortal: false,
+        solutionItemId: "sol1234567890",
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {}
+      };
+
+      const item: any = {
+        text: "",
+        isMultiServicesView: true,
+        editorTrackingInfo: {
+          enableEditorTracking: true
+        }
+      };
+      const data: any = {
+        someProp: {}
+      };
+      const serviceInfo: any = {
+        service: {
+          capabilities: "Create"
+        }
+      };
+      const params: any = {};
+
+      const updatedItem: any = _setItemProperties(
+        item,
+        data,
+        serviceInfo,
+        params,
+        false
+      );
+      expect(updatedItem).toEqual({
+        text: {
+          someProp: {}
+        },
+        isMultiServicesView: true,
+        editorTrackingInfo: {
+          enableEditorTracking: false
+        },
+        capabilities: "Create"
+      });
+      expect(params).toEqual({
+        editorTrackingInfo: {
+          enableEditorTracking: false
+        }
+      });
     });
   });
 });

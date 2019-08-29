@@ -2023,7 +2023,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("addFeatureServiceLayersAndTables", () => {
     it("should handle error", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -2111,7 +2111,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle error on getLayersAndTables", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -2154,7 +2154,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle error on updateLayerFieldReferences", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -2232,7 +2232,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle error on layer updates", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =

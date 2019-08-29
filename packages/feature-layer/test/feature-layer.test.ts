@@ -103,7 +103,7 @@ afterEach(() => {
 describe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
   describe("convertItemToTemplate", () => {
     it("templatize common properties", done => {
-      const id: string = "SVC1234567890";
+      const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const expectedUrl: string = "{{" + id + ".url}}";
@@ -178,7 +178,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token",
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?f=json&token=fake-token",
           "{}"
         )
         .post(
@@ -224,13 +224,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on extractDependencies", done => {
-      const id: string = "SVC1234567890";
+      const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
       const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?f=json&token=fake-token";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -274,11 +274,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on getItemData", done => {
-      const id: string = "SVC1234567890";
+      const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?f=json&token=fake-token";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -299,13 +299,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on getServiceLayersAndTables", done => {
-      const id: string = "SVC1234567890";
+      const id: string = "svc1234567890";
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
       const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/SVC1234567890/data?f=json&token=fake-token";
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?f=json&token=fake-token";
 
       const keyField: string = "globalid";
       const defQuery: string = "status = 'BoardReview'";
@@ -351,7 +351,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
   describe("createItemFromTemplate", () => {
     it("should create a solution from a template", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -474,7 +474,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -487,7 +487,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should create a solution from a template in portal", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -630,7 +630,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on updateItem", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -726,7 +726,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -736,7 +736,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on addFeatureServiceLayersAndTables", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -814,7 +814,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -824,7 +824,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on createService", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -898,7 +898,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -908,7 +908,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle createService success === false", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -985,7 +985,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -995,7 +995,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on updateItem", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -1091,7 +1091,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          SVC1234567890: {}
+          svc1234567890: {}
         },
         MOCK_USER_SESSION,
         function() {
@@ -1101,7 +1101,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle error on updateDefinition", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
@@ -1202,7 +1202,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
     });
 
     it("should handle empty layers and tables", done => {
-      const expectedId: string = "SVC1234567890";
+      const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".id}}";
 
       const expectedUrl: string =
