@@ -86,7 +86,7 @@ export function deploySolution(
     );
 
     // Determine if we are deploying to portal
-    const portalDef = portal.getPortal(portalSubset.id, destinationUserSession);
+    const portalDef = portal.getPortal(portalSubset.id, requestOptions);
 
     // Await completion of async actions
     Promise.all([

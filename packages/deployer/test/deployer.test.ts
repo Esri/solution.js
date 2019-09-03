@@ -141,7 +141,8 @@ describe("Module `deploySolution`", () => {
           itemInfo.data
         )
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
@@ -414,7 +415,8 @@ describe("Module `deploySolution`", () => {
           itemInfo.data
         )
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
@@ -466,7 +468,8 @@ describe("Module `deploySolution`", () => {
       fetchMock
         .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
@@ -517,7 +520,8 @@ describe("Module `deploySolution`", () => {
           itemInfo.data
         )
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
@@ -612,7 +616,8 @@ describe("Module `deploySolution`", () => {
           itemInfo.data
         )
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
@@ -756,7 +761,8 @@ describe("Module `deploySolution`", () => {
           itemInfo.data
         )
         .get(
-          PORTAL_SUBSET.restUrl + "/portals/abCDefG123456?f=json",
+          PORTAL_SUBSET.restUrl +
+            "/portals/abCDefG123456?f=json&token=fake-token",
           portalResponse
         )
         .post(
