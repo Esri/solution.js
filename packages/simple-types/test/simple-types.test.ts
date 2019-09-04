@@ -46,6 +46,8 @@ const MOCK_USER_SESSION = new UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
+
 const noResourcesResponse: any = {
   total: 0,
   start: 1,
@@ -1358,80 +1360,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         done();
       }, done.fail);
     });
-
-    if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
-      it("should catch wrapup errors", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
-        itemTemplate.item = mockItems.getAGOLItem("Form", null);
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            blob
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            noResourcesResponse
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              itemTemplate.itemId +
-              "/addResources",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
-            create404Error()
-          );
-
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(
-          () => done.fail,
-          response => {
-            expect(response.error.code).toEqual(400);
-            expect(response.error.message).toEqual(
-              "Item info file does not exist or is inaccessible."
-            );
-            done();
-          }
-        );
-      });
-    }
   });
 
   describe("createItemFromTemplate", () => {
