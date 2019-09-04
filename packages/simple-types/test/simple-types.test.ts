@@ -753,12 +753,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
       });
 
-      it("should handle form item type", done => {
+      it("should handle form item type with default filename", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
+        const blob = new Blob(["abc", "def", "ghi"], {
+          type: "application/zip"
+        });
 
         const expectedTemplate: any = {
           itemId: "frm1234567890",
@@ -780,7 +782,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url: ""
           },
           data: null,
-          resources: ["frm1234567890_info_form/formData"],
+          resources: ["frm1234567890_info_form/formData.zip"],
           dependencies: ["srv1234567890"],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -909,9 +911,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           done();
         }, done.fail);
       });
-    }
 
-    if (typeof window !== "undefined") {
       // Blobs are only available in the browser
       it("should handle web mapping applications", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
@@ -1027,7 +1027,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
+        const blob = new Blob(["abc", "def", "ghi"], {
+          type: "application/zip"
+        });
 
         fetchMock
           .post(

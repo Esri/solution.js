@@ -50,6 +50,7 @@
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
+import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -102,6 +103,17 @@ export function addResourceFromBlob(
   filename: string,
   requestOptions: auth.IUserRequestOptions
 ): Promise<any> {
+  // Check that the filename has an extension because it is required by the addResources call
+  if (filename && filename.indexOf(".") < 0) {
+    return new Promise((resolve, reject) => {
+      reject(
+        new request.ArcGISAuthError(
+          "Filename must have an extension indicating its type"
+        )
+      );
+    });
+  }
+
   const addRsrcOptions = {
     id: itemId,
     resource: blob,
