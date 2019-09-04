@@ -2017,6 +2017,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         ab766cba0dd44ec080420acc10990282: {}
       };
 
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
       _getCreateServiceOptions(
         itemTemplate,
         requestOptions,
@@ -2051,7 +2055,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }, done.fail);
     });
 
-    it("can get options for HOSTED service with values when name contains quid", done => {
+    it("can get options for HOSTED service with values when name contains guid", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
@@ -2097,6 +2101,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         ab766cba0dd44ec080420acc10990282: {}
       };
 
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
       _getCreateServiceOptions(
         itemTemplate,
         requestOptions,
@@ -2180,6 +2188,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         mockItems.get400Failure()
       );
 
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
       _getCreateServiceOptions(
         itemTemplate,
         requestOptions,
