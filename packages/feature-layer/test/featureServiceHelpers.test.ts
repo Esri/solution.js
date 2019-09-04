@@ -20,6 +20,7 @@
 
 import {
   templatize,
+  deleteViewProps,
   cacheFieldInfos,
   _cacheFieldInfo,
   cachePopupInfos,
@@ -32,6 +33,7 @@ import {
   addFeatureServiceLayersAndTables,
   postProcessFields,
   _getFieldVisibilityUpdates,
+  _validateDomains,
   updatePopupInfo,
   _templatize,
   _templatizeProperty,
@@ -405,7 +407,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             type: "simple"
           }
         },
-        type: "layer"
+        type: "layer",
+        viewDefinitionQuery: "viewDefinitionQuery"
       };
 
       const expectedLayer: any = {
@@ -425,7 +428,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         templates: null,
         relationships: null,
         drawingInfo: null,
-        type: "layer"
+        type: "layer",
+        viewDefinitionQuery: null
       };
 
       const expectedFieldInfos: any = {
@@ -458,7 +462,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               type: "simple"
             }
           },
-          type: "layer"
+          type: "layer",
+          viewDefinitionQuery: "viewDefinitionQuery"
         }
       };
 
@@ -4718,6 +4723,214 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     xit("_getNameMapping", done => {
       console.warn("========== TODO ==========");
       done.fail();
+    });
+  });
+
+  describe("_validateDomains", () => {
+    it("should not update field when domains match", () => {
+      const fieldInfos: any = {
+        sourceFields: [
+          {
+            name: "A"
+          },
+          {
+            name: "B",
+            domain: null
+          },
+          {
+            name: "C",
+            domain: {
+              codedValues: [
+                {
+                  name: "C_1",
+                  value: "C_2"
+                }
+              ]
+            }
+          }
+        ],
+        newFields: [
+          {
+            name: "a"
+          },
+          {
+            name: "b",
+            domain: null
+          },
+          {
+            name: "c",
+            domain: {
+              codedValues: [
+                {
+                  name: "C_1",
+                  value: "C_2"
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      const fieldUpdates: any[] = [];
+      const expected: any[] = [];
+
+      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
+
+      expect(actual).toEqual(expected);
+    });
+
+    it("should update field when domains don't match", () => {
+      const fieldInfos: any = {
+        sourceFields: [
+          {
+            name: "A"
+          },
+          {
+            name: "B",
+            domain: null
+          },
+          {
+            name: "C",
+            unrelatedProp: true,
+            domain: {
+              codedValues: [
+                {
+                  name: "C_1",
+                  value: "C_2"
+                }
+              ]
+            }
+          },
+          {
+            name: "D",
+            domain: {
+              codedValues: [
+                {
+                  name: "DDD_1",
+                  value: "DDD_2"
+                }
+              ]
+            }
+          },
+          {
+            name: "E",
+            domain: {
+              codedValues: [
+                {
+                  name: "EEE_1",
+                  value: "EEE_2"
+                }
+              ]
+            }
+          }
+        ],
+        newFields: [
+          {
+            name: "a"
+          },
+          {
+            name: "b",
+            domain: null
+          },
+          {
+            name: "c",
+            unrelatedProp: false,
+            domain: {
+              codedValues: [
+                {
+                  name: "C_1",
+                  value: "C_2"
+                }
+              ]
+            }
+          },
+          {
+            name: "d",
+            domain: {
+              codedValues: [
+                {
+                  name: "D_1",
+                  value: "D_2"
+                }
+              ]
+            }
+          },
+          {
+            name: "e",
+            domain: {
+              codedValues: [
+                {
+                  name: "E_1",
+                  value: "E_2"
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      const fieldUpdates: any[] = [
+        {
+          name: "d",
+          visible: true
+        }
+      ];
+      const expected: any[] = [
+        {
+          name: "d",
+          visible: true,
+          domain: {
+            codedValues: [
+              {
+                name: "DDD_1",
+                value: "DDD_2"
+              }
+            ]
+          }
+        },
+        {
+          name: "e",
+          domain: {
+            codedValues: [
+              {
+                name: "EEE_1",
+                value: "EEE_2"
+              }
+            ]
+          }
+        }
+      ];
+
+      const actual: any[] = _validateDomains(fieldInfos, fieldUpdates);
+
+      expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("deleteViewProps", () => {
+    it("should remove key props from view layer", () => {
+      const layer: any = {
+        someProp: "A",
+        definitionQuery: "definitionQuery"
+      };
+      const expected: any = {
+        someProp: "A"
+      };
+      deleteViewProps(layer);
+
+      expect(layer).toEqual(expected);
+    });
+
+    it("should not fail when view does not contain key props", () => {
+      const layer: any = {
+        someProp: "A"
+      };
+      const expected: any = {
+        someProp: "A"
+      };
+      deleteViewProps(layer);
+
+      expect(layer).toEqual(expected);
     });
   });
 });
