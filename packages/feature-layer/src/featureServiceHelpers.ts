@@ -736,11 +736,12 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
       if (JSON.stringify(field.domain) !== JSON.stringify(domainFields[i])) {
         // should mixin the update if the field already has some other update
         let hasUpdate: boolean = false;
-        fieldUpdates.forEach((update: any) => {
+        fieldUpdates.some((update: any) => {
           if (update.name === field.name) {
             hasUpdate = true;
             update.domain = domainFields[i];
           }
+          return hasUpdate;
         });
         if (!hasUpdate) {
           fieldUpdates.push({ name: field.name, domain: domainFields[i] });
