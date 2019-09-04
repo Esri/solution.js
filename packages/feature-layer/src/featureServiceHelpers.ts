@@ -100,6 +100,19 @@ export function templatize(
 }
 
 /**
+ * Delete key properties that are system managed
+ *
+ * @param layer The data layer instance with field name references within
+ */
+export function deleteViewProps(layer: any) {
+  const props: string[] = ["definitionQuery"];
+
+  props.forEach(prop => {
+    common.deleteProp(layer, prop);
+  });
+}
+
+/**
  * Cache properties that contain field references
  *
  * @param layer The data layer instance with field name references within
@@ -123,7 +136,8 @@ export function cacheFieldInfos(layer: any, fieldInfos: any): any {
     "templates",
     "relationships",
     "drawingInfo",
-    "timeInfo"
+    "timeInfo",
+    "viewDefinitionQuery"
   ];
 
   props.forEach(prop => {
@@ -473,6 +487,9 @@ export function updateFeatureServiceDefinition(
       const item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
+      if (item.isView) {
+        deleteViewProps(item);
+      }
       // when the item is a view we need to grab the supporting fieldInfos
       if (itemTemplate.properties.service.isView) {
         adminLayerInfos[originalId] = item.adminLayerInfo;
@@ -614,9 +631,17 @@ export function postProcessFields(
             // visible true when added with the layer definition
             // update the field visibility to match that of the source
             if (item.isView) {
-              const fieldUpdates: any[] = _getFieldVisibilityUpdates(
+              let fieldUpdates: any[] = _getFieldVisibilityUpdates(
                 fieldInfos[item.id]
               );
+
+              // view field domains can contain different values than the source field domains
+              // use the cached view domain when it differs from the source view domain
+              fieldUpdates = _validateDomains(
+                fieldInfos[item.id],
+                fieldUpdates
+              );
+
               if (fieldUpdates.length > 0) {
                 fieldInfos[item.id].fields = fieldUpdates;
               }
@@ -678,6 +703,52 @@ export function _getFieldVisibilityUpdates(fieldInfo: any): any[] {
     });
   }
   return visibilityUpdates;
+}
+
+/**
+ *  view field domains can contain different values than the source feature service field domains
+ *  use the cached domain when it differs from the source view field domain
+ *
+ * @param fieldInfo current view layer or table fieldInfo
+ * @param fieldUpdates any existing field updates
+ * @return Array of fields to be updated
+ * @protected
+ */
+export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
+  const domainFields: any[] = [];
+  const domainNames: string[] = [];
+
+  // loop through the cached fields from the source view we are cloning
+  fieldInfo.sourceFields.forEach((field: any) => {
+    if (field.hasOwnProperty("domain") && field.domain) {
+      domainFields.push(field.domain);
+      domainNames.push(String(field.name).toLocaleLowerCase());
+    }
+  });
+
+  // loop through the fields from the new view service
+  // add an update when the domains don't match
+  fieldInfo.newFields.forEach((field: any) => {
+    const i: number = domainNames.indexOf(
+      String(field.name).toLocaleLowerCase()
+    );
+    if (i > -1 && field.hasOwnProperty("domain") && field.domain) {
+      if (JSON.stringify(field.domain) !== JSON.stringify(domainFields[i])) {
+        // should mixin the update if the field already has some other update
+        let hasUpdate: boolean = false;
+        fieldUpdates.forEach((update: any) => {
+          if (update.name === field.name) {
+            hasUpdate = true;
+            update.domain = domainFields[i];
+          }
+        });
+        if (!hasUpdate) {
+          fieldUpdates.push({ name: field.name, domain: domainFields[i] });
+        }
+      }
+    }
+  });
+  return fieldUpdates;
 }
 
 /**
