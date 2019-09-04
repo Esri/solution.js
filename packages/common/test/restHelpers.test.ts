@@ -1938,6 +1938,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         ab766cba0dd44ec080420acc10990282: {}
       };
 
+      fetchMock.post(
+        "http://utility/geomServer/findTransformations/rest/info",
+        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+      );
       _getCreateServiceOptions(
         itemTemplate,
         requestOptions,
