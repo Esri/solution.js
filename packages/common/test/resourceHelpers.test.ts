@@ -19,6 +19,7 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 
 import { getAnImageResponse } from "./mocks/agolItems";
@@ -55,6 +56,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     owningSystemUrl: "https://www.arcgis.com",
     authInfo: {}
   };
+
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
   afterEach(() => {
     fetchMock.restore();
@@ -93,7 +96,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
         const itemId = "itm1234567890";
         const folder = "";
-        const filename = "aFilename";
+        const filename = "aFilename.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
@@ -120,11 +123,37 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("has filename with folder", done => {
+      it("has a filename without an extension", done => {
         const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
         const itemId = "itm1234567890";
         const folder = "aFolder";
         const filename = "aFilename";
+        const expected = new request.ArcGISAuthError(
+          "Filename must have an extension indicating its type"
+        );
+
+        resourceHelpers
+          .addResourceFromBlob(
+            blob,
+            itemId,
+            folder,
+            filename,
+            MOCK_USER_REQOPTS
+          )
+          .then(
+            () => done.fail,
+            (response: any) => {
+              expect(response).toEqual(expected);
+              done();
+            }
+          );
+      });
+
+      it("has filename with folder", done => {
+        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
+        const itemId = "itm1234567890";
+        const folder = "aFolder";
+        const filename = "aFilename.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
@@ -279,7 +308,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           {
             type: resourceHelpers.EFileType.Resource,
             folder: "storageFolder",
-            filename: "storageFilename",
+            filename: "storageFilename.png",
             url: "https://myserver/images/resource.png"
           }
         ];
@@ -374,7 +403,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const filePaths: resourceHelpers.ISourceFileCopyPath[] = [
           {
             folder: "storageFolder",
-            filename: "storageFilename",
+            filename: "storageFilename.png",
             url: "https://myserver/images/thumbnail.png"
           }
         ];
@@ -386,7 +415,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedFetch = getAnImageResponse();
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
-        const expectedUpdate: string[] = ["storageFolder/storageFilename"];
+        const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
 
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
@@ -450,7 +479,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const destination = {
           itemId: "itm1234567890",
           folder: "storageFolder",
-          filename: "storageFilename",
+          filename: "storageFilename.png",
           requestOptions: MOCK_USER_REQOPTS
         };
         const fetchUrl =
