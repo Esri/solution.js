@@ -30,7 +30,6 @@
     "@esri/arcgis-rest-service-admin": "^2.3.0"
   },
   "dependencies": {
-    "@esri/arcgis-rest-types": "^2.3.0",
     "adlib": "^3.0.0",
     "tslib": "^1.9.3"
   },

@@ -32,7 +32,7 @@ import {
   _countRelationships,
   getLayers,
   extractDependencies,
-  getExtent,
+  convertExtent,
   getLayerUpdates,
   _getUpdate,
   getRequest,
@@ -751,7 +751,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   }
 
-  describe("getExtent", () => {
+  describe("convertExtent", () => {
     it("can handle unmatched wkid", done => {
       fetchMock
         .post(geometryServiceUrl + "/findTransformations", {
@@ -767,9 +767,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -794,9 +793,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -815,9 +813,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -838,9 +835,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -867,9 +863,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const expected: any = undefined;
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -892,9 +887,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -912,9 +906,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         .post(geometryServiceUrl + "/findTransformations/rest/info", "{}")
         .post(geometryServiceUrl + "/project/rest/info", "{}");
 
-      getExtent(
+      convertExtent(
         extent,
-        portalSR,
         serviceSR,
         geometryServiceUrl,
         MOCK_USER_REQOPTS
@@ -2137,7 +2130,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       }, done.fail);
     });
 
-    it("can get options for HOSTED service with values and handle error on getExtent", done => {
+    it("can get options for HOSTED service with values and handle error on convertExtent", done => {
       const requestOptions: IUserRequestOptions = {
         authentication: new UserSession({
           username: "jsmith",
