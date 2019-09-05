@@ -313,7 +313,7 @@ describe("Module `deploySolution`", () => {
         folderId: "a4468da125a64526b359b70d8ba4a9dd",
         isPortal: false,
         initiative: {
-          orgExtent: [[-88.009, 41.708], [-88.226, 41.844]],
+          orgExtent: [[-88.226, 41.708], [-88.009, 41.844]], // [[xmin, ymin], [xmax, ymax]]
           defaultExtent: {
             xmin: -9821384.714217981,
             ymin: 5117339.123090005,
