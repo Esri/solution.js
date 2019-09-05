@@ -117,9 +117,8 @@ export function deploySolution(
 
         const portalExtent: any = portalResponse.defaultExtent;
         common
-          .getExtent(
+          .convertExtent(
             portalExtent,
-            portalExtent.spatialReference,
             { wkid: 4326 },
             portalResponse.helperServices.geometry.url,
             requestOptions

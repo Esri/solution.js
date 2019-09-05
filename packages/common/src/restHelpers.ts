@@ -50,10 +50,108 @@ export function addToServiceDefinition(
 }
 
 /**
+ * Converts an extent to a specified spatial reference.
+ * @param extent Extent object to check and (possibly) to project
+ * @param outSR Desired spatial reference
+ * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
+ * @param requestOptions Credentials for the request
+ * @return Original extent if it's already using outSR or the extents projected into the outSR
+ */
+export function convertExtent(
+  extent: serviceAdmin.IExtent,
+  outSR: serviceAdmin.ISpatialReference,
+  geometryServiceUrl: string,
+  requestOptions: request.IRequestOptions
+): Promise<serviceAdmin.IExtent> {
+  const _requestOptions: any = Object.assign({}, requestOptions);
+  return new Promise<any>((resolve, reject) => {
+    // tslint:disable-next-line:no-unnecessary-type-assertion
+    if (extent.spatialReference!.wkid === outSR.wkid) {
+      resolve(extent);
+    } else {
+      _requestOptions.params = {
+        f: "json",
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        inSR: extent.spatialReference!.wkid,
+        outSR: outSR.wkid,
+        extentOfInterest: JSON.stringify(extent)
+      };
+      request
+        .request(geometryServiceUrl + "/findTransformations", _requestOptions)
+        .then(
+          response => {
+            const transformations =
+              response && response.transformations
+                ? response.transformations
+                : undefined;
+            let transformation: any;
+            if (transformations && transformations.length > 0) {
+              // if a forward single transformation is found use that...otherwise check for and use composite
+              transformation = transformations[0].wkid
+                ? transformations[0].wkid
+                : transformations[0].geoTransforms
+                ? transformations[0]
+                : undefined;
+            }
+
+            _requestOptions.params = {
+              f: "json",
+              outSR: outSR.wkid,
+              // tslint:disable-next-line:no-unnecessary-type-assertion
+              inSR: extent.spatialReference!.wkid,
+              geometries: {
+                geometryType: "esriGeometryPolygon",
+                geometries: [
+                  {
+                    rings: [
+                      [
+                        [extent.xmin, extent.ymin],
+                        [extent.xmin, extent.ymax],
+                        [extent.xmax, extent.ymax],
+                        [extent.xmax, extent.ymin],
+                        [extent.xmin, extent.ymin]
+                      ]
+                    ]
+                  }
+                ]
+              },
+              transformation: transformation
+            };
+            request
+              .request(geometryServiceUrl + "/project", _requestOptions)
+              .then(
+                projectResponse => {
+                  const projectGeom: any =
+                    projectResponse.geometries.length > 0
+                      ? projectResponse.geometries[0]
+                      : undefined;
+                  if (projectGeom && projectGeom.rings) {
+                    const ring: any = projectGeom.rings[0];
+                    resolve({
+                      xmin: ring[0][0],
+                      ymin: ring[0][1],
+                      xmax: ring[2][0],
+                      ymax: ring[2][1],
+                      spatialReference: outSR
+                    });
+                  } else {
+                    resolve(undefined);
+                  }
+                },
+                e => reject(generalHelpers.fail(e))
+              );
+          },
+          e => reject(generalHelpers.fail(e))
+        );
+    }
+  });
+}
+
+/**
  * Publishes a feature service as an AGOL item; it does not include its layers and tables
  *
  * @param itemInfo Item's `item` section
- * @param requestOptions Options for the request
+ * @param requestOptions Credentials for the request
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder
  * @param access Access to set for item: "public", "org", "private"
@@ -89,7 +187,7 @@ export function createFeatureService(
  *
  * @param itemInfo Item's `item` section
  * @param dataInfo Item's `data` section
- * @param requestOptions Options for the request
+ * @param requestOptions Credentials for the request
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: "public", "org", "private"
@@ -202,7 +300,7 @@ export function createUniqueFolder(
  * Dependencies will only exist when the service is a view.
  *
  * @param itemTemplate Template of item to be created
- * @param requestOptions Options for the request
+ * @param requestOptions Credentials for the request
  * @return A promise that will resolve a list of dependencies
  */
 export function extractDependencies(
@@ -254,94 +352,6 @@ export function getBlob(
       },
       e => reject(generalHelpers.fail(e)) // unable to get response
     );
-  });
-}
-
-export function getExtent(
-  extent: any,
-  inSR: any,
-  outSR: any,
-  geometryServiceUrl: string,
-  requestOptions: request.IRequestOptions
-): Promise<any> {
-  const _requestOptions: any = Object.assign({}, requestOptions);
-  return new Promise<any>((resolve, reject) => {
-    if (inSR.wkid === outSR.wkid) {
-      resolve(extent);
-    } else {
-      _requestOptions.params = {
-        f: "json",
-        inSR: inSR.wkid,
-        outSR: outSR.wkid,
-        extentOfInterest: JSON.stringify(extent)
-      };
-      request
-        .request(geometryServiceUrl + "/findTransformations", _requestOptions)
-        .then(
-          response => {
-            const transformations =
-              response && response.transformations
-                ? response.transformations
-                : undefined;
-            let transformation: any;
-            if (transformations && transformations.length > 0) {
-              // if a forward single transformation is found use that...otherwise check for and use composite
-              transformation = transformations[0].wkid
-                ? transformations[0].wkid
-                : transformations[0].geoTransforms
-                ? transformations[0]
-                : undefined;
-            }
-
-            _requestOptions.params = {
-              f: "json",
-              outSR: outSR.wkid,
-              inSR: extent.spatialReference.wkid,
-              geometries: {
-                geometryType: "esriGeometryPolygon",
-                geometries: [
-                  {
-                    rings: [
-                      [
-                        [extent.xmin, extent.ymin],
-                        [extent.xmin, extent.ymax],
-                        [extent.xmax, extent.ymax],
-                        [extent.xmax, extent.ymin],
-                        [extent.xmin, extent.ymin]
-                      ]
-                    ]
-                  }
-                ]
-              },
-              transformation: transformation
-            };
-            request
-              .request(geometryServiceUrl + "/project", _requestOptions)
-              .then(
-                projectResponse => {
-                  const projectGeom: any =
-                    projectResponse.geometries.length > 0
-                      ? projectResponse.geometries[0]
-                      : undefined;
-                  if (projectGeom && projectGeom.rings) {
-                    const ring: any = projectGeom.rings[0];
-                    resolve({
-                      xmin: ring[0][0],
-                      ymin: ring[0][1],
-                      xmax: ring[2][0],
-                      ymax: ring[2][1],
-                      spatialReference: outSR
-                    });
-                  } else {
-                    resolve(undefined);
-                  }
-                },
-                e => reject(generalHelpers.fail(e))
-              );
-          },
-          e => reject(generalHelpers.fail(e))
-        );
-    }
   });
 }
 
@@ -655,7 +665,7 @@ export function updateItem(
  *
  * @param id AGOL id of item to update
  * @param url URL to assign to item's base section
- * @param requestOptions Options for the request
+ * @param requestOptions Credentials for the request
  * @return A promise that will resolve when the item has been updated
  */
 export function updateItemURL(
@@ -697,7 +707,7 @@ export function _countRelationships(layers: any[]): number {
  *
  * @param serviceUrl URL to hosted service
  * @param layerList List of layers at that service...must contain id
- * @param requestOptions Options for the request
+ * @param requestOptions Credentials for the request
  * @return A promise that will resolve with a list of the layers from the admin api
  */
 
@@ -753,9 +763,8 @@ export function _getCreateServiceOptions(
     );
 
     // project the portals extent to match that of the service
-    getExtent(
+    convertExtent(
       templateDictionary.initiative.defaultExtent,
-      templateDictionary.initiative.spatialReference,
       serviceInfo.service.spatialReference,
       templateDictionary.geometryServiceUrl,
       requestOptions
