@@ -65,12 +65,14 @@ export function convertExtent(
 ): Promise<serviceAdmin.IExtent> {
   const _requestOptions: any = Object.assign({}, requestOptions);
   return new Promise<any>((resolve, reject) => {
-    if (extent.spatialReference.wkid === outSR.wkid) {
+    // tslint:disable-next-line:no-unnecessary-type-assertion
+    if (extent.spatialReference!.wkid === outSR.wkid) {
       resolve(extent);
     } else {
       _requestOptions.params = {
         f: "json",
-        inSR: extent.spatialReference.wkid,
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        inSR: extent.spatialReference!.wkid,
         outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
       };
@@ -95,7 +97,8 @@ export function convertExtent(
             _requestOptions.params = {
               f: "json",
               outSR: outSR.wkid,
-              inSR: extent.spatialReference.wkid,
+              // tslint:disable-next-line:no-unnecessary-type-assertion
+              inSR: extent.spatialReference!.wkid,
               geometries: {
                 geometryType: "esriGeometryPolygon",
                 geometries: [
