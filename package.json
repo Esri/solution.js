@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^6.2.0",
