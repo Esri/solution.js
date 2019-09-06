@@ -1,0 +1,20 @@
+language: node_js
+sudo: false
+notifications:
+  email: false
+node_js:
+- '8'
+- '10'
+before_script:
+- npm install
+script:
+- npm run test:ci
+env:
+- MOZ_HEADLESS=1
+addons:
+  chrome: stable
+  firefox: latest
+branches:
+  only:
+    - master
+    - develop
