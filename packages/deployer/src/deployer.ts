@@ -128,11 +128,14 @@ export function deploySolution(
               templateDictionary.initiative = Object.assign(
                 templateDictionary.initiative || {},
                 {
-                  // this needs to be in number[][] format and in WGS 84
-                  orgExtent: [
-                    [wgs84Extent.xmin, wgs84Extent.ymin],
-                    [wgs84Extent.xmax, wgs84Extent.ymax]
-                  ],
+                  orgExtent:
+                    wgs84Extent.xmin +
+                    "," +
+                    wgs84Extent.ymin +
+                    "," +
+                    wgs84Extent.xmax +
+                    "," +
+                    wgs84Extent.ymax,
                   defaultExtent: portalExtent,
                   spatialReference: portalExtent.spatialReference
                 }
