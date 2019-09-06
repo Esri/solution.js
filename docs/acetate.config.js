@@ -212,27 +212,33 @@ module.exports = function(acetate) {
   acetate.helper("cdnUrl", function(context, package) {
     return `https://unpkg.com/${
       package.name
-    }@${package.version}/dist/umd/${package.name.replace("@esri/solutions-", "")}.umd`;
+    }@${package.version}/dist/umd/${package.name.replace("@esri/solution-", "")}.umd`;
   });
 
   // <code> friendly script tag string
   acetate.helper("scriptTag", function(context, package) {
-    return `&lt;script src="https://unpkg.com/${
-      package.name
-    }@${package.version}/dist/umd/${package.name.replace("@esri/solutions-", "")}.umd.min.js"&gt;&lt;/script&gt;`;
+    return acetate.nunjucks.renderString(
+      `{% highlight "html" %}<script src="https://unpkg.com/${package.name}@${
+        package.version
+      }/dist/umd/${package.name.replace(
+        "@esri/arcgis-rest-",
+        ""
+      )}.umd.min.js"></script>{% endhighlight %}`
+    );
   });
 
   // CDN with SRI only if hash exists
   acetate.helper("scriptTagSRI", function(context, package) {
     const hash = srihashes.packages[package.name];
     if (hash) {
-      return `<h2 class="font-size--1 trailer-half">CDN with SRI:</h2>
-      <pre><code>&lt;script src="https://unpkg.com/${package.name}@${
+      return acetate.nunjucks.renderString(`
+        {%highlight "html" %}
+        <script src="https://unpkg.com/${package.name}@${
         package.version
       }/dist/umd/${package.name.replace(
-        "@esri/solutions-",
+        "@esri/solution-",
         ""
-      )}.umd.min.js" integrity="${hash}" crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>`;
+      )}.umd.min.js" integrity="${hash}" crossorigin="anonymous"></script>{% endhighlight %}`);
     } else {
       return "";
     }
@@ -245,5 +251,12 @@ module.exports = function(acetate) {
         )
       : [];
     return `npm install ${package.name} ${peers.join(" ")}`;
+  });
+
+  acetate.filter("stripThisFromParams", function(params) {
+    if (!params || !params.length) {
+      return [];
+    }
+    return params.filter(p => p.name !== "this");
   });
 };
