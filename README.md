@@ -45,9 +45,9 @@ When a Solution is deployed into an organization, a new Solution is created that
 
 The API is divided into packages to make it easier to use just the parts that you want:
 
-* `common`, which contains common helper functions for the other packages 
-* `creator`, which contains functions for transforming items into templates 
-* `deployer`, which contains functions for deploying item templates into items in a destination organization 
+* `common`, which contains common helper functions for the other packages
+* `creator`, which contains functions for transforming items into templates
+* `deployer`, which contains functions for deploying item templates into items in a destination organization
 * `feature-layer`, which contains functions for Feature Service items
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
@@ -100,41 +100,56 @@ Afterward, for a list of all available commands run `npm run`.
 Some useful commands include:
 
 * building
- * `npm run build` creates symlinks among packages and creates node, umd, and esm outputs for each package
- * `npm run clean` runs `clean:src` and `clean:dist`
- * `npm run clean:src` deletes `.d.ts`, `.js`, and `.js.map` files
- * `npm run clean:dist` deletes `.rpt2_cache` and `dist` folders
- * `npm run lint` lints the TypeScript files
- * `npm run lint:fix` lints the TypeScript files and fixes
- * `npm run prettify` beautifies TypeScript files
+  * `npm run build` creates symlinks among packages and creates node, umd, and esm outputs for each package
+  * `npm run clean` runs `clean:src` and `clean:dist`
+    * `npm run clean:src` deletes `.d.ts`, `.js`, and `.js.map` files
+    * `npm run clean:dist` deletes `.rpt2_cache` and `dist` folders
+  * `npm run lint` lints the TypeScript files
+  * `npm run lint:fix` lints the TypeScript files and fixes
+  * `npm run prettify` beautifies TypeScript files
 
 * testing
- * `npm run test` lints, then runs tests `test:node` and `test:chrome` to confirm that the API is functioning as expected
- * `npm run test:chrome` runs karma in the Chrome browser
- * `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
- * `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests
- * `npm run test:firefox` runs karma in the Firefox browser
- * `npm run test:node` runs jasmine
- * `npm run test:node:debug` runs jasmine in debug mode
- * `npm run test:ci` lints, then runs `test:node`, `test:chrome:ci`, `test:firefox`, and `coveralls` from a bash window
- * `npm run test:ci:win` lints, then runs `test:node`, `test:chrome:ci`, `test:firefox`, and `coveralls:win` from a Windows window
- * `npm run test:all` runs `test:node` and `test:chrome`
- * `npm run coveralls` updates code coverage info from a bash window
- * `npm run coveralls:win` updates code coverage info from a Windows window
+  * `npm run test` lints, then runs tests `test:node` and `test:chrome` to confirm that the API is functioning as expected
+  * `npm run test:chrome` runs karma in the Chrome browser
+  * `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
+  * `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests
+  * `npm run test:firefox` runs karma in the Firefox browser
+  * `npm run test:node` runs jasmine
+  * `npm run test:node:debug` runs jasmine in debug mode
+  * `npm run test:ci` lints, then runs `test:node`, `test:chrome:ci`, `test:firefox`, and `coveralls` from a bash window
+  * `npm run test:ci:win` lints, then runs `test:node`, `test:chrome:ci`, `test:firefox`, and `coveralls:win` from a Windows window
+  * `npm run test:all` runs `test:node` and `test:chrome`
+  * `npm run coveralls` updates code coverage info from a bash window
+  * `npm run coveralls:win` updates code coverage info from a Windows window
 
 * publishing doc
-
+  * `npm run docs:build` _(requires bash console)_
+    * `npm run docs:typedoc`
+    * `npm run docs:build:acetate`
+    * `npm run docs:build:sass`
+    * `npm run docs:build:images`
+    * `npm run docs:build:js`
+  * `npm run docs:build:dev` _(requires bash console)_
+    * `npm run docs:dev:typedoc`
+    * `npm run docs:dev:acetate`
+    * `npm run docs:dev:sass`
+    * `npm run docs:dev:images`
+    * `npm run docs:dev:js`
+  * `npm run docs:serve` runs `docs:build` and hosts the documentation website on localhost:3000 _(requires bash console)_
+  * `npm run docs:deploy` runs `docs:build` and pushes the documentation to the repository's gh-pages
+  * `npm run docs:srihash`
 
 * publishing code _(requires bash window)_
- * `npm run prerelease:prepare` fetch, clean, link packages, and test
- * `npm run release:prepare` prepares for publication and creates a changelog
- * `npm run release:review` assembles git changes _(use arrow keys to put cursor on line_ above _desired version)_
- * `npm run release:publish` publishes a version
+  * `npm run prerelease:prepare` fetch, clean, link packages, and test
+  * `npm run release:prepare` prepares for publication and creates a changelog
+  * `npm run release:review` assembles git changes _(use arrow keys to put cursor on line_ above _desired version)_
+  * `npm run release:publish` publishes a version
 
 * lifecycle
- * postinstall runs `bootstrap`
- * bootstrap
- * precommit
+  * postinstall runs `bootstrap`
+  * bootstrap
+  * precommit
+
 
 
 ### Frequently Asked Questions
