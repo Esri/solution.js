@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>updateItemURL | API Reference | ArcGIS solution.js</title>
+    
+    <meta name="description" content="A modular, high quality toolkit.">
+    
+    <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
+    <link rel="stylesheet" href="/solution.js/css/style.css">
+    
+  </head>
+  <body>
+  <!-- Drawer -->
+    <div class="drawer drawer-left js-drawer" data-drawer="top-nav" tabindex="0">
+      <nav class="drawer-nav" role="navigation">
+        <aside class="side-nav">
+          <h2 class="side-nav-title">ArcGIS solution.js</h2>
+          <a href="/solution.js/guides/" class="side-nav-link">Guides</a>
+          <a href="/solution.js/api/" class="is-active side-nav-link">API Reference</a>
+        </aside>
+      </nav>
+    </div>
+
+    <div id="page" class="wrapper">
+      <!-- Sample HTML -->
+      <header class="top-nav">
+        <div class="grid-container">
+          <div class="column-24">
+            <!-- desktop sized navigation -->
+            <div class="tablet-hide">
+              <!-- logo / home -->
+              <a href="/solution.js/" class="top-nav-title">ArcGIS solution.js</a>
+              <!-- primary navigation sections -->
+              <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
+                <a href="/solution.js/guides/" class="top-nav-link">Guides</a>
+                <a href="/solution.js/api/" class="is-active top-nav-link">API Reference</a>
+                <a href="https://github.com/Esri/solution.js" class="top-nav-link">GitHub</a>
+              </nav>
+            </div>
+
+            <!-- tablet and mobile sized navigation -->
+            <div class="tablet-show top-nav-flex">
+              <!-- open primary navigation drawer -->
+              <nav class="top-nav-flex-list" role="navigation" aria-labelledby="topnav">
+                <a href="/solution.js/" class="icon-ui-menu top-nav-link js-drawer-toggle" data-drawer="top-nav"><span class="phone-hide">Menu</span></a>
+              </nav>
+              <!-- logo / home -->
+              <header class="top-nav-flex-title">
+                <a href="/solution.js/" class="top-nav-link">ArcGIS REST API JavaScript Client</a>
+              </header>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+
+      <main id="#skip-to-content">
+        
+<div class="grid-container trailer-1 leader-1">
+  <nav class="column-6">
+    <api-search base-url="/solution.js/">
+      <h3 class="font-size--1 trailer-quarter">Packages</h3>
+      <hr class="leader-quarter trailer-quarter" />
+      <ul class="list-plain">
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="1" package-name="@esri/solution-common" ></nav-toggle>
+          <button id="trigger1" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/common/" class="is-active tsd-kind-icon">@esri/solution-common</a>
+          <ul id="list1" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_padPositiveNum/" class="tsd-kind-icon padding-right-1">_padPositiveNum</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/cloneObject/" class="tsd-kind-icon padding-right-1">cloneObject</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/deleteProp/" class="tsd-kind-icon padding-right-1">deleteProp</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/deleteProps/" class="tsd-kind-icon padding-right-1">deleteProps</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/fail/" class="tsd-kind-icon padding-right-1">fail</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getProp/" class="tsd-kind-icon padding-right-1">getProp</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getProps/" class="tsd-kind-icon padding-right-1">getProps</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getUTCTimestamp/" class="tsd-kind-icon padding-right-1">getUTCTimestamp</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/hasAnyKeyword/" class="tsd-kind-icon padding-right-1">hasAnyKeyword</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/hasTypeKeyword/" class="tsd-kind-icon padding-right-1">hasTypeKeyword</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/setProp/" class="tsd-kind-icon padding-right-1">setProp</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IDependency/" class="tsd-kind-icon padding-right-1">IDependency</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IItemTemplate/" class="tsd-kind-icon padding-right-1">IItemTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IItemTemplateConversions/" class="tsd-kind-icon padding-right-1">IItemTemplateConversions</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IItemTypeModuleMap/" class="tsd-kind-icon padding-right-1">IItemTypeModuleMap</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/INumberValuePair/" class="tsd-kind-icon padding-right-1">INumberValuePair</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IPostProcessArgs/" class="tsd-kind-icon padding-right-1">IPostProcessArgs</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/ISolutionItem/" class="tsd-kind-icon padding-right-1">ISolutionItem</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/ISolutionItemData/" class="tsd-kind-icon padding-right-1">ISolutionItemData</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IStringValuePair/" class="tsd-kind-icon padding-right-1">IStringValuePair</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IUpdate/" class="tsd-kind-icon padding-right-1">IUpdate</a>
+            </li>
+            
+            <li class="tsd-kind-enumeration padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/EFileType/" class="tsd-kind-icon padding-right-1">EFileType</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IDeployFileCopyPath/" class="tsd-kind-icon padding-right-1">IDeployFileCopyPath</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/IDeployFilename/" class="tsd-kind-icon padding-right-1">IDeployFilename</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/ISourceFileCopyPath/" class="tsd-kind-icon padding-right-1">ISourceFileCopyPath</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/addMetadataFromBlob/" class="tsd-kind-icon padding-right-1">addMetadataFromBlob</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/addResourceFromBlob/" class="tsd-kind-icon padding-right-1">addResourceFromBlob</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/addThumbnailFromBlob/" class="tsd-kind-icon padding-right-1">addThumbnailFromBlob</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/addThumbnailFromUrl/" class="tsd-kind-icon padding-right-1">addThumbnailFromUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/copyFilesFromStorageItem/" class="tsd-kind-icon padding-right-1">copyFilesFromStorageItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/copyFilesToStorageItem/" class="tsd-kind-icon padding-right-1">copyFilesToStorageItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/copyMetadata/" class="tsd-kind-icon padding-right-1">copyMetadata</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/copyResource/" class="tsd-kind-icon padding-right-1">copyResource</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateGroupFilePaths/" class="tsd-kind-icon padding-right-1">generateGroupFilePaths</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateMetadataStorageFilename/" class="tsd-kind-icon padding-right-1">generateMetadataStorageFilename</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateResourceFilenameFromStorage/" class="tsd-kind-icon padding-right-1">generateResourceFilenameFromStorage</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateResourceStorageFilename/" class="tsd-kind-icon padding-right-1">generateResourceStorageFilename</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateSourceItemFilePaths/" class="tsd-kind-icon padding-right-1">generateSourceItemFilePaths</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateSourceMetadataUrl/" class="tsd-kind-icon padding-right-1">generateSourceMetadataUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateSourceResourceUrl/" class="tsd-kind-icon padding-right-1">generateSourceResourceUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateSourceThumbnailUrl/" class="tsd-kind-icon padding-right-1">generateSourceThumbnailUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateStorageFilePaths/" class="tsd-kind-icon padding-right-1">generateStorageFilePaths</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/generateThumbnailStorageFilename/" class="tsd-kind-icon padding-right-1">generateThumbnailStorageFilename</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_countRelationships/" class="tsd-kind-icon padding-right-1">_countRelationships</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_getCreateServiceOptions/" class="tsd-kind-icon padding-right-1">_getCreateServiceOptions</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_getGroupContentsTranche/" class="tsd-kind-icon padding-right-1">_getGroupContentsTranche</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_getRelationshipUpdates/" class="tsd-kind-icon padding-right-1">_getRelationshipUpdates</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_getUpdate/" class="tsd-kind-icon padding-right-1">_getUpdate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_setItemProperties/" class="tsd-kind-icon padding-right-1">_setItemProperties</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/addToServiceDefinition/" class="tsd-kind-icon padding-right-1">addToServiceDefinition</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/convertExtent/" class="tsd-kind-icon padding-right-1">convertExtent</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createFeatureService/" class="tsd-kind-icon padding-right-1">createFeatureService</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createItemWithData/" class="tsd-kind-icon padding-right-1">createItemWithData</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createUniqueFolder/" class="tsd-kind-icon padding-right-1">createUniqueFolder</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/extractDependencies/" class="tsd-kind-icon padding-right-1">extractDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getBlob/" class="tsd-kind-icon padding-right-1">getBlob</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getGroupContents/" class="tsd-kind-icon padding-right-1">getGroupContents</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getItem/" class="tsd-kind-icon padding-right-1">getItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getItemBlob/" class="tsd-kind-icon padding-right-1">getItemBlob</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getItemData/" class="tsd-kind-icon padding-right-1">getItemData</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getItemRelatedItems/" class="tsd-kind-icon padding-right-1">getItemRelatedItems</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getLayerUpdates/" class="tsd-kind-icon padding-right-1">getLayerUpdates</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getLayers/" class="tsd-kind-icon padding-right-1">getLayers</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getRequest/" class="tsd-kind-icon padding-right-1">getRequest</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getServiceLayersAndTables/" class="tsd-kind-icon padding-right-1">getServiceLayersAndTables</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/shareItem/" class="tsd-kind-icon padding-right-1">shareItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/updateItem/" class="tsd-kind-icon padding-right-1">updateItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/updateItemURL/" class="is-active tsd-kind-icon padding-right-1">updateItemURL</a>
+            </li>
+            
+            <li class="tsd-kind-variable padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/PLACEHOLDER_GEOCODE_SERVER_NAME/" class="tsd-kind-icon padding-right-1">PLACEHOLDER_GEOCODE_SERVER_NAME</a>
+            </li>
+            
+            <li class="tsd-kind-variable padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/PLACEHOLDER_GEOMETRY_SERVER_NAME/" class="tsd-kind-icon padding-right-1">PLACEHOLDER_GEOMETRY_SERVER_NAME</a>
+            </li>
+            
+            <li class="tsd-kind-variable padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/PLACEHOLDER_NA_SERVER_NAME/" class="tsd-kind-icon padding-right-1">PLACEHOLDER_NA_SERVER_NAME</a>
+            </li>
+            
+            <li class="tsd-kind-variable padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/PLACEHOLDER_PRINT_SERVER_NAME/" class="tsd-kind-icon padding-right-1">PLACEHOLDER_PRINT_SERVER_NAME</a>
+            </li>
+            
+            <li class="tsd-kind-variable padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/PLACEHOLDER_SERVER_NAME/" class="tsd-kind-icon padding-right-1">PLACEHOLDER_SERVER_NAME</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_createId/" class="tsd-kind-icon padding-right-1">_createId</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/_getRandomNumberInRange/" class="tsd-kind-icon padding-right-1">_getRandomNumberInRange</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createInitializedGroupTemplate/" class="tsd-kind-icon padding-right-1">createInitializedGroupTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createInitializedItemTemplate/" class="tsd-kind-icon padding-right-1">createInitializedItemTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/createPlaceholderTemplate/" class="tsd-kind-icon padding-right-1">createPlaceholderTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/findTemplateInList/" class="tsd-kind-icon padding-right-1">findTemplateInList</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/findTemplateIndexInList/" class="tsd-kind-icon padding-right-1">findTemplateIndexInList</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/replaceInTemplate/" class="tsd-kind-icon padding-right-1">replaceInTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/templatizeTerm/" class="tsd-kind-icon padding-right-1">templatizeTerm</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="2" package-name="@esri/solution-creator" ></nav-toggle>
+          <button id="trigger2" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/creator/" class="tsd-kind-icon">@esri/solution-creator</a>
+          <ul id="list2" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/creator/_replaceTemplate/" class="tsd-kind-icon padding-right-1">_replaceTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/creator/createItemTemplate/" class="tsd-kind-icon padding-right-1">createItemTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/creator/createSolutionTemplate/" class="tsd-kind-icon padding-right-1">createSolutionTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/creator/IPortalSubset/" class="tsd-kind-icon padding-right-1">IPortalSubset</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/creator/createSolution/" class="tsd-kind-icon padding-right-1">createSolution</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="3" package-name="@esri/solution-deployer" ></nav-toggle>
+          <button id="trigger3" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/deployer/" class="tsd-kind-icon">@esri/solution-deployer</a>
+          <ul id="list3" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/_createItemFromTemplateWhenReady/" class="tsd-kind-icon padding-right-1">_createItemFromTemplateWhenReady</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/_topologicallySortItems/" class="tsd-kind-icon padding-right-1">_topologicallySortItems</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/deploySolutionItems/" class="tsd-kind-icon padding-right-1">deploySolutionItems</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/IPortalSubset/" class="tsd-kind-icon padding-right-1">IPortalSubset</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/ISolutionInfoCard/" class="tsd-kind-icon padding-right-1">ISolutionInfoCard</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/_checkedReplaceAll/" class="tsd-kind-icon padding-right-1">_checkedReplaceAll</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/_estimateDeploymentCost/" class="tsd-kind-icon padding-right-1">_estimateDeploymentCost</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/deployer/deploySolution/" class="tsd-kind-icon padding-right-1">deploySolution</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="4" package-name="@esri/solution-feature-layer" ></nav-toggle>
+          <button id="trigger4" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/feature-layer/" class="tsd-kind-icon">@esri/solution-feature-layer</a>
+          <ul id="list4" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/createItemFromTemplate/" class="tsd-kind-icon padding-right-1">createItemFromTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-interface padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/IPopupInfos/" class="tsd-kind-icon padding-right-1">IPopupInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_cacheFieldInfo/" class="tsd-kind-icon padding-right-1">_cacheFieldInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_cachePopupInfo/" class="tsd-kind-icon padding-right-1">_cachePopupInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_getDependantItemId/" class="tsd-kind-icon padding-right-1">_getDependantItemId</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_getFieldVisibilityUpdates/" class="tsd-kind-icon padding-right-1">_getFieldVisibilityUpdates</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_getNameMapping/" class="tsd-kind-icon padding-right-1">_getNameMapping</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_processAdminObject/" class="tsd-kind-icon padding-right-1">_processAdminObject</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatize/" class="tsd-kind-icon padding-right-1">_templatize</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeAdminLayerInfo/" class="tsd-kind-icon padding-right-1">_templatizeAdminLayerInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeAdminLayerInfoFields/" class="tsd-kind-icon padding-right-1">_templatizeAdminLayerInfoFields</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeAdminSourceLayerFields/" class="tsd-kind-icon padding-right-1">_templatizeAdminSourceLayerFields</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeArcadeExpressions/" class="tsd-kind-icon padding-right-1">_templatizeArcadeExpressions</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeAuthoringInfo/" class="tsd-kind-icon padding-right-1">_templatizeAuthoringInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeDefinitionEditor/" class="tsd-kind-icon padding-right-1">_templatizeDefinitionEditor</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeDefinitionExpression/" class="tsd-kind-icon padding-right-1">_templatizeDefinitionExpression</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeDefinitionQuery/" class="tsd-kind-icon padding-right-1">_templatizeDefinitionQuery</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeDrawingInfo/" class="tsd-kind-icon padding-right-1">_templatizeDrawingInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeExpressionInfos/" class="tsd-kind-icon padding-right-1">_templatizeExpressionInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeFieldName/" class="tsd-kind-icon padding-right-1">_templatizeFieldName</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeGenRenderer/" class="tsd-kind-icon padding-right-1">_templatizeGenRenderer</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeKeys/" class="tsd-kind-icon padding-right-1">_templatizeKeys</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeLabelingInfo/" class="tsd-kind-icon padding-right-1">_templatizeLabelingInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeLayer/" class="tsd-kind-icon padding-right-1">_templatizeLayer</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeLayerFieldReferences/" class="tsd-kind-icon padding-right-1">_templatizeLayerFieldReferences</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeMediaInfos/" class="tsd-kind-icon padding-right-1">_templatizeMediaInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeName/" class="tsd-kind-icon padding-right-1">_templatizeName</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizePopupElements/" class="tsd-kind-icon padding-right-1">_templatizePopupElements</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizePopupInfo/" class="tsd-kind-icon padding-right-1">_templatizePopupInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizePopupInfoFieldInfos/" class="tsd-kind-icon padding-right-1">_templatizePopupInfoFieldInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeProperty/" class="tsd-kind-icon padding-right-1">_templatizeProperty</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeRelationshipFields/" class="tsd-kind-icon padding-right-1">_templatizeRelationshipFields</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeRenderer/" class="tsd-kind-icon padding-right-1">_templatizeRenderer</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeSimpleName/" class="tsd-kind-icon padding-right-1">_templatizeSimpleName</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeSourceServiceName/" class="tsd-kind-icon padding-right-1">_templatizeSourceServiceName</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeTemplates/" class="tsd-kind-icon padding-right-1">_templatizeTemplates</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeTemporalRenderer/" class="tsd-kind-icon padding-right-1">_templatizeTemporalRenderer</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeTimeInfo/" class="tsd-kind-icon padding-right-1">_templatizeTimeInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeTopFilter/" class="tsd-kind-icon padding-right-1">_templatizeTopFilter</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_templatizeTypeTemplates/" class="tsd-kind-icon padding-right-1">_templatizeTypeTemplates</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/_validateDomains/" class="tsd-kind-icon padding-right-1">_validateDomains</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/addFeatureServiceLayersAndTables/" class="tsd-kind-icon padding-right-1">addFeatureServiceLayersAndTables</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/cacheFieldInfos/" class="tsd-kind-icon padding-right-1">cacheFieldInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/cachePopupInfos/" class="tsd-kind-icon padding-right-1">cachePopupInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/deTemplatizeFieldInfos/" class="tsd-kind-icon padding-right-1">deTemplatizeFieldInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/deleteViewProps/" class="tsd-kind-icon padding-right-1">deleteViewProps</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/getFieldSettings/" class="tsd-kind-icon padding-right-1">getFieldSettings</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/getLayersAndTables/" class="tsd-kind-icon padding-right-1">getLayersAndTables</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/postProcessFields/" class="tsd-kind-icon padding-right-1">postProcessFields</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/templatize/" class="tsd-kind-icon padding-right-1">templatize</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/updateFeatureServiceDefinition/" class="tsd-kind-icon padding-right-1">updateFeatureServiceDefinition</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/updateLayerFieldReferences/" class="tsd-kind-icon padding-right-1">updateLayerFieldReferences</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/updatePopupInfo/" class="tsd-kind-icon padding-right-1">updatePopupInfo</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/updateSettingsFieldInfos/" class="tsd-kind-icon padding-right-1">updateSettingsFieldInfos</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/feature-layer/updateTemplate/" class="tsd-kind-icon padding-right-1">updateTemplate</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="5" package-name="@esri/solution-simple-types" ></nav-toggle>
+          <button id="trigger5" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/simple-types/" class="tsd-kind-icon">@esri/solution-simple-types</a>
+          <ul id="list5" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/createItemFromTemplate/" class="tsd-kind-icon padding-right-1">createItemFromTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/getGroupTitle/" class="tsd-kind-icon padding-right-1">getGroupTitle</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/updateGroup/" class="tsd-kind-icon padding-right-1">updateGroup</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_extractDependencies/" class="tsd-kind-icon padding-right-1">_extractDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_getWebmapLayerIds/" class="tsd-kind-icon padding-right-1">_getWebmapLayerIds</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_templatizeWebmapLayerIdsAndUrls/" class="tsd-kind-icon padding-right-1">_templatizeWebmapLayerIdsAndUrls</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_extractDependencies/" class="tsd-kind-icon padding-right-1">_extractDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_getGenericWebAppDependencies/" class="tsd-kind-icon padding-right-1">_getGenericWebAppDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_getWABDependencies/" class="tsd-kind-icon padding-right-1">_getWABDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/findUrls/" class="tsd-kind-icon padding-right-1">findUrls</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/fineTuneCreatedItem/" class="tsd-kind-icon padding-right-1">fineTuneCreatedItem</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/handleServiceRequests/" class="tsd-kind-icon padding-right-1">handleServiceRequests</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/replaceUrl/" class="tsd-kind-icon padding-right-1">replaceUrl</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/setValues/" class="tsd-kind-icon padding-right-1">setValues</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/templatizeDatasources/" class="tsd-kind-icon padding-right-1">templatizeDatasources</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/templatizeWidgets/" class="tsd-kind-icon padding-right-1">templatizeWidgets</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_extractDependencies/" class="tsd-kind-icon padding-right-1">_extractDependencies</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_templatize/" class="tsd-kind-icon padding-right-1">_templatize</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/_updateDispatchers/" class="tsd-kind-icon padding-right-1">_updateDispatchers</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/simple-types/fineTuneCreatedItem/" class="tsd-kind-icon padding-right-1">fineTuneCreatedItem</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="6" package-name="@esri/solution-storymap" ></nav-toggle>
+          <button id="trigger6" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/storymap/" class="tsd-kind-icon">@esri/solution-storymap</a>
+          <ul id="list6" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/storymap/convertItemToTemplate/" class="tsd-kind-icon padding-right-1">convertItemToTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/storymap/createItemFromTemplate/" class="tsd-kind-icon padding-right-1">createItemFromTemplate</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/storymap/isAStoryMap/" class="tsd-kind-icon padding-right-1">isAStoryMap</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+        <li class="tsd-kind-module api-list-item">
+          <nav-toggle index="7" package-name="@esri/solution-viewer" ></nav-toggle>
+          <button id="trigger7" class="btn btn-transparent api-toggle-button" >
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon">
+              <path d="M7 4h5l12 12-12 12H7l12-12L7 4z" />
+            </svg>
+          </button>
+          <a href="/solution.js/api/viewer/" class="tsd-kind-icon">@esri/solution-viewer</a>
+          <ul id="list7" class="api-package-content-list">
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/viewer/getSolutionHierarchy/" class="tsd-kind-icon padding-right-1">getSolutionHierarchy</a>
+            </li>
+            
+          </ul>
+        </li>
+        
+      </ul>
+    </api-search>
+  </nav>
+
+  <div class="column-18">
+    <div class="panel panel-white padding-left-1 padding-right-1 padding-trailer-1 padding-leader-half">
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="clearfix trailer-half">
+  <h1 class="left font-size-5 code-face trailer-0">updateItemURL</h1>
+  <small class="tsd-kind-function font-size--2 right leader-half margin-right-half"><span class="tsd-kind-icon">Function</span></small>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <p>Updates the URL of an item.</p>
+
+
+  
+
+  <div class="panel padding-leader-half padding-trailer-half padding-right-quarter padding-left-half trailer-half">
+    <ul class="list-plain tsd-signatures tsd-kind-function trailer-0 leader-0">
+      
+        <li class="code-face tsd-signature tsd-kind-icon trailer-0 leader-0">updateItemURL<span class="text-light-gray">(</span>id: <i class="text-purple">string</i>, url: <i class="text-purple">string</i>, requestOptions: <i>IUserRequestOptions</i><span class="text-light-gray">) : </span><i>Promise</i><i><span class="text-light-gray">&lt;</span><i class="text-purple">string</i><span class="text-light-gray">&gt;</span></i></li>
+      
+    </ul>
+  </div>
+
+  
+    <h2 class="font-size-1 trailer-half">Parameters</h2>
+    
+  <div class="overflow-auto trailer-1">
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="font-size--2">Parameter</th>
+          <th class="font-size--2">Type</th>
+          <th class="font-size--2">Default</th>
+          <th class="font-size--2">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr id="updateItemURL-id">
+            <td class="code-face">
+              <a href="#updateItemURL-id" class="table-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
+              </a>
+              <span class="code-face">id</span>
+              
+                
+  
+
+  
+
+  
+
+  
+  <span class="label">Required</span>
+  
+
+  
+
+              
+            </td>
+            <td class="code-face"><i class="text-purple">string</i></td>
+            <td class="code-face"></td>
+            <td class="body-face api-param-comment">
+              
+              <p>AGOL id of item to update</p>
+
+            </td>
+          </tr><tr id="updateItemURL-url">
+            <td class="code-face">
+              <a href="#updateItemURL-url" class="table-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
+              </a>
+              <span class="code-face">url</span>
+              
+                
+  
+
+  
+
+  
+
+  
+  <span class="label">Required</span>
+  
+
+  
+
+              
+            </td>
+            <td class="code-face"><i class="text-purple">string</i></td>
+            <td class="code-face"></td>
+            <td class="body-face api-param-comment">
+              
+              <p>URL to assign to item's base section</p>
+
+            </td>
+          </tr><tr id="updateItemURL-requestOptions">
+            <td class="code-face">
+              <a href="#updateItemURL-requestOptions" class="table-link">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
+              </a>
+              <span class="code-face">requestOptions</span>
+              
+                
+  
+
+  
+
+  
+
+  
+  <span class="label">Required</span>
+  
+
+  
+
+              
+            </td>
+            <td class="code-face"><i>IUserRequestOptions</i></td>
+            <td class="code-face"></td>
+            <td class="body-face api-param-comment">
+              
+              <p>Credentials for the request</p>
+
+            </td>
+          </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+
+  
+    
+
+    
+  
+    
+
+    
+  
+    
+      
+      
+  
+    <h2 class="font-size-1 trailer-half">Available <code>requestOptions</code></h2>
+  
+  <div class="overflow-auto trailer-1">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Property</th>
+          <th>Type</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+
+      </tbody>
+    </table>
+  </div>
+
+    
+
+    
+  
+
+  <h2 class="font-size-1 trailer-half">Returns</h2><p>A promise that will resolve when the item has been updated</p>
+
+
+  <div class="fonts-size--1 panel padding-leader-half padding-trailer-half padding-right-half padding-left-half trailer-half">
+  <i>Promise</i><i><span class="text-light-gray">&lt;</span><i class="text-purple">string</i><span class="text-light-gray">&gt;</span></i>
+  </div>
+
+  
+
+
+
+<hr class="leader-half trailer-half">
+
+
+
+<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/restHelpers.ts#L671">packages/common/src/restHelpers.ts:671</a></small>
+
+
+  <details class="leader-1">
+    <summary>Debug Info</summary>
+    <pre><code>undefined</code></pre>
+  </details>
+
+    </div>
+  </div>
+</div>
+
+      </main>
+    </div>
+
+    <footer class="footer">
+      
+<div class="panel panel-white">
+  <div class="grid-container">
+    <div class="column-24">
+      <h2>Legend</h2>
+      <div
+        class="block-group block-group-4-up tablet-block-group-2-up phone-block-group-1-up"
+      >
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-module">
+              <span class="tsd-kind-icon">Module</span>
+            </li>
+            <li class="tsd-kind-object-literal">
+              <span class="tsd-kind-icon">Object literal</span>
+            </li>
+            <li class="tsd-kind-variable">
+              <span class="tsd-kind-icon">Variable</span>
+            </li>
+            <li class="tsd-kind-function">
+              <span class="tsd-kind-icon">Function</span>
+            </li>
+            <li class="tsd-kind-function tsd-has-type-parameter">
+              <span class="tsd-kind-icon">Function with type parameter</span>
+            </li>
+            <li class="tsd-kind-index-signature">
+              <span class="tsd-kind-icon">Index signature</span>
+            </li>
+            <li class="tsd-kind-type-alias">
+              <span class="tsd-kind-icon">Type alias</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-enumeration">
+              <span class="tsd-kind-icon">Enumeration</span>
+            </li>
+            <li class="tsd-kind-enumeration-member">
+              <span class="tsd-kind-icon">Enumeration member</span>
+            </li>
+            <li class="tsd-kind-property tsd-parent-kind-enumeration">
+              <span class="tsd-kind-icon">Property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-enumeration">
+              <span class="tsd-kind-icon">Method</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-interface">
+              <span class="tsd-kind-icon">Interface</span>
+            </li>
+            <li class="tsd-kind-interface tsd-has-type-parameter">
+              <span class="tsd-kind-icon">Interface with type parameter</span>
+            </li>
+            <li class="tsd-kind-constructor tsd-parent-kind-interface">
+              <span class="tsd-kind-icon">Constructor</span>
+            </li>
+            <li class="tsd-kind-property tsd-parent-kind-interface">
+              <span class="tsd-kind-icon">Property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-interface">
+              <span class="tsd-kind-icon">Method</span>
+            </li>
+            <li class="tsd-kind-index-signature tsd-parent-kind-interface">
+              <span class="tsd-kind-icon">Index signature</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-class">
+              <span class="tsd-kind-icon">Class</span>
+            </li>
+            <li class="tsd-kind-class tsd-has-type-parameter">
+              <span class="tsd-kind-icon">Class with type parameter</span>
+            </li>
+            <li class="tsd-kind-constructor tsd-parent-kind-class">
+              <span class="tsd-kind-icon">Constructor</span>
+            </li>
+            <li class="tsd-kind-property tsd-parent-kind-class">
+              <span class="tsd-kind-icon">Property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-class">
+              <span class="tsd-kind-icon">Method</span>
+            </li>
+            <li class="tsd-kind-accessor tsd-parent-kind-class">
+              <span class="tsd-kind-icon">Accessor</span>
+            </li>
+            <li class="tsd-kind-index-signature tsd-parent-kind-class">
+              <span class="tsd-kind-icon">Index signature</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li
+              class="tsd-kind-constructor tsd-parent-kind-class tsd-is-inherited"
+            >
+              <span class="tsd-kind-icon">Inherited constructor</span>
+            </li>
+            <li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
+              <span class="tsd-kind-icon">Inherited property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+              <span class="tsd-kind-icon">Inherited method</span>
+            </li>
+            <li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
+              <span class="tsd-kind-icon">Inherited accessor</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+              <span class="tsd-kind-icon">Protected property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected">
+              <span class="tsd-kind-icon">Protected method</span>
+            </li>
+            <li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-protected">
+              <span class="tsd-kind-icon">Protected accessor</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-property tsd-parent-kind-class tsd-is-private">
+              <span class="tsd-kind-icon">Private property</span>
+            </li>
+            <li class="tsd-kind-method tsd-parent-kind-class tsd-is-private">
+              <span class="tsd-kind-icon">Private method</span>
+            </li>
+            <li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-private">
+              <span class="tsd-kind-icon">Private accessor</span>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <ul class="list-plain">
+            <li class="tsd-kind-property tsd-parent-kind-class tsd-is-static">
+              <span class="tsd-kind-icon">Static property</span>
+            </li>
+            <li
+              class="tsd-kind-call-signature tsd-parent-kind-class tsd-is-static"
+            >
+              <span class="tsd-kind-icon">Static method</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <div class="panel panel-white">
+        <div class="grid-container">
+          <div class="column-24">
+            <a href="https://github.com/Esri/solution.js" class="font-size--2">Fork this project on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/js/calcite-web.min.js"></script>
+
+    <script>
+       calcite.init()
+    </script>
+
+    
+<script src="https://unpkg.com/vue@2.4.2/dist/vue.min.js"></script>
+<script src="https://unpkg.com/fuse.js@3.0.5/dist/fuse.min.js"></script>
+<script src="/solution.js/js/index.js"></script>
+<script src="/solution.js/js/api-search.js"></script>
+<script src="/solution.js/js/nav-toggle.js"></script>
+<script>
+  new Vue({
+    el: "#page"
+  });
+</script>
+
+
+  </body>
+</html>
