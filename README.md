@@ -3,8 +3,8 @@
 [![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
-[npm-img]: https://www.npmjs.com/package/@esri/solution-common
-[npm-url]: https://img.shields.io/npm/v/@esri/solution-common.svg?style=round-square&color=blue
+[npm-img]: https://img.shields.io/npm/v/@esri/solution-common.svg?style=round-square&color=blue
+[npm-url]: https://www.npmjs.com/package/@esri/solution-common
 [travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
 [travis-url]: https://travis-ci.org/Esri/solution.js
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
