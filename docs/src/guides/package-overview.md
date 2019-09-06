@@ -5,16 +5,16 @@ order: 10
 group: 0-introduction
 ---
 
-# Why `@esri/arcgis-rest-js`?
+# Why `@esri/solution.js`?
 
-`@esri/arcgis-rest-js` simplifies making requests to ArcGIS Online and Enterprise in both browsers and Node.js.
+`@esri/solution.js` simplifies making requests to ArcGIS Online and Enterprise in both browsers and Node.js.
 
-There's no better way to explain what that means than comparing an `@esri/arcgis-rest-js` call to the same web request made using plain old JavaScript.
+There's no better way to explain what that means than comparing an `@esri/solution.js` call to the same web request made using plain old JavaScript.
 
 ### @esri/arcgis-rest
 
 ```js
-import { getUser } from "@esri/arcgis-rest-users";
+import { getUser } from "@esri/arcgis-rest-portal";
 
 // pass in a username and get back information about the user
 getUser(`jgravois`)
@@ -37,16 +37,16 @@ xhr.open('GET', url, true);
 xhr.send(null);
 ```
 
-wow, thats a lot easier! `@esri/arcgis-rest-js` is able to intuit the actual url (by default it assumes you're interacting with ArcGIS Online) prior to making the request and internalizes a lot of tedious logic for handling the response.
+wow, thats a lot easier! `@esri/solution.js` is able to intuit the actual url (by default it assumes you're interacting with ArcGIS Online) prior to making the request and internalizes a lot of tedious logic for handling the response.
 
 Our packages tap into a new JavaScript spec called [`fetch()`](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch) under the hood though, so lets compare 🍎s to 🍎s.
 
 ```js
-import { deleteFeatures } from "@esri/arcgis-rest-feature-service";
+import { deleteFeatures } from "@esri/arcgis-rest-feature-layer";
 
 const url = `http://sampleserver6.arcgisonline.com/arcgis/rest/services/SF311/FeatureServer/1/`
 
-// https://esri.github.io/arcgis-rest-js/api/feature-service/deleteFeatures/
+// https://esri.github.io/solution.js/api/feature-service/deleteFeatures/
 deleteFeatures({
   url,
   objectIds: [ 2360245 ]
@@ -83,7 +83,7 @@ fetch(url, {
   })
 ```
 
-As you can see, `@esri/arcgis-rest-js` is still handling a _lot_ of the details internally.
+As you can see, `@esri/solution.js` is still handling a _lot_ of the details internally.
 
 * the operation name is appended to urls
 * a `"POST"` is made automatically (when appropriate)
@@ -95,21 +95,17 @@ As you can see, `@esri/arcgis-rest-js` is still handling a _lot_ of the details 
 
 And we haven't even begun to discuss [authentication](../browser-authentication/).
 
-Whether you're trying to automate interacting with premium services in Node.js or creating a website that will allow users to sign into [ArcGIS Online](https://www.arcgis.com) safely and manage their own content, `@esri/arcgis-rest-js` has you covered.
+Whether you're trying to automate interacting with premium services in Node.js or creating a website that will allow users to sign into [ArcGIS Online](https://www.arcgis.com) safely and manage their own content, `@esri/solution.js` has you covered.
 
 # Package Overview
 
 The library is a collection of _very_ small mix and match packages that are framework agnostic and make a variety of ArcGIS tasks more convenient.
 
-* [`@esri/arcgis-rest-request`](../../api/request/) - Underpins other packages and supports making generic web requests.
-* [`@esri/arcgis-rest-auth`](../../api/auth) - Provides methods for authenticating named users and applications.
-* [`@esri/arcgis-rest-common-types`](../../api/common-types) - TypeScript types that are common across the ArcGIS API.
-* [`@esri/arcgis-rest-items`](../../api/items) - Methods for working with ArcGIS Online/Enterprise content.
-* [`@esri/arcgis-rest-groups`](../../api/groups) - Methods for working with ArcGIS Online/Enterprise groups.
-* [`@esri/arcgis-rest-users`](../../api/users) - Methods for working with ArcGIS Online/Enterprise users.
-* [`@esri/arcgis-rest-sharing`](../../api/sharing) - Methods for updating the permissions of ArcGIS Online/Enterprise content.
-* [`@esri/arcgis-rest-feature-service`](../../api/feature-service) - Functions for querying and editing the features inside feature services
-* [`@esri/arcgis-rest-geocoder`](../../api/geocoder) - Geocoding wrapper for `@esri/arcgis-rest-js`.
-* [`@esri/arcgis-rest-feature-service-admin`](../../api/feature-service-admin) - Functions for creating and updating feature services
-* [`@esri/arcgis-rest-routing`](../../api/routing) - Routing and directions wrapper for `@esri/arcgis-rest-js`.
-* [`@esri/arcgis-rest-common`](../../api/common) - Stores shared methods and types used throughout the ArcGIS API.
+* [`@esri/arcgis-rest-request`](./packages/arcgis-rest-request/) - Underpins other packages and supports making low-level requests.
+* [`@esri/arcgis-rest-auth`](./packages/arcgis-rest-auth) - Provides methods for authenticating named users and applications.
+* [`@esri/arcgis-rest-portal`](./packages/arcgis-rest-portal) - Methods for working with ArcGIS Online/Enterprise content and users.
+* [`@esri/arcgis-rest-feature-layer`](./packages/arcgis-rest-feature-layer) - Functions for querying and editing features inside of hosted feature layers.
+* [`@esri/arcgis-rest-service-admin`](./packages/arcgis-rest-feature-service-admin) - Functions for administering hosted services.
+* [`@esri/arcgis-rest-geocoding`](./packages/arcgis-rest-geocoding) - Geocoding wrapper for `@esri/solution.js`
+* [`@esri/arcgis-rest-routing`](./packages/arcgis-rest-routing) - Routing and directions wrapper for `@esri/solution.js`.
+* [`@esri/arcgis-rest-types`](./packages/arcgis-rest-request/) - Common Typings for TypeScript developers.

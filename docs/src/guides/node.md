@@ -2,22 +2,22 @@
 title: Using ArcGIS REST JS in Node.js
 navTitle: Node.js
 description: Learn how to integrate the ArcGIS REST JS library into a Node.js app.
-order: 60
+order: 50
 group: 1-get-started
 ---
 
 # Get Started with Node.js
 
-Make sure you have polyfills for [`fetch`](https://github.com/matthew-andrews/isomorphic-fetch) and [`FormData`](https://github.com/form-data/isomorphic-form-data) installed before using any ArcGIS REST JS library. You can find `npm install` commands for all packages in the [API reference](/arcgis-rest-js/api).
+Make sure you have polyfills for [`fetch`](https://github.com/lquixada/cross-fetch) and [`FormData`](https://github.com/form-data/isomorphic-form-data) installed before using any ArcGIS REST JS library. You can find `npm install` commands for all packages in the [API reference](/solution.js/api).
 
 ```bash
-npm install @esri/arcgis-rest-request @esri/arcgis-rest-auth isomorphic-fetch isomorphic-form-data
+npm install @esri/arcgis-rest-request @esri/arcgis-rest-auth cross-fetch isomorphic-form-data
 ```
 
-Require the `isomorphic-fetch` and `isomorphic-form-data` modules before using any of the ArcGIS REST JS methods.
-
+Require `cross-fetch` and `isomorphic-form-data` before using any of the ArcGIS REST JS methods.
 ```js
-require("isomorphic-fetch");
+// ensures fetch is available as a global
+require("cross-fetch/polyfill");
 require("isomorphic-form-data");
 
 const { request } = require("@esri/arcgis-rest-request");
@@ -25,7 +25,24 @@ const { request } = require("@esri/arcgis-rest-request");
 request("https://www.arcgis.com/sharing/rest/info")
   .then(response);
 ```
-Demo - [Express Application](https://github.com/Esri/arcgis-rest-js/tree/master/demos/express)
+
+You can also pass through your own named `fetch` implementation.
+
+```js
+const fetch = require("node-fetch")
+const {
+  request,
+  setDefaultRequestOptions
+} = require("@esri/arcgis-rest-request");
+
+// one by one
+request("https://www.arcgis.com/sharing/rest/info", { fetch })
+
+// or in *every* request
+setDefaultRequestOptions({ fetch })
+```
+
+#### Demo - [Express](https://github.com/Esri/solution.js/tree/master/demos/express)
 
 ## Authentication
 
@@ -54,9 +71,9 @@ request(url, {
 })
 ```
 
-Demo - [batch geocoding](https://github.com/Esri/arcgis-rest-js/tree/master/demos/batch-geocoder-node)
+#### Demo - [batch geocoding](https://github.com/Esri/solution.js/tree/master/demos/batch-geocoder-node)
 
-Applications cannot [create, share, access or modify items](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/limitations-of-application-authentication/) in ArcGIS Online or ArcGIS Enterprise. For this, a [`UserSession`](/arcgis-rest-js/api/auth/UserSession/) is more appropriate.
+Applications cannot [create, share, access or modify items](https://developers.arcgis.com/documentation/core-concepts/security-and-authentication/limitations-of-application-authentication/) in ArcGIS Online or ArcGIS Enterprise. For this, a [`UserSession`](/solution.js/api/auth/UserSession/) is more appropriate.
 
 ```js
 const { UserSession } = require("@esri/arcgis-rest-auth");
@@ -68,7 +85,3 @@ const authentication = new UserSession({
 })
 ```
 See the [Browser Authentication](../browser-authentication/) for more information about implementing OAuth 2.0.
-
-
-
-
