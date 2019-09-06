@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
@@ -19,10 +19,10 @@
     "@esri/arcgis-rest-request": "^2.3.0",
     "@esri/arcgis-rest-routing": "^2.3.0",
     "@esri/arcgis-rest-service-admin": "^2.3.0",
-    "@esri/solution-common": "^0.4.3",
-    "@esri/solution-feature-layer": "^0.4.3",
-    "@esri/solution-simple-types": "^0.4.3",
-    "@esri/solution-storymap": "^0.4.3"
+    "@esri/solution-common": "^0.4.4",
+    "@esri/solution-feature-layer": "^0.4.4",
+    "@esri/solution-simple-types": "^0.4.4",
+    "@esri/solution-storymap": "^0.4.4"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.3.0",
@@ -32,10 +32,10 @@
     "@esri/arcgis-rest-request": "^2.3.0",
     "@esri/arcgis-rest-routing": "^2.3.0",
     "@esri/arcgis-rest-service-admin": "^2.3.0",
-    "@esri/solution-common": "^0.4.3",
-    "@esri/solution-feature-layer": "^0.4.3",
-    "@esri/solution-simple-types": "^0.4.3",
-    "@esri/solution-storymap": "^0.4.3"
+    "@esri/solution-common": "^0.4.4",
+    "@esri/solution-feature-layer": "^0.4.4",
+    "@esri/solution-simple-types": "^0.4.4",
+    "@esri/solution-storymap": "^0.4.4"
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^2.3.0",
