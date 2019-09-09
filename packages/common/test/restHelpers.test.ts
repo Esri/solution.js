@@ -120,25 +120,25 @@ const serviceSR: any = {
 };
 
 const extent: any = {
-  xmin: 0,
-  ymin: 0,
-  xmax: 1,
-  ymax: 1,
+  xmin: -131,
+  ymin: 16,
+  xmax: -57,
+  ymax: 58,
   spatialReference: portalSR
 };
 
 const expectedExtent: any = {
-  xmin: 1.1,
-  ymin: 1.2,
-  xmax: 1.5,
-  ymax: 1.6,
+  xmin: -131,
+  ymin: 16,
+  xmax: -57,
+  ymax: 58,
   spatialReference: serviceSR
 };
 
 const geometryServiceUrl: string = "http://utility/geomServer";
 
 const geometry: any = {
-  rings: [[[1.1, 1.2], [1.3, 1.4], [1.5, 1.6]]]
+  rings: [[[-57, 16], [-131, 16], [-131, 58], [-57, 58], [-57, 16]]]
 };
 
 const initiative: any = {
