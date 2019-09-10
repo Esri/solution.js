@@ -127,29 +127,13 @@ export function convertExtent(
                       : undefined;
                   if (projectGeom && projectGeom.rings) {
                     const ring: any = projectGeom.rings[0];
-                    resolve(
-                      ring.reduce((accumulator: any, current: any) => {
-                        return {
-                          xmax: Math.max(
-                            !accumulator ? current[0] : accumulator.xmax,
-                            current[0]
-                          ),
-                          xmin: Math.min(
-                            !accumulator ? current[0] : accumulator.xmin,
-                            current[0]
-                          ),
-                          ymax: Math.max(
-                            !accumulator ? current[1] : accumulator.ymax,
-                            current[1]
-                          ),
-                          ymin: Math.min(
-                            !accumulator ? current[1] : accumulator.ymin,
-                            current[1]
-                          ),
-                          spatialReference: outSR
-                        };
-                      }, false)
-                    );
+                    resolve({
+                      xmin: ring[1][0],
+                      ymin: ring[1][1],
+                      xmax: ring[3][0],
+                      ymax: ring[3][1],
+                      spatialReference: outSR
+                    });
                   } else {
                     resolve(undefined);
                   }
