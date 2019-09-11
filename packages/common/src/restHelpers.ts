@@ -100,19 +100,10 @@ export function convertExtent(
               // tslint:disable-next-line:no-unnecessary-type-assertion
               inSR: extent.spatialReference!.wkid,
               geometries: {
-                geometryType: "esriGeometryPolygon",
+                geometryType: "esriGeometryPoint",
                 geometries: [
-                  {
-                    rings: [
-                      [
-                        [extent.xmin, extent.ymin],
-                        [extent.xmin, extent.ymax],
-                        [extent.xmax, extent.ymax],
-                        [extent.xmax, extent.ymin],
-                        [extent.xmin, extent.ymin]
-                      ]
-                    ]
-                  }
+                  { x: extent.xmin, y: extent.ymin },
+                  { x: extent.xmax, y: extent.ymax }
                 ]
               },
               transformation: transformation
@@ -122,16 +113,15 @@ export function convertExtent(
               .then(
                 projectResponse => {
                   const projectGeom: any =
-                    projectResponse.geometries.length > 0
-                      ? projectResponse.geometries[0]
+                    projectResponse.geometries.length === 2
+                      ? projectResponse.geometries
                       : undefined;
-                  if (projectGeom && projectGeom.rings) {
-                    const ring: any = projectGeom.rings[0];
+                  if (projectGeom) {
                     resolve({
-                      xmin: ring[0][0],
-                      ymin: ring[0][1],
-                      xmax: ring[2][0],
-                      ymax: ring[2][1],
+                      xmin: projectGeom[0].x,
+                      ymin: projectGeom[0].y,
+                      xmax: projectGeom[1].x,
+                      ymax: projectGeom[1].y,
                       spatialReference: outSR
                     });
                   } else {
