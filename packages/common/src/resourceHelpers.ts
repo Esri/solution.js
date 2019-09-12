@@ -83,7 +83,7 @@ export function addMetadataFromBlob(
   itemId: string,
   requestOptions: auth.IUserRequestOptions
 ): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
+  const updateOptions: any = {
     item: {
       id: itemId
     },
@@ -134,7 +134,7 @@ export function addThumbnailFromBlob(
   itemId: string,
   requestOptions: auth.IUserRequestOptions
 ): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
+  const updateOptions: any = {
     item: {
       id: itemId
     },
