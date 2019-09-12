@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-feature-layer",
-  "version": "0.4.5",
+  "version": "0.4.7",
   "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.js",
@@ -14,12 +14,12 @@
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "^2.3.0",
     "@esri/arcgis-rest-request": "^2.3.0",
-    "@esri/solution-common": "^0.4.5"
+    "@esri/solution-common": "^0.4.7"
   },
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.3.0",
     "@esri/arcgis-rest-request": "^2.3.0",
-    "@esri/solution-common": "^0.4.5"
+    "@esri/solution-common": "^0.4.7"
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^2.3.0",
