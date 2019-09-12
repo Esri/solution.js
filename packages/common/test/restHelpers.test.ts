@@ -1821,18 +1821,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             name: "A_sol1234567890",
             title: "A",
             capabilities: [],
-            data: {},
-            text: {},
             spatialReference: {
               wkid: 102100
             }
           },
           folderId: "aabb123456",
           params: {
-            preserveLayerIds: true,
-            spatialReference: {
-              wkid: 102100
-            }
+            preserveLayerIds: true
           },
           preserveLayerIds: true,
           ...requestOptions
@@ -1873,18 +1868,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             name: "undefined_sol1234567890",
             title: undefined,
             capabilities: "",
-            data: {},
-            text: {},
             spatialReference: {
               wkid: 102100
             }
           },
           folderId: "aabb123456",
           params: {
-            preserveLayerIds: true,
-            spatialReference: {
-              wkid: 102100
-            }
+            preserveLayerIds: true
           },
           preserveLayerIds: true,
           ...requestOptions
@@ -1953,19 +1943,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             title: "A",
             somePropNotInItem: true,
             capabilities: ["Query"],
-            data: {},
-            text: {},
             spatialReference: {
               wkid: 102100
-            }
+            },
+            hasViews: true
           },
           folderId: "aabb123456",
           params: {
-            somePropNotInItem: true,
-            preserveLayerIds: true,
-            spatialReference: {
-              wkid: 102100
-            }
+            preserveLayerIds: true
           },
           preserveLayerIds: true,
           ...requestOptions
@@ -2032,8 +2017,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             title: undefined,
             somePropNotInItem: true,
             capabilities: "Query",
-            data: {},
-            text: {},
             isView: true,
             spatialReference: {
               wkid: 102100
@@ -2041,12 +2024,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           },
           folderId: "aabb123456",
           params: {
-            somePropNotInItem: true,
             preserveLayerIds: true,
-            isView: true,
-            spatialReference: {
-              wkid: 102100
-            }
+            isView: true
           },
           preserveLayerIds: true,
           ...requestOptions
@@ -2116,19 +2095,14 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             title: "A",
             somePropNotInItem: true,
             capabilities: ["Query"],
-            data: {},
-            text: {},
             spatialReference: {
               wkid: 102100
-            }
+            },
+            hasViews: true
           },
           folderId: "aabb123456",
           params: {
-            somePropNotInItem: true,
-            preserveLayerIds: true,
-            spatialReference: {
-              wkid: 102100
-            }
+            preserveLayerIds: true
           },
           preserveLayerIds: true,
           ...requestOptions
@@ -2223,30 +2197,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_setItemProperties", () => {
     it("can get options for HOSTED empty service", () => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
-
-      const templateDictionary: any = {
-        folderId: "aabb123456",
-        isPortal: false,
-        solutionItemId: "sol1234567890",
-        initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
-      };
-
       const item: any = {
-        text: "",
         isMultiServicesView: true,
         editorTrackingInfo: {
           enableEditorTracking: true
         }
-      };
-      const data: any = {
-        someProp: {}
       };
       const serviceInfo: any = {
         service: {
@@ -2257,15 +2212,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const updatedItem: any = _setItemProperties(
         item,
-        data,
         serviceInfo,
         params,
         false
       );
       expect(updatedItem).toEqual({
-        text: {
-          someProp: {}
-        },
         isMultiServicesView: true,
         editorTrackingInfo: {
           enableEditorTracking: false

@@ -78,7 +78,7 @@ export function _getWebmapLayerIds(layerList = [] as any[]): string[] {
   return layerList.reduce(
     (ids: string[], layer: any) => {
       const itemId = layer.itemId as string;
-      if (itemId) {
+      if (itemId && ids.indexOf(itemId) < 0) {
         ids.push(itemId);
       }
       return ids;
