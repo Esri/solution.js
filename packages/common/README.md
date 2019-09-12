@@ -64,7 +64,7 @@ Object
 	ymin: 41.70799917451703
 ```
 
-### [API Reference](https://esri.github.io/solution.js/api/types/)
+### [API Reference](https://esri.github.io/solution.js/api/common/)
 
 ### Issues
 
