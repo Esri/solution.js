@@ -4,9 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
-d this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+ this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+
+## [0.4.6] - September 12th 2019
 
 ## [0.4.5] - September 12th 2019
+
+
 
 ## [0.4.2] - August 28th 2019
 
@@ -52,6 +57,14 @@ Initial Public Release
 
 
 
-[0.4.4]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.4.4 "v0.4.4"
-[0.4.5]: https://github.com/Esri/solution.js/compare/v0.4.4...v0.4.5 "v0.4.5"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.4.5...HEAD "Unreleased Changes"
+[0.4.5]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.4.5 &quot;v0.4.5&quot;
+[0.4.6]: https://github.com/Esri/solution.js/compare/v0.4.5...v0.4.6 &quot;v0.4.6&quot;
+[0.4.6]: https://github.com/Esri/solution.js/compare/v0.4.6...v0.4.6 &quot;v0.4.6&quot;
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.4.6...HEAD &quot;Unreleased Changes&quot;
+
+## [0.4.7] - September 12th 2019
+
+[0.4.5]: https://github.com/Esri/solution.js/compare/a41f3b856898e7fbac679ffb44de1c38f55260e3...v0.4.5 "v0.4.5"
+[0.4.6]: https://github.com/Esri/solution.js/compare/v0.4.5...v0.4.6 "v0.4.6"
+[0.4.7]: https://github.com/Esri/solution.js/compare/v0.4.6...v0.4.7 "v0.4.7"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.4.7...HEAD "Unreleased Changes"
