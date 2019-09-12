@@ -1249,13 +1249,13 @@ export function _templatizeFieldName(
 
     if (relatedTables && relatedTables.length > parseInt(relationshipId, 10)) {
       const relatedTable: any = relatedTables[relationshipId];
-
+      // the layers relationships stores the property as relatedTableId
+      // the layers adminLayerInfo relatedTables stores the property as sourceLayerId
+      const prop: string = common.getProp(relatedTable, "relatedTableId")
+        ? "relatedTableId"
+        : "sourceLayerId";
       const _basePath: string =
-        itemID +
-        ".fieldInfos.layer" +
-        relatedTable[layer.isView ? "sourceLayerId" : "relatedTableId"] +
-        ".fields";
-
+        itemID + ".fieldInfos.layer" + relatedTable[prop] + ".fields";
       rels[2] = _templatize(_basePath, rels[2]);
       name = rels.join("/");
     }

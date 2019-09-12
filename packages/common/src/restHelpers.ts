@@ -707,8 +707,7 @@ export function _getCreateServiceOptions(
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const itemInfo: any = newItemTemplate.item;
-    const dataInfo: any = newItemTemplate.data;
+    const itemInfo: any = {};
     const serviceInfo: any = newItemTemplate.properties;
     const folderId: any = templateDictionary.folderId;
     const isPortal: boolean = templateDictionary.isPortal;
@@ -720,10 +719,11 @@ export function _getCreateServiceOptions(
     };
 
     // Retain the existing title but swap with name if it's missing
-    itemInfo.title = itemInfo.title || itemInfo.name;
+    itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
 
     // Need to set the service name: name + "_" + newItemId
-    const baseName: string = itemInfo.name || itemInfo.title;
+    const baseName: string =
+      newItemTemplate.item.name || newItemTemplate.item.title;
 
     // If the name already contains a GUID replace it with the newItemID
     const regEx: any = new RegExp("[0-9A-F]{32}", "gmi");
@@ -732,8 +732,7 @@ export function _getCreateServiceOptions(
       : baseName + "_" + solutionItemId;
 
     const _item: serviceAdmin.ICreateServiceParams = {
-      ...itemInfo,
-      data: dataInfo
+      ...itemInfo
     };
 
     const createOptions = {
@@ -746,7 +745,6 @@ export function _getCreateServiceOptions(
 
     createOptions.item = _setItemProperties(
       createOptions.item,
-      dataInfo,
       serviceInfo,
       params,
       isPortal
@@ -904,17 +902,10 @@ export function _getUpdate(
 
 export function _setItemProperties(
   item: any,
-  data: any,
   serviceInfo: any,
   params: request.IParams,
   isPortal: boolean
 ): any {
-  if (data) {
-    // Get the items data
-    item.text = data;
-    // delete itemTemplate.data;
-  }
-
   // Set the capabilities
   const portalCapabilities = [
     "Create",
@@ -943,28 +934,22 @@ export function _setItemProperties(
 
   // set create options item properties
   const keyProperties: string[] = [
-    "name",
     "isView",
     "sourceSchemaChangesAllowed",
     "isUpdatableView",
     "capabilities",
     "isMultiServicesView"
   ];
-  const deleteKeys: string[] = ["layers", "tables", "hasViews"];
+  const deleteKeys: string[] = ["layers", "tables"];
   const itemKeys: string[] = Object.keys(item);
   const serviceKeys: string[] = Object.keys(serviceInfo.service);
   serviceKeys.forEach(k => {
-    if (itemKeys.indexOf(k) === -1) {
-      params[k] = serviceInfo.service[k];
+    if (itemKeys.indexOf(k) === -1 && deleteKeys.indexOf(k) < 0) {
+      item[k] = serviceInfo.service[k];
+      // These need to be included via params otherwise...
+      // addToDef calls fail when adding adminLayerInfo
       if (serviceInfo.service.isView && keyProperties.indexOf(k) > -1) {
-        item[k] = serviceInfo.service[k];
-      } else {
-        item[k] = serviceInfo.service[k];
-      }
-
-      if (deleteKeys.indexOf(k) > -1) {
-        delete item[k];
-        delete params[k];
+        params[k] = serviceInfo.service[k];
       }
     }
   });
