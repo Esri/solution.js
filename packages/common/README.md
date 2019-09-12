@@ -70,15 +70,15 @@ Object
 
 Found a bug or want to request a new feature? Please take a look at [previously logged issues](https://github.com/Esri/solution.js/issues); if you don't see your concern, please let us know by [submitting an issue](https://github.com/Esri/solution.js/issues/new).
 
-### Versioning
+### [Changelog](https://github.com/Esri/solution.js/blob/develop/CHANGELOG.md)
+
+##### Versioning
 
 For transparency into the release cycle and in striving to maintain backward compatibility, @esri/solution.js is maintained under Semantic Versioning guidelines and will adhere to these rules whenever possible. For more information on SemVer, please visit <http://semver.org/>.
 
 ### Contributing
 
 Esri welcomes contributions from anyone and everyone. Please see our [guidelines for contributing](CONTRIBUTING.md).
-
-### [Changelog](https://github.com/Esri/solution.js/blob/develop/CHANGELOG.md)
 
 ### License
 
