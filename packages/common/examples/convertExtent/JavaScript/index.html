@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>@esri/solution-common createExtent JavaScript example</title>
+  <!--
+   | Copyright 2019 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+</head>
+<body>
+  Add the id of the portal whose default extents are to be converted; app output is in console.
+
+  <script src="lib/require.js"></script>
+  <script>
+    var portalId = "";  // Add the id of the portal whose default extents are to be converted
+
+    require.config({
+      paths: {
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.3.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.3.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.3.0/dist/umd/request.umd.min",
+        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.5.0/dist/umd/common.umd.min"
+      }
+    });
+
+    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/solution-common"],
+      function (auth, portal, solutionCommon) {
+        "use strict";
+        var usOptions = {};
+        var destinationUserSession = new auth.UserSession(usOptions);
+        var requestOptions = { authentication: destinationUserSession };
+
+        // Get the extents of a portal
+        portal.getPortal(portalId, requestOptions)
+          .then(function (portalResponse) {
+            var portalExtent = portalResponse.defaultExtent;
+            if (!portalId) {
+              console.log("Using sample extents:", portalExtent);
+            } else {
+              console.log("Portal extents:", portalExtent);
+            }
+
+            // Convert the extents
+            var outSR = { wkid: 4326 };
+            var geometryServiceUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
+            solutionCommon.convertExtent(portalExtent, outSR, geometryServiceUrl, requestOptions)
+                .then(function (conversionResponse) {
+                console.log("Converted extents:", conversionResponse);
+            });
+          }, function (error) {
+            console.error("Error getting portal extents: " + JSON.stringify(error, null, 2));
+          }
+        );
+      });
+  </script>
+</body>
+</html>
