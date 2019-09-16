@@ -26,7 +26,8 @@ export function getItemInfo(itemId: string): Promise<string> {
       reject("Item's ID is not defined");
       return;
     }
-    const defaultPortalUrl = "https://www.arcgis.com/sharing";
+    const defaultPortalUrl = "https://www.arcgis.com";
+    const defaultPortalSharingUrl = "https://www.arcgis.com/sharing";
     const usOptions: auth.IUserSessionOptions = {};
     const destinationUserSession: auth.UserSession = new auth.UserSession(
       usOptions
@@ -50,14 +51,26 @@ export function getItemInfo(itemId: string): Promise<string> {
         itemBase.type +
         ' "' +
         itemBase.title +
-        '" (' +
+        '" (<a href="' +
+        defaultPortalUrl +
+        "/home/item.html?id=" +
         itemBase.id +
-        ")</h3>";
+        '" target="_blank">' +
+        itemBase.id +
+        "</a>)</h3>";
 
       html +=
         '<table style="width:100%"><tr>' +
-        "<td>Item Json</td>" +
-        "<td>Data Json</td>" +
+        '<td><a href="' +
+        defaultPortalSharingUrl +
+        "/rest/content/items/" +
+        itemBase.id +
+        '?f=json" target="_blank">Item Json</a></td>' +
+        '<td><a href="' +
+        defaultPortalSharingUrl +
+        "/rest/content/items/" +
+        itemBase.id +
+        '/data?f=json" target="_blank">Data Json</a></td>' +
         "</tr><tr>" +
         '<td><textarea rows="10" style="width:99%;font-size:x-small">' +
         JSON.stringify(itemBase, null, 2) +
@@ -72,7 +85,7 @@ export function getItemInfo(itemId: string): Promise<string> {
         (resourceDetail: any) => resourceDetail.resource
       );
       const itemFilePaths: solutionCommon.ISourceFileCopyPath[] = solutionCommon.generateSourceItemFilePaths(
-        defaultPortalUrl,
+        defaultPortalSharingUrl,
         itemId,
         itemBase.thumbnail,
         resourceNames
