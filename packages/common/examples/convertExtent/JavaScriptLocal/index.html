@@ -18,13 +18,24 @@
    | See the License for the specific language governing permissions and
    | limitations under the License.
   -->
+  <style>
+  button {
+    cursor: pointer;
+  }
+  </style>
 </head>
 <body>
-  Add the id of the portal whose default extents are to be converted; app output is in console.
+  <div id="input" style="display:none">
+    <label for="id">ID of the portal whose default extents are to be converted:</label>
+    <input type="text" id="id" style="width:256px">
+    <button onclick="goFcn()">Go</button>
+    <br/><i>Leave empty for default extents</i>
+  </div>
+  <div id="output" style="display:none">Fetching...</div>
 
   <script src="lib/require.js"></script>
   <script>
-    var portalId = "";  // Add the id of the portal whose default extents are to be converted
+    var goFcn;
 
     var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     require.config({
@@ -39,31 +50,45 @@
     require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/solution-common"],
       function (auth, portal, solutionCommon) {
         "use strict";
-        var usOptions = {};
-        var destinationUserSession = new auth.UserSession(usOptions);
-        var requestOptions = { authentication: destinationUserSession };
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
 
-        // Get the extents of a portal
-        portal.getPortal(portalId, requestOptions)
-          .then(function (portalResponse) {
-            var portalExtent = portalResponse.defaultExtent;
-            if (!portalId) {
-              console.log("Using sample extents:", portalExtent);
-            } else {
-              console.log("Portal extents:", portalExtent);
-            }
+        function go () {
+          document.getElementById("input").style.display = "none";
+          document.getElementById("output").style.display = "block";
 
-            // Convert the extents
-            var outSR = { wkid: 4326 };
-            var geometryServiceUrl = "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
-            solutionCommon.convertExtent(portalExtent, outSR, geometryServiceUrl, requestOptions)
-                .then(function (conversionResponse) {
-                console.log("Converted extents:", conversionResponse);
+          var usOptions = {};
+          var destinationUserSession = new auth.UserSession(usOptions);
+          var requestOptions = { authentication: destinationUserSession };
+
+          // Get the extents of a portal
+          var portalId = document.getElementById("id").value;
+          portal.getPortal(portalId, requestOptions)
+            .then(function (portalResponse) {
+              var portalExtent = portalResponse.defaultExtent;
+              let html = "";
+
+              html += "<h4>Source extents</h4>";
+              if (!portalId) {
+                html += "<i>Using sample extents</i><br/>";
+              }
+              html += "<pre>" + JSON.stringify(portalExtent, null, 4) + "</pre>";
+
+              // Convert the extents
+              const outSR = { wkid: 4326 };
+              const geometryServiceUrl =
+                "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
+              // tslint:disable-next-line: no-floating-promises
+              solutionCommon
+                .convertExtent(portalExtent, outSR, geometryServiceUrl, requestOptions)
+                .then(conversionResponse => {
+                  html += "<h4>Projected extents</h4>";
+                  html += "<pre>" + JSON.stringify(conversionResponse, null, 4) + "</pre>";
+
+                  document.getElementById("output").innerHTML = html;
+                });
             });
-          }, function (error) {
-            console.error("Error getting portal extents: " + JSON.stringify(error, null, 2));
-          }
-        );
+        }
       });
   </script>
 </body>

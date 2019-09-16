@@ -18,13 +18,24 @@
    | See the License for the specific language governing permissions and
    | limitations under the License.
   -->
+  <style>
+  button {
+    cursor: pointer;
+  }
+  </style>
 </head>
 <body>
-  Add the id of the portal whose default extents are to be converted; app output is in console.
+  <div id="input" style="display:none">
+    <label for="id">ID of the portal whose default extents are to be converted:</label>
+    <input type="text" id="id" style="width:256px">
+    <button onclick="goFcn()">Go</button>
+    <br/><i>Leave empty for default extents</i>
+  </div>
+  <div id="output" style="display:none">Fetching...</div>
 
   <script src="lib/require.js"></script>
   <script>
-    var portalId = "";  // Add the id of the portal whose default extents are to be converted
+    var goFcn;
 
     require.config({
       paths: {
@@ -34,9 +45,23 @@
         "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.5.0/dist/umd/common.umd.min"
       }
     });
+
     require(["src/main"],
       function (main) {
-        main.convertPortalExtents(portalId);
+        "use strict";
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
+
+        function go () {
+          document.getElementById("input").style.display = "none";
+          document.getElementById("output").style.display = "block";
+
+          main.convertPortalExtents(document.getElementById("id").value).then(
+            html => {
+              document.getElementById("output").innerHTML = html;
+            }
+          );
+        }
       });
   </script>
 </body>
