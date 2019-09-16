@@ -42,7 +42,11 @@ export function getItemInfo(itemId: string): Promise<string> {
     const resourcesDef = portal.getItemResources(itemId, requestOptions);
 
     // tslint:disable-next-line: no-floating-promises
-    Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
+    Promise.all([
+      itemBaseDef,
+      itemDataDef.catch(() => null),
+      resourcesDef
+    ]).then(responses => {
       const [itemBase, itemData, resources] = responses;
       let html = "";
 
