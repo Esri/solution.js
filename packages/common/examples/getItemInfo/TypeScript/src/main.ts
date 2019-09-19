@@ -35,6 +35,12 @@ export function getItemInfo(itemId: string): Promise<string> {
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationUserSession
     };
+    const requestOptionsNonJson: auth.IUserRequestOptions = {
+      ...requestOptions,
+      params: {
+        f: "image"
+      }
+    };
 
     // Get the item base, data, and resources
     const itemBaseDef = solutionCommon.getItem(itemId, requestOptions);
@@ -42,15 +48,11 @@ export function getItemInfo(itemId: string): Promise<string> {
     const resourcesDef = portal.getItemResources(itemId, requestOptions);
 
     // tslint:disable-next-line: no-floating-promises
-    Promise.all([
-      itemBaseDef,
-      itemDataDef.catch(() => null),
-      resourcesDef
-    ]).then(responses => {
-      const [itemBase, itemData, resources] = responses;
-      let html = "";
+    Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
+      const [itemBase, itemDataRaw, resources] = responses;
 
-      html +=
+      // Create item and data sections
+      let html =
         "<h3>" +
         itemBase.type +
         ' "' +
@@ -64,25 +66,77 @@ export function getItemInfo(itemId: string): Promise<string> {
         "</a>)</h3>";
 
       html +=
-        '<table style="width:100%"><tr>' +
-        '<td><a href="' +
-        defaultPortalSharingUrl +
-        "/rest/content/items/" +
-        itemBase.id +
-        '?f=json" target="_blank">Item Json</a></td>' +
-        '<td><a href="' +
-        defaultPortalSharingUrl +
-        "/rest/content/items/" +
-        itemBase.id +
-        '/data?f=json" target="_blank">Data Json</a></td>' +
-        "</tr><tr>" +
-        '<td><textarea rows="10" style="width:99%;font-size:x-small">' +
+        '<div style="width:48%;display:inline-block;">Item</div>' +
+        '<div style="width:2%;display:inline-block;"></div>' +
+        '<div style="width:48%;display:inline-block;">Data</div>' +
+        '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
         JSON.stringify(itemBase, null, 2) +
-        "</textarea></td>" +
-        '<td><textarea rows="10" style="width:99%;font-size:x-small">' +
-        JSON.stringify(itemData, null, 2) +
-        "</textarea></td>" +
-        "</tr></table>";
+        "</textarea></div>" +
+        '<div style="width:2%;display:inline-block;"></div>' +
+        '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;">';
+
+      if (itemDataRaw) {
+        const itemType = itemBase.type.toLowerCase();
+        switch (itemType) {
+          case "arcgis pro add in":
+          case "code sample":
+          case "csv":
+          case "dashboard":
+          case "desktop application template":
+          case "layer package":
+          case "microsoft excel":
+          case "microsoft powerpoint":
+          case "microsoft word":
+          case "pdf":
+            html +=
+              '<a href="https://arcgis4localgov2.maps.arcgis.com/sharing/rest/content/items/' +
+              itemId +
+              '/data" target="_blank">' +
+              (itemBase.title || itemBase.name) +
+              "</a>";
+            break;
+
+          case "image":
+            itemDataRaw.blob().then((data: any) => {
+              if (data.type === "image/tiff") {
+                document.getElementById("dataSection").innerHTML =
+                  "<span>TIFF image; size " + data.size + "</span>";
+              } else {
+                const objectURL = URL.createObjectURL(data);
+                document.getElementById("dataSection").innerHTML =
+                  '<img src="' +
+                  objectURL +
+                  '" style="max-width:99%;border:1px solid lightgray;"/>';
+              }
+            });
+            break;
+
+          case "feature service":
+          case "form":
+          case "locator":
+          case "storymap":
+          case "geojson":
+          case "tile layer":
+          case "web map":
+          case "web mapping application":
+          case "web scene":
+            itemDataRaw.json().then((data: string) => {
+              document.getElementById("dataSection").innerHTML =
+                '<textarea rows="10" style="width:99%;font-size:x-small">' +
+                (data ? JSON.stringify(data, null, 2) : "") +
+                "</textarea>";
+            });
+            break;
+
+          case "document link":
+          default:
+            html += "<i>no data</i>";
+            break;
+        }
+      } else {
+        html += "<i>no data</i>";
+      }
+      html += "</div>";
 
       // Figure out URLs to the resource information
       const resourceNames = (resources.resources as any[]).map(
@@ -107,8 +161,7 @@ export function getItemInfo(itemId: string): Promise<string> {
       html +=
         '<img src="' +
         thumbnailFilePath[0].url +
-        '" style="max-width:256px"/> ' +
-        '<a href="' +
+        '" style="max-width:256px;border:1px solid lightgray;"/>&nbsp;&nbsp;<a href="' +
         thumbnailFilePath[0].url +
         '" target="_blank">' +
         thumbnailName +
@@ -122,24 +175,19 @@ export function getItemInfo(itemId: string): Promise<string> {
         filePathInfo => filePathInfo.url.indexOf(marker) >= 0
       );
       html += '<div id="metadataOutput"></div>';
-      const requestOptionsNonJson: auth.IUserRequestOptions = {
-        ...requestOptions,
-        params: {
-          f: "text"
-        }
-      };
-      request.request(metadataFilePath[0].url, requestOptionsNonJson).then(
-        metadata => {
-          document.getElementById("metadataOutput").innerHTML =
-            '<textarea rows="10" style="width:99%;font-size:x-small">' +
-            metadata +
-            "</textarea>";
-        },
-        () => {
-          document.getElementById("metadataOutput").innerHTML =
-            "<i>no metadata</i>";
-        }
-      );
+      solutionCommon
+        .getText(metadataFilePath[0].url, requestOptions)
+        .then(metadata => {
+          if (metadata) {
+            document.getElementById("metadataOutput").innerHTML =
+              '<textarea rows="10" style="width:99%;font-size:x-small">' +
+              metadata +
+              "</textarea>";
+          } else {
+            document.getElementById("metadataOutput").innerHTML =
+              "<i>no metadata</i>";
+          }
+        });
       html += "</p>";
 
       // Fetch the remaining resources, assuming that they're images for now
@@ -148,20 +196,23 @@ export function getItemInfo(itemId: string): Promise<string> {
       const resourceFilePaths = itemFilePaths.filter(
         filePathInfo => filePathInfo.url.indexOf(marker) >= 0
       );
-      resourceFilePaths.forEach(filePathInfo => {
-        const name = filePathInfo.url.substr(
-          filePathInfo.url.indexOf(marker) + marker.length
-        );
-        html +=
-          '<img src="' +
-          filePathInfo.url +
-          '" style="max-width:256px"/> ' +
-          '<a href="' +
-          filePathInfo.url +
-          '" target="_blank">' +
-          name +
-          "</a><br/>";
-      });
+      if (resourceFilePaths.length === 0) {
+        html += "<p><i>no resources</i></p>";
+      } else {
+        resourceFilePaths.forEach(filePathInfo => {
+          const name = filePathInfo.url.substr(
+            filePathInfo.url.indexOf(marker) + marker.length
+          );
+          html +=
+            '<p><img src="' +
+            filePathInfo.url +
+            '" style="max-width:256px"/>&nbsp;&nbsp;<a href="' +
+            filePathInfo.url +
+            '" target="_blank">' +
+            name +
+            "</a></p>";
+        });
+      }
       html += "</p>";
 
       resolve(html);
