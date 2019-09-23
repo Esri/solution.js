@@ -376,16 +376,6 @@ export function getGroupContents(
   });
 }
 
-export function getItemBlob(
-  itemId: string,
-  requestOptions: auth.IUserRequestOptions
-): Promise<any> {
-  const url = `${portal.getPortalUrl(
-    requestOptions
-  )}/content/items/${itemId}/data`;
-  return getBlob(url, requestOptions);
-}
-
 export function getItem(
   itemId: string,
   requestOptions: auth.IUserRequestOptions
@@ -399,13 +389,48 @@ export function getItem(
 
 export function getItemData(
   itemId: string,
-  requestOptions: auth.IUserRequestOptions
+  requestOptions: auth.IUserRequestOptions,
+  convertToJsonIfText = true
 ): Promise<any> {
-  // Get item data
-  const itemDataParam: portal.IItemDataOptions = {
-    ...requestOptions
-  };
-  return portal.getItemData(itemId, itemDataParam);
+  return new Promise<any>(resolve => {
+    // Get item data
+    const itemDataParam: portal.IItemDataOptions = {
+      ...requestOptions,
+      file: true
+    };
+
+    // Need to shield call because it throws an exception if the item doesn't have data
+    try {
+      portal.getItemData(itemId, itemDataParam).then(
+        blob => {
+          if (blob.type === "application/json" || blob.type === "text/plain") {
+            generalHelpers.blobToText(blob).then(
+              (response: string) => {
+                if (
+                  blob.type === "application/json" ||
+                  (blob.type === "text/plain" && convertToJsonIfText)
+                ) {
+                  const json = JSON.parse(response);
+                  resolve(json.error ? null : json);
+                } else {
+                  resolve(response);
+                }
+              },
+              () => {
+                console.log("getItemData get blob text failed");
+                resolve(null);
+              }
+            );
+          } else {
+            resolve(blob);
+          }
+        },
+        () => resolve(null)
+      );
+    } catch (ignored) {
+      resolve(null);
+    }
+  });
 }
 
 export function getItemRelatedItems(
@@ -578,6 +603,29 @@ export function getServiceLayersAndTables(
         );
       },
       (e: any) => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+export function getText(
+  url: string,
+  requestOptions: auth.IUserRequestOptions
+): Promise<any> {
+  return new Promise<string>((resolve, reject) => {
+    // Get the blob from the URL
+    const blobRequestOptions = {
+      ...requestOptions,
+      rawResponse: true
+    } as request.IRequestOptions;
+    request.request(url, blobRequestOptions).then(
+      content => {
+        // Extract the blob from the response
+        generalHelpers.blobToJson(content).then(
+          resolve,
+          (e: any) => reject(generalHelpers.fail(e)) // unable to get text out of response
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get response
     );
   });
 }
