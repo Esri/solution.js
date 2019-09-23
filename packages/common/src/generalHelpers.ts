@@ -22,6 +22,28 @@
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export function blobToJson(blob: Blob): Promise<any> {
+  return new Promise<any>(resolve => {
+    blobToText(blob).then(
+      blobContents => resolve(JSON.parse(blobContents)),
+      () => resolve("")
+    );
+  });
+}
+
+export function blobToText(blob: Blob): Promise<string> {
+  return new Promise<string>(resolve => {
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      // Disable needed because Node requires cast
+      // tslint:disable-next-line: no-unnecessary-type-assertion
+      const blobContents = (evt.target as FileReader).result;
+      resolve(blobContents ? (blobContents as string) : ""); // not handling ArrayContents variant
+    };
+    reader.readAsText(blob);
+  });
+}
+
 /**
  * ```js
  * import { cloneObject } from "utils/object-helpers";

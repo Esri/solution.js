@@ -63,9 +63,9 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `creator`", () => {
-  describe("createSolution", () => {
-    if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("createSolution", () => {
       it("createSolution with default name", done => {
         const solutionName: string = "";
         const solutionGroupId: string = "grp1234567890";
@@ -105,7 +105,7 @@ describe("Module `creator`", () => {
             mockItems.getAnImageResponse()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?f=json&num=1000&token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?token=fake-token",
             noDataResponse
           )
           .post(
@@ -125,7 +125,7 @@ describe("Module `creator`", () => {
             mockItems.getAnImageResponse()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?f=json&num=1000&token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?token=fake-token",
             noDataResponse
           )
           .post(
@@ -213,7 +213,7 @@ describe("Module `creator`", () => {
             mockItems.getAnImageResponse()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?f=json&num=1000&token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?token=fake-token",
             noDataResponse
           )
           .post(
@@ -233,7 +233,7 @@ describe("Module `creator`", () => {
             mockItems.getAnImageResponse()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?f=json&num=1000&token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?token=fake-token",
             noDataResponse
           )
           .post(
@@ -280,8 +280,8 @@ describe("Module `creator`", () => {
             () => done.fail()
           );
       });
-    }
-  });
+    });
+  }
 });
 
 // -------------------------------------------------------------------------------------------------------------------//
