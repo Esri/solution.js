@@ -47,9 +47,6 @@ export function convertItemToTemplate(
         itemInfo.id +
         ")..."
     ); */
-    const requestOptions: auth.IUserRequestOptions = {
-      authentication: userSession
-    };
 
     // Init template
     const itemTemplate: common.IItemTemplate = isGroup
@@ -72,7 +69,7 @@ export function convertItemToTemplate(
 
       // Request item resources
       const resourcePromise = portal
-        .getItemResources(itemTemplate.itemId, requestOptions)
+        .getItemResources(itemTemplate.itemId, { authentication: userSession })
         .then(resourcesResponse => {
           // Save resources to solution item
           itemTemplate.resources = (resourcesResponse.resources as any[]).map(
@@ -85,10 +82,10 @@ export function convertItemToTemplate(
             itemTemplate.resources
           );
           return common.copyFilesToStorageItem(
-            requestOptions,
+            { authentication: userSession },
             resourceItemFilePaths,
             solutionItemId,
-            requestOptions
+            { authentication: userSession }
           );
         })
         .catch(() => Promise.resolve([]));
@@ -105,94 +102,98 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = common.getItemData(itemTemplate.itemId, requestOptions);
+          dataPromise = common.getItemData(itemTemplate.itemId, {
+            authentication: userSession
+          });
           break;
         case "form":
-          dataPromise = common.getItemBlob(itemTemplate.itemId, requestOptions);
+          dataPromise = common.getItemData(itemTemplate.itemId, {
+            authentication: userSession
+          });
           relatedPromise = common.getItemRelatedItems(
             itemTemplate.itemId,
             "Survey2Service",
             "forward",
-            requestOptions
+            { authentication: userSession }
           );
           break;
       }
 
-      // Items without a data section return an error from the REST library, so we'll need to prevent it
-      // from killing off all promises. This means that there's no `reject` clause to handle, hence:
+      // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
       Promise.all([
-        dataPromise.catch(() => null),
+        dataPromise,
         resourcePromise,
         relatedPromise.catch(
           () =>
             ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
         )
-      ]).then(responses => {
-        const [
-          itemDataResponse,
-          savedResourceFilenames,
-          relatedItemsResponse
-        ] = responses;
-        itemTemplate.data = itemDataResponse;
-        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
-          item => !!item
-        );
+      ]).then(
+        responses => {
+          const [
+            itemDataResponse,
+            savedResourceFilenames,
+            relatedItemsResponse
+          ] = responses;
+          itemTemplate.data = itemDataResponse;
+          itemTemplate.resources = (savedResourceFilenames as any[]).filter(
+            item => !!item
+          );
 
-        let wrapupPromise = Promise.resolve();
-        let webappPromise = Promise.resolve(itemTemplate);
-        switch (itemInfo.type.toLowerCase()) {
-          case "dashboard":
-            dashboard.convertItemToTemplate(itemTemplate);
-            break;
-          case "form":
-            itemTemplate.dependencies = itemTemplate.dependencies.concat(
-              relatedItemsResponse.relatedItems.map(
-                relatedItem => relatedItem.id
-              )
-            );
-
-            // Store the form's data in the solution resources, not in template
-            itemTemplate.data = null;
-            form.convertItemToTemplate(itemTemplate);
-
-            if (itemDataResponse) {
-              const filename =
-                (itemDataResponse as File).name || "formData.zip";
-              const storageName = common.generateResourceStorageFilename(
-                itemTemplate.itemId,
-                filename,
-                "info_form"
+          let wrapupPromise = Promise.resolve();
+          let webappPromise = Promise.resolve(itemTemplate);
+          switch (itemInfo.type.toLowerCase()) {
+            case "dashboard":
+              dashboard.convertItemToTemplate(itemTemplate);
+              break;
+            case "form":
+              itemTemplate.dependencies = itemTemplate.dependencies.concat(
+                relatedItemsResponse.relatedItems.map(
+                  relatedItem => relatedItem.id
+                )
               );
-              itemTemplate.resources.push(
-                storageName.folder + "/" + storageName.filename
-              );
-              wrapupPromise = common.addResourceFromBlob(
-                itemDataResponse,
-                solutionItemId,
-                storageName.folder,
-                storageName.filename,
-                requestOptions
-              );
-            }
-            break;
-          case "web map":
-            webmap.convertItemToTemplate(itemTemplate);
-            break;
-          case "web mapping application":
-            webappPromise = webmappingapplication.convertItemToTemplate(
-              itemTemplate,
-              requestOptions
-            );
-            break;
-          case "workforce project":
-            workforce.convertItemToTemplate(itemTemplate);
-            break;
-        }
 
-        wrapupPromise.then(
-          () => {
-            /* console.log(
+              // Store the form's data in the solution resources, not in template
+              itemTemplate.data = null;
+              form.convertItemToTemplate(itemTemplate);
+
+              if (itemDataResponse) {
+                const filename =
+                  (itemDataResponse as File).name || "formData.zip";
+                const storageName = common.generateResourceStorageFilename(
+                  itemTemplate.itemId,
+                  filename,
+                  "info_form"
+                );
+                itemTemplate.resources.push(
+                  storageName.folder + "/" + storageName.filename
+                );
+                wrapupPromise = common.addResourceFromBlob(
+                  itemDataResponse,
+                  solutionItemId,
+                  storageName.folder,
+                  storageName.filename,
+                  { authentication: userSession }
+                );
+              }
+              break;
+            case "web map":
+              webmap.convertItemToTemplate(itemTemplate);
+              break;
+            case "web mapping application":
+              webappPromise = webmappingapplication.convertItemToTemplate(
+                itemTemplate,
+                { authentication: userSession }
+              );
+              break;
+            case "workforce project":
+              workforce.convertItemToTemplate(itemTemplate);
+              break;
+          }
+
+          wrapupPromise.then(
+            () => {
+              /* console.log(
               "converted " +
                 itemInfo.type +
                 ' "' +
@@ -201,15 +202,15 @@ export function convertItemToTemplate(
                 itemInfo.id +
                 ")"
             ); */
-            webappPromise.then(
-              _itemTemplate => resolve(_itemTemplate),
-              e => {
-                resolve(itemTemplate);
-              }
-            );
-          },
-          err => {
-            /* console.log(
+              webappPromise.then(
+                _itemTemplate => resolve(_itemTemplate),
+                e => {
+                  resolve(itemTemplate);
+                }
+              );
+            },
+            err => {
+              /* console.log(
               "unable to convert " +
                 itemInfo.type +
                 ' "' +
@@ -219,27 +220,34 @@ export function convertItemToTemplate(
                 "): " +
                 JSON.stringify(err, null, 2)
             ); */
-            reject(common.fail(err.response));
-          }
-        );
-      });
+              reject(common.fail(err.response));
+            }
+          );
+          // }); //???
+        },
+        error => {
+          console.log("simple-types convertItemToTemplate failed", error);
+        }
+      );
     } else {
       // Get the group's items--its dependencies
-      common.getGroupContents(itemInfo.id, requestOptions).then(
-        groupContents => {
-          itemTemplate.type = "Group";
-          itemTemplate.dependencies = groupContents;
-          portal.getGroup(itemInfo.id, requestOptions).then(
-            groupResponse => {
-              groupResponse.id = itemTemplate.item.id;
-              itemTemplate.item = groupResponse;
-              resolve(itemTemplate);
-            },
-            () => resolve(itemTemplate)
-          );
-        },
-        () => resolve(itemTemplate)
-      );
+      common
+        .getGroupContents(itemInfo.id, { authentication: userSession })
+        .then(
+          groupContents => {
+            itemTemplate.type = "Group";
+            itemTemplate.dependencies = groupContents;
+            portal.getGroup(itemInfo.id, { authentication: userSession }).then(
+              groupResponse => {
+                groupResponse.id = itemTemplate.item.id;
+                itemTemplate.item = groupResponse;
+                resolve(itemTemplate);
+              },
+              () => resolve(itemTemplate)
+            );
+          },
+          () => resolve(itemTemplate)
+        );
     }
   });
 }
