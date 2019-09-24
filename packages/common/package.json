@@ -12,14 +12,14 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.3.0",
-    "@esri/arcgis-rest-portal": "^2.3.0",
-    "@esri/arcgis-rest-request": "^2.3.0",
-    "@esri/arcgis-rest-service-admin": "^2.3.0"
+    "@esri/arcgis-rest-auth": "^2.4.0",
+    "@esri/arcgis-rest-portal": "^2.4.0",
+    "@esri/arcgis-rest-request": "^2.4.0",
+    "@esri/arcgis-rest-service-admin": "^2.4.0"
   },
   "dependencies": {
     "adlib": "^3.0.0",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   },
   "scripts": {
     "prepare": "npm run build",
