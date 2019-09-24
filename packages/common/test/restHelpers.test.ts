@@ -47,9 +47,7 @@ import {
   TOMORROW,
   createRuntimeMockUserSession,
   setMockDateTime,
-  checkForArcgisRestSuccessRequestError,
-  getEmptyJsonResponse,
-  jsonToResponse
+  checkForArcgisRestSuccessRequestError
 } from "../test/mocks/utils";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
@@ -720,11 +718,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const getUrl = "https://myserver/images/thumbnail.png";
         const expectedServerInfo = SERVER_INFO;
         const expected = mockItems.getAnImageResponse();
-        const expectedGet = new Response(expected);
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(getUrl + "/rest/info", expectedServerInfo)
-          .post(getUrl, expectedGet);
+          .post(getUrl, expected, { sendAsJson: false });
 
         getBlob(url, requestOptions).then(response => {
           expect(response).toEqual(expected);
@@ -1045,7 +1042,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock.get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          jsonToResponse(expected)
+          expected
         );
         getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
           expect(response).toEqual(expected);
@@ -1059,7 +1056,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock.get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          jsonToResponse(mockItems.get500Failure())
+          mockItems.get500Failure()
         );
         getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
           expect(response).toEqual(expected);
@@ -1073,7 +1070,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock.get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          jsonToResponse(expected)
+          expected
         );
         getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
           expect(response).toEqual(expected);

@@ -24,12 +24,7 @@ import {
   createItemFromTemplate,
   updateGroup
 } from "../src/simple-types";
-import {
-  TOMORROW,
-  create404Error,
-  getEmptyJsonResponse,
-  jsonToResponse
-} from "../../common/test/mocks/utils";
+import { TOMORROW, create404Error } from "../../common/test/mocks/utils";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -91,7 +86,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
-            jsonToResponse(mockItems.get500Failure())
+            mockItems.get500Failure()
           )
           .post(
             "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
@@ -357,7 +352,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
-            jsonToResponse(dataResponse)
+            dataResponse
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
@@ -648,7 +643,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data?token=fake-token",
-            jsonToResponse(mockItems.get500Failure())
+            mockItems.get500Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -712,7 +707,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data?token=fake-token",
-            jsonToResponse(["abc", "def", "ghi"])
+            ["abc", "def", "ghi"]
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -797,7 +792,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data?token=fake-token",
-            jsonToResponse(["abc", "def", "ghi"])
+            ["abc", "def", "ghi"]
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -958,7 +953,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data?token=fake-token",
-            jsonToResponse(mockItems.get500Failure())
+            mockItems.get500Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -1037,7 +1032,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data?token=fake-token",
-            jsonToResponse(["abc", "def", "ghi"])
+            ["abc", "def", "ghi"]
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -1173,7 +1168,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
-            jsonToResponse(itemTemplate.data)
+            itemTemplate.data
           );
 
         convertItemToTemplate(

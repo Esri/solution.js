@@ -87,10 +87,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
     describe("addResourceFromBlob", () => {
       it("has filename without folder", done => {
         const blob = utils.getSampleMetadata();
@@ -181,10 +178,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
     describe("addThumbnailFromBlob", () => {
       it("has thumbnail", done => {
         const blob = utils.getSampleImage();
@@ -284,7 +278,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
@@ -322,7 +316,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
@@ -444,17 +438,19 @@ describe("Module `resourceHelpers`: common functions involving the management of
           itemId: "itm1234567890",
           requestOptions: MOCK_USER_REQOPTS
         };
+
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-        const expected = { success: true, id: destination.itemId };
+        const expectedFetch = { success: true, id: destination.itemId };
+        const expectedUpdate = { success: true, id: destination.itemId };
+        fetchMock.post(fetchUrl, expectedFetch).post(updateUrl, expectedUpdate);
 
-        fetchMock.post(fetchUrl, expected).post(updateUrl, expected);
         resourceHelpers
           .copyMetadata(source, destination)
           .then((response: any) => {
-            expect(response).toEqual(expected);
+            expect(response).toEqual(expectedUpdate);
             done();
           }, done.fail);
       });
@@ -486,10 +482,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
     describe("copyResource", () => {
       it("copies resource", done => {
         const source = {
