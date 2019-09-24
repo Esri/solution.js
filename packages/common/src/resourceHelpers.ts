@@ -278,6 +278,10 @@ export function copyMetadata(
   return new Promise<any>((resolve, reject) => {
     restHelpers.getBlob(source.url, source.requestOptions).then(
       blob => {
+        if (blob.type !== "text/xml") {
+          reject(generalHelpers.fail()); // unable to get resource
+          return;
+        }
         addMetadataFromBlob(
           blob,
           destination.itemId,
