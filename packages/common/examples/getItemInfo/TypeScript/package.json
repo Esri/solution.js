@@ -5,18 +5,18 @@
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.3.0",
-    "@esri/arcgis-rest-portal": "^2.3.0",
-    "@esri/arcgis-rest-request": "^2.3.0",
-    "@esri/arcgis-rest-service-admin": "^2.3.0",
+    "@esri/arcgis-rest-auth": "^2.4.0",
+    "@esri/arcgis-rest-portal": "^2.4.0",
+    "@esri/arcgis-rest-request": "^2.4.0",
+    "@esri/arcgis-rest-service-admin": "^2.4.0",
     "@esri/solution-common": "^0.5.0",
     "@types/requirejs": "^2.1.31",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   },
   "scripts": {},
   "repository": {},
