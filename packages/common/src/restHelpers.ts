@@ -610,22 +610,23 @@ export function getServiceLayersAndTables(
 export function getText(
   url: string,
   requestOptions: auth.IUserRequestOptions
-): Promise<any> {
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     // Get the blob from the URL
     const blobRequestOptions = {
       ...requestOptions,
       rawResponse: true
     } as request.IRequestOptions;
+
     request.request(url, blobRequestOptions).then(
       response => {
         // Extract the text from the response
         response.text().then(
-          resolve,
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get text out of response
+          (text: string) => resolve(text.startsWith('{"error":') ? "" : text),
+          () => resolve("") // unable to get text out of response
         );
       },
-      e => reject(generalHelpers.fail(e)) // unable to get response
+      () => resolve("") // unable to get response
     );
   });
 }
