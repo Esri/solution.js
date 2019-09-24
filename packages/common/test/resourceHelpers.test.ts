@@ -269,8 +269,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/doc/metadata.xml";
-        const expectedFetch =
-          "<meta><value1>a</value1><value2>b</value2></meta>";
+        const expectedFetch = new Blob(
+          ["<meta><value1>a</value1><value2>b</value2></meta>"],
+          { type: "text/xml" }
+        );
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
@@ -443,9 +445,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = { success: true, id: destination.itemId };
+        const expectedFetch = utils.getSampleMetadata();
         const expectedUpdate = { success: true, id: destination.itemId };
-        fetchMock.post(fetchUrl, expectedFetch).post(updateUrl, expectedUpdate);
+        fetchMock
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
 
         resourceHelpers
           .copyMetadata(source, destination)
@@ -455,7 +459,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("it fails to copy metadata.xml", done => {
+      it("it fails to acquire metadata.xml", done => {
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
@@ -465,21 +469,54 @@ describe("Module `resourceHelpers`: common functions involving the management of
           itemId: "itm1234567890",
           requestOptions: MOCK_USER_REQOPTS
         };
+
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        const expectedFetch = {
+          error: {
+            code: 400,
+            messageCode: "CONT_0036",
+            message: "Item info file does not exist or is inaccessible.",
+            details: ["Error getting Item Info from DataStore"]
+          }
+        };
+        fetchMock.post(fetchUrl, expectedFetch); // .post(updateUrl, expectedUpdate);
+
+        resourceHelpers.copyMetadata(source, destination).then(
+          response => {
+            response.success ? done.fail() : done();
+          },
+          () => done()
+        );
+      });
+
+      it("it fails to store metadata.xml", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-        const expected = { success: true, id: destination.itemId };
-
+        const expectedFetch = utils.getSampleMetadata();
+        const expectedUpdate = { success: false, id: destination.itemId };
         fetchMock
-          .post(fetchUrl, mockItems.get400Failure())
-          .post(updateUrl, expected);
-        resourceHelpers
-          .copyMetadata(source, destination)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
+
+        resourceHelpers.copyMetadata(source, destination).then(
+          response => {
+            response.success ? done.fail() : done();
+          },
+          () => done()
+        );
       });
     });
 
