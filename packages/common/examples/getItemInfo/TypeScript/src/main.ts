@@ -17,7 +17,6 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
 import * as solutionCommon from "@esri/solution-common";
 
 export function getItemInfo(itemId: string): Promise<string> {
@@ -32,20 +31,17 @@ export function getItemInfo(itemId: string): Promise<string> {
     const destinationUserSession: auth.UserSession = new auth.UserSession(
       usOptions
     );
-    const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
-    };
-    const requestOptionsNonJson: auth.IUserRequestOptions = {
-      ...requestOptions,
-      params: {
-        f: "image"
-      }
-    };
 
     // Get the item base, data, and resources
-    const itemBaseDef = solutionCommon.getItem(itemId, requestOptions);
-    const itemDataDef = solutionCommon.getItemData(itemId, requestOptions);
-    const resourcesDef = portal.getItemResources(itemId, requestOptions);
+    const itemBaseDef = solutionCommon.getItem(itemId, {
+      authentication: destinationUserSession
+    });
+    const itemDataDef = solutionCommon.getItemData(itemId, {
+      authentication: destinationUserSession
+    });
+    const resourcesDef = portal.getItemResources(itemId, {
+      authentication: destinationUserSession
+    });
 
     // tslint:disable-next-line: no-floating-promises
     Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
@@ -120,12 +116,10 @@ export function getItemInfo(itemId: string): Promise<string> {
           case "web map":
           case "web mapping application":
           case "web scene":
-            itemDataRaw.json().then((data: string) => {
-              document.getElementById("dataSection").innerHTML =
-                '<textarea rows="10" style="width:99%;font-size:x-small">' +
-                (data ? JSON.stringify(data, null, 2) : "") +
-                "</textarea>";
-            });
+            html += // Blob is JSON, so it is converted by default
+              '<textarea rows="10" style="width:99%;font-size:x-small">' +
+              (itemDataRaw ? JSON.stringify(itemDataRaw, null, 2) : "") +
+              "</textarea>";
             break;
 
           case "document link":
@@ -176,7 +170,9 @@ export function getItemInfo(itemId: string): Promise<string> {
       );
       html += '<div id="metadataOutput"></div>';
       solutionCommon
-        .getText(metadataFilePath[0].url, requestOptions)
+        .getText(metadataFilePath[0].url, {
+          authentication: destinationUserSession
+        })
         .then(metadata => {
           if (metadata) {
             document.getElementById("metadataOutput").innerHTML =
