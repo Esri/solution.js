@@ -181,8 +181,8 @@ export function copyFilesFromStorageItem(
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        case EFileType.Form:
-          return Promise.resolve();
+        // case EFileType.Form:
+        //   return Promise.resolve();
 
         case EFileType.Metadata:
           return copyMetadata(
