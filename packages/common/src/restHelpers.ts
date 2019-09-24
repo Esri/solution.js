@@ -417,7 +417,6 @@ export function getItemData(
                 }
               },
               () => {
-                console.log("getItemData get blob text failed");
                 resolve(null);
               }
             );

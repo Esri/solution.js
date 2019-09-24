@@ -284,7 +284,7 @@ export function copyMetadata(
           destination.requestOptions
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
+          e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
       e => reject(generalHelpers.fail(e)) // unable to get resource
