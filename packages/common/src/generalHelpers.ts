@@ -25,8 +25,14 @@
 export function blobToJson(blob: Blob): Promise<any> {
   return new Promise<any>(resolve => {
     blobToText(blob).then(
-      blobContents => resolve(JSON.parse(blobContents)),
-      () => resolve("")
+      blobContents => {
+        try {
+          resolve(JSON.parse(blobContents));
+        } catch (err) {
+          resolve(null);
+        }
+      },
+      () => resolve(null)
     );
   });
 }
@@ -152,13 +158,11 @@ export function getProps(obj: any, props: string[]): any {
  *             in obj
  * @param value The value to set at the end of the path
  */
-export function setProp(obj: any, path: any, value: any) {
+export function setProp(obj: any, path: string, value: any) {
   if (getProp(obj, path)) {
-    if (typeof path === "string") {
-      path = path.split(".");
-    }
-    path.reduce((a: any, b: any, c: any) => {
-      if (c === path.length - 1) {
+    const pathParts: string[] = path.split(".");
+    pathParts.reduce((a: any, b: any, c: any) => {
+      if (c === pathParts.length - 1) {
         a[b] = value;
         return value;
       } else {
