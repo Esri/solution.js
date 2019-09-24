@@ -618,9 +618,9 @@ export function getText(
       rawResponse: true
     } as request.IRequestOptions;
     request.request(url, blobRequestOptions).then(
-      content => {
-        // Extract the blob from the response
-        generalHelpers.blobToJson(content).then(
+      response => {
+        // Extract the text from the response
+        response.text().then(
           resolve,
           (e: any) => reject(generalHelpers.fail(e)) // unable to get text out of response
         );
