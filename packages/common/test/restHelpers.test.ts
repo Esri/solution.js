@@ -51,7 +51,6 @@ import {
   getEmptyJsonResponse,
   jsonToResponse
 } from "../test/mocks/utils";
-import { getAnImageResponse } from "./mocks/agolItems";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
@@ -720,7 +719,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         const getUrl = "https://myserver/images/thumbnail.png";
         const expectedServerInfo = SERVER_INFO;
-        const expected = getAnImageResponse();
+        const expected = mockItems.getAnImageResponse();
         const expectedGet = new Response(expected);
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
