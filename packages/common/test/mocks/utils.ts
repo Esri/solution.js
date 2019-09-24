@@ -80,10 +80,6 @@ export const PROGRESS_CALLBACK = function(): void {
   const tick = "tok";
 };
 
-export function getEmptyJsonResponse(): Response {
-  return jsonToResponse({});
-}
-
 export function getSampleMetadata(): any {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
       <dataIdInfo>
@@ -122,10 +118,6 @@ export function getSampleMetadata(): any {
 
 export function jsonToBlob(json: any): Blob {
   return new Blob([JSON.stringify(json)], { type: "application/json" });
-}
-
-export function jsonToResponse(json: any): Response {
-  return new Response(jsonToBlob(json));
 }
 
 export function xmlToBlob(xml: any): Blob {

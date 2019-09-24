@@ -36,8 +36,7 @@ import {
   TOMORROW,
   createMockSettings,
   createRuntimeMockUserSession,
-  checkForArcgisRestSuccessRequestError,
-  jsonToResponse
+  checkForArcgisRestSuccessRequestError
 } from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
@@ -182,7 +181,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?token=fake-token",
-            jsonToResponse(mockItems.get500Failure())
+            mockItems.get500Failure()
           )
           .post(
             "https://www.arcgis.com/sharing/rest/generateToken",

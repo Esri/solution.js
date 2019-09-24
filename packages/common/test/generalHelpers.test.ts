@@ -27,10 +27,49 @@ import {
   deleteProps,
   hasAnyKeyword,
   hasTypeKeyword,
-  getUTCTimestamp
+  getUTCTimestamp,
+  blobToJson
 } from "../src/generalHelpers";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("blobToJson", () => {
+      it("extracts JSON from a blob", done => {
+        const srcJson: any = {
+          a: "b",
+          c: 4
+        };
+        const blob: Blob = new Blob([JSON.stringify(srcJson)], {
+          type: "application/json"
+        });
+
+        blobToJson(blob).then(extractedJson => {
+          expect(extractedJson).toEqual(srcJson);
+          done();
+        }, done.fail);
+      });
+
+      it("fails to extract JSON from a blob 1", done => {
+        const blob: Blob = new Blob([], { type: "application/json" });
+
+        blobToJson(blob).then(extractedJson => {
+          expect(extractedJson).toBeNull();
+          done();
+        }, done.fail);
+      });
+
+      it("fails to extract JSON from a blob 2", done => {
+        const blob: Blob = null;
+
+        blobToJson(blob).then(extractedJson => {
+          expect(extractedJson).toBeNull();
+          done();
+        }, done.fail);
+      });
+    });
+  }
+
   describe("cloneObject", () => {
     it("can clone a shallow object", () => {
       const obj = {

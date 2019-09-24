@@ -22,8 +22,7 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
 import * as utils from "./mocks/utils";
-
-import { getAnImageResponse } from "./mocks/agolItems";
+import * as mockItems from "./mocks/agolItems";
 import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 
@@ -88,10 +87,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
     describe("addResourceFromBlob", () => {
       it("has filename without folder", done => {
         const blob = utils.getSampleMetadata();
@@ -182,10 +178,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
     describe("addThumbnailFromBlob", () => {
       it("has thumbnail", done => {
         const blob = utils.getSampleImage();
@@ -276,8 +269,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/doc/metadata.xml";
-        const expectedFetch =
-          "<meta><value1>a</value1><value2>b</value2></meta>";
+        const expectedFetch = new Blob(
+          ["<meta><value1>a</value1><value2>b</value2></meta>"],
+          { type: "text/xml" }
+        );
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
@@ -285,7 +280,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
@@ -315,7 +310,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/resource.png";
-        const expectedFetch = getAnImageResponse();
+        const expectedFetch = mockItems.getAnImageResponse();
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate = true;
@@ -323,7 +318,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
-          .post(fetchUrl, expectedFetch)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
@@ -407,7 +402,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/thumbnail.png";
-        const expectedFetch = getAnImageResponse();
+        const expectedFetch = mockItems.getAnImageResponse();
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
@@ -445,25 +440,86 @@ describe("Module `resourceHelpers`: common functions involving the management of
           itemId: "itm1234567890",
           requestOptions: MOCK_USER_REQOPTS
         };
+
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-        const expected = { success: true, id: destination.itemId };
+        const expectedFetch = utils.getSampleMetadata();
+        const expectedUpdate = { success: true, id: destination.itemId };
+        fetchMock
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
 
-        fetchMock.post(fetchUrl, expected).post(updateUrl, expected);
         resourceHelpers
           .copyMetadata(source, destination)
           .then((response: any) => {
-            expect(response).toEqual(expected);
+            expect(response).toEqual(expectedUpdate);
             done();
           }, done.fail);
       });
-    });
-  }
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
+      it("it fails to acquire metadata.xml", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        const expectedFetch = {
+          error: {
+            code: 400,
+            messageCode: "CONT_0036",
+            message: "Item info file does not exist or is inaccessible.",
+            details: ["Error getting Item Info from DataStore"]
+          }
+        };
+        fetchMock.post(fetchUrl, expectedFetch); // .post(updateUrl, expectedUpdate);
+
+        resourceHelpers.copyMetadata(source, destination).then(
+          response => {
+            response.success ? done.fail() : done();
+          },
+          () => done()
+        );
+      });
+
+      it("it fails to store metadata.xml", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          requestOptions: MOCK_USER_REQOPTS
+        };
+
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const expectedFetch = utils.getSampleMetadata();
+        const expectedUpdate = { success: false, id: destination.itemId };
+        fetchMock
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
+
+        resourceHelpers.copyMetadata(source, destination).then(
+          response => {
+            response.success ? done.fail() : done();
+          },
+          () => done()
+        );
+      });
+    });
+
     describe("copyResource", () => {
       it("copies resource", done => {
         const source = {
