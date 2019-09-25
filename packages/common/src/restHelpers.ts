@@ -51,6 +51,7 @@ export function addToServiceDefinition(
 
 /**
  * Converts an extent to a specified spatial reference.
+ *
  * @param extent Extent object to check and (possibly) to project
  * @param outSR Desired spatial reference
  * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
@@ -240,6 +241,7 @@ export function createItemWithData(
 
 /**
  * Creates a folder using numeric suffix to ensure uniqueness.
+ *
  * @param folderTitleRoot Folder title, used as-is if possible and with suffix otherwise
  * @param userSession Credentials for creating folder
  * @param suffix Current suffix level; '0' means no suffix
@@ -322,6 +324,13 @@ export function extractDependencies(
   });
 }
 
+/**
+ * Gets a blob from a web site.
+ *
+ * @param url Address of blob
+ * @param userSession Credentials for the request
+ * @return Promise that will resolve with blob or an AGO-style JSON failure response
+ */
 export function getBlob(
   url: string,
   userSession: auth.UserSession
@@ -346,10 +355,10 @@ export function getBlob(
 }
 
 /**
- * Gets the ids of the dependencies (contents) of an AGOL group.
+ * Gets the ids of the dependencies (contents) of an AGO group.
  *
- * @param fullItem A group whose contents are sought
- * @param userSession Credentials for the request to AGOL
+ * @param groupId Id of a group whose contents are sought
+ * @param userSession Credentials for the request to AGO
  * @return A promise that will resolve with list of dependent ids or an empty list
  * @protected
  */
@@ -376,6 +385,14 @@ export function getGroupContents(
   });
 }
 
+/**
+ * Gets the primary information of an AGO item.
+ *
+ * @param itemId Id of an item whose primary information is sought
+ * @param userSession Credentials for the request to AGO
+ * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
+ *         or response error code
+ */
 export function getItem(
   itemId: string,
   userSession: auth.UserSession
@@ -387,6 +404,16 @@ export function getItem(
   return portal.getItem(itemId, itemParam);
 }
 
+/**
+ * Gets the data information of an AGO item.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param userSession Credentials for the request to AGO
+ * @param convertToJsonIfText Switch indicating that MIME type "text/plain" should be converted to JSON;
+ * MIME type "application/json" is always converted
+ * @return A promise that will resolve with 1. null in case of error, or 2. JSON if "application/json" or ("text/plain"
+ * && convertToJsonIfText), or 3. text if ("text/plain" && ¬convertToJsonIfText), or 3. blob
+ */
 export function getItemData(
   itemId: string,
   userSession: auth.UserSession,
@@ -432,6 +459,15 @@ export function getItemData(
   });
 }
 
+/**
+ * Gets the related items of an AGO item.
+ *
+ * @param itemId Id of an item whose related items are sought
+ * @param relationshipType
+ * @param direction
+ * @param userSession Credentials for the request to AGO
+ * @return A promise that will resolve with an arcgis-rest-js `IGetRelatedItemsResponse` structure
+ */
 export function getItemRelatedItems(
   itemId: string,
   relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
@@ -479,13 +515,13 @@ export function getLayers(
 }
 
 /**
- * Add additional options to a layers definition
+ * Add additional options to a layers definition.
  *
  * @param args The IPostProcessArgs for the request(s)
- * @return A promise that will resolve when fullItem has been updated
+ * @return An array of update instructions
  * @protected
  */
-export function getLayerUpdates(args: IPostProcessArgs): any[] {
+export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
@@ -528,7 +564,7 @@ export function getLayerUpdates(args: IPostProcessArgs): any[] {
 /**
  * Add additional options to a layers definition
  *
- * @param update will contain either add, update, or delete from service definition call
+ * @param Update will contain either add, update, or delete from service definition call
  * @return A promise that will resolve when service definition call has completed
  * @protected
  */
@@ -605,6 +641,13 @@ export function getServiceLayersAndTables(
   });
 }
 
+/**
+ * Gets text from a web site.
+ *
+ * @param url Address of text
+ * @param userSession Credentials for the request
+ * @return Promise that will resolve with text or, in case of error, an empty string
+ */
 export function getText(
   url: string,
   userSession: auth.UserSession
@@ -699,7 +742,8 @@ export function updateItem(
  * @param id AGOL id of item to update
  * @param url URL to assign to item's base section
  * @param userSession Credentials for the request
- * @return A promise that will resolve when the item has been updated
+ * @return A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
+ *         response
  */
 export function updateItemURL(
   id: string,
@@ -727,6 +771,13 @@ export function updateItemURL(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Accumulates the number of relationships in a collection of layers.
+ *
+ * @param List of layers to examine
+ * @return The number of relationships
+ * @protected
+ */
 export function _countRelationships(layers: any[]): number {
   const reducer = (accumulator: number, currentLayer: any) =>
     accumulator +
@@ -742,8 +793,8 @@ export function _countRelationships(layers: any[]): number {
  * @param layerList List of layers at that service...must contain id
  * @param userSession Credentials for the request
  * @return A promise that will resolve with a list of the layers from the admin api
+ * @protected
  */
-
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
   userSession: auth.UserSession,
@@ -943,6 +994,15 @@ export function _getUpdate(
   };
 }
 
+/**
+ * Updates a feature service item.
+ *
+ * @param item Item to update
+ * @param serviceInfo Service information
+ * @param params arcgis-rest-js params to update
+ * @param isPortal Is the service hosted in a portal?
+ * @return Updated item
+ */
 export function _setItemProperties(
   item: any,
   serviceInfo: any,
