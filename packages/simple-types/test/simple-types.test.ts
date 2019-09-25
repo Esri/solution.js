@@ -24,13 +24,13 @@ import {
   createItemFromTemplate,
   updateGroup
 } from "../src/simple-types";
+import { TOMORROW, create404Error } from "../../common/test/mocks/utils";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import { IItemTemplate } from "../../common/src/interfaces";
-
-import { TOMORROW, create404Error } from "../../common/test/mocks/utils";
 import { UserSession } from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new UserSession({
@@ -64,42 +64,45 @@ afterEach(() => {
 
 describe("Module `simple-types`: manages the creation and deployment of simple item types", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getResources", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
-
-      itemTemplate.item = {
-        id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Workforce Project",
-        title: "Dam Inspection Assignments"
-      };
-      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-          mockItems.get400Failure()
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
-          {}
-        )
-        .post(
-          "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
-          {}
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should handle error on getResources", done => {
+        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+          "Workforce Project",
+          null
         );
 
-      convertItemToTemplate(
-        itemTemplate.item.id,
-        itemTemplate.item,
-        MOCK_USER_SESSION
-      ).then(newItemTemplate => {
-        expect(newItemTemplate.resources).toEqual([]);
-        done();
-      }, done.fail);
-    });
+        itemTemplate.item = {
+          id: "abc0cab401af4828a25cc6eaeb59fb69",
+          type: "Workforce Project",
+          title: "Dam Inspection Assignments"
+        };
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            mockItems.get400Failure()
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          expect(newItemTemplate.resources).toEqual([]);
+          done();
+        }, done.fail);
+      });
+    }
 
     it("should handle error on getGroup", done => {
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
@@ -275,8 +278,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
 
+    // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
       it("should handle workforce project", done => {
         const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
           "Workforce Project",
@@ -341,14 +344,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
-            {}
+            mockItems.get500Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/addResources",
             { success: true, id: itemTemplate.itemId }
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
             dataResponse
           )
           .get(
@@ -552,8 +555,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
 
+    // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
       it("should handle item resource", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
@@ -582,7 +585,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url:
               "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
           },
-          data: {},
+          data: null,
           resources: [
             "map1234567890_image/banner.png",
             "map1234567890_info_thumbnail/banner.png"
@@ -639,8 +642,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/data?f=json&num=1000&token=fake-token",
-            {}
+              "/data?token=fake-token",
+            mockItems.get500Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -672,7 +675,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.itemId = "dsh1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
         itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], { type: "text/xml" });
 
         const expectedTemplate: any = {
           itemId: "dsh1234567890",
@@ -693,7 +695,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             typeKeywords: ["JavaScript"],
             url: ""
           },
-          data: {},
+          data: ["abc", "def", "ghi"],
           resources: [],
           dependencies: [],
           properties: {},
@@ -704,8 +706,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/data?f=json&num=1000&token=fake-token",
-            blob
+              "/data?token=fake-token",
+            ["abc", "def", "ghi"]
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -758,9 +760,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], {
-          type: "application/zip"
-        });
 
         const expectedTemplate: any = {
           itemId: "frm1234567890",
@@ -781,7 +780,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             typeKeywords: ["JavaScript"],
             url: ""
           },
-          data: null,
+          data: null, // forms don't store info here
           resources: ["frm1234567890_info_form/formData.zip"],
           dependencies: ["srv1234567890"],
           properties: {},
@@ -789,16 +788,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         };
 
         fetchMock
-          .post(
+          .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/data",
-            blob
+              "/data?token=fake-token",
+            ["abc", "def", "ghi"]
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
             {
               total: 1,
               relatedItems: [
@@ -953,8 +952,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/data?f=json&num=1000&token=fake-token",
-            create404Error()
+              "/data?token=fake-token",
+            mockItems.get500Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -999,12 +998,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
           create404Error()
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data?token=fake-token",
           create404Error()
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
           create404Error()
         );
 
@@ -1020,23 +1019,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
 
+    // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
       it("should catch wrapup errors", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
-        const blob = new Blob(["abc", "def", "ghi"], {
-          type: "application/zip"
-        });
 
         fetchMock
-          .post(
+          .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/data",
-            blob
+              "/data?token=fake-token",
+            ["abc", "def", "ghi"]
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -1075,7 +1071,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
-              "/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
             create404Error()
           );
 
@@ -1096,96 +1092,99 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
     }
 
-    it("should handle web mapping application", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        null
-      );
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should handle web mapping application", done => {
+        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+          "Web Mapping Application",
+          null
+        );
 
-      itemTemplate.item = {
-        id: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Web Mapping Application",
-        title: "Voting Centers",
-        url:
-          "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
-      };
-      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.data = {
-        appItemId: "myAppItemId",
-        values: {
-          webmap: "myMapId"
-        },
-        map: {
-          appProxy: {
-            mapItemId: "mapItemId"
-          },
-          itemId: "mapItemId"
-        },
-        folderId: "folderId"
-      };
-      const expected = {
-        itemId: "abc0cab401af4828a25cc6eaeb59fb69",
-        type: "Web Mapping Application",
-        key: "abcdefgh",
-        item: {
-          title: "Voting Centers",
-          id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        itemTemplate.item = {
+          id: "abc0cab401af4828a25cc6eaeb59fb69",
           type: "Web Mapping Application",
-          categories: undefined,
-          culture: undefined,
-          description: undefined,
-          extent: undefined,
-          tags: undefined,
-          thumbnail: undefined,
-          typeKeywords: undefined,
+          title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
-          licenseInfo: undefined,
-          name: undefined,
-          snippet: undefined
-        } as any,
-        data: {
-          appItemId: "{{myAppItemId.id}}",
+            "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
+        };
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+        itemTemplate.data = {
+          appItemId: "myAppItemId",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "myMapId"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "mapItemId"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "mapItemId"
           },
-          folderId: "{{folderId}}"
-        },
-        resources: [] as any[],
-        dependencies: ["myMapId"],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 2
-      };
+          folderId: "folderId"
+        };
+        const expected = {
+          itemId: "abc0cab401af4828a25cc6eaeb59fb69",
+          type: "Web Mapping Application",
+          key: "abcdefgh",
+          item: {
+            title: "Voting Centers",
+            id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+            type: "Web Mapping Application",
+            categories: undefined,
+            culture: undefined,
+            description: undefined,
+            extent: undefined,
+            tags: undefined,
+            thumbnail: undefined,
+            typeKeywords: undefined,
+            url:
+              "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+            licenseInfo: undefined,
+            name: undefined,
+            snippet: undefined
+          } as any,
+          data: {
+            appItemId: "{{myAppItemId.id}}",
+            values: {
+              webmap: "{{myMapId.id}}"
+            },
+            map: {
+              appProxy: {
+                mapItemId: "{{mapItemId.id}}"
+              },
+              itemId: "{{mapItemId.id}}"
+            },
+            folderId: "{{folderId}}"
+          },
+          resources: [] as any[],
+          dependencies: ["myMapId"],
+          properties: {} as any,
+          estimatedDeploymentCostFactor: 2
+        };
 
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
-          []
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
-          itemTemplate.data
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            []
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
+            itemTemplate.data
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(
+          actual => {
+            actual.key = "abcdefgh";
+            expect(actual).toEqual(expected);
+            done();
+          },
+          e => done.fail(e)
         );
-
-      convertItemToTemplate(
-        itemTemplate.item.id,
-        itemTemplate.item,
-        MOCK_USER_SESSION
-      ).then(
-        actual => {
-          actual.key = "abcdefgh";
-          expect(actual).toEqual(expected);
-          done();
-        },
-        e => done.fail(e)
-      );
-    });
+      });
+    }
 
     it("should handle error on web mapping application", done => {
       const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
@@ -1234,7 +1233,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           []
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?f=json&num=1000&token=fake-token",
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data?token=fake-token",
           data
         )
         .post(
@@ -1254,83 +1253,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
     });
 
-    if (typeof window !== "undefined") {
-      // Blobs are only available in the browser
-      it("should handle web mapping applications", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
-        itemTemplate.item = mockItems.getAGOLItem(
-          "Web Mapping Application",
-          null
-        );
-        itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = null;
-
-        const expectedTemplate: any = {
-          itemId: "wma1234567890",
-          type: "Web Mapping Application",
-          item: {
-            id: "{{wma1234567890.id}}",
-            type: "Web Mapping Application",
-            categories: [],
-            culture: "en-us",
-            description: "Description of an AGOL item",
-            extent: [],
-            licenseInfo: null,
-            name: "Name of an AGOL item",
-            snippet: "Snippet of an AGOL item",
-            tags: ["test"],
-            thumbnail: null,
-            title: "An AGOL item",
-            typeKeywords: ["JavaScript"],
-            url:
-              "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
-          },
-          data: null,
-          resources: [],
-          dependencies: [],
-          properties: {},
-          estimatedDeploymentCostFactor: 2
-        };
-
-        fetchMock
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/data?f=json&num=1000&token=fake-token",
-            create404Error()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            noResourcesResponse
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
-          );
-
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
-      });
-    }
-
     it("should catch fetch errors", done => {
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.item = mockItems.getAGOLItem("Form", null);
@@ -1342,12 +1264,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
           create404Error()
         )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data?token=fake-token",
           create404Error()
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&num=1000&relationshipType=Survey2Service&token=fake-token",
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
           create404Error()
         );
 

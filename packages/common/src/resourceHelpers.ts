@@ -181,8 +181,8 @@ export function copyFilesFromStorageItem(
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        case EFileType.Form:
-          return Promise.resolve();
+        // case EFileType.Form:
+        //   return Promise.resolve();
 
         case EFileType.Metadata:
           return copyMetadata(
@@ -278,13 +278,17 @@ export function copyMetadata(
   return new Promise<any>((resolve, reject) => {
     restHelpers.getBlob(source.url, source.requestOptions).then(
       blob => {
+        if (blob.type !== "text/xml") {
+          reject(generalHelpers.fail()); // unable to get resource
+          return;
+        }
         addMetadataFromBlob(
           blob,
           destination.itemId,
           destination.requestOptions
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
+          e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
       e => reject(generalHelpers.fail(e)) // unable to get resource
