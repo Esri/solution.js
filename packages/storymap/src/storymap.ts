@@ -44,9 +44,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageUserSession: auth.UserSession,
+  storageAuthentication: auth.UserSession,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -71,9 +71,9 @@ export function createItemFromTemplate(
         .createItemFromTemplate(
           template,
           resourceFilePaths,
-          storageUserSession,
+          storageAuthentication,
           templateDictionary,
-          destinationUserSession,
+          destinationAuthentication,
           progressTickCallback
         )
         .then(resolve, reject);

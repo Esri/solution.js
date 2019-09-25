@@ -22,6 +22,12 @@
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Extracts JSON from a blob.
+ *
+ * @param blob Blob to use as source
+ * @return A promise that will resolve with JSON or null
+ */
 export function blobToJson(blob: Blob): Promise<any> {
   return new Promise<any>(resolve => {
     blobToText(blob).then(
@@ -37,6 +43,12 @@ export function blobToJson(blob: Blob): Promise<any> {
   });
 }
 
+/**
+ * Extracts text from a blob.
+ *
+ * @param blob Blob to use as source
+ * @return A promise that will resolve with text read from blob
+ */
 export function blobToText(blob: Blob): Promise<string> {
   return new Promise<string>(resolve => {
     const reader = new FileReader();
@@ -51,6 +63,11 @@ export function blobToText(blob: Blob): Promise<string> {
 }
 
 /**
+ * Makes a deep clone, including arrays but not functions.
+ *
+ * @param obj Object to be cloned
+ * @return Clone of obj
+ * @example
  * ```js
  * import { cloneObject } from "utils/object-helpers";
  * const original = { foo: "bar" }
@@ -58,7 +75,6 @@ export function blobToText(blob: Blob): Promise<string> {
  * copy.foo // "bar"
  * copy === original // false
  * ```
- * Make a deep clone, including arrays. Does not handle functions!
  */
 export function cloneObject(obj: { [index: string]: any }): any {
   let clone: { [index: string]: any } = {};
@@ -80,11 +96,10 @@ export function cloneObject(obj: { [index: string]: any }): any {
 }
 
 /**
- * Delete a property from an object
+ * Deletes a property from an object.
  *
- * @param obj object with property to delete
- * @param prop property on object that should be deleted
- *
+ * @param obj Object with property to delete
+ * @param prop Property on object that should be deleted
  */
 export function deleteProp(obj: any, prop: string): void {
   if (obj && obj.hasOwnProperty(prop)) {
@@ -93,11 +108,10 @@ export function deleteProp(obj: any, prop: string): void {
 }
 
 /**
- * Delete properties from an object
+ * Deletes properties from an object.
  *
- * @param obj object with properties to delete
- * @param props array of properties on object that should be deleted
- *
+ * @param obj Object with properties to delete
+ * @param props Array of properties on object that should be deleted
  */
 export function deleteProps(obj: any, props: string[]): void {
   props.forEach(prop => {
@@ -105,6 +119,12 @@ export function deleteProps(obj: any, props: string[]): void {
   });
 }
 
+/**
+ * Creates an AGO-style JSON failure response with success property.
+ *
+ * @param e Optional error information
+ * @return JSON structure with property success set to false and optionally including `e`
+ */
 export function fail(e?: any): any {
   if (e) {
     return { success: false, error: e.error || e };
@@ -130,9 +150,9 @@ export function getProp(obj: { [index: string]: any }, path: string): any {
 }
 
 /**
- * Return an array of values from an object, based on an array of property paths.
+ * Returns an array of values from an object based on an array of property paths.
  *
- * @param obj object to retrive values from
+ * @param obj Object to retrieve values from
  * @param props Array of paths into the object e.g., "data.values.webmap", where "data" is a top-level property
  * @return Array of the values plucked from the object; only defined values are returned
  */
@@ -154,8 +174,7 @@ export function getProps(obj: any, props: string[]): any {
  * Does nothing if the full path does not exist.
  *
  * @param obj Object to set value of
- * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property
- *             in obj
+ * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property in obj
  * @param value The value to set at the end of the path
  */
 export function setProp(obj: any, path: string, value: any) {
@@ -173,9 +192,10 @@ export function setProp(obj: any, path: string, value: any) {
 }
 
 /**
- * Creates a timestamp string using the current date and time.
+ * Creates a timestamp string using the current UTC date and time.
  *
- * @return Timestamp
+ * @return Timestamp formatted as YYYYMMDD_hhmm_ssmmm, with month one-based and all values padded with zeroes on the
+ * left as needed (`ssmmm` stands for seconds from 0..59 and milliseconds from 0..999)
  * @protected
  */
 export function getUTCTimestamp(): string {
@@ -194,11 +214,15 @@ export function getUTCTimestamp(): string {
 }
 
 /**
- * Does the model have any of a set of keywords
+ * Tests if an object's `item.typeKeywords` or `typeKeywords` properties has any of a set of keywords.
+ *
+ * @param jsonObj Object to test
+ * @param keywords List of keywords to look for in jsonObj
+ * @return Boolean indicating result
  */
-export function hasAnyKeyword(model: any, keywords: string[]): boolean {
+export function hasAnyKeyword(jsonObj: any, keywords: string[]): boolean {
   const typeKeywords =
-    getProp(model, "item.typeKeywords") || model.typeKeywords || [];
+    getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
   return keywords.reduce((a, kw) => {
     if (!a) {
       a = typeKeywords.includes(kw);
@@ -208,7 +232,11 @@ export function hasAnyKeyword(model: any, keywords: string[]): boolean {
 }
 
 /**
- * Does the JSON object have a specific typeKeyword?
+ * Tests if an object's `item.typeKeywords` or `typeKeywords` properties has a specific keyword.
+ *
+ * @param jsonObj Object to test
+ * @param keyword Keyword to look for in jsonObj
+ * @return Boolean indicating result
  */
 export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
   const typeKeywords =
@@ -219,7 +247,7 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Pads the string representation of a number to a minimum width.
+ * Pads the string representation of a number to a minimum width. Requires modern browser.
  *
  * @param n Number to pad
  * @param totalSize Desired *minimum* width of number after padding with zeroes

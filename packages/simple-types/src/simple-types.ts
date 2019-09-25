@@ -34,7 +34,7 @@ import * as workforce from "./workforce";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  userSession: auth.UserSession,
+  authentication: auth.UserSession,
   isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -69,23 +69,25 @@ export function convertItemToTemplate(
 
       // Request item resources
       const resourcePromise = portal
-        .getItemResources(itemTemplate.itemId, { authentication: userSession })
+        .getItemResources(itemTemplate.itemId, {
+          authentication: authentication
+        })
         .then(resourcesResponse => {
           // Save resources to solution item
           itemTemplate.resources = (resourcesResponse.resources as any[]).map(
             (resourceDetail: any) => resourceDetail.resource
           );
           const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
-            userSession.portal,
+            authentication.portal,
             itemTemplate.itemId,
             itemTemplate.item.thumbnail,
             itemTemplate.resources
           );
           return common.copyFilesToStorageItem(
-            { authentication: userSession },
+            authentication,
             resourceItemFilePaths,
             solutionItemId,
-            { authentication: userSession }
+            authentication
           );
         })
         .catch(() => Promise.resolve([]));
@@ -102,19 +104,15 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = common.getItemData(itemTemplate.itemId, {
-            authentication: userSession
-          });
+          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
           break;
         case "form":
-          dataPromise = common.getItemData(itemTemplate.itemId, {
-            authentication: userSession
-          });
+          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
           relatedPromise = common.getItemRelatedItems(
             itemTemplate.itemId,
             "Survey2Service",
             "forward",
-            { authentication: userSession }
+            authentication
           );
           break;
       }
@@ -173,7 +171,7 @@ export function convertItemToTemplate(
                   solutionItemId,
                   storageName.folder,
                   storageName.filename,
-                  { authentication: userSession }
+                  authentication
                 );
               }
               break;
@@ -183,7 +181,7 @@ export function convertItemToTemplate(
             case "web mapping application":
               webappPromise = webmappingapplication.convertItemToTemplate(
                 itemTemplate,
-                { authentication: userSession }
+                { authentication: authentication }
               );
               break;
             case "workforce project":
@@ -231,23 +229,21 @@ export function convertItemToTemplate(
       );
     } else {
       // Get the group's items--its dependencies
-      common
-        .getGroupContents(itemInfo.id, { authentication: userSession })
-        .then(
-          groupContents => {
-            itemTemplate.type = "Group";
-            itemTemplate.dependencies = groupContents;
-            portal.getGroup(itemInfo.id, { authentication: userSession }).then(
-              groupResponse => {
-                groupResponse.id = itemTemplate.item.id;
-                itemTemplate.item = groupResponse;
-                resolve(itemTemplate);
-              },
-              () => resolve(itemTemplate)
-            );
-          },
-          () => resolve(itemTemplate)
-        );
+      common.getGroupContents(itemInfo.id, authentication).then(
+        groupContents => {
+          itemTemplate.type = "Group";
+          itemTemplate.dependencies = groupContents;
+          portal.getGroup(itemInfo.id, { authentication: authentication }).then(
+            groupResponse => {
+              groupResponse.id = itemTemplate.item.id;
+              itemTemplate.item = groupResponse;
+              resolve(itemTemplate);
+            },
+            () => resolve(itemTemplate)
+          );
+        },
+        () => resolve(itemTemplate)
+      );
     }
   });
 }
@@ -255,9 +251,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageUserSession: auth.UserSession,
+  storageAuthentication: auth.UserSession,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -283,7 +279,7 @@ export function createItemFromTemplate(
         .createItemWithData(
           newItemTemplate.item,
           newItemTemplate.data,
-          { authentication: destinationUserSession },
+          destinationAuthentication,
           templateDictionary.folderId
         )
         .then(
@@ -305,10 +301,10 @@ export function createItemFromTemplate(
 
               // Copy resources, metadata, thumbnail, form
               const resourcesDef = common.copyFilesFromStorageItem(
-                { authentication: storageUserSession },
+                storageAuthentication,
                 resourceFilePaths,
                 createResponse.id,
-                { authentication: destinationUserSession }
+                destinationAuthentication
               );
 
               // The item's URL includes its id, so it needs to be updated
@@ -318,7 +314,7 @@ export function createItemFromTemplate(
                   newItemTemplate.item.url,
                   templateDictionary
                 ),
-                { authentication: destinationUserSession }
+                destinationAuthentication
               );
 
               // Check for extra processing for web mapping application
@@ -328,12 +324,12 @@ export function createItemFromTemplate(
                   template,
                   newItemTemplate,
                   templateDictionary,
-                  destinationUserSession
+                  destinationAuthentication
                 );
               } else if (template.type.toLowerCase() === "workforce project") {
                 customProcDef = workforce.fineTuneCreatedItem(
                   newItemTemplate,
-                  destinationUserSession
+                  destinationAuthentication
                 );
               } else {
                 customProcDef = Promise.resolve();
@@ -366,7 +362,7 @@ export function createItemFromTemplate(
           portal
             .createGroup({
               group: newItemTemplate.item,
-              authentication: destinationUserSession
+              authentication: destinationAuthentication
             })
             .then(
               createResponse => {
@@ -386,10 +382,10 @@ export function createItemFromTemplate(
                   // Copy resources
                   common
                     .copyFilesFromStorageItem(
-                      { authentication: storageUserSession },
+                      storageAuthentication,
                       resourceFilePaths,
                       createResponse.group.id,
-                      { authentication: destinationUserSession }
+                      destinationAuthentication
                     )
                     .then(
                       () => {
@@ -399,7 +395,7 @@ export function createItemFromTemplate(
 
                         updateGroup(
                           newItemTemplate,
-                          destinationUserSession,
+                          destinationAuthentication,
                           templateDictionary
                         ).then(
                           () => {
@@ -448,7 +444,7 @@ export function getGroupTitle(name: string, id: string): Promise<any> {
 
 export function updateGroup(
   newItemTemplate: common.IItemTemplate,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
@@ -459,7 +455,7 @@ export function updateGroup(
         common.shareItem(
           groupId,
           templateDictionary[d].id,
-          destinationUserSession
+          destinationAuthentication
         )
       );
     });

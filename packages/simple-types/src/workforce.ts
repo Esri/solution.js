@@ -152,22 +152,22 @@ export function _templatize(
  * Updates the dispatchers service to include the current user as a dispatcher
  *
  * @param newlyCreatedItem Item to be created; n.b.: this item is modified
- * @param destinationUserSession The session used to create the new item(s)
+ * @param destinationAuthentication The session used to create the new item(s)
  * @return A promise that will resolve with { "success" === true || false }
  * @protected
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
-  destinationUserSession: auth.UserSession
+  destinationAuthentication: auth.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    destinationUserSession.getUser().then(
+    destinationAuthentication.getUser().then(
       user => {
         _updateDispatchers(
           common.getProp(newlyCreatedItem, "data.dispatchers"),
           user.username || "",
           user.fullName || "",
-          destinationUserSession
+          destinationAuthentication
         ).then(
           results => {
             resolve({ success: results });
@@ -184,14 +184,14 @@ export function _updateDispatchers(
   dispatchers: any,
   name: string,
   fullName: string,
-  destinationUserSession: auth.UserSession
+  destinationAuthentication: auth.UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (dispatchers && dispatchers.url) {
       queryFeatures({
         url: dispatchers.url,
         where: "userId = '" + name + "'",
-        authentication: destinationUserSession
+        authentication: destinationAuthentication
       }).then(
         (results: any) => {
           if (results && results.features) {
@@ -206,7 +206,7 @@ export function _updateDispatchers(
                     }
                   }
                 ],
-                authentication: destinationUserSession
+                authentication: destinationAuthentication
               }).then(
                 addResults => {
                   if (addResults && addResults.addResults) {

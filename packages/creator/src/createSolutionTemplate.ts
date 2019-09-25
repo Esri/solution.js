@@ -106,11 +106,15 @@ export function createItemTemplate(
             const thumbnailUrl =
               portalSharingUrl + "/content/items/" + itemId + "/data";
             common
-              .getBlob(thumbnailUrl, requestOptions)
+              .getBlob(thumbnailUrl, requestOptions.authentication)
               .then(
                 blob =>
                   common
-                    .addThumbnailFromBlob(blob, solutionItemId, requestOptions)
+                    .addThumbnailFromBlob(
+                      blob,
+                      solutionItemId,
+                      requestOptions.authentication
+                    )
                     .then(() => resolve(true), () => resolve(true)),
                 () => resolve(true)
               );
@@ -264,12 +268,12 @@ export function createSolutionTemplate(
   solutionItemId: string,
   ids: string[],
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
+      authentication: destinationAuthentication
     };
     let solutionTemplates: common.IItemTemplate[] = [];
 

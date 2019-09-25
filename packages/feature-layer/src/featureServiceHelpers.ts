@@ -22,13 +22,14 @@
 
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
-import {
+/*import {
   INumberValuePair,
   IStringValuePair,
   IItemTemplate,
   IDependency,
-  IUpdate
-} from "@esri/solution-common/src/interfaces";
+  IUpdate,
+  IPostProcessArgs
+} from "@esri/solution-common/src/interfaces";*/
 import * as common from "@esri/solution-common";
 import * as auth from "@esri/arcgis-rest-auth";
 
@@ -280,7 +281,7 @@ export function getFieldSettings(fieldInfos: any): any {
  * @param settings The settings object used to de-templatize the various templates within the item.
  */
 export function updateSettingsFieldInfos(
-  itemTemplate: IItemTemplate,
+  itemTemplate: common.IItemTemplate,
   settings: any
 ): void {
   const dependencies = itemTemplate.dependencies;
@@ -354,7 +355,7 @@ export function deTemplatizeFieldInfos(
  * @param itemTemplate The current itemTemplate being processed.
  * @return array of layers and tables
  */
-export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
+export function getLayersAndTables(itemTemplate: common.IItemTemplate): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
   (properties.layers || []).forEach(function(layer: any) {
@@ -422,13 +423,13 @@ export function addFeatureServiceLayersAndTables(
           ).then(
             r => {
               // Update relationships and layer definitions
-              const updates: IUpdate[] = common.getLayerUpdates({
+              const updates: common.IUpdate[] = common.getLayerUpdates({
                 message: "updated layer definition",
                 objects: r.layerInfos.fieldInfos,
                 itemTemplate: r.itemTemplate,
-                requestOptions,
+                authentication: requestOptions.authentication,
                 progressTickCallback
-              });
+              } as common.IPostProcessArgs);
               // Process the updates sequentially
               updates
                 .reduce((prev, update) => {
@@ -605,8 +606,16 @@ export function postProcessFields(
 
     const serviceData: any = itemTemplate.properties;
     Promise.all([
-      common.getLayers(url, serviceData["layers"], requestOptions),
-      common.getLayers(url, serviceData["tables"], requestOptions)
+      common.getLayers(
+        url,
+        serviceData["layers"],
+        requestOptions.authentication
+      ),
+      common.getLayers(
+        url,
+        serviceData["tables"],
+        requestOptions.authentication
+      )
     ]).then(
       results => {
         const layers: any[] = results[0] || [];
@@ -878,7 +887,7 @@ export function _templatizeLayerFieldReferences(
   dataItem: any,
   itemID: string,
   layer: any,
-  dependencies: IDependency[]
+  dependencies: common.IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
   const path: string = itemID + ".fieldInfos.layer" + layer.id + ".fields";
@@ -1003,7 +1012,7 @@ export function _templatizeSourceServiceName(
  */
 export function _templatizeAdminLayerInfoFields(
   layer: any,
-  dependencies: IDependency[]
+  dependencies: common.IDependency[]
 ): void {
   // templatize the source layer fields
   const table = common.getProp(
@@ -1054,7 +1063,7 @@ export function _templatizeAdminLayerInfoFields(
 
 export function _getDependantItemId(
   lookupName: string,
-  dependencies: IDependency[]
+  dependencies: common.IDependency[]
 ): string {
   const deps = dependencies.filter(
     dependency => dependency.name === lookupName
@@ -1861,7 +1870,7 @@ export function _templatizeDefinitionQuery(
 export function _getNameMapping(fieldInfos: any, id: string): any {
   // create name mapping
   const fInfo: any = fieldInfos[id];
-  const nameMapping: IStringValuePair = {};
+  const nameMapping: common.IStringValuePair = {};
   const newFields = fInfo.newFields;
   const newFieldNames: string[] = newFields.map((f: any) => f.name);
   const sourceFields: any[] = fInfo.sourceFields;
@@ -1921,6 +1930,6 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
 //#endregion
 
 export interface IPopupInfos {
-  layers: INumberValuePair;
-  tables: INumberValuePair;
+  layers: common.INumberValuePair;
+  tables: common.INumberValuePair;
 }

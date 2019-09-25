@@ -88,18 +88,21 @@ export interface IItemTemplate {
   estimatedDeploymentCostFactor: number;
 }
 
+/**
+ * Function signatures for use in a function lookup array.
+ */
 export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    userSession: auth.UserSession
+    authentication: auth.UserSession
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
     resourceFilePaths: IDeployFileCopyPath[],
-    storageUserSession: auth.UserSession,
+    storageAuthentication: auth.UserSession,
     templateDictionary: any,
-    destinationUserSession: auth.UserSession,
+    destinationAuthentication: auth.UserSession,
     progressTickCallback: () => void
   ): Promise<string>;
 }
@@ -184,9 +187,9 @@ export interface IPostProcessArgs {
   itemTemplate: any;
 
   /**
-   * Options for the request
+   * Credentials for the request
    */
-  requestOptions: auth.IUserRequestOptions;
+  authentication: auth.UserSession;
 
   /**
    * Callback for IProgressUpdate
