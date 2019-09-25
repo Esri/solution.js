@@ -78,7 +78,7 @@ describe("Module `creator`", () => {
           portalUrl: "",
           urlKey: ""
         } as creator.IPortalSubset;
-        const destinationUserSession: auth.UserSession = MOCK_USER_SESSION;
+        const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 
@@ -152,7 +152,7 @@ describe("Module `creator`", () => {
             solutionGroupId,
             templateDictionary,
             portalSubset,
-            destinationUserSession,
+            destinationAuthentication,
             progressCallback
           )
           .then(
@@ -186,7 +186,7 @@ describe("Module `creator`", () => {
           portalUrl: "",
           urlKey: ""
         } as creator.IPortalSubset;
-        const destinationUserSession: auth.UserSession = MOCK_USER_SESSION;
+        const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 
@@ -260,7 +260,7 @@ describe("Module `creator`", () => {
             solutionGroupId,
             templateDictionary,
             portalSubset,
-            destinationUserSession,
+            destinationAuthentication,
             progressCallback
           )
           .then(

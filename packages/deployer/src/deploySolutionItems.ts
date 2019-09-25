@@ -67,9 +67,9 @@ export function deploySolutionItems(
   portalSharingUrl: string,
   storageItemId: string,
   templates: common.IItemTemplate[],
-  storageUserSession: auth.UserSession,
+  storageAuthentication: auth.UserSession,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -97,9 +97,9 @@ export function deploySolutionItems(
             storageItemId,
             template!.resources || []
           ),
-          storageUserSession,
+          storageAuthentication,
           templateDictionary,
-          destinationUserSession,
+          destinationAuthentication,
           progressTickCallback
         )
       );
@@ -156,9 +156,9 @@ enum SortVisitColor {
 export function _createItemFromTemplateWhenReady(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageUserSession: auth.UserSession,
+  storageAuthentication: auth.UserSession,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   templateDictionary[template.itemId] = {};
@@ -194,9 +194,9 @@ export function _createItemFromTemplateWhenReady(
           .createItemFromTemplate(
             template,
             resourceFilePaths,
-            storageUserSession,
+            storageAuthentication,
             templateDictionary,
-            destinationUserSession,
+            destinationAuthentication,
             progressTickCallback
           )
           .then(

@@ -78,10 +78,18 @@ export interface IDeployFileCopyPath extends IDeployFilename {
   url: string;
 }
 
+/**
+ * Adds metadata to an AGO item.
+ *
+ * @param blob Blob containing metadata
+ * @param itemId Item to receive metadata
+ * @param authentication Credentials for the request
+ * @return Promise resolving to JSON containing success boolean
+ */
 export function addMetadataFromBlob(
   blob: any,
   itemId: string,
-  requestOptions: auth.IUserRequestOptions
+  authentication: auth.UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -91,7 +99,7 @@ export function addMetadataFromBlob(
       // Pass metadata in via params because item object is serialized, which discards a blob
       metadata: blob
     },
-    ...requestOptions
+    authentication: authentication
   };
   return portal.updateItem(updateOptions);
 }
@@ -101,7 +109,7 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  requestOptions: auth.IUserRequestOptions
+  authentication: auth.UserSession
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
@@ -118,7 +126,7 @@ export function addResourceFromBlob(
     id: itemId,
     resource: blob,
     name: filename,
-    ...requestOptions,
+    authentication: authentication,
     params: {}
   };
   if (folder) {
@@ -132,7 +140,7 @@ export function addResourceFromBlob(
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  requestOptions: auth.IUserRequestOptions
+  authentication: auth.UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -142,7 +150,7 @@ export function addThumbnailFromBlob(
       // Pass image in directly because item object is serialized, which discards a blob
       thumbnail: blob
     },
-    ...requestOptions
+    authentication: authentication
   };
   return portal.updateItem(updateOptions);
 }
@@ -150,14 +158,14 @@ export function addThumbnailFromBlob(
 export function addThumbnailFromUrl(
   url: string,
   itemId: string,
-  requestOptions: auth.IUserRequestOptions
+  authentication: auth.UserSession
 ): Promise<any> {
   const updateOptions: portal.IUpdateItemOptions = {
     item: {
       id: itemId,
       thumbnailurl: url
     },
-    ...requestOptions
+    authentication: authentication
   };
   return portal.updateItem(updateOptions);
 }
@@ -166,17 +174,17 @@ export function addThumbnailFromUrl(
  * Copies the files described by a list of full URLs and folder/filename combinations for
  * the resources, metadata, and thumbnail of an item or group to an item.
  *
- * @param storageRequestOptions Options for requesting information from the storage
+ * @param storageAuthentication Credentials for the request to the storage
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destinationRequestOptions Options for writing information to destination
+ * @param destinationAuthentication Credentials for the request to the destination
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
-  storageRequestOptions: auth.IUserRequestOptions,
+  storageAuthentication: auth.UserSession,
   filePaths: IDeployFileCopyPath[],
   destinationItemId: string,
-  destinationRequestOptions: auth.IUserRequestOptions
+  destinationAuthentication: auth.UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
@@ -188,31 +196,31 @@ export function copyFilesFromStorageItem(
           return copyMetadata(
             {
               url: filePath.url,
-              requestOptions: storageRequestOptions
+              authentication: storageAuthentication
             },
             {
               itemId: destinationItemId,
-              requestOptions: destinationRequestOptions
+              authentication: destinationAuthentication
             }
           );
         case EFileType.Resource:
           return copyResource(
             {
               url: filePath.url,
-              requestOptions: storageRequestOptions
+              authentication: storageAuthentication
             },
             {
               itemId: destinationItemId,
               folder: filePath.folder,
               filename: filePath.filename,
-              requestOptions: destinationRequestOptions
+              authentication: destinationAuthentication
             }
           );
         case EFileType.Thumbnail:
           return addThumbnailFromUrl(
             filePath.url,
             destinationItemId,
-            destinationRequestOptions
+            destinationAuthentication
           );
       }
     });
@@ -226,17 +234,17 @@ export function copyFilesFromStorageItem(
  * Copies the files described by a list of full URLs and storage folder/filename combinations for storing
  * the resources, metadata, and thumbnail of an item or group to a storage item.
  *
- * @param sourceRequestOptions Options for requesting information from source
+ * @param sourceUserSession Credentials for the request to the source
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
  * @param storageItemId Id of item to receive copy of resource/metadata/thumbnail
- * @param storageRequestOptions Options for writing information to destination
+ * @param storageAuthentication Credentials for the request to the storage
  * @return A promise which resolves to a list of the filenames under which the resource/metadata/thumbnails are stored
  */
 export function copyFilesToStorageItem(
-  sourceRequestOptions: auth.IUserRequestOptions,
+  sourceUserSession: auth.UserSession,
   filePaths: ISourceFileCopyPath[],
   storageItemId: string,
-  storageRequestOptions: auth.IUserRequestOptions
+  storageAuthentication: auth.UserSession
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
@@ -244,13 +252,13 @@ export function copyFilesToStorageItem(
         copyResource(
           {
             url: filePath.url,
-            requestOptions: sourceRequestOptions
+            authentication: sourceUserSession
           },
           {
             itemId: storageItemId,
             folder: filePath.folder,
             filename: filePath.filename,
-            requestOptions: storageRequestOptions
+            authentication: storageAuthentication
           }
         ).then(
           // Ignore failures because the item may not have metadata or thumbnail
@@ -268,15 +276,15 @@ export function copyFilesToStorageItem(
 export function copyMetadata(
   source: {
     url: string;
-    requestOptions: auth.IUserRequestOptions;
+    authentication: auth.UserSession;
   },
   destination: {
     itemId: string;
-    requestOptions: auth.IUserRequestOptions;
+    authentication: auth.UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.requestOptions).then(
+    restHelpers.getBlob(source.url, source.authentication).then(
       blob => {
         if (blob.type !== "text/xml") {
           reject(generalHelpers.fail()); // unable to get resource
@@ -285,7 +293,7 @@ export function copyMetadata(
         addMetadataFromBlob(
           blob,
           destination.itemId,
-          destination.requestOptions
+          destination.authentication
         ).then(
           resolve,
           e => reject(generalHelpers.fail(e)) // unable to add resource
@@ -300,27 +308,27 @@ export function copyMetadata(
  * Copies a resource from a URL to an item.
  *
  * @param source.url URL to source resource
- * @param source.requestOptions Options for requesting information from source
+ * @param source.authentication Credentials for the request to source
  * @param destination.itemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destination.folderName Folder in destination for resource/metadata/thumbnail; defaults to top level
  * @param destination.filename Filename in destination for resource/metadata/thumbnail
- * @param destination.requestOptions Options for writing information to destination
+ * @param destination.authentication Credentials for the request to destination
  * @return A promise which resolves to the filename under which the resource/metadata/thumbnail is stored
  */
 export function copyResource(
   source: {
     url: string;
-    requestOptions: auth.IUserRequestOptions;
+    authentication: auth.UserSession;
   },
   destination: {
     itemId: string;
     folder: string;
     filename: string;
-    requestOptions: auth.IUserRequestOptions;
+    authentication: auth.UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.requestOptions).then(
+    restHelpers.getBlob(source.url, source.authentication).then(
       async blob => {
         if (blob.type === "text/plain" || blob.type === "application/json") {
           try {
@@ -341,7 +349,7 @@ export function copyResource(
           destination.itemId,
           destination.folder,
           destination.filename,
-          destination.requestOptions
+          destination.authentication
         ).then(
           resolve,
           e => reject(generalHelpers.fail(e)) // unable to get resource

@@ -54,16 +54,16 @@ export function addToServiceDefinition(
  * @param extent Extent object to check and (possibly) to project
  * @param outSR Desired spatial reference
  * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @return Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(
   extent: serviceAdmin.IExtent,
   outSR: serviceAdmin.ISpatialReference,
   geometryServiceUrl: string,
-  requestOptions: request.IRequestOptions
+  userSession: auth.UserSession
 ): Promise<serviceAdmin.IExtent> {
-  const _requestOptions: any = Object.assign({}, requestOptions);
+  const _requestOptions: any = Object.assign({}, userSession);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
     if (extent.spatialReference!.wkid === outSR.wkid) {
@@ -141,7 +141,7 @@ export function convertExtent(
  * Publishes a feature service as an AGOL item; it does not include its layers and tables
  *
  * @param itemInfo Item's `item` section
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder
  * @param access Access to set for item: "public", "org", "private"
@@ -149,14 +149,14 @@ export function convertExtent(
  */
 export function createFeatureService(
   newItemTemplate: IItemTemplate,
-  requestOptions: auth.IUserRequestOptions,
+  userSession: auth.UserSession,
   templateDictionary: any
 ): Promise<serviceAdmin.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
     _getCreateServiceOptions(
       newItemTemplate,
-      requestOptions,
+      userSession,
       templateDictionary
     ).then(
       createOptions => {
@@ -177,7 +177,7 @@ export function createFeatureService(
  *
  * @param itemInfo Item's `item` section
  * @param dataInfo Item's `data` section
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param access Access to set for item: "public", "org", "private"
@@ -186,7 +186,7 @@ export function createFeatureService(
 export function createItemWithData(
   itemInfo: any,
   dataInfo: any,
-  requestOptions: auth.IUserRequestOptions,
+  userSession: auth.UserSession,
   folderId: string | undefined,
   access = "private"
 ): Promise<portal.ICreateItemResponse> {
@@ -198,7 +198,7 @@ export function createItemWithData(
         data: dataInfo
       },
       folderId,
-      ...requestOptions
+      authentication: userSession
     };
 
     portal.createItemInFolder(createOptions).then(
@@ -210,7 +210,7 @@ export function createItemWithData(
             const accessOptions: portal.ISetAccessOptions = {
               id: createResponse.id,
               access: access === "public" ? "public" : "org", // need to use constants rather than string
-              ...requestOptions
+              authentication: userSession
             };
             portal.setItemAccess(accessOptions).then(
               () => {
@@ -290,19 +290,19 @@ export function createUniqueFolder(
  * Dependencies will only exist when the service is a view.
  *
  * @param itemTemplate Template of item to be created
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @return A promise that will resolve a list of dependencies
  */
 export function extractDependencies(
   itemTemplate: IItemTemplate,
-  requestOptions?: auth.IUserRequestOptions
+  userSession?: auth.UserSession
 ): Promise<IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView) {
       const url: string = itemTemplate.item.url;
-      request.request(url + "/sources?f=json", requestOptions).then(
+      request.request(url + "/sources?f=json", userSession).then(
         response => {
           if (response && response.services) {
             response.services.forEach((layer: any) => {
@@ -324,12 +324,12 @@ export function extractDependencies(
 
 export function getBlob(
   url: string,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
     // Get the blob from the URL
     const blobRequestOptions = {
-      ...requestOptions,
+      authentication: userSession,
       rawResponse: true
     } as request.IRequestOptions;
     request.request(url, blobRequestOptions).then(
@@ -349,13 +349,13 @@ export function getBlob(
  * Gets the ids of the dependencies (contents) of an AGOL group.
  *
  * @param fullItem A group whose contents are sought
- * @param requestOptions Options for requesting information from AGOL
+ * @param userSession Credentials for the request to AGOL
  * @return A promise that will resolve with list of dependent ids or an empty list
  * @protected
  */
 export function getGroupContents(
   groupId: string,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingRequest: portal.IGetGroupContentOptions = {
@@ -363,7 +363,7 @@ export function getGroupContents(
         start: 1,
         num: 100
       },
-      ...requestOptions
+      authentication: userSession
     };
 
     // Fetch group items
@@ -378,24 +378,24 @@ export function getGroupContents(
 
 export function getItem(
   itemId: string,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<any> {
   // Get item data
   const itemParam: request.IRequestOptions = {
-    ...requestOptions
+    authentication: userSession
   };
   return portal.getItem(itemId, itemParam);
 }
 
 export function getItemData(
   itemId: string,
-  requestOptions: auth.IUserRequestOptions,
+  userSession: auth.UserSession,
   convertToJsonIfText = true
 ): Promise<any> {
   return new Promise<any>(resolve => {
     // Get item data
     const itemDataParam: portal.IItemDataOptions = {
-      ...requestOptions,
+      authentication: userSession,
       file: true
     };
 
@@ -436,14 +436,14 @@ export function getItemRelatedItems(
   itemId: string,
   relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
   direction: "forward" | "reverse",
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<portal.IGetRelatedItemsResponse> {
   // Get item related items
   const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
     id: itemId,
     relationshipType,
     direction,
-    ...requestOptions
+    authentication: userSession
   };
   return portal.getRelatedItems(itemRelatedItemsParam);
 }
@@ -451,7 +451,7 @@ export function getItemRelatedItems(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  requestOptions: auth.IUserRequestOptions
+  authentication: auth.UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
@@ -464,10 +464,9 @@ export function getLayers(
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
       requestsDfd.push(
-        request.request(
-          serviceUrl + "/" + layer["id"] + "?f=json",
-          requestOptions
-        )
+        request.request(serviceUrl + "/" + layer["id"] + "?f=json", {
+          authentication: authentication
+        })
       );
     });
 
@@ -515,7 +514,7 @@ export function getLayerUpdates(args: IPostProcessArgs): any[] {
       message: "updated layer relationships",
       objects: args.objects,
       itemTemplate: args.itemTemplate,
-      requestOptions: args.requestOptions,
+      authentication: args.authentication,
       progressTickCallback: args.progressTickCallback
     });
     if (relUpdates.layers.length > 0) {
@@ -535,9 +534,9 @@ export function getLayerUpdates(args: IPostProcessArgs): any[] {
  */
 export function getRequest(update: IUpdate): Promise<void> {
   return new Promise((resolveFn, rejectFn) => {
-    const options: any = {
+    const options: request.IRequestOptions = {
       params: update.params,
-      ...update.args.requestOptions
+      authentication: update.args.authentication
     };
     request.request(update.url, options).then(
       () => {
@@ -557,13 +556,13 @@ export function getRequest(update: IUpdate): Promise<void> {
  * Fills in missing data, including full layer and table definitions, in a feature services' definition.
  *
  * @param itemTemplate Feature service item, data, dependencies definition to be modified
- * @param requestOptions Options for requesting information from AGOL
+ * @param userSession Credentials for the request to AGOL
  * @return A promise that will resolve when fullItem has been updated
  * @protected
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     const properties: any = {
@@ -578,12 +577,12 @@ export function getServiceLayersAndTables(
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
-    request.request(serviceUrl + "?f=json", requestOptions).then(
+    request.request(serviceUrl + "?f=json", userSession).then(
       serviceData => {
         properties.service = serviceData;
         Promise.all([
-          getLayers(serviceUrl, serviceData["layers"], requestOptions),
-          getLayers(serviceUrl, serviceData["tables"], requestOptions)
+          getLayers(serviceUrl, serviceData["layers"], userSession),
+          getLayers(serviceUrl, serviceData["tables"], userSession)
         ]).then(
           results => {
             properties.layers = results[0];
@@ -608,12 +607,12 @@ export function getServiceLayersAndTables(
 
 export function getText(
   url: string,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     // Get the blob from the URL
     const blobRequestOptions = {
-      ...requestOptions,
+      authentication: userSession,
       rawResponse: true
     } as request.IRequestOptions;
 
@@ -633,17 +632,13 @@ export function getText(
 export function shareItem(
   groupId: string,
   id: string,
-  destinationUserSession: auth.UserSession
+  destinationAuthentication: auth.UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
-    };
-
     const shareOptions: portal.IGroupSharingOptions = {
       groupId,
       id,
-      ...requestOptions
+      authentication: destinationAuthentication
     };
 
     portal.shareItemWithGroup(shareOptions).then(
@@ -659,7 +654,7 @@ export function updateItem(
   serviceItemId: string,
   itemInfo: any,
   data: any,
-  requestOptions: auth.IUserRequestOptions,
+  userSession: auth.UserSession,
   access?: string | undefined,
   progressTickCallback?: () => void
 ): Promise<void> {
@@ -669,7 +664,7 @@ export function updateItem(
       params: {
         text: data
       },
-      ...requestOptions
+      authentication: userSession
     };
     portal.updateItem(updateOptions).then(
       () => {
@@ -679,7 +674,7 @@ export function updateItem(
           const accessOptions: portal.ISetAccessOptions = {
             id: serviceItemId,
             access: access === "public" ? "public" : "org", // need to use constants rather than string
-            ...requestOptions
+            authentication: userSession
           };
           portal.setItemAccess(accessOptions).then(
             () => {
@@ -703,13 +698,13 @@ export function updateItem(
  *
  * @param id AGOL id of item to update
  * @param url URL to assign to item's base section
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @return A promise that will resolve when the item has been updated
  */
 export function updateItemURL(
   id: string,
   url: string,
-  requestOptions: auth.IUserRequestOptions
+  userSession: auth.UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL
@@ -718,7 +713,7 @@ export function updateItemURL(
         id,
         url
       },
-      ...requestOptions
+      authentication: userSession
     };
 
     portal.updateItem(options).then(
@@ -745,13 +740,13 @@ export function _countRelationships(layers: any[]): number {
  *
  * @param serviceUrl URL to hosted service
  * @param layerList List of layers at that service...must contain id
- * @param requestOptions Credentials for the request
+ * @param userSession Credentials for the request
  * @return A promise that will resolve with a list of the layers from the admin api
  */
 
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
-  requestOptions: auth.IUserRequestOptions,
+  userSession: auth.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -788,7 +783,7 @@ export function _getCreateServiceOptions(
       folderId,
       params,
       preserveLayerIds: true,
-      ...requestOptions
+      authentication: userSession
     };
 
     createOptions.item = _setItemProperties(
@@ -803,7 +798,7 @@ export function _getCreateServiceOptions(
       templateDictionary.initiative.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.geometryServiceUrl,
-      requestOptions
+      userSession
     ).then(
       extent => {
         templateDictionary[itemId].initialExtent = extent;

@@ -41,11 +41,11 @@ import * as fsUtils from "./featureServiceHelpers";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  userSession: auth.UserSession
+  authentication: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
-      authentication: userSession
+      authentication: authentication
     };
 
     // Init template
@@ -56,27 +56,34 @@ export function convertItemToTemplate(
     // Update the estimated cost factor to deploy this item
     template.estimatedDeploymentCostFactor = 3;
 
-    common.getItemData(template.item.id, requestOptions).then(
+    common.getItemData(template.item.id, requestOptions.authentication).then(
       data => {
         template.data = data;
-        common.getServiceLayersAndTables(template, requestOptions).then(
-          itemTemplate => {
-            // Extract dependencies
-            common.extractDependencies(itemTemplate, requestOptions).then(
-              (dependencies: common.IDependency[]) => {
-                // set the dependencies as an array of IDs from the array of IDependency
-                itemTemplate.dependencies = dependencies.map(
-                  (dep: any) => dep.id
-                );
+        common
+          .getServiceLayersAndTables(template, requestOptions.authentication)
+          .then(
+            itemTemplate => {
+              // Extract dependencies
+              common
+                .extractDependencies(
+                  itemTemplate,
+                  requestOptions.authentication
+                )
+                .then(
+                  (dependencies: common.IDependency[]) => {
+                    // set the dependencies as an array of IDs from the array of IDependency
+                    itemTemplate.dependencies = dependencies.map(
+                      (dep: any) => dep.id
+                    );
 
-                // resolve the template with templatized values
-                resolve(fsUtils.templatize(itemTemplate, dependencies));
-              },
-              (e: any) => reject(common.fail(e))
-            );
-          },
-          e => reject(common.fail(e))
-        );
+                    // resolve the template with templatized values
+                    resolve(fsUtils.templatize(itemTemplate, dependencies));
+                  },
+                  (e: any) => reject(common.fail(e))
+                );
+            },
+            e => reject(common.fail(e))
+          );
       },
       e => reject(common.fail(e))
     );
@@ -101,9 +108,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageUserSession: auth.UserSession,
+  storageAuthentication: auth.UserSession,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -115,7 +122,7 @@ export function createItemFromTemplate(
         ")"
     ); */
     const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
+      authentication: destinationAuthentication
     };
 
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
@@ -127,7 +134,11 @@ export function createItemFromTemplate(
 
     // Create the item, then update its URL with its new id
     common
-      .createFeatureService(newItemTemplate, requestOptions, templateDictionary)
+      .createFeatureService(
+        newItemTemplate,
+        requestOptions.authentication,
+        templateDictionary
+      )
       .then(
         createResponse => {
           progressTickCallback();
@@ -161,7 +172,7 @@ export function createItemFromTemplate(
                       createResponse.serviceItemId,
                       newItemTemplate.item,
                       newItemTemplate.data,
-                      requestOptions
+                      requestOptions.authentication
                     )
                     .then(
                       () => resolve(createResponse.serviceItemId),

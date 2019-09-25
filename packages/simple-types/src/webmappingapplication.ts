@@ -344,7 +344,7 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationUserSession: auth.UserSession
+  destinationAuthentication: auth.UserSession
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
@@ -374,7 +374,7 @@ export function fineTuneCreatedItem(
               "/package"
           },
           {},
-          { authentication: destinationUserSession },
+          destinationAuthentication,
           templateDictionary.folderId
         )
         .then(() => resolve(), () => resolve());
