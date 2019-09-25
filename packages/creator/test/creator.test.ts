@@ -23,6 +23,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import { TOMORROW } from "../../common/test/mocks/utils";
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 import * as creator from "../src/creator";
 
 // Set up a UserSession to use in all these tests
@@ -175,7 +176,7 @@ describe("Module `creator`", () => {
       });
 
       it("createSolution with specified name", done => {
-        const solutionName: string = "scratch_" + getUTCTimestamp();
+        const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
         const templateDictionary: any = {};
         const portalSubset = {
@@ -283,35 +284,3 @@ describe("Module `creator`", () => {
     });
   }
 });
-
-// -------------------------------------------------------------------------------------------------------------------//
-
-/**
- * Creates a timestamp string using the current date and time.
- *
- * @return Timestamp
- * @protected
- */
-export function getUTCTimestamp(): string {
-  const now = new Date();
-  return (
-    padPositiveNum(now.getUTCFullYear(), 4) +
-    padPositiveNum(now.getUTCMonth() + 1, 2) +
-    padPositiveNum(now.getUTCDate(), 2) +
-    "_" +
-    padPositiveNum(now.getUTCHours(), 2) +
-    padPositiveNum(now.getUTCMinutes(), 2) +
-    "_" +
-    padPositiveNum(now.getUTCSeconds(), 2) +
-    padPositiveNum(now.getUTCMilliseconds(), 3)
-  );
-}
-
-function padPositiveNum(n: number, totalSize: number): string {
-  let numStr = n.toString();
-  const numPads = totalSize - numStr.length;
-  if (numPads > 0) {
-    numStr = "0".repeat(numPads) + numStr; // TODO IE11 does not support repeat()
-  }
-  return numStr;
-}
