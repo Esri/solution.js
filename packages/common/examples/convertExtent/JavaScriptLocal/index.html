@@ -40,10 +40,10 @@
     var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     require.config({
       paths: {
-        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.3.0/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.3.0/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.3.0/dist/umd/request.umd.min",
-        "@esri/solution-common": package_path + "/lib/common.umd",
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.4.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.4.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.4.0/dist/umd/request.umd.min",
+        "@esri/solution-common": package_path + "/lib/common.umd"
       }
     });
 
@@ -59,11 +59,10 @@
 
           var usOptions = {};
           var destinationUserSession = new auth.UserSession(usOptions);
-          var requestOptions = { authentication: destinationUserSession };
 
           // Get the extents of a portal
           var portalId = document.getElementById("id").value;
-          portal.getPortal(portalId, requestOptions)
+          portal.getPortal(portalId, { authentication: destinationUserSession })
             .then(function (portalResponse) {
               var portalExtent = portalResponse.defaultExtent;
               let html = "";
@@ -80,7 +79,7 @@
                 "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
               // tslint:disable-next-line: no-floating-promises
               solutionCommon
-                .convertExtent(portalExtent, outSR, geometryServiceUrl, requestOptions)
+                .convertExtent(portalExtent, outSR, geometryServiceUrl, destinationUserSession)
                 .then(conversionResponse => {
                   html += "<h4>Projected extents</h4>";
                   html += "<pre>" + JSON.stringify(conversionResponse, null, 4) + "</pre>";
