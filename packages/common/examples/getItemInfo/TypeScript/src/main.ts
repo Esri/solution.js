@@ -25,6 +25,7 @@ export function getItemInfo(itemId: string): Promise<string> {
       reject("Item's ID is not defined");
       return;
     }
+
     const defaultPortalUrl = "https://www.arcgis.com";
     const defaultPortalSharingUrl = "https://www.arcgis.com/sharing";
     const usOptions: auth.IUserSessionOptions = {};
@@ -33,15 +34,15 @@ export function getItemInfo(itemId: string): Promise<string> {
     );
 
     // Get the item base, data, and resources
-    const itemBaseDef = solutionCommon.getItem(itemId, {
-      authentication: destinationUserSession
-    });
-    const itemDataDef = solutionCommon.getItemData(itemId, {
-      authentication: destinationUserSession
-    });
-    const resourcesDef = portal.getItemResources(itemId, {
-      authentication: destinationUserSession
-    });
+    const itemBaseDef = solutionCommon.getItem(itemId, destinationUserSession);
+    const itemDataDef = solutionCommon.getItemData(
+      itemId,
+      destinationUserSession
+    );
+    const resourcesDef = portal.getItemResources(
+      itemId,
+      destinationUserSession
+    );
 
     // tslint:disable-next-line: no-floating-promises
     Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
@@ -169,10 +170,9 @@ export function getItemInfo(itemId: string): Promise<string> {
         filePathInfo => filePathInfo.url.indexOf(marker) >= 0
       );
       html += '<div id="metadataOutput"></div>';
+      // tslint:disable-next-line: no-floating-promises
       solutionCommon
-        .getText(metadataFilePath[0].url, {
-          authentication: destinationUserSession
-        })
+        .getText(metadataFilePath[0].url, destinationUserSession)
         .then(metadata => {
           if (metadata) {
             document.getElementById("metadataOutput").innerHTML =
