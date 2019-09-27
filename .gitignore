@@ -91,3 +91,6 @@ __*
 packages/**/*.js
 packages/**/*.map
 packages/**/*.d.ts
+
+# Users can manage package-lock files
+package-lock.json
