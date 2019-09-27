@@ -51,7 +51,7 @@ import {
 } from "../test/mocks/utils";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
-import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
 
@@ -96,10 +96,6 @@ const MOCK_USER_SESSION = new UserSession({
   password: "123456",
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
-
-const MOCK_USER_REQOPTS: IUserRequestOptions = {
-  authentication: MOCK_USER_SESSION
-};
 
 const SERVER_INFO = {
   currentVersion: 10.1,
@@ -242,7 +238,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       createFeatureService(
         template,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         templateDictionary
       ).then(
         () => done.fail(),
@@ -258,9 +254,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       // with known results
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
-      const sessionWithMockedTime: IUserRequestOptions = {
-        authentication: createRuntimeMockUserSession(setMockDateTime(now))
-      };
+      const sessionWithMockedTime: UserSession = createRuntimeMockUserSession(
+        setMockDateTime(now)
+      );
 
       fetchMock
         .post(
@@ -336,7 +332,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle private specification", done => {
       const itemInfo: any = {};
       const dataInfo: any = {};
-      const requestOptions = MOCK_USER_REQOPTS;
       const folderId = "fld1234567890";
       const access = "private";
 
@@ -352,7 +347,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       createItemWithData(
         itemInfo,
         dataInfo,
-        requestOptions,
+        MOCK_USER_SESSION,
         folderId,
         access
       ).then(
@@ -367,7 +362,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle org specification", done => {
       const itemInfo: any = {};
       const dataInfo: any = {};
-      const requestOptions = MOCK_USER_REQOPTS;
       const folderId = "fld1234567890";
       const access = "org";
 
@@ -389,7 +383,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       createItemWithData(
         itemInfo,
         dataInfo,
-        requestOptions,
+        MOCK_USER_SESSION,
         folderId,
         access
       ).then(
@@ -404,7 +398,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle public specification", done => {
       const itemInfo: any = {};
       const dataInfo: any = {};
-      const requestOptions = MOCK_USER_REQOPTS;
       const folderId = "fld1234567890";
       const access = "public";
 
@@ -426,7 +419,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       createItemWithData(
         itemInfo,
         dataInfo,
-        requestOptions,
+        MOCK_USER_SESSION,
         folderId,
         access
       ).then(
@@ -441,7 +434,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle failure to change created item's access", done => {
       const itemInfo: any = {};
       const dataInfo: any = {};
-      const requestOptions = MOCK_USER_REQOPTS;
       const folderId = "fld1234567890";
       const access = "public";
 
@@ -467,7 +459,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       createItemWithData(
         itemInfo,
         dataInfo,
-        requestOptions,
+        MOCK_USER_SESSION,
         folderId,
         access
       ).then(
@@ -652,7 +644,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.properties.service.isView = true;
 
       fetchMock.post(baseSvcURL + "/sources?f=json", mockItems.get400Failure());
-      extractDependencies(itemTemplate, MOCK_USER_REQOPTS).then(
+      extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
         () => done.fail(),
         error => {
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
@@ -673,7 +665,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         baseSvcURL + "/sources?f=json",
         mockItems.getAGOLServiceSources()
       );
-      extractDependencies(itemTemplate, MOCK_USER_REQOPTS).then(
+      extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
         dependencies => {
           expect(dependencies).toEqual(expected);
         },
@@ -698,7 +690,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemTemplate.item.url + "/sources?f=json",
         mockItems.getAGOLServiceSources()
       );
-      extractDependencies(itemTemplate, MOCK_USER_REQOPTS).then(
+      extractDependencies(itemTemplate, MOCK_USER_SESSION).then(
         dependencies => {
           expect(dependencies).toEqual(expected);
           done();
@@ -713,7 +705,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     describe("getBlob", () => {
       it("can get a blob from a URL", done => {
         const url: string = "https://myserver/images/thumbnail.png";
-        const requestOptions = MOCK_USER_REQOPTS;
 
         const getUrl = "https://myserver/images/thumbnail.png";
         const expectedServerInfo = SERVER_INFO;
@@ -723,34 +714,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           .post(getUrl + "/rest/info", expectedServerInfo)
           .post(getUrl, expected, { sendAsJson: false });
 
-        getBlob(url, requestOptions).then(response => {
+        getBlob(url, MOCK_USER_SESSION).then(response => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
       });
-
-      /*
-      it("can handle inability to get a blob out of a response", done => {
-        const url: string = "https://myserver/images/thumbnail.png";
-        const requestOptions = MOCK_USER_REQOPTS;
-
-        const getUrl = "https://myserver/images/thumbnail.png";
-        const expectedGet = new Response();
-        fetchMock.post(getUrl, expectedGet);
-
-        getBlob(
-          url,
-          requestOptions
-        ).then(
-          () => done.fail,
-          response => {
-            console.warn("getBlob1", JSON.stringify(response,null,2));
-            // expect(response).toEqual(expected);
-            done();
-          }
-        );
-      });
-      */
     });
   }
 
@@ -774,7 +742,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         expect(_extent).toEqual(expectedExtent);
         done();
@@ -800,7 +768,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         expect(_extent).toEqual(expectedExtent);
         done();
@@ -820,7 +788,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         expect(_extent).toEqual(expectedExtent);
         done();
@@ -842,7 +810,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         expect(_extent).toEqual(expectedExtent);
         done();
@@ -870,7 +838,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         expect(_extent).toEqual(expected);
         done();
@@ -894,7 +862,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         done.fail();
       }, done);
@@ -913,7 +881,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         extent,
         serviceSR,
         geometryServiceUrl,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(_extent => {
         done.fail();
       }, done);
@@ -974,7 +942,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
         JSON.stringify(expected)
       );
-      getItem(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+      getItem(itemId, MOCK_USER_SESSION).then((response: any) => {
         expect(response).toEqual(expected);
         done();
       }, done.fail);
@@ -988,7 +956,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
         JSON.stringify(expected)
       );
-      getItem(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+      getItem(itemId, MOCK_USER_SESSION).then((response: any) => {
         expect(response).toEqual(expected);
         done();
       }, done.fail);
@@ -1044,7 +1012,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1058,7 +1026,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           mockItems.get500Failure()
         );
-        getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1072,7 +1040,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData(itemId, MOCK_USER_REQOPTS).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1096,7 +1064,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemId,
         relationshipType,
         direction,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then((response: any) => {
         expect(response).toEqual(expected);
         done();
@@ -1121,7 +1089,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemId,
         relationshipType,
         direction,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then((response: any) => {
         expect(response).toEqual(expected);
         done();
@@ -1209,7 +1177,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         itemId,
         relationshipType,
         direction,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then((response: any) => {
         expect(response).toEqual(expected);
         done();
@@ -1227,7 +1195,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.url = url;
 
       fetchMock.post(adminUrl + "/0?f=json", mockItems.get400Failure());
-      getLayers(url, [{ id: 0 }], MOCK_USER_REQOPTS).then(
+      getLayers(url, [{ id: 0 }], MOCK_USER_SESSION).then(
         () => done.fail(),
         error => {
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
@@ -1263,7 +1231,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: objects,
         itemTemplate: itemTemplate,
-        requestOptions: MOCK_USER_REQOPTS,
+        authentication: MOCK_USER_SESSION,
         progressTickCallback: function(opts: any) {
           return opts;
         }
@@ -1349,7 +1317,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
-        requestOptions: MOCK_USER_REQOPTS,
+        authentication: MOCK_USER_SESSION,
         progressTickCallback: function(opts: any) {
           return opts;
         }
@@ -1379,7 +1347,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
-        requestOptions: MOCK_USER_REQOPTS,
+        authentication: MOCK_USER_SESSION,
         progressTickCallback: function(opts: any) {
           return opts;
         }
@@ -1416,7 +1384,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", mockItems.get400Failure());
-      getServiceLayersAndTables(itemTemplate, MOCK_USER_REQOPTS).then(
+      getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION).then(
         () => done.fail(),
         error => {
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
@@ -1442,7 +1410,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", expected.properties.service);
       fetchMock.post(adminUrl + "/0?f=json", mockItems.get400Failure());
-      getServiceLayersAndTables(itemTemplate, MOCK_USER_REQOPTS).then(
+      getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION).then(
         () => done.fail(),
         error => {
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
@@ -1471,7 +1439,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         adminUrl + "/0?f=json",
         expected.properties.service.layers[0]
       );
-      getServiceLayersAndTables(itemTemplate, MOCK_USER_REQOPTS).then(
+      getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION).then(
         template => {
           expect(template).toEqual(expected);
           done();
@@ -1509,7 +1477,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         adminUrl + "/1?f=json",
         expected.properties.service.tables[0]
       );
-      getServiceLayersAndTables(itemTemplate, MOCK_USER_REQOPTS).then(
+      getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION).then(
         template => {
           expect(template).toEqual(expected);
           done();
@@ -1551,7 +1519,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(url + "?f=json", expected.properties.service);
       fetchMock.post(adminUrl + "/0?f=json", expected.properties.layers[0]);
       fetchMock.post(adminUrl + "/1?f=json", expected.properties.tables[0]);
-      getServiceLayersAndTables(itemTemplate, MOCK_USER_REQOPTS).then(
+      getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION).then(
         template => {
           expect(template).toEqual(expected);
           done();
@@ -1581,7 +1549,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         undefined,
         progressTickCallback
       ).then(
@@ -1605,7 +1573,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         undefined,
         progressTickCallback
       ).then(
@@ -1632,7 +1600,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         "public",
         progressTickCallback
       ).then(
@@ -1659,7 +1627,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         "org",
         progressTickCallback
       ).then(
@@ -1686,7 +1654,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
-        MOCK_USER_REQOPTS,
+        MOCK_USER_SESSION,
         "org",
         progressTickCallback
       ).then(
@@ -1709,7 +1677,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         mockItems.get400Failure()
       );
 
-      updateItemURL("0", url, MOCK_USER_REQOPTS).then(
+      updateItemURL("0", url, MOCK_USER_SESSION).then(
         () => done.fail(),
         error => {
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
@@ -1727,7 +1695,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         '{"success":true}'
       );
 
-      updateItemURL("0", url, MOCK_USER_REQOPTS).then(
+      updateItemURL("0", url, MOCK_USER_SESSION).then(
         id => {
           expect(id).toEqual("0");
           done();
@@ -1767,12 +1735,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       const templateDictionary: any = {
         folderId: "aabb123456",
@@ -1790,7 +1756,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(options => {
         expect(options).toEqual({
@@ -1807,19 +1773,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             preserveLayerIds: true
           },
           preserveLayerIds: true,
-          ...requestOptions
+          authentication: userSession
         });
         done();
       }, done.fail);
     });
 
     it("can get options for PORTAL empty service", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       const templateDictionary: any = {
         folderId: "aabb123456",
@@ -1837,7 +1801,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(options => {
         expect(options).toEqual({
@@ -1854,19 +1818,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             preserveLayerIds: true
           },
           preserveLayerIds: true,
-          ...requestOptions
+          authentication: userSession
         });
         done();
       }, done.fail);
     });
 
     it("can get options for HOSTED service with values", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -1911,7 +1873,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(options => {
         expect(options).toEqual({
@@ -1930,19 +1892,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             preserveLayerIds: true
           },
           preserveLayerIds: true,
-          ...requestOptions
+          authentication: userSession
         });
         done();
       }, done.fail);
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -1985,7 +1945,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(options => {
         expect(options).toEqual({
@@ -2005,19 +1965,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             isView: true
           },
           preserveLayerIds: true,
-          ...requestOptions
+          authentication: userSession
         });
         done();
       }, done.fail);
     });
 
     it("can get options for HOSTED service with values when name contains guid", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -2063,7 +2021,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(options => {
         expect(options).toEqual({
@@ -2082,19 +2040,17 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             preserveLayerIds: true
           },
           preserveLayerIds: true,
-          ...requestOptions
+          authentication: userSession
         });
         done();
       }, done.fail);
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", done => {
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
+      const userSession: UserSession = new UserSession({
+        username: "jsmith",
+        password: "123456"
+      });
 
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
@@ -2145,7 +2101,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
       _getCreateServiceOptions(
         itemTemplate,
-        requestOptions,
+        userSession,
         templateDictionary
       ).then(done.fail, done);
     });

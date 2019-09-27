@@ -23,7 +23,7 @@
     "fetch-mock": "^7.3.3",
     "gh-pages": "^1.1.0",
     "gh-release": "^3.4.0",
-    "handlebars": "^4.1.2",
+    "handlebars": "^4.3.0",
     "husky": "^0.14.3",
     "inspect-process": "^0.5.0",
     "jasmine": "^3.4.0",
@@ -47,13 +47,13 @@
     "prettier": "^1.17.0",
     "resolve": "^1.5.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.68.0",
+    "rollup": "^1.21.4",
     "rollup-plugin-commonjs": "^9.3.4",
     "rollup-plugin-filesize": "^6.1.1",
     "rollup-plugin-json": "^4.0.0",
     "rollup-plugin-node-resolve": "^3.0.3",
     "rollup-plugin-terser": "^4.0.4",
-    "rollup-plugin-typescript2": "^0.21.0",
+    "rollup-plugin-typescript2": "^0.24.2",
     "rollup-plugin-uglify": "^3.0.0",
     "semantic-release": "^15.13.24",
     "shelljs": "^0.7.8",
@@ -64,14 +64,14 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.6.3"
   },
   "dependencies": {
     "@types/adlib": "^3.0.1",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0",
-    "tslib": "^1.9.3"
+    "tslib": "^1.10.0"
   },
   "lint-staged": {
     "*.ts": [

@@ -3,7 +3,7 @@
   "version": "0.5.0",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
-  "unpkg": "dist/umd/common.umd.js",
+  "unpkg": "dist/umd/simple-types.umd.min.js",
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -12,15 +12,15 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.3.0",
-    "@esri/arcgis-rest-feature-layer": "^2.3.0",
-    "@esri/arcgis-rest-portal": "^2.3.0",
-    "@esri/arcgis-rest-request": "^2.3.0",
+    "@esri/arcgis-rest-auth": "^2.4.0",
+    "@esri/arcgis-rest-feature-layer": "^2.4.0",
+    "@esri/arcgis-rest-portal": "^2.4.0",
+    "@esri/arcgis-rest-request": "^2.4.0",
     "@esri/solution-common": "^0.5.0"
   },
   "dependencies": {
-    "@esri/arcgis-rest-types": "^2.3.0",
-    "tslib": "^1.9.3"
+    "@esri/arcgis-rest-types": "^2.4.0",
+    "tslib": "^1.10.0"
   },
   "scripts": {
     "prepare": "npm run build",

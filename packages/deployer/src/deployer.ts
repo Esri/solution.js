@@ -54,7 +54,7 @@ export function deploySolution(
   itemInfoCard: ISolutionInfoCard,
   templateDictionary: any,
   portalSubset: IPortalSubset,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
@@ -66,12 +66,12 @@ export function deploySolution(
     };
 
     const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
+      authentication: destinationAuthentication
     };
 
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
     const itemDataParam: portal.IItemDataOptions = {
-      authentication: destinationUserSession
+      authentication: destinationAuthentication
     };
     const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
 
@@ -82,7 +82,7 @@ export function deploySolution(
     //   * Manage Right of Way Activities 2
     const folderCreationDef = common.createUniqueFolder(
       itemInfoCard.title,
-      destinationUserSession
+      destinationAuthentication
     );
 
     // Determine if we are deploying to portal
@@ -121,7 +121,7 @@ export function deploySolution(
             portalExtent,
             { wkid: 4326 },
             portalResponse.helperServices.geometry.url,
-            requestOptions
+            requestOptions.authentication
           )
           .then(
             function(wgs84Extent) {
@@ -171,9 +171,7 @@ export function deploySolution(
                 .createItemWithData(
                   updateItemInfo,
                   {},
-                  {
-                    authentication: destinationUserSession
-                  },
+                  destinationAuthentication,
                   templateDictionary.folderId
                 )
                 .then(
@@ -201,9 +199,9 @@ export function deploySolution(
                         portalSubset.restUrl,
                         sourceId,
                         itemData.templates,
-                        destinationUserSession,
+                        destinationAuthentication,
                         templateDictionary,
-                        destinationUserSession,
+                        destinationAuthentication,
                         () => {
                           progressCallback(
                             (percentDone += progressPercentStep)
@@ -250,7 +248,7 @@ export function deploySolution(
                           item.typeKeywords = ["Solution", "Deployed"];
                           const updatedItemInfo: portal.IUpdateItemOptions = {
                             item: item,
-                            authentication: destinationUserSession,
+                            authentication: destinationAuthentication,
                             folderId: templateDictionary.folderId
                           };
                           portal.updateItem(updatedItemInfo).then(

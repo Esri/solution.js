@@ -40,7 +40,7 @@ export function createSolution(
   groupId: string,
   templateDictionary: any,
   portalSubset: IPortalSubset,
-  destinationUserSession: auth.UserSession,
+  destinationAuthentication: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
   let percentDone = 1; // Let the caller know that we've started
@@ -48,7 +48,7 @@ export function createSolution(
 
   return new Promise<string>((resolve, reject) => {
     const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationUserSession
+      authentication: destinationAuthentication
     };
 
     const solutionData: common.ISolutionItemData = {
@@ -81,7 +81,7 @@ export function createSolution(
           .createItemWithData(
             solutionItem,
             solutionData,
-            requestOptions,
+            requestOptions.authentication,
             undefined
           )
           .then(updateResponse => {
@@ -98,12 +98,12 @@ export function createSolution(
                   true
                 ) +
                 "?token=" +
-                destinationUserSession.token;
+                destinationAuthentication.token;
               common
                 .addThumbnailFromUrl(
                   groupItemThumbnail,
                   updateResponse.id,
-                  requestOptions
+                  requestOptions.authentication
                 )
                 .then(() => itemResolve(updateResponse.id), itemReject);
             } else {
@@ -114,7 +114,10 @@ export function createSolution(
     });
 
     // Fetch group contents
-    const groupContentsDef = common.getGroupContents(groupId, requestOptions);
+    const groupContentsDef = common.getGroupContents(
+      groupId,
+      requestOptions.authentication
+    );
 
     // When we have the solution item and the group contents, we can add the contents to the solution
     Promise.all([solutionItemDef, groupContentsDef]).then(
@@ -134,7 +137,7 @@ export function createSolution(
             solutionItemId,
             groupContents,
             templateDictionary,
-            destinationUserSession,
+            destinationAuthentication,
             () => {
               progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
             }

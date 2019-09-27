@@ -43,11 +43,6 @@ describe("Module `resourceHelpers`: common functions involving the management of
     portal: "https://myorg.maps.arcgis.com/sharing/rest"
   });
 
-  const MOCK_USER_REQOPTS: auth.IUserRequestOptions = {
-    authentication: MOCK_USER_SESSION,
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
-  };
-
   const SERVER_INFO = {
     currentVersion: 10.1,
     fullVersion: "10.1",
@@ -75,7 +70,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         fetchMock.post(updateUrl, expected);
         resourceHelpers
-          .addMetadataFromBlob(blob, itemId, MOCK_USER_REQOPTS)
+          .addMetadataFromBlob(blob, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
             expect(response).toEqual(expected);
             const options: fetchMock.MockOptions = fetchMock.lastOptions(
@@ -105,7 +100,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             itemId,
             folder,
             filename,
-            MOCK_USER_REQOPTS
+            MOCK_USER_SESSION
           )
           .then((response: any) => {
             expect(response).toEqual(expected);
@@ -135,7 +130,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             itemId,
             folder,
             filename,
-            MOCK_USER_REQOPTS
+            MOCK_USER_SESSION
           )
           .then(
             () => done.fail,
@@ -162,7 +157,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             itemId,
             folder,
             filename,
-            MOCK_USER_REQOPTS
+            MOCK_USER_SESSION
           )
           .then((response: any) => {
             expect(response).toEqual(expected);
@@ -189,7 +184,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         fetchMock.post(updateUrl, expected);
         resourceHelpers
-          .addThumbnailFromBlob(blob, itemId, MOCK_USER_REQOPTS)
+          .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
             expect(response).toEqual(expected);
             const options: fetchMock.MockOptions = fetchMock.lastOptions(
@@ -213,7 +208,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       fetchMock.post(updateUrl, expectedUpdate);
       resourceHelpers
-        .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_REQOPTS)
+        .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
         .then((response: any) => {
           expect(response).toEqual(expectedUpdate);
           const options: fetchMock.MockOptions = fetchMock.lastOptions(
@@ -233,18 +228,18 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("copyFilesFromStorageItem", () => {
     it("empty files list", done => {
-      const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: resourceHelpers.IDeployFileCopyPath[] = [] as resourceHelpers.IDeployFileCopyPath[];
       const destinationItemId: string = "itm1234567890";
-      const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const destinationAuthentication = MOCK_USER_SESSION;
       const expected = true;
 
       resourceHelpers
         .copyFilesFromStorageItem(
-          storageRequestOptions,
+          storageAuthentication,
           filePaths,
           destinationItemId,
-          destinationRequestOptions
+          destinationAuthentication
         )
         .then((response: any) => {
           expect(response).toEqual(expected);
@@ -255,7 +250,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("single metadata file to copy", done => {
-        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
           {
             type: resourceHelpers.EFileType.Metadata,
@@ -265,7 +260,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }
         ];
         const destinationItemId: string = "itm1234567890";
-        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const destinationAuthentication = MOCK_USER_SESSION;
         const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/doc/metadata.xml";
@@ -284,10 +279,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
-            storageRequestOptions,
+            storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationRequestOptions
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -296,7 +291,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("single resource file to copy", done => {
-        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
           {
             type: resourceHelpers.EFileType.Resource,
@@ -306,7 +301,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }
         ];
         const destinationItemId: string = "itm1234567890";
-        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const destinationAuthentication = MOCK_USER_SESSION;
         const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/resource.png";
@@ -322,10 +317,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
-            storageRequestOptions,
+            storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationRequestOptions
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -334,7 +329,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("single thumbnail file to copy", done => {
-        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
           {
             type: resourceHelpers.EFileType.Thumbnail,
@@ -344,7 +339,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }
         ];
         const destinationItemId: string = "itm1234567890";
-        const destinationRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const destinationAuthentication = MOCK_USER_SESSION;
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
@@ -352,10 +347,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock.post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(
-            storageRequestOptions,
+            storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationRequestOptions
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -367,18 +362,18 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("copyFilesToStorageItem", () => {
     it("empty files list", done => {
-      const sourceRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const sourceUserSession = MOCK_USER_SESSION;
       const filePaths: resourceHelpers.ISourceFileCopyPath[] = [] as resourceHelpers.ISourceFileCopyPath[];
       const storageItemId: string = "itm1234567890";
-      const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+      const storageAuthentication = MOCK_USER_SESSION;
       const expected: string[] = [];
 
       resourceHelpers
         .copyFilesToStorageItem(
-          sourceRequestOptions,
+          sourceUserSession,
           filePaths,
           storageItemId,
-          storageRequestOptions
+          storageAuthentication
         )
         .then((response: any) => {
           expect(response).toEqual(expected);
@@ -389,7 +384,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("single file to copy", done => {
-        const sourceRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const sourceUserSession = MOCK_USER_SESSION;
         const filePaths: resourceHelpers.ISourceFileCopyPath[] = [
           {
             folder: "storageFolder",
@@ -398,7 +393,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }
         ];
         const storageItemId: string = "itm1234567890";
-        const storageRequestOptions: auth.IUserRequestOptions = MOCK_USER_REQOPTS;
+        const storageAuthentication = MOCK_USER_SESSION;
         const serverInfoUrl = "https://myserver/images/thumbnail.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
         const fetchUrl = "https://myserver/images/thumbnail.png";
@@ -414,10 +409,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesToStorageItem(
-            sourceRequestOptions,
+            sourceUserSession,
             filePaths,
             storageItemId,
-            storageRequestOptions
+            storageAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -434,11 +429,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
         const destination = {
           itemId: "itm1234567890",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
 
         const fetchUrl =
@@ -463,11 +458,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
         const destination = {
           itemId: "itm1234567890",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
 
         const fetchUrl =
@@ -494,11 +489,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
         const destination = {
           itemId: "itm1234567890",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
 
         const fetchUrl =
@@ -525,13 +520,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
         const destination = {
           itemId: "itm1234567890",
           folder: "storageFolder",
           filename: "storageFilename.png",
-          requestOptions: MOCK_USER_REQOPTS
+          authentication: MOCK_USER_SESSION
         };
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
