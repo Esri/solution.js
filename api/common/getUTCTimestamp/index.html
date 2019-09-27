@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>getUTCTimestamp | API Reference | ArcGIS solution.js</title>
+    <title>getUTCTimestamp | API Reference | solution.js library</title>
     
     <meta name="description" content="A modular, high quality toolkit.">
     
+    <link rel="icon" type="image/png" href="./img/favicon.png">
     <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
     <link rel="stylesheet" href="/solution.js/css/style.css">
     
@@ -17,7 +18,7 @@
     <div class="drawer drawer-left js-drawer" data-drawer="top-nav" tabindex="0">
       <nav class="drawer-nav" role="navigation">
         <aside class="side-nav">
-          <h2 class="side-nav-title">ArcGIS solution.js</h2>
+          <h2 class="side-nav-title">solution.js library</h2>
           <a href="/solution.js/guides/" class="side-nav-link">Guides</a>
           <a href="/solution.js/api/" class="is-active side-nav-link">API Reference</a>
         </aside>
@@ -32,7 +33,7 @@
             <!-- desktop sized navigation -->
             <div class="tablet-hide">
               <!-- logo / home -->
-              <a href="/solution.js/" class="top-nav-title">ArcGIS solution.js</a>
+              <a href="/solution.js/" class="top-nav-title">solution.js library</a>
               <!-- primary navigation sections -->
               <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
                 <a href="/solution.js/guides/" class="top-nav-link">Guides</a>
@@ -79,6 +80,14 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/_padPositiveNum/" class="tsd-kind-icon padding-right-1">_padPositiveNum</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/blobToJson/" class="tsd-kind-icon padding-right-1">blobToJson</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/blobToText/" class="tsd-kind-icon padding-right-1">blobToText</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -310,10 +319,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/getItemBlob/" class="tsd-kind-icon padding-right-1">getItemBlob</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getItemData/" class="tsd-kind-icon padding-right-1">getItemData</a>
             </li>
             
@@ -335,6 +340,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getServiceLayersAndTables/" class="tsd-kind-icon padding-right-1">getServiceLayersAndTables</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getText/" class="tsd-kind-icon padding-right-1">getText</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -934,7 +943,7 @@
 
 
 
-  <p>Creates a timestamp string using the current date and time.</p>
+  <p>Creates a timestamp string using the current UTC date and time.</p>
 
 
   
@@ -951,7 +960,8 @@
 
   
 
-  <h2 class="font-size-1 trailer-half">Returns</h2><p>Timestamp</p>
+  <h2 class="font-size-1 trailer-half">Returns</h2><p>Timestamp formatted as YYYYMMDD_hhmm_ssmmm, with month one-based and all values padded with zeroes on the
+left as needed (<code>ssmmm</code> stands for seconds from 0..59 and milliseconds from 0..999)</p>
 
 
   <div class="fonts-size--1 panel padding-leader-half padding-trailer-half padding-right-half padding-left-half trailer-half">
@@ -966,7 +976,7 @@
 
 
 
-<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/generalHelpers.ts#L155">packages/common/src/generalHelpers.ts:155</a></small>
+<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/generalHelpers.ts#L201">packages/common/src/generalHelpers.ts:201</a></small>
 
 
   <details class="leader-1">

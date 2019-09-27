@@ -4,10 +4,11 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>storymap | API Reference | ArcGIS solution.js</title>
+    <title>storymap | API Reference | solution.js library</title>
     
     <meta name="description" content="A modular, high quality toolkit.">
     
+    <link rel="icon" type="image/png" href="./img/favicon.png">
     <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
     <link rel="stylesheet" href="/solution.js/css/style.css">
     
@@ -17,7 +18,7 @@
     <div class="drawer drawer-left js-drawer" data-drawer="top-nav" tabindex="0">
       <nav class="drawer-nav" role="navigation">
         <aside class="side-nav">
-          <h2 class="side-nav-title">ArcGIS solution.js</h2>
+          <h2 class="side-nav-title">solution.js library</h2>
           <a href="/solution.js/guides/" class="side-nav-link">Guides</a>
           <a href="/solution.js/api/" class="is-active side-nav-link">API Reference</a>
         </aside>
@@ -32,7 +33,7 @@
             <!-- desktop sized navigation -->
             <div class="tablet-hide">
               <!-- logo / home -->
-              <a href="/solution.js/" class="top-nav-title">ArcGIS solution.js</a>
+              <a href="/solution.js/" class="top-nav-title">solution.js library</a>
               <!-- primary navigation sections -->
               <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
                 <a href="/solution.js/guides/" class="top-nav-link">Guides</a>
@@ -79,6 +80,14 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/_padPositiveNum/" class="tsd-kind-icon padding-right-1">_padPositiveNum</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/blobToJson/" class="tsd-kind-icon padding-right-1">blobToJson</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/blobToText/" class="tsd-kind-icon padding-right-1">blobToText</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -310,10 +319,6 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/getItemBlob/" class="tsd-kind-icon padding-right-1">getItemBlob</a>
-            </li>
-            
-            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getItemData/" class="tsd-kind-icon padding-right-1">getItemData</a>
             </li>
             
@@ -335,6 +340,10 @@
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
               <a href="/solution.js/api/common/getServiceLayersAndTables/" class="tsd-kind-icon padding-right-1">getServiceLayersAndTables</a>
+            </li>
+            
+            <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
+              <a href="/solution.js/api/common/getText/" class="tsd-kind-icon padding-right-1">getText</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -888,13 +897,13 @@
 
   <div class="column-18">
     <div class="panel panel-white padding-left-1 padding-right-1 padding-trailer-1 padding-leader-half">
-      <small class="label right">Version 0.4.7</small>
+      <small class="label right">Version 0.5.3</small>
 <h1 class="tsd-kind-module font-size-3 trailer-half code-face">
   <a href="/solution.js/api/storymap/" class="is-active">@esri/solution-storymap</a>
 </h1>
 <p class="font-size--1 trailer-1 avenir-regular">Manages the creation and deployment of Story Map item types for @esri/solution.js.</p>
 <h2 class="font-size-0 trailer-quarter">npm install:</h2>
-<pre><code>npm install @esri/solution-storymap @esri/arcgis-rest-auth@^2.3.0  @esri/solution-common@^0.4.7  @esri/solution-simple-types@^0.4.7 </code></pre>
+<pre><code>npm install @esri/solution-storymap </code></pre>
 <h2 class="font-size-0 trailer-quarter">Module Import:</h2>
 
 <pre><code class="js"><span class="hljs-keyword">import</span> {
@@ -904,10 +913,10 @@
 } <span class="hljs-keyword">from</span> <span class="hljs-string">"@esri/solution-storymap"</span>;</code></pre>
 
 <h2 class="font-size-0 trailer-quarter">CDN:</h2>
-<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.4.7/dist/umd/@esri/solution-storymap.umd.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+<pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.5.3/dist/umd/@esri/solution-storymap.umd.min.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <h2 class="font-size-0 trailer-quarter">CDN with SRI:</h2>
 
-        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.4.7/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-M/bHS4feDW3CXQ/tPBA5hgumFWiCoODqBEeXKNZ17xZIlYBlsD8OrvjpR0/7l/+t"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+        <pre><code class="html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/@esri/solution-storymap@0.5.3/dist/umd/storymap.umd.min.js"</span> <span class="hljs-attr">integrity</span>=<span class="hljs-string">"sha384-SHiSZ6gaqnRJ6HaaGHuD+TUlIBok8boEJ4u+ECjZ9CLmp5hiFW7WOsttjLPtjs1d"</span> <span class="hljs-attr">crossorigin</span>=<span class="hljs-string">"anonymous"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 <hr class="leader-half trailer-quarter" />
 <ul class="list-plain package-contents">
   
