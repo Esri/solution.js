@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -16,7 +16,7 @@
     "@esri/arcgis-rest-feature-layer": "^2.4.0",
     "@esri/arcgis-rest-portal": "^2.4.0",
     "@esri/arcgis-rest-request": "^2.4.0",
-    "@esri/solution-common": "^0.5.1"
+    "@esri/solution-common": "^0.5.2"
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^2.4.0",
@@ -72,5 +72,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "95b374b394313fa068879f035df203fd10aff9d5"
+  "gitHead": "2dc87311604ba7dcceab5816eaf4c1e1a32eb4b0"
 }
