@@ -19,9 +19,15 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
-import { IDeployFileCopyPath } from "./resourceHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+export enum EFileType {
+  Form,
+  Metadata,
+  Resource,
+  Thumbnail
+}
 
 /**
  * A solution template AGO item
@@ -46,6 +52,22 @@ export interface ISolutionItemData {
    * The collection of templates
    */
   templates: IItemTemplate[];
+}
+
+export interface ISourceFileCopyPath {
+  url: string;
+  folder: string;
+  filename: string;
+}
+
+export interface IDeployFilename {
+  type: EFileType;
+  folder: string;
+  filename: string;
+}
+
+export interface IDeployFileCopyPath extends IDeployFilename {
+  url: string;
 }
 
 export interface IItemTemplate {
