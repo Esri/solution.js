@@ -443,7 +443,7 @@ export function getItemData(
                   (blob.type === "text/plain" && convertToJsonIfText)
                 ) {
                   const json = response !== "" ? JSON.parse(response) : null;
-                  resolve(json.error ? null : json);
+                  resolve(json && json.error ? null : json);
                 } else {
                   resolve(response);
                 }
