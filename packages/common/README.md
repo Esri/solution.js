@@ -21,9 +21,9 @@
 ### Example
 
 ```js
-var fetch = require('node-fetch');
-var FormData = require('isomorphic-form-data');
-var Promise = require('promise');
+var fetch = require("node-fetch");
+var FormData = require("isomorphic-form-data");
+var Promise = require("promise");
 
 var auth = require("@esri/arcgis-rest-auth");
 require("@esri/arcgis-rest-portal");
@@ -57,11 +57,11 @@ solutionCommon.convertExtent(
 Example is hosted in [RunKit](https://runkit.com/miketschudi/esri-solution-common/1.0.0); expected output:
 ```
 Object
-	spatialReference: Object {wkid: 4326}
-	xmax: -88.0099965440373
-	xmin: -88.22699358406922
-	ymax: 41.84499732645768
-	ymin: 41.70799917451703
+ spatialReference: Object {wkid: 4326}
+ xmax: -88.0099965440373
+ xmin: -88.22699358406922
+ ymax: 41.84499732645768
+ ymin: 41.70799917451703
 ```
 
 ### [API Reference](https://esri.github.io/solution.js/api/common/)
