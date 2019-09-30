@@ -16,8 +16,8 @@
 
 import { UserSession } from "@esri/arcgis-rest-auth";
 
-import * as mInterfaces from "../../src/interfaces";
-import * as mObjHelpers from "../../src/generalHelpers";
+import * as interfaces from "../../src/interfaces";
+import * as generalHelpers from "../../src/generalHelpers";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -235,9 +235,12 @@ export function jsonClone(obj: any) {
  * @param solutionTemplateItem Solution template
  */
 export function removeItemFcns(
-  solutionTemplateItem: mInterfaces.ISolutionItem
+  solutionTemplateItem: interfaces.ISolutionItem
 ): void {
-  const templates = mObjHelpers.getProp(solutionTemplateItem, "data.templates");
+  const templates = generalHelpers.getProp(
+    solutionTemplateItem,
+    "data.templates"
+  );
   if (templates) {
     if (Array.isArray(templates)) {
       templates.forEach(template => {
