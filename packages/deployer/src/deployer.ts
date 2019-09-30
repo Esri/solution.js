@@ -27,33 +27,10 @@ import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export interface IPortalSubset {
-  name: string;
-  id: string;
-  restUrl: string;
-  portalUrl: string;
-  urlKey: string;
-}
-
-export interface ISolutionInfoCard {
-  id: string;
-  title: string;
-  snippet: string;
-  description: string;
-  url: string;
-  thumbnailUrl: string;
-  tryitUrl: string;
-  created: number;
-  tags: string[];
-  categories: string;
-  deployCommonId: string;
-  deployVersion: number;
-}
-
 export function deploySolution(
-  itemInfoCard: ISolutionInfoCard,
+  itemInfoCard: common.ISolutionInfoCard,
   templateDictionary: any,
-  portalSubset: IPortalSubset,
+  portalSubset: common.IPortalSubset,
   destinationAuthentication: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<common.ISolutionItem> {

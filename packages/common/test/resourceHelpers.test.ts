@@ -19,8 +19,10 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as interfaces from "../src/interfaces";
 import * as request from "@esri/arcgis-rest-request";
 import * as resourceHelpers from "../src/resourceHelpers";
+
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
 import { TOMORROW } from "./lib/utils";
@@ -229,7 +231,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   describe("copyFilesFromStorageItem", () => {
     it("empty files list", done => {
       const storageAuthentication = MOCK_USER_SESSION;
-      const filePaths: resourceHelpers.IDeployFileCopyPath[] = [] as resourceHelpers.IDeployFileCopyPath[];
+      const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
       const destinationItemId: string = "itm1234567890";
       const destinationAuthentication = MOCK_USER_SESSION;
       const expected = true;
@@ -251,9 +253,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
     if (typeof window !== "undefined") {
       it("single metadata file to copy", done => {
         const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
-            type: resourceHelpers.EFileType.Metadata,
+            type: interfaces.EFileType.Metadata,
             folder: "",
             filename: "",
             url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
@@ -292,9 +294,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       it("single resource file to copy", done => {
         const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
-            type: resourceHelpers.EFileType.Resource,
+            type: interfaces.EFileType.Resource,
             folder: "storageFolder",
             filename: "storageFilename.png",
             url: "https://myserver/images/resource.png"
@@ -330,9 +332,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
       it("single thumbnail file to copy", done => {
         const storageAuthentication = MOCK_USER_SESSION;
-        const filePaths: resourceHelpers.IDeployFileCopyPath[] = [
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
-            type: resourceHelpers.EFileType.Thumbnail,
+            type: interfaces.EFileType.Thumbnail,
             folder: "",
             filename: "",
             url: "https://myserver/images/thumbnail.png" // Thumbnail uses only URL
@@ -363,7 +365,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   describe("copyFilesToStorageItem", () => {
     it("empty files list", done => {
       const sourceUserSession = MOCK_USER_SESSION;
-      const filePaths: resourceHelpers.ISourceFileCopyPath[] = [] as resourceHelpers.ISourceFileCopyPath[];
+      const filePaths: interfaces.ISourceFileCopyPath[] = [] as interfaces.ISourceFileCopyPath[];
       const storageItemId: string = "itm1234567890";
       const storageAuthentication = MOCK_USER_SESSION;
       const expected: string[] = [];
@@ -385,7 +387,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     if (typeof window !== "undefined") {
       it("single file to copy", done => {
         const sourceUserSession = MOCK_USER_SESSION;
-        const filePaths: resourceHelpers.ISourceFileCopyPath[] = [
+        const filePaths: interfaces.ISourceFileCopyPath[] = [
           {
             folder: "storageFolder",
             filename: "storageFilename.png",
@@ -550,7 +552,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail.png";
-      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+      const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
@@ -586,8 +588,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("top-level image file", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f/gtnp2.jpg";
-      const expected: resourceHelpers.IDeployFilename = {
-        type: resourceHelpers.EFileType.Resource,
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Resource,
         folder: "",
         filename: "gtnp2.jpg"
       };
@@ -601,8 +603,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("image file in folder", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_aFolder/git_merge.png";
-      const expected: resourceHelpers.IDeployFilename = {
-        type: resourceHelpers.EFileType.Resource,
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Resource,
         folder: "aFolder",
         filename: "git_merge.png"
       };
@@ -616,8 +618,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("metadata file", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml";
-      const expected: resourceHelpers.IDeployFilename = {
-        type: resourceHelpers.EFileType.Metadata,
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Metadata,
         folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
         filename: "metadata.xml"
       };
@@ -631,8 +633,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("thumbnail", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png";
-      const expected: resourceHelpers.IDeployFilename = {
-        type: resourceHelpers.EFileType.Thumbnail,
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Thumbnail,
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
         filename: "thumbnail.png"
       };
@@ -682,7 +684,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames: string[] = [];
-      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+      const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
@@ -712,7 +714,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["gtnp2.jpg"];
-      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+      const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -748,7 +750,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["myFolder/gtnp2.jpg"];
-      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+      const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
@@ -784,7 +786,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
-      const expected: resourceHelpers.ISourceFileCopyPath[] = [
+      const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
@@ -908,7 +910,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [];
-      const expected: resourceHelpers.IDeployFileCopyPath[] = [];
+      const expected: interfaces.IDeployFileCopyPath[] = [];
 
       const actual = resourceHelpers.generateStorageFilePaths(
         portalSharingUrl,
@@ -925,13 +927,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
       ];
-      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+      const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
           folder: "",
           filename: "gtnp2.jpg",
-          type: resourceHelpers.EFileType.Resource
+          type: interfaces.EFileType.Resource
         }
       ];
 
@@ -950,13 +952,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg"
       ];
-      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+      const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg",
           folder: "myFolder",
           filename: "gtnp2.jpg",
-          type: resourceHelpers.EFileType.Resource
+          type: interfaces.EFileType.Resource
         }
       ];
 
@@ -975,13 +977,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
       ];
-      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+      const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml",
-          type: resourceHelpers.EFileType.Metadata
+          type: interfaces.EFileType.Metadata
         }
       ];
 
@@ -1000,13 +1002,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
       ];
-      const expected: resourceHelpers.IDeployFileCopyPath[] = [
+      const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
             "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png",
-          type: resourceHelpers.EFileType.Thumbnail
+          type: interfaces.EFileType.Thumbnail
         }
       ];
 

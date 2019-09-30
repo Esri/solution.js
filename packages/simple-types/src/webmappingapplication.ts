@@ -422,7 +422,7 @@ export function _getGenericWebAppDependencies(model: any): string[] {
  * Return a list of items this site depends on
  */
 export function _getWABDependencies(model: any): string[] {
-  const deps = [];
+  const deps = [] as string[];
   const v = common.getProp(model, "data.map.itemId");
   if (v) {
     deps.push(v);

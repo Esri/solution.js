@@ -49,34 +49,12 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
+import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "./restHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-export interface ISourceFileCopyPath {
-  url: string;
-  folder: string;
-  filename: string;
-}
-
-export enum EFileType {
-  Form,
-  Metadata,
-  Resource,
-  Thumbnail
-}
-
-export interface IDeployFilename {
-  type: EFileType;
-  folder: string;
-  filename: string;
-}
-
-export interface IDeployFileCopyPath extends IDeployFilename {
-  url: string;
-}
 
 /**
  * Adds metadata to an AGO item.
@@ -182,17 +160,17 @@ export function addThumbnailFromUrl(
  */
 export function copyFilesFromStorageItem(
   storageAuthentication: auth.UserSession,
-  filePaths: IDeployFileCopyPath[],
+  filePaths: interfaces.IDeployFileCopyPath[],
   destinationItemId: string,
   destinationAuthentication: auth.UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        // case EFileType.Form:
+        // case interfaces.EFileType.Form:
         //   return Promise.resolve();
 
-        case EFileType.Metadata:
+        case interfaces.EFileType.Metadata:
           return copyMetadata(
             {
               url: filePath.url,
@@ -203,7 +181,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case EFileType.Resource:
+        case interfaces.EFileType.Resource:
           return copyResource(
             {
               url: filePath.url,
@@ -216,7 +194,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case EFileType.Thumbnail:
+        case interfaces.EFileType.Thumbnail:
           return addThumbnailFromUrl(
             filePath.url,
             destinationItemId,
@@ -242,7 +220,7 @@ export function copyFilesFromStorageItem(
  */
 export function copyFilesToStorageItem(
   sourceUserSession: auth.UserSession,
-  filePaths: ISourceFileCopyPath[],
+  filePaths: interfaces.ISourceFileCopyPath[],
   storageItemId: string,
   storageAuthentication: auth.UserSession
 ): Promise<string[]> {
@@ -372,7 +350,7 @@ export function generateGroupFilePaths(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string
-): ISourceFileCopyPath[] {
+): interfaces.ISourceFileCopyPath[] {
   if (!thumbnailUrlPart) {
     return [];
   }
@@ -419,13 +397,13 @@ export function generateMetadataStorageFilename(
  */
 export function generateResourceFilenameFromStorage(
   storageResourceFilename: string
-): IDeployFilename {
-  let type = EFileType.Resource;
+): interfaces.IDeployFilename {
+  let type = interfaces.EFileType.Resource;
   let [folder, filename] = storageResourceFilename.split("/");
   if (folder.endsWith("_info_thumbnail")) {
-    type = EFileType.Thumbnail;
+    type = interfaces.EFileType.Thumbnail;
   } else if (folder.endsWith("_info_metadata")) {
-    type = EFileType.Metadata;
+    type = interfaces.EFileType.Metadata;
     filename = "metadata.xml";
   } else {
     const folderStart = folder.indexOf("_");
@@ -482,7 +460,7 @@ export function generateSourceItemFilePaths(
   itemId: string,
   thumbnailUrlPart: string,
   resourceFilenames: string[]
-): ISourceFileCopyPath[] {
+): interfaces.ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
       url: generateSourceResourceUrl(
@@ -590,7 +568,7 @@ export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
   resourceFilenames: string[]
-): IDeployFileCopyPath[] {
+): interfaces.IDeployFileCopyPath[] {
   return resourceFilenames && resourceFilenames.map
     ? resourceFilenames.map(resourceFilename => {
         return {

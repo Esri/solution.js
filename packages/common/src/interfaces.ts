@@ -19,68 +19,95 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
-import { IDeployFileCopyPath } from "./resourceHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * A solution template AGO item
+ * Flag for storing an item's binary resources.
  */
-export interface ISolutionItem {
-  /**
-   * Item base section JSON
-   */
-  item: any;
-  /**
-   * Item data section JSON
-   */
-  data: ISolutionItemData;
+export enum EFileType {
+  Form,
+  Metadata,
+  Resource,
+  Thumbnail
 }
 
-export interface ISolutionItemData {
+/**
+ * Storage of dependencies.
+ */
+export interface IDependency {
   /**
-   * General information about the solution template
+   * Dependency item id for templatization.
    */
-  metadata: any;
+  id: string;
+
   /**
-   * The collection of templates
+   * Dependency service name for name mapping.
+   * This is used to find appropriate source service name for views.
    */
-  templates: IItemTemplate[];
+  name: string;
 }
 
+/**
+ * IDeployFilename extended to include the URL to the stored resource.
+ */
+export interface IDeployFileCopyPath extends IDeployFilename {
+  url: string;
+}
+
+/**
+ * File type, folder, and filename for deploying an item's binary resource.
+ */
+export interface IDeployFilename {
+  type: EFileType;
+  folder: string;
+  filename: string;
+}
+
+/**
+ * The templatized form of an item or group.
+ */
 export interface IItemTemplate {
   /**
    * Item's AGO id
    */
   itemId: string;
+
   /**
    * AGO item type name
    */
   type: string;
+
   /**
    * Fairly unique identifier; set to 'i' + chars 2-8 of a random number in base 36
    */
   key: string;
+
   /**
    * Item base section JSON
    */
   item: any;
+
   /**
    * Item data section JSON
    */
   data: any;
+
   /**
    * References to item resources
    */
   resources: any[];
+
   /**
    * List of ids of AGO items needed by this item
    */
   dependencies: string[];
+
   /**
    * Miscellaneous item-specific properties
    */
   properties: any;
+
   /**
    * Estimated relative cost of deploying this item; corresponds to number of progressCallback
    * function calls made during while deploying it
@@ -115,13 +142,6 @@ export interface IItemTypeModuleMap {
 }
 
 /**
- * A simple interface for a key value pair with string as the key
- */
-export interface IStringValuePair {
-  [key: string]: any;
-}
-
-/**
  * A simple interface for a key value pair with number as the key
  */
 export interface INumberValuePair {
@@ -129,45 +149,18 @@ export interface INumberValuePair {
 }
 
 /**
- * Storage of dependencies.
+ * Subset of a esri/portal/Portal used by this library.
  */
-export interface IDependency {
-  /**
-   * Dependency item id for templatization.
-   */
-  id: string;
-
-  /**
-   * Dependency service name for name mapping.
-   * This is used to find appropriate source service name for views.
-   */
+export interface IPortalSubset {
   name: string;
-}
-
-/**
- * Storage of update info
- * @protected
- */
-export interface IUpdate {
-  /**
-   * url for the update request
-   */
-  url: string;
-
-  /**
-   * object to update the layers definition
-   */
-  params: any;
-
-  /**
-   * arguments for post processing functions
-   */
-  args: IPostProcessArgs;
+  id: string;
+  restUrl: string;
+  portalUrl: string;
+  urlKey: string;
 }
 
 /**
  * Storage of arguments for post processing functions
- * @protected
  */
 export interface IPostProcessArgs {
   /**
@@ -195,4 +188,99 @@ export interface IPostProcessArgs {
    * Callback for IProgressUpdate
    */
   progressTickCallback: any;
+}
+
+/**
+ * Summary of a solution item.
+ */
+export interface ISolutionInfoCard {
+  id: string;
+  title: string;
+  snippet: string;
+  description: string;
+  url: string;
+  thumbnailUrl: string;
+  tryitUrl: string;
+  created: number;
+  tags: string[];
+  categories: string;
+  deployCommonId: string;
+  deployVersion: number;
+}
+
+/**
+ * A solution template AGO item
+ */
+export interface ISolutionItem {
+  /**
+   * Item base section JSON
+   */
+  item: any;
+
+  /**
+   * Item data section JSON
+   */
+  data: ISolutionItemData;
+}
+
+/**
+ * The data section of a solution item.
+ */
+export interface ISolutionItemData {
+  /**
+   * General information about the solution template
+   */
+  metadata: any;
+
+  /**
+   * The collection of templates
+   */
+  templates: IItemTemplate[];
+}
+
+/**
+ *  Information for storing a resource in a storage item.
+ */
+export interface ISourceFileCopyPath {
+  /**
+   * URL where a resource, metadata, or thumbnail of an item or group can be found
+   */
+  url: string;
+
+  /**
+   * Folder for storing a resource in a storage item
+   */
+  folder: string;
+
+  /**
+   * Filename for storing a resource in a storage item
+   */
+  filename: string;
+}
+
+/**
+ * A simple interface for a key value pair with string as the key
+ */
+export interface IStringValuePair {
+  [key: string]: any;
+}
+
+/**
+ * Storage of update info
+ */
+export interface IUpdate {
+  /**
+   * URL for the update request
+   */
+  url: string;
+
+  /**
+   * object to update the layers definition
+   */
+  params: any;
+
+  /**
+   * arguments for post processing functions
+   */
+  args: IPostProcessArgs;
 }
