@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.5.1",
+  "version": "0.5.5",
   "description": "to do",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.4.0",
     "@esri/arcgis-rest-portal": "^2.4.0",
-    "@esri/solution-common": "^0.5.1"
+    "@esri/solution-common": "^0.5.5"
   },
   "dependencies": {
     "@esri/arcgis-rest-types": "^2.4.0",
@@ -50,5 +50,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "95b374b394313fa068879f035df203fd10aff9d5"
+  "gitHead": "5a47c8cdfeba9d735695a0c41705f6618a816cd6"
 }
