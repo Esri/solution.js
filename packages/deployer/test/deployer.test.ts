@@ -122,7 +122,7 @@ describe("Module `deploySolution`", () => {
           "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
         )
       );
-      delete expectedMap.extent;
+      expectedMap.extent = undefined;
       expectedMap.thumbnail =
         PORTAL_SUBSET.restUrl +
         "/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
@@ -258,6 +258,7 @@ describe("Module `deploySolution`", () => {
                 documentation: null,
                 categories: [],
                 spatialReference: null,
+                extent: undefined,
                 accessInformation: "Esri, Inc.",
                 licenseInfo: null,
                 culture: "en-us",

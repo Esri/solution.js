@@ -18,14 +18,14 @@
 
 // import * as mFeatureService from "../../../feature-layer/src/feature-layer";
 // import * as fsUtils from "../../../feature-layer/src/featureServiceHelpers";
-import * as mInterfaces from "../../src/interfaces";
+import * as interfaces from "../../src/interfaces";
 import * as mockItems from "../mocks/agolItems";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
 
 export function getSolutionTemplateItem(
-  templates = [] as mInterfaces.IItemTemplate[]
-): mInterfaces.ISolutionItem {
+  templates = [] as interfaces.IItemTemplate[]
+): interfaces.ISolutionItem {
   return {
     item: {
       commentsEnabled: false,
@@ -343,8 +343,8 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
   };
 }
 
-export function getWebMappingApplicationTemplate(): mInterfaces.IItemTemplate[] {
-  const template: mInterfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
+  const template: interfaces.IItemTemplate[] = [
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
@@ -361,8 +361,8 @@ export function getWebMappingApplicationTemplate(): mInterfaces.IItemTemplate[] 
   return template;
 }
 
-export function getWebMappingApplicationTemplateGroup(): mInterfaces.IItemTemplate[] {
-  const template: mInterfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplate[] {
+  const template: interfaces.IItemTemplate[] = [
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
@@ -388,8 +388,8 @@ export function getWebMappingApplicationTemplateGroup(): mInterfaces.IItemTempla
   return template;
 }
 
-export function getWebMappingApplicationTemplateNoWebmapOrGroup(): mInterfaces.IItemTemplate[] {
-  const template: mInterfaces.IItemTemplate[] = [
+export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.IItemTemplate[] {
+  const template: interfaces.IItemTemplate[] = [
     getItemTemplatePart(
       "Web Mapping Application",
       undefined,

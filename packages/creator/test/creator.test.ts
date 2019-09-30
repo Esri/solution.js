@@ -77,7 +77,7 @@ describe("Module `creator`", () => {
           restUrl: "https://www.arcgis.com/sharing/rest",
           portalUrl: "",
           urlKey: ""
-        } as creator.IPortalSubset;
+        } as common.IPortalSubset;
         const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
@@ -185,7 +185,7 @@ describe("Module `creator`", () => {
           restUrl: "https://www.arcgis.com/sharing/rest",
           portalUrl: "",
           urlKey: ""
-        } as creator.IPortalSubset;
+        } as common.IPortalSubset;
         const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
