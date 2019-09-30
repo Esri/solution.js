@@ -29,20 +29,12 @@ export function getItemInfo(itemId: string): Promise<string> {
     const defaultPortalUrl = "https://www.arcgis.com";
     const defaultPortalSharingUrl = "https://www.arcgis.com/sharing";
     const usOptions: auth.IUserSessionOptions = {};
-    const destinationUserSession: auth.UserSession = new auth.UserSession(
-      usOptions
-    );
+    const authorization: auth.UserSession = new auth.UserSession(usOptions);
 
     // Get the item base, data, and resources
-    const itemBaseDef = solutionCommon.getItem(itemId, destinationUserSession);
-    const itemDataDef = solutionCommon.getItemData(
-      itemId,
-      destinationUserSession
-    );
-    const resourcesDef = portal.getItemResources(
-      itemId,
-      destinationUserSession
-    );
+    const itemBaseDef = solutionCommon.getItem(itemId, authorization);
+    const itemDataDef = solutionCommon.getItemData(itemId, authorization);
+    const resourcesDef = portal.getItemResources(itemId, authorization);
 
     // tslint:disable-next-line: no-floating-promises
     Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
@@ -172,7 +164,7 @@ export function getItemInfo(itemId: string): Promise<string> {
       html += '<div id="metadataOutput"></div>';
       // tslint:disable-next-line: no-floating-promises
       solutionCommon
-        .getText(metadataFilePath[0].url, destinationUserSession)
+        .getText(metadataFilePath[0].url, authorization)
         .then(metadata => {
           if (metadata) {
             document.getElementById("metadataOutput").innerHTML =
