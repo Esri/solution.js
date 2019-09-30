@@ -27,19 +27,11 @@ import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export interface IPortalSubset {
-  name: string;
-  id: string;
-  restUrl: string;
-  portalUrl: string;
-  urlKey: string;
-}
-
 export function createSolution(
   solutionName: string,
   groupId: string,
   templateDictionary: any,
-  portalSubset: IPortalSubset,
+  portalSubset: common.IPortalSubset,
   destinationAuthentication: auth.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
