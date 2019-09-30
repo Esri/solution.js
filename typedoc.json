@@ -16916,7 +16916,7 @@
       "package": "common",
       "pkg": {
         "name": "@esri/solution-common",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Provides general helper functions for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/common.umd.min.js",
@@ -24740,7 +24740,7 @@
       "package": "creator",
       "pkg": {
         "name": "@esri/solution-creator",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Manages the creation of a Solution item for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/creator.umd.min.js",
@@ -24755,10 +24755,10 @@
           "@esri/arcgis-rest-auth": "^2.4.0",
           "@esri/arcgis-rest-portal": "^2.4.0",
           "@esri/arcgis-rest-request": "^2.4.0",
-          "@esri/solution-common": "^0.5.3",
-          "@esri/solution-feature-layer": "^0.5.3",
-          "@esri/solution-simple-types": "^0.5.3",
-          "@esri/solution-storymap": "^0.5.3"
+          "@esri/solution-common": "^0.5.5",
+          "@esri/solution-feature-layer": "^0.5.5",
+          "@esri/solution-simple-types": "^0.5.5",
+          "@esri/solution-storymap": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.3.0",
@@ -25492,7 +25492,7 @@
       "package": "deployer",
       "pkg": {
         "name": "@esri/solution-deployer",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Manages the deployment of a Solution for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/deployer.umd.min.js",
@@ -25507,10 +25507,10 @@
           "@esri/arcgis-rest-auth": "^2.4.0",
           "@esri/arcgis-rest-portal": "^2.4.0",
           "@esri/arcgis-rest-request": "^2.4.0",
-          "@esri/solution-common": "^0.5.3",
-          "@esri/solution-feature-layer": "^0.5.3",
-          "@esri/solution-simple-types": "^0.5.3",
-          "@esri/solution-storymap": "^0.5.3"
+          "@esri/solution-common": "^0.5.5",
+          "@esri/solution-feature-layer": "^0.5.5",
+          "@esri/solution-simple-types": "^0.5.5",
+          "@esri/solution-storymap": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.4.0",
@@ -26714,7 +26714,7 @@
       "package": "feature-layer",
       "pkg": {
         "name": "@esri/solution-feature-layer",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/feature-layer.umd.min.js",
@@ -26728,7 +26728,7 @@
         "devDependencies": {
           "@esri/arcgis-rest-auth": "^2.4.0",
           "@esri/arcgis-rest-request": "^2.4.0",
-          "@esri/solution-common": "^0.5.3"
+          "@esri/solution-common": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.4.0",
@@ -31831,7 +31831,7 @@
       "package": "simple-types",
       "pkg": {
         "name": "@esri/solution-simple-types",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -31847,7 +31847,7 @@
           "@esri/arcgis-rest-feature-layer": "^2.4.0",
           "@esri/arcgis-rest-portal": "^2.4.0",
           "@esri/arcgis-rest-request": "^2.4.0",
-          "@esri/solution-common": "^0.5.3"
+          "@esri/solution-common": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.4.0",
@@ -33938,7 +33938,7 @@
       "package": "storymap",
       "pkg": {
         "name": "@esri/solution-storymap",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/storymap.umd.min.js",
@@ -33951,8 +33951,8 @@
         ],
         "devDependencies": {
           "@esri/arcgis-rest-auth": "^2.4.0",
-          "@esri/solution-common": "^0.5.3",
-          "@esri/solution-simple-types": "^0.5.3"
+          "@esri/solution-common": "^0.5.5",
+          "@esri/solution-simple-types": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.4.0",
@@ -34286,7 +34286,7 @@
       "package": "viewer",
       "pkg": {
         "name": "@esri/solution-viewer",
-        "version": "0.5.3",
+        "version": "0.5.5",
         "description": "to do",
         "main": "dist/node/index.js",
         "unpkg": "dist/umd/viewer.umd.min.js",
@@ -34300,7 +34300,7 @@
         "devDependencies": {
           "@esri/arcgis-rest-auth": "^2.4.0",
           "@esri/arcgis-rest-portal": "^2.4.0",
-          "@esri/solution-common": "^0.5.3"
+          "@esri/solution-common": "^0.5.5"
         },
         "dependencies": {
           "@esri/arcgis-rest-types": "^2.4.0",
