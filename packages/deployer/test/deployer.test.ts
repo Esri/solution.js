@@ -344,29 +344,59 @@ describe("Module `deploySolution`", () => {
           id: "svc1234567890",
           url: featureServerUrl,
           name: "ROWPermits_publiccomment",
-          fieldInfos: {
-            layer0: {
-              fields: {
-                globalid: "globalid",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                objectid: "OBJECTID",
-                appname: "appname",
-                boardreview: "BoardReview"
+          layer0: {
+            fields: {
+              globalid: {
+                name: "globalid"
+              },
+              creationdate: {
+                name: "CreationDate"
+              },
+              creator: {
+                name: "Creator"
+              },
+              editdate: {
+                name: "EditDate"
+              },
+              editor: {
+                name: "Editor"
+              },
+              objectid: {
+                name: "OBJECTID"
+              },
+              appname: {
+                name: "appname"
+              },
+              boardreview: {
+                name: "BoardReview"
               }
-            },
-            layer1: {
-              fields: {
-                globalid: "globalid",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                objectid: "OBJECTID",
-                appname: "appname",
-                boardreview: "BoardReview"
+            }
+          },
+          layer1: {
+            fields: {
+              globalid: {
+                name: "globalid"
+              },
+              creationdate: {
+                name: "CreationDate"
+              },
+              creator: {
+                name: "Creator"
+              },
+              editdate: {
+                name: "EditDate"
+              },
+              editor: {
+                name: "Editor"
+              },
+              objectid: {
+                name: "OBJECTID"
+              },
+              appname: {
+                name: "appname"
+              },
+              boardreview: {
+                name: "BoardReview"
               }
             }
           }

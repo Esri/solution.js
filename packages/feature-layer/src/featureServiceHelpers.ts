@@ -292,7 +292,8 @@ export function updateSettingsFieldInfos(
       dependencies.forEach((d: any) => {
         settingsKeys.forEach((_k: any) => {
           if (d === settings[_k].id) {
-            settings[k]["fieldInfos"] = settings[_k].fieldInfos;
+            // TODO verify this is right
+            settings[k] = settings[_k].fieldInfos;
           }
         });
       });
@@ -661,7 +662,8 @@ export function postProcessFields(
         // Add the fieldInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
           if (id === templateDictionary[k].id) {
-            templateDictionary[k]["fieldInfos"] = getFieldSettings(fieldInfos);
+            // TODO
+            templateDictionary[k] = getFieldSettings(fieldInfos);
           }
         });
 
@@ -890,7 +892,7 @@ export function _templatizeLayerFieldReferences(
   dependencies: common.IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
-  const path: string = itemID + ".fieldInfos.layer" + layer.id + ".fields";
+  const path: string = itemID + ".layer" + layer.id + ".fields";
 
   // Get the field names for various tests
   const fieldNames: string[] = layer.fields.map((f: any) => f.name);
@@ -1022,8 +1024,7 @@ export function _templatizeAdminLayerInfoFields(
 
   if (table) {
     let id: string = _getDependantItemId(table.sourceServiceName, dependencies);
-    const path: string =
-      id + ".fieldInfos.layer" + table.sourceLayerId + ".fields";
+    const path: string = id + ".layer" + table.sourceLayerId + ".fields";
 
     _templatizeAdminSourceLayerFields(table.sourceLayerFields || [], path);
 
@@ -1037,8 +1038,7 @@ export function _templatizeAdminLayerInfoFields(
     if (relatedTables.length > 0) {
       relatedTables.forEach((t: any) => {
         id = _getDependantItemId(t.sourceServiceName, dependencies);
-        const relatedPath: string =
-          id + ".fieldInfos.layer" + t.sourceLayerId + ".fields";
+        const relatedPath: string = id + ".layer" + t.sourceLayerId + ".fields";
 
         _templatizeTopFilter(t.topFilter || {}, relatedPath);
 
@@ -1129,8 +1129,7 @@ export function _templatizeRelationshipFields(
     const relationships: any[] = layer.relationships;
     relationships.forEach(r => {
       if (r.keyField) {
-        const basePath: string =
-          itemID + ".fieldInfos.layer" + layer.id + ".fields";
+        const basePath: string = itemID + ".layer" + layer.id + ".fields";
         _templatizeProperty(r, "keyField", basePath);
       }
     });
@@ -1264,7 +1263,7 @@ export function _templatizeFieldName(
         ? "relatedTableId"
         : "sourceLayerId";
       const _basePath: string =
-        itemID + ".fieldInfos.layer" + relatedTable[prop] + ".fields";
+        itemID + ".layer" + relatedTable[prop] + ".fields";
       rels[2] = _templatize(_basePath, rels[2]);
       name = rels.join("/");
     }
@@ -1883,11 +1882,11 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         newFieldNames.indexOf(lName) === -1
       ) {
         if (f.alias === field.alias) {
-          nameMapping[lName] = f.name;
+          nameMapping[lName] = f;
         }
       }
       if (String(f.name).toLowerCase() === lName) {
-        nameMapping[lName] = f.name;
+        nameMapping[lName] = f;
       }
     });
   });
@@ -1916,6 +1915,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
             name: lowerEfi
           });
         }
+        console.log(newEfi[k]);
         nameMapping[lowerEfi] = newEfi[k];
       }
     });
