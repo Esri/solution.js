@@ -305,20 +305,24 @@ export function extractDependencies(
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView) {
       const url: string = itemTemplate.item.url;
-      request.request(url + "/sources?f=json", authentication).then(
-        response => {
-          if (response && response.services) {
-            response.services.forEach((layer: any) => {
-              dependencies.push({
-                id: layer.serviceItemId,
-                name: layer.name
+      request
+        .request(url + "/sources?f=json", {
+          authentication: authentication
+        })
+        .then(
+          response => {
+            if (response && response.services) {
+              response.services.forEach((layer: any) => {
+                dependencies.push({
+                  id: layer.serviceItemId,
+                  name: layer.name
+                });
               });
-            });
-            resolve(dependencies);
-          }
-        },
-        e => reject(generalHelpers.fail(e))
-      );
+              resolve(dependencies);
+            }
+          },
+          e => reject(generalHelpers.fail(e))
+        );
     } else {
       resolve(dependencies);
     }
@@ -438,8 +442,8 @@ export function getItemData(
                   blob.type === "application/json" ||
                   (blob.type === "text/plain" && convertToJsonIfText)
                 ) {
-                  const json = JSON.parse(response);
-                  resolve(json.error ? null : json);
+                  const json = response !== "" ? JSON.parse(response) : null;
+                  resolve(json && json.error ? null : json);
                 } else {
                   resolve(response);
                 }
@@ -614,31 +618,35 @@ export function getServiceLayersAndTables(
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
-    request.request(serviceUrl + "?f=json", authentication).then(
-      serviceData => {
-        properties.service = serviceData;
-        Promise.all([
-          getLayers(serviceUrl, serviceData["layers"], authentication),
-          getLayers(serviceUrl, serviceData["tables"], authentication)
-        ]).then(
-          results => {
-            properties.layers = results[0];
-            properties.tables = results[1];
-            itemTemplate.properties = properties;
+    request
+      .request(serviceUrl + "?f=json", {
+        authentication: authentication
+      })
+      .then(
+        serviceData => {
+          properties.service = serviceData;
+          Promise.all([
+            getLayers(serviceUrl, serviceData["layers"], authentication),
+            getLayers(serviceUrl, serviceData["tables"], authentication)
+          ]).then(
+            results => {
+              properties.layers = results[0];
+              properties.tables = results[1];
+              itemTemplate.properties = properties;
 
-            itemTemplate.estimatedDeploymentCostFactor +=
-              properties.layers.length + // layers
-              _countRelationships(properties.layers) + // layer relationships
-              properties.tables.length + // tables & estimated single relationship for each
-              _countRelationships(properties.tables); // table relationships
+              itemTemplate.estimatedDeploymentCostFactor +=
+                properties.layers.length + // layers
+                _countRelationships(properties.layers) + // layer relationships
+                properties.tables.length + // tables & estimated single relationship for each
+                _countRelationships(properties.tables); // table relationships
 
-            resolve(itemTemplate);
-          },
-          e => reject(generalHelpers.fail(e))
-        );
-      },
-      (e: any) => reject(generalHelpers.fail(e))
-    );
+              resolve(itemTemplate);
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        },
+        (e: any) => reject(generalHelpers.fail(e))
+      );
   });
 }
 
