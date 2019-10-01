@@ -173,6 +173,22 @@ export function templatizeTerm(
   return context.replace(pattern, "{{" + term + suffix + "}}");
 }
 
+/**
+ * Helper function to templatize value and make sure its converted to lowercase
+ *
+ * @param basePath path used to de-templatize while deploying
+ * @param value to be converted to lower case for lookup while deploying
+ */
+export function templatizeToLowerCase(basePath: string, value: string): string {
+  if (value.startsWith("{{")) {
+    return value;
+  } else {
+    return String(
+      templatizeTerm(basePath, basePath, "." + String(value).toLowerCase())
+    );
+  }
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**

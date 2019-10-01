@@ -175,6 +175,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       addToServiceDefinition(url, {}).then(
         () => done.fail(),
         error => {
+          jasmine.clock().uninstall();
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
           done();
         }
@@ -191,6 +192,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       addToServiceDefinition(url, {}).then(
         () => {
+          jasmine.clock().uninstall();
           done();
         },
         () => done.fail()
@@ -241,8 +243,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         MOCK_USER_SESSION,
         templateDictionary
       ).then(
-        () => done.fail(),
+        () => {
+          jasmine.clock().uninstall();
+          done.fail();
+        },
         error => {
+          jasmine.clock().uninstall();
           expect(checkForArcgisRestSuccessRequestError(error)).toBe(true);
           done();
         }
@@ -252,6 +258,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can create a service", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
+      jasmine.clock().uninstall();
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
       const sessionWithMockedTime: UserSession = createRuntimeMockUserSession(

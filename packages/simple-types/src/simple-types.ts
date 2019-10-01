@@ -142,7 +142,10 @@ export function convertItemToTemplate(
           let webappPromise = Promise.resolve(itemTemplate);
           switch (itemInfo.type.toLowerCase()) {
             case "dashboard":
-              dashboard.convertItemToTemplate(itemTemplate);
+              webappPromise = dashboard.convertItemToTemplate(
+                itemTemplate,
+                authentication
+              );
               break;
             case "form":
               itemTemplate.dependencies = itemTemplate.dependencies.concat(
