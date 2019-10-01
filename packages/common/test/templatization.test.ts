@@ -156,6 +156,26 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
+  describe("templatizeToLowerCase", () => {
+    it("should handle convert value to lower case", () => {
+      const basePath: string = "abc";
+      const value: string = "DEF";
+      const expected: string = "{{abc.def}}";
+
+      const actual = templatization.templatizeToLowerCase(basePath, value);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should return the value if its already been templatized", () => {
+      const basePath: string = "abc";
+      const value: string = "{{abc.def}}";
+      const expected: string = "{{abc.def}}";
+
+      const actual = templatization.templatizeToLowerCase(basePath, value);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_createId", () => {
     xit("_createId", done => {
       console.warn("========== TODO ==========");
