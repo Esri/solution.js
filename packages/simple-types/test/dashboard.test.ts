@@ -57,129 +57,133 @@ afterEach(() => {
 
 describe("Module `dashboard`: manages the creation and deployment of dashboard item type", () => {
   describe("convertItemToTemplate", () => {
-    it("should templatize webmap ids and external datasource ids", done => {
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
-          _mapDataResponse
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
-          _featureServiceItemResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
-          _externalDatasourceResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
-          _webmapFeatureServiceResponse
-        );
+    if (typeof window !== "undefined") {
+      it("should templatize webmap ids and external datasource ids", done => {
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            '{"token":"fake-token"}'
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+            _mapDataResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
+            _featureServiceItemResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
+            _externalDatasourceResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
+            _webmapFeatureServiceResponse
+          );
 
-      dashboard
-        .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
-        .then(
-          updatedTemplate => {
-            expect(updatedTemplate).toEqual(expectedUpdatedTemplate);
-            done();
-          },
-          e => {
-            done.fail(e);
-          }
-        );
-    });
+        dashboard
+          .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
+          .then(
+            updatedTemplate => {
+              expect(updatedTemplate).toEqual(expectedUpdatedTemplate);
+              done();
+            },
+            e => {
+              done.fail(e);
+            }
+          );
+      });
 
-    it("should handle error on getting datasource info", done => {
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
-          _mapDataResponse
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
-          _featureServiceItemResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
-          _externalDatasourceResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
-          mockItems.get400SuccessFailure()
-        );
+      it("should handle error on getting datasource info", done => {
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            '{"token":"fake-token"}'
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+            _mapDataResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
+            _featureServiceItemResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
+            _externalDatasourceResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
+            mockItems.get400SuccessFailure()
+          );
 
-      dashboard
-        .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
-        .then(() => done.fail(), () => done());
-    });
+        dashboard
+          .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
+          .then(() => done.fail(), () => done());
+      });
 
-    it("should handle error on getting datasource", done => {
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
-          _mapDataResponse
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
-          mockItems.get400SuccessFailure()
-        );
+      it("should handle error on getting datasource", done => {
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            '{"token":"fake-token"}'
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+            _mapDataResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
+            mockItems.get400SuccessFailure()
+          );
 
-      dashboard
-        .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
-        .then(() => done.fail(), () => done());
-    });
+        dashboard
+          .convertItemToTemplate(_initialDashboardTemplate, MOCK_USER_SESSION)
+          .then(() => done.fail(), () => done());
+      });
+    }
   });
 
   describe("_extractDependencies", () => {
-    it("should extract dependencies", done => {
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
-          _mapDataResponse
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
-          _featureServiceItemResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
-          _externalDatasourceResponse
-        )
-        .post(
-          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
-          _webmapFeatureServiceResponse
-        );
+    if (typeof window !== "undefined") {
+      it("should extract dependencies", done => {
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            '{"token":"fake-token"}'
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+            _mapDataResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/934a9ef8efa7448fa8ddf7b13cef0240?f=json&token=fake-token",
+            _featureServiceItemResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/LayerForDashboardExteternal/FeatureServer/0?f=json",
+            _externalDatasourceResponse
+          )
+          .post(
+            "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2?f=json",
+            _webmapFeatureServiceResponse
+          );
 
-      dashboard
-        ._extractDependencies(_initialDashboardTemplate, MOCK_USER_SESSION)
-        .then(
-          results => {
-            expect(results.itemTemplate.dependencies).toEqual(
-              expectedUpdatedTemplate.dependencies
-            );
-            done();
-          },
-          e => {
-            done.fail(e);
-          }
-        );
-    });
+        dashboard
+          ._extractDependencies(_initialDashboardTemplate, MOCK_USER_SESSION)
+          .then(
+            results => {
+              expect(results.itemTemplate.dependencies).toEqual(
+                expectedUpdatedTemplate.dependencies
+              );
+              done();
+            },
+            e => {
+              done.fail(e);
+            }
+          );
+      });
+    }
   });
 
   describe("_getDatasourceInfo", () => {
