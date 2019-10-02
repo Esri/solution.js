@@ -647,24 +647,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "0": {
           newFields: [
             {
-              name: "A"
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "A"
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -681,24 +693,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "1": {
           newFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -716,16 +740,40 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           fields: {
-            a: "A",
-            b: "B",
-            createdate: "CreateDate"
+            a: {
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
+            },
+            b: {
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            createdate: {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
           }
         },
         layer1: {
           fields: {
-            c: "C",
-            d: "D",
-            createdate: "CreateDate"
+            c: {
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            d: {
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            createdate: {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
           }
         }
       };
@@ -752,34 +800,50 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           newFields: [
             {
               name: "a0",
-              alias: "A_a"
+              alias: "A_a",
+              type: "fieldTypeA"
             },
             {
-              name: "b"
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "createdate"
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "create_date"
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "editdate"
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
               name: "A",
-              alias: "A_a"
+              alias: "A_a",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "EditDate"
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -798,33 +862,51 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "1": {
           newFields: [
             {
-              name: "c"
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "d"
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "createdate"
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "create_date"
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "editdate"
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "EditDate"
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -843,18 +925,50 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           fields: {
-            a: "a0",
-            b: "b",
-            createdate: "create_date",
-            editdate: "editdate"
+            a: {
+              name: "a0",
+              alias: "A_a",
+              type: "fieldTypeA"
+            },
+            b: {
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
           }
         },
         layer1: {
           fields: {
-            c: "c",
-            d: "d",
-            createdate: "create_date",
-            editdate: "editdate"
+            c: {
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            d: {
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
           }
         }
       };
@@ -863,21 +977,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           otherProperty: {
             test: "test"
           },
-          deleteFields: [
-            {
-              name: "createdate"
-            }
-          ]
+          deleteFields: ["createdate", "editdate"]
         },
         "1": {
           otherProperty: {
             test: "test"
           },
-          deleteFields: [
-            {
-              name: "createdate"
-            }
-          ]
+          deleteFields: ["createdate"]
         }
       };
       const settings: any = getFieldSettings(fieldInfos);
@@ -2902,17 +3008,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const propName = "someProp";
 
       let obj: any;
-      _templatizeProperty(obj, propName, basePath);
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toBeUndefined();
 
       obj = {};
-      _templatizeProperty(obj, propName, basePath);
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toEqual({});
 
-      obj[propName] = "NaMe";
-      _templatizeProperty(obj, propName, basePath);
+      obj[propName] = "NaMe123";
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toEqual({
-        someProp: "{{" + basePath + ".name}}"
+        someProp: "{{" + basePath + ".name123.name}}"
       });
     });
   });
@@ -3153,11 +3259,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "{{" + basePath + ".a}}"
+                  source: "{{" + basePath + ".a.name}}"
                 },
                 {
                   name: "B",
-                  source: "{{" + basePath + ".b}}"
+                  source: "{{" + basePath + ".b.name}}"
                 }
               ]
             }
@@ -3488,7 +3594,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedLayerDef: any = {
         popupInfo: {
-          title: "{{{" + basePath + ".a}}}",
+          title: "{{{" + basePath + ".a.name}}}",
           description: "",
           fieldInfos: [
             {
@@ -4088,14 +4194,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       const fieldNames: any[] = ["A", "B", "C", "D"];
       let expression;
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toBeUndefined();
     });
 
     it("should not fail with empty expression", () => {
       const fieldNames: any[] = ["A", "B", "C", "D"];
       let expression: string = "";
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toEqual("");
     });
 
@@ -4105,7 +4221,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       // test case in expression
       let expression =
         "(a LIKE b AND c LIKE d) AND (A LIKE B AND C LIKE D SOMEOTHERABC)";
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toEqual(
         "(a LIKE b AND c LIKE d) AND ({{" +
           basePath +

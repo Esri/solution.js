@@ -400,7 +400,7 @@ export function _getDatasourcePromises(
           type: "externalDataset",
           layerId: layerId,
           itemId: itemId,
-          basePath: itemId + ".fieldInfos.layer" + layerId + ".fields",
+          basePath: itemId + ".layer" + layerId + ".fields",
           url: "",
           fields: [],
           references: [obj.id]
@@ -526,7 +526,7 @@ export function _getDatasourcesFromMap(
           datasourceInfo = Object.assign(datasourceInfo, {
             layerId: layerId,
             itemId: layer.itemId,
-            basePath: layer.itemId + ".fieldInfos.layer" + layerId + ".fields",
+            basePath: layer.itemId + ".layer" + layerId + ".fields",
             url: layer.url
           });
         }
@@ -704,7 +704,7 @@ export function _templatizeFieldReferences(
   fields.forEach(field => {
     objString = objString.replace(
       new RegExp(field.name, "g"),
-      common.templatizeToLowerCase(basePath, field.name)
+      common.templatizeToLowerCase(basePath, field.name + ".name")
     );
   });
   return JSON.parse(objString);

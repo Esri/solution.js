@@ -4740,7 +4740,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}}"
+              "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}"
           },
           selection: {
             type: "single",
@@ -4768,21 +4768,21 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
                         constraint: {
                           type: "field",
                           value:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.organiz}}"
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}"
                         }
                       },
                       {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.objectid}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                           type: "esriFieldTypeOID"
                         },
                         operator: "between",
@@ -4799,7 +4799,7 @@ const expectedUpdatedTemplate: any = {
               outFields: ["*"],
               groupByFields: [],
               orderByFields: [
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.organiz}} asc"
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc"
               ],
               statisticDefinitions: [],
               maxFeatures: 50,
@@ -4821,7 +4821,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}}"
+              "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}"
           },
           selection: {
             type: "single",
@@ -4840,7 +4840,7 @@ const expectedUpdatedTemplate: any = {
               outFields: ["*"],
               groupByFields: [],
               orderByFields: [
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}} asc"
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
               ],
               statisticDefinitions: [],
               maxFeatures: 50,
@@ -4862,7 +4862,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}} {{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}} {{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.pocphone}}}"
+              "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}} {{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}}"
           },
           selection: {
             type: "single",
@@ -4890,7 +4890,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -4903,7 +4903,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -4916,7 +4916,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -4978,7 +4978,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -5040,7 +5040,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.name}}}"
+              "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}"
           },
           selection: {
             type: "single",
@@ -5070,7 +5070,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.owntype}}",
+                            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owntype.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -5083,7 +5083,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -5117,9 +5117,9 @@ const expectedUpdatedTemplate: any = {
                   fieldMap: [
                     {
                       sourceName:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
                     }
                   ],
                   targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
@@ -5154,7 +5154,7 @@ const expectedUpdatedTemplate: any = {
                     {
                       sourceName: "filterField",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.closeddate}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
                     }
                   ],
                   targetId:
@@ -5180,7 +5180,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.name}}}"
+              "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}}"
           },
           selection: {
             type: "single",
@@ -5210,7 +5210,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -5244,9 +5244,9 @@ const expectedUpdatedTemplate: any = {
                   fieldMap: [
                     {
                       sourceName:
-                        "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
                     }
                   ],
                   targetId: "f81f2270-e104-453d-9c09-045d8d1087c9#main"
@@ -5281,7 +5281,7 @@ const expectedUpdatedTemplate: any = {
                     {
                       sourceName: "filterField",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.closeddate}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
                     }
                   ],
                   targetId:
@@ -5331,7 +5331,7 @@ const expectedUpdatedTemplate: any = {
                     {
                       sourceName: "filterField",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}"
                     }
                   ],
                   targetId:
@@ -5381,7 +5381,7 @@ const expectedUpdatedTemplate: any = {
                     {
                       sourceName: "filterField",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
                     }
                   ],
                   targetId: "7866f4bd-8361-4205-8fd7-f92da41fdb61#main"
@@ -5401,7 +5401,7 @@ const expectedUpdatedTemplate: any = {
           category: {
             type: "features",
             itemText:
-              "{{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}}"
+              "{{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}}"
           },
           selection: {
             type: "single",
@@ -5431,7 +5431,7 @@ const expectedUpdatedTemplate: any = {
                         type: "filterRule",
                         field: {
                           name:
-                            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                           type: "esriFieldTypeString"
                         },
                         operator: "equal",
@@ -5496,7 +5496,7 @@ const expectedUpdatedTemplate: any = {
                     {
                       sourceName: "filterField",
                       targetName:
-                        "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}"
+                        "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
                     }
                   ],
                   targetId: "c220e9bb-f0b9-4f0e-93e8-8baa3f39aa0c#main"
@@ -5663,11 +5663,11 @@ const expectedUpdatedTemplate: any = {
           }
         ],
         valueField:
-          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
         minValueField:
-          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.occupancy}}",
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
         maxValueField:
-          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.occupancy}}",
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
         noValueVerticalAlignment: "middle",
         showCaptionWhenNoValue: true,
         showDescriptionWhenNoValue: true,
@@ -5691,7 +5691,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -5707,8 +5707,8 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}} asc",
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}} asc"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc",
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 50,
@@ -5825,7 +5825,7 @@ const expectedUpdatedTemplate: any = {
           }
         ],
         valueField:
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.numbeds}}",
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
         noValueVerticalAlignment: "middle",
         showCaptionWhenNoValue: true,
         showDescriptionWhenNoValue: true,
@@ -5856,7 +5856,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.owner}}",
+                          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -5893,7 +5893,7 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.numbeds}}",
+                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "min"
               }
@@ -5926,7 +5926,7 @@ const expectedUpdatedTemplate: any = {
           labelsPlacement: "default",
           labelRotation: 0,
           fieldName:
-            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
           nullLabel: "Null",
           blankLabel: "Blank",
           defaultColor: "#d6d6d6",
@@ -6013,7 +6013,7 @@ const expectedUpdatedTemplate: any = {
         graphs: [
           {
             valueField:
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.numbeds}}",
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
             title: "# of Beds Available",
             lineColor: "#ffaa00",
             lineColorField: "_lineColor_",
@@ -6090,7 +6090,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6103,7 +6103,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.owner}}",
+                          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6119,7 +6119,7 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.owner}} asc"
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 10,
@@ -6142,7 +6142,7 @@ const expectedUpdatedTemplate: any = {
         category: {
           sliceProperties: [],
           fieldName:
-            "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+            "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
           nullLabel: "Null",
           blankLabel: "Blank",
           defaultColor: "#d6d6d6",
@@ -6233,7 +6233,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6248,15 +6248,15 @@ const expectedUpdatedTemplate: any = {
             },
             outFields: ["*"],
             groupByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}"
             ],
             orderByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}} asc"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}} asc"
             ],
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.objectid}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "count"
               }
@@ -6281,7 +6281,7 @@ const expectedUpdatedTemplate: any = {
         category: {
           sliceProperties: [],
           fieldName:
-            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
           nullLabel: "Null",
           blankLabel: "Blank",
           defaultColor: "#d6d6d6",
@@ -6311,7 +6311,7 @@ const expectedUpdatedTemplate: any = {
           groupedColor: "#d6d6d6"
         },
         valueField:
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.numbeds}}",
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
         legend: {
           enabled: false,
           format: "percentage",
@@ -6370,7 +6370,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.name}}",
+                          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6386,7 +6386,7 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.owner}} asc"
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.owner.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 20,
@@ -6410,13 +6410,13 @@ const expectedUpdatedTemplate: any = {
           sliceProperties: [
             {
               key:
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
               label: "# of Beds Available",
               color: "#ffaa00"
             },
             {
               key:
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
               label: "# of Beds Available",
               color: "#ffff00"
             }
@@ -6494,7 +6494,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6513,7 +6513,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6532,16 +6532,16 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 outStatisticFieldName:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 statisticType: "avg"
               },
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 outStatisticFieldName:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 statisticType: "avg"
               }
             ],
@@ -6568,7 +6568,7 @@ const expectedUpdatedTemplate: any = {
           labelsPlacement: "default",
           labelRotation: 0,
           fieldName:
-            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
           nullLabel: "Null",
           blankLabel: "Blank",
           defaultColor: "#d6d6d6",
@@ -6655,7 +6655,7 @@ const expectedUpdatedTemplate: any = {
         guides: [],
         splitBy: {
           fieldName:
-            "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.name}}",
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}",
           defaultColor: "#d6d6d6",
           seriesProperties: []
         },
@@ -6714,7 +6714,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6729,17 +6729,17 @@ const expectedUpdatedTemplate: any = {
             },
             outFields: ["*"],
             groupByFields: [
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.name}}"
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.name.name}}"
             ],
             orderByFields: [
-              "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}} asc",
+              "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}} asc",
               "value asc"
             ],
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.objectid}}",
+                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.objectid.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "count"
               }
@@ -6764,12 +6764,12 @@ const expectedUpdatedTemplate: any = {
           labelOverrides: [
             {
               key:
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
               label: "# of Beds Available"
             },
             {
               key:
-                "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
               label: "# of Beds Available"
             }
           ],
@@ -6918,7 +6918,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -6937,16 +6937,16 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 outStatisticFieldName:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 statisticType: "avg"
               },
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 outStatisticFieldName:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 statisticType: "avg"
               }
             ],
@@ -7085,7 +7085,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7104,7 +7104,7 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.objectid}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "count"
               }
@@ -7132,7 +7132,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7151,7 +7151,7 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.objectid}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "count"
               }
@@ -7179,7 +7179,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7198,7 +7198,7 @@ const expectedUpdatedTemplate: any = {
             statisticDefinitions: [
               {
                 onStatisticField:
-                  "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.objectid}}",
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 outStatisticFieldName: "value",
                 statisticType: "count"
               }
@@ -7257,7 +7257,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7273,8 +7273,8 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}} asc",
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.organiz}} asc"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc",
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 25,
@@ -7317,7 +7317,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7333,7 +7333,7 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}} asc"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 50,
@@ -7354,7 +7354,7 @@ const expectedUpdatedTemplate: any = {
       {
         type: "embeddedContentWidget",
         url:
-          "{{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}}",
+          "{{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}}",
         contentType: "document",
         imageRefreshInterval: 0,
         videoSettings: {
@@ -7383,7 +7383,7 @@ const expectedUpdatedTemplate: any = {
                       type: "filterRule",
                       field: {
                         name:
-                          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                         type: "esriFieldTypeString"
                       },
                       operator: "equal",
@@ -7399,7 +7399,7 @@ const expectedUpdatedTemplate: any = {
             outFields: ["*"],
             groupByFields: [],
             orderByFields: [
-              "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}} asc"
+              "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}} asc"
             ],
             statisticDefinitions: [],
             maxFeatures: 50,
@@ -7520,7 +7520,7 @@ const expectedUpdatedTemplate: any = {
         ],
         type: "feature",
         idFieldName:
-          "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facilityid}}",
+          "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
         events: [
           {
             type: "parameterChanged",
@@ -7567,7 +7567,7 @@ const expectedUpdatedTemplate: any = {
                   {
                     sourceName: "filterField",
                     targetName:
-                      "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.fulladdr}}"
+                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}"
                   }
                 ],
                 targetId:
@@ -7593,7 +7593,7 @@ const expectedUpdatedTemplate: any = {
                   {
                     sourceName: "filterField",
                     targetName:
-                      "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.numbeds}}"
+                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}"
                   }
                 ],
                 targetId:
@@ -7620,7 +7620,7 @@ const expectedUpdatedTemplate: any = {
                   {
                     sourceName: "filterField",
                     targetName:
-                      "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.closeddate}}"
+                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}"
                   }
                 ],
                 targetId:
@@ -7653,7 +7653,7 @@ const expectedUpdatedTemplate: any = {
         ],
         type: "feature",
         idFieldName:
-          "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
         events: [
           {
             type: "parameterChanged",
@@ -7664,9 +7664,9 @@ const expectedUpdatedTemplate: any = {
                 fieldMap: [
                   {
                     sourceName:
-                      "{{934a9ef8efa7448fa8ddf7b13cef0240.fieldInfos.layer0.fields.facilityid}}",
+                      "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.facilityid.name}}",
                     targetName:
-                      "{{4efe5f693de34620934787ead6693f19.fieldInfos.layer2.fields.facname}}"
+                      "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}"
                   }
                 ],
                 targetId:

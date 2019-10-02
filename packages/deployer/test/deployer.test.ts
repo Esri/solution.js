@@ -347,56 +347,88 @@ describe("Module `deploySolution`", () => {
           layer0: {
             fields: {
               globalid: {
-                name: "globalid"
+                name: "globalid",
+                alias: "globalid",
+                type: "esriFieldTypeGlobalID"
               },
               creationdate: {
-                name: "CreationDate"
+                name: "CreationDate",
+                alias: "CreationDate",
+                type: "esriFieldTypeDate"
               },
               creator: {
-                name: "Creator"
+                name: "Creator",
+                alias: "Creator",
+                type: "esriFieldTypeString"
               },
               editdate: {
-                name: "EditDate"
+                name: "EditDate",
+                alias: "EditDate",
+                type: "esriFieldTypeDate"
               },
               editor: {
-                name: "Editor"
+                name: "Editor",
+                alias: "Editor",
+                type: "esriFieldTypeString"
               },
               objectid: {
-                name: "OBJECTID"
+                name: "OBJECTID",
+                alias: "OBJECTID",
+                type: "esriFieldTypeOID"
               },
               appname: {
-                name: "appname"
+                name: "appname",
+                alias: "appname",
+                type: "esriFieldTypeString"
               },
               boardreview: {
-                name: "BoardReview"
+                name: "BoardReview",
+                alias: "Board Review",
+                type: "esriFieldTypeString"
               }
             }
           },
           layer1: {
             fields: {
               globalid: {
-                name: "globalid"
+                name: "globalid",
+                alias: "globalid",
+                type: "esriFieldTypeGlobalID"
               },
               creationdate: {
-                name: "CreationDate"
+                name: "CreationDate",
+                alias: "CreationDate",
+                type: "esriFieldTypeDate"
               },
               creator: {
-                name: "Creator"
+                name: "Creator",
+                alias: "Creator",
+                type: "esriFieldTypeString"
               },
               editdate: {
-                name: "EditDate"
+                name: "EditDate",
+                alias: "EditDate",
+                type: "esriFieldTypeDate"
               },
               editor: {
-                name: "Editor"
+                name: "Editor",
+                alias: "Editor",
+                type: "esriFieldTypeString"
               },
               objectid: {
-                name: "OBJECTID"
+                name: "OBJECTID",
+                alias: "OBJECTID",
+                type: "esriFieldTypeOID"
               },
               appname: {
-                name: "appname"
+                name: "appname",
+                alias: "appname",
+                type: "esriFieldTypeString"
               },
               boardreview: {
-                name: "BoardReview"
+                name: "BoardReview",
+                alias: "Board Review",
+                type: "esriFieldTypeString"
               }
             }
           }
