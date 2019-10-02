@@ -666,7 +666,10 @@ export function postProcessFields(
         // Add the fieldInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
           if (id === templateDictionary[k].id) {
-            templateDictionary[k] = getFieldSettings(fieldInfos);
+            templateDictionary[k] = Object.assign(
+              templateDictionary[k],
+              getFieldSettings(fieldInfos)
+            );
           }
         });
 
