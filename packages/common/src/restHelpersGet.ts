@@ -115,11 +115,12 @@ export function getBlob(
 export function getBlobAsFile(
   url: string,
   filename: string,
-  authentication: auth.UserSession
+  authentication: auth.UserSession,
+  ignoreErrors: number[] = []
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     // Get the blob from the URL
-    getBlob(url, authentication).then(
+    getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob => resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
@@ -141,11 +142,12 @@ export function getBlobCheckForError(
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     // Get the blob from the URL
-    getBlob(url, authentication).then(
-      (blob: Blob) => {
-        if (blob.type.startsWith("text/plain")) {
+    getBlob(url, authentication).then(blob => {
+      // Reclassify text/plain blobs as needed
+      fixTextBlobType(blob).then(adjustedBlob => {
+        if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          generalHelpers.blobToJson(blob).then(
+          generalHelpers.blobToJson(adjustedBlob).then(
             (json: any) => {
               if (json && json.error) {
                 const code: number = json.error.code;
@@ -155,17 +157,16 @@ export function getBlobCheckForError(
                   reject(json); // Other error; fail with error
                 }
               } else {
-                resolve(blob); // Pass text blob along
+                resolve(adjustedBlob);
               }
             },
-            () => resolve(blob) // Pass text blob along
+            () => resolve(adjustedBlob)
           );
         } else {
-          resolve(blob); // Pass binary blob along
+          resolve(adjustedBlob);
         }
-      },
-      error => reject(error) // Pass error along
-    );
+      }, reject);
+    }, reject);
   });
 }
 

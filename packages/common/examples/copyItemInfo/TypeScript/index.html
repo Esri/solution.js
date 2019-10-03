@@ -28,14 +28,12 @@
   }
   </style>
   <script>
-    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     var dojoConfig = {
       "paths": {
         "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min",
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min",
-        "src": package_path + "/src"
+        "src": window.location + "src",
       }
     };
   </script>
@@ -52,8 +50,8 @@
   <script>
     var goFcn;
 
-    require(["esri/portal/Portal", "@esri/arcgis-rest-auth", "@esri/solution-common", "src/main"],
-      function (Portal, auth, common, main) {
+    require(["esri/portal/Portal", "@esri/arcgis-rest-auth", "src/main"],
+      function (Portal, auth, main) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
@@ -66,28 +64,28 @@
           // Once portal is loaded, user signed in
           portal.load().then(
             () => {
-              var credential = common.getProp(portal, "credential");
+              var credential = portal.credential;
               if (credential) {
                 document.getElementById("input").style.display = "none";
                 document.getElementById("output").style.display = "block";
-                run (auth.UserSession.fromCredential(credential), document.getElementById("id").value);
+
+                main.copyItemInfo(
+                  document.getElementById("id").value,
+                  auth.UserSession.fromCredential(credential)
+                ).then(
+                  html => {
+                    document.getElementById("output").innerHTML = html;
+                  },
+                  error => {
+                    document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+                  }
+                );
               }
             }
           );
         }
-
-        function run (authorization, id) {
-          main.copyItemInfo(authorization, id).then(
-            html => {
-              document.getElementById("output").innerHTML = html;
-            },
-            error => {
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
-            }
-          );
-        }
-      });
+      }
+    );
   </script>
 </body>
 </html>
-

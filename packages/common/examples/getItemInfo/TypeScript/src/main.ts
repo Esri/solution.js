@@ -16,194 +16,204 @@
 // @esri/solution-common getItemInfo TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as solutionCommon from "@esri/solution-common";
+// import * as solutionCommon from "@esri/solution-common";
+import * as solutionCommon from "../src/common.umd.min";
 
-export function getItemInfo(itemId: string): Promise<string> {
+export function getItemInfo(
+  itemId: string,
+  authorization: auth.UserSession
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
       reject("Item's ID is not defined");
       return;
     }
 
-    const defaultPortalUrl = "https://www.arcgis.com";
-    const defaultPortalSharingUrl = "https://www.arcgis.com/sharing";
-    const usOptions: auth.IUserSessionOptions = {};
-    const authorization: auth.UserSession = new auth.UserSession(usOptions);
-
-    // Get the item base, data, and resources
-    const itemBaseDef = solutionCommon.getItem(itemId, authorization);
-    const itemDataDef = solutionCommon.getItemData(itemId, authorization);
-    const resourcesDef = portal.getItemResources(itemId, authorization);
-
-    // tslint:disable-next-line: no-floating-promises
-    Promise.all([itemBaseDef, itemDataDef, resourcesDef]).then(responses => {
-      const [itemBase, itemDataRaw, resources] = responses;
-
-      // Create item and data sections
-      let html =
-        "<h3>" +
-        itemBase.type +
-        ' "' +
-        itemBase.title +
-        '" (<a href="' +
-        defaultPortalUrl +
-        "/home/item.html?id=" +
-        itemBase.id +
-        '" target="_blank">' +
-        itemBase.id +
-        "</a>)</h3>";
-
-      html +=
-        '<div style="width:48%;display:inline-block;">Item</div>' +
-        '<div style="width:2%;display:inline-block;"></div>' +
-        '<div style="width:48%;display:inline-block;">Data</div>' +
-        '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
-        JSON.stringify(itemBase, null, 2) +
-        "</textarea></div>" +
-        '<div style="width:2%;display:inline-block;"></div>' +
-        '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;">';
-
-      if (itemDataRaw) {
-        const itemType = itemBase.type.toLowerCase();
-        switch (itemType) {
-          case "arcgis pro add in":
-          case "code sample":
-          case "csv":
-          case "dashboard":
-          case "desktop application template":
-          case "layer package":
-          case "microsoft excel":
-          case "microsoft powerpoint":
-          case "microsoft word":
-          case "pdf":
-            html +=
-              '<a href="https://arcgis4localgov2.maps.arcgis.com/sharing/rest/content/items/' +
-              itemId +
-              '/data" target="_blank">' +
-              (itemBase.title || itemBase.name) +
-              "</a>";
-            break;
-
-          case "image":
-            itemDataRaw.blob().then((data: any) => {
-              if (data.type === "image/tiff") {
-                document.getElementById("dataSection").innerHTML =
-                  "<span>TIFF image; size " + data.size + "</span>";
-              } else {
-                const objectURL = URL.createObjectURL(data);
-                document.getElementById("dataSection").innerHTML =
-                  '<img src="' +
-                  objectURL +
-                  '" style="max-width:99%;border:1px solid lightgray;"/>';
-              }
-            });
-            break;
-
-          case "feature service":
-          case "form":
-          case "locator":
-          case "storymap":
-          case "geojson":
-          case "tile layer":
-          case "web map":
-          case "web mapping application":
-          case "web scene":
-            html += // Blob is JSON, so it is converted by default
-              '<textarea rows="10" style="width:99%;font-size:x-small">' +
-              (itemDataRaw ? JSON.stringify(itemDataRaw, null, 2) : "") +
-              "</textarea>";
-            break;
-
-          case "document link":
-          default:
-            html += "<i>no data</i>";
-            break;
-        }
-      } else {
-        html += "<i>no data</i>";
-      }
-      html += "</div>";
-
-      // Figure out URLs to the resource information
-      const resourceNames = (resources.resources as any[]).map(
-        (resourceDetail: any) => resourceDetail.resource
-      );
-      const itemFilePaths: solutionCommon.ISourceFileCopyPath[] = solutionCommon.generateSourceItemFilePaths(
-        defaultPortalSharingUrl,
-        itemId,
-        itemBase.thumbnail,
-        resourceNames
-      );
-
-      // Extract the thumbnail URL
-      html += "<p>Thumbnail<br/>";
-      let marker = "/info/thumbnail/";
-      const thumbnailFilePath = itemFilePaths.filter(
-        filePathInfo => filePathInfo.url.indexOf(marker) >= 0
-      );
-      const thumbnailName = thumbnailFilePath[0].url.substring(
-        thumbnailFilePath[0].url.indexOf("/info/") + "/info/".length
-      );
-      html +=
-        '<img src="' +
-        thumbnailFilePath[0].url +
-        '" style="max-width:256px;border:1px solid lightgray;"/>&nbsp;&nbsp;<a href="' +
-        thumbnailFilePath[0].url +
-        '" target="_blank">' +
-        thumbnailName +
-        "</a><br/>";
-      html += "</p>";
-
-      // Extract the metadata URL and see if it exists
-      html += "<p>Metadata<br/>";
-      marker = "/info/metadata/";
-      const metadataFilePath = itemFilePaths.filter(
-        filePathInfo => filePathInfo.url.indexOf(marker) >= 0
-      );
-      html += '<div id="metadataOutput"></div>';
+    // Get the item information
+    const itemBaseDef = solutionCommon.getItemBase(itemId, authorization);
+    const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
-      solutionCommon
-        .getText(metadataFilePath[0].url, authorization)
-        .then(metadata => {
-          if (metadata) {
-            document.getElementById("metadataOutput").innerHTML =
-              '<textarea rows="10" style="width:99%;font-size:x-small">' +
-              metadata +
-              "</textarea>";
-          } else {
-            document.getElementById("metadataOutput").innerHTML =
-              "<i>no metadata</i>";
-          }
-        });
-      html += "</p>";
-
-      // Fetch the remaining resources, assuming that they're images for now
-      html += "<p>Resources<br/>";
-      marker = "/resources/";
-      const resourceFilePaths = itemFilePaths.filter(
-        filePathInfo => filePathInfo.url.indexOf(marker) >= 0
+      itemBaseDef.then(
+        // any error fetching item base will be handled via Promise.all later
+        (itemBase: any) => {
+          solutionCommon
+            .getItemDataAsFile(itemId, itemBase.name, authorization)
+            .then(resolve2, (error: any) => reject2(error));
+        }
       );
-      if (resourceFilePaths.length === 0) {
-        html += "<p><i>no resources</i></p>";
-      } else {
-        resourceFilePaths.forEach(filePathInfo => {
-          const name = filePathInfo.url.substr(
-            filePathInfo.url.indexOf(marker) + marker.length
-          );
-          html +=
-            '<p><img src="' +
-            filePathInfo.url +
-            '" style="max-width:256px"/>&nbsp;&nbsp;<a href="' +
-            filePathInfo.url +
-            '" target="_blank">' +
-            name +
-            "</a></p>";
-        });
-      }
-      html += "</p>";
-
-      resolve(html);
     });
+    const itemThumbnailDef = new Promise<Blob>((resolve3, reject3) => {
+      // tslint:disable-next-line: no-floating-promises
+      itemBaseDef.then(
+        // any error fetching item base will be handled via Promise.all later
+        (itemBase: any) => {
+          solutionCommon
+            .getItemThumbnail(itemId, itemBase.thumbnail, false, authorization)
+            .then(resolve3, (error: any) => reject3(error));
+        }
+      );
+    });
+    const itemMetadataDef = solutionCommon.getItemMetadataBlob(
+      itemId,
+      authorization
+    );
+    const itemResourcesDef = solutionCommon.getItemResourcesFiles(
+      itemId,
+      authorization
+    );
+
+    Promise.all([
+      itemBaseDef,
+      itemDataDef,
+      itemThumbnailDef,
+      itemMetadataDef,
+      itemResourcesDef
+    ]).then(
+      responses => {
+        const [
+          itemBase,
+          itemDataFile,
+          itemThumbnail,
+          itemMetadataBlob,
+          itemResourceFiles
+        ] = responses;
+        // (itemBase: any)  text/plain JSON
+        // (itemDataDef: File)  */*
+        // (itemThumbnail: Blob)  image/*
+        // (itemMetadataDef: Blob)  application/xml
+        // (itemResourcesDef: Blob[])  list of */*
+        console.log("itemBase", itemBase);
+        console.log("itemData", itemDataFile);
+        console.log("itemThumbnail", itemThumbnail);
+        console.log("itemMetadata", itemMetadataBlob);
+        console.log("itemResources", itemResourceFiles);
+
+        const portalUrl = solutionCommon.getPortalUrlFromAuth(authorization);
+
+        // Show item and data sections
+        let html =
+          "<h3>" +
+          itemBase.type +
+          ' "' +
+          itemBase.title +
+          '" (<a href="' +
+          portalUrl +
+          "/home/item.html?id=" +
+          itemBase.id +
+          '" target="_blank">' +
+          itemBase.id +
+          "</a>)</h3>";
+
+        html +=
+          '<div style="width:48%;display:inline-block;">Item</div>' +
+          '<div style="width:2%;display:inline-block;"></div>' +
+          '<div style="width:48%;display:inline-block;">Data</div>' +
+          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
+          JSON.stringify(itemBase, null, 2) +
+          "</textarea></div>" +
+          '<div style="width:2%;display:inline-block;"></div>' +
+          '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;"></div>';
+        showBlob(itemDataFile, "dataSection");
+
+        // Show thumbnail section
+        html += '<p>Thumbnail<br/><div id="thumbnailOutput"></div></p>';
+        showBlob(itemThumbnail, "thumbnailOutput");
+
+        // Show metadata section
+        html += '<p>Metadata<br/><div id="metadataOutput"></div></p>';
+        showBlob(itemMetadataBlob, "metadataOutput");
+
+        // Show resources section
+        html += "<p>Resources<br/>";
+        if (itemResourceFiles.length === 0) {
+          html += "<p><i>none</i>";
+        } else {
+          for (let i: number = 0; i < itemResourceFiles.length; ++i) {
+            const containerId = "resourceOutput" + i;
+            html += '<div id="' + containerId + '"></div>';
+            showBlob(itemResourceFiles[i], containerId);
+          }
+        }
+        html += "</p>";
+
+        resolve(html);
+      },
+      (error: any) => reject(error)
+    );
   });
+}
+
+function showBlob(blob: Blob, domContainerId: string): void {
+  setTimeout(() => {
+    const domContainer: HTMLElement = document.getElementById(domContainerId);
+    if (!blob) {
+      domContainer.innerHTML = "<i>none</i>";
+      return;
+    }
+    const file = blob as File;
+
+    if (blob.type === "application/json") {
+      solutionCommon.blobToJson(blob).then(
+        text => {
+          domContainer.innerHTML =
+            '<textarea rows="10" style="width:99%;font-size:x-small">' +
+            JSON.stringify(text, null, 2) +
+            "</textarea>";
+        },
+        error =>
+          (domContainer.innerHTML =
+            "<i>problem extracting JSON: " + error + "</i>")
+      );
+    } else if (
+      blob.type.startsWith("text/plain") ||
+      blob.type === "text/xml" ||
+      blob.type === "application/xml"
+    ) {
+      solutionCommon.blobToText(blob).then(
+        text => {
+          domContainer.innerHTML =
+            '<textarea rows="10" style="width:99%;font-size:x-small">' +
+            text +
+            "</textarea>";
+        },
+        error =>
+          (domContainer.innerHTML =
+            "<i>problem extracting text: " + error + "</i>")
+      );
+    } else if (blob.type.startsWith("image/")) {
+      domContainer.innerHTML =
+        '<img src="' +
+        window.URL.createObjectURL(blob) +
+        '" style="max-width:256px;border:1px solid lightgray;"/>';
+      if (file.name) {
+        domContainer.innerHTML +=
+          '&nbsp;&nbsp;&nbsp;&nbsp;<a href="' +
+          window.URL.createObjectURL(file) +
+          '" download="' +
+          file.name +
+          '">' +
+          file.name +
+          "</a>";
+      }
+      domContainer.innerHTML += "</p>";
+    } else {
+      if (file.name) {
+        domContainer.innerHTML =
+          '<a href="' +
+          window.URL.createObjectURL(file) +
+          '" download="' +
+          file.name +
+          '">' +
+          file.name +
+          "</a>";
+      } else {
+        domContainer.innerHTML =
+          '<a href="' +
+          window.URL.createObjectURL(blob) +
+          '">' +
+          blob.type +
+          "</a>";
+      }
+    }
+  }, 10);
 }

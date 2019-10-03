@@ -48,8 +48,8 @@
       }
     });
 
-    require(["src/main"],
-      function (main) {
+    require(["@esri/arcgis-rest-auth", "src/main"],
+      function (auth, main) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
@@ -58,7 +58,10 @@
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
 
-          main.getItemInfo(document.getElementById("id").value).then(
+          main.getItemInfo(
+            document.getElementById("id").value,
+            new auth.UserSession({})
+          ).then(
             html => {
               document.getElementById("output").innerHTML = html;
             },
@@ -67,7 +70,8 @@
             }
           );
         }
-      });
+      }
+    );
   </script>
 </body>
 </html>

@@ -51,7 +51,9 @@ export function blobToJson(blob: Blob): Promise<any> {
  * @return File created out of Blob and filename
  */
 export function blobToFile(blob: Blob, filename: string): File {
-  return new File([blob], filename ? filename : "", { type: blob.type });
+  return blob
+    ? new File([blob], filename ? filename : "", { type: blob.type })
+    : blob;
 }
 
 /**
