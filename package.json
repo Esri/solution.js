@@ -5,8 +5,8 @@
   "devDependencies": {
     "@semantic-release/commit-analyzer": "^6.2.0",
     "@types/fetch-mock": "^7.3.1",
-    "@types/jasmine": "^2.8.2",
-    "@types/node": "^6.14.4",
+    "@types/jasmine": "^3.4.0",
+    "@types/node": "^10.12.15",
     "acetate": "^2.0.8",
     "acetate-cli": "^1.0.1",
     "changelog-parser": "^2.7.0",
