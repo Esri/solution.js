@@ -24,8 +24,6 @@ import {
   _setItemProperties,
   addToServiceDefinition,
   createItemWithData,
-  getGroupContents,
-  _getGroupContentsTranche,
   updateItemURL,
   updateItem,
   getServiceLayersAndTables,
@@ -37,12 +35,16 @@ import {
   _getUpdate,
   getRequest,
   _getRelationshipUpdates,
-  createUniqueFolder,
+  createUniqueFolder
+} from "../src/restHelpers";
+import {
+  getGroupContents,
+  _getGroupContentsTranche,
   getItem,
-  getItemData,
+  getItemData0,
   getItemRelatedItems,
   getBlob
-} from "../src/restHelpers";
+} from "../src/restHelpersGet";
 import {
   TOMORROW,
   createRuntimeMockUserSession,
@@ -1019,7 +1021,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1033,7 +1035,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           mockItems.get500Failure()
         );
-        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1047,7 +1049,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);

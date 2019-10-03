@@ -53,6 +53,7 @@ import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "./restHelpers";
+import * as restHelpersGet from "./restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -262,7 +263,7 @@ export function copyMetadata(
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.authentication).then(
+    restHelpersGet.getBlob(source.url, source.authentication).then(
       blob => {
         if (blob.type !== "text/xml") {
           reject(generalHelpers.fail()); // unable to get resource
@@ -306,7 +307,7 @@ export function copyResource(
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.authentication).then(
+    restHelpersGet.getBlob(source.url, source.authentication).then(
       async blob => {
         if (blob.type === "text/plain" || blob.type === "application/json") {
           try {
