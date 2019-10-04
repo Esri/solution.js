@@ -110,7 +110,7 @@ export function getBlob(
  * @param url Address of Blob
  * @param filename Name to use for file
  * @param authentication Credentials for the request
- * @return Promise that will resolve with a File or an AGO-style JSON failure response
+ * @return Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
  */
 export function getBlobAsFile(
   url: string,
@@ -121,7 +121,8 @@ export function getBlobAsFile(
   return new Promise<File>((resolve, reject) => {
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
-      blob => resolve(generalHelpers.blobToFile(blob, filename)),
+      blob =>
+        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
@@ -295,7 +296,7 @@ export function getItemData0(
  * @param itemId Id of an item whose data information is sought
  * @param filename Name to use for file
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the data Blob or null if the item doesn't have a data section
+ * @return Promise that will resolve with a File, undefined if the Blob is null, or an AGO-style JSON failure response
  */
 export function getItemDataAsFile(
   itemId: string,
@@ -304,7 +305,8 @@ export function getItemDataAsFile(
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
-      blob => resolve(generalHelpers.blobToFile(blob, filename)),
+      blob =>
+        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
