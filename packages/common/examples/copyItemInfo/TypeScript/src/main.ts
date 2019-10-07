@@ -65,6 +65,7 @@ export function copyItemInfo(
           itemMetadataFile,
           itemResourceFiles
         ] = responses;
+        // Construct the thumbnail URL from the item base info
         const itemThumbnailUrl = solutionCommon.getItemThumbnailUrl(
           itemId,
           itemBase.thumbnail,
@@ -72,6 +73,8 @@ export function copyItemInfo(
           authentication
         );
 
+        // Summarize what we have
+        // ----------------------
         // (itemBase: any)  text/plain JSON
         // (itemDataDef: File)  */*
         // (itemThumbnailUrl: string)
@@ -107,6 +110,12 @@ export function copyItemInfo(
   });
 }
 
+/**
+ * Extracts the properties of an item that can be copied.
+ *
+ * @param sourceItem Item from which to copy properties
+ * @return Object containing copyable properties from sourceItem
+ */
 export function getCopyableItemBaseProperties(sourceItem: any): any {
   const copyableItem: any = {
     name: sourceItem.name,

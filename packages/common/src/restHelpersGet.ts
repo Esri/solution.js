@@ -324,15 +324,29 @@ export function getItemDataBlob(
   authentication: auth.UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    const url = `${getPortalSharingUrlFromAuth(
-      authentication
-    )}/content/items/${itemId}/data`;
+    const url = getItemDataBlobUrl(itemId, authentication);
 
     getBlobCheckForError(url, authentication, [500]).then(
       blob => resolve(fixTextBlobType(blob)),
       reject
     );
   });
+}
+
+/**
+ * Gets the URL to the data information of an AGO item in its raw (Blob) form.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return URL string
+ */
+export function getItemDataBlobUrl(
+  itemId: string,
+  authentication: auth.UserSession
+): string {
+  return `${getPortalSharingUrlFromAuth(
+    authentication
+  )}/content/items/${itemId}/data`;
 }
 
 /**
@@ -369,15 +383,29 @@ export function getItemMetadataBlob(
   authentication: auth.UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    const url = `${getPortalSharingUrlFromAuth(
-      authentication
-    )}/content/items/${itemId}/info/metadata/metadata.xml`;
+    const url = getItemMetadataBlobUrl(itemId, authentication);
 
     getBlobCheckForError(url, authentication, [400]).then(
       (blob: Blob) => resolve(fixTextBlobType(blob)),
       reject
     );
   });
+}
+
+/**
+ * Gets the URL to the metadata information of an AGO item.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return URL string
+ */
+export function getItemMetadataBlobUrl(
+  itemId: string,
+  authentication: auth.UserSession
+): string {
+  return `${getPortalSharingUrlFromAuth(
+    authentication
+  )}/content/items/${itemId}/info/metadata/metadata.xml`;
 }
 
 /**
@@ -456,13 +484,10 @@ export function getItemThumbnail(
       authentication
     );
 
-    getBlob(url, authentication).then(resolve, error => {
-      if (generalHelpers.getProp(error, "code") === 500) {
-        resolve();
-      } else {
-        reject(error);
-      }
-    });
+    getBlobCheckForError(url, authentication, [500]).then(
+      blob => resolve(fixTextBlobType(blob)),
+      reject
+    );
   });
 }
 

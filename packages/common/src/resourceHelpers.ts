@@ -75,7 +75,7 @@ export function addMetadataFromBlob(
       id: itemId
     },
     params: {
-      // Pass metadata in via params because item object is serialized, which discards a blob
+      // Pass metadata in via params because item property is serialized, which discards a blob
       metadata: blob
     },
     authentication: authentication

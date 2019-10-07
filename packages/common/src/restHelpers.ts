@@ -32,7 +32,6 @@ import {
   IPostProcessArgs
 } from "./interfaces";
 import { replaceInTemplate } from "./templatization";
-import { fileURLToPath } from "url";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -240,62 +239,19 @@ export function createItemWithData(
   });
 }
 
-export function addItemDataFile(
-  itemId: string,
-  dataFile: File,
-  authentication: auth.UserSession
-): Promise<portal.IUpdateItemResponse> {
-  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
-    const addItemData: (data: any) => void = (data: any) => {
-      const addDataOptions: portal.IAddItemDataOptions = {
-        id: itemId,
-        data: data,
-        authentication: authentication
-      };
-      portal.addItemData(addDataOptions).then(resolve, reject);
-    };
-
-    if (dataFile.type.startsWith("text/plain")) {
-      generalHelpers.blobToText(dataFile).then(addItemData, reject);
-    } else if (dataFile.type === "application/json") {
-      generalHelpers.blobToJson(dataFile).then(addItemData, reject);
-    } else {
-      addItemData(dataFile);
-    }
-  });
-}
-
-export function addItemMetadataFile(
-  itemId: string,
-  metadataFile: File,
-  authentication: auth.UserSession
-): Promise<portal.IUpdateItemResponse> {
-  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
-    const addMetadataOptions: portal.IUpdateItemOptions = {
-      item: {
-        id: itemId
-      },
-      params: {
-        // Pass metadata in via params because item object is serialized, which discards a blob
-        metadata: metadataFile
-      },
-      authentication: authentication
-    };
-
-    portal.updateItem(addMetadataOptions).then(resolve, reject);
-  });
-}
-
 /**
  * Publishes an item and its data as an AGOL item.
  *
  * @param itemInfo Item's `item` section
- * @param dataFile Item's `data` section
- * @param authentication Credentials for the request
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
+ * @param authentication Credentials for the request
+ * @param itemThumbnailUrl URL to image to use for item thumbnail
+ * @param dataFile Item's `data` section
+ * @param metadataFile Item's metadata file
+ * @param resourcesFiles Item's resources
  * @param access Access to set for item: "public", "org", "private"
- * @return A promise that will resolve with an object reporting success and the Solution id
+ * @return A promise that will resolve with an object reporting success or failure and the Solution id
  */
 export function createItemWithData2(
   itemInfo: any,
@@ -340,7 +296,7 @@ export function createItemWithData2(
           if (metadataFile) {
             console.log("add metadata...");
             updateDefs.push(
-              addItemMetadataFile(
+              _addItemMetadataFile(
                 createResponse.id,
                 metadataFile,
                 authentication
@@ -370,7 +326,7 @@ export function createItemWithData2(
           if (dataFile) {
             console.log("add data...");
             updateDefs.push(
-              addItemDataFile(createResponse.id, dataFile, authentication)
+              _addItemDataFile(createResponse.id, dataFile, authentication)
             );
           }
 
@@ -390,61 +346,6 @@ export function createItemWithData2(
               reject(generalHelpers.fail(e));
             }
           );
-
-          /*
-            .then(  //setItemAccess
-              () => {
-                resolve({
-                  folder: createResponse.folder,
-                  id: createResponse.id,
-                  success: true
-                });
-              },
-              e => reject(generalHelpers.fail(e))
-            );
-          } else {
-            resolve({
-              folder: createResponse.folder,
-              id: createResponse.id,
-              success: true
-            });
-          }
-
-          .then(  // addItemData
-            (addDataResponse: portal.IUpdateItemResponse) => {
-              console.log("addItemData OK", JSON.stringify(addDataResponse,null,2));
-            },
-            error => {
-              console.log("addItemData failed", JSON.stringify(error,null,2));
-            }
-          );
-          */
-
-          /*
-          monitorUpload(createResponse.id, authentication).then(
-            () => {
-              console.log("createItemInFolder upload ok");
-              const commitRequestOptions: portal.IUserItemOptions = {
-                id: createResponse.id,
-                authentication: authentication
-              }
-              portal.commitItemUpload(commitRequestOptions).then(
-                (commitResponse: portal.IUpdateItemResponse) => {
-                  console.log("commitItemUpload OK", JSON.stringify(commitResponse));
-                },
-                error => {
-                  console.log("commitItemUpload XX", JSON.stringify(error));
-                }
-              );
-            },
-            () => {
-              console.log("createItemInFolder upload failed");
-            }
-          );
-              */
-
-          /*
-           */
         } else {
           reject(generalHelpers.fail());
         }
@@ -803,6 +704,71 @@ export function updateItemURL(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Adds a data section to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param dataFile Data to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function _addItemDataFile(
+  itemId: string,
+  dataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addItemData: (data: any) => void = (data: any) => {
+      const addDataOptions: portal.IAddItemDataOptions = {
+        id: itemId,
+        data: data,
+        authentication: authentication
+      };
+      portal.addItemData(addDataOptions).then(resolve, reject);
+    };
+
+    // Item data has to be submitted as text or JSON for those file types
+    if (dataFile.type.startsWith("text/plain")) {
+      generalHelpers.blobToText(dataFile).then(addItemData, reject);
+    } else if (dataFile.type === "application/json") {
+      generalHelpers.blobToJson(dataFile).then(addItemData, reject);
+    } else {
+      addItemData(dataFile);
+    }
+  });
+}
+
+/**
+ * Adds a metadata file to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param metadataFile Metadata to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function _addItemMetadataFile(
+  itemId: string,
+  metadataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addMetadataOptions: portal.IUpdateItemOptions = {
+      item: {
+        id: itemId
+      },
+      params: {
+        // Pass metadata in via params because item property is serialized, which discards a blob
+        metadata: metadataFile
+      },
+      authentication: authentication
+    };
+
+    portal.updateItem(addMetadataOptions).then(resolve, reject);
+  });
+}
 
 /**
  * Accumulates the number of relationships in a collection of layers.

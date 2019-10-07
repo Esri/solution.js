@@ -77,6 +77,8 @@ export function getItemInfo(
           itemMetadataBlob,
           itemResourceFiles
         ] = responses;
+        // Summarize what we have
+        // ----------------------
         // (itemBase: any)  text/plain JSON
         // (itemDataDef: File)  */*
         // (itemThumbnail: Blob)  image/*
@@ -143,6 +145,12 @@ export function getItemInfo(
   });
 }
 
+/**
+ * Creates the HTML for a blob and adds it to the innerHTML of the supplied DOM container.
+ *
+ * @param blob Blob or File to display
+ * @param domContainerId Id of DOM container to receive created HTML
+ */
 function showBlob(blob: Blob, domContainerId: string): void {
   setTimeout(() => {
     const domContainer: HTMLElement = document.getElementById(domContainerId);
