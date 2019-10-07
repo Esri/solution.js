@@ -340,7 +340,29 @@ export function getItemDataBlob(
  *
  * @param itemId Id of an item whose data information is sought
  * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with the metadata xml or null if the item doesn't have metadata
+ * @return Promise that will resolve with a File containing the metadata or an AGO-style JSON failure response
+ */
+export function getItemMetadataAsFile(
+  itemId: string,
+  authentication: auth.UserSession
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    getItemMetadataBlob(itemId, authentication).then(
+      blob =>
+        !blob
+          ? resolve()
+          : resolve(generalHelpers.blobToFile(blob, "metadata.xml")),
+      reject
+    );
+  });
+}
+
+/**
+ * Gets the metadata information of an AGO item.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
  */
 export function getItemMetadataBlob(
   itemId: string,
@@ -427,12 +449,12 @@ export function getItemThumbnail(
   authentication: auth.UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    const url =
-      getPortalSharingUrlFromAuth(authentication) +
-      (isGroup ? "/community/groups/" : "/content/items/") +
-      itemId +
-      "/info/" +
-      thumbnailUrlPart;
+    const url = getItemThumbnailUrl(
+      itemId,
+      thumbnailUrlPart,
+      isGroup,
+      authentication
+    );
 
     getBlob(url, authentication).then(resolve, error => {
       if (generalHelpers.getProp(error, "code") === 500) {
@@ -442,6 +464,31 @@ export function getItemThumbnail(
       }
     });
   });
+}
+
+/**
+ * Gets the URL to the thumbnail of an AGO item.
+ *
+ * @param itemId Id of an item whose resources are sought
+ * @param thumbnailUrlPart The partial name of the item's thumbnail as reported by the `thumbnail` property
+ * in the item's base section
+ * @param isGroup Switch indicating if the item is a group
+ * @param authentication Credentials for the request to AGO
+ * @return URL string
+ */
+export function getItemThumbnailUrl(
+  itemId: string,
+  thumbnailUrlPart: string,
+  isGroup: boolean,
+  authentication: auth.UserSession
+): string {
+  return (
+    getPortalSharingUrlFromAuth(authentication) +
+    (isGroup ? "/community/groups/" : "/content/items/") +
+    itemId +
+    "/info/" +
+    thumbnailUrlPart
+  );
 }
 
 /**

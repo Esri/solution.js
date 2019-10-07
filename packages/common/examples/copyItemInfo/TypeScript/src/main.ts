@@ -16,12 +16,13 @@
 // @esri/solution-common getItemInfo TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as portal from "@esri/arcgis-rest-portal";
 // import * as solutionCommon from "@esri/solution-common";
 import * as solutionCommon from "../src/common.umd.min";
 
 export function copyItemInfo(
   itemId: string,
-  authorization: auth.UserSession
+  authentication: auth.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -30,42 +31,30 @@ export function copyItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(itemId, authorization);
-    const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
+    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
+    const itemDataDef = new Promise<File>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
           solutionCommon
-            .getItemDataAsFile(itemId, itemBase.name, authorization)
+            .getItemDataAsFile(itemId, itemBase.name, authentication)
             .then(resolve2, (error: any) => reject2(error));
         }
       );
     });
-    const itemThumbnailDef = new Promise<Blob>((resolve3, reject3) => {
-      // tslint:disable-next-line: no-floating-promises
-      itemBaseDef.then(
-        // any error fetching item base will be handled via Promise.all later
-        (itemBase: any) => {
-          solutionCommon
-            .getItemThumbnail(itemId, itemBase.thumbnail, false, authorization)
-            .then(resolve3, (error: any) => reject3(error));
-        }
-      );
-    });
-    const itemMetadataDef = solutionCommon.getItemMetadataBlob(
+    const itemMetadataDef = solutionCommon.getItemMetadataAsFile(
       itemId,
-      authorization
+      authentication
     );
     const itemResourcesDef = solutionCommon.getItemResourcesFiles(
       itemId,
-      authorization
+      authentication
     );
 
     Promise.all([
       itemBaseDef,
       itemDataDef,
-      itemThumbnailDef,
       itemMetadataDef,
       itemResourcesDef
     ]).then(
@@ -73,24 +62,64 @@ export function copyItemInfo(
         const [
           itemBase,
           itemDataFile,
-          itemThumbnail,
-          itemMetadataBlob,
+          itemMetadataFile,
           itemResourceFiles
         ] = responses;
+        const itemThumbnailUrl = solutionCommon.getItemThumbnailUrl(
+          itemId,
+          itemBase.thumbnail,
+          false,
+          authentication
+        );
+
         // (itemBase: any)  text/plain JSON
         // (itemDataDef: File)  */*
-        // (itemThumbnail: Blob)  image/*
+        // (itemThumbnailUrl: string)
         // (itemMetadataDef: Blob)  application/xml
-        // (itemResourcesDef: Blob[])  list of */*
+        // (itemResourcesDef: File[])  list of */*
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
-        console.log("itemThumbnail", itemThumbnail);
-        console.log("itemMetadata", itemMetadataBlob);
+        console.log("itemThumbnail", itemThumbnailUrl);
+        console.log("itemMetadata", itemMetadataFile);
         console.log("itemResources", itemResourceFiles);
 
-        resolve("OK ");
+        // Create the copy after extracting properties that aren't specific to the source
+        solutionCommon
+          .createItemWithData2(
+            getCopyableItemBaseProperties(itemBase),
+            undefined, // folder id
+            authentication,
+            itemThumbnailUrl,
+            itemDataFile,
+            itemMetadataFile,
+            itemResourceFiles,
+            "public"
+          )
+          .then(
+            (createResponse: portal.ICreateItemResponse) => {
+              resolve(JSON.stringify(createResponse));
+            },
+            (error: any) => reject(JSON.stringify(error))
+          );
       },
-      (error: any) => reject(error)
+      (error: any) => reject(JSON.stringify(error))
     );
   });
+}
+
+export function getCopyableItemBaseProperties(sourceItem: any): any {
+  const copyableItem: any = {
+    name: sourceItem.name,
+    title: sourceItem.title,
+    type: sourceItem.type,
+    typeKeywords: sourceItem.typeKeywords,
+    description: sourceItem.description,
+    tags: sourceItem.tags,
+    snippet: sourceItem.snippet,
+    documentation: sourceItem.documentation,
+    extent: sourceItem.extent,
+    categories: sourceItem.categories,
+    spatialReference: sourceItem.spatialReference
+  };
+  return copyableItem;
 }

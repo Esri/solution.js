@@ -21,7 +21,7 @@ import * as solutionCommon from "../src/common.umd.min";
 
 export function getItemInfo(
   itemId: string,
-  authorization: auth.UserSession
+  authentication: auth.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -30,14 +30,14 @@ export function getItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(itemId, authorization);
+    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
           solutionCommon
-            .getItemDataAsFile(itemId, itemBase.name, authorization)
+            .getItemDataAsFile(itemId, itemBase.name, authentication)
             .then(resolve2, (error: any) => reject2(error));
         }
       );
@@ -48,18 +48,18 @@ export function getItemInfo(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
           solutionCommon
-            .getItemThumbnail(itemId, itemBase.thumbnail, false, authorization)
+            .getItemThumbnail(itemId, itemBase.thumbnail, false, authentication)
             .then(resolve3, (error: any) => reject3(error));
         }
       );
     });
     const itemMetadataDef = solutionCommon.getItemMetadataBlob(
       itemId,
-      authorization
+      authentication
     );
     const itemResourcesDef = solutionCommon.getItemResourcesFiles(
       itemId,
-      authorization
+      authentication
     );
 
     Promise.all([
@@ -81,14 +81,14 @@ export function getItemInfo(
         // (itemDataDef: File)  */*
         // (itemThumbnail: Blob)  image/*
         // (itemMetadataDef: Blob)  application/xml
-        // (itemResourcesDef: Blob[])  list of */*
+        // (itemResourcesDef: File[])  list of */*
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
         console.log("itemThumbnail", itemThumbnail);
         console.log("itemMetadata", itemMetadataBlob);
         console.log("itemResources", itemResourceFiles);
 
-        const portalUrl = solutionCommon.getPortalUrlFromAuth(authorization);
+        const portalUrl = solutionCommon.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
         let html =
@@ -138,7 +138,7 @@ export function getItemInfo(
 
         resolve(html);
       },
-      (error: any) => reject(error)
+      (error: any) => reject(JSON.stringify(error))
     );
   });
 }

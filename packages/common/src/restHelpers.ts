@@ -32,6 +32,7 @@ import {
   IPostProcessArgs
 } from "./interfaces";
 import { replaceInTemplate } from "./templatization";
+import { fileURLToPath } from "url";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -230,6 +231,220 @@ export function createItemWithData(
               success: true
             });
           }
+        } else {
+          reject(generalHelpers.fail());
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+export function addItemDataFile(
+  itemId: string,
+  dataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addItemData: (data: any) => void = (data: any) => {
+      const addDataOptions: portal.IAddItemDataOptions = {
+        id: itemId,
+        data: data,
+        authentication: authentication
+      };
+      portal.addItemData(addDataOptions).then(resolve, reject);
+    };
+
+    if (dataFile.type.startsWith("text/plain")) {
+      generalHelpers.blobToText(dataFile).then(addItemData, reject);
+    } else if (dataFile.type === "application/json") {
+      generalHelpers.blobToJson(dataFile).then(addItemData, reject);
+    } else {
+      addItemData(dataFile);
+    }
+  });
+}
+
+export function addItemMetadataFile(
+  itemId: string,
+  metadataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addMetadataOptions: portal.IUpdateItemOptions = {
+      item: {
+        id: itemId
+      },
+      params: {
+        // Pass metadata in via params because item object is serialized, which discards a blob
+        metadata: metadataFile
+      },
+      authentication: authentication
+    };
+
+    portal.updateItem(addMetadataOptions).then(resolve, reject);
+  });
+}
+
+/**
+ * Publishes an item and its data as an AGOL item.
+ *
+ * @param itemInfo Item's `item` section
+ * @param dataFile Item's `data` section
+ * @param authentication Credentials for the request
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param access Access to set for item: "public", "org", "private"
+ * @return A promise that will resolve with an object reporting success and the Solution id
+ */
+export function createItemWithData2(
+  itemInfo: any,
+  folderId: string | undefined,
+  authentication: auth.UserSession,
+  itemThumbnailUrl?: string,
+  dataFile?: File,
+  metadataFile?: File,
+  resourcesFiles?: File[],
+  access = "private"
+): Promise<portal.ICreateItemResponse> {
+  return new Promise((resolve, reject) => {
+    // Create item
+    const createOptions: portal.ICreateItemOptions = {
+      item: {
+        ...itemInfo
+      },
+      folderId,
+      authentication: authentication
+    };
+    if (itemThumbnailUrl) {
+      createOptions.item.thumbnailurl = itemThumbnailUrl;
+    }
+
+    portal.createItemInFolder(createOptions).then(
+      createResponse => {
+        if (createResponse.success) {
+          const updateDefs: Array<Promise<any>> = [];
+
+          if (access !== "private") {
+            // Set access if it is not AGOL default
+            // Set the access manually since the access value in createItem appears to be ignored
+            const accessOptions: portal.ISetAccessOptions = {
+              id: createResponse.id,
+              access: access === "public" ? "public" : "org", // need to use constants rather than string
+              authentication: authentication
+            };
+            console.log("add share...");
+            updateDefs.push(portal.setItemAccess(accessOptions));
+          }
+
+          if (metadataFile) {
+            console.log("add metadata...");
+            updateDefs.push(
+              addItemMetadataFile(
+                createResponse.id,
+                metadataFile,
+                authentication
+              )
+            );
+          }
+
+          if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
+            resourcesFiles.forEach(file => {
+              const addResourceOptions: portal.IItemResourceOptions = {
+                id: createResponse.id,
+                resource: file,
+                name: file.name,
+                authentication: authentication,
+                params: {}
+              };
+              /*if (folder) {
+                  addResourceOptions.params = {
+                    resourcesPrefix: folder
+                  };
+                }*/
+              console.log("add resource " + file.name + "...");
+              updateDefs.push(portal.addItemResource(addResourceOptions));
+            });
+          }
+
+          if (dataFile) {
+            console.log("add data...");
+            updateDefs.push(
+              addItemDataFile(createResponse.id, dataFile, authentication)
+            );
+          }
+
+          Promise.all(updateDefs).then(
+            responses => {
+              console.log(
+                "all " + updateDefs.length + " updates succeeded",
+                JSON.stringify(responses, null, 2)
+              );
+              resolve(createResponse);
+            },
+            e => {
+              console.log(
+                "one or more updates failed",
+                JSON.stringify(e, null, 2)
+              );
+              reject(generalHelpers.fail(e));
+            }
+          );
+
+          /*
+            .then(  //setItemAccess
+              () => {
+                resolve({
+                  folder: createResponse.folder,
+                  id: createResponse.id,
+                  success: true
+                });
+              },
+              e => reject(generalHelpers.fail(e))
+            );
+          } else {
+            resolve({
+              folder: createResponse.folder,
+              id: createResponse.id,
+              success: true
+            });
+          }
+
+          .then(  // addItemData
+            (addDataResponse: portal.IUpdateItemResponse) => {
+              console.log("addItemData OK", JSON.stringify(addDataResponse,null,2));
+            },
+            error => {
+              console.log("addItemData failed", JSON.stringify(error,null,2));
+            }
+          );
+          */
+
+          /*
+          monitorUpload(createResponse.id, authentication).then(
+            () => {
+              console.log("createItemInFolder upload ok");
+              const commitRequestOptions: portal.IUserItemOptions = {
+                id: createResponse.id,
+                authentication: authentication
+              }
+              portal.commitItemUpload(commitRequestOptions).then(
+                (commitResponse: portal.IUpdateItemResponse) => {
+                  console.log("commitItemUpload OK", JSON.stringify(commitResponse));
+                },
+                error => {
+                  console.log("commitItemUpload XX", JSON.stringify(error));
+                }
+              );
+            },
+            () => {
+              console.log("createItemInFolder upload failed");
+            }
+          );
+              */
+
+          /*
+           */
         } else {
           reject(generalHelpers.fail());
         }
