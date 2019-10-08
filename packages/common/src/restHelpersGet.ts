@@ -245,7 +245,7 @@ export function getItemBase(
  * @return A promise that will resolve with 1. null in case of error, or 2. JSON if "application/json" or ("text/plain"
  * && convertToJsonIfText), or 3. text if ("text/plain" && ¬convertToJsonIfText), or 3. blob
  */
-export function getItemData0(
+export function getItemData(
   itemId: string,
   authentication: auth.UserSession,
   convertToJsonIfText = true
@@ -307,6 +307,26 @@ export function getItemDataAsFile(
     getItemDataBlob(itemId, authentication).then(
       blob =>
         !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
+      reject
+    );
+  });
+}
+
+/**
+ * Gets the data information of an AGO item in its JSON form.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param filename Name to use for file
+ * @param authentication Credentials for the request to AGO
+ * @return Promise that will resolve with JSON, or an AGO-style JSON failure response
+ */
+export function getItemDataAsJson(
+  itemId: string,
+  authentication: auth.UserSession
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    getItemDataBlob(itemId, authentication).then(
+      blob => (!blob ? resolve() : resolve(generalHelpers.blobToJson(blob))),
       reject
     );
   });
@@ -477,6 +497,11 @@ export function getItemThumbnail(
   authentication: auth.UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
+    if (!thumbnailUrlPart) {
+      resolve();
+      return;
+    }
+
     const url = getItemThumbnailUrl(
       itemId,
       thumbnailUrlPart,
