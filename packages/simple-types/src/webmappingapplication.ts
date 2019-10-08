@@ -388,12 +388,6 @@ export function _getGenericWebAppDependencies(model: any): any {
   return common.getProps(model, props);
 }
 
-/**
- * Gets a list of item dependencies from a WAB application
- *
- * @param model A webmap solution template
- * @return A lsit of itemIds for each of the dependencies
- */
 export function _getWABDependencies(model: any): any {
   const deps = [] as string[];
   const v = common.getProp(model, "data.map.itemId");
@@ -564,11 +558,12 @@ export function _getSortOrder(
 
   // if we have the url and the layerID and its found prioritize it first
   // else if we find the maps layer id prioritze it first
+  let layerUrlTest: any;
   if (url && !isNaN(layerId)) {
-    const layerUrlTest: any = new RegExp(url + "/" + layerId, "gm");
-    if (layerUrlTest.test(testString)) {
-      return 1;
-    }
+    layerUrlTest = new RegExp(url + "/" + layerId, "gm");
+  }
+  if (layerUrlTest.test(testString)) {
+    return 1;
   } else if (datasourceInfo.ids.length > 0) {
     if (
       datasourceInfo.ids.some(id => {

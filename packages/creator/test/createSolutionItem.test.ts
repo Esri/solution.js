@@ -96,7 +96,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "4efe5f693de34620934787ead6693f19",
     type: "Feature Service",
-    key: "xdeszl2g",
+    key: "jqcu9ml8",
     item: {
       id: "{{4efe5f693de34620934787ead6693f19.id}}",
       type: "Feature Service",
@@ -4829,7 +4829,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "7e6c41c72d4548d9a312329e0c5a984f",
     type: "Web Map",
-    key: "m8so6ttd",
+    key: "abgdh3ud",
     item: {
       id: "{{7e6c41c72d4548d9a312329e0c5a984f.id}}",
       type: "Web Map",
@@ -5125,7 +5125,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "6f87e1912d6f4c889bbdcfb14dce7484",
     type: "Web Mapping Application",
-    key: "afgdpbom",
+    key: "f6zngin5",
     item: {
       id: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}",
       type: "Web Mapping Application",
@@ -17115,7 +17115,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "eb6dc49be6f44f76aa195d6de8ce5c48",
     type: "Web Map",
-    key: "z5azutrm",
+    key: "nrmmcdec",
     item: {
       id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
       type: "Web Map",
@@ -20383,7 +20383,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
     type: "Feature Service",
-    key: "te8p7ta8",
+    key: "exflx3n1",
     item: {
       id: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
       type: "Feature Service",
@@ -25117,7 +25117,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
   {
     itemId: "b19aec399444407da84fffe2a55d4151",
     type: "Feature Service",
-    key: "rstaoz9t",
+    key: "jt4ulolq",
     item: {
       id: "{{b19aec399444407da84fffe2a55d4151.id}}",
       type: "Feature Service",
@@ -30156,7 +30156,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "4efe5f693de34620934787ead6693f19",
     type: "Feature Service",
-    key: "xdeszl2g",
+    key: "jqcu9ml8",
     item: {
       id: "{{4efe5f693de34620934787ead6693f19.id}}",
       type: "Feature Service",
@@ -34889,7 +34889,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "7e6c41c72d4548d9a312329e0c5a984f",
     type: "Web Map",
-    key: "m8so6ttd",
+    key: "abgdh3ud",
     item: {
       id: "{{7e6c41c72d4548d9a312329e0c5a984f.id}}",
       type: "Web Map",
@@ -35185,7 +35185,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "6f87e1912d6f4c889bbdcfb14dce7484",
     type: "Web Mapping Application",
-    key: "afgdpbom",
+    key: "f6zngin5",
     item: {
       id: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}",
       type: "Web Mapping Application",
@@ -35959,7 +35959,7 @@ const expected: common.IItemTemplate[] = [
                           "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
                         type: "esriFieldTypeString",
                         alias:
-                          "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                          "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
                         length: 50,
                         editable: true,
                         nullable: true,
@@ -36338,13 +36338,13 @@ const expected: common.IItemTemplate[] = [
                       fieldName:
                         "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
                       label:
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
                       visible: true,
                       type: "esriFieldTypeString",
                       duplicate: false,
                       isRecognizedValues: [
                         "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}"
+                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}"
                       ]
                     }
                   ]
@@ -39886,14 +39886,14 @@ const expected: common.IItemTemplate[] = [
                       mode: "feature",
                       type: "bar",
                       clusterField:
-                        "{{4efe5f693de34620934787ead6693f19.layer0.fields.objectid.name}}",
+                        "{{b19aec399444407da84fffe2a55d4151.layer3.fields.objectid.name}}",
                       valueFields: [
                         "{{b19aec399444407da84fffe2a55d4151.layer3.fields.shape__area.name}}"
                       ],
                       sortOrder: {
                         isAsc: true,
                         field:
-                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.objectid.name}}"
+                          "{{b19aec399444407da84fffe2a55d4151.layer3.fields.objectid.name}}"
                       }
                     },
                     display: {
@@ -41196,7 +41196,7 @@ const expected: common.IItemTemplate[] = [
                         "{{4efe5f693de34620934787ead6693f19.layer4.fields.lasteditor.name}}",
                       type: "esriFieldTypeString",
                       alias:
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
                       length: 50,
                       editable: true,
                       nullable: true,
@@ -41506,43 +41506,43 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.owner.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.owner.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.owntype.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.owntype.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.subtypefield.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.subtypefield.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.featurecode.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.featurecode.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -41605,43 +41605,43 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.owner.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.owner.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.owntype.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.owntype.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.subtypefield.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.subtypefield.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.featurecode.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.featurecode.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -41715,7 +41715,7 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -41727,7 +41727,7 @@ const expected: common.IItemTemplate[] = [
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -41885,7 +41885,7 @@ const expected: common.IItemTemplate[] = [
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -42061,13 +42061,13 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                         isEditable: true,
                         visible: true
                       },
                       {
                         fieldName:
-                          "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}",
+                          "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -43063,7 +43063,7 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
+                          "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -43095,7 +43095,7 @@ const expected: common.IItemTemplate[] = [
                       },
                       {
                         fieldName:
-                          "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
+                          "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -43262,37 +43262,37 @@ const expected: common.IItemTemplate[] = [
                       }
                     },
                     TestLayerForDashBoardMap_7041: {
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.owner.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.owner.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.owntype.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.owntype.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.subtypefield.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.subtypefield.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.featurecode.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.featurecode.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -43613,12 +43613,12 @@ const expected: common.IItemTemplate[] = [
                       }
                     },
                     TestLayerForDashBoardMap_5389: {
-                      "{{4efe5f693de34620934787ead6693f19.layer4.fields.facilityid.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{4efe5f693de34620934787ead6693f19.layer4.fields.name.name}}": {
+                      "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -48002,7 +48002,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "eb6dc49be6f44f76aa195d6de8ce5c48",
     type: "Web Map",
-    key: "z5azutrm",
+    key: "nrmmcdec",
     item: {
       id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
       type: "Web Map",
@@ -51270,7 +51270,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
     type: "Feature Service",
-    key: "te8p7ta8",
+    key: "exflx3n1",
     item: {
       id: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
       type: "Feature Service",
@@ -56004,7 +56004,7 @@ const expected: common.IItemTemplate[] = [
   {
     itemId: "b19aec399444407da84fffe2a55d4151",
     type: "Feature Service",
-    key: "rstaoz9t",
+    key: "jt4ulolq",
     item: {
       id: "{{b19aec399444407da84fffe2a55d4151.id}}",
       type: "Feature Service",
