@@ -389,7 +389,10 @@ export function _getGenericWebAppDependencies(model: any): any {
 }
 
 /**
- * Return a list of items this site depends on
+ * Gets a list of item dependencies from a WAB application
+ *
+ * @param model A webmap solution template
+ * @return A lsit of itemIds for each of the dependencies
  */
 export function _getWABDependencies(model: any): any {
   const deps = [] as string[];
