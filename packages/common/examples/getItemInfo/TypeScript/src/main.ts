@@ -16,6 +16,7 @@
 // @esri/solution-common getItemInfo TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as portal from "@esri/arcgis-rest-portal";
 // import * as solutionCommon from "@esri/solution-common";
 import * as solutionCommon from "../src/common.umd.min";
 
@@ -69,7 +70,7 @@ export function getItemInfo(
       itemMetadataDef,
       itemResourcesDef
     ]).then(
-      responses => {
+      async responses => {
         const [
           itemBase,
           itemDataFile,
@@ -114,16 +115,19 @@ export function getItemInfo(
           JSON.stringify(itemBase, null, 2) +
           "</textarea></div>" +
           '<div style="width:2%;display:inline-block;"></div>' +
-          '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;"></div>';
-        showBlob(itemDataFile, "dataSection");
+          '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;">';
+        html += await showBlob(itemDataFile, "dataSection");
+        html += "</div>";
 
         // Show thumbnail section
-        html += '<p>Thumbnail<br/><div id="thumbnailOutput"></div></p>';
-        showBlob(itemThumbnail, "thumbnailOutput");
+        html += '<p>Thumbnail<br/><div id="thumbnailOutput">';
+        html += await showBlob(itemThumbnail, "thumbnailOutput");
+        html += "</div></p>";
 
         // Show metadata section
-        html += '<p>Metadata<br/><div id="metadataOutput"></div></p>';
-        showBlob(itemMetadataBlob, "metadataOutput");
+        html += '<p>Metadata<br/><div id="metadataOutput">';
+        html += await showBlob(itemMetadataBlob, "metadataOutput");
+        html += "</div></p>";
 
         // Show resources section
         html += "<p>Resources<br/>";
@@ -132,17 +136,72 @@ export function getItemInfo(
         } else {
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
             const containerId = "resourceOutput" + i;
-            html += '<div id="' + containerId + '"></div>';
-            showBlob(itemResourceFiles[i], containerId);
+            html += '<div id="' + containerId + '">';
+            html += await showBlob(itemResourceFiles[i], containerId);
+            html += "</div>";
           }
         }
         html += "</p>";
 
-        resolve(html);
+        // Show sections custom to item types
+        if (itemBase.type === "Feature Service") {
+          if (authentication.token) {
+            // These queries require authentication
+            // Show resources section
+            solutionCommon
+              .getFeatureServiceProperties(itemBase.url, authentication)
+              .then(
+                (properties: solutionCommon.IFeatureServiceProperties) => {
+                  html += "<p>Feature Service Properties<br/>";
+
+                  html +=
+                    "<p><i>Service description</i><br/>" +
+                    textAreaHtml(JSON.stringify(properties.service, null, 2)) +
+                    "</p>";
+
+                  html += "<p><i>Layers</i>";
+                  properties.layers.forEach(
+                    layer =>
+                      (html += textAreaHtml(JSON.stringify(layer, null, 2)))
+                  );
+                  html += "</p>";
+
+                  html += "<p><i>Tables</i>";
+                  properties.tables.forEach(
+                    layer =>
+                      (html += textAreaHtml(JSON.stringify(layer, null, 2)))
+                  );
+                  html += "</p>";
+
+                  html += "</p>";
+                  resolve(html);
+                },
+                (error: any) => reject(JSON.stringify(error))
+              );
+          } else {
+            resolve(html);
+          }
+        } else {
+          resolve(html);
+        }
       },
       (error: any) => reject(JSON.stringify(error))
     );
   });
+}
+
+/**
+ * Creates the HTML for a textarea using the supplied text.
+ *
+ * @param text Text to insert into textarea
+ * @return textarea HTML
+ */
+function textAreaHtml(text: any): string {
+  return (
+    '<textarea rows="10" style="width:99%;font-size:x-small">' +
+    text +
+    "</textarea>"
+  );
 }
 
 /**
@@ -151,50 +210,39 @@ export function getItemInfo(
  * @param blob Blob or File to display
  * @param domContainerId Id of DOM container to receive created HTML
  */
-function showBlob(blob: Blob, domContainerId: string): void {
-  setTimeout(() => {
-    const domContainer: HTMLElement = document.getElementById(domContainerId);
-    if (!blob) {
-      domContainer.innerHTML = "<i>none</i>";
+function showBlob(blob: Blob, domContainerId: string): Promise<string> {
+  return new Promise<string>(resolve => {
+    if (!blob || blob.size === 0) {
+      resolve("<i>none</i>");
       return;
     }
     const file = blob as File;
 
     if (blob.type === "application/json") {
-      solutionCommon.blobToJson(blob).then(
-        text => {
-          domContainer.innerHTML =
-            '<textarea rows="10" style="width:99%;font-size:x-small">' +
-            JSON.stringify(text, null, 2) +
-            "</textarea>";
-        },
-        error =>
-          (domContainer.innerHTML =
-            "<i>problem extracting JSON: " + error + "</i>")
-      );
+      solutionCommon
+        .blobToJson(blob)
+        .then(
+          text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
+          error => resolve("<i>problem extracting JSON: " + error + "</i>")
+        );
     } else if (
       blob.type.startsWith("text/plain") ||
       blob.type === "text/xml" ||
       blob.type === "application/xml"
     ) {
-      solutionCommon.blobToText(blob).then(
-        text => {
-          domContainer.innerHTML =
-            '<textarea rows="10" style="width:99%;font-size:x-small">' +
-            text +
-            "</textarea>";
-        },
-        error =>
-          (domContainer.innerHTML =
-            "<i>problem extracting text: " + error + "</i>")
-      );
+      solutionCommon
+        .blobToText(blob)
+        .then(
+          text => resolve(textAreaHtml(text)),
+          error => resolve("<i>problem extracting text: " + error + "</i>")
+        );
     } else if (blob.type.startsWith("image/")) {
-      domContainer.innerHTML =
+      let html =
         '<img src="' +
         window.URL.createObjectURL(blob) +
         '" style="max-width:256px;border:1px solid lightgray;"/>';
       if (file.name) {
-        domContainer.innerHTML +=
+        html +=
           '&nbsp;&nbsp;&nbsp;&nbsp;<a href="' +
           window.URL.createObjectURL(file) +
           '" download="' +
@@ -203,25 +251,28 @@ function showBlob(blob: Blob, domContainerId: string): void {
           file.name +
           "</a>";
       }
-      domContainer.innerHTML += "</p>";
+      html += "</p>";
+      resolve(html);
     } else {
       if (file.name) {
-        domContainer.innerHTML =
+        resolve(
           '<a href="' +
-          window.URL.createObjectURL(file) +
-          '" download="' +
-          file.name +
-          '">' +
-          file.name +
-          "</a>";
+            window.URL.createObjectURL(file) +
+            '" download="' +
+            file.name +
+            '">' +
+            file.name +
+            "</a>"
+        );
       } else {
-        domContainer.innerHTML =
+        resolve(
           '<a href="' +
-          window.URL.createObjectURL(blob) +
-          '">' +
-          blob.type +
-          "</a>";
+            window.URL.createObjectURL(blob) +
+            '">' +
+            blob.type +
+            "</a>"
+        );
       }
     }
-  }, 10);
+  });
 }
