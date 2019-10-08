@@ -27,6 +27,7 @@ import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import {
   IDependency,
+  IFeatureServiceProperties,
   IItemTemplate,
   IUpdate,
   IPostProcessArgs
@@ -289,12 +290,10 @@ export function createItemWithData2(
               access: access === "public" ? "public" : "org", // need to use constants rather than string
               authentication: authentication
             };
-            console.log("add share...");
             updateDefs.push(portal.setItemAccess(accessOptions));
           }
 
           if (metadataFile) {
-            console.log("add metadata...");
             updateDefs.push(
               _addItemMetadataFile(
                 createResponse.id,
@@ -313,38 +312,28 @@ export function createItemWithData2(
                 authentication: authentication,
                 params: {}
               };
-              /*if (folder) {
-                  addResourceOptions.params = {
-                    resourcesPrefix: folder
-                  };
-                }*/
-              console.log("add resource " + file.name + "...");
+
+              // Check for folder in resource filename
+              const filenameParts = file.name.split("/");
+              if (filenameParts.length > 1) {
+                addResourceOptions.name = filenameParts[1];
+                addResourceOptions.params = {
+                  resourcesPrefix: filenameParts[0]
+                };
+              }
               updateDefs.push(portal.addItemResource(addResourceOptions));
             });
           }
 
           if (dataFile) {
-            console.log("add data...");
             updateDefs.push(
               _addItemDataFile(createResponse.id, dataFile, authentication)
             );
           }
 
           Promise.all(updateDefs).then(
-            responses => {
-              console.log(
-                "all " + updateDefs.length + " updates succeeded",
-                JSON.stringify(responses, null, 2)
-              );
-              resolve(createResponse);
-            },
-            e => {
-              console.log(
-                "one or more updates failed",
-                JSON.stringify(e, null, 2)
-              );
-              reject(generalHelpers.fail(e));
-            }
+            responses => resolve(createResponse),
+            e => reject(generalHelpers.fail(e))
           );
         } else {
           reject(generalHelpers.fail());
@@ -460,10 +449,14 @@ export function getLayers(
 
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
+      const requestOptions: request.IRequestOptions = {
+        authentication: authentication
+      };
       requestsDfd.push(
-        request.request(serviceUrl + "/" + layer["id"] + "?f=json", {
-          authentication: authentication
-        })
+        request.request(
+          serviceUrl + "/" + layer["id"] + "?f=json",
+          requestOptions
+        )
       );
     });
 
@@ -562,18 +555,41 @@ export function getServiceLayersAndTables(
   authentication: auth.UserSession
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
-    const properties: any = {
-      service: {},
-      layers: [],
-      tables: []
-    };
-
     // To have enough information for reconstructing the service, we'll supplement
     // the item and data sections with sections for the service, full layers, and
     // full tables
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
+    getFeatureServiceProperties(serviceUrl, authentication).then(
+      properties => {
+        itemTemplate.properties = properties;
+
+        itemTemplate.estimatedDeploymentCostFactor +=
+          properties.layers.length + // layers
+          _countRelationships(properties.layers) + // layer relationships
+          properties.tables.length + // tables & estimated single relationship for each
+          _countRelationships(properties.tables); // table relationships
+
+        resolve(itemTemplate);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+export function getFeatureServiceProperties(
+  serviceUrl: string,
+  authentication: auth.UserSession
+): Promise<IFeatureServiceProperties> {
+  return new Promise<IFeatureServiceProperties>((resolve, reject) => {
+    const properties: IFeatureServiceProperties = {
+      service: {},
+      layers: [],
+      tables: []
+    };
+
+    // Get the service description
     request
       .request(serviceUrl + "?f=json", {
         authentication: authentication
@@ -581,6 +597,7 @@ export function getServiceLayersAndTables(
       .then(
         serviceData => {
           properties.service = serviceData;
+
           Promise.all([
             getLayers(serviceUrl, serviceData["layers"], authentication),
             getLayers(serviceUrl, serviceData["tables"], authentication)
@@ -588,17 +605,9 @@ export function getServiceLayersAndTables(
             results => {
               properties.layers = results[0];
               properties.tables = results[1];
-              itemTemplate.properties = properties;
-
-              itemTemplate.estimatedDeploymentCostFactor +=
-                properties.layers.length + // layers
-                _countRelationships(properties.layers) + // layer relationships
-                properties.tables.length + // tables & estimated single relationship for each
-                _countRelationships(properties.tables); // table relationships
-
-              resolve(itemTemplate);
+              resolve(properties);
             },
-            e => reject(generalHelpers.fail(e))
+            (e: any) => reject(generalHelpers.fail(e))
           );
         },
         (e: any) => reject(generalHelpers.fail(e))
