@@ -313,6 +313,196 @@ export function createSolutionTemplate(
   });
 }
 
+/**
+ * Templatizes field references within specific template types.
+ * Currently only handles web applications
+ *
+ * @param templates List of solution templates
+ * @return A list of templates that have templatized field references
+ */
+export function postProcessFieldReferences(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  const datasourceInfos: common.IDatasourceInfo[] = _getDatasourceInfos(
+    templates
+  );
+  const templateTypeHash: any = _getTemplateTypeHash(templates);
+
+  return templates.map(template => {
+    if (template.type === "Web Mapping Application") {
+      const webMapFSDependencies: string[] = _getWebMapFSDependencies(
+        template,
+        templateTypeHash
+      );
+      const itemHandler: any = moduleMap[template.item.type.toLowerCase()];
+      if (itemHandler) {
+        const dependencies: string[] = webMapFSDependencies.concat(
+          template.dependencies
+        );
+        let dependantDatasources: common.IDatasourceInfo[] = datasourceInfos.filter(
+          ds => {
+            if (dependencies.indexOf(ds.itemId) > -1) {
+              return ds;
+            }
+          }
+        );
+        dependantDatasources = _addMapLayerIds(
+          dependantDatasources,
+          templateTypeHash
+        );
+        if (dependantDatasources.length > 0) {
+          template = itemHandler.postProcessFieldReferences(
+            template,
+            dependantDatasources,
+            template.item.type
+          );
+        }
+      }
+    }
+    return template;
+  });
+}
+
+/**
+ * Get common properties that will support the templatization of field references
+ *
+ * @param templates List of solution templates
+ * @return A list of IDataSourceInfo objects with key properties
+ */
+export function _getDatasourceInfos(
+  templates: common.IItemTemplate[]
+): common.IDatasourceInfo[] {
+  const datasourceInfos: common.IDatasourceInfo[] = [];
+  templates.forEach(t => {
+    if (t.type === "Feature Service") {
+      const layers: any[] = common.getProp(t, "properties.layers") || [];
+      const tables: any[] = common.getProp(t, "properties.tables") || [];
+      const layersAndTables: any[] = layers.concat(tables);
+      layersAndTables.forEach(obj => {
+        if (!common.hasDatasource(datasourceInfos, t.itemId, obj.id)) {
+          datasourceInfos.push({
+            itemId: t.itemId,
+            layerId: obj.id,
+            fields: obj.fields,
+            basePath: t.itemId + ".layer" + obj.id + ".fields",
+            url: common.getProp(t, "item.url"),
+            ids: []
+          });
+        }
+      });
+    }
+  });
+  return datasourceInfos;
+}
+
+/**
+ * Creates a simple lookup object to quickly understand an items type and dependencies
+ * and associated web map layer ids based on itemId
+ *
+ * @param templates List of solution templates
+ * @return The lookup object with type, dependencies, and webmap layer info
+ */
+export function _getTemplateTypeHash(templates: common.IItemTemplate[]): any {
+  const templateTypeHash: any = {};
+  templates.forEach(template => {
+    templateTypeHash[template.itemId] = {
+      type: template.type,
+      dependencies: template.dependencies
+    };
+    if (template.type === "Web Map") {
+      _updateWebMapHashInfo(template, templateTypeHash[template.itemId]);
+    }
+  });
+  return templateTypeHash;
+}
+
+/**
+ * Updates the lookup object with webmap layer info
+ * so we can know the id used within a map for a given feature service
+ *
+ * @param template A webmap solution template
+ * @return The lookup object with webmap layer info added
+ */
+export function _updateWebMapHashInfo(
+  template: common.IItemTemplate,
+  hashItem: any
+) {
+  const operationalLayers: any[] = common.getProp(
+    template,
+    "data.operationalLayers"
+  );
+  if (operationalLayers && operationalLayers.length > 0) {
+    hashItem.operationalLayers = [];
+    operationalLayers.forEach(layer => {
+      if (layer.layerType === "ArcGISFeatureLayer") {
+        const opLayer: any = {};
+        opLayer[common.cleanId(layer.itemId)] = {
+          id: layer.id,
+          url: layer.url
+        };
+        hashItem.operationalLayers.push(opLayer);
+      }
+    });
+  }
+}
+
+/**
+ * Updates the datasource info objects by passing the webmap layer IDs from the lookup hash
+ * to the underlying feature service datasource infos
+ *
+ * @param datasourceInfos A webmap solution template
+ * @param templateTypeHash A simple lookup object populated with key item info
+ * @return The updated datasource infos
+ */
+export function _addMapLayerIds(
+  datasourceInfos: common.IDatasourceInfo[],
+  templateTypeHash: any
+): common.IDatasourceInfo[] {
+  const webMapIds: any[] = Object.keys(templateTypeHash).filter(k => {
+    if (templateTypeHash[k].type === "Web Map") {
+      return templateTypeHash[k];
+    }
+  });
+
+  return datasourceInfos.map(ds => {
+    webMapIds.forEach(webMapId => {
+      templateTypeHash[webMapId].operationalLayers.forEach((opLayer: any) => {
+        const opLayerInfo: any = opLayer[ds.itemId];
+        if (opLayerInfo && ds.url + "/" + ds.layerId === opLayerInfo.url) {
+          ds.ids.push(opLayerInfo.id);
+        }
+      });
+    });
+    return ds;
+  });
+}
+
+/**
+ * Get feature service item IDs from applications webmaps
+ * As they are not explict dependencies of the application but are needed for field references
+ *
+ * @param template A webmap solution template
+ * @param templateTypeHash A simple lookup object populated with key item info
+ * @return A lsit of feature service item IDs
+ */
+export function _getWebMapFSDependencies(
+  template: common.IItemTemplate,
+  templateTypeHash: any
+): string[] {
+  const webMapFSDependencies: string[] = [];
+  template.dependencies.forEach(dep => {
+    const depObj: any = templateTypeHash[dep];
+    if (depObj.type === "Web Map") {
+      depObj.dependencies.forEach((depObjDependency: string) => {
+        if (templateTypeHash[depObjDependency].type === "Feature Service") {
+          webMapFSDependencies.push(depObjDependency);
+        }
+      });
+    }
+  });
+  return webMapFSDependencies;
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**

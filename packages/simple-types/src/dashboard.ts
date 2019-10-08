@@ -653,7 +653,7 @@ export function _templatizeByDatasource(
                 if (Array.isArray(fields) && basePath) {
                   _action.fieldMap = _action.fieldMap.map((m: any) => {
                     const _m: any = m;
-                    _m.targetName = _templatizeFieldReferences(
+                    _m.targetName = common.templatizeFieldReferences(
                       _m.targetName,
                       fields,
                       basePath
@@ -678,8 +678,12 @@ export function _templatizeByDatasource(
             const fields: any[] = common.getProp(datasourceInfo, "fields");
             const basePath: string = common.getProp(datasourceInfo, "basePath");
             if (Array.isArray(fields) && basePath) {
-              _obj = _templatizeFieldReferences(_obj, fields, basePath);
-              _dataset = _templatizeFieldReferences(_dataset, fields, basePath);
+              _obj = common.templatizeFieldReferences(_obj, fields, basePath);
+              _dataset = common.templatizeFieldReferences(
+                _dataset,
+                fields,
+                basePath
+              );
             }
           }
         }
@@ -688,26 +692,6 @@ export function _templatizeByDatasource(
       return _obj;
     } else return _obj;
   });
-}
-
-/**
- * using each field from the datasource replace any occurances
- * of the field name with the templatized value
- * @protected
- */
-export function _templatizeFieldReferences(
-  obj: any,
-  fields: any[],
-  basePath: string
-): any {
-  let objString: string = JSON.stringify(obj);
-  fields.forEach(field => {
-    objString = objString.replace(
-      new RegExp(field.name, "g"),
-      common.templatizeToLowerCase(basePath, field.name + ".name")
-    );
-  });
-  return JSON.parse(objString);
 }
 
 /**
@@ -743,7 +727,9 @@ export function _getDatasourceInfo(
     }
   } else {
     // otherwise match the itemId and the layerId to get the correct fields and path
-    const itemId: any = _cleanId(common.getProp(obj, "dataSource.itemId"));
+    const itemId: any = common.cleanId(
+      common.getProp(obj, "dataSource.itemId")
+    );
     const layerId: any = common.getProp(obj, "dataSource.layerId");
     if (itemId) {
       datasourceInfos.some(di => {
@@ -754,12 +740,4 @@ export function _getDatasourceInfo(
     }
   }
   return info;
-}
-
-/**
- * remove templatization from id to compare
- * @protected
- */
-export function _cleanId(id: any): any {
-  return id ? id.replace("{{", "").replace(".id}}", "") : id;
 }

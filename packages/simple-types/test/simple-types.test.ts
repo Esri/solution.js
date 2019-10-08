@@ -2375,4 +2375,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       }, done.fail);
     });
   });
+
+  describe("postProcessFieldReferences", () => {
+    xit("postProcessFieldReferences", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
 });

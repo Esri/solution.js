@@ -96,7 +96,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -129,7 +129,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -176,7 +176,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         estimatedDeploymentCostFactor: 0
       };
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -271,7 +271,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       );
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -323,7 +323,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       );
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             done.fail();
@@ -402,7 +402,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -533,7 +533,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", layer1);
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -700,7 +700,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", layer1);
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           actual => {
             expect(actual).toEqual(expected);
@@ -773,7 +773,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           () => {
             done.fail();
@@ -845,7 +845,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
       webmappingapplication
-        .convertItemToTemplate(model, { authentication: MOCK_USER_SESSION })
+        .convertItemToTemplate(model, MOCK_USER_SESSION)
         .then(
           () => {
             done.fail();
@@ -1287,6 +1287,62 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             done();
           }
         );
+    });
+  });
+
+  describe("postProcessFieldReferences", () => {
+    xit("postProcessFieldReferences", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatizeDatasourceFieldReferences", () => {
+    xit("_templatizeDatasourceFieldReferences", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatizeWidgetFieldReferences", () => {
+    xit("_templatizeWidgetFieldReferences", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_getReplaceOrder", () => {
+    xit("_getReplaceOrder", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_getSortOrder ", () => {
+    xit("_getSortOrder ", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_prioritizedTests", () => {
+    xit("_prioritizedTests", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatizeParentByURL", () => {
+    xit("_templatizeParentByURL", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_templatizeParentByWebMapLayerId", () => {
+    xit("_templatizeParentByWebMapLayerId", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
     });
   });
 });
