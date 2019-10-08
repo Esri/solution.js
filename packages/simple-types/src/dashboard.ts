@@ -310,7 +310,7 @@ export function _getWidgetPromises(
       if (widget.type === "mapWidget") {
         if (itemTemplate.dependencies.indexOf(widget.itemId) < 0) {
           // get map data so we can understand the relative path layer references
-          mapPromises.push(common.getItemData0(widget.itemId, authentication));
+          mapPromises.push(common.getItemData(widget.itemId, authentication));
           itemTemplate.dependencies.push(widget.itemId);
         }
         widget.itemId = common.templatizeToLowerCase(widget.itemId, "id");

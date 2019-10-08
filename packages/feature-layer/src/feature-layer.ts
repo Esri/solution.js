@@ -56,7 +56,7 @@ export function convertItemToTemplate(
     // Update the estimated cost factor to deploy this item
     template.estimatedDeploymentCostFactor = 3;
 
-    common.getItemData0(template.item.id, requestOptions.authentication).then(
+    common.getItemData(template.item.id, requestOptions.authentication).then(
       data => {
         template.data = data;
         common
