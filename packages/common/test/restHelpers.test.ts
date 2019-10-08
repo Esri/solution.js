@@ -41,7 +41,7 @@ import {
   getGroupContents,
   _getGroupContentsTranche,
   getItem,
-  getItemData0,
+  getItemData,
   getItemRelatedItems,
   getBlob
 } from "../src/restHelpersGet";
@@ -1021,7 +1021,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1035,7 +1035,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           mockItems.get500Failure()
         );
-        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
@@ -1049,7 +1049,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
           expected
         );
-        getItemData0(itemId, MOCK_USER_SESSION).then((response: any) => {
+        getItemData(itemId, MOCK_USER_SESSION).then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
