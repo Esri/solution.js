@@ -17,8 +17,7 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
-// import * as solutionCommon from "@esri/solution-common";
-import * as solutionCommon from "../src/common.umd.min";
+import * as solutionCommon from "@esri/solution-common";
 
 export function getItemInfo(
   itemId: string,
