@@ -28,8 +28,10 @@ import {
   hasAnyKeyword,
   hasTypeKeyword,
   getUTCTimestamp,
-  blobToJson
+  blobToJson,
+  hasDatasource
 } from "../src/generalHelpers";
+import * as interfaces from "../src/interfaces";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   // Blobs are only available in the browser
@@ -389,6 +391,54 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const keyword: string = "B";
       const expected: boolean = true;
       expect(hasTypeKeyword(model, keyword)).toBe(expected);
+    });
+  });
+
+  describe("hasDatasource", () => {
+    it("will return true when datasource is found", () => {
+      const itemId: string = "solutionItem0123456";
+      const layerId: number = 0;
+      const datasource: interfaces.IDatasourceInfo = {
+        layerId: layerId,
+        ids: [],
+        itemId: itemId,
+        basePath: "",
+        fields: []
+      };
+      const actual: boolean = hasDatasource([datasource], itemId, layerId);
+      expect(actual).toBe(true);
+    });
+
+    it("will return false when itemId is NOT found", () => {
+      const itemId: string = "solutionItem0123456";
+      const layerId: number = 0;
+      const datasource: interfaces.IDatasourceInfo = {
+        layerId: layerId,
+        ids: [],
+        itemId: itemId,
+        basePath: "",
+        fields: []
+      };
+      const actual: boolean = hasDatasource(
+        [datasource],
+        itemId + "1",
+        layerId
+      );
+      expect(actual).toBe(false);
+    });
+
+    it("will return false when layerId is NOT found", () => {
+      const itemId: string = "solutionItem0123456";
+      const layerId: number = 0;
+      const datasource: interfaces.IDatasourceInfo = {
+        layerId: layerId,
+        ids: [],
+        itemId: itemId,
+        basePath: "",
+        fields: []
+      };
+      const actual: boolean = hasDatasource([datasource], itemId, 1);
+      expect(actual).toBe(false);
     });
   });
 

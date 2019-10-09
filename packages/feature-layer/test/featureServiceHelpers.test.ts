@@ -86,7 +86,7 @@ import * as common from "@esri/solution-common";
 
 let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
-const basePath: string = itemId + ".fieldInfos.layer0.fields";
+const basePath: string = itemId + ".layer0.fields";
 
 const _initiative: any = {
   orgExtent: {
@@ -647,24 +647,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "0": {
           newFields: [
             {
-              name: "A"
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "A"
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -681,24 +693,36 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "1": {
           newFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -716,16 +740,40 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           fields: {
-            a: "A",
-            b: "B",
-            createdate: "CreateDate"
+            a: {
+              name: "A",
+              alias: "A",
+              type: "fieldTypeA"
+            },
+            b: {
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            createdate: {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
           }
         },
         layer1: {
           fields: {
-            c: "C",
-            d: "D",
-            createdate: "CreateDate"
+            c: {
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            d: {
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            createdate: {
+              name: "CreateDate",
+              alias: "CreateDate",
+              type: "fieldTypeDate"
+            }
           }
         }
       };
@@ -752,34 +800,50 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           newFields: [
             {
               name: "a0",
-              alias: "A_a"
+              alias: "A_a",
+              type: "fieldTypeA"
             },
             {
-              name: "b"
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "createdate"
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "create_date"
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "editdate"
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
               name: "A",
-              alias: "A_a"
+              alias: "A_a",
+              type: "fieldTypeA"
             },
             {
-              name: "B"
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "EditDate"
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -798,33 +862,51 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "1": {
           newFields: [
             {
-              name: "c"
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "d"
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "createdate"
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "create_date"
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "editdate"
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           sourceFields: [
             {
-              name: "C"
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
             },
             {
-              name: "D"
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
             },
             {
-              name: "CreateDate"
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
             },
             {
-              name: "EditDate"
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
             }
           ],
           otherProperty: {
@@ -843,18 +925,50 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           fields: {
-            a: "a0",
-            b: "b",
-            createdate: "create_date",
-            editdate: "editdate"
+            a: {
+              name: "a0",
+              alias: "A_a",
+              type: "fieldTypeA"
+            },
+            b: {
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
           }
         },
         layer1: {
           fields: {
-            c: "c",
-            d: "d",
-            createdate: "create_date",
-            editdate: "editdate"
+            c: {
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            d: {
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
           }
         }
       };
@@ -863,21 +977,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           otherProperty: {
             test: "test"
           },
-          deleteFields: [
-            {
-              name: "createdate"
-            }
-          ]
+          deleteFields: ["createdate", "editdate"]
         },
         "1": {
           otherProperty: {
             test: "test"
           },
-          deleteFields: [
-            {
-              name: "createdate"
-            }
-          ]
+          deleteFields: ["createdate"]
         }
       };
       const settings: any = getFieldSettings(fieldInfos);
@@ -888,37 +994,83 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("updateSettingsFieldInfos", () => {
     it("should transfer settings when dependencies exist", () => {
-      const fieldInfos: any = {
-        layer0: {
-          fields: {
-            objectid: "OBJECTID",
-            jurisdictionname: "jurisdictionname",
-            jurisdictiontype: "jurisdictiontype",
-            regvoters: "regvoters",
-            ballotscast: "ballotscast",
-            ballotsnotcast: "ballotsnotcast",
-            globalid: "GlobalID",
-            creationdate: "CreationDate",
-            creator: "Creator",
-            editdate: "EditDate",
-            editor: "Editor"
+      const layer0 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
           }
-        },
-        layer1: {
-          fields: {
-            objectid: "OBJECTID",
-            contest: "contest",
-            category: "category",
-            jurisdictionname: "jurisdictionname",
-            candidate: "candidate",
-            party: "party",
-            numvotes: "numvotes",
-            percvote: "percvote",
-            globalid: "GlobalID",
-            creationdate: "CreationDate",
-            creator: "Creator",
-            editdate: "EditDate",
-            editor: "Editor"
+        }
+      };
+      const layer1 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
           }
         }
       };
@@ -932,7 +1084,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
-          fieldInfos: fieldInfos
+          layer0: layer0,
+          layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
           id: "ebe7e53cc218423c9225ceb783d412b5",
@@ -962,13 +1115,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
-          fieldInfos: fieldInfos
+          layer0: layer0,
+          layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
           id: "ebe7e53cc218423c9225ceb783d412b5",
           url: "",
           name: "ElectionResults_join_20190425_2019_12456",
-          fieldInfos: fieldInfos
+          layer0: layer0,
+          layer1: layer1
         }
       };
 
@@ -978,37 +1133,83 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should NOT transfer settings when dependencies DO NOT exist", () => {
-      const fieldInfos: any = {
-        layer0: {
-          fields: {
-            objectid: "OBJECTID",
-            jurisdictionname: "jurisdictionname",
-            jurisdictiontype: "jurisdictiontype",
-            regvoters: "regvoters",
-            ballotscast: "ballotscast",
-            ballotsnotcast: "ballotsnotcast",
-            globalid: "GlobalID",
-            creationdate: "CreationDate",
-            creator: "Creator",
-            editdate: "EditDate",
-            editor: "Editor"
+      const layer0 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
           }
-        },
-        layer1: {
-          fields: {
-            objectid: "OBJECTID",
-            contest: "contest",
-            category: "category",
-            jurisdictionname: "jurisdictionname",
-            candidate: "candidate",
-            party: "party",
-            numvotes: "numvotes",
-            percvote: "percvote",
-            globalid: "GlobalID",
-            creationdate: "CreationDate",
-            creator: "Creator",
-            editdate: "EditDate",
-            editor: "Editor"
+        }
+      };
+      const layer1 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
           }
         }
       };
@@ -1022,7 +1223,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
-          fieldInfos: fieldInfos
+          layer0: layer0,
+          layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
           id: "ebe7e53cc218423c9225ceb783d412b5",
@@ -1052,7 +1254,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           id: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
-          fieldInfos: fieldInfos
+          layer0: layer0,
+          layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
           id: "ebe7e53cc218423c9225ceb783d412b5",
@@ -1071,16 +1274,16 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const fieldInfos: any = {
         "0": {
           displayField:
-            "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}",
+            "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}",
           templates: [
             {
               prototype: {
                 attributes: {
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}": null,
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}": null,
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}": null,
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}": null,
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}": null
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}": null,
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": null,
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}": null,
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}": null,
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}": null
                 }
               }
             }
@@ -1091,13 +1294,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               visualVariables: [
                 {
                   field:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}"
                 }
               ],
               authoringInfo: {},
               type: "uniqueValue",
               field1:
-                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}}",
+                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}",
               defaultSymbol: {},
               uniqueValueInfos: []
             }
@@ -1107,10 +1310,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               id: "-",
               name: "-",
               domains: {
-                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}": {
+                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}": {
                   type: "inherited"
                 },
-                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}": {
+                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": {
                   type: "inherited"
                 }
               },
@@ -1121,8 +1324,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   drawingTool: "esriFeatureEditToolPoint",
                   prototype: {
                     attributes: {
-                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}": null,
-                      "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}": null
+                      "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}": null,
+                      "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}": null
                     }
                   }
                 }
@@ -1136,72 +1339,72 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerId: 1,
               topFilter: {
                 orderByFields:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}} DESC",
+                  "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}} DESC",
                 groupByFields:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}},{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}},{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
               },
               sourceLayerFields: [
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.category}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.candidate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.party}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.percvote}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.globalid}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creationdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creator}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editor}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}"
                 }
               ],
               parentKeyFields: [
-                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
               ],
               keyFields: [
-                "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
               ]
             }
           ]
         },
         "1": {
           displayField:
-            "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}",
+            "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}",
           templates: [],
           relationships: []
         }
@@ -1214,108 +1417,108 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             fieldInfos: [
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.objectid}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.objectid.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.contest}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.contest.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.category}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.category.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.candidate}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.candidate.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.numvotes}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.numvotes.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
               },
               {
                 fieldName: "expression/expr0"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname_1552494094382.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid_1552494094382.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate_1552494094382.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator_1552494094382.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate_1552494094382.name}}"
               },
               {
                 fieldName:
-                  "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor_1552494094382}}"
+                  "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor_1552494094382.name}}"
               }
             ],
             description:
-              "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.contest}}\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.candidate}}</b> received the most votes in {{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.numvotes}}<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.percvote}}%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
+              "<table cellpadding='0' style='text-align: center; border-collapse: collapse; border-spacing: 0px; width: 100%; table-layout: fixed; margin: 0px -1px'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='background-color: {expression/expr0}; color: #FFFFFF; min-width:0%; max-width:100%; width:initial; text-align:center; vertical-align: middle; font-weight: normal; padding: 5px 0px; font-size:14px'>{{ab766cba0dd44ec080420acc10990282.layer0.fields.contest.name}}\n\t\t\t</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 50%; max-width: 100%; padding-left: 0px;'>\n\t\t\t<br /><b>{{ab766cba0dd44ec080420acc10990282.layer0.fields.candidate.name}}</b> received the most votes in {{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}.<br />\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n\t</table>\n\t\n\t<table style='font-weight: normal; width: 100%; margin: 8px 0px; border-collapse: separate; border-spacing: 0px 8px; table-layout: fixed;'>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><b>Votes:</b><br /><font>{{ab766cba0dd44ec080420acc10990282.layer0.fields.numvotes.name}}<br /></font></td>\n\t\t\t\n\t\t\t<td style='text-align: center; width: 100%; max-width: 100%; padding-left: 0px; padding-bottom: 10px'><font><b>Percent:</b><br />{{ab766cba0dd44ec080420acc10990282.layer0.fields.percvote.name}}%\n\t\t\t</font></td>\n\t\t</tr>\n\t</tbody>\n</table>",
             expressionInfos: [
               {
                 name: "expr0",
                 title: "Banner Color",
                 expression:
-                  "if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.party}} == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
+                  "if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Constitution'){\n    return '#A900E6';\n}\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Democratic'){\n    return '#244078';\n}\n    \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Green'){\n    return '#17AA5C';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Libertarian'){\n    return '#F9D334';\n}\n\nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Republican'){\n    return '#B0301C';\n}\n \nelse if ($feature.{{ab766cba0dd44ec080420acc10990282.layer0.fields.party.name}} == 'Write In'){\n    return '#FFAA00';\n}\n    \nreturn '#D6D6D6';\n",
                 returnType: "string"
               }
             ]
@@ -1335,43 +1538,43 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
                 }
               ],
               relatedTables: []
@@ -1388,51 +1591,51 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.contest}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.contest.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.category}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.category.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.candidate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.candidate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.party}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.party.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.numvotes}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.numvotes.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.percvote}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.percvote.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.globalid}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.globalid.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creationdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creationdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.creator}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.creator.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editdate}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editdate.name}}"
                 },
                 {
                   source:
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.editor}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.editor.name}}"
                 }
               ],
               relatedTables: [
@@ -1443,55 +1646,283 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceLayerFields: [
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictiontype}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictiontype.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.regvoters}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.regvoters.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotscast}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotscast.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.ballotsnotcast}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.ballotsnotcast.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.globalid}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.globalid.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creationdate}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creationdate.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.creator}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.creator.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editdate}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editdate.name}}"
                     },
                     {
                       source:
-                        "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.editor}}"
+                        "{{ab766cba0dd44ec080420acc10990282.layer0.fields.editor.name}}"
                     }
                   ],
                   type: "INNER",
                   parentKeyFields: [
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer1.fields.jurisdictionname}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer1.fields.jurisdictionname.name}}"
                   ],
                   keyFields: [
-                    "{{ab766cba0dd44ec080420acc10990282.fieldInfos.layer0.fields.jurisdictionname}}"
+                    "{{ab766cba0dd44ec080420acc10990282.layer0.fields.jurisdictionname.name}}"
                   ]
                 }
               ]
             }
+          }
+        }
+      };
+
+      const layerZero0 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          }
+        }
+      };
+      const layerOne0 = {
+        fields: {
+          objectid: {
+            name: "OBJECTID"
+          },
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          }
+        }
+      };
+
+      const layerZero1 = {
+        fields: {
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          },
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname_1552494094382: {
+            name: "jurisdictionname_1552494094382"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid_1552494094382: {
+            name: "GlobalID_1552494094382"
+          },
+          creationdate_1552494094382: {
+            name: "CreationDate_1552494094382"
+          },
+          creator_1552494094382: {
+            name: "Creator_1552494094382"
+          },
+          editdate_1552494094382: {
+            name: "EditDate_1552494094382"
+          },
+          editor_1552494094382: {
+            name: "Editor_1552494094382"
+          },
+          objectid: {
+            name: "ObjectId"
+          }
+        }
+      };
+      const layerOne1 = {
+        fields: {
+          contest: {
+            name: "contest"
+          },
+          category: {
+            name: "category"
+          },
+          jurisdictionname: {
+            name: "jurisdictionname"
+          },
+          candidate: {
+            name: "candidate"
+          },
+          party: {
+            name: "party"
+          },
+          numvotes: {
+            name: "numvotes"
+          },
+          percvote: {
+            name: "percvote"
+          },
+          globalid: {
+            name: "GlobalID"
+          },
+          creationdate: {
+            name: "CreationDate"
+          },
+          creator: {
+            name: "Creator"
+          },
+          editdate: {
+            name: "EditDate"
+          },
+          editor: {
+            name: "Editor"
+          },
+          jurisdictionname_1552493773603: {
+            name: "jurisdictionname_1552493773603"
+          },
+          jurisdictiontype: {
+            name: "jurisdictiontype"
+          },
+          regvoters: {
+            name: "regvoters"
+          },
+          ballotscast: {
+            name: "ballotscast"
+          },
+          ballotsnotcast: {
+            name: "ballotsnotcast"
+          },
+          globalid_1552493773603: {
+            name: "GlobalID_1552493773603"
+          },
+          creationdate_1552493773603: {
+            name: "CreationDate_1552493773603"
+          },
+          creator_1552493773603: {
+            name: "Creator_1552493773603"
+          },
+          editdate_1552493773603: {
+            name: "EditDate_1552493773603"
+          },
+          editor_1552493773603: {
+            name: "Editor_1552493773603"
+          },
+          objectid: {
+            name: "ObjectId"
           }
         }
       };
@@ -1502,101 +1933,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "0998341a7a2a4e9c86c553287a1f3e94": {
           id: "82ed3b6c2236429d885c872b3e188ead",
           name: "ElectionResults_20190425_2115_55512",
-          fieldInfos: {
-            layer0: {
-              fields: {
-                objectid: "OBJECTID",
-                jurisdictionname: "jurisdictionname",
-                jurisdictiontype: "jurisdictiontype",
-                regvoters: "regvoters",
-                ballotscast: "ballotscast",
-                ballotsnotcast: "ballotsnotcast",
-                globalid: "GlobalID",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor"
-              }
-            },
-            layer1: {
-              fields: {
-                objectid: "OBJECTID",
-                contest: "contest",
-                category: "category",
-                jurisdictionname: "jurisdictionname",
-                candidate: "candidate",
-                party: "party",
-                numvotes: "numvotes",
-                percvote: "percvote",
-                globalid: "GlobalID",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor"
-              }
-            }
-          }
+          layer0: layerZero0,
+          layer1: layerOne0
         },
         ab766cba0dd44ec080420acc10990282: {
           id: "b3c3021ef3e5409dbb2a35c8f111d1de",
-          fieldInfos: {
-            layer0: {
-              fields: {
-                jurisdictionname: "jurisdictionname",
-                jurisdictiontype: "jurisdictiontype",
-                regvoters: "regvoters",
-                ballotscast: "ballotscast",
-                ballotsnotcast: "ballotsnotcast",
-                globalid: "GlobalID",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                contest: "contest",
-                category: "category",
-                jurisdictionname_1552494094382:
-                  "jurisdictionname_1552494094382",
-                candidate: "candidate",
-                party: "party",
-                numvotes: "numvotes",
-                percvote: "percvote",
-                globalid_1552494094382: "GlobalID_1552494094382",
-                creationdate_1552494094382: "CreationDate_1552494094382",
-                creator_1552494094382: "Creator_1552494094382",
-                editdate_1552494094382: "EditDate_1552494094382",
-                editor_1552494094382: "Editor_1552494094382",
-                objectid: "ObjectId"
-              }
-            },
-            layer1: {
-              fields: {
-                contest: "contest",
-                category: "category",
-                jurisdictionname: "jurisdictionname",
-                candidate: "candidate",
-                party: "party",
-                numvotes: "numvotes",
-                percvote: "percvote",
-                globalid: "GlobalID",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                jurisdictionname_1552493773603:
-                  "jurisdictionname_1552493773603",
-                jurisdictiontype: "jurisdictiontype",
-                regvoters: "regvoters",
-                ballotscast: "ballotscast",
-                ballotsnotcast: "ballotsnotcast",
-                globalid_1552493773603: "GlobalID_1552493773603",
-                creationdate_1552493773603: "CreationDate_1552493773603",
-                creator_1552493773603: "Creator_1552493773603",
-                editdate_1552493773603: "EditDate_1552493773603",
-                editor_1552493773603: "Editor_1552493773603",
-                objectid: "ObjectId"
-              }
-            }
-          }
+          layer0: layerZero1,
+          layer1: layerOne1
         }
       };
 
@@ -2039,17 +2382,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -2170,17 +2509,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -2248,17 +2583,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -2375,21 +2706,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       layer0Popup.popupInfo.title =
         "{{" +
         itemTemplate.itemId +
-        ".fieldInfos.layer" +
+        ".layer" +
         layer0Popup.id +
         ".fields." +
         layer0.fields[0].name +
-        "}}";
+        ".name}}";
 
       const layer1Popup: any = itemTemplate.data.tables[0];
       layer1Popup.popupInfo.title =
         "{{" +
         itemTemplate.itemId +
-        ".fieldInfos.layer" +
+        ".layer" +
         layer1Popup.id +
         ".fields." +
         layer1.fields[0].name +
-        "}}";
+        ".name}}";
 
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate.data);
 
@@ -2422,8 +2753,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           expect(layerInfos).toBeDefined();
           expect(layerInfos.fieldInfos).toBeDefined();
 
-          // verify the fieldInfos have been added to settings
-          expect(settings[itemTemplate.itemId].fieldInfos).toBeDefined();
+          // verify the field info have been added to settings
+          expect(settings[itemTemplate.itemId].layer0).toBeDefined();
+          expect(settings[itemTemplate.itemId].layer1).toBeDefined();
 
           // verify popup infos
           expect(layerInfos.popupInfos).toBeDefined();
@@ -2676,17 +3008,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const propName = "someProp";
 
       let obj: any;
-      _templatizeProperty(obj, propName, basePath);
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toBeUndefined();
 
       obj = {};
-      _templatizeProperty(obj, propName, basePath);
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toEqual({});
 
-      obj[propName] = "NaMe";
-      _templatizeProperty(obj, propName, basePath);
+      obj[propName] = "NaMe123";
+      _templatizeProperty(obj, propName, basePath, "name");
       expect(obj).toEqual({
-        someProp: "{{" + basePath + ".name}}"
+        someProp: "{{" + basePath + ".name123.name}}"
       });
     });
   });
@@ -2927,11 +3259,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "{{" + basePath + ".a}}"
+                  source: "{{" + basePath + ".a.name}}"
                 },
                 {
                   name: "B",
-                  source: "{{" + basePath + ".b}}"
+                  source: "{{" + basePath + ".b.name}}"
                 }
               ]
             }
@@ -2944,7 +3276,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle field in related tables", () => {
-      const relatedBasePath: string = itemId + ".fieldInfos.layer1.fields";
+      const relatedBasePath: string = itemId + ".layer1.fields";
       const layer = {
         adminLayerInfo: {
           viewLayerDefinition: {
@@ -3003,11 +3335,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               sourceLayerFields: [
                 {
                   name: "A",
-                  source: "{{" + basePath + ".a}}"
+                  source: "{{" + basePath + ".a.name}}"
                 },
                 {
                   name: "B",
-                  source: "{{" + basePath + ".b}}"
+                  source: "{{" + basePath + ".b.name}}"
                 }
               ],
               relatedTables: [
@@ -3015,21 +3347,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   sourceServiceName: "Table",
                   sourceLayerId: 1,
                   topFilter: {
-                    orderByFields: "{{" + relatedBasePath + ".aa}} DESC",
-                    groupByFields: "{{" + relatedBasePath + ".bb}}"
+                    orderByFields: "{{" + relatedBasePath + ".aa.name}} DESC",
+                    groupByFields: "{{" + relatedBasePath + ".bb.name}}"
                   },
                   sourceLayerFields: [
                     {
                       name: "AA",
-                      source: "{{" + relatedBasePath + ".aa}}"
+                      source: "{{" + relatedBasePath + ".aa.name}}"
                     },
                     {
                       name: "BB",
-                      source: "{{" + relatedBasePath + ".bb}}"
+                      source: "{{" + relatedBasePath + ".bb.name}}"
                     }
                   ],
-                  parentKeyFields: ["{{" + basePath + ".a}}"],
-                  keyFields: ["{{" + relatedBasePath + ".aa}}"]
+                  parentKeyFields: ["{{" + basePath + ".a.name}}"],
+                  keyFields: ["{{" + relatedBasePath + ".aa.name}}"]
                 }
               ]
             }
@@ -3099,7 +3431,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         relationships: [
           {
             relatedTableId: id,
-            keyField: "{{" + itemId + ".fieldInfos.layer0.fields.aa}}"
+            keyField: "{{" + itemId + ".layer0.fields.aa.name}}"
           }
         ]
       };
@@ -3258,16 +3590,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const fieldNames: string[] = ["A", "B"];
 
-      const relatedBasePath =
-        itemId + ".fieldInfos.layer" + relatedTableId + ".fields";
+      const relatedBasePath = itemId + ".layer" + relatedTableId + ".fields";
 
       const expectedLayerDef: any = {
         popupInfo: {
-          title: "{{{" + basePath + ".a}}}",
+          title: "{{{" + basePath + ".a.name}}}",
           description: "",
           fieldInfos: [
             {
-              fieldName: "relationships/0/{{" + relatedBasePath + ".aa}}",
+              fieldName: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
               label: "AA",
               isEditable: false,
               visible: false,
@@ -3275,7 +3606,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               stringFieldOption: "textbox"
             },
             {
-              fieldName: "{{" + basePath + ".a}}",
+              fieldName: "{{" + basePath + ".a.name}}",
               label: "A",
               isEditable: false,
               visible: false,
@@ -3295,7 +3626,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "expr1",
               title: "Population (Expr)",
-              expression: "$feature.{{" + basePath + ".a}}",
+              expression: "$feature.{{" + basePath + ".a.name}}",
               returnType: "number"
             },
             {
@@ -3304,9 +3635,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               expression:
                 "$feature.{{" +
                 basePath +
-                ".a}} + ' (' + $feature.{{" +
+                ".a.name}} + ' (' + $feature.{{" +
                 basePath +
-                ".b}} + ')'",
+                ".b.name}} + ')'",
               returnType: "string"
             }
           ],
@@ -3319,7 +3650,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               type: "fields",
               fieldInfos: [
                 {
-                  fieldName: "relationships/0/{{" + relatedBasePath + ".bb}}",
+                  fieldName:
+                    "relationships/0/{{" + relatedBasePath + ".bb.name}}",
                   label: "Postcode",
                   isEditable: false,
                   visible: false,
@@ -3336,10 +3668,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "barchart",
                   caption: "For a better idea...",
                   value: {
-                    fields: ["relationships/0/{{" + relatedBasePath + ".aa}}"],
+                    fields: [
+                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
+                    ],
                     tooltipField:
-                      "relationships/0/{{" + relatedBasePath + ".aa}}",
-                    normalizeField: "{{" + basePath + ".aa}}"
+                      "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+                    normalizeField: "{{" + basePath + ".aa.name}}"
                   }
                 }
               ]
@@ -3356,11 +3690,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               caption: "For a better idea...",
               value: {
                 fields: [
-                  "relationships/0/{{" + relatedBasePath + ".bb}}",
-                  "{{" + basePath + ".a}}"
+                  "relationships/0/{{" + relatedBasePath + ".bb.name}}",
+                  "{{" + basePath + ".a.name}}"
                 ],
-                tooltipField: "relationships/0/{{" + relatedBasePath + ".aa}}",
-                normalizeField: "{{" + basePath + ".aa}}"
+                tooltipField:
+                  "relationships/0/{{" + relatedBasePath + ".aa.name}}",
+                normalizeField: "{{" + basePath + ".aa.name}}"
               }
             }
           ]
@@ -3401,8 +3736,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should handle popup when not a view", () => {
       const relatedTableId: string = "1";
 
-      const relatedBasePath =
-        itemId + ".fieldInfos.layer" + relatedTableId + ".fields";
+      const relatedBasePath = itemId + ".layer" + relatedTableId + ".fields";
 
       const layerDefinition: any = {
         popupInfo: {
@@ -3504,11 +3838,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedLayerDef: any = {
         popupInfo: {
-          title: "{{{" + basePath + ".a}}}",
+          title: "{{{" + basePath + ".a.name}}}",
           description: "",
           fieldInfos: [
             {
-              fieldName: "relationships/0/{{" + relatedBasePath + ".aa}}",
+              fieldName: "relationships/0/{{" + relatedBasePath + ".aa.name}}",
               label: "AA",
               isEditable: false,
               visible: false,
@@ -3516,7 +3850,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               stringFieldOption: "textbox"
             },
             {
-              fieldName: "{{" + basePath + ".a}}",
+              fieldName: "{{" + basePath + ".a.name}}",
               label: "A",
               isEditable: false,
               visible: false,
@@ -3528,7 +3862,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             {
               name: "expr1",
               title: "Population (Expr)",
-              expression: "$feature.{{" + basePath + ".a}}",
+              expression: "$feature.{{" + basePath + ".a.name}}",
               returnType: "number"
             },
             {
@@ -3537,9 +3871,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               expression:
                 "$feature.{{" +
                 basePath +
-                ".a}} + ' (' + $feature.{{" +
+                ".a.name}} + ' (' + $feature.{{" +
                 basePath +
-                ".b}} + ')'",
+                ".b.name}} + ')'",
               returnType: "string"
             }
           ],
@@ -3552,7 +3886,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               type: "fields",
               fieldInfos: [
                 {
-                  fieldName: "relationships/0/{{" + relatedBasePath + ".bb}}",
+                  fieldName:
+                    "relationships/0/{{" + relatedBasePath + ".bb.name}}",
                   label: "Postcode",
                   isEditable: false,
                   visible: false,
@@ -3569,9 +3904,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                   type: "barchart",
                   caption: "For a better idea...",
                   value: {
-                    fields: ["relationships/0/{{" + relatedBasePath + ".aa}}"],
+                    fields: [
+                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
+                    ],
                     tooltipField:
-                      "relationships/0/{{" + relatedBasePath + ".aa}}"
+                      "relationships/0/{{" + relatedBasePath + ".aa.name}}"
                   }
                 }
               ]
@@ -3588,10 +3925,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               caption: "For a better idea...",
               value: {
                 fields: [
-                  "relationships/0/{{" + relatedBasePath + ".bb}}",
-                  "{{" + basePath + ".a}}"
+                  "relationships/0/{{" + relatedBasePath + ".bb.name}}",
+                  "{{" + basePath + ".a.name}}"
                 ],
-                tooltipField: "relationships/0/{{" + relatedBasePath + ".aa}}"
+                tooltipField:
+                  "relationships/0/{{" + relatedBasePath + ".aa.name}}"
               }
             }
           ]
@@ -3639,11 +3977,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         propName:
           "SomeAwords and SomeBwords and {{" +
           basePath +
-          ".a}} and {{" +
+          ".a.name}} and {{" +
           basePath +
-          ".b}} and {{" +
+          ".b.name}} and {{" +
           basePath +
-          ".c}} and stuff"
+          ".c.name}} and stuff"
       };
       _templatizeName(obj, prop, fieldNames, basePath);
       expect(obj).toEqual(expected);
@@ -3758,11 +4096,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           parameterizedExpression:
             "{{" +
             basePath +
-            ".a}} BETWEEN {0} AND {1} or {{" +
+            ".a.name}} BETWEEN {0} AND {1} or {{" +
             basePath +
-            ".b}} = 23 or {{" +
+            ".b.name}} = 23 or {{" +
             basePath +
-            ".c}} LIKE '{2}%'",
+            ".c.name}} LIKE '{2}%'",
           inputs: [
             {
               hint: "Enter square miles.",
@@ -3770,13 +4108,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               parameters: [
                 {
                   type: "esriFieldTypeInteger",
-                  fieldName: "{{" + basePath + ".a}}",
+                  fieldName: "{{" + basePath + ".a.name}}",
                   parameterId: 0,
                   defaultValue: 10
                 },
                 {
                   type: "esriFieldTypeInteger",
-                  fieldName: "{{" + basePath + ".b}}",
+                  fieldName: "{{" + basePath + ".b.name}}",
                   parameterId: 1,
                   defaultValue: 100
                 }
@@ -3788,7 +4126,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
               parameters: [
                 {
                   type: "esriFieldTypeString",
-                  fieldName: "{{" + basePath + ".c}}",
+                  fieldName: "{{" + basePath + ".c.name}}",
                   parameterId: 2,
                   defaultValue: "Jack"
                 }
@@ -3841,11 +4179,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         definitionExpression:
           "{{" +
           basePath +
-          ".a}} IS ABC AND {{" +
+          ".a.name}} IS ABC AND {{" +
           basePath +
-          ".b}} LIKE {{" +
+          ".b.name}} LIKE {{" +
           basePath +
-          ".c}}"
+          ".c.name}}"
       };
       _templatizeDefinitionExpression(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
@@ -3856,14 +4194,24 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail with undefined", () => {
       const fieldNames: any[] = ["A", "B", "C", "D"];
       let expression;
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toBeUndefined();
     });
 
     it("should not fail with empty expression", () => {
       const fieldNames: any[] = ["A", "B", "C", "D"];
       let expression: string = "";
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toEqual("");
     });
 
@@ -3873,17 +4221,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       // test case in expression
       let expression =
         "(a LIKE b AND c LIKE d) AND (A LIKE B AND C LIKE D SOMEOTHERABC)";
-      expression = _templatizeSimpleName(expression, basePath, fieldNames);
+      expression = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
       expect(expression).toEqual(
         "(a LIKE b AND c LIKE d) AND ({{" +
           basePath +
-          ".a}} LIKE {{" +
+          ".a.name}} LIKE {{" +
           basePath +
-          ".b}} AND {{" +
+          ".b.name}} AND {{" +
           basePath +
-          ".c}} LIKE {{" +
+          ".c.name}} LIKE {{" +
           basePath +
-          ".d}} SOMEOTHERABC)"
+          ".d.name}} SOMEOTHERABC)"
       );
     });
   });
@@ -3962,12 +4315,12 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             visualVariables: [
               {
                 type: "colorInfo",
-                field: "{{" + basePath + ".population}}",
+                field: "{{" + basePath + ".population.name}}",
                 stops: []
               }
             ],
             type: "classBreaks",
-            field: "{{" + basePath + ".population}}",
+            field: "{{" + basePath + ".population.name}}",
             minValue: -9007199254740991,
             classBreakInfos: []
           }
@@ -4010,7 +4363,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             type: "heatmap",
             blurRadius: 10,
             colorStops: [],
-            field: "{{" + basePath + ".test}}",
+            field: "{{" + basePath + ".test.name}}",
             maxPixelIntensity: 1249.2897582229123,
             minPixelIntensity: 0
           }
@@ -4080,15 +4433,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
                 valueExpression:
                   'var fieldNames = ["{{' +
                   basePath +
-                  '.pop10_cy}}", "{{' +
+                  '.pop10_cy.name}}", "{{' +
                   basePath +
-                  '.pop40_cy}}", "{{' +
+                  '.pop40_cy.name}}", "{{' +
                   basePath +
-                  '.pop60_cy}}", "{{' +
+                  '.pop60_cy.name}}", "{{' +
                   basePath +
-                  '.pop20_cy}}", "{{' +
+                  '.pop20_cy.name}}", "{{' +
                   basePath +
-                  '.pop30_cy}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\nif(value != null && value >= 0) {\nif (totalValue == null) { totalValue = 0; }\ntotalValue = totalValue + value;\n}\n}\nvar strength = null;\nif (maxValueField != null && totalValue > 0) {\nstrength = (maxValue / totalValue) * 100;\n}\nreturn strength;',
+                  '.pop30_cy.name}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\nif(value != null && value >= 0) {\nif (totalValue == null) { totalValue = 0; }\ntotalValue = totalValue + value;\n}\n}\nvar strength = null;\nif (maxValueField != null && totalValue > 0) {\nstrength = (maxValue / totalValue) * 100;\n}\nreturn strength;',
                 stops: [],
                 legendOptions: {}
               },
@@ -4102,29 +4455,29 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             authoringInfo: {
               type: "predominance",
               fields: [
-                "{{" + basePath + ".pop10_cy}}",
-                "{{" + basePath + ".pop40_cy}}",
-                "{{" + basePath + ".pop60_cy}}",
-                "{{" + basePath + ".pop20_cy}}",
-                "{{" + basePath + ".pop30_cy}}"
+                "{{" + basePath + ".pop10_cy.name}}",
+                "{{" + basePath + ".pop40_cy.name}}",
+                "{{" + basePath + ".pop60_cy.name}}",
+                "{{" + basePath + ".pop20_cy.name}}",
+                "{{" + basePath + ".pop30_cy.name}}"
               ],
               visualVariables: {
-                endTime: "{{" + basePath + ".pop30_cy}}"
+                endTime: "{{" + basePath + ".pop30_cy.name}}"
               }
             },
             type: "uniqueValue",
             valueExpression:
               'var fieldNames = ["{{' +
               basePath +
-              '.pop10_cy}}", "{{' +
+              '.pop10_cy.name}}", "{{' +
               basePath +
-              '.pop40_cy}}", "{{' +
+              '.pop40_cy.name}}", "{{' +
               basePath +
-              '.pop60_cy}}", "{{' +
+              '.pop60_cy.name}}", "{{' +
               basePath +
-              '.pop20_cy}}", "{{' +
+              '.pop20_cy.name}}", "{{' +
               basePath +
-              '.pop30_cy}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\n}\nreturn maxValueField;',
+              '.pop30_cy.name}}"];\nvar numFields = 5;\nvar maxValueField = null;\nvar maxValue = -Infinity;\nvar value, i, totalValue = null;\nfor(i = 0; i < numFields; i++) {\nvalue = $feature[fieldNames[i]];\nif(value > 0) {\nif(value > maxValue) {\nmaxValue = value;\nmaxValueField = fieldNames[i];\n}\nelse if (value == maxValue) {\nmaxValueField = null;\n}\n}\n}\nreturn maxValueField;',
             uniqueValueInfos: []
           }
         }
@@ -4161,7 +4514,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         drawingInfo: {
           renderer: {
             type: "simple",
-            rotationExpression: "[{{" + basePath + ".test}}]",
+            rotationExpression: "[{{" + basePath + ".test.name}}]",
             symbol: {}
           }
         }
@@ -4225,7 +4578,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             observationRenderer: {
               visualVariables: [
                 {
-                  field: "{{" + basePath + ".inclination}}",
+                  field: "{{" + basePath + ".inclination.name}}",
                   rotationType: "geographic",
                   type: "rotationInfo"
                 }
@@ -4236,7 +4589,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
             latestObservationRenderer: {
               visualVariables: [
                 {
-                  field: "{{" + basePath + ".inclination}}",
+                  field: "{{" + basePath + ".inclination.name}}",
                   rotationType: "geographic",
                   type: "rotationInfo"
                 }
@@ -4283,7 +4636,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         drawingInfo: {
           renderer: {
             type: "uniqueValue",
-            field1: "{{" + basePath + ".country}}",
+            field1: "{{" + basePath + ".country.name}}",
             uniqueValueInfos: []
           }
         }
@@ -4342,11 +4695,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       let expected: string =
         "Round((($feature.{{" +
         basePath +
-        ".pop_16up}} - $feature.{{" +
+        ".pop_16up.name}} - $feature.{{" +
         basePath +
-        ".emp_cy}})/$feature.{{" +
+        ".emp_cy.name}})/$feature.{{" +
         basePath +
-        ".pop_16up}})*100,2) + '%'";
+        ".pop_16up.name}})*100,2) + '%'";
 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
@@ -4357,20 +4710,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       text =
         "Round((($feature.{{" +
         basePath +
-        ".pop_16up}} - $feature.{{" +
+        ".pop_16up.name}} - $feature.{{" +
         basePath +
-        ".emp_cy}})/$feature.{{" +
+        ".emp_cy.name}})/$feature.{{" +
         basePath +
-        ".pop_16up}})*100,2) + '%'";
+        ".pop_16up.name}})*100,2) + '%'";
 
       expected =
         "Round((($feature.{{" +
         basePath +
-        ".pop_16up}} - $feature.{{" +
+        ".pop_16up.name}} - $feature.{{" +
         basePath +
-        ".emp_cy}})/$feature.{{" +
+        ".emp_cy.name}})/$feature.{{" +
         basePath +
-        ".pop_16up}})*100,2) + '%'";
+        ".pop_16up.name}})*100,2) + '%'";
 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
@@ -4384,13 +4737,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual('$feature["{{' + basePath + '.emp_cy}}"]');
+      expect(text).toEqual('$feature["{{' + basePath + '.emp_cy.name}}"]');
 
       text = "$feature['EMP_CY']";
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual("$feature['{{" + basePath + ".emp_cy}}']");
+      expect(text).toEqual("$feature['{{" + basePath + ".emp_cy.name}}']");
     });
 
     it("should handle $feature[] notation with join", () => {
@@ -4399,13 +4752,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual('$feature["COUNTY_ID.{{' + basePath + '.emp_cy}}"]');
+      expect(text).toEqual(
+        '$feature["COUNTY_ID.{{' + basePath + '.emp_cy.name}}"]'
+      );
 
       text = "$feature['COUNTY_ID.EMP_CY']";
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual("$feature['COUNTY_ID.{{" + basePath + ".emp_cy}}']");
+      expect(text).toEqual(
+        "$feature['COUNTY_ID.{{" + basePath + ".emp_cy.name}}']"
+      );
     });
 
     it('should handle "fieldName" notation', () => {
@@ -4414,13 +4771,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual('var names = ["{{' + basePath + '.emp_cy}}"]');
+      expect(text).toEqual('var names = ["{{' + basePath + '.emp_cy.name}}"]');
 
       text = "var names = ['EMP_CY']";
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
       });
-      expect(text).toEqual("var names = ['{{" + basePath + ".emp_cy}}']");
+      expect(text).toEqual("var names = ['{{" + basePath + ".emp_cy.name}}']");
 
       text = 'var names = [ "EMP_CY", "POP_16UP" ]';
       fieldNames.forEach((name: string) => {
@@ -4429,9 +4786,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(text).toEqual(
         'var names = [ "{{' +
           basePath +
-          '.emp_cy}}", "{{' +
+          '.emp_cy.name}}", "{{' +
           basePath +
-          '.pop_16up}}" ]'
+          '.pop_16up.name}}" ]'
       );
 
       text = "var names = [ 'EMP_CY', 'POP_16UP' ]";
@@ -4441,9 +4798,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(text).toEqual(
         "var names = [ '{{" +
           basePath +
-          ".emp_cy}}', '{{" +
+          ".emp_cy.name}}', '{{" +
           basePath +
-          ".pop_16up}}' ]"
+          ".pop_16up.name}}' ]"
       );
     });
   });
@@ -4486,20 +4843,20 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expected: any[] = [
         {
-          labelExpression: "[{{" + basePath + ".description}}]",
+          labelExpression: "[{{" + basePath + ".description.name}}]",
           labelExpressionInfo: {
             value:
               'return $feature["{{' +
               basePath +
-              '.state_name}}"] + " (arcade)";',
+              '.state_name.name}}"] + " (arcade)";',
             expression:
               'return $feature["{{' +
               basePath +
-              '.state_name}}"] + " (arcade)";'
+              '.state_name.name}}"] + " (arcade)";'
           },
           fieldInfos: [
             {
-              fieldName: "{{" + basePath + ".acres}}",
+              fieldName: "{{" + basePath + ".acres.name}}",
               format: {
                 places: 2,
                 digitSeparator: true
@@ -4550,10 +4907,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
       expected.templates[0].prototype.attributes[
-        "{{" + basePath + ".a}}"
+        "{{" + basePath + ".a.name}}"
       ] = null;
       expected.templates[0].prototype.attributes[
-        "{{" + basePath + ".b}}"
+        "{{" + basePath + ".b.name}}"
       ] = null;
 
       _templatizeTemplates(layer, basePath);
@@ -4594,11 +4951,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
       const expectedDomains: any = {};
-      expectedDomains["{{" + path + ".a}}"] = "A";
-      expectedDomains["{{" + path + ".b}}"] = "B";
+      expectedDomains["{{" + path + ".a.name}}"] = "A";
+      expectedDomains["{{" + path + ".b.name}}"] = "B";
       const expectedTemplates: any = {};
-      expectedTemplates["{{" + path + ".a}}"] = "A";
-      expectedTemplates["{{" + path + ".b}}"] = "B";
+      expectedTemplates["{{" + path + ".a.name}}"] = "A";
+      expectedTemplates["{{" + path + ".b.name}}"] = "B";
       const expectedLayer: any = {
         types: [
           {
@@ -4665,9 +5022,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expected: any = {
         timeInfo: {
-          endTimeField: "{{" + path + ".a}}",
-          startTimeField: "{{" + path + ".b}}",
-          trackIdField: "{{" + path + ".c}}"
+          endTimeField: "{{" + path + ".a.name}}",
+          startTimeField: "{{" + path + ".b.name}}",
+          trackIdField: "{{" + path + ".c.name}}"
         }
       };
       _templatizeTimeInfo(layer, path);
@@ -4708,11 +5065,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         viewDefinitionQuery:
           "a is not {{" +
           basePath +
-          ".a}} is B isNot but {{" +
+          ".a.name}} is B isNot but {{" +
           basePath +
-          ".bb}} is and {{" +
+          ".bb.name}} is and {{" +
           basePath +
-          ".ccc}}"
+          ".ccc.name}}"
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);

@@ -139,7 +139,9 @@ export function createSolution(
               progressCallback(98);
 
               // Update solution item with its data JSON
-              solutionData.templates = solutionTemplates;
+              solutionData.templates = createSolutionTemplate.postProcessFieldReferences(
+                solutionTemplates
+              );
               const updateOptions: portal.IUpdateItemOptions = {
                 item: {
                   id: solutionItemId,

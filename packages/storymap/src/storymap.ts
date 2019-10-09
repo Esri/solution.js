@@ -28,7 +28,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 
 export function convertItemToTemplate(
   itemInfo: any,
-  userSession: auth.UserSession
+  authentication: auth.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     if (itemInfo.type === "StoryMap") {
