@@ -175,6 +175,127 @@ export function createFeatureService(
 }
 
 /**
+ * Publishes an item and its data, metadata, and resources as an AGOL item.
+ *
+ * @param itemInfo Item's `item` section
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param authentication Credentials for the request
+ * @param itemThumbnailUrl URL to image to use for item thumbnail
+ * @param dataFile Item's `data` section
+ * @param metadataFile Item's metadata file
+ * @param resourcesFiles Item's resources
+ * @param access Access to set for item: "public", "org", "private"
+ * @return A promise that will resolve with an object reporting success or failure and the Solution id
+ */
+export function createFullItem(
+  itemInfo: any,
+  folderId: string | undefined,
+  authentication: auth.UserSession,
+  itemThumbnailUrl?: string,
+  dataFile?: File,
+  metadataFile?: File,
+  resourcesFiles?: File[],
+  access = "private"
+): Promise<portal.ICreateItemResponse> {
+  return new Promise((resolve, reject) => {
+    // Create item
+    const createOptions: portal.ICreateItemOptions = {
+      item: {
+        ...itemInfo
+      },
+      folderId,
+      authentication: authentication
+    };
+    if (itemThumbnailUrl) {
+      createOptions.item.thumbnailurl = itemThumbnailUrl;
+    }
+
+    portal.createItemInFolder(createOptions).then(
+      createResponse => {
+        if (createResponse.success) {
+          let accessDef: Promise<portal.ISharingResponse>;
+
+          // Set access if it is not AGOL default
+          // Set the access manually since the access value in createItem appears to be ignored
+          // Need to run serially; will not work reliably if done in parallel with adding the data section
+          if (access !== "private") {
+            const accessOptions: portal.ISetAccessOptions = {
+              id: createResponse.id,
+              access: access === "public" ? "public" : "org", // need to use constants rather than string
+              authentication: authentication
+            };
+            accessDef = portal.setItemAccess(accessOptions);
+          } else {
+            accessDef = Promise.resolve({
+              itemId: createResponse.id
+            } as portal.ISharingResponse);
+          }
+
+          // Now add attached items
+          accessDef.then(
+            () => {
+              const updateDefs: Array<Promise<any>> = [];
+
+              // Add the data section
+              if (dataFile) {
+                updateDefs.push(
+                  _addItemDataFile(createResponse.id, dataFile, authentication)
+                );
+              }
+
+              // Add the resources
+              if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
+                resourcesFiles.forEach(file => {
+                  const addResourceOptions: portal.IItemResourceOptions = {
+                    id: createResponse.id,
+                    resource: file,
+                    name: file.name,
+                    authentication: authentication,
+                    params: {}
+                  };
+
+                  // Check for folder in resource filename
+                  const filenameParts = file.name.split("/");
+                  if (filenameParts.length > 1) {
+                    addResourceOptions.name = filenameParts[1];
+                    addResourceOptions.params = {
+                      resourcesPrefix: filenameParts[0]
+                    };
+                  }
+                  updateDefs.push(portal.addItemResource(addResourceOptions));
+                });
+              }
+
+              // Add the metadata section
+              if (metadataFile) {
+                updateDefs.push(
+                  _addItemMetadataFile(
+                    createResponse.id,
+                    metadataFile,
+                    authentication
+                  )
+                );
+              }
+
+              // Wait until all adds are done
+              Promise.all(updateDefs).then(
+                () => resolve(createResponse),
+                e => reject(generalHelpers.fail(e))
+              );
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        } else {
+          reject(generalHelpers.fail());
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
  * Publishes an item and its data as an AGOL item.
  *
  * @param itemInfo Item's `item` section
@@ -231,110 +352,6 @@ export function createItemWithData(
               success: true
             });
           }
-        } else {
-          reject(generalHelpers.fail());
-        }
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-/**
- * Publishes an item and its data as an AGOL item.
- *
- * @param itemInfo Item's `item` section
- * @param folderId Id of folder to receive item; null indicates that the item goes into the root
- *                 folder; ignored for Group item type
- * @param authentication Credentials for the request
- * @param itemThumbnailUrl URL to image to use for item thumbnail
- * @param dataFile Item's `data` section
- * @param metadataFile Item's metadata file
- * @param resourcesFiles Item's resources
- * @param access Access to set for item: "public", "org", "private"
- * @return A promise that will resolve with an object reporting success or failure and the Solution id
- */
-export function createItemWithData2(
-  itemInfo: any,
-  folderId: string | undefined,
-  authentication: auth.UserSession,
-  itemThumbnailUrl?: string,
-  dataFile?: File,
-  metadataFile?: File,
-  resourcesFiles?: File[],
-  access = "private"
-): Promise<portal.ICreateItemResponse> {
-  return new Promise((resolve, reject) => {
-    // Create item
-    const createOptions: portal.ICreateItemOptions = {
-      item: {
-        ...itemInfo
-      },
-      folderId,
-      authentication: authentication
-    };
-    if (itemThumbnailUrl) {
-      createOptions.item.thumbnailurl = itemThumbnailUrl;
-    }
-
-    portal.createItemInFolder(createOptions).then(
-      createResponse => {
-        if (createResponse.success) {
-          const updateDefs: Array<Promise<any>> = [];
-
-          if (access !== "private") {
-            // Set access if it is not AGOL default
-            // Set the access manually since the access value in createItem appears to be ignored
-            const accessOptions: portal.ISetAccessOptions = {
-              id: createResponse.id,
-              access: access === "public" ? "public" : "org", // need to use constants rather than string
-              authentication: authentication
-            };
-            updateDefs.push(portal.setItemAccess(accessOptions));
-          }
-
-          if (metadataFile) {
-            updateDefs.push(
-              _addItemMetadataFile(
-                createResponse.id,
-                metadataFile,
-                authentication
-              )
-            );
-          }
-
-          if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
-            resourcesFiles.forEach(file => {
-              const addResourceOptions: portal.IItemResourceOptions = {
-                id: createResponse.id,
-                resource: file,
-                name: file.name,
-                authentication: authentication,
-                params: {}
-              };
-
-              // Check for folder in resource filename
-              const filenameParts = file.name.split("/");
-              if (filenameParts.length > 1) {
-                addResourceOptions.name = filenameParts[1];
-                addResourceOptions.params = {
-                  resourcesPrefix: filenameParts[0]
-                };
-              }
-              updateDefs.push(portal.addItemResource(addResourceOptions));
-            });
-          }
-
-          if (dataFile) {
-            updateDefs.push(
-              _addItemDataFile(createResponse.id, dataFile, authentication)
-            );
-          }
-
-          Promise.all(updateDefs).then(
-            responses => resolve(createResponse),
-            e => reject(generalHelpers.fail(e))
-          );
         } else {
           reject(generalHelpers.fail());
         }

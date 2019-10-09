@@ -88,7 +88,7 @@ export function copyItemInfo(
 
         // Create the copy after extracting properties that aren't specific to the source
         solutionCommon
-          .createItemWithData2(
+          .createFullItem(
             getCopyableItemBaseProperties(itemBase),
             undefined, // folder id
             authentication,
