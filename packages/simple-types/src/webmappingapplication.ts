@@ -562,7 +562,7 @@ export function _getSortOrder(
   if (url && !isNaN(layerId)) {
     layerUrlTest = new RegExp(url + "/" + layerId, "gm");
   }
-  if (layerUrlTest.test(testString)) {
+  if (layerUrlTest && layerUrlTest.test(testString)) {
     return 1;
   } else if (datasourceInfo.ids.length > 0) {
     if (
