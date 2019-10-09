@@ -443,10 +443,8 @@ function createItemTemplateRelationship(
   };
   relationship.keyField =
     role === "esriRelRoleOrigin"
-      ? "{{svc1234567890.fieldInfos.layer" + id + ".fields.globalid}}"
-      : "{{svc1234567890.fieldInfos.layer" +
-        relatedTableId +
-        ".fields.globalid}}";
+      ? "{{svc1234567890.layer" + id + ".fields.globalid.name}}"
+      : "{{svc1234567890.layer" + relatedTableId + ".fields.globalid.name}}";
   return relationship;
 }
 
@@ -986,9 +984,7 @@ function getLayerOrTableTemplate(
     globalIdField: "globalid",
     capabilities: "Create,Query,Editing",
     viewDefinitionQuery:
-      "status = '{{svc1234567890.fieldInfos.layer" +
-      id +
-      ".fields.boardreview}}'",
+      "status = '{{svc1234567890.layer" + id + ".fields.boardreview.name}}'",
     definitionQuery: "status = 'BoardReview'"
   };
 }

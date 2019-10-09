@@ -292,7 +292,12 @@ export function updateSettingsFieldInfos(
       dependencies.forEach((d: any) => {
         settingsKeys.forEach((_k: any) => {
           if (d === settings[_k].id) {
-            settings[k]["fieldInfos"] = settings[_k].fieldInfos;
+            const layerKeys = Object.keys(settings[_k]);
+            layerKeys.forEach(layerKey => {
+              if (layerKey.startsWith("layer")) {
+                settings[k][layerKey] = settings[_k][layerKey];
+              }
+            });
           }
         });
       });
@@ -661,7 +666,10 @@ export function postProcessFields(
         // Add the fieldInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
           if (id === templateDictionary[k].id) {
-            templateDictionary[k]["fieldInfos"] = getFieldSettings(fieldInfos);
+            templateDictionary[k] = Object.assign(
+              templateDictionary[k],
+              getFieldSettings(fieldInfos)
+            );
           }
         });
 
@@ -792,7 +800,11 @@ export function updatePopupInfo(
  * @param basePath path used to de-templatize while deploying
  * @param value to be converted to lower case for lookup while deploying
  */
-export function _templatize(basePath: string, value: string): string {
+export function _templatize(
+  basePath: string,
+  value: string,
+  suffix?: string
+): string {
   if (value.startsWith("{{")) {
     return value;
   } else {
@@ -800,7 +812,7 @@ export function _templatize(basePath: string, value: string): string {
       common.templatizeTerm(
         basePath,
         basePath,
-        "." + String(value).toLowerCase()
+        "." + String(value).toLowerCase() + (suffix ? "." + suffix : "")
       )
     );
   }
@@ -816,10 +828,11 @@ export function _templatize(basePath: string, value: string): string {
 export function _templatizeProperty(
   object: any,
   property: string,
-  basePath: string
+  basePath: string,
+  suffix: string
 ): void {
   if (object && object.hasOwnProperty(property) && object[property]) {
-    object[property] = _templatize(basePath, object[property]);
+    object[property] = _templatize(basePath, object[property], suffix);
   }
 }
 
@@ -890,7 +903,7 @@ export function _templatizeLayerFieldReferences(
   dependencies: common.IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
-  const path: string = itemID + ".fieldInfos.layer" + layer.id + ".fields";
+  const path: string = itemID + ".layer" + layer.id + ".fields";
 
   // Get the field names for various tests
   const fieldNames: string[] = layer.fields.map((f: any) => f.name);
@@ -1022,8 +1035,7 @@ export function _templatizeAdminLayerInfoFields(
 
   if (table) {
     let id: string = _getDependantItemId(table.sourceServiceName, dependencies);
-    const path: string =
-      id + ".fieldInfos.layer" + table.sourceLayerId + ".fields";
+    const path: string = id + ".layer" + table.sourceLayerId + ".fields";
 
     _templatizeAdminSourceLayerFields(table.sourceLayerFields || [], path);
 
@@ -1037,8 +1049,7 @@ export function _templatizeAdminLayerInfoFields(
     if (relatedTables.length > 0) {
       relatedTables.forEach((t: any) => {
         id = _getDependantItemId(t.sourceServiceName, dependencies);
-        const relatedPath: string =
-          id + ".fieldInfos.layer" + t.sourceLayerId + ".fields";
+        const relatedPath: string = id + ".layer" + t.sourceLayerId + ".fields";
 
         _templatizeTopFilter(t.topFilter || {}, relatedPath);
 
@@ -1049,12 +1060,12 @@ export function _templatizeAdminLayerInfoFields(
 
         const parentKeyFields: any[] = t.parentKeyFields || [];
         t.parentKeyFields = parentKeyFields.map((f: any) => {
-          return _templatize(path, f);
+          return _templatize(path, f, "name");
         });
 
         const keyFields: any[] = t.keyFields || [];
         t.keyFields = keyFields.map((f: any) => {
-          return _templatize(relatedPath, f);
+          return _templatize(relatedPath, f, "name");
         });
       });
     }
@@ -1081,7 +1092,7 @@ export function _templatizeAdminSourceLayerFields(
   fields: any[],
   basePath: string
 ): void {
-  fields.forEach(f => _templatizeProperty(f, "source", basePath));
+  fields.forEach(f => _templatizeProperty(f, "source", basePath, "name"));
 }
 
 /**
@@ -1098,7 +1109,7 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
       const orderByField = orderByFields.split(" ")[0];
       topFilter.orderByFields = topFilter.orderByFields.replace(
         orderByField,
-        _templatize(basePath, orderByField)
+        _templatize(basePath, orderByField, "name")
       );
     }
 
@@ -1107,7 +1118,7 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
       const _groupByFields = groupByFields.split(",");
       if (_groupByFields.length > 0) {
         const mappedFields = _groupByFields.map((f: any) => {
-          return _templatize(basePath, f);
+          return _templatize(basePath, f, "name");
         });
         topFilter.groupByFields = mappedFields.join(",");
       }
@@ -1129,9 +1140,8 @@ export function _templatizeRelationshipFields(
     const relationships: any[] = layer.relationships;
     relationships.forEach(r => {
       if (r.keyField) {
-        const basePath: string =
-          itemID + ".fieldInfos.layer" + layer.id + ".fields";
-        _templatizeProperty(r, "keyField", basePath);
+        const basePath: string = itemID + ".layer" + layer.id + ".fields";
+        _templatizeProperty(r, "keyField", basePath, "name");
       }
     });
   }
@@ -1203,7 +1213,7 @@ export function _templatizeName(
       if (regEx.test(object[property])) {
         object[property] = object[property].replace(
           regEx,
-          _templatize(basePath, name)
+          _templatize(basePath, name, "name")
         );
       }
     });
@@ -1264,15 +1274,15 @@ export function _templatizeFieldName(
         ? "relatedTableId"
         : "sourceLayerId";
       const _basePath: string =
-        itemID + ".fieldInfos.layer" + relatedTable[prop] + ".fields";
-      rels[2] = _templatize(_basePath, rels[2]);
+        itemID + ".layer" + relatedTable[prop] + ".fields";
+      rels[2] = _templatize(_basePath, rels[2], "name");
       name = rels.join("/");
     }
   } else {
     // do not need to templatize expression references as the expression
     // itself will be templatized
     if (name.indexOf("expression/") === -1) {
-      name = _templatize(basePath, name);
+      name = _templatize(basePath, name, "name");
     }
   }
   return name;
@@ -1355,7 +1365,7 @@ export function _templatizeMediaInfos(
       );
 
       if (v.hasOwnProperty("normalizeField")) {
-        _templatizeProperty(v, "normalizeField", basePath);
+        _templatizeProperty(v, "normalizeField", basePath, "name");
       }
 
       if (v.hasOwnProperty("tooltipField")) {
@@ -1390,7 +1400,7 @@ export function _templatizeDefinitionEditor(
         inputs.forEach(i => {
           if (i.parameters) {
             i.parameters.forEach((p: any) => {
-              _templatizeProperty(p, "fieldName", basePath);
+              _templatizeProperty(p, "fieldName", basePath, "name");
             });
           }
         });
@@ -1400,7 +1410,8 @@ export function _templatizeDefinitionEditor(
         defEditor.parameterizedExpression = _templatizeSimpleName(
           defEditor.parameterizedExpression || "",
           basePath,
-          fieldNames
+          fieldNames,
+          "name"
         );
       }
     }
@@ -1423,7 +1434,8 @@ export function _templatizeDefinitionExpression(
     layer.definitionExpression = _templatizeSimpleName(
       layer.definitionExpression || "",
       basePath,
-      fieldNames
+      fieldNames,
+      "name"
     );
   }
 }
@@ -1438,12 +1450,16 @@ export function _templatizeDefinitionExpression(
 export function _templatizeSimpleName(
   expression: string,
   basePath: string,
-  fieldNames: string[]
+  fieldNames: string[],
+  suffix: string
 ): string {
   fieldNames.forEach(name => {
     const regEx = new RegExp("\\b" + name + "\\b", "gm");
     if (expression && regEx.test(expression)) {
-      expression = expression.replace(regEx, _templatize(basePath, name));
+      expression = expression.replace(
+        regEx,
+        _templatize(basePath, name, suffix)
+      );
     }
   });
   return expression;
@@ -1524,10 +1540,12 @@ export function _templatizeGenRenderer(
     }
 
     const props: string[] = ["field", "normalizationField"];
-    props.forEach(p => _templatizeProperty(renderer, p, basePath));
+    props.forEach(p => _templatizeProperty(renderer, p, basePath, "name"));
 
     const fieldNameProps: string[] = ["field1", "field2", "field3"];
-    fieldNameProps.forEach(fnP => _templatizeProperty(renderer, fnP, basePath));
+    fieldNameProps.forEach(fnP =>
+      _templatizeProperty(renderer, fnP, basePath, "name")
+    );
 
     // When an attribute name is specified, it's enclosed in square brackets
     const rExp: string = renderer.rotationExpression;
@@ -1537,7 +1555,7 @@ export function _templatizeGenRenderer(
         if (regEx.test(rExp)) {
           renderer.rotationExpression = rExp.replace(
             regEx,
-            "[" + _templatize(basePath, name) + "]"
+            "[" + _templatize(basePath, name, "name") + "]"
           );
         }
       });
@@ -1558,7 +1576,7 @@ export function _templatizeGenRenderer(
     const visualVariables: any[] = renderer.visualVariables;
     if (visualVariables) {
       visualVariables.forEach(v => {
-        props.forEach(p => _templatizeProperty(v, p, basePath));
+        props.forEach(p => _templatizeProperty(v, p, basePath, "name"));
         if (v.valueExpression) {
           fieldNames.forEach(name => {
             v.valueExpression = _templatizeArcadeExpressions(
@@ -1612,14 +1630,14 @@ export function _templatizeAuthoringInfo(
     const props: string[] = ["field", "normalizationField"];
 
     const field1: any = authoringInfo.field1;
-    props.forEach(p => _templatizeProperty(field1, p, basePath));
+    props.forEach(p => _templatizeProperty(field1, p, basePath, "name"));
 
     const field2: any = authoringInfo.field2;
-    props.forEach(p => _templatizeProperty(field2, p, basePath));
+    props.forEach(p => _templatizeProperty(field2, p, basePath, "name"));
 
     const fields: any[] = authoringInfo.fields;
     if (fields) {
-      authoringInfo.fields = fields.map(f => _templatize(basePath, f));
+      authoringInfo.fields = fields.map(f => _templatize(basePath, f, "name"));
     }
 
     const vProps: string[] = ["endTime", "field", "startTime"];
@@ -1628,7 +1646,7 @@ export function _templatizeAuthoringInfo(
       vProps.forEach(p => {
         // endTime and startTime may or may not be a field name
         if (fieldNames.indexOf(vVars[p]) > -1) {
-          _templatizeProperty(vVars, p, basePath);
+          _templatizeProperty(vVars, p, basePath, "name");
         }
       });
     }
@@ -1647,7 +1665,7 @@ export function _templatizeArcadeExpressions(
   fieldName: string,
   basePath: string
 ): string {
-  const t = _templatize(basePath, fieldName);
+  const t = _templatize(basePath, fieldName, "name");
 
   if (text) {
     // test for $feature. notation
@@ -1709,13 +1727,15 @@ export function _templatizeLabelingInfo(
   labelingInfo.forEach((li: any) => {
     if (li.hasOwnProperty("fieldInfos")) {
       const fieldInfos: any[] = li.fieldInfos || [];
-      fieldInfos.forEach(fi => _templatizeProperty(fi, "fieldName", basePath));
+      fieldInfos.forEach(fi =>
+        _templatizeProperty(fi, "fieldName", basePath, "name")
+      );
     }
 
     const labelExp: string = li.labelExpression || "";
     const labelExpInfo: any = li.labelExpressionInfo || {};
     fieldNames.forEach(n => {
-      const t: string = _templatize(basePath, n);
+      const t: string = _templatize(basePath, n, "name");
 
       // check for [fieldName] or ["fieldName"]
       const regExBracket = new RegExp('(\\[\\"*)+(' + n + ')(\\"*\\])+', "gm");
@@ -1761,7 +1781,7 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
   const templates: any[] = layer.templates || [];
   templates.forEach(t => {
     const attributes: any = common.getProp(t, "prototype.attributes");
-    const _attributes: any = _templatizeKeys(attributes, basePath);
+    const _attributes: any = _templatizeKeys(attributes, basePath, "name");
     if (_attributes) {
       t.prototype.attributes = _attributes;
     }
@@ -1772,7 +1792,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   const types: any[] = layer.types;
   if (types && Array.isArray(types) && types.length > 0) {
     types.forEach((type: any) => {
-      const domains: any = _templatizeKeys(type.domains, basePath);
+      const domains: any = _templatizeKeys(type.domains, basePath, "name");
       if (domains) {
         type.domains = domains;
       }
@@ -1781,7 +1801,11 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
       if (templates && templates.length > 0) {
         templates.forEach((t: any) => {
           const attributes = common.getProp(t, "prototype.attributes");
-          const _attributes: any = _templatizeKeys(attributes, basePath);
+          const _attributes: any = _templatizeKeys(
+            attributes,
+            basePath,
+            "name"
+          );
           if (_attributes) {
             t.prototype.attributes = _attributes;
           }
@@ -1791,7 +1815,11 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   }
 }
 
-export function _templatizeKeys(obj: any, basePath: string): any {
+export function _templatizeKeys(
+  obj: any,
+  basePath: string,
+  suffix: string
+): any {
   let _obj: any;
 
   if (obj) {
@@ -1799,7 +1827,7 @@ export function _templatizeKeys(obj: any, basePath: string): any {
     const objKeys: string[] = Object.keys(obj);
     if (objKeys && objKeys.length > 0) {
       objKeys.forEach(k => {
-        _obj[_templatize(basePath, k)] = obj[k];
+        _obj[_templatize(basePath, k, suffix)] = obj[k];
       });
     }
   }
@@ -1823,7 +1851,7 @@ export function _templatizeTimeInfo(layer: any, basePath: string): void {
     ];
     timeProps.forEach(t => {
       if (timeInfo[t] !== "") {
-        _templatizeProperty(timeInfo, t, basePath);
+        _templatizeProperty(timeInfo, t, basePath, "name");
       } else {
         timeInfo[t] = null;
       }
@@ -1848,14 +1876,16 @@ export function _templatizeDefinitionQuery(
     layer.viewDefinitionQuery = _templatizeSimpleName(
       layer.viewDefinitionQuery || "",
       basePath,
-      fieldNames
+      fieldNames,
+      "name"
     );
   }
   if (layer && layer.hasOwnProperty("definitionQuery")) {
     layer.definitionQuery = _templatizeSimpleName(
       layer.definitionQuery || "",
       basePath,
-      fieldNames
+      fieldNames,
+      "name"
     );
   }
 }
@@ -1883,11 +1913,19 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         newFieldNames.indexOf(lName) === -1
       ) {
         if (f.alias === field.alias) {
-          nameMapping[lName] = f.name;
+          nameMapping[lName] = {
+            name: f.name,
+            alias: f.alias,
+            type: f.type
+          };
         }
       }
       if (String(f.name).toLowerCase() === lName) {
-        nameMapping[lName] = f.name;
+        nameMapping[lName] = {
+          name: f.name,
+          alias: f.alias,
+          type: f.type
+        };
       }
     });
   });
@@ -1912,11 +1950,22 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
           }
           // This issue only occurs on portal so we
           // need to delete the lcase version of the field
-          fInfo.deleteFields.push({
-            name: lowerEfi
-          });
+          fInfo.deleteFields.push(lowerEfi);
         }
-        nameMapping[lowerEfi] = newEfi[k];
+
+        // editFieldsInfo only has the name and not the alias and type
+        let sourceEfiField: any;
+        fInfo.sourceFields.some((sf: any) => {
+          if (sf.name === efi[k]) {
+            sourceEfiField = sf;
+          }
+          return sf.name === efi[k];
+        });
+        nameMapping[lowerEfi] = {
+          name: newEfi[k],
+          alias: sourceEfiField ? sourceEfiField.alias : "",
+          type: sourceEfiField ? sourceEfiField.type : ""
+        };
       }
     });
 

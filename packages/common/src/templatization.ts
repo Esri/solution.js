@@ -189,6 +189,31 @@ export function templatizeToLowerCase(basePath: string, value: string): string {
   }
 }
 
+/**
+ * using each field from the datasource replace any occurances
+ * of the field name with the templatized value
+ * Needs to account for:
+ * "NAME"
+ * "NAME NAME2"
+ * "NAME ASC"
+ * "{NAME}"
+ * "(NAME = value AND NAME2 = someOtherValue)"
+ */
+export function templatizeFieldReferences(
+  obj: any,
+  fields: any[],
+  basePath: string
+): any {
+  let objString: string = JSON.stringify(obj);
+  fields.forEach(field => {
+    objString = objString.replace(
+      new RegExp("\\b" + field.name + "\\b", "g"),
+      templatizeToLowerCase(basePath, field.name + ".name")
+    );
+  });
+  return JSON.parse(objString);
+}
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**

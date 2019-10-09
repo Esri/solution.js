@@ -115,14 +115,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const expectedId: string = "{{" + id + ".id}}";
         const keyField: string = "globalid";
         const expectedLayerKeyField: string =
-          "{{" + id + ".fieldInfos.layer0.fields.globalid}}";
+          "{{" + id + ".layer0.fields.globalid.name}}";
         const expectedTableKeyField: string =
-          "{{" + id + ".fieldInfos.layer1.fields.globalid}}";
+          "{{" + id + ".layer1.fields.globalid.name}}";
         const defQuery: string = "status = 'BoardReview'";
         const expectedLayerDefQuery: string =
-          "status = '{{" + id + ".fieldInfos.layer0.fields.boardreview}}'";
+          "status = '{{" + id + ".layer0.fields.boardreview.name}}'";
         const expectedTableDefQuery: string =
-          "status = '{{" + id + ".fieldInfos.layer1.fields.boardreview}}'";
+          "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
 
         itemTemplate = mockSolutions.getItemTemplatePart(
           "Feature Service",
@@ -367,17 +367,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -503,17 +499,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -646,17 +638,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -752,17 +740,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -840,17 +824,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -924,17 +904,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -1011,17 +987,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -1117,17 +1089,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       const layerKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer0.fields.globalid}}";
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
       const tableKeyField: string =
-        "{{" + expectedId + ".fieldInfos.layer1.fields.globalid}}";
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
       const layerDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer0.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
       const tableDefQuery: string =
-        "status = '{{" +
-        expectedId +
-        ".fieldInfos.layer1.fields.boardreview}}'";
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",

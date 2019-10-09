@@ -344,29 +344,91 @@ describe("Module `deploySolution`", () => {
           id: "svc1234567890",
           url: featureServerUrl,
           name: "ROWPermits_publiccomment",
-          fieldInfos: {
-            layer0: {
-              fields: {
-                globalid: "globalid",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                objectid: "OBJECTID",
-                appname: "appname",
-                boardreview: "BoardReview"
+          layer0: {
+            fields: {
+              globalid: {
+                name: "globalid",
+                alias: "globalid",
+                type: "esriFieldTypeGlobalID"
+              },
+              creationdate: {
+                name: "CreationDate",
+                alias: "CreationDate",
+                type: "esriFieldTypeDate"
+              },
+              creator: {
+                name: "Creator",
+                alias: "Creator",
+                type: "esriFieldTypeString"
+              },
+              editdate: {
+                name: "EditDate",
+                alias: "EditDate",
+                type: "esriFieldTypeDate"
+              },
+              editor: {
+                name: "Editor",
+                alias: "Editor",
+                type: "esriFieldTypeString"
+              },
+              objectid: {
+                name: "OBJECTID",
+                alias: "OBJECTID",
+                type: "esriFieldTypeOID"
+              },
+              appname: {
+                name: "appname",
+                alias: "appname",
+                type: "esriFieldTypeString"
+              },
+              boardreview: {
+                name: "BoardReview",
+                alias: "Board Review",
+                type: "esriFieldTypeString"
               }
-            },
-            layer1: {
-              fields: {
-                globalid: "globalid",
-                creationdate: "CreationDate",
-                creator: "Creator",
-                editdate: "EditDate",
-                editor: "Editor",
-                objectid: "OBJECTID",
-                appname: "appname",
-                boardreview: "BoardReview"
+            }
+          },
+          layer1: {
+            fields: {
+              globalid: {
+                name: "globalid",
+                alias: "globalid",
+                type: "esriFieldTypeGlobalID"
+              },
+              creationdate: {
+                name: "CreationDate",
+                alias: "CreationDate",
+                type: "esriFieldTypeDate"
+              },
+              creator: {
+                name: "Creator",
+                alias: "Creator",
+                type: "esriFieldTypeString"
+              },
+              editdate: {
+                name: "EditDate",
+                alias: "EditDate",
+                type: "esriFieldTypeDate"
+              },
+              editor: {
+                name: "Editor",
+                alias: "Editor",
+                type: "esriFieldTypeString"
+              },
+              objectid: {
+                name: "OBJECTID",
+                alias: "OBJECTID",
+                type: "esriFieldTypeOID"
+              },
+              appname: {
+                name: "appname",
+                alias: "appname",
+                type: "esriFieldTypeString"
+              },
+              boardreview: {
+                name: "BoardReview",
+                alias: "Board Review",
+                type: "esriFieldTypeString"
               }
             }
           }

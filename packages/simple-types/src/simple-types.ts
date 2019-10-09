@@ -184,7 +184,7 @@ export function convertItemToTemplate(
             case "web mapping application":
               webappPromise = webmappingapplication.convertItemToTemplate(
                 itemTemplate,
-                { authentication: authentication }
+                authentication
               );
               break;
             case "workforce project":
@@ -469,4 +469,29 @@ export function updateGroup(
       e => reject(common.fail(e))
     );
   });
+}
+
+/**
+ * Templatizes field references within specific template types.
+ * Currently only handles web mapping applications
+ *
+ * @param template A solution template
+ * @param datasourceInfos A list of objects that store key datasource info used to templatizing field references
+ * @param type The item type
+ * @return The updated solution template
+ */
+export function postProcessFieldReferences(
+  solutionTemplate: common.IItemTemplate,
+  datasourceInfos: common.IDatasourceInfo[],
+  type: string
+): common.IItemTemplate {
+  switch (type.toLowerCase()) {
+    case "web mapping application":
+      webmappingapplication.postProcessFieldReferences(
+        solutionTemplate,
+        datasourceInfos
+      );
+      break;
+  }
+  return solutionTemplate;
 }
