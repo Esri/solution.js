@@ -657,7 +657,7 @@ export function getAGOLService(
   const service: any = {
     currentVersion: 10.61,
     serviceItemId: "svc1234567890",
-    isView: isNullOrUndefined(isView) ? true : isView,
+    isView: isView === null || isView === undefined ? true : isView,
     isUpdatableView: true,
     sourceSchemaChangesAllowed: true,
     serviceDescription: "",
@@ -769,7 +769,7 @@ export function getAGOLLayerOrTable(
     name: name,
     type: type,
     serviceItemId: "svc1234567890",
-    isView: isNullOrUndefined(isView) ? true : isView,
+    isView: isView === null || isView === undefined ? true : isView,
     isUpdatableView: true,
     sourceSchemaChangesAllowed: true,
     displayField: "appname",
