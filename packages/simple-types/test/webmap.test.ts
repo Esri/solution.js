@@ -166,18 +166,18 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           operationalLayers: [
             {
               itemId: "{{layer1.id}}",
-              url: "{{layer1.url}}/4"
+              url: "{{layer1.layer4.url}}"
             },
             {
               itemId: "{{layer2.id}}",
-              url: "{{layer2.url}}/4"
+              url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
               itemId: "{{layer4.id}}",
-              url: "{{layer4.url}}/4"
+              url: "{{layer4.layer4.url}}"
             }
           ],
           tables: []
@@ -240,14 +240,14 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           tables: [
             {
               itemId: "{{table1.id}}",
-              url: "{{table1.url}}/4"
+              url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
               itemId: "{{table3.id}}",
-              url: "{{table3.url}}/4"
+              url: "{{table3.layer4.url}}"
             },
             {
               itemId: null
@@ -331,27 +331,27 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             },
             {
               itemId: "{{layer2.id}}",
-              url: "{{layer2.url}}/4"
+              url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
               itemId: "{{layer4.id}}",
-              url: "{{layer4.url}}/4"
+              url: "{{layer4.layer4.url}}"
             }
           ],
           tables: [
             {
               itemId: "{{table1.id}}",
-              url: "{{table1.url}}/4"
+              url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
               itemId: "{{table3.id}}",
-              url: "{{table3.url}}/4"
+              url: "{{table3.layer4.url}}"
             },
             {
               itemId: null

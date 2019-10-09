@@ -94,8 +94,12 @@ export function _templatizeWebmapLayerIdsAndUrls(
     .filter((layer: any) => !!layer.itemId)
     .forEach((layer: any) => {
       const layerId = layer.url.substr((layer.url as string).lastIndexOf("/"));
-      layer.url =
-        common.templatizeTerm(layer.itemId, layer.itemId, ".url") + layerId;
+      console.log("layerId: " + layerId);
+      layer.url = common.templatizeTerm(
+        layer.itemId,
+        layer.itemId,
+        ".layer" + layerId.replace("/", "") + ".url"
+      );
       layer.itemId = common.templatizeTerm(layer.itemId, layer.itemId, ".id");
     });
 }

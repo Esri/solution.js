@@ -248,7 +248,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.id}}",
                 isDynamic: false,
                 label: "Point layer",
-                url: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/0"
+                url: "{{2ea59a64b34646f8972a71c7d536e4a3.layer0.url}}"
               }
             },
             settings: {}
@@ -498,10 +498,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   somePortalPath: {
                     s: "{{organization.portalBaseUrl}}"
@@ -647,10 +649,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
                     service: "{{organization.geocodeServerUrl}}"
@@ -668,10 +672,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
                     service: "{{organization.geocodeServerUrl}}"

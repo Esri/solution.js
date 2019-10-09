@@ -643,6 +643,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("getFieldSettings", () => {
     it("should handle fields NOT changed", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
       const fieldInfos: any = {
         "0": {
           newFields: [
@@ -739,6 +740,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          url: serviceUrl + "/" + 0,
           fields: {
             a: {
               name: "A",
@@ -758,6 +760,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          url: serviceUrl + "/" + 1,
           fields: {
             c: {
               name: "C",
@@ -789,12 +792,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const settings = getFieldSettings(fieldInfos);
+      const settings = getFieldSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
 
     it("should handle fields changed", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
       const fieldInfos: any = {
         "0": {
           newFields: [
@@ -924,6 +928,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          url: serviceUrl + "/" + 0,
           fields: {
             a: {
               name: "a0",
@@ -948,6 +953,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          url: serviceUrl + "/" + 1,
           fields: {
             c: {
               name: "c",
@@ -986,7 +992,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           deleteFields: ["createdate"]
         }
       };
-      const settings: any = getFieldSettings(fieldInfos);
+      const settings: any = getFieldSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });

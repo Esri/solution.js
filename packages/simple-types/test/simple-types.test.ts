@@ -298,19 +298,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
           dispatchers: {
             serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-            url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+            url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
           },
           assignments: {
             serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-            url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+            url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
           },
           workers: {
             serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-            url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+            url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
           },
           tracks: {
             serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-            url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+            url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
             enabled: true,
             updateInterval: 300
           },
@@ -1369,19 +1369,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
         dispatchers: {
           serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
         },
         assignments: {
           serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
         },
         workers: {
           serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
         },
         tracks: {
           serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-          url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+          url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
           updateInterval: 300
         },

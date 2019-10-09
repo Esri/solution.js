@@ -615,7 +615,7 @@ export function getItemTemplateData(type?: string): any {
           {
             id: "ROWPermitApplication_4605",
             layerType: "ArcGISFeatureLayer",
-            url: "{{svc1234567890.url}}/0",
+            url: "{{svc1234567890.layer0.url}}",
             title: "ROW Permits",
             itemId: "{{svc1234567890.id}}",
             popupInfo: {},
@@ -650,7 +650,7 @@ export function getItemTemplateData(type?: string): any {
         },
         tables: [
           {
-            url: "{{svc1234567890.url}}/1",
+            url: "{{svc1234567890.layer1.url}}",
             id: "ROWPermitApplication_4404",
             title: "ROW Permit Comment",
             layerDefinition: {},

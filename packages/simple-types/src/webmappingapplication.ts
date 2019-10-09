@@ -215,10 +215,11 @@ export function handleServiceRequests(
               const serviceTemplate: string =
                 "{{" +
                 serviceResponse.serviceItemId +
-                ".url}}/" +
                 (serviceResponse.hasOwnProperty("id")
-                  ? serviceResponse.id
-                  : "");
+                  ? ".layer" + serviceResponse.id
+                  : "") +
+                ".url}}";
+              console.log(serviceTemplate);
               objString = replaceUrl(
                 objString,
                 requestUrls[i],

@@ -105,7 +105,12 @@ export function _templatize(
           const layerId = data[p].url.substr(
             (data[p].url as string).lastIndexOf("/")
           );
-          data[p].url = common.templatizeTerm(id, id, ".url") + layerId;
+          data[p].url = common.templatizeTerm(
+            id,
+            id,
+            ".layer" + layerId.replace("/", "") + ".url"
+          );
+          console.log(data[p].url);
         }
       } else {
         // templatize simple id properties

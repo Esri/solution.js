@@ -258,12 +258,13 @@ export function updateTemplate(
  * @param fieldInfos The object that stores the cached layer properties and name mapping
  * @return The settings object that will be used to de-templatize the field references.
  */
-export function getFieldSettings(fieldInfos: any): any {
+export function getFieldSettings(fieldInfos: any, url: string): any {
   const settings: any = {};
   const ids = Object.keys(fieldInfos);
   ids.forEach((id: any) => {
     settings["layer" + id] = {
-      fields: _getNameMapping(fieldInfos, id)
+      fields: _getNameMapping(fieldInfos, id),
+      url: url + "/" + id
     };
     common.deleteProp(fieldInfos[id], "newFields");
     common.deleteProp(fieldInfos[id], "sourceFields");
@@ -668,7 +669,7 @@ export function postProcessFields(
           if (id === templateDictionary[k].id) {
             templateDictionary[k] = Object.assign(
               templateDictionary[k],
-              getFieldSettings(fieldInfos)
+              getFieldSettings(fieldInfos, templateDictionary[k].url)
             );
           }
         });

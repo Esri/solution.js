@@ -345,6 +345,7 @@ describe("Module `deploySolution`", () => {
           url: featureServerUrl,
           name: "ROWPermits_publiccomment",
           layer0: {
+            url: featureServerUrl + "/" + 0,
             fields: {
               globalid: {
                 name: "globalid",
@@ -389,6 +390,7 @@ describe("Module `deploySolution`", () => {
             }
           },
           layer1: {
+            url: featureServerUrl + "/" + 1,
             fields: {
               globalid: {
                 name: "globalid",
