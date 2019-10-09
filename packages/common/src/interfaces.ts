@@ -290,3 +290,33 @@ export interface IUpdate {
    */
   args: IPostProcessArgs;
 }
+
+/**
+ * The relevant elements of a data source that are used for templatization
+ */
+export interface IDatasourceInfo {
+  /**
+   * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
+   */
+  basePath: string;
+  /**
+   * The portal item id eg. "4efe5f693de34620934787ead6693f19"
+   */
+  itemId: string;
+  /**
+   * The id for the layer from the service eg. 0
+   */
+  layerId: number;
+  /**
+   * The id for the layer from a map could be referenced by more than one map for a solution
+   */
+  ids: string[];
+  /**
+   * The url used for fields lookup
+   */
+  url?: string;
+  /**
+   * The fields this datasource contains
+   */
+  fields: any[];
+}

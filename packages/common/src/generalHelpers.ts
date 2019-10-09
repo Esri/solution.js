@@ -20,6 +20,8 @@
  * @module generalHelpers
  */
 
+import * as interfaces from "./interfaces";
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
@@ -253,6 +255,31 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
   const typeKeywords =
     getProp(jsonObj, "item.typeKeywords") || jsonObj.typeKeywords || [];
   return typeKeywords.includes(keyword);
+}
+
+/**
+ * Tests if an array of DatasourceInfos has a given item and layer id already.
+ *
+ * @param datasourceInfos Array of DatasourceInfos to evaluate
+ * @param itemId The items id to check for
+ * @param layerId The layers id to check for
+ * @return Boolean indicating result
+ */
+export function hasDatasource(
+  datasourceInfos: interfaces.IDatasourceInfo[],
+  itemId: string,
+  layerId: number
+): boolean {
+  return datasourceInfos.some(
+    ds => ds.itemId === itemId && ds.layerId === layerId
+  );
+}
+
+/**
+ * remove templatization from id to compare
+ */
+export function cleanId(id: any): any {
+  return id ? id.replace("{{", "").replace(".id}}", "") : id;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
