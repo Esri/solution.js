@@ -265,10 +265,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         id: 0
       };
 
-      fetchMock.post(
-        "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
-        layer0
-      );
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        );
 
       webmappingapplication
         .convertItemToTemplate(model, MOCK_USER_SESSION)
@@ -317,10 +319,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      fetchMock.post(
-        "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
-        mockItems.get400Failure()
-      );
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          mockItems.get400Failure()
+        );
 
       webmappingapplication
         .convertItemToTemplate(model, MOCK_USER_SESSION)
@@ -529,6 +533,8 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .post("https://path/FeatureServer/1/rest/info", {})
+        .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
         .post("http://path/FeatureServer/1", layer1);
 
@@ -696,6 +702,8 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .post("https://path/FeatureServer/1/rest/info", {})
+        .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
         .post("http://path/FeatureServer/1", layer1);
 
@@ -769,6 +777,8 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .post("https://path/FeatureServer/1/rest/info", {})
+        .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
@@ -841,6 +851,8 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .post("https://path/FeatureServer/1/rest/info", {})
+        .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
         .post("http://path/FeatureServer/1", mockItems.get400Failure());
 
@@ -1182,7 +1194,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         id: "cda1234567890",
         folder: "fld1234567890"
       };
-      fetchMock.post(createUrl, expected);
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          '{"token":"fake-token"}'
+        )
+        .post(createUrl, expected);
 
       // Function doesn't reject, so,
       // tslint:disable-next-line:no-floating-promises

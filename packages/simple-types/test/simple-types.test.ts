@@ -1228,6 +1228,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }
       };
       fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
           []
