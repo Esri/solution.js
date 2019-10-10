@@ -31,50 +31,6 @@ import * as request from "@esri/arcgis-rest-request";
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
 /**
- * Fixes the types of Blobs incorrectly typed as text/plain.
- * @param blob Blob to check
- * @return Promise resolving to original Blob, unless it's originally typed as text/plain but is
- * really JSON, ZIP, or XML
- */
-export function fixTextBlobType(blob: Blob): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    if (blob && blob.type.startsWith("text/plain")) {
-      generalHelpers.blobToText(blob).then(
-        blobText => {
-          // Convertible to JSON?
-          try {
-            JSON.parse(blobText);
-            // Yes; reclassify as JSON
-            resolve(new Blob([blob], { type: "application/json" }));
-          } catch (ignored) {
-            // Nope; test for ZIP file
-            if (
-              blobText.length > 4 &&
-              blobText.substr(0, 4) === ZIP_FILE_HEADER_SIGNATURE
-            ) {
-              // Yes; reclassify as ZIP
-              resolve(new Blob([blob], { type: "application/zip" }));
-            } else if (blobText.startsWith("<")) {
-              // Reclassify as XML; since the blob started out as text/plain, it's more likely that is
-              // meant to be human-readable, so we'll use text/xml instead of application/xml
-              resolve(new Blob([blob], { type: "text/xml" }));
-            } else {
-              // Leave as text
-              resolve(blob);
-            }
-          }
-        },
-        // Faulty blob
-        reject
-      );
-    } else {
-      // Not typed as plain text, so simply return
-      resolve(blob);
-    }
-  });
-}
-
-/**
  * Gets a Blob from a web site.
  *
  * @param url Address of Blob
@@ -145,7 +101,7 @@ export function getBlobCheckForError(
     // Get the blob from the URL
     getBlob(url, authentication).then(blob => {
       // Reclassify text/plain blobs as needed
-      fixTextBlobType(blob).then(adjustedBlob => {
+      _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
           generalHelpers.blobToJson(adjustedBlob).then(
@@ -347,7 +303,7 @@ export function getItemDataBlob(
     const url = getItemDataBlobUrl(itemId, authentication);
 
     getBlobCheckForError(url, authentication, [500]).then(
-      blob => resolve(fixTextBlobType(blob)),
+      blob => resolve(_fixTextBlobType(blob)),
       reject
     );
   });
@@ -406,7 +362,7 @@ export function getItemMetadataBlob(
     const url = getItemMetadataBlobUrl(itemId, authentication);
 
     getBlobCheckForError(url, authentication, [400]).then(
-      (blob: Blob) => resolve(fixTextBlobType(blob)),
+      (blob: Blob) => resolve(_fixTextBlobType(blob)),
       reject
     );
   });
@@ -510,7 +466,7 @@ export function getItemThumbnail(
     );
 
     getBlobCheckForError(url, authentication, [500]).then(
-      blob => resolve(fixTextBlobType(blob)),
+      blob => resolve(_fixTextBlobType(blob)),
       reject
     );
   });
@@ -571,6 +527,51 @@ export function getPortalUrlFromAuth(authentication: auth.UserSession): string {
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Fixes the types of Blobs incorrectly typed as text/plain.
+ * @param blob Blob to check
+ * @return Promise resolving to original Blob, unless it's originally typed as text/plain but is
+ * really JSON, ZIP, or XML
+ * @protected
+ */
+export function _fixTextBlobType(blob: Blob): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    if (blob && blob.type.startsWith("text/plain")) {
+      generalHelpers.blobToText(blob).then(
+        blobText => {
+          // Convertible to JSON?
+          try {
+            JSON.parse(blobText);
+            // Yes; reclassify as JSON
+            resolve(new Blob([blob], { type: "application/json" }));
+          } catch (ignored) {
+            // Nope; test for ZIP file
+            if (
+              blobText.length > 4 &&
+              blobText.substr(0, 4) === ZIP_FILE_HEADER_SIGNATURE
+            ) {
+              // Yes; reclassify as ZIP
+              resolve(new Blob([blob], { type: "application/zip" }));
+            } else if (blobText.startsWith("<")) {
+              // Reclassify as XML; since the blob started out as text/plain, it's more likely that is
+              // meant to be human-readable, so we'll use text/xml instead of application/xml
+              resolve(new Blob([blob], { type: "text/xml" }));
+            } else {
+              // Leave as text
+              resolve(blob);
+            }
+          }
+        },
+        // Faulty blob
+        reject
+      );
+    } else {
+      // Not typed as plain text, so simply return
+      resolve(blob);
+    }
+  });
+}
 
 /**
  * Gets some of the ids of the dependencies (contents) of an AGO group.
