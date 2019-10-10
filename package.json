@@ -99,6 +99,8 @@
     "test:ci": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run coveralls",
     "test:ci:win": "npm run lint && npm run test:node && npm run test:chrome:ci && npm run coveralls:win",
     "test:all": "npm run test:node && npm run test:chrome",
+    "test:coverage": "npm run test:chrome:ci && npm run coveralls",
+    "test:coverage:win": "npm run test:chrome:ci && npm run coveralls:win",
     "coveralls": "cat coverage/lcov/lcov.info | node node_modules/coveralls/bin/coveralls",
     "coveralls:win": "start cmd.exe /c \"type coverage\\lcov\\lcov.info | node node_modules/coveralls/bin/coveralls.js\"",
     "docs:build": "rimraf docs/build && npm run docs:typedoc && npm run docs:build:acetate && npm run docs:build:sass && npm run docs:build:images && npm run docs:build:js",
