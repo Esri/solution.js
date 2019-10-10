@@ -80,7 +80,7 @@ export const PROGRESS_CALLBACK = function(): void {
   const tick = "tok";
 };
 
-export function getSampleMetadata(): any {
+export function getSampleMetadata(mimeType = "text/xml"): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
       <dataIdInfo>
         <idCitation>
@@ -113,19 +113,38 @@ export function getSampleMetadata(): any {
         </role>
       </mdContact>
     </metadata>`;
-  return xmlToBlob(xml);
+  return xmlToBlob(xml, mimeType);
 }
 
 export function jsonToBlob(json: any): Blob {
   return new Blob([JSON.stringify(json)], { type: "application/json" });
 }
 
-export function xmlToBlob(xml: any): Blob {
-  return new Blob([xml], { type: "text/xml" });
+export function xmlToBlob(xml: any, mimeType = "text/xml"): Blob {
+  return new Blob([xml], { type: mimeType });
 }
 
 export function getSampleImage(): Blob {
   return imageAsDataUriToBlob(atob(_imageAsDataUri(false)));
+}
+
+export function getSampleZip(mimeType = "application/zip"): Blob {
+  const zipContents =
+    "504B0304 0A000000 0000C045 D9424437\
+EB352600 00002600 00000700 00006373\
+762E6373 76746869 732C6973 2C612C63\
+6F6D6D61 2C736570 61726174 65642C76\
+616C7565 2C66696C 650D0A50 4B010214\
+000A0000 000000C0 45D94244 37EB3526\
+00000026 00000007000000000 00000000\
+00200000 00000000 00637376 2E637376\
+504B0506 00000000 01000100 35000000\
+4B000000 0000";
+  const bytes = new Uint8Array(Math.ceil(zipContents.length / 2));
+  for (let i = 0; i < bytes.length; i++) {
+    bytes[i] = parseInt(zipContents.substr(i * 2, 2), 16);
+  }
+  return new Blob([bytes], { type: mimeType });
 }
 
 export function imageAsDataUriToBlob(imageAsDataUri: string): Blob {

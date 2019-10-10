@@ -19,12 +19,13 @@
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as generalHelpers from "../src/generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "../src/restHelpersGet";
 
+import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../test/mocks/agolItems";
-import { TOMORROW } from "../test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -35,9 +36,9 @@ const MOCK_USER_SESSION = new auth.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
-  tokenExpires: TOMORROW,
+  tokenExpires: utils.TOMORROW,
   refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
+  refreshTokenExpires: utils.TOMORROW,
   refreshTokenTTL: 1440,
   username: "casey",
   password: "123456",
@@ -498,12 +499,131 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("_fixTextBlobType", () => {
-    xit("_fixTextBlobType", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("_fixTextBlobType", () => {
+      it("should pass application/json blobs through unchanged", done => {
+        const testBlobType = "application/json";
+        const testBlobContents = JSON.stringify({
+          a: "a",
+          b: 1,
+          c: {
+            d: "d"
+          }
+        });
+        const testBlob = new Blob([testBlobContents], { type: testBlobType });
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(testBlobType);
+          generalHelpers.blobToText(ok).then((text: string) => {
+            expect(text).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+        }, done.fail);
+      });
+
+      it("should pass text/xml blobs through unchanged", done => {
+        const testBlobType = "text/xml";
+        const testBlob = utils.getSampleMetadata();
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(testBlobType);
+          const resultBlobContentsDef = generalHelpers.blobToText(ok);
+          const testBlobContentsDef = generalHelpers.blobToText(testBlob);
+          Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
+            results => {
+              const [resultBlobContents, testBlobContents] = results;
+              expect(resultBlobContents).toEqual(testBlobContents);
+              done();
+            },
+            done.fail
+          );
+        }, done.fail);
+      });
+
+      it("should pass truly text blobs through unchanged", done => {
+        const testBlobType = "text/plain";
+        const testBlobContents = "This is a block of text";
+        const testBlob = new Blob([testBlobContents], { type: testBlobType });
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(testBlobType);
+          generalHelpers.blobToText(ok).then((text: string) => {
+            expect(text).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+        }, done.fail);
+      });
+
+      it("should handle blob MIME text types with character-set suffix", done => {
+        const testBlobType = "text/plain; charset=utf-8";
+        const testBlobContents = "This is a block of UTF8 text";
+        const testBlob = new Blob([testBlobContents], { type: testBlobType });
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(testBlobType);
+          generalHelpers.blobToText(ok).then((text: string) => {
+            expect(text).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+        }, done.fail);
+      });
+
+      it("should re-type application/json blobs claiming to be text/plain", done => {
+        const testBlobType = "text/plain";
+        const realBlobType = "application/json";
+        const testBlobContents = JSON.stringify({
+          a: "a",
+          b: 1,
+          c: {
+            d: "d"
+          }
+        });
+        const testBlob = new Blob([testBlobContents], { type: testBlobType });
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(realBlobType);
+          generalHelpers.blobToText(ok).then((text: string) => {
+            expect(text).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+        }, done.fail);
+      });
+
+      it("should re-type text/xml blobs claiming to be text/plain", done => {
+        const testBlobType = "text/plain";
+        const realBlobType = "text/xml";
+        const testBlob = utils.getSampleMetadata(testBlobType);
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(realBlobType);
+          const resultBlobContentsDef = generalHelpers.blobToText(ok);
+          const testBlobContentsDef = generalHelpers.blobToText(testBlob);
+          Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
+            results => {
+              const [resultBlobContents, testBlobContents] = results;
+              expect(resultBlobContents).toEqual(testBlobContents);
+              done();
+            },
+            done.fail
+          );
+        }, done.fail);
+      });
+
+      it("should re-type application/zip blobs claiming to be text/plain", done => {
+        const testBlobType = "text/plain";
+        const realBlobType = "application/zip";
+        const testBlob = utils.getSampleZip(testBlobType);
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(realBlobType);
+          const resultBlobContentsDef = generalHelpers.blobToText(ok);
+          const testBlobContentsDef = generalHelpers.blobToText(testBlob);
+          Promise.all([resultBlobContentsDef, testBlobContentsDef]).then(
+            results => {
+              const [resultBlobContents, testBlobContents] = results;
+              expect(resultBlobContents).toEqual(testBlobContents);
+              done();
+            },
+            done.fail
+          );
+        }, done.fail);
+      });
     });
-  });
+  }
 
   describe("_getGroupContentsTranche", () => {
     xit("_getGroupContentsTranche", done => {
