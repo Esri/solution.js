@@ -202,7 +202,7 @@ export function deploySolution(
                               // Update ids present in template dictionary
                               const itemId = common.getProp(
                                 templateDictionary,
-                                itemTemplate.itemId + ".id"
+                                itemTemplate.itemId + ".itemId"
                               );
                               if (itemId) {
                                 itemTemplate.itemId = itemId;
@@ -211,7 +211,7 @@ export function deploySolution(
                                 id => {
                                   const dependId = common.getProp(
                                     templateDictionary,
-                                    id + ".id"
+                                    id + ".itemId"
                                   );
                                   return dependId ? dependId : id;
                                 }

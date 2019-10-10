@@ -112,7 +112,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const adminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-        const expectedId: string = "{{" + id + ".id}}";
+        const expectedId: string = "{{" + id + ".itemId}}";
         const keyField: string = "globalid";
         const expectedLayerKeyField: string =
           "{{" + id + ".layer0.fields.globalid.name}}";
@@ -357,7 +357,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   describe("createItemFromTemplate", () => {
     it("should create a solution from a template", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -489,7 +489,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should create a solution from a template in portal", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -628,7 +628,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle error on updateItem", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -730,7 +730,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle error on addFeatureServiceLayersAndTables", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -814,7 +814,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle error on createService", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -894,7 +894,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle createService success === false", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -977,7 +977,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle error on updateItem", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1079,7 +1079,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle error on updateDefinition", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1176,7 +1176,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
     it("should handle empty layers and tables", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";

@@ -123,7 +123,7 @@ export function templatizeDatasources(
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
         if (common.getProp(ds, "itemId")) {
-          ds.itemId = common.templatizeTerm(ds.itemId, ds.itemId, ".id");
+          ds.itemId = common.templatizeTerm(ds.itemId, ds.itemId, ".itemId");
         }
         if (common.getProp(ds, "url")) {
           const urlResults: any = findUrls(
@@ -219,7 +219,6 @@ export function handleServiceRequests(
                   ? ".layer" + serviceResponse.id
                   : "") +
                 ".url}}";
-              console.log(serviceTemplate);
               objString = replaceUrl(
                 objString,
                 requestUrls[i],
@@ -420,7 +419,11 @@ export function _templatizeIdPaths(
 ) {
   paths.forEach(path => {
     const id: any = common.getProp(itemTemplate, path);
-    common.setProp(itemTemplate, path, common.templatizeTerm(id, id, ".id"));
+    common.setProp(
+      itemTemplate,
+      path,
+      common.templatizeTerm(id, id, ".itemId")
+    );
   });
 }
 
@@ -561,9 +564,12 @@ export function _getSortOrder(
   // else if we find the maps layer id prioritze it first
   let layerUrlTest: any;
   if (url && !isNaN(layerId)) {
-    layerUrlTest = new RegExp(url + "/" + layerId, "gm");
+    layerUrlTest = new RegExp(
+      url.replace(/[.]/, ".layer" + layerId + "."),
+      "gm"
+    );
   }
-  if (layerUrlTest.test(testString)) {
+  if (layerUrlTest && layerUrlTest.test(testString)) {
     return 1;
   } else if (datasourceInfo.ids.length > 0) {
     if (
@@ -608,7 +614,14 @@ export function _prioritizedTests(
 ): any {
   const objString: string = JSON.stringify(obj);
   const hasDatasources = datasourceInfos.filter(ds => {
-    const urlTest: any = new RegExp(ds.url + "/" + ds.layerId, "gm");
+    let urlTest: any;
+    if (ds.url && !isNaN(ds.layerId)) {
+      urlTest = new RegExp(
+        ds.url.replace(/[.]/, ".layer" + ds.layerId + "."),
+        "gm"
+      );
+    }
+
     let hasMapLayerId: boolean = false;
     if (ds.ids.length > 0) {
       hasMapLayerId = ds.ids.some(id => {
@@ -617,7 +630,7 @@ export function _prioritizedTests(
       });
     }
 
-    if (hasMapLayerId || urlTest.test(objString)) {
+    if (hasMapLayerId || (urlTest && urlTest.test(objString))) {
       return ds;
     }
   });
@@ -652,7 +665,12 @@ export function _templatizeParentByURL(
   let clone: { [index: string]: any } = {};
   const url = ds.url;
   const layerId = ds.layerId;
-  const urlTest: any = new RegExp(url + "/" + layerId, "gm");
+
+  let urlTest: any;
+  if (url && !isNaN(layerId)) {
+    urlTest = new RegExp(url.replace(/[.]/, ".layer" + layerId + "."), "gm");
+  }
+
   if (Array.isArray(obj)) {
     clone = obj.map(c => {
       return _templatizeParentByURL(c, ds);
@@ -662,7 +680,7 @@ export function _templatizeParentByURL(
       if (obj[i] != null && typeof obj[i] === "object") {
         clone[i] = _templatizeParentByURL(obj[i], ds);
       } else {
-        if (urlTest.test(obj[i])) {
+        if (urlTest && urlTest.test(obj[i])) {
           obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
         }
         clone[i] = obj[i];

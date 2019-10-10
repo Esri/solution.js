@@ -341,7 +341,7 @@ describe("Module `deploySolution`", () => {
             ymax: 5137789.39951188,
             spatialReference: { wkid: 102100 }
           },
-          id: "svc1234567890",
+          itemId: "svc1234567890",
           url: featureServerUrl,
           name: "ROWPermits_publiccomment",
           layer0: {
@@ -436,7 +436,7 @@ describe("Module `deploySolution`", () => {
           }
         },
         map1234567890: {
-          id: "map1234567890"
+          itemId: "map1234567890"
         }
       };
 

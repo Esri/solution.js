@@ -53,7 +53,7 @@ export function templatize(
   const id: string = common.cloneObject(itemTemplate.item.id);
 
   itemTemplate.item.url = _templatize(id, "url");
-  itemTemplate.item.id = _templatize(id, "id");
+  itemTemplate.item.id = common.templatizeTerm(id, id, ".itemId");
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
@@ -65,9 +65,10 @@ export function templatize(
   const _items: any[] = layers.concat(tables);
 
   // templatize the service references serviceItemId
-  itemTemplate.properties.service.serviceItemId = _templatize(
+  itemTemplate.properties.service.serviceItemId = common.templatizeTerm(
     itemTemplate.properties.service.serviceItemId,
-    "id"
+    itemTemplate.properties.service.serviceItemId,
+    ".itemId"
   );
 
   if (common.getProp(itemTemplate, "properties.service.fullExtent")) {
@@ -238,7 +239,7 @@ export function updateTemplate(
   templateDictionary[itemTemplate.itemId] = Object.assign(
     templateDictionary[itemTemplate.itemId] || {},
     {
-      id: createResponse.serviceItemId,
+      itemId: createResponse.serviceItemId,
       url: createResponse.serviceurl,
       name: createResponse.name
     }
@@ -289,10 +290,10 @@ export function updateSettingsFieldInfos(
   const id = itemTemplate.itemId;
   const settingsKeys = Object.keys(settings);
   settingsKeys.forEach((k: any) => {
-    if (id === settings[k].id) {
+    if (id === settings[k].itemId) {
       dependencies.forEach((d: any) => {
         settingsKeys.forEach((_k: any) => {
-          if (d === settings[_k].id) {
+          if (d === settings[_k].itemId) {
             const layerKeys = Object.keys(settings[_k]);
             layerKeys.forEach(layerKey => {
               if (layerKey.startsWith("layer")) {
@@ -666,7 +667,7 @@ export function postProcessFields(
 
         // Add the fieldInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
-          if (id === templateDictionary[k].id) {
+          if (id === templateDictionary[k].itemId) {
             templateDictionary[k] = Object.assign(
               templateDictionary[k],
               getFieldSettings(fieldInfos, templateDictionary[k].url)
@@ -876,7 +877,11 @@ export function _templatizeLayer(
     }
 
     if (update.hasOwnProperty("serviceItemId")) {
-      update["serviceItemId"] = _templatize(update["serviceItemId"], "id");
+      update["serviceItemId"] = common.templatizeTerm(
+        update["serviceItemId"],
+        update["serviceItemId"],
+        ".itemId"
+      );
     }
 
     if (update.hasOwnProperty("adminLayerInfo")) {
