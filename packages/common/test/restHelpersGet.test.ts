@@ -472,23 +472,80 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemThumbnailUrl", () => {
-    xit("getItemThumbnailUrl", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("get thumbnail url for an item", () => {
+      expect(
+        restHelpersGet.getItemThumbnailUrl(
+          "itm1234567890",
+          "thumbnail/ago_downloaded.png",
+          false,
+          MOCK_USER_SESSION
+        )
+      ).toEqual(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png"
+      );
+    });
+
+    it("get thumbnail url for a group", () => {
+      expect(
+        restHelpersGet.getItemThumbnailUrl(
+          "grp1234567890",
+          "thumbnail/ago_downloaded.png",
+          true,
+          MOCK_USER_SESSION
+        )
+      ).toEqual(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/thumbnail/ago_downloaded.png"
+      );
     });
   });
 
   describe("getPortalSharingUrlFromAuth", () => {
-    xit("getPortalSharingUrlFromAuth", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("gets a default portal sharing url with authentication but no portal", () => {
+      const mockUserSession = new auth.UserSession({
+        clientId: "clientId",
+        redirectUri: "https://example-app.com/redirect-uri",
+        token: "fake-token",
+        tokenExpires: utils.TOMORROW,
+        refreshToken: "refreshToken",
+        refreshTokenExpires: utils.TOMORROW,
+        refreshTokenTTL: 1440,
+        username: "casey",
+        password: "123456"
+      });
+      expect(
+        restHelpersGet.getPortalSharingUrlFromAuth(mockUserSession)
+      ).toEqual("https://www.arcgis.com/sharing/rest");
+    });
+
+    it("gets portal sharing url from authentication", () => {
+      expect(
+        restHelpersGet.getPortalSharingUrlFromAuth(MOCK_USER_SESSION)
+      ).toEqual("https://myorg.maps.arcgis.com/sharing/rest");
     });
   });
 
   describe("getPortalUrlFromAuth", () => {
-    xit("getPortalUrlFromAuth", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("gets a default portal url with authentication but no portal", () => {
+      const mockUserSession = new auth.UserSession({
+        clientId: "clientId",
+        redirectUri: "https://example-app.com/redirect-uri",
+        token: "fake-token",
+        tokenExpires: utils.TOMORROW,
+        refreshToken: "refreshToken",
+        refreshTokenExpires: utils.TOMORROW,
+        refreshTokenTTL: 1440,
+        username: "casey",
+        password: "123456"
+      });
+      expect(restHelpersGet.getPortalUrlFromAuth(mockUserSession)).toEqual(
+        "https://www.arcgis.com"
+      );
+    });
+
+    it("gets portal url from authentication", () => {
+      expect(restHelpersGet.getPortalUrlFromAuth(MOCK_USER_SESSION)).toEqual(
+        "https://myorg.maps.arcgis.com"
+      );
     });
   });
 
@@ -640,7 +697,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       restHelpersGet
         ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
         .then(
-          failed => done.fail(),
+          () => done.fail(),
           ok => {
             expect(ok.message).toEqual(
               "CONT_0006: Group does not exist or is inaccessible."
@@ -675,7 +732,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         }, done.fail);
     });
 
-    xit("handles a group where contents can be retrieved via a single fetch", done => {
+    it("handles a group where contents can be retrieved via a single fetch", done => {
       const groupId = "grp1234567890";
       const pagingParams: portal.IPagingParams = {
         start: 1, // one-based
@@ -837,9 +894,219 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("_getItemResourcesTranche", () => {
-    xit("_getItemResourcesTranche", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles an inaccessible item", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        {
+          error: {
+            code: 400,
+            messageCode: "CONT_0001",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        }
+      );
+      restHelpersGet
+        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+        .then(
+          () => done.fail(),
+          ok => {
+            expect(ok.message).toEqual(
+              "CONT_0001: Item does not exist or is inaccessible."
+            );
+            done();
+          }
+        );
+    });
+
+    it("handles an item with no resources", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        {
+          total: 0,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          resources: []
+        }
+      );
+      restHelpersGet
+        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: Array<Promise<File>>) => {
+          expect(ok.length).toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    it("handles an item with one resource", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          {
+            total: 1,
+            start: 1,
+            num: 1,
+            nextStart: -1,
+            resources: [
+              {
+                resource: "Jackson Lake.png",
+                created: 1568662976000,
+                size: 1231
+              }
+            ]
+          }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.getSampleImage()
+        );
+      restHelpersGet
+        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: Array<Promise<File>>) => {
+          expect(ok.length).toEqual(1);
+          Promise.all(ok).then(rsrcResponses => {
+            done();
+          }, done.fail);
+        }, done.fail);
+    });
+
+    it("handles an item with multiple resources where they can be retrieved via a single fetch", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          {
+            total: 4,
+            start: 1,
+            num: 4,
+            nextStart: -1,
+            resources: [
+              {
+                resource: "Bradley & Taggart Lakes.png",
+                created: 1568662976000,
+                size: 1231
+              },
+              {
+                resource: "Jackson Lake.png",
+                created: 1568662976000,
+                size: 1231
+              },
+              {
+                resource: "Jenny Lake.png",
+                created: 1568662968000,
+                size: 1231
+              },
+              {
+                resource: "Leigh Lake.png",
+                created: 1568662960000,
+                size: 1231
+              }
+            ]
+          }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+          utils.getSampleImage()
+        );
+      restHelpersGet
+        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: Array<Promise<File>>) => {
+          expect(ok.length).toEqual(4);
+          Promise.all(ok).then(rsrcResponses => done(), done.fail);
+        }, done.fail);
+    });
+
+    it("handles an item with multiple resources where they require multiple fetches", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 1
+      };
+
+      const filenames = [
+        "Bradley & Taggart Lakes.png",
+        "Jackson Lake.png",
+        "Jenny Lake.png",
+        "Leigh Lake.png"
+      ];
+      let imageNum = 0;
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          () => {
+            const i = imageNum++;
+            return {
+              total: 4,
+              start: i + 1,
+              num: 1,
+              nextStart: i < 3 ? i + 2 : -1,
+              resources: [
+                {
+                  resource: filenames[i],
+                  created: 1568662976000,
+                  size: 1231
+                }
+              ]
+            };
+          }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+          utils.getSampleImage()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+          utils.getSampleImage()
+        );
+      restHelpersGet
+        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: Array<Promise<File>>) => {
+          expect(ok.length).toEqual(4);
+          Promise.all(ok).then(rsrcResponses => done(), done.fail);
+        }, done.fail);
     });
   });
 });
