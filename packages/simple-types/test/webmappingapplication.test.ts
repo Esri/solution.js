@@ -1283,7 +1283,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const expected = {
         success: false
       };
-      fetchMock.post(createUrl, expected);
+      fetchMock
+        .post(createUrl, expected)
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          '{"token":"abc123"}'
+        );
 
       webmappingapplication
         .fineTuneCreatedItem(
