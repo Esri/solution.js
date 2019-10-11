@@ -99,17 +99,21 @@ export function _templatize(
       if (common.getProp(data[p], "serviceItemId")) {
         // templatize properties with id and url
         const id: string = data[p].serviceItemId;
-        data[p].serviceItemId = common.templatizeTerm(id, id, ".id");
+        data[p].serviceItemId = common.templatizeTerm(id, id, ".itemId");
 
         if (common.getProp(data[p], "url")) {
           const layerId = data[p].url.substr(
-            (data[p].url as string).lastIndexOf("/")
+            (data[p].url as string).lastIndexOf("/") + 1
           );
-          data[p].url = common.templatizeTerm(id, id, ".url") + layerId;
+          data[p].url = common.templatizeTerm(
+            id,
+            id,
+            ".layer" + layerId + ".url"
+          );
         }
       } else {
         // templatize simple id properties
-        data[p] = common.templatizeTerm(data[p], data[p], ".id");
+        data[p] = common.templatizeTerm(data[p], data[p], ".itemId");
       }
     }
   });
@@ -125,7 +129,7 @@ export function _templatize(
         id = id.replace("itemID=", "");
         item.urlTemplate = item.urlTemplate.replace(
           id,
-          common.templatizeTerm(id, id, ".id")
+          common.templatizeTerm(id, id, ".itemId")
         );
       });
     }

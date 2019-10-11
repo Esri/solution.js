@@ -94,7 +94,7 @@ export function getItemTemplatePart(
         type,
         "svc",
         dependencies,
-        url || "{{svc1234567890.id}}"
+        url || "{{svc1234567890.itemId}}"
       );
       templatePart.item.url = url || "{{svc1234567890.url}}";
       templatePart.data = getItemTemplateData(type);
@@ -168,7 +168,7 @@ export function getItemTemplatePart(
         type,
         "sto",
         dependencies,
-        url || "https://storymaps.arcgis.com/stories/{{sto1234567890.id}}"
+        url || "https://storymaps.arcgis.com/stories/{{sto1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -180,7 +180,7 @@ export function getItemTemplatePart(
         "map",
         dependencies,
         url ||
-          "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
+          "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -193,7 +193,7 @@ export function getItemTemplatePart(
         "wma",
         dependencies,
         url ||
-          "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
+          "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -311,7 +311,7 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
     type: "Group",
     key: "i1a2b3c4",
     item: {
-      id: "{{grp1234567890.id}}",
+      id: "{{grp1234567890.itemId}}",
       title: "An AGOL group",
       isInvitationOnly: true,
       description: "Description of an AGOL group",
@@ -348,12 +348,12 @@ export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
+      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
     getItemTemplatePart(
       "Web Map",
       ["svc1234567890"],
-      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
+      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
     getItemTemplatePart("Feature Service")
   ];
@@ -366,12 +366,12 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
+      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
     getItemTemplatePart(
       "Web Map",
       ["svc1234567890"],
-      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
+      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
     getItemTemplatePart("Feature Service", [])
   ];
@@ -393,7 +393,7 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.II
     getItemTemplatePart(
       "Web Mapping Application",
       undefined,
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
+      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     )
   ];
 
@@ -492,7 +492,7 @@ export function getItemTemplateData(type?: string): any {
             showNavigation: true,
             events: [],
             flashRepeats: 3,
-            itemId: "{{map1234567890.id}}",
+            itemId: "{{map1234567890.itemId}}",
             mapTools: [
               {
                 type: "bookmarksTool"
@@ -615,9 +615,9 @@ export function getItemTemplateData(type?: string): any {
           {
             id: "ROWPermitApplication_4605",
             layerType: "ArcGISFeatureLayer",
-            url: "{{svc1234567890.url}}/0",
+            url: "{{svc1234567890.layer0.url}}",
             title: "ROW Permits",
-            itemId: "{{svc1234567890.id}}",
+            itemId: "{{svc1234567890.itemId}}",
             popupInfo: {},
             capabilities: "Query"
           }
@@ -650,11 +650,11 @@ export function getItemTemplateData(type?: string): any {
         },
         tables: [
           {
-            url: "{{svc1234567890.url}}/1",
+            url: "{{svc1234567890.layer1.url}}",
             id: "ROWPermitApplication_4404",
             title: "ROW Permit Comment",
             layerDefinition: {},
-            itemId: "{{svc1234567890.id}}",
+            itemId: "{{svc1234567890.itemId}}",
             popupInfo: {}
           }
         ]
@@ -666,7 +666,7 @@ export function getItemTemplateData(type?: string): any {
         source: "tpl1234567890",
         folderId: "{{folderId}}",
         values: {
-          webmap: "{{map1234567890.id}}",
+          webmap: "{{map1234567890.itemId}}",
           title: "A web mapping application",
           titleIcon: "images/banner.png",
           displayText: "<b>Welcome</p>",
@@ -696,22 +696,22 @@ export function getItemTemplateData(type?: string): any {
 
     case "Workforce Project":
       data = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
-        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
           url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}"
         },
         assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
           url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}"
         },
         workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
           url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}"
         },
         tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.url}}",
           enabled: true,
           updateInterval: 300
@@ -724,11 +724,11 @@ export function getItemTemplateData(type?: string): any {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}://Workforce",
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}://Workforce",
             assignmentTypes: [
               {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}://Workforce"
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}://Workforce"
               }
             ]
           }
@@ -747,7 +747,7 @@ export function getItemTemplateData(type?: string): any {
 function getServiceTemplate(layers = [] as any, tables = [] as any): any {
   const service: any = {
     currentVersion: 10.61,
-    serviceItemId: "{{svc1234567890.id}}",
+    serviceItemId: "{{svc1234567890.itemId}}",
     isView: true,
     isUpdatableView: true,
     sourceSchemaChangesAllowed: true,
@@ -826,7 +826,7 @@ function getLayerOrTableTemplate(
     id: id,
     name: name,
     type: type,
-    serviceItemId: "{{svc1234567890.id}}",
+    serviceItemId: "{{svc1234567890.itemId}}",
     isView: true,
     isUpdatableView: true,
     sourceSchemaChangesAllowed: true,
@@ -1000,8 +1000,8 @@ function getItemTemplateFundamentals(
     type: type,
     key: "i1a2b3c4",
     item: {
-      id: "{{" + typePrefix + "1234567890.id}}",
-      item: "{{" + typePrefix + "1234567890.id}}",
+      id: "{{" + typePrefix + "1234567890.itemId}}",
+      item: "{{" + typePrefix + "1234567890.itemId}}",
       name: "Name of an AGOL item",
       title: "An AGOL item",
       type: type,

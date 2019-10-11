@@ -341,10 +341,12 @@ describe("Module `deploySolution`", () => {
             ymax: 5137789.39951188,
             spatialReference: { wkid: 102100 }
           },
-          id: "svc1234567890",
+          itemId: "svc1234567890",
           url: featureServerUrl,
           name: "ROWPermits_publiccomment",
           layer0: {
+            url: featureServerUrl + "/" + 0,
+            layerId: "0",
             fields: {
               globalid: {
                 name: "globalid",
@@ -389,6 +391,8 @@ describe("Module `deploySolution`", () => {
             }
           },
           layer1: {
+            url: featureServerUrl + "/" + 1,
+            layerId: "1",
             fields: {
               globalid: {
                 name: "globalid",
@@ -434,7 +438,7 @@ describe("Module `deploySolution`", () => {
           }
         },
         map1234567890: {
-          id: "map1234567890"
+          itemId: "map1234567890"
         }
       };
 

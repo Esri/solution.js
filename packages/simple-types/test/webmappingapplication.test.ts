@@ -79,15 +79,15 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.id}}",
+          appItemId: "{{myAppItemId.itemId}}",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "{{myMapId.itemId}}"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "{{mapItemId.itemId}}"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "{{mapItemId.itemId}}"
           }
         },
         resources: [] as any[],
@@ -122,7 +122,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
-        data: { values: { group: "{{myGroupId.id}}" } },
+        data: { values: { group: "{{myGroupId.itemId}}" } },
         resources: [] as any[],
         dependencies: ["myGroupId"],
         properties: {} as any,
@@ -144,7 +144,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
             "http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=itm1234567890"
@@ -162,10 +162,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{itm1234567890.itemId}}"
         } as any,
         data: {
           folderId: "{{folderId}}"
@@ -230,25 +230,25 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.id}}",
+          appItemId: "{{myAppItemId.itemId}}",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "{{myMapId.itemId}}"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "{{mapItemId.itemId}}"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "{{mapItemId.itemId}}"
           },
           dataSource: {
             dataSources: {
               external_123456789: {
                 type: "source type",
                 portalUrl: "{{organization.portalBaseUrl}}",
-                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.id}}",
+                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.itemId}}",
                 isDynamic: false,
                 label: "Point layer",
-                url: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/0"
+                url: "{{2ea59a64b34646f8972a71c7d536e4a3.layer0.url}}"
               }
             },
             settings: {}
@@ -372,22 +372,22 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.id}}",
+          appItemId: "{{myAppItemId.itemId}}",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "{{myMapId.itemId}}"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "{{mapItemId.itemId}}"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "{{mapItemId.itemId}}"
           },
           dataSource: {
             dataSources: {
               external_123456789: {
                 type: "source type",
                 portalUrl: "{{organization.portalBaseUrl}}",
-                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.id}}",
+                itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.itemId}}",
                 isDynamic: false,
                 label: "Point layer"
               }
@@ -417,7 +417,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -472,21 +472,21 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.id}}"
+            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
-          appItemId: "{{myAppItemId.id}}",
+          appItemId: "{{myAppItemId.itemId}}",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "{{myMapId.itemId}}"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "{{mapItemId.itemId}}"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "{{mapItemId.itemId}}"
           },
           dataSource: {
             dataSources: {},
@@ -498,10 +498,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   somePortalPath: {
                     s: "{{organization.portalBaseUrl}}"
@@ -548,7 +550,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -621,21 +623,21 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.id}}"
+            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
-          appItemId: "{{myAppItemId.id}}",
+          appItemId: "{{myAppItemId.itemId}}",
           values: {
-            webmap: "{{myMapId.id}}"
+            webmap: "{{myMapId.itemId}}"
           },
           map: {
             appProxy: {
-              mapItemId: "{{mapItemId.id}}"
+              mapItemId: "{{mapItemId.itemId}}"
             },
-            itemId: "{{mapItemId.id}}"
+            itemId: "{{mapItemId.itemId}}"
           },
           dataSource: {
             dataSources: {},
@@ -647,10 +649,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
                     service: "{{organization.geocodeServerUrl}}"
@@ -668,10 +672,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 icon: "{{organization.portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
-                    someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   someOtherProperty: {
-                    someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.url}}/1"
+                    someHttpsUrl:
+                      "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
                     service: "{{organization.geocodeServerUrl}}"
@@ -715,7 +721,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -787,7 +793,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         type: "Web Mapping Application",
         key: "abcdefgh",
         item: {
-          id: "{{f3223bda3c304dd0bf46dee75ac31aae.id}}",
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"

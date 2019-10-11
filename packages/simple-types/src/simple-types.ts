@@ -58,7 +58,7 @@ export function convertItemToTemplate(
     itemTemplate.item.id = common.templatizeTerm(
       itemTemplate.item.id,
       itemTemplate.item.id,
-      ".id"
+      ".itemId"
     );
 
     if (!isGroup) {
@@ -293,7 +293,7 @@ export function createItemFromTemplate(
               // Add the new item to the settings
               newItemTemplate.itemId = createResponse.id;
               templateDictionary[template.itemId] = {
-                id: createResponse.id
+                itemId: createResponse.id
               };
 
               // Update the template again now that we have the new item id
@@ -343,7 +343,8 @@ export function createItemFromTemplate(
                   progressTickCallback();
 
                   // Update the template dictionary with the new id
-                  templateDictionary[template.itemId].id = createResponse.id;
+                  templateDictionary[template.itemId].itemId =
+                    createResponse.id;
 
                   resolve(createResponse.id);
                 },
@@ -373,7 +374,7 @@ export function createItemFromTemplate(
                 if (createResponse.success) {
                   newItemTemplate.itemId = createResponse.group.id;
                   templateDictionary[template.itemId] = {
-                    id: createResponse.group.id
+                    itemId: createResponse.group.id
                   };
 
                   // Update the template again now that we have the new item id
@@ -393,7 +394,7 @@ export function createItemFromTemplate(
                     .then(
                       () => {
                         // Update the template dictionary with the new id
-                        templateDictionary[template.itemId].id =
+                        templateDictionary[template.itemId].itemId =
                           createResponse.group.id;
 
                         updateGroup(
@@ -457,7 +458,7 @@ export function updateGroup(
       defArray.push(
         common.shareItem(
           groupId,
-          templateDictionary[d].id,
+          templateDictionary[d].itemId,
           destinationAuthentication
         )
       );

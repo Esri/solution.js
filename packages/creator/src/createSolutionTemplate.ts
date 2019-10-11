@@ -468,7 +468,11 @@ export function _addMapLayerIds(
     webMapIds.forEach(webMapId => {
       templateTypeHash[webMapId].operationalLayers.forEach((opLayer: any) => {
         const opLayerInfo: any = opLayer[ds.itemId];
-        if (opLayerInfo && ds.url + "/" + ds.layerId === opLayerInfo.url) {
+        const url: string =
+          ds.url && !isNaN(ds.layerId)
+            ? ds.url.replace(/[.]/, ".layer" + ds.layerId + ".")
+            : "";
+        if (opLayerInfo && url === opLayerInfo.url) {
           ds.ids.push(opLayerInfo.id);
         }
       });

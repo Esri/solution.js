@@ -315,7 +315,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: true,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       createFeatureService(
@@ -1752,7 +1753,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: false,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       itemTemplate.item.name = "A";
@@ -1797,7 +1799,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: true,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       itemTemplate.itemId = "ab766cba0dd44ec080420acc10990282";
@@ -1871,7 +1874,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: false,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       fetchMock.post(
@@ -1943,7 +1947,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: true,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       fetchMock.post(
@@ -2019,7 +2024,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         isPortal: false,
         solutionItemId: "sol1234567890",
         initiative: initiative,
-        ab766cba0dd44ec080420acc10990282: {}
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       fetchMock.post(
@@ -2094,7 +2100,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         solutionItemId: "sol1234567890",
         initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        geometryServiceUrl: geometryServiceUrl
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       fetchMock.post(

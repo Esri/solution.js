@@ -18,19 +18,8 @@
  * Provides tests for functions involving the creation and deployment of feature layers and services.
  */
 
-import {
-  convertItemToTemplate,
-  createItemFromTemplate
-} from "../src/feature-layer";
-
-import {
-  IItemTemplate,
-  IDependency,
-  INumberValuePair,
-  IStringValuePair,
-  IUpdate,
-  IPostProcessArgs
-} from "../../common/src/interfaces";
+import * as featureLayer from "../src/feature-layer";
+import * as common from "../../common/src/interfaces";
 
 import {
   TOMORROW,
@@ -39,13 +28,11 @@ import {
   checkForArcgisRestSuccessRequestError
 } from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
-import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
-// import * as mClassifier from "../../src/itemTypes/classifier";
+import * as auth from "@esri/arcgis-rest-auth";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
-// import { cacheFieldInfos } from "../../src/utils/field-helpers";
 
-let itemTemplate: IItemTemplate = mockSolutions.getItemTemplatePart(
+let itemTemplate: common.IItemTemplate = mockSolutions.getItemTemplatePart(
   "Feature Service",
   [],
   "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
@@ -63,7 +50,7 @@ beforeEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
+const MOCK_USER_SESSION = new auth.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -76,9 +63,7 @@ const MOCK_USER_SESSION = new UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
-const MOCK_USER_REQOPTS: IUserRequestOptions = {
-  authentication: MOCK_USER_SESSION
-};
+const geometryServiceUrl: string = "http://utility/geomServer";
 
 const _initiative: any = {
   orgExtent: [[0, 0], [1, 1]],
@@ -112,7 +97,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const adminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-        const expectedId: string = "{{" + id + ".id}}";
+        const expectedId: string = "{{" + id + ".itemId}}";
         const keyField: string = "globalid";
         const expectedLayerKeyField: string =
           "{{" + id + ".layer0.fields.globalid.name}}";
@@ -188,8 +173,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             '{"token":"abc123"}'
           );
 
-        convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
-          r => {
+        featureLayer
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .then(r => {
             // verify the state up front
             expect(r.item.id).toEqual(expectedId);
             expect(r.item.url).toEqual(expectedUrl);
@@ -220,9 +206,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
               expectedTableDefQuery
             );
             done();
-          },
-          done.fail
-        );
+          }, done.fail);
       });
     }
 
@@ -268,12 +252,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"token":"abc123"}'
         );
 
-      convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
-        r => {
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
           done.fail();
-        },
-        done
-      );
+        }, done);
     });
 
     it("should handle error on getItemData", done => {
@@ -295,12 +278,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(url + "?f=json", mockItems.get400Failure())
         .get(itemDataUrl, mockItems.get400Failure());
 
-      convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
-        r => {
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
           done.fail();
-        },
-        done
-      );
+        }, done);
     });
 
     it("should handle error on getServiceLayersAndTables", done => {
@@ -345,19 +327,18 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"token":"abc123"}'
         );
 
-      convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION).then(
-        r => {
+      featureLayer
+        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+        .then(r => {
           done.fail();
-        },
-        done
-      );
+        }, done);
     });
   });
 
   describe("createItemFromTemplate", () => {
     it("should create a solution from a template", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -469,27 +450,30 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(r => {
-        expect(r).toEqual("svc1234567890");
-        done();
-      }, done.fail);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {},
+            organization: { geometryServiceUrl: geometryServiceUrl }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(r => {
+          expect(r).toEqual("svc1234567890");
+          done();
+        }, done.fail);
     });
 
     it("should create a solution from a template in portal", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -611,24 +595,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/move",
           '{"success": true, "folderId": 1245}'
         );
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        settings,
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(r => {
-        expect(r).toEqual("svc1234567890");
-        done();
-      }, done.fail);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          settings,
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(r => {
+          expect(r).toEqual("svc1234567890");
+          done();
+        }, done.fail);
     });
 
     it("should handle error on updateItem", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -713,24 +699,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {}
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(done.fail, done);
     });
 
     it("should handle error on addFeatureServiceLayersAndTables", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -797,24 +785,29 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {},
+            organization: { geometryServiceUrl: geometryServiceUrl }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(r => {
+          done.fail();
+        }, done);
     });
 
     it("should handle error on createService", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -877,24 +870,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {}
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(done.fail, done);
     });
 
     it("should handle createService success === false", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -902,15 +897,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
       itemTemplate = mockSolutions.getItemTemplatePart(
         "Feature Service",
@@ -921,20 +907,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
       itemTemplate.properties.service.serviceItemId = id;
-      itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
-      };
-
       itemTemplate.properties.layers[0].serviceItemId = id;
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
-      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
-      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
-
       itemTemplate.properties.tables[0].serviceItemId = id;
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
-      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
-      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
-      delete itemTemplate.item.item;
 
       const settings = createMockSettings();
       settings.folderId = "fld1234567890";
@@ -944,7 +918,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
-      createResponse.success = true;
+      createResponse.success = false;
 
       fetchMock
         .post(url + "?f=json", itemTemplate.properties.service)
@@ -957,27 +931,33 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
-          '{"success":false}'
+          createResponse
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {},
+            organization: { geometryServiceUrl: geometryServiceUrl }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(r => {
+          expect(r).toEqual("svc1234567890");
+          done.fail();
+        }, done);
     });
 
     it("should handle error on updateItem", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1062,24 +1042,26 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          initiative: _initiative,
-          svc1234567890: {}
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            initiative: _initiative,
+            svc1234567890: {}
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(done.fail, done);
     });
 
     it("should handle error on updateDefinition", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1162,21 +1144,23 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {},
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(done.fail, done);
     });
 
     it("should handle empty layers and tables", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1245,16 +1229,18 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {},
-        MOCK_USER_SESSION,
-        function() {
-          const a = "progressTick";
-        }
-      ).then(done.fail, done);
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const a = "progressTick";
+          }
+        )
+        .then(done.fail, done);
     });
   });
 });

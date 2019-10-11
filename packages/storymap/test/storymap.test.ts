@@ -68,35 +68,35 @@ describe("Module `storymap`", () => {
       expect(storymap.isAStoryMap(templateWMA)).toBeFalsy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/Cascade/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/Cascade/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/MapSeries/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/MapSeries/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/MapTour/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/MapTour/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/Shortlist/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/Shortlist/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/StoryMap/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/StoryMap/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/StoryMapBasic/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/StoryMapBasic/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
 
       templateWMA.item.url =
-        "{{organization.portalBaseUrl}}/apps/StorytellingSwipe/index.html?appid={{wma1234567890.id}}";
+        "{{organization.portalBaseUrl}}/apps/StorytellingSwipe/index.html?appid={{wma1234567890.itemId}}";
       expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
     });
   });

@@ -116,7 +116,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemId: "grp1234567890",
         type: "",
         item: {
-          id: "{{grp1234567890.id}}",
+          id: "{{grp1234567890.itemId}}",
           type: "",
           description: "Description of an AGOL group",
           snippet: "Snippet of an AGOL group",
@@ -238,7 +238,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemId: "grp1234567890",
         type: "Group",
         item: {
-          id: "{{grp1234567890.id}}",
+          id: "{{grp1234567890.itemId}}",
           type: "",
           description: "Description of an AGOL group",
           snippet: "Snippet of an AGOL group",
@@ -294,39 +294,39 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
         const expectedTemplateData: any = {
-          workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
-          dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+          workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
+          dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
           dispatchers: {
-            serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-            url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+            serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+            url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
           },
           assignments: {
-            serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-            url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+            serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+            url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
           },
           workers: {
-            serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-            url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+            serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+            url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
           },
           tracks: {
-            serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-            url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+            serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+            url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
             enabled: true,
             updateInterval: 300
           },
           version: "1.2.0",
-          groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
+          groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
           folderId: "{{folderId}}",
           assignmentIntegrations: [
             {
               id: "default-navigator",
               prompt: "Navigate to Assignment",
               urlTemplate:
-                "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
+                "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
               assignmentTypes: [
                 {
                   urlTemplate:
-                    "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+                    "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
                 }
               ]
             }
@@ -520,7 +520,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               groupDesignations: null
             }
           ],
-          id: "{{grp1234567890.id}}"
+          id: "{{grp1234567890.itemId}}"
         },
         data: {},
         resources: [],
@@ -569,7 +569,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "map1234567890",
           type: "Web Map",
           item: {
-            id: "{{map1234567890.id}}",
+            id: "{{map1234567890.itemId}}",
             type: "Web Map",
             categories: [],
             culture: "en-us",
@@ -583,7 +583,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.id}}"
+              "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
           data: null,
           resources: [
@@ -680,7 +680,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "dsh1234567890",
           type: "Dashboard",
           item: {
-            id: "{{dsh1234567890.id}}",
+            id: "{{dsh1234567890.itemId}}",
             type: "Dashboard",
             categories: [],
             culture: "en-us",
@@ -765,7 +765,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "frm1234567890",
           type: "Form",
           item: {
-            id: "{{frm1234567890.id}}",
+            id: "{{frm1234567890.itemId}}",
             type: "Form",
             categories: [],
             culture: "en-us",
@@ -925,7 +925,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "wma1234567890",
           type: "Web Mapping Application",
           item: {
-            id: "{{wma1234567890.id}}",
+            id: "{{wma1234567890.itemId}}",
             type: "Web Mapping Application",
             categories: [],
             culture: "en-us",
@@ -939,7 +939,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.id}}"
+              "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
           },
           data: null,
           resources: [],
@@ -1127,7 +1127,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           key: "abcdefgh",
           item: {
             title: "Voting Centers",
-            id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+            id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             type: "Web Mapping Application",
             categories: undefined,
             culture: undefined,
@@ -1137,21 +1137,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             thumbnail: undefined,
             typeKeywords: undefined,
             url:
-              "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+              "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             licenseInfo: undefined,
             name: undefined,
             snippet: undefined
           } as any,
           data: {
-            appItemId: "{{myAppItemId.id}}",
+            appItemId: "{{myAppItemId.itemId}}",
             values: {
-              webmap: "{{myMapId.id}}"
+              webmap: "{{myMapId.itemId}}"
             },
             map: {
               appProxy: {
-                mapItemId: "{{mapItemId.id}}"
+                mapItemId: "{{mapItemId.itemId}}"
               },
-              itemId: "{{mapItemId.id}}"
+              itemId: "{{mapItemId.itemId}}"
             },
             folderId: "{{folderId}}"
           },
@@ -1365,39 +1365,39 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.data = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
-        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
         },
         assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
         },
         workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
         },
         tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-          url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+          url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
           updateInterval: 300
         },
         version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
+        groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
         folderId: "{{folderId}}",
         assignmentIntegrations: [
           {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
             assignmentTypes: [
               {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
               }
             ]
           }
@@ -1405,7 +1405,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       const expected: any = {};
-      expected[itemId] = { id: newItemID };
+      expected[itemId] = { itemId: newItemID };
 
       fetchMock
         .post(
@@ -1508,7 +1508,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       const expected: any = {};
-      expected[itemId] = { id: newItemID };
+      expected[itemId] = { itemId: newItemID };
 
       fetchMock
         .get(
@@ -1802,7 +1802,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
         title: "Voting Centers",
-        id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
         categories: undefined,
         culture: undefined,
@@ -1812,21 +1812,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined
       };
       itemTemplate.data = {
-        appItemId: "{{myAppItemId.id}}",
+        appItemId: "{{myAppItemId.itemId}}",
         values: {
-          webmap: "{{myMapId.id}}"
+          webmap: "{{myMapId.itemId}}"
         },
         map: {
           appProxy: {
-            mapItemId: "{{mapItemId.id}}"
+            mapItemId: "{{mapItemId.itemId}}"
           },
-          itemId: "{{mapItemId.id}}"
+          itemId: "{{mapItemId.itemId}}"
         },
         folderId: "{{folderId}}"
       };
@@ -1877,7 +1877,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = {
         title: "Voting Centers",
-        id: "{{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         type: "Web Mapping Application",
         categories: undefined,
         culture: undefined,
@@ -1887,21 +1887,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.id}}",
+          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined
       };
       itemTemplate.data = {
-        appItemId: "{{myAppItemId.id}}",
+        appItemId: "{{myAppItemId.itemId}}",
         values: {
-          webmap: "{{myMapId.id}}"
+          webmap: "{{myMapId.itemId}}"
         },
         map: {
           appProxy: {
-            mapItemId: "{{mapItemId.id}}"
+            mapItemId: "{{mapItemId.itemId}}"
           },
-          itemId: "{{mapItemId.id}}"
+          itemId: "{{mapItemId.itemId}}"
         },
         folderId: "{{folderId}}"
       };
@@ -2298,7 +2298,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       updateGroup(itemTemplate, MOCK_USER_SESSION, {
         abc0cab401af4828a25cc6eaeb59fb69: {
-          id: "abc2cab401af4828a25cc6eaeb59fb69"
+          itemId: "abc2cab401af4828a25cc6eaeb59fb69"
         }
       }).then(() => {
         done.fail();
@@ -2368,7 +2368,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       updateGroup(itemTemplate, MOCK_USER_SESSION, {
         abc0cab401af4828a25cc6eaeb59fb69: {
-          id: "abc2cab401af4828a25cc6eaeb59fb69"
+          itemId: "abc2cab401af4828a25cc6eaeb59fb69"
         }
       }).then(() => {
         done();

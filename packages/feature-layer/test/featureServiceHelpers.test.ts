@@ -26,7 +26,7 @@ import {
   cachePopupInfos,
   _cachePopupInfo,
   updateTemplate,
-  getFieldSettings,
+  getLayerSettings,
   updateSettingsFieldInfos,
   deTemplatizeFieldInfos,
   getLayersAndTables,
@@ -165,7 +165,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "",
         properties: {
           service: {
-            serviceItemId: "{{DEF456.id}}",
+            serviceItemId: "{{DEF456.itemId}}",
             fullExtent: "{{ABC123.fullExtent}}",
             initialExtent: "{{ABC123.initialExtent}}"
           },
@@ -178,7 +178,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
-          id: "{{ABC123.id}}",
+          id: "{{ABC123.itemId}}",
           url: "{{ABC123.url}}"
         },
         data: {},
@@ -279,7 +279,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         key: "ABC123",
         properties: {
           service: {
-            serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
+            serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
             fullExtent: "{{ab766cba0dd44ec080420acc10990282.fullExtent}}",
             initialExtent: "{{ab766cba0dd44ec080420acc10990282.initialExtent}}",
             layers: [
@@ -298,7 +298,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [
             {
               id: "0",
-              serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
+              serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
               adminLayerInfo: {},
               displayField: "A",
               fields: [
@@ -311,7 +311,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: [
             {
               id: "1",
-              serviceItemId: "{{ab766cba0dd44ec080420acc10990282.id}}",
+              serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
               fields: [
                 {
                   name: "B"
@@ -323,7 +323,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         type: "",
         item: {
           extent: {}, // only set through createSolutionTemplate
-          id: "{{ab766cba0dd44ec080420acc10990282.id}}",
+          id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}"
         },
         data: {
@@ -592,7 +592,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       itemTemplate.itemId = "AAABBBCCC123";
       itemTemplate.item = {
-        id: "{{AAABBBCCC123.id}}",
+        id: "{{AAABBBCCC123.itemId}}",
         url: "{{AAABBBCCC123.url}}"
       };
 
@@ -630,7 +630,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedSettings: any = {
         AAABBBCCC123: {
-          id: "DDDEEEFFF456",
+          itemId: "DDDEEEFFF456",
           url: "http://test/FeatureServer",
           name: "TheService"
         }
@@ -643,6 +643,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("getFieldSettings", () => {
     it("should handle fields NOT changed", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
       const fieldInfos: any = {
         "0": {
           newFields: [
@@ -739,6 +740,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          url: serviceUrl + "/" + 0,
+          layerId: "0",
           fields: {
             a: {
               name: "A",
@@ -758,6 +761,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          url: serviceUrl + "/" + 1,
+          layerId: "1",
           fields: {
             c: {
               name: "C",
@@ -789,12 +794,13 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const settings = getFieldSettings(fieldInfos);
+      const settings = getLayerSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
 
     it("should handle fields changed", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
       const fieldInfos: any = {
         "0": {
           newFields: [
@@ -924,6 +930,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          url: serviceUrl + "/" + 0,
+          layerId: "0",
           fields: {
             a: {
               name: "a0",
@@ -948,6 +956,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          url: serviceUrl + "/" + 1,
+          layerId: "1",
           fields: {
             c: {
               name: "c",
@@ -986,7 +996,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           deleteFields: ["createdate"]
         }
       };
-      const settings: any = getFieldSettings(fieldInfos);
+      const settings: any = getLayerSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -1081,14 +1091,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         "0998341a7a2a4e9c86c553287a1f3e94": {
-          id: "166657ce19f34c32846cd12022e2c33a",
+          itemId: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
           layer0: layer0,
           layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
-          id: "ebe7e53cc218423c9225ceb783d412b5",
+          itemId: "ebe7e53cc218423c9225ceb783d412b5",
           url: "",
           name: "ElectionResults_join_20190425_2019_12456"
         }
@@ -1112,14 +1122,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         organization: {},
         isPortal: false,
         "0998341a7a2a4e9c86c553287a1f3e94": {
-          id: "166657ce19f34c32846cd12022e2c33a",
+          itemId: "166657ce19f34c32846cd12022e2c33a",
           url: "",
           name: "ElectionResults_20190425_2018_51947",
           layer0: layer0,
           layer1: layer1
         },
         ab766cba0dd44ec080420acc10990282: {
-          id: "ebe7e53cc218423c9225ceb783d412b5",
+          itemId: "ebe7e53cc218423c9225ceb783d412b5",
           url: "",
           name: "ElectionResults_join_20190425_2019_12456",
           layer0: layer0,
@@ -2372,7 +2382,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("addFeatureServiceLayersAndTables", () => {
     it("should handle error", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -2456,7 +2466,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle error on getLayersAndTables", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -2499,7 +2509,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle error on updateLayerFieldReferences", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -2573,7 +2583,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should handle error on layer updates", done => {
       const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".id}}";
+      const id: string = "{{" + expectedId + ".itemId}}";
 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -2674,7 +2684,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const settings = createMockSettings();
       settings.folderId = "fld1234567890";
       settings[itemTemplate.itemId] = {
-        id: itemTemplate.itemId,
+        itemId: itemTemplate.itemId,
         url: url
       };
 

@@ -313,7 +313,11 @@ export function _getWidgetPromises(
           mapPromises.push(common.getItemData(widget.itemId, authentication));
           itemTemplate.dependencies.push(widget.itemId);
         }
-        widget.itemId = common.templatizeToLowerCase(widget.itemId, "id");
+        widget.itemId = common.templatizeTerm(
+          widget.itemId,
+          widget.itemId,
+          ".itemId"
+        );
       }
       if (Array.isArray(widget.datasets)) {
         datasourcePromises = datasourcePromises.concat(
@@ -382,7 +386,11 @@ export function _getDatasourcePromises(
       if (itemTemplate.dependencies.indexOf(itemId) < 0) {
         itemTemplate.dependencies.push(itemId);
       }
-      dataset.dataSource.itemId = common.templatizeToLowerCase(itemId, "id");
+      dataset.dataSource.itemId = common.templatizeTerm(
+        itemId,
+        itemId,
+        ".itemId"
+      );
 
       const layerId: number = common.getProp(dataset, "dataSource.layerId");
       const hasItem: boolean = datasourceInfos.some(ds => {
