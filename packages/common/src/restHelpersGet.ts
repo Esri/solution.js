@@ -589,10 +589,8 @@ export function _getGroupContentsTranche(
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
-    const pagingRequest: any = {
-      params: {
-        ...pagingParams
-      },
+    const pagingRequest: portal.IGetGroupContentOptions = {
+      paging: pagingParams,
       authentication: authentication
     };
 
@@ -641,14 +639,14 @@ export function _getItemResourcesTranche(
     const trancheUrl = `${portalSharingUrl}/content/items/${itemId}/resources`;
     const itemResourcesDef: Array<Promise<File>> = [];
 
-    const pagingRequest: any = {
+    const options: request.IRequestOptions = {
       params: {
         ...pagingParams
       },
       authentication: authentication
     };
 
-    request.request(trancheUrl, pagingRequest).then(contents => {
+    request.request(trancheUrl, options).then(contents => {
       if (contents.num > 0) {
         // Extract the list of resource filenames from the JSON returned
         contents.resources.forEach((resource: any) => {
