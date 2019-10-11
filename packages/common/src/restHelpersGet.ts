@@ -507,10 +507,7 @@ export function getPortalSharingUrlFromAuth(
   authentication: auth.UserSession
 ): string {
   // If auth was passed, use that portal
-  return (
-    generalHelpers.getProp(authentication, "portal") ||
-    "https://www.arcgis.com/sharing/rest"
-  );
+  return generalHelpers.getProp(authentication, "portal");
 }
 
 /**
