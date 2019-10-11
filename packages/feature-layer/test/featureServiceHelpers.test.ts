@@ -26,7 +26,7 @@ import {
   cachePopupInfos,
   _cachePopupInfo,
   updateTemplate,
-  getFieldSettings,
+  getLayerSettings,
   updateSettingsFieldInfos,
   deTemplatizeFieldInfos,
   getLayersAndTables,
@@ -741,6 +741,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           url: serviceUrl + "/" + 0,
+          layerId: "0",
           fields: {
             a: {
               name: "A",
@@ -761,6 +762,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         layer1: {
           url: serviceUrl + "/" + 1,
+          layerId: "1",
           fields: {
             c: {
               name: "C",
@@ -792,7 +794,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const settings = getFieldSettings(fieldInfos, serviceUrl);
+      const settings = getLayerSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -929,6 +931,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         layer0: {
           url: serviceUrl + "/" + 0,
+          layerId: "0",
           fields: {
             a: {
               name: "a0",
@@ -954,6 +957,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         layer1: {
           url: serviceUrl + "/" + 1,
+          layerId: "1",
           fields: {
             c: {
               name: "c",
@@ -992,7 +996,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           deleteFields: ["createdate"]
         }
       };
-      const settings: any = getFieldSettings(fieldInfos, serviceUrl);
+      const settings: any = getLayerSettings(fieldInfos, serviceUrl);
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });

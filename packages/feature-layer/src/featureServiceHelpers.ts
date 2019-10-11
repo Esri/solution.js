@@ -256,19 +256,20 @@ export function updateTemplate(
  *
  * Example... { layer0: { fields: { lowerCaseSourceFieldName: newFieldNameAfterDeployment } } }
  *
- * @param fieldInfos The object that stores the cached layer properties and name mapping
+ * @param layerInfos The object that stores the cached layer properties and name mapping
  * @return The settings object that will be used to de-templatize the field references.
  */
-export function getFieldSettings(fieldInfos: any, url: string): any {
+export function getLayerSettings(layerInfos: any, url: string): any {
   const settings: any = {};
-  const ids = Object.keys(fieldInfos);
+  const ids = Object.keys(layerInfos);
   ids.forEach((id: any) => {
     settings["layer" + id] = {
-      fields: _getNameMapping(fieldInfos, id),
-      url: url + "/" + id
+      fields: _getNameMapping(layerInfos, id),
+      url: url + "/" + id,
+      layerId: id
     };
-    common.deleteProp(fieldInfos[id], "newFields");
-    common.deleteProp(fieldInfos[id], "sourceFields");
+    common.deleteProp(layerInfos[id], "newFields");
+    common.deleteProp(layerInfos[id], "sourceFields");
   });
   return settings;
 }
@@ -589,7 +590,7 @@ export function updateLayerFieldReferences(
  * added to the definition
  *
  * @param itemTemplate Item to be created
- * @param fieldInfos Hash map of properties that contain field references
+ * @param layerInfos Hash map of properties that contain field references and various layer info
  * @param popupInfos Hash map of a layers popupInfo
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary
@@ -599,7 +600,7 @@ export function updateLayerFieldReferences(
  */
 export function postProcessFields(
   itemTemplate: common.IItemTemplate,
-  fieldInfos: any,
+  layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
   templateDictionary: any,
@@ -628,17 +629,17 @@ export function postProcessFields(
         const layers: any[] = results[0] || [];
         const tables: any[] = results[1] || [];
         const layersAndTables: any[] = layers.concat(tables);
-        // Set the newFields property for the fieldInfos...this will contain all fields
+        // Set the newFields property for the layerInfos...this will contain all fields
         // as they are after being added to the definition.
         // This allows us to handle any potential field name changes after deploy to portal
         layersAndTables.forEach((item: any) => {
-          if (fieldInfos && fieldInfos.hasOwnProperty(item.id)) {
-            fieldInfos[item.id]["newFields"] = item.fields;
-            fieldInfos[item.id]["sourceSchemaChangesAllowed"] =
+          if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
+            layerInfos[item.id]["newFields"] = item.fields;
+            layerInfos[item.id]["sourceSchemaChangesAllowed"] =
               item.sourceSchemaChangesAllowed;
             if (item.editFieldsInfo) {
               // more than case change when deployed to protal so keep track of the new names
-              fieldInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
+              layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
                 JSON.stringify(item.editFieldsInfo)
               );
             }
@@ -648,37 +649,37 @@ export function postProcessFields(
             // update the field visibility to match that of the source
             if (item.isView) {
               let fieldUpdates: any[] = _getFieldVisibilityUpdates(
-                fieldInfos[item.id]
+                layerInfos[item.id]
               );
 
               // view field domains can contain different values than the source field domains
               // use the cached view domain when it differs from the source view domain
               fieldUpdates = _validateDomains(
-                fieldInfos[item.id],
+                layerInfos[item.id],
                 fieldUpdates
               );
 
               if (fieldUpdates.length > 0) {
-                fieldInfos[item.id].fields = fieldUpdates;
+                layerInfos[item.id].fields = fieldUpdates;
               }
             }
           }
         });
 
-        // Add the fieldInfos to the settings object to be used while detemplatizing
+        // Add the layerInfos to the settings object to be used while detemplatizing
         settingsKeys.forEach((k: any) => {
           if (id === templateDictionary[k].itemId) {
             templateDictionary[k] = Object.assign(
               templateDictionary[k],
-              getFieldSettings(fieldInfos, templateDictionary[k].url)
+              getLayerSettings(layerInfos, templateDictionary[k].url)
             );
           }
         });
 
-        // update the fieldInfos object with current field names
+        // update the layerInfos object with current field names
         resolveFn(
           deTemplatizeFieldInfos(
-            fieldInfos,
+            layerInfos,
             popupInfos,
             adminLayerInfos,
             templateDictionary
@@ -868,6 +869,13 @@ export function _templatizeLayer(
   }
 
   updates.forEach(update => {
+    if (update.hasOwnProperty("name")) {
+      // templatize the name but leave the current name as the optional default
+      update.name = _templatize(
+        update["serviceItemId"] + ".layer" + update.id,
+        "name||" + update.name
+      );
+    }
     if (update.hasOwnProperty("extent")) {
       update.extent = common.templatizeTerm(
         update["serviceItemId"],
