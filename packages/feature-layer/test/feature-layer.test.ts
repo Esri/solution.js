@@ -80,6 +80,8 @@ const MOCK_USER_REQOPTS: IUserRequestOptions = {
   authentication: MOCK_USER_SESSION
 };
 
+const geometryServiceUrl: string = "http://utility/geomServer";
+
 const _initiative: any = {
   orgExtent: [[0, 0], [1, 1]],
   defaultExtent: {
@@ -475,7 +477,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         MOCK_USER_SESSION,
         {
           initiative: _initiative,
-          svc1234567890: {}
+          svc1234567890: {},
+          organization: { geometryServiceUrl: geometryServiceUrl }
         },
         MOCK_USER_SESSION,
         function() {
