@@ -99,39 +99,39 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
       };
 
       const expectedTemplateData: any = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.id}}",
-        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.id}}",
+        workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
+        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.id}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.url}}/0"
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
         },
         assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.id}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.url}}/0"
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
         },
         workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.id}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.url}}/0"
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
         },
         tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.id}}",
-          url: "{{abc64329e69144c59f69f3f3e0d45269.url}}/0",
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+          url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
           updateInterval: 300
         },
         version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.id}}",
+        groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
         folderId: "{{folderId}}",
         assignmentIntegrations: [
           {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce",
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
             assignmentTypes: [
               {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.id}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.id}}}://Workforce"
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
               }
             ]
           }

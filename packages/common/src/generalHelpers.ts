@@ -279,7 +279,7 @@ export function hasDatasource(
  * remove templatization from id to compare
  */
 export function cleanId(id: any): any {
-  return id ? id.replace("{{", "").replace(".id}}", "") : id;
+  return id ? id.replace("{{", "").replace(".itemId}}", "") : id;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

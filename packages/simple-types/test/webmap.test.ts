@@ -53,7 +53,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers"
         } as any,
         data: null as any,
@@ -67,10 +67,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: null as any,
         resources: [] as any[],
@@ -87,7 +87,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {} as any,
@@ -101,10 +101,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {} as any,
         resources: [] as any[],
@@ -121,7 +121,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
@@ -157,27 +157,27 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
             {
-              itemId: "{{layer1.id}}",
-              url: "{{layer1.url}}/4"
+              itemId: "{{layer1.itemId}}",
+              url: "{{layer1.layer4.url}}"
             },
             {
-              itemId: "{{layer2.id}}",
-              url: "{{layer2.url}}/4"
+              itemId: "{{layer2.itemId}}",
+              url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{layer4.id}}",
-              url: "{{layer4.url}}/4"
+              itemId: "{{layer4.itemId}}",
+              url: "{{layer4.layer4.url}}"
             }
           ],
           tables: []
@@ -196,7 +196,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
@@ -230,24 +230,24 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [],
           tables: [
             {
-              itemId: "{{table1.id}}",
-              url: "{{table1.url}}/4"
+              itemId: "{{table1.itemId}}",
+              url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{table3.id}}",
-              url: "{{table3.url}}/4"
+              itemId: "{{table3.itemId}}",
+              url: "{{table3.layer4.url}}"
             },
             {
               itemId: null
@@ -268,7 +268,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
@@ -319,10 +319,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.id}}",
+          id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.id}}"
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
@@ -330,28 +330,28 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
               itemId: null
             },
             {
-              itemId: "{{layer2.id}}",
-              url: "{{layer2.url}}/4"
+              itemId: "{{layer2.itemId}}",
+              url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{layer4.id}}",
-              url: "{{layer4.url}}/4"
+              itemId: "{{layer4.itemId}}",
+              url: "{{layer4.layer4.url}}"
             }
           ],
           tables: [
             {
-              itemId: "{{table1.id}}",
-              url: "{{table1.url}}/4"
+              itemId: "{{table1.itemId}}",
+              url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{table3.id}}",
-              url: "{{table3.url}}/4"
+              itemId: "{{table3.itemId}}",
+              url: "{{table3.layer4.url}}"
             },
             {
               itemId: null

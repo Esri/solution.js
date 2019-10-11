@@ -283,7 +283,7 @@ const initialDashboardTemplate: any = {
   type: "Dashboard",
   key: "w5u0o8te",
   item: {
-    id: "{{eff3f22d41ad42dcb6fe9015f26d40f4.id}}",
+    id: "{{eff3f22d41ad42dcb6fe9015f26d40f4.itemId}}",
     type: "Dashboard",
     categories: [],
     culture: "en-us",
@@ -4706,7 +4706,7 @@ const expectedUpdatedTemplate: any = {
   type: "Dashboard",
   key: "w5u0o8te",
   item: {
-    id: "{{eff3f22d41ad42dcb6fe9015f26d40f4.id}}",
+    id: "{{eff3f22d41ad42dcb6fe9015f26d40f4.itemId}}",
     type: "Dashboard",
     categories: [],
     culture: "en-us",
@@ -5054,7 +5054,7 @@ const expectedUpdatedTemplate: any = {
               type: "serviceDataset",
               dataSource: {
                 type: "featureServiceDataSource",
-                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
                 layerId: 0,
                 table: false
               },
@@ -5194,7 +5194,7 @@ const expectedUpdatedTemplate: any = {
               type: "serviceDataset",
               dataSource: {
                 type: "featureServiceDataSource",
-                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
                 layerId: 0,
                 table: false
               },
@@ -5415,7 +5415,7 @@ const expectedUpdatedTemplate: any = {
               type: "serviceDataset",
               dataSource: {
                 type: "featureServiceDataSource",
-                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+                itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
                 layerId: 0,
                 table: false
               },
@@ -5517,7 +5517,7 @@ const expectedUpdatedTemplate: any = {
       {
         type: "mapWidget",
         flashRepeats: 3,
-        itemId: "{{7e6c41c72d4548d9a312329e0c5a984f.id}}",
+        itemId: "{{7e6c41c72d4548d9a312329e0c5a984f.itemId}}",
         mapTools: [],
         showNavigation: false,
         showPopup: true,
@@ -5840,7 +5840,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },
@@ -5883,7 +5883,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },
@@ -6074,7 +6074,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },
@@ -6354,7 +6354,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },
@@ -6698,7 +6698,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },
@@ -7637,7 +7637,7 @@ const expectedUpdatedTemplate: any = {
             type: "serviceDataset",
             dataSource: {
               type: "featureServiceDataSource",
-              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+              itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
               layerId: 0,
               table: false
             },

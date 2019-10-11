@@ -98,7 +98,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "jqcu9ml8",
     item: {
-      id: "{{4efe5f693de34620934787ead6693f19.id}}",
+      id: "{{4efe5f693de34620934787ead6693f19.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -128,7 +128,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+        serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
         serviceDescription:
           "Incident Analysis data and symbology for Situational Awareness",
         hasVersionedData: false,
@@ -265,7 +265,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 0,
           name: "Hospital",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -639,7 +639,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 1,
           name: "School",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -992,7 +992,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 2,
           name: "Emergency Shelter",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "FACNAME",
           description: "",
           copyrightText: "",
@@ -1690,7 +1690,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 3,
           name: "Emergency Assistance",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "PLACENAME",
           description: "",
           copyrightText: "",
@@ -2328,7 +2328,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 4,
           name: "Bridges",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -3157,7 +3157,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 5,
           name: "Road Closure",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "BLOCKNM",
           description: "",
           copyrightText: "",
@@ -3764,7 +3764,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 6,
           name: "DemographicPolygons",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME10",
           description: "",
           copyrightText: "",
@@ -4156,7 +4156,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 7,
           name: "Incident Area",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "INCIDENTID",
           description: "",
           copyrightText: "",
@@ -4831,7 +4831,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Web Map",
     key: "abgdh3ud",
     item: {
-      id: "{{7e6c41c72d4548d9a312329e0c5a984f.id}}",
+      id: "{{7e6c41c72d4548d9a312329e0c5a984f.itemId}}",
       type: "Web Map",
       categories: [],
       culture: "en-us",
@@ -4853,18 +4853,18 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.id}}"
+        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
     },
     data: {
       operationalLayers: [
         {
           id: "TestLayerForDashBoardMap_632",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/2",
+          url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Shelter: {FACNAME}",
             fieldInfos: [
@@ -5127,7 +5127,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Web Mapping Application",
     key: "f6zngin5",
     item: {
-      id: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}",
+      id: "{{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}",
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
@@ -5150,7 +5150,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.id}}"
+        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     data: {
       theme: {
@@ -5870,7 +5870,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                       }
                     ],
                     title: "TestLayerForDashBoardMap - Emergency Assistance",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/3"
+                    url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}"
                   },
                   fieldInfos: [
                     {
@@ -6270,11 +6270,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               highlightColor: "#00ffff",
               searchLayers: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   geometryType: "esriGeometryPoint",
                   id: "TestLayerForDashBoardMap_2892",
                   layerId: "0",
-                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}/",
+                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}",
                   isMapServer: false,
                   title: "TestLayerForDashBoardMap - Hospital",
                   visibility: true,
@@ -6416,11 +6416,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   }
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                   geometryType: "esriGeometryPolygon",
                   id: "TestLayer2FromWebApp_5607",
                   layerId: "1",
-                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}/",
+                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}",
                   isMapServer: false,
                   title: "TestLayer2FromWebApp - Chemical Activity",
                   visibility: true,
@@ -6754,7 +6754,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 sources: [
                   {
                     layerId: "TestLayer2FromWebApp_5607",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                     name: "TestLayer2FromWebApp - Chemical Activity",
                     placeholder: "",
                     searchFields: [
@@ -6775,7 +6775,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_2615",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/7",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}",
                     name: "TestLayerForDashBoardMap - Incident Area",
                     placeholder: "",
                     searchFields: [
@@ -6795,7 +6795,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_8627",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/6",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}",
                     name: "TestLayerForDashBoardMap - DemographicPolygons",
                     placeholder: "",
                     searchFields: ["OBJECTID", "TRACTCE10", "ID", "CHILD_CY"],
@@ -6904,7 +6904,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 filters: [
                   {
                     layerId: "TestLayerForDashBoardMap_2892",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                     name: "TestLayerForDashBoardMap - Hospital",
                     filter: {
                       logicalOperator: "AND",
@@ -7000,7 +7000,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayer2FromWebApp_5607",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                     name: "TestLayer2FromWebApp - Chemical Activity",
                     filter: {
                       logicalOperator: "AND",
@@ -7150,7 +7150,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   layerTitle: "TestLayerForDashBoardMap - Hospital",
                   layers: "TestLayerForDashBoardMap_2892",
                   advStat: {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                     stats: {
                       outFields: [
                         {
@@ -7247,7 +7247,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   layerTitle: "TestLayerForDashBoardMap - Emergency Assistance",
                   layers: "TestLayerForDashBoardMap_5538",
                   advStat: {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/3",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}",
                     stats: {
                       tabCount: false,
                       pre: [
@@ -7423,12 +7423,12 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           right: 0,
           bottom: 0
         },
-        itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+        itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
         mapOptions: {},
         id: "map",
         portalUrl: "{{organization.portalBaseUrl}}/",
         appProxy: {
-          mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+          mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
           proxyItems: []
         },
         mapRefreshInterval: {
@@ -7475,7 +7475,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   layer: "TestLayerForDashBoardMap_2892",
                   label: "TestLayerForDashBoardMap - Hospital",
                   refresh: false,
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   id: "TestLayerForDashBoardMap_2892",
                   symbolData: {
                     symbolType: "LayerSymbol",
@@ -8091,7 +8091,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   layer: "TestLayer2FromWebApp_4042",
                   label: "TestLayer2FromWebApp - Stands",
                   refresh: false,
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/3",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}",
                   id: "TestLayer2FromWebApp_4042",
                   symbolData: {
                     symbolType: "LayerSymbol",
@@ -8630,7 +8630,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               spatialFilterLabel: "Spatial filters",
               queries: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   name: "TestLayerForDashBoardMap - Hospital",
                   icon: {
                     color: [0, 0, 128, 128],
@@ -8749,7 +8749,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   customResultName: true
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/4",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
                   name: "TestLayer2FromWebApp - Harvest Crops",
                   icon: {
                     color: [0, 0, 128, 128],
@@ -8967,7 +8967,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Stands",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/3"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - Property",
@@ -8975,7 +8975,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Property",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/2"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - Chemical Activity",
@@ -8983,7 +8983,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Chemical Activity",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/1"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - HarvestActivity",
@@ -8991,7 +8991,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - HarvestActivity",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/0"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Incident Area",
@@ -8999,7 +8999,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Incident Area",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/7"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - DemographicPolygons",
@@ -9007,7 +9007,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - DemographicPolygons",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/6"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Road Closure",
@@ -9015,7 +9015,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Road Closure",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/5"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer5.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Bridges",
@@ -9023,7 +9023,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Bridges",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/4"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Emergency Assistance",
@@ -9031,7 +9031,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Emergency Assistance",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/3"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Emergency Shelter",
@@ -9039,7 +9039,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Emergency Shelter",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/2"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - School",
@@ -9047,7 +9047,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - School",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/1"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Hospital",
@@ -9055,7 +9055,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Hospital",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}"
                 }
               ],
               drsUrl:
@@ -9811,7 +9811,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 sources: [
                   {
                     layerId: "TestLayer2FromWebApp_8439",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/2",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}",
                     name: "TestLayer2FromWebApp - Property",
                     placeholder: "",
                     searchFields: ["OBJECTID", "GlobalID", "CreationDate"],
@@ -9824,7 +9824,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_7041",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/1",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}",
                     name: "TestLayerForDashBoardMap - School",
                     placeholder: "",
                     searchFields: ["OBJECTID", "OWNER", "FEATURECODE"],
@@ -10032,14 +10032,14 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               },
               layers: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
                   geometryType: "esriGeometryPoint",
                   id: "TestLayerForDashBoardMap_5389",
                   label: "",
                   layerName: "TestLayerForDashBoardMap - Bridges",
                   layerVersion: 10.7,
                   layerId: "4",
-                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}/",
+                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}",
                   selectedFields: {
                     FACILITYID: {
                       name: "FACILITYID",
@@ -10682,14 +10682,14 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                   groupbyfieldCheckBoxStatus: true
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
                   geometryType: "esriGeometryPolygon",
                   id: "TestLayer2FromWebApp_9409",
                   label: "",
                   layerName: "TestLayer2FromWebApp - HarvestActivity",
                   layerVersion: 10.7,
                   layerId: "0",
-                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}/",
+                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}",
                   selectedFields: {
                     ActivitySubCategory: {
                       fieldName: "ActivitySubCategory",
@@ -10903,14 +10903,14 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 type: "syncEnable",
                 layers: [
                   {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
                     layerName: "TestLayerForDashBoardMap - Bridges",
                     id: "TestLayerForDashBoardMap_5389",
                     allowDownload: true,
                     downloadingFileOption: ["csv"]
                   },
                   {
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
                     layerName: "TestLayer2FromWebApp - HarvestActivity",
                     id: "TestLayer2FromWebApp_9409",
                     allowDownload: true,
@@ -16260,10 +16260,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           "external~08595057759890956": {
             type: "Features",
             portalUrl: "{{organization.portalBaseUrl}}",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
             isDynamic: false,
             label: "School",
-            url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}/1",
+            url: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}",
             filterByExtent: false,
             filter: {
               logicalOperator: "AND",
@@ -17098,7 +17098,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         },
         settings: {}
       },
-      appItemId: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}"
+      appItemId: "{{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     resources: [
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/5422652170345252.png",
@@ -17117,7 +17117,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Web Map",
     key: "nrmmcdec",
     item: {
-      id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+      id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
       type: "Web Map",
       categories: [],
       culture: "en-us",
@@ -17139,18 +17139,18 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.id}}"
+        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
     },
     data: {
       operationalLayers: [
         {
           id: "TestLayer2FromWebApp_4042",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/3",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Stands: {StandName}",
             fieldInfos: [
@@ -17273,11 +17273,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_8439",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/2",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Property",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Property: {PropertyName}",
             fieldInfos: [
@@ -17384,11 +17384,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_5607",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Chemical Activity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Chemical Activity: {ActivityStatus}",
             fieldInfos: [
@@ -17637,11 +17637,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_9409",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - HarvestActivity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "HarvestActivity: {HarvestUnitName}",
             fieldInfos: [
@@ -17933,11 +17933,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2615",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/7",
+          url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Incident Area",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Incident Area: {INCIDENTID}",
             fieldInfos: [
@@ -18095,11 +18095,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_8627",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/6",
+          url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - DemographicPolygons",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "DemographicPolygons: {NAME10}",
             fieldInfos: [
@@ -18309,11 +18309,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_7797",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/5",
+          url: "{{4efe5f693de34620934787ead6693f19.layer5.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Road Closure",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Road Closure: {BLOCKNM}",
             fieldInfos: [
@@ -18491,11 +18491,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_5389",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+          url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Bridges",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Bridges: {NAME}",
             fieldInfos: [
@@ -18777,11 +18777,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_5538",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/3",
+          url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Assistance",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Assistance: {PLACENAME}",
             fieldInfos: [
@@ -19078,11 +19078,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2914",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/2",
+          url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Shelter: {FACNAME}",
             fieldInfos: [
@@ -19300,11 +19300,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_7041",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/1",
+          url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - School",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "School: {NAME}",
             fieldInfos: [
@@ -19468,11 +19468,11 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2892",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+          url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Hospital",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Hospital: {NAME}",
             fieldInfos: [
@@ -19634,10 +19634,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       version: "2.15",
       tables: [
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/8",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer8.url}}",
           id: "TestLayer2FromWebApp_5860",
           title: "TestLayer2FromWebApp - Activity Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Activity Stands: {StandID}",
             fieldInfos: [
@@ -19750,10 +19750,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/7",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer7.url}}",
           id: "TestLayer2FromWebApp_8278",
           title: "TestLayer2FromWebApp - ChemicalProduct",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ChemicalProduct: {ProductName}",
             fieldInfos: [
@@ -19938,10 +19938,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/6",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer6.url}}",
           id: "TestLayer2FromWebApp_8866",
           title: "TestLayer2FromWebApp - ChemicalApplication",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ChemicalApplication: {ApplicationRate}",
             fieldInfos: [
@@ -20086,10 +20086,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/5",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer5.url}}",
           id: "TestLayer2FromWebApp_6326",
           title: "TestLayer2FromWebApp - ActivityWeather",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ActivityWeather: {WeatherDate}",
             fieldInfos: [
@@ -20233,10 +20233,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/4",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
           id: "TestLayer2FromWebApp_4230",
           title: "TestLayer2FromWebApp - Harvest Crops",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Harvest Crops: {CropName}",
             fieldInfos: [
@@ -20385,7 +20385,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "exflx3n1",
     item: {
-      id: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+      id: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -20415,7 +20415,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+        serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
         serviceDescription:
           "Incident Analysis data and symbology for Situational Awareness",
         hasVersionedData: false,
@@ -20552,7 +20552,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 0,
           name: "Hospital",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -20927,7 +20927,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 1,
           name: "School",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -21280,7 +21280,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 2,
           name: "Emergency Shelter",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "FACNAME",
           description: "",
           copyrightText: "",
@@ -21978,7 +21978,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 3,
           name: "Emergency Assistance",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "PLACENAME",
           description: "",
           copyrightText: "",
@@ -22616,7 +22616,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 4,
           name: "Bridges",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -23445,7 +23445,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 5,
           name: "Road Closure",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "BLOCKNM",
           description: "",
           copyrightText: "",
@@ -24052,7 +24052,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 6,
           name: "DemographicPolygons",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME10",
           description: "",
           copyrightText: "",
@@ -24444,7 +24444,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 7,
           name: "Incident Area",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "INCIDENTID",
           description: "",
           copyrightText: "",
@@ -25119,7 +25119,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "jt4ulolq",
     item: {
-      id: "{{b19aec399444407da84fffe2a55d4151.id}}",
+      id: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -25159,7 +25159,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+        serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
         serviceDescription:
           "Standardized approach for cataloging forest activities such as chemical applications, harvest activities.",
         hasVersionedData: false,
@@ -25310,7 +25310,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 0,
           name: "HarvestActivity",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "HarvestUnitName",
           description: "HarvestActivity",
           copyrightText: "",
@@ -26147,7 +26147,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 1,
           name: "Chemical Activity",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ActivityStatus",
           description: "Chemical Activity",
           copyrightText: "",
@@ -26953,7 +26953,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 2,
           name: "Property",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "PropertyName",
           description: "Property",
           copyrightText: "",
@@ -27268,7 +27268,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 3,
           name: "Stands",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "StandName",
           description: "Stands",
           copyrightText: "",
@@ -27609,7 +27609,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 4,
           name: "Harvest Crops",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "CropName",
           description: "",
           copyrightText: "",
@@ -28194,7 +28194,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 5,
           name: "ActivityWeather",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "WeatherDate",
           description: "",
           copyrightText: "",
@@ -28598,7 +28598,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 6,
           name: "ChemicalApplication",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ApplicationRate",
           description: "",
           copyrightText: "",
@@ -29117,7 +29117,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 7,
           name: "ChemicalProduct",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ProductName",
           description: "",
           copyrightText: "",
@@ -29842,7 +29842,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           id: 8,
           name: "Activity Stands",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "StandID",
           description: "",
           copyrightText: "",
@@ -30158,7 +30158,7 @@ const expected: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "jqcu9ml8",
     item: {
-      id: "{{4efe5f693de34620934787ead6693f19.id}}",
+      id: "{{4efe5f693de34620934787ead6693f19.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -30188,7 +30188,7 @@ const expected: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+        serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
         serviceDescription:
           "Incident Analysis data and symbology for Situational Awareness",
         hasVersionedData: false,
@@ -30325,7 +30325,7 @@ const expected: common.IItemTemplate[] = [
           id: 0,
           name: "Hospital",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -30699,7 +30699,7 @@ const expected: common.IItemTemplate[] = [
           id: 1,
           name: "School",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -31052,7 +31052,7 @@ const expected: common.IItemTemplate[] = [
           id: 2,
           name: "Emergency Shelter",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "FACNAME",
           description: "",
           copyrightText: "",
@@ -31750,7 +31750,7 @@ const expected: common.IItemTemplate[] = [
           id: 3,
           name: "Emergency Assistance",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "PLACENAME",
           description: "",
           copyrightText: "",
@@ -32388,7 +32388,7 @@ const expected: common.IItemTemplate[] = [
           id: 4,
           name: "Bridges",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -33217,7 +33217,7 @@ const expected: common.IItemTemplate[] = [
           id: 5,
           name: "Road Closure",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "BLOCKNM",
           description: "",
           copyrightText: "",
@@ -33824,7 +33824,7 @@ const expected: common.IItemTemplate[] = [
           id: 6,
           name: "DemographicPolygons",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "NAME10",
           description: "",
           copyrightText: "",
@@ -34216,7 +34216,7 @@ const expected: common.IItemTemplate[] = [
           id: 7,
           name: "Incident Area",
           type: "Feature Layer",
-          serviceItemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          serviceItemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           displayField: "INCIDENTID",
           description: "",
           copyrightText: "",
@@ -34891,7 +34891,7 @@ const expected: common.IItemTemplate[] = [
     type: "Web Map",
     key: "abgdh3ud",
     item: {
-      id: "{{7e6c41c72d4548d9a312329e0c5a984f.id}}",
+      id: "{{7e6c41c72d4548d9a312329e0c5a984f.itemId}}",
       type: "Web Map",
       categories: [],
       culture: "en-us",
@@ -34913,18 +34913,18 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.id}}"
+        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
     },
     data: {
       operationalLayers: [
         {
           id: "TestLayerForDashBoardMap_632",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/2",
+          url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Shelter: {FACNAME}",
             fieldInfos: [
@@ -35187,7 +35187,7 @@ const expected: common.IItemTemplate[] = [
     type: "Web Mapping Application",
     key: "f6zngin5",
     item: {
-      id: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}",
+      id: "{{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}",
       type: "Web Mapping Application",
       categories: [],
       culture: "en-us",
@@ -35210,7 +35210,7 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.id}}"
+        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     data: {
       theme: {
@@ -35968,7 +35968,7 @@ const expected: common.IItemTemplate[] = [
                       }
                     ],
                     title: "TestLayerForDashBoardMap - Emergency Assistance",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/3"
+                    url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}"
                   },
                   fieldInfos: [
                     {
@@ -36473,11 +36473,11 @@ const expected: common.IItemTemplate[] = [
               highlightColor: "#00ffff",
               searchLayers: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   geometryType: "esriGeometryPoint",
                   id: "TestLayerForDashBoardMap_2892",
                   layerId: "0",
-                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}/",
+                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}",
                   isMapServer: false,
                   title: "TestLayerForDashBoardMap - Hospital",
                   visibility: true,
@@ -36636,11 +36636,11 @@ const expected: common.IItemTemplate[] = [
                   }
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                   geometryType: "esriGeometryPolygon",
                   id: "TestLayer2FromWebApp_5607",
                   layerId: "1",
-                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}/",
+                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}",
                   isMapServer: false,
                   title: "TestLayer2FromWebApp - Chemical Activity",
                   visibility: true,
@@ -37008,7 +37008,7 @@ const expected: common.IItemTemplate[] = [
                 sources: [
                   {
                     layerId: "TestLayer2FromWebApp_5607",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                     name: "TestLayer2FromWebApp - Chemical Activity",
                     placeholder: "",
                     searchFields: [
@@ -37030,7 +37030,7 @@ const expected: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_2615",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/7",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}",
                     name: "TestLayerForDashBoardMap - Incident Area",
                     placeholder: "",
                     searchFields: [
@@ -37051,7 +37051,7 @@ const expected: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_8627",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/6",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}",
                     name: "TestLayerForDashBoardMap - DemographicPolygons",
                     placeholder: "",
                     searchFields: [
@@ -37170,7 +37170,7 @@ const expected: common.IItemTemplate[] = [
                 filters: [
                   {
                     layerId: "TestLayerForDashBoardMap_2892",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                     name: "TestLayerForDashBoardMap - Hospital",
                     filter: {
                       logicalOperator: "AND",
@@ -37282,7 +37282,7 @@ const expected: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayer2FromWebApp_5607",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
                     name: "TestLayer2FromWebApp - Chemical Activity",
                     filter: {
                       logicalOperator: "AND",
@@ -37444,7 +37444,7 @@ const expected: common.IItemTemplate[] = [
                   layerTitle: "TestLayerForDashBoardMap - Hospital",
                   layers: "TestLayerForDashBoardMap_2892",
                   advStat: {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                     stats: {
                       outFields: [
                         {
@@ -37554,7 +37554,7 @@ const expected: common.IItemTemplate[] = [
                   layerTitle: "TestLayerForDashBoardMap - Emergency Assistance",
                   layers: "TestLayerForDashBoardMap_5538",
                   advStat: {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/3",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}",
                     stats: {
                       tabCount: false,
                       pre: [
@@ -37734,12 +37734,12 @@ const expected: common.IItemTemplate[] = [
           right: 0,
           bottom: 0
         },
-        itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+        itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
         mapOptions: {},
         id: "map",
         portalUrl: "{{organization.portalBaseUrl}}/",
         appProxy: {
-          mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+          mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
           proxyItems: []
         },
         mapRefreshInterval: {
@@ -37786,7 +37786,7 @@ const expected: common.IItemTemplate[] = [
                   layer: "TestLayerForDashBoardMap_2892",
                   label: "TestLayerForDashBoardMap - Hospital",
                   refresh: false,
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   id: "TestLayerForDashBoardMap_2892",
                   symbolData: {
                     symbolType: "LayerSymbol",
@@ -38457,7 +38457,7 @@ const expected: common.IItemTemplate[] = [
                   layer: "TestLayer2FromWebApp_4042",
                   label: "TestLayer2FromWebApp - Stands",
                   refresh: false,
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/3",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}",
                   id: "TestLayer2FromWebApp_4042",
                   symbolData: {
                     symbolType: "LayerSymbol",
@@ -39078,7 +39078,7 @@ const expected: common.IItemTemplate[] = [
               spatialFilterLabel: "Spatial filters",
               queries: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
                   name: "TestLayerForDashBoardMap - Hospital",
                   icon: {
                     color: [0, 0, 128, 128],
@@ -39206,7 +39206,7 @@ const expected: common.IItemTemplate[] = [
                   customResultName: true
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/4",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
                   name: "TestLayer2FromWebApp - Harvest Crops",
                   icon: {
                     color: [0, 0, 128, 128],
@@ -39441,7 +39441,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Stands",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/3"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - Property",
@@ -39449,7 +39449,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Property",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/2"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - Chemical Activity",
@@ -39457,7 +39457,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - Chemical Activity",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/1"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}"
                 },
                 {
                   label: "TestLayer2FromWebApp - HarvestActivity",
@@ -39465,7 +39465,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayer2FromWebApp - HarvestActivity",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/0"
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Incident Area",
@@ -39473,7 +39473,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Incident Area",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/7"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - DemographicPolygons",
@@ -39481,7 +39481,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - DemographicPolygons",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/6"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Road Closure",
@@ -39489,7 +39489,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Road Closure",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/5"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer5.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Bridges",
@@ -39497,7 +39497,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Bridges",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/4"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Emergency Assistance",
@@ -39505,7 +39505,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Emergency Assistance",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/3"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Emergency Shelter",
@@ -39513,7 +39513,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Emergency Shelter",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/2"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - School",
@@ -39521,7 +39521,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - School",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/1"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}"
                 },
                 {
                   label: "TestLayerForDashBoardMap - Hospital",
@@ -39529,7 +39529,7 @@ const expected: common.IItemTemplate[] = [
                   alias: "TestLayerForDashBoardMap - Hospital",
                   show: true,
                   layerType: "ArcGISFeatureLayer",
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/0"
+                  url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}"
                 }
               ],
               drsUrl:
@@ -40300,7 +40300,7 @@ const expected: common.IItemTemplate[] = [
                 sources: [
                   {
                     layerId: "TestLayer2FromWebApp_8439",
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/2",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}",
                     name: "TestLayer2FromWebApp - Property",
                     placeholder: "",
                     searchFields: [
@@ -40318,7 +40318,7 @@ const expected: common.IItemTemplate[] = [
                   },
                   {
                     layerId: "TestLayerForDashBoardMap_7041",
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/1",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}",
                     name: "TestLayerForDashBoardMap - School",
                     placeholder: "",
                     searchFields: [
@@ -40531,14 +40531,14 @@ const expected: common.IItemTemplate[] = [
               },
               layers: [
                 {
-                  url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+                  url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
                   geometryType: "esriGeometryPoint",
                   id: "TestLayerForDashBoardMap_5389",
                   label: "",
                   layerName: "TestLayerForDashBoardMap - Bridges",
                   layerVersion: 10.7,
                   layerId: "4",
-                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}/",
+                  baseURL: "{{4efe5f693de34620934787ead6693f19.url}}",
                   selectedFields: {
                     "{{4efe5f693de34620934787ead6693f19.layer4.fields.facilityid.name}}": {
                       name:
@@ -41208,14 +41208,14 @@ const expected: common.IItemTemplate[] = [
                   groupbyfieldCheckBoxStatus: true
                 },
                 {
-                  url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+                  url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
                   geometryType: "esriGeometryPolygon",
                   id: "TestLayer2FromWebApp_9409",
                   label: "",
                   layerName: "TestLayer2FromWebApp - HarvestActivity",
                   layerVersion: 10.7,
                   layerId: "0",
-                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}/",
+                  baseURL: "{{b19aec399444407da84fffe2a55d4151.url}}",
                   selectedFields: {
                     "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitysubcategory.name}}": {
                       fieldName:
@@ -41450,14 +41450,14 @@ const expected: common.IItemTemplate[] = [
                 type: "syncEnable",
                 layers: [
                   {
-                    url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+                    url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
                     layerName: "TestLayerForDashBoardMap - Bridges",
                     id: "TestLayerForDashBoardMap_5389",
                     allowDownload: true,
                     downloadingFileOption: ["csv"]
                   },
                   {
-                    url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+                    url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
                     layerName: "TestLayer2FromWebApp - HarvestActivity",
                     id: "TestLayer2FromWebApp_9409",
                     allowDownload: true,
@@ -47046,10 +47046,10 @@ const expected: common.IItemTemplate[] = [
           "external~08595057759890956": {
             type: "Features",
             portalUrl: "{{organization.portalBaseUrl}}",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
             isDynamic: false,
             label: "School",
-            url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}/1",
+            url: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}",
             filterByExtent: false,
             filter: {
               logicalOperator: "AND",
@@ -47985,7 +47985,7 @@ const expected: common.IItemTemplate[] = [
         },
         settings: {}
       },
-      appItemId: "{{6f87e1912d6f4c889bbdcfb14dce7484.id}}"
+      appItemId: "{{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     resources: [
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/5422652170345252.png",
@@ -48004,7 +48004,7 @@ const expected: common.IItemTemplate[] = [
     type: "Web Map",
     key: "nrmmcdec",
     item: {
-      id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.id}}",
+      id: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
       type: "Web Map",
       categories: [],
       culture: "en-us",
@@ -48026,18 +48026,18 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.id}}"
+        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
     },
     data: {
       operationalLayers: [
         {
           id: "TestLayer2FromWebApp_4042",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/3",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer3.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Stands: {StandName}",
             fieldInfos: [
@@ -48160,11 +48160,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_8439",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/2",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Property",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Property: {PropertyName}",
             fieldInfos: [
@@ -48271,11 +48271,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_5607",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/1",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer1.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Chemical Activity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Chemical Activity: {ActivityStatus}",
             fieldInfos: [
@@ -48524,11 +48524,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayer2FromWebApp_9409",
           layerType: "ArcGISFeatureLayer",
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/0",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer0.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - HarvestActivity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "HarvestActivity: {HarvestUnitName}",
             fieldInfos: [
@@ -48820,11 +48820,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2615",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/7",
+          url: "{{4efe5f693de34620934787ead6693f19.layer7.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Incident Area",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Incident Area: {INCIDENTID}",
             fieldInfos: [
@@ -48982,11 +48982,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_8627",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/6",
+          url: "{{4efe5f693de34620934787ead6693f19.layer6.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - DemographicPolygons",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "DemographicPolygons: {NAME10}",
             fieldInfos: [
@@ -49196,11 +49196,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_7797",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/5",
+          url: "{{4efe5f693de34620934787ead6693f19.layer5.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Road Closure",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Road Closure: {BLOCKNM}",
             fieldInfos: [
@@ -49378,11 +49378,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_5389",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/4",
+          url: "{{4efe5f693de34620934787ead6693f19.layer4.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Bridges",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Bridges: {NAME}",
             fieldInfos: [
@@ -49664,11 +49664,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_5538",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/3",
+          url: "{{4efe5f693de34620934787ead6693f19.layer3.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Assistance",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Assistance: {PLACENAME}",
             fieldInfos: [
@@ -49965,11 +49965,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2914",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/2",
+          url: "{{4efe5f693de34620934787ead6693f19.layer2.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Emergency Shelter: {FACNAME}",
             fieldInfos: [
@@ -50187,11 +50187,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_7041",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/1",
+          url: "{{4efe5f693de34620934787ead6693f19.layer1.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - School",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "School: {NAME}",
             fieldInfos: [
@@ -50355,11 +50355,11 @@ const expected: common.IItemTemplate[] = [
         {
           id: "TestLayerForDashBoardMap_2892",
           layerType: "ArcGISFeatureLayer",
-          url: "{{4efe5f693de34620934787ead6693f19.url}}/0",
+          url: "{{4efe5f693de34620934787ead6693f19.layer0.url}}",
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Hospital",
-          itemId: "{{4efe5f693de34620934787ead6693f19.id}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
           popupInfo: {
             title: "Hospital: {NAME}",
             fieldInfos: [
@@ -50521,10 +50521,10 @@ const expected: common.IItemTemplate[] = [
       version: "2.15",
       tables: [
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/8",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer8.url}}",
           id: "TestLayer2FromWebApp_5860",
           title: "TestLayer2FromWebApp - Activity Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Activity Stands: {StandID}",
             fieldInfos: [
@@ -50637,10 +50637,10 @@ const expected: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/7",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer7.url}}",
           id: "TestLayer2FromWebApp_8278",
           title: "TestLayer2FromWebApp - ChemicalProduct",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ChemicalProduct: {ProductName}",
             fieldInfos: [
@@ -50825,10 +50825,10 @@ const expected: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/6",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer6.url}}",
           id: "TestLayer2FromWebApp_8866",
           title: "TestLayer2FromWebApp - ChemicalApplication",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ChemicalApplication: {ApplicationRate}",
             fieldInfos: [
@@ -50973,10 +50973,10 @@ const expected: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/5",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer5.url}}",
           id: "TestLayer2FromWebApp_6326",
           title: "TestLayer2FromWebApp - ActivityWeather",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "ActivityWeather: {WeatherDate}",
             fieldInfos: [
@@ -51120,10 +51120,10 @@ const expected: common.IItemTemplate[] = [
           }
         },
         {
-          url: "{{b19aec399444407da84fffe2a55d4151.url}}/4",
+          url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
           id: "TestLayer2FromWebApp_4230",
           title: "TestLayer2FromWebApp - Harvest Crops",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           popupInfo: {
             title: "Harvest Crops: {CropName}",
             fieldInfos: [
@@ -51272,7 +51272,7 @@ const expected: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "exflx3n1",
     item: {
-      id: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+      id: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -51302,7 +51302,7 @@ const expected: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+        serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
         serviceDescription:
           "Incident Analysis data and symbology for Situational Awareness",
         hasVersionedData: false,
@@ -51439,7 +51439,7 @@ const expected: common.IItemTemplate[] = [
           id: 0,
           name: "Hospital",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -51814,7 +51814,7 @@ const expected: common.IItemTemplate[] = [
           id: 1,
           name: "School",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -52167,7 +52167,7 @@ const expected: common.IItemTemplate[] = [
           id: 2,
           name: "Emergency Shelter",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "FACNAME",
           description: "",
           copyrightText: "",
@@ -52865,7 +52865,7 @@ const expected: common.IItemTemplate[] = [
           id: 3,
           name: "Emergency Assistance",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "PLACENAME",
           description: "",
           copyrightText: "",
@@ -53503,7 +53503,7 @@ const expected: common.IItemTemplate[] = [
           id: 4,
           name: "Bridges",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME",
           description: "",
           copyrightText: "",
@@ -54332,7 +54332,7 @@ const expected: common.IItemTemplate[] = [
           id: 5,
           name: "Road Closure",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "BLOCKNM",
           description: "",
           copyrightText: "",
@@ -54939,7 +54939,7 @@ const expected: common.IItemTemplate[] = [
           id: 6,
           name: "DemographicPolygons",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "NAME10",
           description: "",
           copyrightText: "",
@@ -55331,7 +55331,7 @@ const expected: common.IItemTemplate[] = [
           id: 7,
           name: "Incident Area",
           type: "Feature Layer",
-          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.id}}",
+          serviceItemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           displayField: "INCIDENTID",
           description: "",
           copyrightText: "",
@@ -56006,7 +56006,7 @@ const expected: common.IItemTemplate[] = [
     type: "Feature Service",
     key: "jt4ulolq",
     item: {
-      id: "{{b19aec399444407da84fffe2a55d4151.id}}",
+      id: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
       type: "Feature Service",
       categories: [],
       culture: "",
@@ -56046,7 +56046,7 @@ const expected: common.IItemTemplate[] = [
     properties: {
       service: {
         currentVersion: 10.7,
-        serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+        serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
         serviceDescription:
           "Standardized approach for cataloging forest activities such as chemical applications, harvest activities.",
         hasVersionedData: false,
@@ -56197,7 +56197,7 @@ const expected: common.IItemTemplate[] = [
           id: 0,
           name: "HarvestActivity",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "HarvestUnitName",
           description: "HarvestActivity",
           copyrightText: "",
@@ -57034,7 +57034,7 @@ const expected: common.IItemTemplate[] = [
           id: 1,
           name: "Chemical Activity",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ActivityStatus",
           description: "Chemical Activity",
           copyrightText: "",
@@ -57840,7 +57840,7 @@ const expected: common.IItemTemplate[] = [
           id: 2,
           name: "Property",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "PropertyName",
           description: "Property",
           copyrightText: "",
@@ -58155,7 +58155,7 @@ const expected: common.IItemTemplate[] = [
           id: 3,
           name: "Stands",
           type: "Feature Layer",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "StandName",
           description: "Stands",
           copyrightText: "",
@@ -58496,7 +58496,7 @@ const expected: common.IItemTemplate[] = [
           id: 4,
           name: "Harvest Crops",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "CropName",
           description: "",
           copyrightText: "",
@@ -59081,7 +59081,7 @@ const expected: common.IItemTemplate[] = [
           id: 5,
           name: "ActivityWeather",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "WeatherDate",
           description: "",
           copyrightText: "",
@@ -59485,7 +59485,7 @@ const expected: common.IItemTemplate[] = [
           id: 6,
           name: "ChemicalApplication",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ApplicationRate",
           description: "",
           copyrightText: "",
@@ -60004,7 +60004,7 @@ const expected: common.IItemTemplate[] = [
           id: 7,
           name: "ChemicalProduct",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "ProductName",
           description: "",
           copyrightText: "",
@@ -60729,7 +60729,7 @@ const expected: common.IItemTemplate[] = [
           id: 8,
           name: "Activity Stands",
           type: "Table",
-          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.id}}",
+          serviceItemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
           displayField: "StandID",
           description: "",
           copyrightText: "",

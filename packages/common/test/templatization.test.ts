@@ -136,8 +136,8 @@ describe("Module `templatization`: common functions involving the adlib library"
     it("should handle supplied suffix", () => {
       const context: string = "a sentence with aTerm in it";
       const term: string = "aTerm";
-      const suffix: string = ".id";
-      const expected: string = "a sentence with {{aTerm.id}} in it";
+      const suffix: string = ".itemId";
+      const expected: string = "a sentence with {{aTerm.itemId}} in it";
 
       const actual = templatization.templatizeTerm(context, term, suffix);
       expect(actual).toEqual(expected);
@@ -147,9 +147,9 @@ describe("Module `templatization`: common functions involving the adlib library"
       const context: string =
         "a sentence with multiple aTerms in it: aTerm, aTerm";
       const term: string = "aTerm";
-      const suffix: string = ".id";
+      const suffix: string = ".itemId";
       const expected: string =
-        "a sentence with multiple {{aTerm.id}}s in it: {{aTerm.id}}, {{aTerm.id}}";
+        "a sentence with multiple {{aTerm.itemId}}s in it: {{aTerm.itemId}}, {{aTerm.itemId}}";
 
       const actual = templatization.templatizeTerm(context, term, suffix);
       expect(actual).toEqual(expected);
