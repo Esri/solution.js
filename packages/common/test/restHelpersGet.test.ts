@@ -95,13 +95,6 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("getGroupContents", () => {
-    xit("getGroupContents", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("getItem", () => {
     it("item doesn't allow access to item", done => {
       const itemId = "itm1234567890";
@@ -626,9 +619,220 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   }
 
   describe("_getGroupContentsTranche", () => {
-    xit("_getGroupContentsTranche", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles an inaccessible group", done => {
+      const groupId = "grp1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        {
+          error: {
+            code: 400,
+            messageCode: "CONT_0006",
+            message: "Group does not exist or is inaccessible.",
+            details: []
+          }
+        }
+      );
+      restHelpersGet
+        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
+        .then(
+          failed => done.fail(),
+          ok => {
+            expect(ok.message).toEqual(
+              "CONT_0006: Group does not exist or is inaccessible."
+            );
+            done();
+          }
+        );
+    });
+
+    it("handles an empty group", done => {
+      const groupId = "grp1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        {
+          total: 0,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          items: []
+        }
+      );
+      restHelpersGet
+        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: string[]) => {
+          expect(ok.length).toEqual(0);
+          done();
+        }, done.fail);
+    });
+
+    xit("handles a group where contents can be retrieved via a single fetch", done => {
+      const groupId = "grp1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        {
+          total: 2,
+          start: 1,
+          num: 2,
+          nextStart: -1,
+          items: [
+            {
+              id: "itm1234567890"
+            },
+            {
+              id: "itm1234567891"
+            }
+          ]
+        }
+      );
+      restHelpersGet
+        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: string[]) => {
+          expect(ok.length).toEqual(2);
+          expect(ok).toEqual(["itm1234567890", "itm1234567891"]);
+          done();
+        }, done.fail);
+    });
+
+    it("handles a group where contents require two fetches", done => {
+      const groupId = "grp1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 2
+      };
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
+          {
+            total: 4,
+            start: 1,
+            num: 2,
+            nextStart: 3,
+            items: [
+              {
+                id: "itm1234567890"
+              },
+              {
+                id: "itm1234567891"
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
+          {
+            total: 4,
+            start: 3,
+            num: 2,
+            nextStart: -1,
+            items: [
+              {
+                id: "itm1234567892"
+              },
+              {
+                id: "itm1234567893"
+              }
+            ]
+          }
+        );
+      restHelpersGet
+        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: string[]) => {
+          expect(ok.length).toEqual(4);
+          expect(ok).toEqual([
+            "itm1234567890",
+            "itm1234567891",
+            "itm1234567892",
+            "itm1234567893"
+          ]);
+          done();
+        }, done.fail);
+    });
+
+    it("handles a group where contents require multiple fetches", done => {
+      const groupId = "grp1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 2
+      };
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
+          {
+            total: 5,
+            start: 1,
+            num: 2,
+            nextStart: 3,
+            items: [
+              {
+                id: "itm1234567890"
+              },
+              {
+                id: "itm1234567891"
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
+          {
+            total: 5,
+            start: 3,
+            num: 2,
+            nextStart: 5,
+            items: [
+              {
+                id: "itm1234567892"
+              },
+              {
+                id: "itm1234567893"
+              }
+            ]
+          }
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=5&num=2&token=fake-token",
+          {
+            total: 5,
+            start: 5,
+            num: 1,
+            nextStart: -1,
+            items: [
+              {
+                id: "itm1234567894"
+              }
+            ]
+          }
+        );
+      restHelpersGet
+        ._getGroupContentsTranche(groupId, pagingParams, MOCK_USER_SESSION)
+        .then((ok: string[]) => {
+          expect(ok.length).toEqual(5);
+          expect(ok).toEqual([
+            "itm1234567890",
+            "itm1234567891",
+            "itm1234567892",
+            "itm1234567893",
+            "itm1234567894"
+          ]);
+          done();
+        }, done.fail);
     });
   });
 
