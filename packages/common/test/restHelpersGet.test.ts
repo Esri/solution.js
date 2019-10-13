@@ -465,9 +465,33 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemThumbnail", () => {
-    xit("getItemThumbnail", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handle missing thumbnail for an item", done => {
+      restHelpersGet
+        .getItemThumbnail("itm1234567890", null, false, MOCK_USER_SESSION)
+        .then((ok: Blob) => {
+          expect(ok).toBeUndefined();
+          done();
+        }, done.fail);
+    });
+
+    it("get thumbnail for an item", done => {
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+        utils.getSampleImage(),
+        { sendAsJson: false }
+      );
+
+      restHelpersGet
+        .getItemThumbnail(
+          "itm1234567890",
+          "thumbnail/ago_downloaded.png",
+          false,
+          MOCK_USER_SESSION
+        )
+        .then((ok: Blob) => {
+          expect(ok.type).toEqual("image/png");
+          done();
+        }, done.fail);
     });
   });
 
@@ -568,6 +592,15 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             expect(text).toEqual(testBlobContents);
             done();
           }, done.fail);
+        }, done.fail);
+      });
+
+      it("should pass image blobs through unchanged", done => {
+        const testBlobType = "image/png";
+        const testBlob = utils.getSampleImage();
+        restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
+          expect(ok.type).toEqual(testBlobType);
+          done();
         }, done.fail);
       });
 
