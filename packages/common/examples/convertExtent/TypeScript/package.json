@@ -11,7 +11,7 @@
     "@esri/arcgis-rest-service-admin": "^2.4.0",
     "@esri/solution-common": "^0.5.5",
     "@types/requirejs": "^2.1.31",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "es6-promise": "^4.2.1",

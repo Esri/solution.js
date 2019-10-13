@@ -60,18 +60,18 @@
     "slug": "^0.9.1",
     "sri-toolbox": "0.2.0",
     "ts-node": "^8.3.0",
+    "tslib": "^1.10.0",
     "tslint": "^5.16.0",
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.6.3"
+    "typescript": "^3.6.4"
   },
   "dependencies": {
     "@types/adlib": "^3.0.1",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
-    "isomorphic-form-data": "^2.0.0",
-    "tslib": "^1.10.0"
+    "isomorphic-form-data": "^2.0.0"
   },
   "lint-staged": {
     "*.ts": [
