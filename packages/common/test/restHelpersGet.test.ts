@@ -474,25 +474,28 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         }, done.fail);
     });
 
-    it("get thumbnail for an item", done => {
-      fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
-        utils.getSampleImage(),
-        { sendAsJson: false }
-      );
+    // Function atob is only available in the browser
+    if (typeof window !== "undefined") {
+      it("get thumbnail for an item", done => {
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+          utils.getSampleImage(),
+          { sendAsJson: false }
+        );
 
-      restHelpersGet
-        .getItemThumbnail(
-          "itm1234567890",
-          "thumbnail/ago_downloaded.png",
-          false,
-          MOCK_USER_SESSION
-        )
-        .then((ok: Blob) => {
-          expect(ok.type).toEqual("image/png");
-          done();
-        }, done.fail);
-    });
+        restHelpersGet
+          .getItemThumbnail(
+            "itm1234567890",
+            "thumbnail/ago_downloaded.png",
+            false,
+            MOCK_USER_SESSION
+          )
+          .then((ok: Blob) => {
+            expect(ok.type).toEqual("image/png");
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("getItemThumbnailUrl", () => {
@@ -983,164 +986,167 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         }, done.fail);
     });
 
-    it("handles an item with one resource", done => {
-      const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 10
-      };
+    // Function atob is only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles an item with one resource", done => {
+        const itemId = "itm1234567890";
+        const pagingParams: portal.IPagingParams = {
+          start: 1, // one-based
+          num: 10
+        };
 
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
-          {
-            total: 1,
-            start: 1,
-            num: 1,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "Jackson Lake.png",
-                created: 1568662976000,
-                size: 1231
-              }
-            ]
-          }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-          utils.getSampleImage()
-        );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(1);
-          Promise.all(ok).then(rsrcResponses => {
-            done();
-          }, done.fail);
-        }, done.fail);
-    });
-
-    it("handles an item with multiple resources where they can be retrieved via a single fetch", done => {
-      const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 10
-      };
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
-          {
-            total: 4,
-            start: 1,
-            num: 4,
-            nextStart: -1,
-            resources: [
-              {
-                resource: "Bradley & Taggart Lakes.png",
-                created: 1568662976000,
-                size: 1231
-              },
-              {
-                resource: "Jackson Lake.png",
-                created: 1568662976000,
-                size: 1231
-              },
-              {
-                resource: "Jenny Lake.png",
-                created: 1568662968000,
-                size: 1231
-              },
-              {
-                resource: "Leigh Lake.png",
-                created: 1568662960000,
-                size: 1231
-              }
-            ]
-          }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-          utils.getSampleImage()
-        );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(4);
-          Promise.all(ok).then(rsrcResponses => done(), done.fail);
-        }, done.fail);
-    });
-
-    it("handles an item with multiple resources where they require multiple fetches", done => {
-      const itemId = "itm1234567890";
-      const pagingParams: portal.IPagingParams = {
-        start: 1, // one-based
-        num: 1
-      };
-
-      const filenames = [
-        "Bradley & Taggart Lakes.png",
-        "Jackson Lake.png",
-        "Jenny Lake.png",
-        "Leigh Lake.png"
-      ];
-      let imageNum = 0;
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
-          () => {
-            const i = imageNum++;
-            return {
-              total: 4,
-              start: i + 1,
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            {
+              total: 1,
+              start: 1,
               num: 1,
-              nextStart: i < 3 ? i + 2 : -1,
+              nextStart: -1,
               resources: [
                 {
-                  resource: filenames[i],
+                  resource: "Jackson Lake.png",
                   created: 1568662976000,
                   size: 1231
                 }
               ]
-            };
-          }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-          utils.getSampleImage()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-          utils.getSampleImage()
-        );
-      restHelpersGet
-        ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
-        .then((ok: Array<Promise<File>>) => {
-          expect(ok.length).toEqual(4);
-          Promise.all(ok).then(rsrcResponses => done(), done.fail);
-        }, done.fail);
-    });
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.getSampleImage()
+          );
+        restHelpersGet
+          ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+          .then((ok: Array<Promise<File>>) => {
+            expect(ok.length).toEqual(1);
+            Promise.all(ok).then(rsrcResponses => {
+              done();
+            }, done.fail);
+          }, done.fail);
+      });
+
+      it("handles an item with multiple resources where they can be retrieved via a single fetch", done => {
+        const itemId = "itm1234567890";
+        const pagingParams: portal.IPagingParams = {
+          start: 1, // one-based
+          num: 10
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            {
+              total: 4,
+              start: 1,
+              num: 4,
+              nextStart: -1,
+              resources: [
+                {
+                  resource: "Bradley & Taggart Lakes.png",
+                  created: 1568662976000,
+                  size: 1231
+                },
+                {
+                  resource: "Jackson Lake.png",
+                  created: 1568662976000,
+                  size: 1231
+                },
+                {
+                  resource: "Jenny Lake.png",
+                  created: 1568662968000,
+                  size: 1231
+                },
+                {
+                  resource: "Leigh Lake.png",
+                  created: 1568662960000,
+                  size: 1231
+                }
+              ]
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+            utils.getSampleImage()
+          );
+        restHelpersGet
+          ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+          .then((ok: Array<Promise<File>>) => {
+            expect(ok.length).toEqual(4);
+            Promise.all(ok).then(rsrcResponses => done(), done.fail);
+          }, done.fail);
+      });
+
+      it("handles an item with multiple resources where they require multiple fetches", done => {
+        const itemId = "itm1234567890";
+        const pagingParams: portal.IPagingParams = {
+          start: 1, // one-based
+          num: 1
+        };
+
+        const filenames = [
+          "Bradley & Taggart Lakes.png",
+          "Jackson Lake.png",
+          "Jenny Lake.png",
+          "Leigh Lake.png"
+        ];
+        let imageNum = 0;
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            () => {
+              const i = imageNum++;
+              return {
+                total: 4,
+                start: i + 1,
+                num: 1,
+                nextStart: i < 3 ? i + 2 : -1,
+                resources: [
+                  {
+                    resource: filenames[i],
+                    created: 1568662976000,
+                    size: 1231
+                  }
+                ]
+              };
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+            utils.getSampleImage()
+          );
+        restHelpersGet
+          ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
+          .then((ok: Array<Promise<File>>) => {
+            expect(ok.length).toEqual(4);
+            Promise.all(ok).then(rsrcResponses => done(), done.fail);
+          }, done.fail);
+      });
+    }
   });
 });
 
