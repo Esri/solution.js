@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/creator.umd.min.js",
@@ -15,10 +15,10 @@
     "@esri/arcgis-rest-auth": "^2.4.0",
     "@esri/arcgis-rest-portal": "^2.4.0",
     "@esri/arcgis-rest-request": "^2.4.0",
-    "@esri/solution-common": "^0.5.5",
-    "@esri/solution-feature-layer": "^0.5.5",
-    "@esri/solution-simple-types": "^0.5.5",
-    "@esri/solution-storymap": "^0.5.5",
+    "@esri/solution-common": "^0.5.6",
+    "@esri/solution-feature-layer": "^0.5.6",
+    "@esri/solution-simple-types": "^0.5.6",
+    "@esri/solution-storymap": "^0.5.6",
     "rollup": "^1.22.0"
   },
   "dependencies": {

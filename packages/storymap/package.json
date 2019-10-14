@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-storymap",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/storymap.umd.min.js",
@@ -13,9 +13,9 @@
   ],
   "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.4.0",
-    "@esri/solution-common": "^0.5.5",
     "@esri/arcgis-rest-request": "^2.4.0",
-    "@esri/solution-simple-types": "^0.5.5",
+    "@esri/solution-common": "^0.5.6",
+    "@esri/solution-simple-types": "^0.5.6",
     "rollup": "^1.22.0"
   },
   "dependencies": {
