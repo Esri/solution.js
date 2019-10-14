@@ -207,7 +207,12 @@ export function templatizeFieldReferences(
   let objString: string = JSON.stringify(obj);
   fields.forEach(field => {
     objString = objString.replace(
-      new RegExp("\\b" + field.name + "\\b", "g"),
+      // needs to ensure that its not already been templatized
+      // cannot be followed by .name and cannot be proceeded by fieldName in case of {{01922837.name.name}}
+      new RegExp(
+        "\\b" + field.name + "\\b(?![.name])(?<![.]" + field.name + ")",
+        "g"
+      ),
       templatizeToLowerCase(basePath, field.name + ".name")
     );
   });

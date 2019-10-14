@@ -278,6 +278,19 @@ export function createItemFromTemplate(
 
     if (!isGroup) {
       // Create the item, then update its URL with its new id
+
+      // some fieldnames are used as keys for objects
+      // when we templatize field references for web applications we first stringify the components of the
+      // web application that could contain field references and then serach for them with a regular expression.
+      // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
+      if (template.type.toLowerCase() === "web mapping application") {
+        newItemTemplate = JSON.parse(
+          common.replaceInTemplate(
+            JSON.stringify(newItemTemplate),
+            templateDictionary
+          )
+        );
+      }
       common
         .createItemWithData(
           newItemTemplate.item,
