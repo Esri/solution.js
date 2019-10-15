@@ -162,25 +162,6 @@ export function getGroupContents(
  * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
-export function getItem(
-  itemId: string,
-  authentication: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemParam: request.IRequestOptions = {
-    authentication: authentication
-  };
-  return portal.getItem(itemId, itemParam);
-}
-
-/**
- * Gets the primary information of an AGO item.
- *
- * @param itemId Id of an item whose primary information is sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
- *         or response error code
- */
 export function getItemBase(
   itemId: string,
   authentication: auth.UserSession

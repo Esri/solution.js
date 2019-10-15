@@ -210,7 +210,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("getItem", () => {
+  describe("getItemBase", () => {
     it("item doesn't allow access to item", done => {
       const itemId = "itm1234567890";
       const expected = {
@@ -258,7 +258,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         JSON.stringify(expected)
       );
       restHelpersGet
-        .getItem(itemId, MOCK_USER_SESSION)
+        .getItemBase(itemId, MOCK_USER_SESSION)
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
@@ -274,18 +274,11 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         JSON.stringify(expected)
       );
       restHelpersGet
-        .getItem(itemId, MOCK_USER_SESSION)
+        .getItemBase(itemId, MOCK_USER_SESSION)
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
-    });
-  });
-
-  describe("getItemBase", () => {
-    xit("getItemBase", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 

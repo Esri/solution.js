@@ -416,7 +416,7 @@ export function _getDatasourcePromises(
         // if this is a new entry to datasouceInfos and we do not already have a promise
         // established to query for the url and fields add a new promise to fetch the necessary details
         if (!hasItem) {
-          datasourcePromises.push(common.getItem(itemId, authentication));
+          datasourcePromises.push(common.getItemBase(itemId, authentication));
         }
       } else {
         if (datasource.references.indexOf(obj.id) < 0) {
