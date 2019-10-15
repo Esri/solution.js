@@ -692,10 +692,94 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResourcesFiles", () => {
-    xit("getItemResourcesFiles", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles an inaccessible item", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        {
+          error: {
+            code: 400,
+            messageCode: "CONT_0001",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        }
+      );
+      restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        ok => {
+          expect(ok.message).toEqual(
+            "CONT_0001: Item does not exist or is inaccessible."
+          );
+          done();
+        }
+      );
     });
+
+    // File is only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles an item with no resources", done => {
+        const itemId = "itm1234567890";
+        const pagingParams: portal.IPagingParams = {
+          start: 1, // one-based
+          num: 10
+        };
+
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          {
+            total: 0,
+            start: 1,
+            num: 0,
+            nextStart: -1,
+            resources: []
+          }
+        );
+        restHelpersGet
+          .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
+          .then((ok: File[]) => {
+            expect(ok.length).toEqual(0);
+            done();
+          }, done.fail);
+      });
+
+      it("handles an item with one resource", done => {
+        const itemId = "itm1234567890";
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            {
+              total: 1,
+              start: 1,
+              num: 1,
+              nextStart: -1,
+              resources: [
+                {
+                  resource: "Jackson Lake.png",
+                  created: 1568662976000,
+                  size: 1231
+                }
+              ]
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          );
+        restHelpersGet
+          .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
+          .then((ok: File[]) => {
+            expect(ok.length).toEqual(1);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("getItemThumbnail", () => {
@@ -1248,7 +1332,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
@@ -1301,19 +1386,23 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
@@ -1359,19 +1448,23 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
