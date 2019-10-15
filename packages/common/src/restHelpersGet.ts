@@ -104,21 +104,19 @@ export function getBlobCheckForError(
       _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          generalHelpers.blobToJson(adjustedBlob).then(
-            (json: any) => {
-              if (json && json.error) {
-                const code: number = json.error.code;
-                if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                  resolve((null as unknown) as Blob); // Error, but ignored
-                } else {
-                  reject(json); // Other error; fail with error
-                }
+          // tslint:disable-next-line: no-floating-promises
+          generalHelpers.blobToJson(adjustedBlob).then((json: any) => {
+            if (json && json.error) {
+              const code: number = json.error.code;
+              if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
+                resolve((null as unknown) as Blob); // Error, but ignored
               } else {
-                resolve(adjustedBlob);
+                reject(json); // Other error; fail with error
               }
-            },
-            () => resolve(adjustedBlob)
-          );
+            } else {
+              resolve(adjustedBlob);
+            }
+          });
         } else {
           resolve(adjustedBlob);
         }
