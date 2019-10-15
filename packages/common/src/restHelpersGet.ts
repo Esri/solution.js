@@ -260,8 +260,8 @@ export function getItemDataAsFile(
 export function getItemDataAsJson(
   itemId: string,
   authentication: auth.UserSession
-): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
       blob => (!blob ? resolve() : resolve(generalHelpers.blobToJson(blob))),
       reject
