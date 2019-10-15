@@ -243,7 +243,9 @@ export function getItemDataAsFile(
   return new Promise<File>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
       blob =>
-        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
+        !blob
+          ? resolve(null)
+          : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
@@ -263,7 +265,8 @@ export function getItemDataAsJson(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
-      blob => (!blob ? resolve() : resolve(generalHelpers.blobToJson(blob))),
+      blob =>
+        !blob ? resolve(null) : resolve(generalHelpers.blobToJson(blob)),
       reject
     );
   });
@@ -321,7 +324,7 @@ export function getItemMetadataAsFile(
     getItemMetadataBlob(itemId, authentication).then(
       blob =>
         !blob
-          ? resolve()
+          ? resolve(null)
           : resolve(generalHelpers.blobToFile(blob, "metadata.xml")),
       reject
     );
