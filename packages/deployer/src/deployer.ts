@@ -47,10 +47,10 @@ export function deploySolution(
     };
 
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: destinationAuthentication
-    };
-    const solutionItemDataDef = portal.getItemData(sourceId, itemDataParam);
+    const solutionItemDataDef = common.getItemDataAsJson(
+      sourceId,
+      destinationAuthentication
+    );
 
     // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
     // suffix if the folder exists, e.g.,

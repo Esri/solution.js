@@ -98,7 +98,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
           .then(file => {
-            expect(file).toBeNull();
+            expect(file).toBeUndefined();
             done();
           }, done.fail);
       });
@@ -112,7 +112,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
           .then(file => {
-            expect(file).not.toBeNull();
+            expect(file).not.toBeUndefined();
             expect(file.type).toEqual("image/png");
             expect(file.name).toEqual("myFile.png");
             done();
@@ -133,7 +133,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
           .then(blob => {
-            expect(blob).not.toBeNull();
+            expect(blob).not.toBeUndefined();
             expect(blob.type).toEqual("image/png");
             done();
           }, done.fail);
@@ -156,7 +156,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION)
           .then(blob => {
-            expect(blob).not.toBeNull();
+            expect(blob).not.toBeUndefined();
             expect(blob.type).toEqual("application/json");
             done();
           }, done.fail);
@@ -170,7 +170,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [500])
           .then(blob => {
-            expect(blob).not.toBeNull();
+            expect(blob).not.toBeUndefined();
             expect(blob.type).toEqual("application/json");
             done();
           }, done.fail);
@@ -190,7 +190,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
           .then(blob => {
-            expect(blob).toBeNull();
+            expect(blob).toBeUndefined();
             done();
           }, done.fail);
       });
@@ -209,7 +209,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
           () => done.fail(),
           response => {
-            expect(response).not.toBeNull();
+            expect(response).not.toBeUndefined();
             expect(response.error.code).toEqual(400);
             done();
           }
@@ -290,97 +290,6 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("getItemData", () => {
-      it("item doesn't allow access to data", done => {
-        const itemId = "itm1234567890";
-        const expected: any = {
-          name: "ArcGISAuthError",
-          message:
-            "GWM_0003: You do not have permissions to access this resource or perform this operation.",
-          originalMessage:
-            "You do not have permissions to access this resource or perform this operation.",
-          code: "GWM_0003",
-          response: {
-            error: {
-              code: 403,
-              messageCode: "GWM_0003",
-              message:
-                "You do not have permissions to access this resource or perform this operation.",
-              details: [] as any[]
-            }
-          },
-          url:
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          options: {
-            httpMethod: "GET",
-            params: {
-              f: "json"
-            },
-            authentication: {
-              clientId: "clientId",
-              refreshToken: "refreshToken",
-              refreshTokenExpires: "2019-06-13T19:35:21.995Z",
-              username: "casey",
-              password: "123456",
-              token: "fake-token",
-              tokenExpires: "2019-06-13T19:35:21.995Z",
-              portal: "https://myorg.maps.arcgis.com/sharing/rest",
-              tokenDuration: 20160,
-              redirectUri: "https://example-app.com/redirect-uri",
-              refreshTokenTTL: 1440
-            },
-            headers: {}
-          }
-        };
-
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          expected
-        );
-        restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-
-      it("item doesn't have data", done => {
-        const itemId = "itm1234567890";
-        const expected: any = null;
-
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          mockItems.get500Failure()
-        );
-        restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-
-      it("item has data", done => {
-        const itemId = "itm1234567890";
-        const expected = { values: { a: 1, b: "c" } };
-
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          expected
-        );
-        restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-    });
-  }
-
   describe("getItemDataAsFile", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
@@ -401,7 +310,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
           .then((json: any) => {
-            expect(json).toBeNull();
+            expect(json).toBeUndefined();
             done();
           }, done.fail);
       });
@@ -418,7 +327,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
           .then(file => {
-            expect(file).not.toBeNull();
+            expect(file).not.toBeUndefined();
             expect(file.type).toEqual("image/png");
             expect(file.name).toEqual("myFile.png");
             done();
@@ -447,7 +356,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemDataAsJson(itemId, MOCK_USER_SESSION)
           .then((json: any) => {
-            expect(json).toBeNull();
+            expect(json).toBeUndefined();
             done();
           }, done.fail);
       });
@@ -472,8 +381,62 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemDataAsJson(itemId, MOCK_USER_SESSION)
           .then(json => {
-            expect(json).not.toBeNull();
+            expect(json).not.toBeUndefined();
             expect(json).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+      });
+
+      it("handles item that doesn't allow access to data", done => {
+        const itemId = "itm1234567890";
+        const expected: any = {
+          name: "ArcGISAuthError",
+          message:
+            "GWM_0003: You do not have permissions to access this resource or perform this operation.",
+          originalMessage:
+            "You do not have permissions to access this resource or perform this operation.",
+          code: "GWM_0003",
+          response: {
+            error: {
+              code: 403,
+              messageCode: "GWM_0003",
+              message:
+                "You do not have permissions to access this resource or perform this operation.",
+              details: [] as any[]
+            }
+          },
+          url:
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
+          options: {
+            httpMethod: "GET",
+            params: {
+              f: "json"
+            },
+            authentication: {
+              clientId: "clientId",
+              refreshToken: "refreshToken",
+              refreshTokenExpires: "2019-06-13T19:35:21.995Z",
+              username: "casey",
+              password: "123456",
+              token: "fake-token",
+              tokenExpires: "2019-06-13T19:35:21.995Z",
+              portal: "https://myorg.maps.arcgis.com/sharing/rest",
+              tokenDuration: 20160,
+              redirectUri: "https://example-app.com/redirect-uri",
+              refreshTokenTTL: 1440
+            },
+            headers: {}
+          }
+        };
+
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
+          expected
+        );
+        restHelpersGet
+          .getItemDataAsJson(itemId, MOCK_USER_SESSION)
+          .then((response: any) => {
+            expect(response).toEqual(expected);
             done();
           }, done.fail);
       });
@@ -510,7 +473,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
           .then((json: any) => {
-            expect(json).toBeNull();
+            expect(json).toBeUndefined();
             done();
           }, done.fail);
       });
@@ -527,7 +490,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         restHelpersGet
           .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
           .then(file => {
-            expect(file).not.toBeNull();
+            expect(file).not.toBeUndefined();
             expect(file.type).toEqual("text/xml");
             done();
           }, done.fail);

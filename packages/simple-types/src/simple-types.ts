@@ -104,10 +104,17 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
+          dataPromise = common.getItemDataAsJson(
+            itemTemplate.itemId,
+            authentication
+          );
           break;
         case "form":
-          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
+          dataPromise = common.getItemDataAsFile(
+            itemTemplate.itemId,
+            itemTemplate.item.name,
+            authentication
+          );
           relatedPromise = common.getItemRelatedItems(
             itemTemplate.itemId,
             "Survey2Service",

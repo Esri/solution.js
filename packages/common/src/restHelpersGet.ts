@@ -78,9 +78,7 @@ export function getBlobAsFile(
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob =>
-        !blob
-          ? resolve(null)
-          : resolve(generalHelpers.blobToFile(blob, filename)),
+        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
@@ -111,7 +109,7 @@ export function getBlobCheckForError(
             if (json && json.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                resolve(null); // Error, but ignored
+                resolve(); // Error, but ignored
               } else {
                 reject(json); // Other error; fail with error
               }
@@ -173,61 +171,6 @@ export function getItemBase(
 }
 
 /**
- * Gets the data information of an AGO item.
- *
- * @param itemId Id of an item whose data information is sought
- * @param authentication Credentials for the request to AGO
- * @param convertToJsonIfText Switch indicating that MIME type "text/plain" should be converted to JSON;
- * MIME type "application/json" is always converted
- * @return A promise that will resolve with 1. null in case of error, or 2. JSON if "application/json" or ("text/plain"
- * && convertToJsonIfText), or 3. text if ("text/plain" && ¬convertToJsonIfText), or 3. blob
- */
-export function getItemData(
-  itemId: string,
-  authentication: auth.UserSession,
-  convertToJsonIfText = true
-): Promise<any> {
-  return new Promise<any>(resolve => {
-    // Get item data
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: authentication,
-      file: true
-    };
-
-    // Need to shield call because it throws an exception if the item doesn't have data
-    try {
-      portal.getItemData(itemId, itemDataParam).then(
-        blob => {
-          if (blob.type === "application/json" || blob.type === "text/plain") {
-            generalHelpers.blobToText(blob).then(
-              (response: string) => {
-                if (
-                  blob.type === "application/json" ||
-                  (blob.type === "text/plain" && convertToJsonIfText)
-                ) {
-                  const json = response !== "" ? JSON.parse(response) : null;
-                  resolve(json && json.error ? null : json);
-                } else {
-                  resolve(response);
-                }
-              },
-              () => {
-                resolve(null);
-              }
-            );
-          } else {
-            resolve(blob);
-          }
-        },
-        () => resolve(null)
-      );
-    } catch (ignored) {
-      resolve(null);
-    }
-  });
-}
-
-/**
  * Gets the data information of an AGO item in its raw (Blob) form and casts it as a file using the supplied name.
  *
  * @param itemId Id of an item whose data information is sought
@@ -243,9 +186,7 @@ export function getItemDataAsFile(
   return new Promise<File>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
       blob =>
-        !blob
-          ? resolve(null)
-          : resolve(generalHelpers.blobToFile(blob, filename)),
+        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
@@ -265,8 +206,7 @@ export function getItemDataAsJson(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
-      blob =>
-        !blob ? resolve(null) : resolve(generalHelpers.blobToJson(blob)),
+      blob => (!blob ? resolve() : resolve(generalHelpers.blobToJson(blob))),
       reject
     );
   });
@@ -324,7 +264,7 @@ export function getItemMetadataAsFile(
     getItemMetadataBlob(itemId, authentication).then(
       blob =>
         !blob
-          ? resolve(null)
+          ? resolve()
           : resolve(generalHelpers.blobToFile(blob, "metadata.xml")),
       reject
     );

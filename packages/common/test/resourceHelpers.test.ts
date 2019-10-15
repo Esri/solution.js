@@ -536,7 +536,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: destination.itemId };
 
-        fetchMock.post(fetchUrl, expected).post(updateUrl, expected);
+        fetchMock
+          .post(fetchUrl, expected, { sendAsJson: false })
+          .post(updateUrl, expected);
         resourceHelpers
           .copyResource(source, destination)
           .then((response: any) => {
