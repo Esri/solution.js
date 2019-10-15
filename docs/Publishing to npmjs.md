@@ -1,6 +1,7 @@
 ## Publishing solution.js to npmjs
 
 1. Remove the node_modules directories.
+```
   ..\solution.js\node_modules
   ..\solution.js\packages\common\node_modules
   ..\solution.js\packages\creator\node_modules
@@ -9,6 +10,7 @@
   ..\solution.js\packages\simple-types\node_modules
   ..\solution.js\packages\storymap\node_modules
   ..\solution.js\packages\viewer\node_modules
+ ```
 
 2. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
 
