@@ -78,7 +78,9 @@ export function getBlobAsFile(
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob =>
-        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
+        !blob
+          ? resolve(null)
+          : resolve(generalHelpers.blobToFile(blob, filename)),
       reject
     );
   });
@@ -109,7 +111,7 @@ export function getBlobCheckForError(
             if (json && json.error) {
               const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                resolve((null as unknown) as Blob); // Error, but ignored
+                resolve(null); // Error, but ignored
               } else {
                 reject(json); // Other error; fail with error
               }
