@@ -82,16 +82,131 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   }
 
   describe("getBlobAsFile", () => {
-    xit("getBlobAsFile", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should ignore ignorable error", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, {
+        error: {
+          code: 400,
+          messageCode: "CONT_0004",
+          message: "Item does not exist or is inaccessible.",
+          details: []
+        }
+      });
+      restHelpersGet
+        .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
+        .then(file => {
+          expect(file).toBeNull();
+          done();
+        }, done.fail);
+    });
+
+    it("should use supplied filename", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, mockItems.getAnImageResponse(), {
+        sendAsJson: false
+      });
+      restHelpersGet
+        .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
+        .then(file => {
+          expect(file).not.toBeNull();
+          expect(file.type).toEqual("image/png");
+          expect(file.name).toEqual("myFile.png");
+          done();
+        }, done.fail);
     });
   });
 
   describe("getBlobCheckForError", () => {
-    xit("getBlobCheckForError", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should pass through an image file", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, mockItems.getAnImageResponse(), {
+        sendAsJson: false
+      });
+      restHelpersGet
+        .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
+        .then(blob => {
+          expect(blob).not.toBeNull();
+          expect(blob.type).toEqual("image/png");
+          done();
+        }, done.fail);
+    });
+
+    it("should pass through non-error JSON", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      const testBlobContents = JSON.stringify({
+        a: "a",
+        b: 1,
+        c: {
+          d: "d"
+        }
+      });
+      const testBlob = new Blob([testBlobContents], {
+        type: "application/json"
+      });
+      fetchMock.post(url, testBlob, { sendAsJson: false });
+      restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION).then(blob => {
+        expect(blob).not.toBeNull();
+        expect(blob.type).toEqual("application/json");
+        done();
+      }, done.fail);
+    });
+
+    it("should handle bad JSON by passing it through", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      const testBlob = new Blob(["badJson:{"], { type: "application/json" });
+      fetchMock.post(url, testBlob, { sendAsJson: false });
+      restHelpersGet
+        .getBlobCheckForError(url, MOCK_USER_SESSION, [500])
+        .then(blob => {
+          expect(blob).not.toBeNull();
+          expect(blob.type).toEqual("application/json");
+          done();
+        }, done.fail);
+    });
+
+    it("should ignore ignorable error", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, {
+        error: {
+          code: 400,
+          messageCode: "CONT_0004",
+          message: "Item does not exist or is inaccessible.",
+          details: []
+        }
+      });
+      restHelpersGet
+        .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
+        .then(blob => {
+          expect(blob).toBeNull();
+          done();
+        }, done.fail);
+    });
+
+    it("should return significant error", done => {
+      const url =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+      fetchMock.post(url, {
+        error: {
+          code: 400,
+          messageCode: "CONT_0004",
+          message: "Item does not exist or is inaccessible.",
+          details: []
+        }
+      });
+      restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
+        () => done.fail(),
+        response => {
+          expect(response).not.toBeNull();
+          expect(response.error.code).toEqual(400);
+          done();
+        }
+      );
     });
   });
 
