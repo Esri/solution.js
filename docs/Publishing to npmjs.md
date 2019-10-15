@@ -1,8 +1,23 @@
 ## Publishing solution.js to npmjs
 
-1. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+1. Remove the node_modules directories.
+  ..\solution.js\node_modules
+  ..\solution.js\packages\common\node_modules
+  ..\solution.js\packages\creator\node_modules
+  ..\solution.js\packages\deployer\node_modules
+  ..\solution.js\packages\feature-layer\node_modules
+  ..\solution.js\packages\simple-types\node_modules
+  ..\solution.js\packages\storymap\node_modules
+  ..\solution.js\packages\viewer\node_modules
 
-2. Log in to npmjs
+2. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+
+3. From the repos root folder install a fresh copy of the node modules
+```
+npm install
+```
+
+4. Log in to npmjs
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```
 npm login
@@ -13,9 +28,9 @@ Enter one-time password from your authenticator app: &lt;e.g., from Okta Verify&
 Logged in as &lt;npm username&gt; on https://registry.npmjs.org/
 ```
 
-3. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+5. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
-4. Prepare the release.
+6. Prepare the release.
 The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version. 
 ```
 npm run prerelease:prepare
@@ -23,11 +38,15 @@ npm run release:prepare
 npm run release:review
 ```
 
-5. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.)
+7. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.)
+*Note: To confirm the expected set at the end of this file visit the repos webpage and navigate to releases > tags. If you see additional tags in the CHANGELOG.md you can remove them. To remove them permanently from your local repo use:
+```
+git tag -d tagName
+```
 
-6. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+8. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
 
-7. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+9. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 *Note: The last message in this step shows the error message "Error: CHANGELOG.md does not contain any versions", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -35,7 +54,7 @@ npm run release:publish
 ? Enter OTP: <2-factor-code>
 ```
 
-8. Update the package.json files in the TypeScript examples in the common package and run `npm install` for each.
+10. Update the package.json files in the TypeScript examples in the common package with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub
