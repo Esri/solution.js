@@ -537,7 +537,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected = { success: true, id: destination.itemId };
 
         fetchMock
-          .post(fetchUrl, expected, { sendAsJson: false })
+          .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
           .post(updateUrl, expected);
         resourceHelpers
           .copyResource(source, destination)
@@ -547,10 +547,52 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
+
+    it("handles inexplicable response ==============================", done => {
+      const source = {
+        url:
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        folder: "storageFolder",
+        filename: "storageFilename.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const fetchUrl =
+        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+
+      fetchMock.post(
+        fetchUrl,
+        new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
+        { sendAsJson: false }
+      );
+      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+    });
+
+    it("handles inability to get resource", done => {
+      const source = {
+        url:
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        folder: "storageFolder",
+        filename: "storageFilename.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const fetchUrl =
+        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+
+      fetchMock.post(fetchUrl, 500);
+      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+    });
   }
 
   describe("generateGroupFilePaths", () => {
-    it("for a group thumbnail", () => {
+    it("generates paths for a group thumbnail", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail.png";
@@ -569,6 +611,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
         thumbnailUrlPart
       );
       expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles the absence of a group thumbnail", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const thumbnailUrlPart = "";
+      const expected: interfaces.IDeployFileCopyPath[] = [];
+
+      const actual = resourceHelpers.generateGroupFilePaths(
+        portalSharingUrl,
+        itemId,
+        thumbnailUrlPart
+      );
+      expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
   });
@@ -908,7 +965,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("generateStorageFilePaths", () => {
-    it("without resources", () => {
+    it("generates paths without resources", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [];
@@ -923,7 +980,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("with a single top-level file resource", () => {
+    it("generates paths with a single top-level file resource", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
@@ -948,7 +1005,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("with a single file resource in a folder", () => {
+    it("generates paths with a single file resource in a folder", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
@@ -973,7 +1030,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("with a metadata", () => {
+    it("generates paths with metadata", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
@@ -998,7 +1055,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("with a thumbnail", () => {
+    it("generates paths with a thumbnail", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
@@ -1020,6 +1077,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
         resourceFilenames
       );
       expect(actual.length).toEqual(1);
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles the absence of resource filenames", () => {
+      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const resourceFilenames = null as string[];
+      const expected: interfaces.IDeployFileCopyPath[] = [];
+
+      const actual = resourceHelpers.generateStorageFilePaths(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilenames
+      );
+      expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
     });
   });
