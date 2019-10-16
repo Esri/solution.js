@@ -17,7 +17,7 @@
 /**
  * Provides common item fetch functions involving the arcgis-rest-js library.
  *
- * @module restHelpers
+ * @module restHelpersGet
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
