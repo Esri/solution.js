@@ -58,10 +58,9 @@ export function _extractDependencies(
   let dependencies: string[] = [];
 
   if (itemTemplate.data) {
-    dependencies = [
-      ..._getWebmapLayerIds(itemTemplate.data.operationalLayers),
-      ..._getWebmapLayerIds(itemTemplate.data.tables)
-    ];
+    const layers: any[] = itemTemplate.data.operationalLayers || [];
+    const tables: any[] = itemTemplate.data.tables || [];
+    dependencies = _getWebmapLayerIds(layers.concat(tables));
   }
 
   return dependencies;

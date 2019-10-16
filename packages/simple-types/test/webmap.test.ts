@@ -366,6 +366,110 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       const actual = webmap.convertItemToTemplate(model);
       expect(actual).toEqual(expected);
     });
+    it("converts with layer and table data from same service", () => {
+      const model = {
+        itemId: "itm1234567890",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{itm1234567890.itemId}}",
+          title: "Voting Centers"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: null
+            },
+            {
+              itemId: "theItemID",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/0"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "theItemID",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+            }
+          ],
+          tables: [
+            {
+              itemId: "theItemID",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "theItemID",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+            },
+            {
+              itemId: null
+            }
+          ]
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "itm1234567890",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{itm1234567890.itemId}}",
+          title: "Voting Centers",
+          url:
+            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{theItemID.itemId}}",
+              url: "{{theItemID.layer0.url}}"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{theItemID.itemId}}",
+              url: "{{theItemID.layer1.url}}"
+            }
+          ],
+          tables: [
+            {
+              itemId: "{{theItemID.itemId}}",
+              url: "{{theItemID.layer2.url}}"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{theItemID.itemId}}",
+              url: "{{theItemID.layer3.url}}"
+            },
+            {
+              itemId: null
+            }
+          ]
+        } as any,
+        resources: [] as any[],
+        dependencies: ["theItemID"],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const actual = webmap.convertItemToTemplate(model);
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_extractDependencies", () => {
