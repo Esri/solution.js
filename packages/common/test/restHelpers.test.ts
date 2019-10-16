@@ -35,13 +35,18 @@ import {
   _getUpdate,
   getRequest,
   _getRelationshipUpdates,
-  createUniqueFolder
+  createUniqueFolder,
+  _addItemDataFile,
+  _addItemMetadataFile
 } from "../src/restHelpers";
 import {
   TOMORROW,
   createRuntimeMockUserSession,
   setMockDateTime,
-  checkForArcgisRestSuccessRequestError
+  checkForArcgisRestSuccessRequestError,
+  getSampleJsonAsBlob,
+  getSampleMetadata,
+  getSampleTextAsBlob
 } from "../test/mocks/utils";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
 import * as fetchMock from "fetch-mock";
@@ -1385,6 +1390,132 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         () => done.fail()
       );
+    });
+  });
+
+  describe("_addItemDataFile", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should add text/plain data", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleTextAsBlob() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token"
+          );
+          done();
+        }, done.fail);
+      });
+
+      it("should add application/json data", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleJsonAsBlob() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token"
+          );
+          done();
+        }, done.fail);
+      });
+
+      it("should add text data that's not text/plain or application/json", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleMetadata() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          (fetchBody as FormData).forEach(
+            (value: FormDataEntryValue, key: string) => {
+              switch (key) {
+                case "f":
+                  expect(value.toString()).toEqual("json");
+                  break;
+                case "id":
+                  expect(value.toString()).toEqual(itemId);
+                  break;
+                case "file":
+                  expect(value.valueOf()).toEqual(
+                    new File([getSampleMetadata()], "file")
+                  );
+                  break;
+                case "token":
+                  expect(value.toString()).toEqual("fake-token");
+                  break;
+              }
+            }
+          );
+          done();
+        }, done.fail);
+      });
+    }
+  });
+
+  describe("_addItemMetadataFile", () => {
+    it("should update metadata", done => {
+      const itemId = "itm1234567890";
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update",
+        '{"success":true}'
+      );
+      _addItemMetadataFile(
+        itemId,
+        getSampleMetadata() as File,
+        MOCK_USER_SESSION
+      ).then(response => {
+        expect(response.success).toBeTruthy();
+        done();
+      }, done.fail);
+    });
+
+    it("should handle failure to update metadata", done => {
+      const itemId = "itm1234567890";
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update",
+        '{"success":false}'
+      );
+      _addItemMetadataFile(
+        itemId,
+        getSampleMetadata() as File,
+        MOCK_USER_SESSION
+      ).then(response => {
+        expect(response.success).toBeFalsy();
+        done();
+      }, done.fail);
     });
   });
 

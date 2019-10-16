@@ -128,6 +128,20 @@ export function getSampleImage(): Blob {
   return imageAsDataUriToBlob(atob(_imageAsDataUri(false)));
 }
 
+export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
+  return jsonToBlob({
+    a: "a",
+    b: 1,
+    c: {
+      d: "d"
+    }
+  });
+}
+
+export function getSampleTextAsBlob(mimeType = "text/plain"): Blob {
+  return new Blob(["this is some text"], { type: mimeType });
+}
+
 export function getSampleZip(mimeType = "application/zip"): Blob {
   const zipContents =
     "504B0304 0A000000 0000C045 D9424437\
