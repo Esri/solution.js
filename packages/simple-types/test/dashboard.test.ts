@@ -186,92 +186,92 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     }
   });
 
+  describe("_getMapDatasources", () => {
+    xit("_getMapDatasources", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
+  describe("_getExternalDatasources", () => {
+    xit("_getExternalDatasources", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
+  });
+
   describe("_getDatasourceInfo", () => {
-    xit("_getNameMapping", done => {
+    xit("_getDatasourceInfo", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getItemPromises", () => {
-    xit("_getNameMapping", done => {
+    xit("_getItemPromises", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getWidgetPromises", () => {
-    xit("_getNameMapping", done => {
+    xit("_getWidgetPromises", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getPromises", () => {
-    xit("_getNameMapping", done => {
+    xit("_getPromises", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getDatasourcePromises", () => {
-    xit("_getNameMapping", done => {
+    xit("_getDatasourcePromises", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_updateDatasourceInfoFields", () => {
-    xit("_getNameMapping", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_addDependency", () => {
-    xit("_getNameMapping", done => {
+    xit("_updateDatasourceInfoFields", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getDatasourcesFromMap", () => {
-    xit("_getNameMapping", done => {
+    xit("_getDatasourcesFromMap", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_hasDatasourceInfo", () => {
-    xit("_getNameMapping", done => {
+    xit("_hasDatasourceInfo", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_templatize", () => {
-    xit("_getNameMapping", done => {
+    xit("_templatize", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
-  describe("_templatizeByDataset", () => {
-    xit("_getNameMapping", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeFieldReferences", () => {
-    xit("_getNameMapping", done => {
+  describe("_templatizeByDatasource", () => {
+    xit("_templatizeByDatasource", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
   });
 
   describe("_getDatasourceInfo", () => {
-    xit("_getNameMapping", done => {
+    xit("_getDatasourceInfo", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });

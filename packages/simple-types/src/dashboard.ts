@@ -114,8 +114,11 @@ interface IDashboardDatasource {
 }
 
 /**
- * Extract all item dependencies and templatize field references
- * @public
+ * Converts a dashboard item to a template.
+ *
+ * @param itemTemplate Template for the dashboard item
+ * @param authentication Credentials for the request
+ * @return templatized itemTemplate
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
@@ -135,12 +138,16 @@ export function convertItemToTemplate(
  * Gets the dependencies and data for all widgets
  * ..allows us to understand relative dashboard references and external datasource references
  * ..also allows us to get the fieldnames for each of the layers fields
+ *
+ * @param itemTemplate Template for the dashboard item
+ * @param authentication Credentials for the requests
+ * @return A promise with the updated itemTemplate and DatasourceInfo array with key details about the datasources
  * @protected
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
   authentication: auth.UserSession
-) {
+): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     // Object containing any map and or data source promises that will fetch field information.
     // As well as the currently known data source info
@@ -170,13 +177,17 @@ export function _extractDependencies(
 }
 
 /**
- * get datasource info for all map datasources
+ * Get datasource info for all map datasources
+ *
+ * @param mapPromises A list of promises from various dashboard properties that can contain map layer references
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return A promise with a updated list of datasource info from map datasources
  * @protected
  */
 export function _getMapDatasources(
   mapPromises: any[],
   datasourceInfos: IDashboardDatasourceInfo[]
-) {
+): Promise<any> {
   // get data for all maps referenced
   // this will always resolve...will return null when no data
   return new Promise<any>(resolve => {
@@ -195,14 +206,19 @@ export function _getMapDatasources(
 }
 
 /**
- * get datasource info for all external datasources
+ * Get datasource info for all map datasources
+ *
+ * @param datasourcePromises A list of promises from various dashboard properties that can contain map layer references
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @param authentication Credentials for the requests
+ * @return A promise with a updated list of datasource info from external datasources
  * @protected
  */
 export function _getExternalDatasources(
   datasourcePromises: any[],
   datasourceInfos: IDashboardDatasourceInfo[],
   authentication: auth.UserSession
-) {
+): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     Promise.all(datasourcePromises).then(
       _results => {
@@ -227,8 +243,13 @@ export function _getExternalDatasources(
 }
 
 /**
- * loop through the datasets of widgets, panels, and urlParameters to gather field collections
+ * Loop through the datasets of widgets, panels, and urlParameters to gather field collections
  * for any referenced datasets
+ *
+ * @param itemTemplate The current dashboard template
+ * @param authentication Credentials for the requests
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return An object with promises for map and external datasources as well as the inital datasource info array
  * @protected
  */
 export function _getItemPromises(
@@ -290,8 +311,14 @@ export function _getItemPromises(
 }
 
 /**
- * loop through all widgets and find dataset datasources
- * add map itemId to the items dependency list
+ * Loop through all widgets to find dataset datasources
+ * and add map itemId to the items dependency list
+ * and templatize map item id
+ *
+ * @param itemTemplate The current dashboard template
+ * @param authentication Credentials for the requests
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return An object with map and datasource promises
  * @protected
  */
 export function _getWidgetPromises(
@@ -338,7 +365,13 @@ export function _getWidgetPromises(
 }
 
 /**
- * used for datasets referenced in panel selectors and urlParameters
+ * Use for datasets referenced in panel selectors and urlParameters
+ *
+ * @param itemTemplate The current dashboard template
+ * @param authentication Credentials for the requests
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @param objs A list of objects that can contain dataset references
+ * @return An list of datasource promises
  * @protected
  */
 export function _getPromises(
@@ -368,8 +401,14 @@ export function _getPromises(
 }
 
 /**
- * loop through all the datsets datasources for a widget, selector, or urlParameter and look for external
+ * Loop through all the datsets datasources for a widget, selector, or urlParameter and look for external
  * datasource references
+ *
+ * @param obj An object that may contain dataset references
+ * @param itemTemplate The current dashboard template
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @param authentication Credentials for the requests
+ * @return An list of datasource promises
  * @protected
  */
 export function _getDatasourcePromises(
@@ -458,7 +497,11 @@ export function _getDatasourcePromises(
 }
 
 /**
- * fetch the fields collection for each datasource found
+ * Fetch the fields collection for each datasource found
+ *
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @param authentication Credentials for the requests
+ * @return A promise that will resolve the DatasourceInfos with the fetched fields added
  * @protected
  */
 export function _updateDatasourceInfoFields(
@@ -505,14 +548,19 @@ export function _updateDatasourceInfoFields(
 }
 
 /**
- * loop through the fetched map data and if we don't already have each operational layer
- * added to datasourceInfos...add the placeholder
+ * Loop through the fetched map data and if we don't already have each operational layer
+ * added to datasourceInfos...add a placeholder
+ *
+ * @param mapData data from an AGOL map that can contain
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return Updated instance of DatasourceInfos
  * @protected
  */
 export function _getDatasourcesFromMap(
   mapData: any,
   datasourceInfos: IDashboardDatasourceInfo[]
 ): any {
+  // TODO shouldn't this also check for tables
   if (mapData && Array.isArray(mapData.operationalLayers)) {
     mapData.operationalLayers.forEach((layer: any) => {
       // only add if the itemId and layerId are unique
@@ -545,7 +593,11 @@ export function _getDatasourcesFromMap(
 }
 
 /**
- * test if the itemId and layerId already exist in the collection
+ * Test if the itemId and layerId already exist in the collection
+ *
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @param layer The layer to verify against the current datasourceInfos
+ * @return A boolean with true if the layer is already represented in the datasourceInfos
  * @protected
  */
 export function _hasDatasourceInfo(
@@ -565,8 +617,11 @@ export function _hasDatasourceInfo(
 }
 
 /**
- * now that we know the the path and fields for each datasource
- * tempatize all field references
+ * Now that we know the the path and fields for each datasource tempatize all field references
+ *
+ * @param itemTemplate The current dashboard template
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return An updated itemTemplate with templatized field references
  * @protected
  */
 export function _templatize(
@@ -625,7 +680,11 @@ export function _templatize(
 }
 
 /**
- * for any service dataset datasource templatize all field references
+ * For any service dataset datasource templatize all field references
+ *
+ * @param objs A list of objects that can contain field references
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return An updated list of objects with templatized field references
  * @protected
  */
 export function _templatizeByDatasource(
@@ -703,8 +762,11 @@ export function _templatizeByDatasource(
 }
 
 /**
- * obj can be a Dataset or an event
- * find the appropriate datasource info object from the datasourceInfo collection
+ * Find the appropriate datasource info object from the datasourceInfo collection
+ *
+ * @param obj Can be a Dataset or an event
+ * @param datasourceInfos A list of objects that contain key details about the datasources from the application
+ * @return The supporting datasource info for the given object
  * @protected
  */
 export function _getDatasourceInfo(
