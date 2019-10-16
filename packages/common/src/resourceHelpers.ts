@@ -309,7 +309,10 @@ export function copyResource(
   return new Promise<any>((resolve, reject) => {
     restHelpersGet.getBlob(source.url, source.authentication).then(
       async blob => {
-        if (blob.type === "text/plain" || blob.type === "application/json") {
+        if (
+          blob.type.startsWith("text/plain") ||
+          blob.type === "application/json"
+        ) {
           try {
             const text = await new Response(blob).text();
             const json = JSON.parse(text);
