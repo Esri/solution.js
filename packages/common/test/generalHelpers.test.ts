@@ -30,7 +30,8 @@ import {
   hasAnyKeyword,
   hasTypeKeyword,
   getUTCTimestamp,
-  hasDatasource
+  hasDatasource,
+  _padPositiveNum
 } from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 
@@ -465,9 +466,19 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("_padPositiveNum", () => {
-    xit("_padPositiveNum", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles numbers wider than minimum width", () => {
+      expect(_padPositiveNum(0, 0)).toEqual("0");
+      expect(_padPositiveNum(123, 0)).toEqual("123");
+    });
+
+    it("handles numbers the same width as the minimum width", () => {
+      expect(_padPositiveNum(0, 1)).toEqual("0");
+      expect(_padPositiveNum(123, 3)).toEqual("123");
+    });
+
+    it("handles numbers narrower than the minimum width", () => {
+      expect(_padPositiveNum(0, 10)).toEqual("0000000000");
+      expect(_padPositiveNum(123, 10)).toEqual("0000000123");
     });
   });
 });
