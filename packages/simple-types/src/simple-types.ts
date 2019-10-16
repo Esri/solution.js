@@ -202,39 +202,34 @@ export function convertItemToTemplate(
           wrapupPromise.then(
             () => {
               /* console.log(
-              "converted " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                ")"
-            ); */
-              webappPromise.then(
-                _itemTemplate => resolve(_itemTemplate),
-                e => {
-                  resolve(itemTemplate);
-                }
-              );
+                "converted " +
+                  itemInfo.type +
+                  ' "' +
+                  itemInfo.title +
+                  '" (' +
+                  itemInfo.id +
+                  ")"
+              ); */
+              webappPromise.then(resolve, () => resolve(itemTemplate));
             },
             err => {
               /* console.log(
-              "unable to convert " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                "): " +
-                JSON.stringify(err, null, 2)
-            ); */
+                "unable to convert " +
+                  itemInfo.type +
+                  ' "' +
+                  itemInfo.title +
+                  '" (' +
+                  itemInfo.id +
+                  "): " +
+                  JSON.stringify(err, null, 2)
+              ); */
               reject(common.fail(err.response));
             }
           );
-          // }); //???
         },
         error => {
           console.log("simple-types convertItemToTemplate failed", error);
+          reject(error);
         }
       );
     } else {
