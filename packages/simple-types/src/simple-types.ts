@@ -167,7 +167,10 @@ export function convertItemToTemplate(
 
               if (itemDataResponse) {
                 const filename =
-                  (itemDataResponse as File).name || "formData.zip";
+                  itemTemplate.item.name ||
+                  (itemDataResponse as File).name ||
+                  "formData.zip";
+                itemTemplate.item.name = filename;
                 const storageName = common.generateResourceStorageFilename(
                   itemTemplate.itemId,
                   filename,

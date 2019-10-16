@@ -757,12 +757,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
       });
 
-      xit("should handle form item type with default filename", done => {
-        // TODO
+      it("should handle form item type with default filename", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
+        itemTemplate.item.name = null;
 
         const expectedTemplate: any = {
           itemId: "frm1234567890",
@@ -775,7 +775,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             description: "Description of an AGOL item",
             extent: [],
             licenseInfo: null,
-            name: null,
+            name: "formData.zip",
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
             thumbnail: null,
