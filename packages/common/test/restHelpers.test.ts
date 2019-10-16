@@ -357,7 +357,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -393,7 +393,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -429,7 +429,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -465,7 +465,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId,
         access
       ).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toEqual(false);
           done();
@@ -602,7 +602,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(createUrl, expectedCreate);
 
       createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toBeUndefined();
           expect(response.message).toEqual("400: Unable to create folder.");
@@ -627,7 +627,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(createUrl, expectedCreate);
 
       createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toBeUndefined();
           expect(response.message).toEqual("400: Unable to create folder.");

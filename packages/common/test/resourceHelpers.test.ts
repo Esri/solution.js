@@ -135,7 +135,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             MOCK_USER_SESSION
           )
           .then(
-            () => done.fail,
+            () => done.fail(),
             (response: any) => {
               expect(response).toEqual(expected);
               done();
