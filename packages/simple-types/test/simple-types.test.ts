@@ -24,7 +24,7 @@ import {
   createItemFromTemplate,
   updateGroup
 } from "../src/simple-types";
-import { TOMORROW, create404Error } from "../../common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -37,9 +37,9 @@ const MOCK_USER_SESSION = new UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
-  tokenExpires: TOMORROW,
+  tokenExpires: utils.TOMORROW,
   refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
+  refreshTokenExpires: utils.TOMORROW,
   refreshTokenTTL: 1440,
   username: "casey",
   password: "123456",
@@ -775,7 +775,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             description: "Description of an AGOL item",
             extent: [],
             licenseInfo: null,
-            name: "Name of an AGOL item",
+            name: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
             thumbnail: null,
@@ -1000,15 +1000,15 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       fetchMock
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
-          create404Error()
+          utils.create404Error()
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
-          create404Error()
+          utils.create404Error()
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-          create404Error()
+          utils.create404Error()
         );
 
       convertItemToTemplate(
@@ -1016,7 +1016,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.item,
         MOCK_USER_SESSION
       ).then(newItemTemplate => {
-        expect(newItemTemplate.data).toEqual(null);
+        expect(newItemTemplate.data).toBeUndefined();
         expect(newItemTemplate.resources).toEqual([]);
         expect(newItemTemplate.dependencies).toEqual([]);
         done();
@@ -1025,19 +1025,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      xit("should catch wrapup errors", done => {
-        // TODO
+      it("should catch wrapup errors", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
+        itemTemplate.item.name = "form.zip";
 
         fetchMock
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data",
-            ["abc", "def", "ghi"]
+            utils.getSampleZip(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -1077,7 +1078,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            create404Error()
+            utils.create404Error()
           );
 
         convertItemToTemplate(
@@ -1085,7 +1086,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate.item,
           MOCK_USER_SESSION
         ).then(
-          () => done.fail,
+          () => done.fail(),
           response => {
             expect(response.error.code).toEqual(400);
             expect(response.error.message).toEqual(
@@ -1173,7 +1174,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
-            itemTemplate.data
+            new Blob([JSON.stringify(itemTemplate.data)], {
+              type: "application/json"
+            }),
+            { sendAsJson: false }
           );
 
         convertItemToTemplate(
