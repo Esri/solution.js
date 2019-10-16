@@ -128,14 +128,18 @@ export function getSampleImage(): Blob {
   return imageAsDataUriToBlob(atob(_imageAsDataUri(false)));
 }
 
-export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
-  return jsonToBlob({
+export function getSampleJson(): any {
+  return {
     a: "a",
     b: 1,
     c: {
       d: "d"
     }
-  });
+  };
+}
+
+export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
+  return jsonToBlob(getSampleJson());
 }
 
 export function getSampleTextAsBlob(mimeType = "text/plain"): Blob {
