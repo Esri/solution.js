@@ -456,7 +456,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("it fails to acquire metadata.xml", done => {
+      it("handles inability to get metadata.xml", done => {
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
@@ -477,17 +477,32 @@ describe("Module `resourceHelpers`: common functions involving the management of
             details: ["Error getting Item Info from DataStore"]
           }
         };
-        fetchMock.post(fetchUrl, expectedFetch); // .post(updateUrl, expectedUpdate);
-
-        resourceHelpers.copyMetadata(source, destination).then(
-          response => {
-            response.success ? done.fail() : done();
-          },
-          () => done()
-        );
+        fetchMock.post(fetchUrl, expectedFetch);
+        resourceHelpers.copyMetadata(source, destination).then(response => {
+          response.success ? done.fail() : done();
+        }, done);
       });
 
-      it("it fails to store metadata.xml", done => {
+      it("handles inability to get metadata.xml, hard error", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          authentication: MOCK_USER_SESSION
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          authentication: MOCK_USER_SESSION
+        };
+
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        fetchMock.post(fetchUrl, 500);
+        resourceHelpers.copyMetadata(source, destination).then(response => {
+          response.success ? done.fail() : done();
+        }, done);
+      });
+
+      it("handles inability to store metadata.xml", done => {
         const source = {
           url:
             "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
@@ -507,7 +522,34 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
+        resourceHelpers.copyMetadata(source, destination).then(
+          response => {
+            response.success ? done.fail() : done();
+          },
+          () => done()
+        );
+      });
 
+      it("handles inability to store metadata.xml, hard error", done => {
+        const source = {
+          url:
+            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+          authentication: MOCK_USER_SESSION
+        };
+        const destination = {
+          itemId: "itm1234567890",
+          authentication: MOCK_USER_SESSION
+        };
+
+        const fetchUrl =
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const expectedFetch = utils.getSampleMetadata();
+        const expectedUpdate = 500;
+        fetchMock
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, expectedUpdate);
         resourceHelpers.copyMetadata(source, destination).then(
           response => {
             response.success ? done.fail() : done();
@@ -548,7 +590,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
     });
 
-    it("handles inexplicable response ==============================", done => {
+    it("handles inexplicable response", done => {
       const source = {
         url:
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
@@ -587,6 +629,30 @@ describe("Module `resourceHelpers`: common functions involving the management of
         "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
 
       fetchMock.post(fetchUrl, 500);
+      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+    });
+
+    it("handles inability to copy resource, hard error", done => {
+      const source = {
+        url:
+          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const destination = {
+        itemId: "itm1234567890",
+        folder: "storageFolder",
+        filename: "storageFilename.png",
+        authentication: MOCK_USER_SESSION
+      };
+      const fetchUrl =
+        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+      const updateUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+      const expected = 500;
+
+      fetchMock
+        .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+        .post(updateUrl, expected);
       resourceHelpers.copyResource(source, destination).then(done.fail, done);
     });
   }

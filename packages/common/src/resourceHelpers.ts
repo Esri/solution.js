@@ -66,7 +66,7 @@ import * as restHelpersGet from "./restHelpersGet";
  * @return Promise resolving to JSON containing success boolean
  */
 export function addMetadataFromBlob(
-  blob: any,
+  blob: Blob,
   itemId: string,
   authentication: auth.UserSession
 ): Promise<any> {
@@ -334,7 +334,7 @@ export function copyResource(
           destination.authentication
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
+          e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
       e => reject(generalHelpers.fail(e)) // unable to get resource
