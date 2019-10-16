@@ -24,6 +24,12 @@ const WEBMAP_APP_URL_PART: string = "/home/webmap/viewer.html?webmap=";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Converts an AGOL webmap item to a template.
+ *
+ * @param itemTemplate
+ * @return Template for the solution item that contains key details for item reconstruction
+ */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
@@ -43,13 +49,11 @@ export function convertItemToTemplate(
   return itemTemplate;
 }
 
-// ------------------------------------------------------------------------------------------------------------------ //
-
 /**
  * Gets the ids of the dependencies of an AGOL webmap item.
  *
- * @param fullItem A webmap item whose dependencies are sought
- * @return List of dependencies
+ * @param itemTemplate A webmap item whose dependencies are sought
+ * @return List of dependencies ids
  * @protected
  */
 export function _extractDependencies(
@@ -67,10 +71,10 @@ export function _extractDependencies(
 }
 
 /**
- * Extracts the AGOL id or URL for each layer or table object in a list.
+ * Extracts the AGOL id for each layer or table object in a list.
  *
  * @param layerList List of map layers or tables
- * @return List containing id of each layer or table that has an itemId
+ * @return List containing the ids of each layer or table that has an itemId
  * @protected
  */
 export function _getWebmapLayerIds(layerList = [] as any[]): string[] {
@@ -86,6 +90,13 @@ export function _getWebmapLayerIds(layerList = [] as any[]): string[] {
   );
 }
 
+/**
+ * Templatizes the url and item id for layers or tables within the webmap.
+ *
+ * @param layerList List of map layers or tables
+ * @return void
+ * @protected
+ */
 export function _templatizeWebmapLayerIdsAndUrls(
   layerList = [] as any[]
 ): void {
