@@ -21,11 +21,10 @@ import { queryFeatures, addFeatures } from "@esri/arcgis-rest-feature-layer";
 //#region Publish Process ---------------------------------------------------------------------------------------//
 
 /**
- * Templatize source item
+ * Converts an workforce item to a template.
  *
  * @param itemTemplate template for the workforce project item
  * @return templatized itemTemplate
- * @protected
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
@@ -60,7 +59,7 @@ export function convertItemToTemplate(
  *
  * @param data itemTemplate data
  * @param keyProperties workforce project properties that contain references to dependencies
- * @return a list of dependency IDs
+ * @return List of dependencies ids
  */
 export function _extractDependencies(
   data: any,
@@ -90,10 +89,7 @@ export function _extractDependencies(
  * @param keyProperties workforce project properties that should be templatized
  * @return an updated data object to be stored in the template
  */
-export function _templatize(
-  data: any,
-  keyProperties: string[]
-): common.IItemTemplate {
+export function _templatize(data: any, keyProperties: string[]): any {
   keyProperties.forEach(p => {
     if (common.getProp(data, p)) {
       if (common.getProp(data[p], "serviceItemId")) {
@@ -153,12 +149,11 @@ export function _templatize(
 //#region Deploy Process ---------------------------------------------------------------------------------------//
 
 /**
- * Updates the dispatchers service to include the current user as a dispatcher
+ * Gets the current user and updates the dispatchers service
  *
  * @param newlyCreatedItem Item to be created; n.b.: this item is modified
  * @param destinationAuthentication The session used to create the new item(s)
  * @return A promise that will resolve with { "success" === true || false }
- * @protected
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
@@ -184,6 +179,16 @@ export function fineTuneCreatedItem(
   });
 }
 
+/**
+ * Updates the dispatchers service to include the current user as a dispatcher
+ *
+ * @param dispatchers The dispatchers object from the workforce items data
+ * @param name Current users name
+ * @param fullName Current users full name
+ * @param destinationAuthentication The session used to create the new item(s)
+ * @return A promise that will resolve with true || false
+ * @protected
+ */
 export function _updateDispatchers(
   dispatchers: any,
   name: string,

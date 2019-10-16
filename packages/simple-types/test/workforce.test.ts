@@ -18,25 +18,18 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import { convertItemToTemplate, fineTuneCreatedItem } from "../src/workforce";
-
-import { IItemTemplate } from "../../common/src/interfaces";
+import * as workforce from "../src/workforce";
+import * as interfaces from "../../common/src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as mockSolutions from "../../common/test/mocks/templates";
 import * as fetchMock from "fetch-mock";
-import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+import * as auth from "@esri/arcgis-rest-auth";
 
-import {
-  TOMORROW,
-  createMockSettings,
-  createRuntimeMockUserSession,
-  checkForArcgisRestSuccessRequestError
-} from "../../common/test/mocks/utils";
+import { TOMORROW } from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
+const MOCK_USER_SESSION = new auth.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -49,10 +42,6 @@ const MOCK_USER_SESSION = new UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
-const MOCK_USER_REQOPTS: IUserRequestOptions = {
-  authentication: MOCK_USER_SESSION
-};
-
 afterEach(() => {
   fetchMock.restore();
 });
@@ -62,7 +51,7 @@ afterEach(() => {
 describe("Module `workforce`: manages the creation and deployment of wprkforce project item types", () => {
   describe("convertItemToTemplate", () => {
     it("should extract dependencies", () => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -78,7 +67,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         "abc715c2df2b466da05577776e82d044"
       ];
 
-      const newItemTemplate = convertItemToTemplate(itemTemplate);
+      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
       const newDependencies: string[] = newItemTemplate.dependencies;
       expect(newDependencies.length).toEqual(expectedDependencies.length);
 
@@ -88,7 +77,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should templatize key properties in the template", () => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -138,7 +127,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         ]
       };
 
-      const newItemTemplate = convertItemToTemplate(itemTemplate);
+      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
       expect(newItemTemplate.data).toEqual(expectedTemplateData);
     });
   });
@@ -159,7 +148,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
 
   describe("fineTuneCreatedItem", () => {
     it("should update dispatchers service", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -184,14 +173,14 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
           addResults: [{}]
         });
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
         expect(r).toEqual({ success: true });
         done();
       }, done.fail);
     });
 
     it("should handle error on update dispatchers", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -209,14 +198,13 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         })
         .get(queryUrl, mockItems.get400Failure());
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
-        done.fail,
-        done
-      );
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .then(done.fail, done);
     });
 
     it("should handle error on getUser", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -227,14 +215,13 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
 
       fetchMock.get(userUrl, mockItems.get400Failure());
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
-        done.fail,
-        done
-      );
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .then(done.fail, done);
     });
 
     it("should not update dispatchers service if it contains records", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -254,7 +241,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
           features: [{}]
         });
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
         expect(r).toEqual({
           success: true
         });
@@ -263,7 +250,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should handle failure to add features", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -286,20 +273,19 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         })
         .post(addUrl, {});
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
-        done.fail,
-        e => {
+      workforce
+        .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
+        .then(done.fail, e => {
           expect(e).toEqual({
             success: false,
             error: { success: false, message: "Failed to add dispatch record." }
           });
           done();
-        }
-      );
+        });
     });
 
     it("should handle error on add dispatcher features", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -322,7 +308,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         })
         .post(addUrl, mockItems.get400Failure());
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(
         r => {
           done.fail();
         },
@@ -333,7 +319,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should have success === false when query does not return a features property", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -351,7 +337,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         })
         .get(queryUrl, {});
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
         expect(r).toEqual({
           success: false
         });
@@ -360,7 +346,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should have success === false when dispatchers does not have url", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -380,7 +366,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
 
       delete itemTemplate.data.dispatchers.url;
 
-      fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
         expect(r).toEqual({
           success: false
         });
