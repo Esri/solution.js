@@ -991,7 +991,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     }
 
     xit("should catch fetch errors", done => {
-      // TODO
+      // TODO resolve Karma internal error triggered by this test
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.item = mockItems.getAGOLItem("Form", null);
       itemTemplate.itemId = itemTemplate.item.id;
