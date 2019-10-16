@@ -19,6 +19,8 @@
  */
 
 import {
+  blobToJson,
+  cleanId,
   cloneObject,
   fail,
   getProp,
@@ -28,7 +30,6 @@ import {
   hasAnyKeyword,
   hasTypeKeyword,
   getUTCTimestamp,
-  blobToJson,
   hasDatasource
 } from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
@@ -71,6 +72,18 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       });
     });
   }
+
+  describe("cleanId", () => {
+    it("should handle empty id", () => {
+      expect(cleanId(null)).toBeNull();
+      expect(cleanId(undefined)).toBeUndefined();
+      expect(cleanId("")).toEqual("");
+    });
+
+    it("should remove template braces and itemId property", () => {
+      expect(cleanId("{{itm1234567890.itemId}}")).toEqual("itm1234567890");
+    });
+  });
 
   describe("cloneObject", () => {
     it("can clone a shallow object", () => {
