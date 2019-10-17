@@ -105,8 +105,8 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data",
             noDataResponse
           )
           .post(
@@ -125,8 +125,8 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data",
             noDataResponse
           )
           .post(
@@ -213,8 +213,8 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data",
             noDataResponse
           )
           .post(
@@ -233,8 +233,8 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data",
             noDataResponse
           )
           .post(

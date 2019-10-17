@@ -27,6 +27,7 @@ import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import {
   IDependency,
+  IFeatureServiceProperties,
   IItemTemplate,
   IUpdate,
   IPostProcessArgs
@@ -167,6 +168,127 @@ export function createFeatureService(
           },
           e => reject(generalHelpers.fail(e))
         );
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+/**
+ * Publishes an item and its data, metadata, and resources as an AGOL item.
+ *
+ * @param itemInfo Item's `item` section
+ * @param folderId Id of folder to receive item; null indicates that the item goes into the root
+ *                 folder; ignored for Group item type
+ * @param authentication Credentials for the request
+ * @param itemThumbnailUrl URL to image to use for item thumbnail
+ * @param dataFile Item's `data` section
+ * @param metadataFile Item's metadata file
+ * @param resourcesFiles Item's resources
+ * @param access Access to set for item: "public", "org", "private"
+ * @return A promise that will resolve with an object reporting success or failure and the Solution id
+ */
+export function createFullItem(
+  itemInfo: any,
+  folderId: string | undefined,
+  authentication: auth.UserSession,
+  itemThumbnailUrl?: string,
+  dataFile?: File,
+  metadataFile?: File,
+  resourcesFiles?: File[],
+  access = "private"
+): Promise<portal.ICreateItemResponse> {
+  return new Promise((resolve, reject) => {
+    // Create item
+    const createOptions: portal.ICreateItemOptions = {
+      item: {
+        ...itemInfo
+      },
+      folderId,
+      authentication: authentication
+    };
+    if (itemThumbnailUrl) {
+      createOptions.item.thumbnailurl = itemThumbnailUrl;
+    }
+
+    portal.createItemInFolder(createOptions).then(
+      createResponse => {
+        if (createResponse.success) {
+          let accessDef: Promise<portal.ISharingResponse>;
+
+          // Set access if it is not AGOL default
+          // Set the access manually since the access value in createItem appears to be ignored
+          // Need to run serially; will not work reliably if done in parallel with adding the data section
+          if (access !== "private") {
+            const accessOptions: portal.ISetAccessOptions = {
+              id: createResponse.id,
+              access: access === "public" ? "public" : "org", // need to use constants rather than string
+              authentication: authentication
+            };
+            accessDef = portal.setItemAccess(accessOptions);
+          } else {
+            accessDef = Promise.resolve({
+              itemId: createResponse.id
+            } as portal.ISharingResponse);
+          }
+
+          // Now add attached items
+          accessDef.then(
+            () => {
+              const updateDefs: Array<Promise<any>> = [];
+
+              // Add the data section
+              if (dataFile) {
+                updateDefs.push(
+                  _addItemDataFile(createResponse.id, dataFile, authentication)
+                );
+              }
+
+              // Add the resources
+              if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
+                resourcesFiles.forEach(file => {
+                  const addResourceOptions: portal.IItemResourceOptions = {
+                    id: createResponse.id,
+                    resource: file,
+                    name: file.name,
+                    authentication: authentication,
+                    params: {}
+                  };
+
+                  // Check for folder in resource filename
+                  const filenameParts = file.name.split("/");
+                  if (filenameParts.length > 1) {
+                    addResourceOptions.name = filenameParts[1];
+                    addResourceOptions.params = {
+                      resourcesPrefix: filenameParts[0]
+                    };
+                  }
+                  updateDefs.push(portal.addItemResource(addResourceOptions));
+                });
+              }
+
+              // Add the metadata section
+              if (metadataFile) {
+                updateDefs.push(
+                  _addItemMetadataFile(
+                    createResponse.id,
+                    metadataFile,
+                    authentication
+                  )
+                );
+              }
+
+              // Wait until all adds are done
+              Promise.all(updateDefs).then(
+                () => resolve(createResponse),
+                e => reject(generalHelpers.fail(e))
+              );
+            },
+            e => reject(generalHelpers.fail(e))
+          );
+        } else {
+          reject(generalHelpers.fail());
+        }
       },
       e => reject(generalHelpers.fail(e))
     );
@@ -329,166 +451,6 @@ export function extractDependencies(
   });
 }
 
-/**
- * Gets a blob from a web site.
- *
- * @param url Address of blob
- * @param authentication Credentials for the request
- * @return Promise that will resolve with blob or an AGO-style JSON failure response
- */
-export function getBlob(
-  url: string,
-  authentication: auth.UserSession
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    // Get the blob from the URL
-    const blobRequestOptions = {
-      authentication: authentication,
-      rawResponse: true
-    } as request.IRequestOptions;
-    request.request(url, blobRequestOptions).then(
-      content => {
-        // Extract the blob from the response
-        content.blob().then(
-          resolve,
-          (e: any) => reject(generalHelpers.fail(e)) // unable to get blob out of response
-        );
-      },
-      e => reject(generalHelpers.fail(e)) // unable to get response
-    );
-  });
-}
-
-/**
- * Gets the ids of the dependencies (contents) of an AGO group.
- *
- * @param groupId Id of a group whose contents are sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with list of dependent ids or an empty list
- * @protected
- */
-export function getGroupContents(
-  groupId: string,
-  authentication: auth.UserSession
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    const pagingRequest: portal.IGetGroupContentOptions = {
-      paging: {
-        start: 1,
-        num: 100
-      },
-      authentication: authentication
-    };
-
-    // Fetch group items
-    _getGroupContentsTranche(groupId, pagingRequest).then(
-      contents => {
-        resolve(contents);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-/**
- * Gets the primary information of an AGO item.
- *
- * @param itemId Id of an item whose primary information is sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
- *         or response error code
- */
-export function getItem(
-  itemId: string,
-  authentication: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemParam: request.IRequestOptions = {
-    authentication: authentication
-  };
-  return portal.getItem(itemId, itemParam);
-}
-
-/**
- * Gets the data information of an AGO item.
- *
- * @param itemId Id of an item whose data information is sought
- * @param authentication Credentials for the request to AGO
- * @param convertToJsonIfText Switch indicating that MIME type "text/plain" should be converted to JSON;
- * MIME type "application/json" is always converted
- * @return A promise that will resolve with 1. null in case of error, or 2. JSON if "application/json" or ("text/plain"
- * && convertToJsonIfText), or 3. text if ("text/plain" && ¬convertToJsonIfText), or 3. blob
- */
-export function getItemData(
-  itemId: string,
-  authentication: auth.UserSession,
-  convertToJsonIfText = true
-): Promise<any> {
-  return new Promise<any>(resolve => {
-    // Get item data
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: authentication,
-      file: true
-    };
-
-    // Need to shield call because it throws an exception if the item doesn't have data
-    try {
-      portal.getItemData(itemId, itemDataParam).then(
-        blob => {
-          if (blob.type === "application/json" || blob.type === "text/plain") {
-            generalHelpers.blobToText(blob).then(
-              (response: string) => {
-                if (
-                  blob.type === "application/json" ||
-                  (blob.type === "text/plain" && convertToJsonIfText)
-                ) {
-                  const json = response !== "" ? JSON.parse(response) : null;
-                  resolve(json && json.error ? null : json);
-                } else {
-                  resolve(response);
-                }
-              },
-              () => {
-                resolve(null);
-              }
-            );
-          } else {
-            resolve(blob);
-          }
-        },
-        () => resolve(null)
-      );
-    } catch (ignored) {
-      resolve(null);
-    }
-  });
-}
-
-/**
- * Gets the related items of an AGO item.
- *
- * @param itemId Id of an item whose related items are sought
- * @param relationshipType
- * @param direction
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with an arcgis-rest-js `IGetRelatedItemsResponse` structure
- */
-export function getItemRelatedItems(
-  itemId: string,
-  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
-  direction: "forward" | "reverse",
-  authentication: auth.UserSession
-): Promise<portal.IGetRelatedItemsResponse> {
-  // Get item related items
-  const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
-    id: itemId,
-    relationshipType,
-    direction,
-    authentication: authentication
-  };
-  return portal.getRelatedItems(itemRelatedItemsParam);
-}
-
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
@@ -504,10 +466,14 @@ export function getLayers(
 
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
+      const requestOptions: request.IRequestOptions = {
+        authentication: authentication
+      };
       requestsDfd.push(
-        request.request(serviceUrl + "/" + layer["id"] + "?f=json", {
-          authentication: authentication
-        })
+        request.request(
+          serviceUrl + "/" + layer["id"] + "?f=json",
+          requestOptions
+        )
       );
     });
 
@@ -606,18 +572,41 @@ export function getServiceLayersAndTables(
   authentication: auth.UserSession
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
-    const properties: any = {
-      service: {},
-      layers: [],
-      tables: []
-    };
-
     // To have enough information for reconstructing the service, we'll supplement
     // the item and data sections with sections for the service, full layers, and
     // full tables
 
     // Get the service description
     const serviceUrl = itemTemplate.item.url;
+    getFeatureServiceProperties(serviceUrl, authentication).then(
+      properties => {
+        itemTemplate.properties = properties;
+
+        itemTemplate.estimatedDeploymentCostFactor +=
+          properties.layers.length + // layers
+          _countRelationships(properties.layers) + // layer relationships
+          properties.tables.length + // tables & estimated single relationship for each
+          _countRelationships(properties.tables); // table relationships
+
+        resolve(itemTemplate);
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
+export function getFeatureServiceProperties(
+  serviceUrl: string,
+  authentication: auth.UserSession
+): Promise<IFeatureServiceProperties> {
+  return new Promise<IFeatureServiceProperties>((resolve, reject) => {
+    const properties: IFeatureServiceProperties = {
+      service: {},
+      layers: [],
+      tables: []
+    };
+
+    // Get the service description
     request
       .request(serviceUrl + "?f=json", {
         authentication: authentication
@@ -625,6 +614,7 @@ export function getServiceLayersAndTables(
       .then(
         serviceData => {
           properties.service = serviceData;
+
           Promise.all([
             getLayers(serviceUrl, serviceData["layers"], authentication),
             getLayers(serviceUrl, serviceData["tables"], authentication)
@@ -632,52 +622,13 @@ export function getServiceLayersAndTables(
             results => {
               properties.layers = results[0];
               properties.tables = results[1];
-              itemTemplate.properties = properties;
-
-              itemTemplate.estimatedDeploymentCostFactor +=
-                properties.layers.length + // layers
-                _countRelationships(properties.layers) + // layer relationships
-                properties.tables.length + // tables & estimated single relationship for each
-                _countRelationships(properties.tables); // table relationships
-
-              resolve(itemTemplate);
+              resolve(properties);
             },
-            e => reject(generalHelpers.fail(e))
+            (e: any) => reject(generalHelpers.fail(e))
           );
         },
         (e: any) => reject(generalHelpers.fail(e))
       );
-  });
-}
-
-/**
- * Gets text from a web site.
- *
- * @param url Address of text
- * @param authentication Credentials for the request
- * @return Promise that will resolve with text or, in case of error, an empty string
- */
-export function getText(
-  url: string,
-  authentication: auth.UserSession
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    // Get the blob from the URL
-    const blobRequestOptions = {
-      authentication: authentication,
-      rawResponse: true
-    } as request.IRequestOptions;
-
-    request.request(url, blobRequestOptions).then(
-      response => {
-        // Extract the text from the response
-        response.text().then(
-          (text: string) => resolve(text.startsWith('{"error":') ? "" : text),
-          () => resolve("") // unable to get text out of response
-        );
-      },
-      () => resolve("") // unable to get response
-    );
   });
 }
 
@@ -781,6 +732,71 @@ export function updateItemURL(
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
+ * Adds a data section to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param dataFile Data to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function _addItemDataFile(
+  itemId: string,
+  dataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addItemData: (data: any) => void = (data: any) => {
+      const addDataOptions: portal.IAddItemDataOptions = {
+        id: itemId,
+        data: data,
+        authentication: authentication
+      };
+      portal.addItemData(addDataOptions).then(resolve, reject);
+    };
+
+    // Item data has to be submitted as text or JSON for those file types
+    if (dataFile.type.startsWith("text/plain")) {
+      generalHelpers.blobToText(dataFile).then(addItemData, reject);
+    } else if (dataFile.type === "application/json") {
+      generalHelpers.blobToJson(dataFile).then(addItemData, reject);
+    } else {
+      addItemData(dataFile);
+    }
+  });
+}
+
+/**
+ * Adds a metadata file to an item.
+ *
+ * @param itemId Id of item to receive data file
+ * @param metadataFile Metadata to be added
+ * @param authentication Credentials for the request
+ * @return Promise reporting success or failure
+ * @protected
+ */
+export function _addItemMetadataFile(
+  itemId: string,
+  metadataFile: File,
+  authentication: auth.UserSession
+): Promise<portal.IUpdateItemResponse> {
+  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+    const addMetadataOptions: portal.IUpdateItemOptions = {
+      item: {
+        id: itemId
+      },
+      params: {
+        // Pass metadata in via params because item property is serialized, which discards a blob
+        metadata: metadataFile
+      },
+      authentication: authentication
+    };
+
+    portal.updateItem(addMetadataOptions).then(resolve, reject);
+  });
+}
+
+/**
  * Accumulates the number of relationships in a collection of layers.
  *
  * @param List of layers to examine
@@ -872,52 +888,6 @@ export function _getCreateServiceOptions(
           templateDictionary
         );
         resolve(createOptions);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-/**
- * Gets the ids of a group's contents.
- *
- * @param groupId Group id
- * @param pagingRequest Options for requesting group contents; note: its paging.start parameter may
- *                      be modified by this routine
- * @return A promise that will resolve with a list of the ids of the group's contents or an empty
- *         list
- * @protected
- */
-export function _getGroupContentsTranche(
-  groupId: string,
-  pagingRequest: portal.IGetGroupContentOptions
-): Promise<string[]> {
-  return new Promise((resolve, reject) => {
-    // Fetch group items
-    portal.getGroupContent(groupId, pagingRequest).then(
-      contents => {
-        if (contents.num > 0) {
-          // Extract the list of content ids from the JSON returned
-          const trancheIds: string[] = contents.items.map(
-            (item: any) => item.id
-          );
-
-          // Are there more contents to fetch?
-          if (contents.nextStart > 0) {
-            pagingRequest.paging.start = contents.nextStart;
-            _getGroupContentsTranche(groupId, pagingRequest).then(
-              (allSubsequentTrancheIds: string[]) => {
-                // Append all of the following tranches to this tranche and return it
-                resolve(trancheIds.concat(allSubsequentTrancheIds));
-              },
-              e => reject(generalHelpers.fail(e))
-            );
-          } else {
-            resolve(trancheIds);
-          }
-        } else {
-          resolve([]);
-        }
       },
       e => reject(generalHelpers.fail(e))
     );

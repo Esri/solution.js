@@ -27,14 +27,16 @@ import * as mockTemplates from "../../common/test/mocks/templates";
 describe("Module `storymap`", () => {
   describe("convertItemToTemplate", () => {
     xit("convertItemToTemplate", done => {
-      console.warn("========== TODO ==========");
+      console.warn("========== TODO ========== storymap convertItemToTemplate");
       done.fail();
     });
   });
 
   describe("createItemFromTemplate", () => {
     xit("createItemFromTemplate", done => {
-      console.warn("========== TODO ==========");
+      console.warn(
+        "========== TODO ========== storymap createItemFromTemplate"
+      );
       done.fail();
     });
   });

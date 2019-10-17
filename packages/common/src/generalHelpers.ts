@@ -25,7 +25,7 @@ import * as interfaces from "./interfaces";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Extracts JSON from a blob.
+ * Extracts JSON from a Blob.
  *
  * @param blob Blob to use as source
  * @return A promise that will resolve with JSON or null
@@ -46,7 +46,18 @@ export function blobToJson(blob: Blob): Promise<any> {
 }
 
 /**
- * Extracts text from a blob.
+ * Converts a Blob to a File.
+ *
+ * @param blob Blob to use as source
+ * @param filename Name to use for file
+ * @return File created out of Blob and filename
+ */
+export function blobToFile(blob: Blob, filename: string): File {
+  return new File([blob], filename ? filename : "", { type: blob.type });
+}
+
+/**
+ * Extracts text from a Blob.
  *
  * @param blob Blob to use as source
  * @return A promise that will resolve with text read from blob

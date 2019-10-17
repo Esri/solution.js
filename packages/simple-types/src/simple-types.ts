@@ -104,10 +104,17 @@ export function convertItemToTemplate(
         case "workforce project":
         case "web map":
         case "web mapping application":
-          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
+          dataPromise = common.getItemDataAsJson(
+            itemTemplate.itemId,
+            authentication
+          );
           break;
         case "form":
-          dataPromise = common.getItemData(itemTemplate.itemId, authentication);
+          dataPromise = common.getItemDataAsFile(
+            itemTemplate.itemId,
+            itemTemplate.item.name,
+            authentication
+          );
           relatedPromise = common.getItemRelatedItems(
             itemTemplate.itemId,
             "Survey2Service",
@@ -160,7 +167,10 @@ export function convertItemToTemplate(
 
               if (itemDataResponse) {
                 const filename =
-                  (itemDataResponse as File).name || "formData.zip";
+                  itemTemplate.item.name ||
+                  (itemDataResponse as File).name ||
+                  "formData.zip";
+                itemTemplate.item.name = filename;
                 const storageName = common.generateResourceStorageFilename(
                   itemTemplate.itemId,
                   filename,
@@ -195,39 +205,34 @@ export function convertItemToTemplate(
           wrapupPromise.then(
             () => {
               /* console.log(
-              "converted " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                ")"
-            ); */
-              webappPromise.then(
-                _itemTemplate => resolve(_itemTemplate),
-                e => {
-                  resolve(itemTemplate);
-                }
-              );
+                "converted " +
+                  itemInfo.type +
+                  ' "' +
+                  itemInfo.title +
+                  '" (' +
+                  itemInfo.id +
+                  ")"
+              ); */
+              webappPromise.then(resolve, () => resolve(itemTemplate));
             },
             err => {
               /* console.log(
-              "unable to convert " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                "): " +
-                JSON.stringify(err, null, 2)
-            ); */
+                "unable to convert " +
+                  itemInfo.type +
+                  ' "' +
+                  itemInfo.title +
+                  '" (' +
+                  itemInfo.id +
+                  "): " +
+                  JSON.stringify(err, null, 2)
+              ); */
               reject(common.fail(err.response));
             }
           );
-          // }); //???
         },
         error => {
           console.log("simple-types convertItemToTemplate failed", error);
+          reject(error);
         }
       );
     } else {

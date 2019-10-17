@@ -1,5 +1,5 @@
 {
-  "name": "getItemInfo",
+  "name": "copyItemInfo",
   "version": "0.0.1",
   "description": "Example use of @esri/solution-common.",
   "license": "Apache-2.0",

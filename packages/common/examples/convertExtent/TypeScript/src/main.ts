@@ -23,14 +23,12 @@ import * as solutionCommon from "@esri/solution-common";
 export function convertPortalExtents(portalId: string): Promise<string> {
   return new Promise<string>(resolve => {
     const usOptions: auth.IUserSessionOptions = {};
-    const destinationUserSession: auth.UserSession = new auth.UserSession(
-      usOptions
-    );
+    const authorization: auth.UserSession = new auth.UserSession(usOptions);
 
     // Get the extents of a portal
     // tslint:disable-next-line: no-floating-promises
     portal
-      .getPortal(portalId, { authentication: destinationUserSession })
+      .getPortal(portalId, { authentication: authorization })
       .then(portalResponse => {
         const portalExtent: any = portalResponse.defaultExtent;
         let html = "";
@@ -47,12 +45,7 @@ export function convertPortalExtents(portalId: string): Promise<string> {
           "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
         // tslint:disable-next-line: no-floating-promises
         solutionCommon
-          .convertExtent(
-            portalExtent,
-            outSR,
-            geometryServiceUrl,
-            destinationUserSession
-          )
+          .convertExtent(portalExtent, outSR, geometryServiceUrl, authorization)
           .then(conversionResponse => {
             html += "<h4>Projected extents</h4>";
             html +=

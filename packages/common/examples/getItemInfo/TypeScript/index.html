@@ -29,8 +29,12 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    <label for="id">ID of the item to be fetched:</label>
-    <input type="text" id="id" style="width:256px">
+    <label for="id">ID of the item to be fetched:</label><input type="text" id="id" style="width:256px">
+    <br /><br />
+    <i>For private items or info:</i><br />
+    <label for="username">username:</label><input type="text" id="username">
+    <label for="password">password:</label><input type="password" id="password">
+    <br /><br />
     <button onclick="goFcn()">Go</button>
   </div>
   <div id="output" style="display:none">Fetching...</div>
@@ -41,15 +45,15 @@
 
     require.config({
       paths: {
-        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.4.0/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.4.0/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.4.0/dist/umd/request.umd.min",
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.5.4/dist/umd/common.umd.min"
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.5.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.5.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.5.0/dist/umd/request.umd.min",
+        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.5.7/dist/umd/common.umd.min"
       }
     });
 
-    require(["src/main"],
-      function (main) {
+    require(["@esri/arcgis-rest-auth", "src/main"],
+      function (auth, main) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
@@ -58,7 +62,13 @@
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
 
-          main.getItemInfo(document.getElementById("id").value).then(
+          main.getItemInfo(
+            document.getElementById("id").value,
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value
+            })
+          ).then(
             html => {
               document.getElementById("output").innerHTML = html;
             },
@@ -67,7 +77,8 @@
             }
           );
         }
-      });
+      }
+    );
   </script>
 </body>
 </html>

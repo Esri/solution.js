@@ -53,6 +53,7 @@ import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "./restHelpers";
+import * as restHelpersGet from "./restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -65,7 +66,7 @@ import * as restHelpers from "./restHelpers";
  * @return Promise resolving to JSON containing success boolean
  */
 export function addMetadataFromBlob(
-  blob: any,
+  blob: Blob,
   itemId: string,
   authentication: auth.UserSession
 ): Promise<any> {
@@ -74,7 +75,7 @@ export function addMetadataFromBlob(
       id: itemId
     },
     params: {
-      // Pass metadata in via params because item object is serialized, which discards a blob
+      // Pass metadata in via params because item property is serialized, which discards a blob
       metadata: blob
     },
     authentication: authentication
@@ -262,7 +263,7 @@ export function copyMetadata(
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.authentication).then(
+    restHelpersGet.getBlob(source.url, source.authentication).then(
       blob => {
         if (blob.type !== "text/xml") {
           reject(generalHelpers.fail()); // unable to get resource
@@ -306,9 +307,12 @@ export function copyResource(
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpers.getBlob(source.url, source.authentication).then(
+    restHelpersGet.getBlob(source.url, source.authentication).then(
       async blob => {
-        if (blob.type === "text/plain" || blob.type === "application/json") {
+        if (
+          blob.type.startsWith("text/plain") ||
+          blob.type === "application/json"
+        ) {
           try {
             const text = await new Response(blob).text();
             const json = JSON.parse(text);
@@ -330,7 +334,7 @@ export function copyResource(
           destination.authentication
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to get resource
+          e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
       e => reject(generalHelpers.fail(e)) // unable to get resource

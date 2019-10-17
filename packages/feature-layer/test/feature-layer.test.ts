@@ -164,8 +164,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
           .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
           .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data",
             mockItems.get500Failure()
           )
           .post(
@@ -181,7 +181,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             expect(r.item.url).toEqual(expectedUrl);
             expect(r.dependencies.length).toEqual(1);
             expect(r.estimatedDeploymentCostFactor).toEqual(7);
-            expect(r.data).toEqual(null);
+            expect(r.data).toBeUndefined();
             expect(r.properties.service.serviceItemId).toEqual(expectedId);
 
             expect(r.properties.layers[0].serviceItemId).toEqual(expectedId);
@@ -210,129 +210,132 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       });
     }
 
-    it("should handle error on extractDependencies", done => {
-      const id: string = "svc1234567890";
-      const url: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?token=fake-token";
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should handle error on extractDependencies", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const adminUrl: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+        const itemDataUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
 
-      const keyField: string = "globalid";
-      const defQuery: string = "status = 'BoardReview'";
+        const keyField: string = "globalid";
+        const defQuery: string = "status = 'BoardReview'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
-        "Feature Service",
-        [],
-        url
-      );
-      itemTemplate.itemId = id;
-      itemTemplate.item.id = id;
-      itemTemplate.estimatedDeploymentCostFactor = 0;
-      itemTemplate.properties.service.serviceItemId = id;
-
-      itemTemplate.properties.layers[0].serviceItemId = id;
-      itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
-      itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
-
-      itemTemplate.properties.tables[0].serviceItemId = id;
-      itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
-      itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
-      delete itemTemplate.item.item;
-
-      fetchMock
-        .get(itemDataUrl, "{}")
-        .post(url + "?f=json", itemTemplate.properties.service)
-        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
-        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-        .post(url + "/sources?f=json", mockItems.get400Failure())
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
+        itemTemplate = mockSolutions.getItemTemplatePart(
+          "Feature Service",
+          [],
+          url
         );
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.estimatedDeploymentCostFactor = 0;
+        itemTemplate.properties.service.serviceItemId = id;
 
-      featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-        .then(r => {
-          done.fail();
-        }, done);
-    });
+        itemTemplate.properties.layers[0].serviceItemId = id;
+        itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
+        itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
 
-    it("should handle error on getItemData", done => {
-      const id: string = "svc1234567890";
-      const url: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?token=fake-token";
+        itemTemplate.properties.tables[0].serviceItemId = id;
+        itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
+        itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
+        delete itemTemplate.item.item;
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
-        "Feature Service",
-        [],
-        url
-      );
-      itemTemplate.itemId = id;
-      itemTemplate.item.id = id;
+        fetchMock
+          .post(itemDataUrl, "{}")
+          .post(url + "?f=json", itemTemplate.properties.service)
+          .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+          .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+          .post(url + "/sources?f=json", mockItems.get400Failure())
+          .post(
+            "https://www.arcgis.com/sharing/rest/generateToken",
+            '{"token":"abc123"}'
+          );
 
-      fetchMock
-        .post(url + "?f=json", mockItems.get400Failure())
-        .get(itemDataUrl, mockItems.get400Failure());
+        featureLayer
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .then(r => {
+            done.fail();
+          }, done);
+      });
 
-      featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-        .then(r => {
-          done.fail();
-        }, done);
-    });
+      it("should handle error on getItemData", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const itemDataUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
 
-    it("should handle error on getServiceLayersAndTables", done => {
-      const id: string = "svc1234567890";
-      const url: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-      const itemDataUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data?token=fake-token";
-
-      const keyField: string = "globalid";
-      const defQuery: string = "status = 'BoardReview'";
-
-      itemTemplate = mockSolutions.getItemTemplatePart(
-        "Feature Service",
-        [],
-        url
-      );
-      itemTemplate.itemId = id;
-      itemTemplate.item.id = id;
-      itemTemplate.estimatedDeploymentCostFactor = 0;
-      itemTemplate.properties.service.serviceItemId = id;
-
-      itemTemplate.properties.layers[0].serviceItemId = id;
-      itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
-      itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
-
-      itemTemplate.properties.tables[0].serviceItemId = id;
-      itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
-      itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
-      delete itemTemplate.item.item;
-
-      fetchMock
-        .get(itemDataUrl, "{}")
-        .post(url + "?f=json", mockItems.get400Failure())
-        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
-        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-        .post(url + "/sources?f=json", mockItems.get400Failure())
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
+        itemTemplate = mockSolutions.getItemTemplatePart(
+          "Feature Service",
+          [],
+          url
         );
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
 
-      featureLayer
-        .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
-        .then(r => {
-          done.fail();
-        }, done);
-    });
+        fetchMock
+          .post(url + "?f=json", mockItems.get400Failure())
+          .post(itemDataUrl, mockItems.get400Failure());
+
+        featureLayer
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .then(r => {
+            done.fail();
+          }, done);
+      });
+
+      it("should handle error on getServiceLayersAndTables", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const adminUrl: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+        const itemDataUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
+
+        const keyField: string = "globalid";
+        const defQuery: string = "status = 'BoardReview'";
+
+        itemTemplate = mockSolutions.getItemTemplatePart(
+          "Feature Service",
+          [],
+          url
+        );
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.estimatedDeploymentCostFactor = 0;
+        itemTemplate.properties.service.serviceItemId = id;
+
+        itemTemplate.properties.layers[0].serviceItemId = id;
+        itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
+        itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
+
+        itemTemplate.properties.tables[0].serviceItemId = id;
+        itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
+        itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
+        delete itemTemplate.item.item;
+
+        fetchMock
+          .post(itemDataUrl, "{}")
+          .post(url + "?f=json", mockItems.get400Failure())
+          .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+          .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+          .post(url + "/sources?f=json", mockItems.get400Failure())
+          .post(
+            "https://www.arcgis.com/sharing/rest/generateToken",
+            '{"token":"abc123"}'
+          );
+
+        featureLayer
+          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .then(r => {
+            done.fail();
+          }, done);
+      });
+    }
   });
 
   describe("createItemFromTemplate", () => {

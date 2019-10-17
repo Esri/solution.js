@@ -64,6 +64,12 @@ export interface IDeployFilename {
   filename: string;
 }
 
+export interface IFeatureServiceProperties {
+  service: any;
+  layers: any[];
+  tables: any[];
+}
+
 /**
  * The templatized form of an item or group.
  */
