@@ -82,6 +82,7 @@ export function createInitializedItemTemplate(
   itemTemplate.item = {
     ...itemTemplate.item,
     categories: itemInfo.categories,
+    contentStatus: itemInfo.contentStatus,
     culture: itemInfo.culture,
     description: itemInfo.description,
     extent: itemInfo.extent,
