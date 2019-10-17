@@ -82,20 +82,143 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   }
 
   describe("getBlobAsFile", () => {
-    xit("getBlobAsFile", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should ignore ignorable error", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, {
+          error: {
+            code: 400,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet
+          .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
+          .then(file => {
+            expect(file).toBeUndefined();
+            done();
+          }, done.fail);
+      });
+
+      it("should use supplied filename", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, mockItems.getAnImageResponse(), {
+          sendAsJson: false
+        });
+        restHelpersGet
+          .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
+          .then(file => {
+            expect(file).not.toBeUndefined();
+            expect(file.type).toEqual("image/png");
+            expect(file.name).toEqual("myFile.png");
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("getBlobCheckForError", () => {
-    xit("getBlobCheckForError", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should pass through an image file", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, mockItems.getAnImageResponse(), {
+          sendAsJson: false
+        });
+        restHelpersGet
+          .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
+          .then(blob => {
+            expect(blob).not.toBeUndefined();
+            expect(blob.type).toEqual("image/png");
+            done();
+          }, done.fail);
+      });
+
+      it("should pass through non-error JSON", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        const testBlobContents = JSON.stringify({
+          a: "a",
+          b: 1,
+          c: {
+            d: "d"
+          }
+        });
+        const testBlob = new Blob([testBlobContents], {
+          type: "application/json"
+        });
+        fetchMock.post(url, testBlob, { sendAsJson: false });
+        restHelpersGet
+          .getBlobCheckForError(url, MOCK_USER_SESSION)
+          .then(blob => {
+            expect(blob).not.toBeUndefined();
+            expect(blob.type).toEqual("application/json");
+            done();
+          }, done.fail);
+      });
+
+      it("should handle bad JSON by passing it through", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        const testBlob = new Blob(["badJson:{"], { type: "application/json" });
+        fetchMock.post(url, testBlob, { sendAsJson: false });
+        restHelpersGet
+          .getBlobCheckForError(url, MOCK_USER_SESSION, [500])
+          .then(blob => {
+            expect(blob).not.toBeUndefined();
+            expect(blob.type).toEqual("application/json");
+            done();
+          }, done.fail);
+      });
+
+      it("should ignore ignorable error", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, {
+          error: {
+            code: 400,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet
+          .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
+          .then(blob => {
+            expect(blob).toBeUndefined();
+            done();
+          }, done.fail);
+      });
+
+      it("should return significant error", done => {
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+        fetchMock.post(url, {
+          error: {
+            code: 400,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
+          () => done.fail(),
+          response => {
+            expect(response).not.toBeUndefined();
+            expect(response.error.code).toEqual(400);
+            done();
+          }
+        );
+      });
+    }
   });
 
-  describe("getItem", () => {
+  describe("getItemBase", () => {
     it("item doesn't allow access to item", done => {
       const itemId = "itm1234567890";
       const expected = {
@@ -143,7 +266,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         JSON.stringify(expected)
       );
       restHelpersGet
-        .getItem(itemId, MOCK_USER_SESSION)
+        .getItemBase(itemId, MOCK_USER_SESSION)
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
@@ -159,7 +282,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         JSON.stringify(expected)
       );
       restHelpersGet
-        .getItem(itemId, MOCK_USER_SESSION)
+        .getItemBase(itemId, MOCK_USER_SESSION)
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
@@ -167,17 +290,104 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("getItemBase", () => {
-    xit("getItemBase", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
+  describe("getItemDataAsFile", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles item without a data section", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemDataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, {
+          error: {
+            code: 500,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet
+          .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
+          .then((json: any) => {
+            expect(json).toBeUndefined();
+            done();
+          }, done.fail);
+      });
+
+      it("gets data section that's an image", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemDataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, mockItems.getAnImageResponse(), {
+          sendAsJson: false
+        });
+        restHelpersGet
+          .getItemDataAsFile(itemId, "myFile.png", MOCK_USER_SESSION)
+          .then(file => {
+            expect(file).not.toBeUndefined();
+            expect(file.type).toEqual("image/png");
+            expect(file.name).toEqual("myFile.png");
+            done();
+          }, done.fail);
+      });
+    }
   });
 
-  // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("getItemData", () => {
-      it("item doesn't allow access to data", done => {
+  describe("getItemDataAsJson", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles item without a data section", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemDataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, {
+          error: {
+            code: 500,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet
+          .getItemDataAsJson(itemId, MOCK_USER_SESSION)
+          .then((json: any) => {
+            expect(json).toBeUndefined();
+            done();
+          }, done.fail);
+      });
+
+      it("get data section that's JSON", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemDataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        const testBlobContents = {
+          a: "a",
+          b: 1,
+          c: {
+            d: "d"
+          }
+        };
+        const testBlob = new Blob([JSON.stringify(testBlobContents)], {
+          type: "application/json"
+        });
+        fetchMock.post(url, testBlob, { sendAsJson: false });
+        restHelpersGet
+          .getItemDataAsJson(itemId, MOCK_USER_SESSION)
+          .then(json => {
+            expect(json).not.toBeUndefined();
+            expect(json).toEqual(testBlobContents);
+            done();
+          }, done.fail);
+      });
+
+      it("handles item that doesn't allow access to data", done => {
         const itemId = "itm1234567890";
         const expected: any = {
           name: "ArcGISAuthError",
@@ -196,7 +406,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           },
           url:
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
           options: {
             httpMethod: "GET",
             params: {
@@ -219,98 +429,85 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }
         };
 
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
           expected
         );
         restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
+          .getItemDataAsJson(itemId, MOCK_USER_SESSION)
           .then((response: any) => {
             expect(response).toEqual(expected);
             done();
           }, done.fail);
       });
-
-      it("item doesn't have data", done => {
-        const itemId = "itm1234567890";
-        const expected: any = null;
-
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          mockItems.get500Failure()
-        );
-        restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-
-      it("item has data", done => {
-        const itemId = "itm1234567890";
-        const expected = { values: { a: 1, b: "c" } };
-
-        fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data?token=fake-token",
-          expected
-        );
-        restHelpersGet
-          .getItemData(itemId, MOCK_USER_SESSION)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-    });
-  }
-
-  describe("getItemDataAsFile", () => {
-    xit("getItemDataAsFile", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("getItemDataAsJson", () => {
-    xit("getItemDataAsJson", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("getItemDataBlob", () => {
-    xit("getItemDataBlob", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
+    }
   });
 
   describe("getItemDataBlobUrl", () => {
-    xit("getItemDataBlobUrl", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("gets the data blob url from the authentication", () => {
+      const itemId = "itm1234567890";
+      const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
+      expect(url).toEqual(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data"
+      );
     });
   });
 
   describe("getItemMetadataAsFile", () => {
-    xit("getItemMetadataAsFile", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles item without metadata", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemMetadataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, {
+          error: {
+            code: 400,
+            messageCode: "CONT_0004",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        });
+        restHelpersGet
+          .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
+          .then((json: any) => {
+            expect(json).toBeUndefined();
+            done();
+          }, done.fail);
+      });
 
-  describe("getItemMetadataBlob", () => {
-    xit("getItemMetadataBlob", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
+      it("gets metadata", done => {
+        const itemId = "itm1234567890";
+        const url = restHelpersGet.getItemMetadataBlobUrl(
+          itemId,
+          MOCK_USER_SESSION
+        );
+        fetchMock.post(url, utils.getSampleMetadata(), {
+          sendAsJson: false
+        });
+        restHelpersGet
+          .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
+          .then(file => {
+            expect(file).not.toBeUndefined();
+            expect(file.type).toEqual("text/xml");
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("getItemMetadataBlobUrl", () => {
-    xit("getItemMetadataBlobUrl", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("gets the metadata blob url from the authentication", () => {
+      const itemId = "itm1234567890";
+      const url = restHelpersGet.getItemMetadataBlobUrl(
+        itemId,
+        MOCK_USER_SESSION
+      );
+      expect(url).toEqual(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/metadata/metadata.xml"
+      );
     });
   });
 
@@ -458,10 +655,94 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResourcesFiles", () => {
-    xit("getItemResourcesFiles", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles an inaccessible item", done => {
+      const itemId = "itm1234567890";
+      const pagingParams: portal.IPagingParams = {
+        start: 1, // one-based
+        num: 10
+      };
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        {
+          error: {
+            code: 400,
+            messageCode: "CONT_0001",
+            message: "Item does not exist or is inaccessible.",
+            details: []
+          }
+        }
+      );
+      restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        ok => {
+          expect(ok.message).toEqual(
+            "CONT_0001: Item does not exist or is inaccessible."
+          );
+          done();
+        }
+      );
     });
+
+    // File is only available in the browser
+    if (typeof window !== "undefined") {
+      it("handles an item with no resources", done => {
+        const itemId = "itm1234567890";
+        const pagingParams: portal.IPagingParams = {
+          start: 1, // one-based
+          num: 10
+        };
+
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          {
+            total: 0,
+            start: 1,
+            num: 0,
+            nextStart: -1,
+            resources: []
+          }
+        );
+        restHelpersGet
+          .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
+          .then((ok: File[]) => {
+            expect(ok.length).toEqual(0);
+            done();
+          }, done.fail);
+      });
+
+      it("handles an item with one resource", done => {
+        const itemId = "itm1234567890";
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            {
+              total: 1,
+              start: 1,
+              num: 1,
+              nextStart: -1,
+              resources: [
+                {
+                  resource: "Jackson Lake.png",
+                  created: 1568662976000,
+                  size: 1231
+                }
+              ]
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          );
+        restHelpersGet
+          .getItemResourcesFiles(itemId, MOCK_USER_SESSION)
+          .then((ok: File[]) => {
+            expect(ok.length).toEqual(1);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("getItemThumbnail", () => {
@@ -1014,7 +1295,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
@@ -1067,19 +1349,23 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)
@@ -1125,19 +1411,23 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
-            utils.getSampleImage()
+            utils.getSampleImage(),
+            { sendAsJson: false }
           );
         restHelpersGet
           ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)

@@ -17,7 +17,7 @@
 /**
  * Provides common item fetch functions involving the arcgis-rest-js library.
  *
- * @module restHelpers
+ * @module restHelpersGet
  */
 
 import * as auth from "@esri/arcgis-rest-auth";
@@ -104,21 +104,19 @@ export function getBlobCheckForError(
       _fixTextBlobType(blob).then(adjustedBlob => {
         if (adjustedBlob.type === "application/json") {
           // Blob may be an error
-          generalHelpers.blobToJson(adjustedBlob).then(
-            (json: any) => {
-              if (json && json.error) {
-                const code: number = json.error.code;
-                if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
-                  resolve((null as unknown) as Blob); // Error, but ignored
-                } else {
-                  reject(json); // Other error; fail with error
-                }
+          // tslint:disable-next-line: no-floating-promises
+          generalHelpers.blobToJson(adjustedBlob).then((json: any) => {
+            if (json && json.error) {
+              const code: number = json.error.code;
+              if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
+                resolve(); // Error, but ignored
               } else {
-                resolve(adjustedBlob);
+                reject(json); // Other error; fail with error
               }
-            },
-            () => resolve(adjustedBlob)
-          );
+            } else {
+              resolve(adjustedBlob);
+            }
+          });
         } else {
           resolve(adjustedBlob);
         }
@@ -162,25 +160,6 @@ export function getGroupContents(
  * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
  */
-export function getItem(
-  itemId: string,
-  authentication: auth.UserSession
-): Promise<any> {
-  // Get item data
-  const itemParam: request.IRequestOptions = {
-    authentication: authentication
-  };
-  return portal.getItem(itemId, itemParam);
-}
-
-/**
- * Gets the primary information of an AGO item.
- *
- * @param itemId Id of an item whose primary information is sought
- * @param authentication Credentials for the request to AGO
- * @return A promise that will resolve with item's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
- *         or response error code
- */
 export function getItemBase(
   itemId: string,
   authentication: auth.UserSession
@@ -189,61 +168,6 @@ export function getItemBase(
     authentication: authentication
   };
   return portal.getItem(itemId, itemParam);
-}
-
-/**
- * Gets the data information of an AGO item.
- *
- * @param itemId Id of an item whose data information is sought
- * @param authentication Credentials for the request to AGO
- * @param convertToJsonIfText Switch indicating that MIME type "text/plain" should be converted to JSON;
- * MIME type "application/json" is always converted
- * @return A promise that will resolve with 1. null in case of error, or 2. JSON if "application/json" or ("text/plain"
- * && convertToJsonIfText), or 3. text if ("text/plain" && ¬convertToJsonIfText), or 3. blob
- */
-export function getItemData(
-  itemId: string,
-  authentication: auth.UserSession,
-  convertToJsonIfText = true
-): Promise<any> {
-  return new Promise<any>(resolve => {
-    // Get item data
-    const itemDataParam: portal.IItemDataOptions = {
-      authentication: authentication,
-      file: true
-    };
-
-    // Need to shield call because it throws an exception if the item doesn't have data
-    try {
-      portal.getItemData(itemId, itemDataParam).then(
-        blob => {
-          if (blob.type === "application/json" || blob.type === "text/plain") {
-            generalHelpers.blobToText(blob).then(
-              (response: string) => {
-                if (
-                  blob.type === "application/json" ||
-                  (blob.type === "text/plain" && convertToJsonIfText)
-                ) {
-                  const json = response !== "" ? JSON.parse(response) : null;
-                  resolve(json && json.error ? null : json);
-                } else {
-                  resolve(response);
-                }
-              },
-              () => {
-                resolve(null);
-              }
-            );
-          } else {
-            resolve(blob);
-          }
-        },
-        () => resolve(null)
-      );
-    } catch (ignored) {
-      resolve(null);
-    }
-  });
 }
 
 /**
@@ -279,8 +203,8 @@ export function getItemDataAsFile(
 export function getItemDataAsJson(
   itemId: string,
   authentication: auth.UserSession
-): Promise<File> {
-  return new Promise<File>((resolve, reject) => {
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
       blob => (!blob ? resolve() : resolve(generalHelpers.blobToJson(blob))),
       reject

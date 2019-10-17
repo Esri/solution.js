@@ -64,8 +64,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
             "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
             '{"token":"fake-token"}'
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data",
             _mapDataResponse
           )
           .get(
@@ -100,8 +100,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
             "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
             '{"token":"fake-token"}'
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data",
             _mapDataResponse
           )
           .get(
@@ -128,8 +128,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
             "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
             '{"token":"fake-token"}'
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data",
             _mapDataResponse
           )
           .get(
@@ -152,8 +152,8 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
             "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
             '{"token":"fake-token"}'
           )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data?token=fake-token",
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/7e6c41c72d4548d9a312329e0c5a984f/data",
             _mapDataResponse
           )
           .get(

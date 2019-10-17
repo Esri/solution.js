@@ -23,6 +23,7 @@ import {
   _getCreateServiceOptions,
   _setItemProperties,
   addToServiceDefinition,
+  createFullItem,
   createItemWithData,
   updateItemURL,
   updateItem,
@@ -35,17 +36,25 @@ import {
   _getUpdate,
   getRequest,
   _getRelationshipUpdates,
-  createUniqueFolder
+  createUniqueFolder,
+  _addItemDataFile,
+  _addItemMetadataFile
 } from "../src/restHelpers";
 import {
   TOMORROW,
   createRuntimeMockUserSession,
   setMockDateTime,
-  checkForArcgisRestSuccessRequestError
+  getSuccessResponse,
+  checkForArcgisRestSuccessRequestError,
+  getSampleImage,
+  getSampleJson,
+  getSampleJsonAsBlob,
+  getSampleMetadata,
+  getSampleTextAsBlob
 } from "../test/mocks/utils";
 import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
+import * as auth from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import * as mockItems from "../test/mocks/agolItems";
 import * as portal from "@esri/arcgis-rest-portal";
 
@@ -77,8 +86,8 @@ beforeEach(() => {
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
+// Set up a auth.UserSession to use in all these tests
+const MOCK_USER_SESSION = new auth.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -255,7 +264,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       jasmine.clock().uninstall();
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
-      const sessionWithMockedTime: UserSession = createRuntimeMockUserSession(
+      const sessionWithMockedTime: auth.UserSession = createRuntimeMockUserSession(
         setMockDateTime(now)
       );
 
@@ -330,6 +339,323 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("createFullItem", () => {
+    it("can create a minimal item", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = null as File[];
+      const access = undefined as string; // default is "private"
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          (folderId ? folderId + "/addItem" : "addItem"),
+        {
+          success: true,
+          id: "itm1234567980",
+          folder: folderId
+        }
+      );
+
+      createFullItem(
+        itemInfo,
+        folderId,
+        MOCK_USER_SESSION,
+        itemThumbnailUrl,
+        dataFile,
+        metadataFile,
+        resourcesFiles,
+        access
+      ).then(response => (response.success ? done() : done.fail()), done.fail);
+    });
+
+    it("can create a minimal public item", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = null as File[];
+      const access = "public";
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
+          {
+            success: true,
+            id: "itm1234567980",
+            folder: folderId
+          }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+          {
+            notSharedWith: [] as string[],
+            itemId: "itm1234567980"
+          }
+        );
+
+      createFullItem(
+        itemInfo,
+        folderId,
+        MOCK_USER_SESSION,
+        itemThumbnailUrl,
+        dataFile,
+        metadataFile,
+        resourcesFiles,
+        access
+      ).then(response => (response.success ? done() : done.fail()), done.fail);
+    });
+
+    // Files are only available in the browser
+    if (typeof window !== "undefined") {
+      it("can create an org item with goodies", done => {
+        const itemInfo: any = {};
+        const folderId: string = null as string; // default is top level
+        const itemThumbnailUrl: string = "thumbnail/thumbnail.png";
+        const dataFile: File = new File([getSampleJsonAsBlob()], "data.json");
+        const metadataFile: File = new File(
+          [getSampleMetadata()],
+          "metadata.xml"
+        );
+        const resourcesFiles: File[] = [
+          new File([getSampleImage()], "image.png")
+        ];
+        const access = "org";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+              (folderId ? folderId + "/addItem" : "addItem"),
+            {
+              success: true,
+              id: "itm1234567980",
+              folder: folderId
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+            {
+              notSharedWith: [] as string[],
+              itemId: "itm1234567980"
+            }
+          )
+          .post(
+            "https://www.arcgis.com/sharing/content/items/itm1234567980/info/thumbnail/thumbnail.png",
+            getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/update",
+            getSuccessResponse({ id: "itm1234567980" })
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/addResources",
+            getSuccessResponse({
+              itemId: "itm1234567980",
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            })
+          );
+
+        createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        ).then(
+          response => (response.success ? done() : done.fail()),
+          done.fail
+        );
+      });
+
+      it("can create an item with a resource in a subfolder", done => {
+        const itemInfo: any = {};
+        const folderId: string = null as string; // default is top level
+        const itemThumbnailUrl: string = null as string;
+        const dataFile: File = null as File;
+        const metadataFile: File = null as File;
+        const resourcesFiles: File[] = [
+          new File([getSampleImage()], "resourceFolder/image.png")
+        ];
+        const access = undefined as string; // default is "private"
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+              (folderId ? folderId + "/addItem" : "addItem"),
+            {
+              success: true,
+              id: "itm1234567980",
+              folder: folderId
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/addResources",
+            getSuccessResponse({
+              itemId: "itm1234567980",
+              owner: MOCK_USER_SESSION.username,
+              folder: "resourceFolder"
+            })
+          );
+
+        createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        ).then(
+          response => (response.success ? done() : done.fail()),
+          done.fail
+        );
+      });
+
+      it("can handle failure to add metadata to item, hard error", done => {
+        const itemInfo: any = {};
+        const folderId: string = null as string; // default is top level
+        const itemThumbnailUrl: string = null as string;
+        const dataFile: File = null as File;
+        const metadataFile: File = new File(
+          [getSampleMetadata()],
+          "metadata.xml"
+        );
+        const resourcesFiles: File[] = null as File[];
+        const access = undefined as string; // default is "private"
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+              (folderId ? folderId + "/addItem" : "addItem"),
+            {
+              success: true,
+              id: "itm1234567980",
+              folder: folderId
+            }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/update",
+            500
+          );
+
+        createFullItem(
+          itemInfo,
+          folderId,
+          MOCK_USER_SESSION,
+          itemThumbnailUrl,
+          dataFile,
+          metadataFile,
+          resourcesFiles,
+          access
+        ).then(() => done.fail(), done);
+      });
+    }
+
+    it("can handle failure to create an item", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = null as File[];
+      const access = undefined as string; // default is "private"
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          (folderId ? folderId + "/addItem" : "addItem"),
+        {
+          success: false,
+          id: "itm1234567980",
+          folder: folderId
+        }
+      );
+
+      createFullItem(
+        itemInfo,
+        folderId,
+        MOCK_USER_SESSION,
+        itemThumbnailUrl,
+        dataFile,
+        metadataFile,
+        resourcesFiles,
+        access
+      ).then(() => done.fail(), done);
+    });
+
+    it("can handle failure to create an item, hard error", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = null as File[];
+      const access = undefined as string; // default is "private"
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          (folderId ? folderId + "/addItem" : "addItem"),
+        500
+      );
+
+      createFullItem(
+        itemInfo,
+        folderId,
+        MOCK_USER_SESSION,
+        itemThumbnailUrl,
+        dataFile,
+        metadataFile,
+        resourcesFiles,
+        access
+      ).then(() => done.fail(), done);
+    });
+
+    it("can handle failure to create a public item, hard error", done => {
+      const itemInfo: any = {};
+      const folderId: string = null as string; // default is top level
+      const itemThumbnailUrl: string = null as string;
+      const dataFile: File = null as File;
+      const metadataFile: File = null as File;
+      const resourcesFiles: File[] = null as File[];
+      const access = "public";
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+            (folderId ? folderId + "/addItem" : "addItem"),
+          {
+            success: true,
+            id: "itm1234567980",
+            folder: folderId
+          }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+          500
+        );
+
+      createFullItem(
+        itemInfo,
+        folderId,
+        MOCK_USER_SESSION,
+        itemThumbnailUrl,
+        dataFile,
+        metadataFile,
+        resourcesFiles,
+        access
+      ).then(() => done.fail(), done);
+    });
+  });
+
   describe("createItemWithData", () => {
     it("can handle private specification", done => {
       const itemInfo: any = {};
@@ -357,7 +683,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -393,7 +719,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -429,7 +755,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           expect(response).toEqual(expectedCreate);
           done();
         },
-        () => done.fail
+        () => done.fail()
       );
     });
 
@@ -465,7 +791,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId,
         access
       ).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toEqual(false);
           done();
@@ -602,7 +928,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(createUrl, expectedCreate);
 
       createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toBeUndefined();
           expect(response.message).toEqual("400: Unable to create folder.");
@@ -627,7 +953,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(createUrl, expectedCreate);
 
       createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail,
+        () => done.fail(),
         response => {
           expect(response.success).toBeUndefined();
           expect(response.message).toEqual("400: Unable to create folder.");
@@ -1388,6 +1714,135 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_addItemDataFile", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should add text/plain data", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleTextAsBlob() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=this%20is%20some%20text&token=fake-token"
+          );
+          done();
+        }, done.fail);
+      });
+
+      it("should add application/json data", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleJsonAsBlob() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          expect(fetchBody).toEqual(
+            "f=json&id=itm1234567890&text=%7B%22a%22%3A%22a%22%2C%22b%22%3A1%2C%22c%22%3A%7B%22d%22%3A%22d%22%7D%7D&token=fake-token"
+          );
+          done();
+        }, done.fail);
+      });
+
+      it("should add text data that's not text/plain or application/json", done => {
+        const itemId = "itm1234567890";
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/update";
+        fetchMock.post(url, '{"success":true}');
+        _addItemDataFile(
+          itemId,
+          getSampleMetadata() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
+          const fetchBody = (options as fetchMock.MockResponseObject).body;
+          (fetchBody as FormData).forEach(
+            (value: FormDataEntryValue, key: string) => {
+              switch (key) {
+                case "f":
+                  expect(value.toString()).toEqual("json");
+                  break;
+                case "id":
+                  expect(value.toString()).toEqual(itemId);
+                  break;
+                case "file":
+                  expect(value.valueOf()).toEqual(
+                    new File([getSampleMetadata()], "file")
+                  );
+                  break;
+                case "token":
+                  expect(value.toString()).toEqual("fake-token");
+                  break;
+              }
+            }
+          );
+          done();
+        }, done.fail);
+      });
+    }
+  });
+
+  describe("_addItemMetadataFile", () => {
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("should update metadata", done => {
+        const itemId = "itm1234567890";
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            itemId +
+            "/update",
+          '{"success":true}'
+        );
+        _addItemMetadataFile(
+          itemId,
+          getSampleMetadata() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeTruthy();
+          done();
+        }, done.fail);
+      });
+
+      it("should handle failure to update metadata", done => {
+        const itemId = "itm1234567890";
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            itemId +
+            "/update",
+          '{"success":false}'
+        );
+        _addItemMetadataFile(
+          itemId,
+          getSampleMetadata() as File,
+          MOCK_USER_SESSION
+        ).then(response => {
+          expect(response.success).toBeFalsy();
+          done();
+        }, done.fail);
+      });
+    }
+  });
+
   describe("_countRelationships", () => {
     it("can handle empty layer array", () => {
       const layers: any[] = [];
@@ -1418,7 +1873,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1464,7 +1919,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL empty service", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1510,7 +1965,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1585,7 +2040,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1659,7 +2114,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values when name contains guid", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1735,7 +2190,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", done => {
-      const userSession: UserSession = new UserSession({
+      const userSession: auth.UserSession = new auth.UserSession({
         username: "jsmith",
         password: "123456"
       });
