@@ -1053,6 +1053,50 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         .post(
           "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/2",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/1",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/0",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/7",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/6",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/5",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/4",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/3",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/2",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0",
+          mockItems.get400Failure()
         );
 
       webmappingapplication
