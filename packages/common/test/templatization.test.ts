@@ -176,6 +176,56 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
+  describe("templatizeFieldReferences", () => {
+    it("templatizeFieldReferences", () => {
+      const obj: any = {
+        field1: {
+          fieldname: "test"
+        },
+        field2: {
+          fieldname: "name"
+        },
+        field3: {
+          fieldname: "{{0019226378376276.layer0.fields.test.name}}"
+        },
+        field4: {
+          fieldname: "{{0019226378376276.layer0.fields.name.name}}"
+        }
+      };
+      const fields: any[] = [
+        {
+          name: "test"
+        },
+        {
+          name: "name"
+        }
+      ];
+      const basePath: string = "0019226378376276.layer0.fields";
+
+      const expected: any = {
+        field1: {
+          fieldname: "{{0019226378376276.layer0.fields.test.name}}"
+        },
+        field2: {
+          fieldname: "{{0019226378376276.layer0.fields.name.name}}"
+        },
+        field3: {
+          fieldname: "{{0019226378376276.layer0.fields.test.name}}"
+        },
+        field4: {
+          fieldname: "{{0019226378376276.layer0.fields.name.name}}"
+        }
+      };
+
+      const actual = templatization.templatizeFieldReferences(
+        obj,
+        fields,
+        basePath
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_createId", () => {
     xit("_createId", done => {
       console.warn("========== TODO ==========");
