@@ -308,6 +308,10 @@ export interface IDatasourceInfo {
    */
   layerId: number;
   /**
+   * The webmap layer id eg. "TestLayerForDashBoardMap_632"
+   */
+  id?: string;
+  /**
    * The id for the layer from a map could be referenced by more than one map for a solution
    */
   ids: string[];

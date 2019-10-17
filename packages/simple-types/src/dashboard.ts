@@ -39,47 +39,6 @@ interface IDashboardWidget {
 }
 
 /**
- * The relevant elements of a data source that are used for templatization
- * @protected
- */
-interface IDashboardDatasourceInfo {
-  /**
-   * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
-   */
-  basePath: string;
-  /**
-   * This is a property we are adding...may not stick around
-   */
-  type: string;
-  /**
-   * The portal item id eg. "4efe5f693de34620934787ead6693f19"
-   */
-  itemId: string;
-  /**
-   * The id for the layer from the service eg. "0"
-   */
-
-  layerId: number;
-  /**
-   * The webmap layer id eg. "TestLayerForDashBoardMap_632"
-   */
-  id?: string;
-  /**
-   * The url used for fields lookup
-   */
-  url: string; //
-  /**
-   * The fields this datasource contains
-   */
-  fields: any[];
-  /**
-   * The ids of objects that reference a datasource.
-   * In some cases a field reference will come from a datset referenced in another widget.
-   */
-  references: string[];
-}
-
-/**
  * The relevant elements of a dashboards dataset
  * @protected
  */
@@ -186,7 +145,7 @@ export function _extractDependencies(
  */
 export function _getMapDatasources(
   mapPromises: any[],
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): Promise<any> {
   // get data for all maps referenced
   // this will always resolve...will return null when no data
@@ -216,7 +175,7 @@ export function _getMapDatasources(
  */
 export function _getExternalDatasources(
   datasourcePromises: any[],
-  datasourceInfos: IDashboardDatasourceInfo[],
+  datasourceInfos: common.IDatasourceInfo[],
   authentication: auth.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -255,7 +214,7 @@ export function _getExternalDatasources(
 export function _getItemPromises(
   itemTemplate: common.IItemTemplate,
   authentication: auth.UserSession,
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): any {
   let datasourcePromises: any[] = [Promise.resolve(null)];
   let mapPromises: any[] = [Promise.resolve(null)];
@@ -324,7 +283,7 @@ export function _getItemPromises(
 export function _getWidgetPromises(
   itemTemplate: common.IItemTemplate,
   authentication: auth.UserSession,
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): any {
   let datasourcePromises: any[] = [];
   const mapPromises: any[] = [];
@@ -379,7 +338,7 @@ export function _getWidgetPromises(
 export function _getPromises(
   itemTemplate: common.IItemTemplate,
   authentication: auth.UserSession,
-  datasourceInfos: IDashboardDatasourceInfo[],
+  datasourceInfos: common.IDatasourceInfo[],
   objs: any[]
 ): any {
   let datasourcePromises: any[] = [];
@@ -416,7 +375,7 @@ export function _getPromises(
 export function _getDatasourcePromises(
   obj: any,
   itemTemplate: common.IItemTemplate,
-  datasourceInfos: IDashboardDatasourceInfo[],
+  datasourceInfos: common.IDatasourceInfo[],
   authentication: auth.UserSession
 ): any[] {
   const datasourcePromises: any[] = [];
@@ -446,13 +405,12 @@ export function _getDatasourcePromises(
       if (!hasDatasource) {
         // add the base datasourceInfo url and fields will be completed when possible
         datasourceInfos.push({
-          type: "externalDataset",
           layerId: layerId,
           itemId: itemId,
           basePath: itemId + ".layer" + layerId + ".fields",
           url: "",
           fields: [],
-          references: [obj.id]
+          ids: [obj.id]
         });
         // if this is a new entry to datasouceInfos and we do not already have a promise
         // established to query for the url and fields add a new promise to fetch the necessary details
@@ -460,8 +418,8 @@ export function _getDatasourcePromises(
           datasourcePromises.push(common.getItemBase(itemId, authentication));
         }
       } else {
-        if (datasource.references.indexOf(obj.id) < 0) {
-          datasource.references.push(obj.id);
+        if (datasource && datasource.ids.indexOf(obj.id) < 0) {
+          datasource.ids.push(obj.id);
         }
       }
     } else {
@@ -478,18 +436,17 @@ export function _getDatasourcePromises(
         });
         if (!hasDatasource) {
           datasourceInfos.push({
-            type: "mapDataset",
             id: dashboardLayerId,
             layerId: NaN,
             itemId: "",
             basePath: "",
             url: "",
             fields: [],
-            references: [obj.id]
+            ids: [obj.id]
           });
         } else {
-          if (datasource.references.indexOf(obj.id) < 0) {
-            datasource.references.push(obj.id);
+          if (datasource && datasource.ids.indexOf(obj.id) < 0) {
+            datasource.ids.push(obj.id);
           }
         }
       }
@@ -507,7 +464,7 @@ export function _getDatasourcePromises(
  * @protected
  */
 export function _updateDatasourceInfoFields(
-  datasourceInfos: IDashboardDatasourceInfo[],
+  datasourceInfos: common.IDatasourceInfo[],
   authentication: auth.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -560,9 +517,8 @@ export function _updateDatasourceInfoFields(
  */
 export function _getDatasourcesFromMap(
   mapData: any,
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): any {
-  // TODO shouldn't this also check for tables
   if (mapData && Array.isArray(mapData.operationalLayers)) {
     mapData.operationalLayers.forEach((layer: any) => {
       // only add if the itemId and layerId are unique
@@ -572,7 +528,7 @@ export function _getDatasourcesFromMap(
           10
         );
 
-        // get the placeholder...it will contain the type, id and fields placeholder
+        // get the placeholder...it will contain the id and fields placeholder
         let datasourceInfo: any;
         datasourceInfos.some(datasource => {
           if (layer.id === datasource.id) {
@@ -603,7 +559,7 @@ export function _getDatasourcesFromMap(
  * @protected
  */
 export function _hasDatasourceInfo(
-  datasourceInfos: IDashboardDatasourceInfo[],
+  datasourceInfos: common.IDatasourceInfo[],
   layer: any
 ): boolean {
   return datasourceInfos.some(di => {
@@ -628,7 +584,7 @@ export function _hasDatasourceInfo(
  */
 export function _templatize(
   itemTemplate: common.IItemTemplate,
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): common.IItemTemplate {
   // widgets
   const widgets: IDashboardWidget[] = common.getProp(
@@ -691,7 +647,7 @@ export function _templatize(
  */
 export function _templatizeByDatasource(
   objs: any[],
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): any {
   return objs.map(obj => {
     let _obj: any = obj;
@@ -773,7 +729,7 @@ export function _templatizeByDatasource(
  */
 export function _getDatasourceInfo(
   obj: any,
-  datasourceInfos: IDashboardDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[]
 ): any {
   let info: any;
   // the datasource will have an id property when it's referencing a map layer
@@ -792,7 +748,7 @@ export function _getDatasourceInfo(
       // in that case lookup the datasource from referenced widget
       const dashboardWidgetId: string = id.split("#")[0];
       datasourceInfos.some(di => {
-        const hasRef: boolean = di.references.indexOf(dashboardWidgetId) > -1;
+        const hasRef: boolean = di.ids.indexOf(dashboardWidgetId) > -1;
         info = hasRef ? di : info;
         return hasRef;
       });
