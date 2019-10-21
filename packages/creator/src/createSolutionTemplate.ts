@@ -329,7 +329,10 @@ export function postProcessFieldReferences(
   const templateTypeHash: any = _getTemplateTypeHash(templates);
 
   return templates.map(template => {
-    if (template.type === "Web Mapping Application") {
+    if (
+      template.type === "Web Mapping Application" ||
+      template.type === "Dashboard"
+    ) {
       const webMapFSDependencies: string[] = _getWebMapFSDependencies(
         template,
         templateTypeHash

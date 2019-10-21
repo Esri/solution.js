@@ -323,4 +323,9 @@ export interface IDatasourceInfo {
    * The fields this datasource contains
    */
   fields: any[];
+  /**
+   * The ralative ids for references to a datasource
+   * Application types like dashboard can reference datasources via realtive widget reference ids
+   */
+  references?: any[];
 }

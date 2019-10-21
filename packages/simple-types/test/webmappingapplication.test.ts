@@ -1129,12 +1129,17 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("handleServiceRequests ", () => {
-    xit("handleServiceRequests ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should handle no service requests ", done => {
+      const expected: string = "{test: 123}";
+      webmappingapplication.handleServiceRequests([], [], "{test: 123}").then(
+        actual => {
+          expect(actual).toEqual(expected);
+          done();
+        },
+        e => done.fail
+      );
     });
   });
-
   describe("findUrls ", () => {
     xit("findUrls ", done => {
       console.warn("========== TODO ==========");

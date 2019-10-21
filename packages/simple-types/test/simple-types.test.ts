@@ -22,15 +22,17 @@ import {
   getGroupTitle,
   convertItemToTemplate,
   createItemFromTemplate,
-  updateGroup
+  updateGroup,
+  postProcessFieldReferences
 } from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
-
+import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import { IItemTemplate } from "../../common/src/interfaces";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import { stat } from "mz/fs";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new UserSession({
@@ -2359,9 +2361,59 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("postProcessFieldReferences", () => {
-    xit("postProcessFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should process dashboard field references", () => {
+      const template: common.IItemTemplate = common.cloneObject(
+        staticDashboardMocks._initialDashboardTemplate
+      );
+      const datasourceInfos: common.IDatasourceInfo[] = common.cloneObject(
+        staticDashboardMocks.datasourceInfos
+      );
+      const expected: common.IItemTemplate = common.cloneObject(
+        staticDashboardMocks.expectedTemplate
+      );
+
+      // we don't first convert the item to template so the itemIds are not templatized
+      // clean those out for this test.
+      // This should be handled differently when removing the static mock items in favor of standard mock items.
+      expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId
+      );
+      expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId
+      );
+      expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[0].itemId = common.cleanId(
+        expected.data.widgets[0].itemId
+      );
+      expected.data.widgets[3].datasets[1].dataSource.itemId = common.cleanId(
+        expected.data.widgets[3].datasets[1].dataSource.itemId
+      );
+      expected.data.widgets[3].datasets[2].dataSource.itemId = common.cleanId(
+        expected.data.widgets[3].datasets[2].dataSource.itemId
+      );
+      expected.data.widgets[4].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.widgets[4].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[6].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.widgets[6].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[8].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.widgets[8].datasets[0].dataSource.itemId
+      );
+      expected.data.urlParameters[4].datasets[0].dataSource.itemId = common.cleanId(
+        expected.data.urlParameters[4].datasets[0].dataSource.itemId
+      );
+
+      expected.dependencies = [];
+
+      const actual = postProcessFieldReferences(
+        template,
+        datasourceInfos,
+        "Dashboard"
+      );
+      expect(actual).toEqual(expected);
     });
   });
 });
