@@ -91,19 +91,19 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
         workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
           url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
         },
         assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
           url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
         },
         workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
           url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
         },
         tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
           updateInterval: 300

@@ -20,7 +20,7 @@
 
 import {
   blobToJson,
-  cleanId,
+  cleanItemId,
   cloneObject,
   fail,
   getProp,
@@ -72,19 +72,21 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         }, done.fail);
       });
     });
+
+    describe("blobToFile", () => {
+      xit("blobToFile", done => {
+        console.warn("========== TODO blobToFile ========== ");
+        done.fail();
+      });
+    });
+
+    describe("blobToText", () => {
+      xit("blobToText", done => {
+        console.warn("========== TODO blobToText ========== ");
+        done.fail();
+      });
+    });
   }
-
-  describe("cleanId", () => {
-    it("should handle empty id", () => {
-      expect(cleanId(null)).toBeNull();
-      expect(cleanId(undefined)).toBeUndefined();
-      expect(cleanId("")).toEqual("");
-    });
-
-    it("should remove template braces and itemId property", () => {
-      expect(cleanId("{{itm1234567890.itemId}}")).toEqual("itm1234567890");
-    });
-  });
 
   describe("cloneObject", () => {
     it("can clone a shallow object", () => {
@@ -198,6 +200,47 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("deleteProp", () => {
+    it("should handle missing prop", () => {
+      const testObject: any = {};
+      deleteProp(testObject, "prop1");
+      expect(testObject).toEqual({});
+    });
+
+    it("should delete a prop", () => {
+      const testObject: any = {
+        prop1: true,
+        prop2: true
+      };
+      const expected: any = {
+        prop2: true
+      };
+      deleteProp(testObject, "prop1");
+      expect(testObject).toEqual(expected);
+    });
+  });
+
+  describe("deleteProps", () => {
+    it("should handle missing props", () => {
+      const testObject: any = {};
+      deleteProps(testObject, ["prop1", "prop2"]);
+      expect(testObject).toEqual({});
+    });
+
+    it("should delete props", () => {
+      const testObject: any = {
+        prop1: true,
+        prop2: true,
+        prop3: true
+      };
+      const expected: any = {
+        prop2: true
+      };
+      deleteProps(testObject, ["prop1", "prop3"]);
+      expect(testObject).toEqual(expected);
+    });
+  });
+
   describe("fail", () => {
     it("can return failure with no error argument", () => {
       const error: any = undefined;
@@ -280,44 +323,19 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("deleteProp", () => {
-    it("should handle missing prop", () => {
-      const testObject: any = {};
-      deleteProp(testObject, "prop1");
-      expect(testObject).toEqual({});
-    });
-
-    it("should delete a prop", () => {
-      const testObject: any = {
-        prop1: true,
-        prop2: true
-      };
-      const expected: any = {
-        prop2: true
-      };
-      deleteProp(testObject, "prop1");
-      expect(testObject).toEqual(expected);
+  describe("setProp", () => {
+    xit("setProp", done => {
+      console.warn("========== TODO setProp ========== ");
+      done.fail();
     });
   });
 
-  describe("deleteProps", () => {
-    it("should handle missing props", () => {
-      const testObject: any = {};
-      deleteProps(testObject, ["prop1", "prop2"]);
-      expect(testObject).toEqual({});
-    });
-
-    it("should delete props", () => {
-      const testObject: any = {
-        prop1: true,
-        prop2: true,
-        prop3: true
-      };
-      const expected: any = {
-        prop2: true
-      };
-      deleteProps(testObject, ["prop1", "prop3"]);
-      expect(testObject).toEqual(expected);
+  describe("getUTCTimestamp", () => {
+    it("can get a well formed timestamp", () => {
+      const timestamp: string = getUTCTimestamp();
+      const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
+      const regEx = new RegExp(exp, "gm");
+      expect(regEx.test(timestamp)).toBe(true);
     });
   });
 
@@ -456,12 +474,29 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("getUTCTimestamp", () => {
-    it("can get a well formed timestamp", () => {
-      const timestamp: string = getUTCTimestamp();
-      const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
-      const regEx = new RegExp(exp, "gm");
-      expect(regEx.test(timestamp)).toBe(true);
+  describe("cleanItemId", () => {
+    it("should handle empty id", () => {
+      expect(cleanItemId(null)).toBeNull();
+      expect(cleanItemId(undefined)).toBeUndefined();
+      expect(cleanItemId("")).toEqual("");
+    });
+
+    it("should remove template braces and itemId property", () => {
+      expect(cleanItemId("{{itm1234567890.itemId}}")).toEqual("itm1234567890");
+    });
+  });
+
+  describe("cleanLayerBasedItemId", () => {
+    xit("cleanLayerBasedItemId", done => {
+      console.warn("========== TODO cleanLayerBasedItemId ========== ");
+      done.fail();
+    });
+  });
+
+  describe("cleanLayerId", () => {
+    xit("cleanLayerId", done => {
+      console.warn("========== TODO cleanLayerId ========== ");
+      done.fail();
     });
   });
 

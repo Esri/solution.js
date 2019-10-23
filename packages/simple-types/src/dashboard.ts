@@ -62,7 +62,7 @@ interface IDashboardDatasource {
    * as well as the individual layerId
    */
   itemId?: string;
-  layerId?: number;
+  layerId?: any;
   /**
    * When it's a datasource from a map widget it will contain a reltive path
    * DashboardMapId#OperationalLayerId
@@ -140,11 +140,19 @@ export function _getDatasourceDependencies(
       if (itemTemplate.dependencies.indexOf(itemId) < 0) {
         itemTemplate.dependencies.push(itemId);
       }
+      const layerId: number = common.getProp(dataset, "dataSource.layerId");
       dataset.dataSource.itemId = common.templatizeTerm(
         itemId,
         itemId,
-        ".itemId"
+        layerId !== undefined ? ".layer" + layerId + ".itemId" : ".itemId"
       );
+      if (layerId !== undefined) {
+        dataset.dataSource.layerId = common.templatizeTerm(
+          itemId,
+          itemId,
+          ".layer" + layerId + ".layerId"
+        );
+      }
     }
   });
 }
@@ -199,13 +207,12 @@ export function _updateDatasourceReferences(
       if (Array.isArray(obj.datasets)) {
         obj.datasets.forEach((dataset: IDashboardDataset) => {
           // when the datasource has an itemId it's an external datasource
-          const itemId: string = common.cleanId(
+          const itemId: string = common.cleanLayerBasedItemId(
             common.getProp(dataset, "dataSource.itemId")
           );
           if (itemId) {
-            const layerId: number = common.getProp(
-              dataset,
-              "dataSource.layerId"
+            const layerId: number = common.cleanLayerId(
+              common.getProp(dataset, "dataSource.layerId")
             );
             datasourceInfos.some(ds => {
               if (ds.itemId === itemId && ds.layerId === layerId) {
@@ -389,10 +396,12 @@ export function _getDatasourceInfo(
     }
   } else {
     // otherwise match the itemId and the layerId to get the correct fields and path
-    const itemId: any = common.cleanId(
+    const itemId: any = common.cleanLayerBasedItemId(
       common.getProp(obj, "dataSource.itemId")
     );
-    const layerId: any = common.getProp(obj, "dataSource.layerId");
+    const layerId: any = common.cleanLayerId(
+      common.getProp(obj, "dataSource.layerId")
+    );
     if (itemId) {
       datasourceInfos.some(di => {
         const matches: boolean = itemId === di.itemId && layerId === di.layerId;

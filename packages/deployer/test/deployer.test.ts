@@ -348,6 +348,7 @@ describe("Module `deploySolution`", () => {
             url: featureServerUrl,
             name: "ROWPermits_publiccomment",
             layer0: {
+              itemId: "svc1234567890",
               url: featureServerUrl + "/" + 0,
               layerId: "0",
               fields: {
@@ -394,6 +395,7 @@ describe("Module `deploySolution`", () => {
               }
             },
             layer1: {
+              itemId: "svc1234567890",
               url: featureServerUrl + "/" + 1,
               layerId: "1",
               fields: {

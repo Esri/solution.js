@@ -430,21 +430,20 @@ export function _updateWebMapHashInfo(
   template: common.IItemTemplate,
   hashItem: any
 ) {
-  const operationalLayers: any[] = common.getProp(
-    template,
-    "data.operationalLayers"
-  );
-  if (operationalLayers && operationalLayers.length > 0) {
-    hashItem.operationalLayers = [];
-    operationalLayers.forEach(layer => {
-      if (layer.layerType === "ArcGISFeatureLayer") {
-        const opLayer: any = {};
-        opLayer[common.cleanId(layer.itemId)] = {
-          id: layer.id,
-          url: layer.url
-        };
-        hashItem.operationalLayers.push(opLayer);
-      }
+  const operationalLayers: any[] =
+    common.getProp(template, "data.operationalLayers") || [];
+
+  const tables: any[] = common.getProp(template, "data.tables") || [];
+  const layersAndTables: any[] = operationalLayers.concat(tables);
+  if (layersAndTables && layersAndTables.length > 0) {
+    hashItem.layersAndTables = [];
+    layersAndTables.forEach(layer => {
+      const obj: any = {};
+      obj[common.cleanLayerBasedItemId(layer.itemId)] = {
+        id: layer.id,
+        url: layer.url
+      };
+      hashItem.layersAndTables.push(obj);
     });
   }
 }
@@ -469,7 +468,7 @@ export function _addMapLayerIds(
 
   return datasourceInfos.map(ds => {
     webMapIds.forEach(webMapId => {
-      templateTypeHash[webMapId].operationalLayers.forEach((opLayer: any) => {
+      templateTypeHash[webMapId].layersAndTables.forEach((opLayer: any) => {
         const opLayerInfo: any = opLayer[ds.itemId];
         const url: string =
           ds.url && !isNaN(ds.layerId)

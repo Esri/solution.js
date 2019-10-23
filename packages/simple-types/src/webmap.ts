@@ -114,7 +114,7 @@ export function _templatizeWebmapLayerIdsAndUrls(
       layer.itemId = common.templatizeTerm(
         layer.itemId,
         layer.itemId,
-        ".itemId"
+        ".layer" + layerId + ".itemId"
       );
     });
 }

@@ -95,7 +95,7 @@ export function _templatize(data: any, keyProperties: string[]): any {
       if (common.getProp(data[p], "serviceItemId")) {
         // templatize properties with id and url
         const id: string = data[p].serviceItemId;
-        data[p].serviceItemId = common.templatizeTerm(id, id, ".itemId");
+        let serviceItemIdSuffix: string = ".itemId";
 
         if (common.getProp(data[p], "url")) {
           const layerId = data[p].url.substr(
@@ -106,7 +106,13 @@ export function _templatize(data: any, keyProperties: string[]): any {
             id,
             ".layer" + layerId + ".url"
           );
+          serviceItemIdSuffix = ".layer" + layerId + serviceItemIdSuffix;
         }
+        data[p].serviceItemId = common.templatizeTerm(
+          id,
+          id,
+          serviceItemIdSuffix
+        );
       } else {
         // templatize simple id properties
         data[p] = common.templatizeTerm(data[p], data[p], ".itemId");

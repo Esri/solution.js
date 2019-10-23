@@ -276,10 +276,43 @@ export function hasDatasource(
 }
 
 /**
- * remove templatization from id to compare
+ * remove templatization from item id to compare
+ *
+ * eg {{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}
+ * returns 934a9ef8efa7448fa8ddf7b13cef0240
  */
-export function cleanId(id: any): any {
+export function cleanItemId(id: any): any {
   return id ? id.replace("{{", "").replace(".itemId}}", "") : id;
+}
+
+/**
+ * remove templatization from layer based item id to compare
+ * eg {{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}
+ * returns 934a9ef8efa7448fa8ddf7b13cef0240
+ */
+export function cleanLayerBasedItemId(id: any): any {
+  return id
+    ? id
+        .replace("{{", "")
+        .replace(/([.]layer([0-9]|[1-9][0-9])[.](item|layer)Id)[}]{2}/, "")
+    : id;
+}
+
+/**
+ * remove templatization from layer id to compare
+ * eg {{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}
+ * returns 0
+ */
+export function cleanLayerId(id: any) {
+  return id.toString
+    ? parseInt(
+        id
+          .toString()
+          .replace(/[{]{2}.{32}[.]layer/, "")
+          .replace(/[.]layerId[}]{2}/, ""),
+        10
+      )
+    : id;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

@@ -132,10 +132,18 @@ export function templatizeDatasources(
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
-        if (common.getProp(ds, "itemId")) {
-          ds.itemId = common.templatizeTerm(ds.itemId, ds.itemId, ".itemId");
-        }
+        const itemId: any = common.getProp(ds, "itemId");
         if (common.getProp(ds, "url")) {
+          if (itemId) {
+            const layerId = ds.url.substr(
+              (ds.url as string).lastIndexOf("/") + 1
+            );
+            ds.itemId = common.templatizeTerm(
+              itemId,
+              itemId,
+              ".layer" + layerId + ".itemId"
+            );
+          }
           const urlResults: any = findUrls(
             ds.url,
             portalUrl,
@@ -157,6 +165,9 @@ export function templatizeDatasources(
             }
           );
         } else {
+          if (itemId) {
+            ds.itemId = common.templatizeTerm(itemId, itemId, ".itemId");
+          }
           resolve(itemTemplate);
         }
       });

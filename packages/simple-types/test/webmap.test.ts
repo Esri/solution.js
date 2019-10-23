@@ -165,18 +165,18 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         data: {
           operationalLayers: [
             {
-              itemId: "{{layer1.itemId}}",
+              itemId: "{{layer1.layer4.itemId}}",
               url: "{{layer1.layer4.url}}"
             },
             {
-              itemId: "{{layer2.itemId}}",
+              itemId: "{{layer2.layer4.itemId}}",
               url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{layer4.itemId}}",
+              itemId: "{{layer4.layer4.itemId}}",
               url: "{{layer4.layer4.url}}"
             }
           ],
@@ -239,14 +239,14 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           operationalLayers: [],
           tables: [
             {
-              itemId: "{{table1.itemId}}",
+              itemId: "{{table1.layer4.itemId}}",
               url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{table3.itemId}}",
+              itemId: "{{table3.layer4.itemId}}",
               url: "{{table3.layer4.url}}"
             },
             {
@@ -330,27 +330,27 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
               itemId: null
             },
             {
-              itemId: "{{layer2.itemId}}",
+              itemId: "{{layer2.layer4.itemId}}",
               url: "{{layer2.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{layer4.itemId}}",
+              itemId: "{{layer4.layer4.itemId}}",
               url: "{{layer4.layer4.url}}"
             }
           ],
           tables: [
             {
-              itemId: "{{table1.itemId}}",
+              itemId: "{{table1.layer4.itemId}}",
               url: "{{table1.layer4.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{table3.itemId}}",
+              itemId: "{{table3.layer4.itemId}}",
               url: "{{table3.layer4.url}}"
             },
             {
@@ -434,27 +434,27 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
               itemId: null
             },
             {
-              itemId: "{{theItemID.itemId}}",
+              itemId: "{{theItemID.layer0.itemId}}",
               url: "{{theItemID.layer0.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{theItemID.itemId}}",
+              itemId: "{{theItemID.layer1.itemId}}",
               url: "{{theItemID.layer1.url}}"
             }
           ],
           tables: [
             {
-              itemId: "{{theItemID.itemId}}",
+              itemId: "{{theItemID.layer2.itemId}}",
               url: "{{theItemID.layer2.url}}"
             },
             {
               itemId: null
             },
             {
-              itemId: "{{theItemID.itemId}}",
+              itemId: "{{theItemID.layer3.itemId}}",
               url: "{{theItemID.layer3.url}}"
             },
             {
