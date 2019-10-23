@@ -876,9 +876,10 @@ export function _templatizeLayer(
   updates.forEach(update => {
     if (update.hasOwnProperty("name")) {
       // templatize the name but leave the current name as the optional default
-      update.name = _templatize(
+      update.name = common.templatizeTerm(
         update["serviceItemId"] + ".layer" + update.id,
-        "name||" + update.name
+        update["serviceItemId"] + ".layer" + update.id,
+        ".name||" + update.name
       );
     }
     if (update.hasOwnProperty("extent")) {
