@@ -331,7 +331,8 @@ export function postProcessFieldReferences(
   return templates.map(template => {
     if (
       template.type === "Web Mapping Application" ||
-      template.type === "Dashboard"
+      template.type === "Dashboard" ||
+      template.type === "Web Map"
     ) {
       const webMapFSDependencies: string[] = _getWebMapFSDependencies(
         template,
@@ -389,7 +390,9 @@ export function _getDatasourceInfos(
             fields: obj.fields,
             basePath: t.itemId + ".layer" + obj.id + ".fields",
             url: common.getProp(t, "item.url"),
-            ids: []
+            ids: [],
+            relationships: obj.relationships || [],
+            adminLayerInfo: obj.adminLayerInfo || {}
           });
         }
       });
@@ -439,11 +442,22 @@ export function _updateWebMapHashInfo(
     hashItem.layersAndTables = [];
     layersAndTables.forEach(layer => {
       const obj: any = {};
-      obj[common.cleanLayerBasedItemId(layer.itemId)] = {
-        id: layer.id,
-        url: layer.url
-      };
-      hashItem.layersAndTables.push(obj);
+      let itemId: any;
+      if (layer.itemId) {
+        itemId = layer.itemId;
+      } else if (layer.url && layer.url.indexOf("{{") > -1) {
+        // some layers like heatmap layer don't have a itemId
+        itemId = layer.url
+          .replace("{{", "")
+          .replace(/([.]layer([0-9]|[1-9][0-9])[.]url)[}]{2}/, "");
+      }
+      if (itemId) {
+        obj[common.cleanLayerBasedItemId(itemId)] = {
+          id: layer.id,
+          url: layer.url
+        };
+        hashItem.layersAndTables.push(obj);
+      }
     });
   }
 }

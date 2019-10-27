@@ -75,7 +75,9 @@ export const datasourceInfos: interfaces.IDatasourceInfo[] = [
         name: "EMAIL"
       }
     ],
-    ids: []
+    ids: [],
+    relationships: [],
+    adminLayerInfo: {}
   },
   {
     itemId: "4efe5f693de34620934787ead6693f19",
@@ -153,7 +155,9 @@ export const datasourceInfos: interfaces.IDatasourceInfo[] = [
     ],
     basePath: "4efe5f693de34620934787ead6693f19.layer2.fields",
     url: "{{4efe5f693de34620934787ead6693f19.url}}",
-    ids: ["TestLayerForDashBoardMap_632"]
+    ids: ["TestLayerForDashBoardMap_632"],
+    relationships: [],
+    adminLayerInfo: {}
   }
 ];
 

@@ -4866,10 +4866,12 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Emergency Shelter",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -4877,7 +4879,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -4885,7 +4888,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -4893,7 +4897,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -4901,7 +4906,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -4909,7 +4915,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -4917,7 +4924,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -4925,7 +4933,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -4933,7 +4942,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -4941,7 +4951,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -4953,7 +4964,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -4965,7 +4977,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -4977,7 +4990,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -4985,7 +4999,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -4993,7 +5008,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -5001,7 +5017,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -5009,7 +5026,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -5017,7 +5035,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -5025,7 +5044,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -5036,7 +5056,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closedate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -5047,7 +5068,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -5055,7 +5077,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -5066,7 +5089,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -32854,10 +32878,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Emergency Shelter",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -32865,7 +32891,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -32873,7 +32900,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -32881,7 +32909,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -32889,7 +32918,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -32897,7 +32927,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -32905,7 +32936,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -32913,7 +32945,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -32921,7 +32954,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -32929,7 +32963,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -32941,7 +32976,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -32953,7 +32989,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -32965,7 +33002,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -32973,7 +33011,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -32981,7 +33020,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -32989,7 +33029,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -32997,7 +33038,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -33005,7 +33047,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -33013,7 +33056,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -33024,7 +33068,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closedate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -33035,7 +33080,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -33043,7 +33089,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -33054,7 +33101,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -43895,10 +43943,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - Stands",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer3.itemId}}",
           popupInfo: {
-            title: "Stands: {StandName}",
+            title:
+              "Stands: {{{b19aec399444407da84fffe2a55d4151.layer3.fields.standname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -43906,7 +43956,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.standid.name}}",
                 label: "Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -43914,7 +43965,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
                 label: "Property ID",
                 isEditable: true,
                 tooltip: "",
@@ -43922,7 +43974,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ParentStandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.parentstandid.name}}",
                 label: "Parent Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -43930,7 +43983,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.standname.name}}",
                 label: "Stand Name",
                 isEditable: true,
                 tooltip: "",
@@ -43938,7 +43992,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -43946,7 +44001,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -43958,7 +44014,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -43970,7 +44027,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -43981,7 +44039,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -43989,7 +44048,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -44000,7 +44060,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -44022,10 +44083,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - Property",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer2.itemId}}",
           popupInfo: {
-            title: "Property: {PropertyName}",
+            title:
+              "Property: {{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -44033,7 +44096,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
                 label: "Property ID",
                 isEditable: true,
                 tooltip: "",
@@ -44041,7 +44105,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}",
                 label: "Property Name",
                 isEditable: true,
                 tooltip: "",
@@ -44049,7 +44114,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -44057,7 +44123,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -44069,7 +44136,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -44081,7 +44149,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -44092,7 +44161,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -44100,7 +44170,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -44111,7 +44182,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -44133,10 +44205,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - Chemical Activity",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer1.itemId}}",
           popupInfo: {
-            title: "Chemical Activity: {ActivityStatus}",
+            title:
+              "Chemical Activity: {{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitystatus.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -44144,7 +44218,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityStatus",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitystatus.name}}",
                 label: "Activity Status",
                 isEditable: true,
                 tooltip: "",
@@ -44152,7 +44227,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StartDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.startdate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -44163,7 +44239,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EndDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -44174,7 +44251,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityOwner",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activityowner.name}}",
                 label: "Activity Owner",
                 isEditable: true,
                 tooltip: "",
@@ -44182,7 +44260,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "IsActivityForSitePrep",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.isactivityforsiteprep.name}}",
                 label: "Is Activity tor Site Prep",
                 isEditable: true,
                 tooltip: "",
@@ -44190,7 +44269,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitymethod.name}}",
                 label: "Logging Method",
                 isEditable: true,
                 tooltip: "",
@@ -44198,7 +44278,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -44206,7 +44287,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CostType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.costtype.name}}",
                 label: "Cost Type",
                 isEditable: true,
                 tooltip: "",
@@ -44214,7 +44296,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RateType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.ratetype.name}}",
                 label: "Rate Type",
                 isEditable: true,
                 tooltip: "",
@@ -44222,7 +44305,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "UnitCostPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitcostplanned.name}}",
                 label: "Unit Cost Planned",
                 isEditable: true,
                 tooltip: "",
@@ -44234,7 +44318,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitquantityplanned.name}}",
                 label: "Unit Quantity Planned",
                 isEditable: true,
                 tooltip: "",
@@ -44246,7 +44331,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitCostActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitcostactual.name}}",
                 label: "Unit Cost Actual",
                 isEditable: true,
                 tooltip: "",
@@ -44258,7 +44344,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitquantityactual.name}}",
                 label: "Unit Quantity Actual",
                 isEditable: true,
                 tooltip: "",
@@ -44270,7 +44357,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -44278,7 +44366,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivtySubCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activtysubcategory.name}}",
                 label: "Activity Sub Category",
                 isEditable: true,
                 tooltip: "",
@@ -44290,7 +44379,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activityarea.name}}",
                 label: "Area",
                 isEditable: true,
                 tooltip: "",
@@ -44302,7 +44392,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AreaUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.areaunitofmeasure.name}}",
                 label: "Area Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -44310,7 +44401,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -44322,7 +44414,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -44334,7 +44427,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -44345,7 +44439,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -44353,7 +44448,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -44364,7 +44460,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -44386,10 +44483,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - HarvestActivity",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer0.itemId}}",
           popupInfo: {
-            title: "HarvestActivity: {HarvestUnitName}",
+            title:
+              "HarvestActivity: {{{b19aec399444407da84fffe2a55d4151.layer0.fields.harvestunitname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -44397,7 +44496,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivitySubCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitysubcategory.name}}",
                 label: "Activity Sub Category",
                 isEditable: true,
                 tooltip: "",
@@ -44409,7 +44509,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitymethod.name}}",
                 label: "Harvest Method",
                 isEditable: true,
                 tooltip: "",
@@ -44417,7 +44518,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StartDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.startdate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -44428,7 +44530,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EndDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -44439,7 +44542,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityStatus",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitystatus.name}}",
                 label: "Activity Status",
                 isEditable: true,
                 tooltip: "",
@@ -44447,7 +44551,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityOwner",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activityowner.name}}",
                 label: "Activity Owner",
                 isEditable: true,
                 tooltip: "",
@@ -44455,7 +44560,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activityarea.name}}",
                 label: "Area",
                 isEditable: true,
                 tooltip: "",
@@ -44467,7 +44573,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AreaUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.areaunitofmeasure.name}}",
                 label: "Area Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -44475,7 +44582,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "IsActivityForSitePrep",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.isactivityforsiteprep.name}}",
                 label: "Is Activity tor Site Prep",
                 isEditable: true,
                 tooltip: "",
@@ -44483,7 +44591,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HarvestUnitName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.harvestunitname.name}}",
                 label: "Harvest Unit Name",
                 isEditable: true,
                 tooltip: "",
@@ -44491,7 +44600,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LoggingMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.loggingmethod.name}}",
                 label: "LoggingMethod",
                 isEditable: true,
                 tooltip: "",
@@ -44499,7 +44609,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LoggingConditionClass",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.loggingconditionclass.name}}",
                 label: "Logging Condition Classification",
                 isEditable: true,
                 tooltip: "",
@@ -44507,7 +44618,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TerrainSlopeType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.terrainslopetype.name}}",
                 label: "Terrain Slope Type",
                 isEditable: true,
                 tooltip: "",
@@ -44515,7 +44627,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OptimalHarvestDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.optimalharvestdate.name}}",
                 label: "Optimal Harvest Date",
                 isEditable: true,
                 tooltip: "",
@@ -44526,7 +44639,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CostType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.costtype.name}}",
                 label: "Cost Type",
                 isEditable: true,
                 tooltip: "",
@@ -44534,7 +44648,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RateType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.ratetype.name}}",
                 label: "Rate Type",
                 isEditable: true,
                 tooltip: "",
@@ -44542,7 +44657,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "UnitCostPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitcostplanned.name}}",
                 label: "Unit Cost Planned",
                 isEditable: true,
                 tooltip: "",
@@ -44554,7 +44670,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitquantityplanned.name}}",
                 label: "Unit Quantity Planned",
                 isEditable: true,
                 tooltip: "",
@@ -44566,7 +44683,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitCostActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitcostactual.name}}",
                 label: "Unit Cost Actual",
                 isEditable: true,
                 tooltip: "",
@@ -44578,7 +44696,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitquantityactual.name}}",
                 label: "Unit Quantity Actual",
                 isEditable: true,
                 tooltip: "",
@@ -44590,7 +44709,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -44598,7 +44718,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -44606,7 +44727,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -44618,7 +44740,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -44630,7 +44753,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -44641,7 +44765,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -44649,7 +44774,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -44660,7 +44786,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -44682,10 +44809,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Incident Area",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer7.itemId}}",
           popupInfo: {
-            title: "Incident Area: {INCIDENTID}",
+            title:
+              "Incident Area: {{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentid.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -44693,7 +44822,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentid.name}}",
                 label: "Incident Number",
                 isEditable: true,
                 tooltip: "",
@@ -44701,7 +44831,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentnm.name}}",
                 label: "Incident Name",
                 isEditable: true,
                 tooltip: "",
@@ -44709,7 +44840,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CATEGORY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.category.name}}",
                 label: "Category",
                 isEditable: true,
                 tooltip: "",
@@ -44717,7 +44849,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTTP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidenttp.name}}",
                 label: "Incident Type",
                 isEditable: true,
                 tooltip: "",
@@ -44725,7 +44858,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COLLTIME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.colltime.name}}",
                 label: "Collection Time",
                 isEditable: true,
                 tooltip: "",
@@ -44736,7 +44870,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "REPTIME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.reptime.name}}",
                 label: "Report Time",
                 isEditable: true,
                 tooltip: "",
@@ -44747,7 +44882,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DESCRIP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.descrip.name}}",
                 label: "Description",
                 isEditable: true,
                 tooltip: "",
@@ -44755,7 +44891,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.locdesc.name}}",
                 label: "Location Description",
                 isEditable: true,
                 tooltip: "",
@@ -44763,7 +44900,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SEVERITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.severity.name}}",
                 label: "Severity",
                 isEditable: true,
                 tooltip: "",
@@ -44771,7 +44909,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SEVDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.sevdesc.name}}",
                 label: "Severity Description",
                 isEditable: true,
                 tooltip: "",
@@ -44779,7 +44918,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GROWTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.growth.name}}",
                 label: "Growth",
                 isEditable: true,
                 tooltip: "",
@@ -44787,7 +44927,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -44798,7 +44939,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -44806,7 +44948,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -44818,7 +44961,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -44844,10 +44988,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - DemographicPolygons",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer6.itemId}}",
           popupInfo: {
-            title: "DemographicPolygons: {NAME10}",
+            title:
+              "DemographicPolygons: {{{4efe5f693de34620934787ead6693f19.layer6.fields.name10.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -44855,7 +45001,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STATEFP10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.statefp10.name}}",
                 label: "STATEFP10",
                 isEditable: true,
                 tooltip: "",
@@ -44863,7 +45010,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COUNTYFP10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.countyfp10.name}}",
                 label: "COUNTYFP10",
                 isEditable: true,
                 tooltip: "",
@@ -44871,7 +45019,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TRACTCE10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.tractce10.name}}",
                 label: "TRACTCE10",
                 isEditable: true,
                 tooltip: "",
@@ -44879,7 +45028,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.name10.name}}",
                 label: "NAME10",
                 isEditable: true,
                 tooltip: "",
@@ -44887,7 +45037,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAMELSAD10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.namelsad10.name}}",
                 label: "NAMELSAD10",
                 isEditable: true,
                 tooltip: "",
@@ -44895,7 +45046,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.id.name}}",
                 label: "ID",
                 isEditable: true,
                 tooltip: "",
@@ -44903,7 +45055,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORIG_ID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.orig_id.name}}",
                 label: "ORIG_ID",
                 isEditable: true,
                 tooltip: "",
@@ -44915,7 +45068,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "sourceCountry",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.sourcecountry.name}}",
                 label: "sourceCountry",
                 isEditable: true,
                 tooltip: "",
@@ -44923,7 +45077,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CHILD_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.child_cy.name}}",
                 label: "2015 Children (Age <14)",
                 isEditable: true,
                 tooltip: "",
@@ -44935,7 +45090,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "SENIORS_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.seniors_cy.name}}",
                 label: "2015 Seniors (Age 65+)",
                 isEditable: true,
                 tooltip: "",
@@ -44947,7 +45103,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TOTPOP_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.totpop_cy.name}}",
                 label: "2015 Total Population",
                 isEditable: true,
                 tooltip: "",
@@ -44959,7 +45116,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PACSOVEH0",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.pacsoveh0.name}}",
                 label:
                   "2009-2013 ACS Owner Households with no vehicles available",
                 isEditable: true,
@@ -44972,7 +45130,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSLANGBAS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acslangbas.name}}",
                 label: "ACS Pop 5+: Lang at Home Base",
                 isEditable: true,
                 tooltip: "",
@@ -44984,7 +45143,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSHHDIS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acshhdis.name}}",
                 label: "ACS HHs w/1+ Pers w/Disability",
                 isEditable: true,
                 tooltip: "",
@@ -44996,7 +45156,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSSNAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acssnap.name}}",
                 label: "ACS HHs w/Food Stamps/SNAP",
                 isEditable: true,
                 tooltip: "",
@@ -45008,7 +45169,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDAGE_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.medage_cy.name}}",
                 label: "Median Age",
                 isEditable: true,
                 tooltip: "",
@@ -45020,7 +45182,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -45032,7 +45195,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -45058,10 +45222,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Road Closure",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer5.itemId}}",
           popupInfo: {
-            title: "Road Closure: {BLOCKNM}",
+            title:
+              "Road Closure: {{{4efe5f693de34620934787ead6693f19.layer5.fields.blocknm.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -45069,7 +45235,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blocknm.name}}",
                 label: "Road Closure",
                 isEditable: true,
                 tooltip: "",
@@ -45077,7 +45244,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.locdesc.name}}",
                 label: "Location",
                 isEditable: true,
                 tooltip: "",
@@ -45085,7 +45253,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blocktype.name}}",
                 label: "Reason",
                 isEditable: true,
                 tooltip: "",
@@ -45093,7 +45262,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COMMENT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.comment.name}}",
                 label: "Comments",
                 isEditable: true,
                 tooltip: "",
@@ -45101,7 +45271,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLCLOSE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.fullclose.name}}",
                 label: "Full Closure",
                 isEditable: true,
                 tooltip: "",
@@ -45109,7 +45280,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALTROUTE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.altroute.name}}",
                 label: "Alternate Route",
                 isEditable: true,
                 tooltip: "",
@@ -45117,7 +45289,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STARTDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.startdate.name}}",
                 label: "Starts",
                 isEditable: true,
                 tooltip: "",
@@ -45128,7 +45301,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ENDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.enddate.name}}",
                 label: "Ends",
                 isEditable: true,
                 tooltip: "",
@@ -45139,7 +45313,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.contact.name}}",
                 label: "Contact Information",
                 isEditable: true,
                 tooltip: "",
@@ -45147,7 +45322,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PERMITID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.permitid.name}}",
                 label: "Permit Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -45155,7 +45331,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.incidentid.name}}",
                 label: "Incident Number",
                 isEditable: true,
                 tooltip: "",
@@ -45163,7 +45340,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.incidentnm.name}}",
                 label: "Incident Name",
                 isEditable: true,
                 tooltip: "",
@@ -45171,7 +45349,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -45182,7 +45361,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -45190,7 +45370,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DIRECTION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.direction.name}}",
                 label: "DIRECTION",
                 isEditable: true,
                 tooltip: "",
@@ -45198,7 +45379,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKOCCUR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blockoccur.name}}",
                 label: "BLOCKOCCUR",
                 isEditable: true,
                 tooltip: "",
@@ -45206,7 +45388,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACTIVE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.active.name}}",
                 label: "Active",
                 isEditable: true,
                 tooltip: "",
@@ -45214,7 +45397,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -45240,10 +45424,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Bridges",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer4.itemId}}",
           popupInfo: {
-            title: "Bridges: {NAME}",
+            title:
+              "Bridges: {{{4efe5f693de34620934787ead6693f19.layer4.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -45251,7 +45437,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -45259,7 +45446,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.name.name}}",
                 label: "Bridge Name",
                 isEditable: true,
                 tooltip: "",
@@ -45267,7 +45455,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGETYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgetype.name}}",
                 label: "Bridge Type",
                 isEditable: true,
                 tooltip: "",
@@ -45275,7 +45464,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGENUM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgenum.name}}",
                 label: "Official Bridge Number",
                 isEditable: true,
                 tooltip: "",
@@ -45283,7 +45473,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGEDESGN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgedesgn.name}}",
                 label: "Bridge Design",
                 isEditable: true,
                 tooltip: "",
@@ -45291,7 +45482,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TRAFFICTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.traffictype.name}}",
                 label: "Traffic Type",
                 isEditable: true,
                 tooltip: "",
@@ -45299,7 +45491,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DESIGNLOAD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.designload.name}}",
                 label: "Design Load Rating",
                 isEditable: true,
                 tooltip: "",
@@ -45307,7 +45500,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPANTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.spantype.name}}",
                 label: "Span Type",
                 isEditable: true,
                 tooltip: "",
@@ -45315,7 +45509,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPANLENGTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.spanlength.name}}",
                 label: "Span Length",
                 isEditable: true,
                 tooltip: "",
@@ -45327,7 +45522,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMSPAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.numspan.name}}",
                 label: "Number of Spans",
                 isEditable: true,
                 tooltip: "",
@@ -45339,7 +45535,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DECKTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.decktype.name}}",
                 label: "Deck Type",
                 isEditable: true,
                 tooltip: "",
@@ -45347,7 +45544,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DECKTHICK",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.deckthick.name}}",
                 label: "Deck Thickness",
                 isEditable: true,
                 tooltip: "",
@@ -45359,7 +45557,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LNONSTR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lnonstr.name}}",
                 label: "Lanes on Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -45371,7 +45570,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LNUNSTR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lnunstr.name}}",
                 label: "Lanes Under Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -45383,7 +45583,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDIAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.median.name}}",
                 label: "Median on Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -45391,7 +45592,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "APPWIDTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.appwidth.name}}",
                 label: "Approach Width",
                 isEditable: true,
                 tooltip: "",
@@ -45403,7 +45605,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DOWELLENG",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.dowelleng.name}}",
                 label: "Dowel Length",
                 isEditable: true,
                 tooltip: "",
@@ -45415,7 +45618,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DOWELSIZE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.dowelsize.name}}",
                 label: "Dowel Size",
                 isEditable: true,
                 tooltip: "",
@@ -45427,7 +45631,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AVGTRAFFIC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.avgtraffic.name}}",
                 label: "Daily Traffic Volume",
                 isEditable: true,
                 tooltip: "",
@@ -45439,7 +45644,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "YRTRAFFIC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.yrtraffic.name}}",
                 label: "Year Traffic Counted",
                 isEditable: true,
                 tooltip: "",
@@ -45450,7 +45656,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "INSTALLDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.installdate.name}}",
                 label: "Install Date",
                 isEditable: true,
                 tooltip: "",
@@ -45461,7 +45668,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONDITION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.condition.name}}",
                 label: "Condition",
                 isEditable: true,
                 tooltip: "",
@@ -45469,7 +45677,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNEDBY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.ownedby.name}}",
                 label: "Owned By",
                 isEditable: true,
                 tooltip: "",
@@ -45481,7 +45690,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MAINTBY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.maintby.name}}",
                 label: "Managed By",
                 isEditable: true,
                 tooltip: "",
@@ -45493,7 +45703,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -45504,7 +45715,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -45526,10 +45738,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Emergency Assistance",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer3.itemId}}",
           popupInfo: {
-            title: "Emergency Assistance: {PLACENAME}",
+            title:
+              "Emergency Assistance: {{{4efe5f693de34620934787ead6693f19.layer3.fields.placename.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -45537,7 +45751,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CONTACTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.contactid.name}}",
                 label: "Contact ID",
                 isEditable: true,
                 tooltip: "",
@@ -45545,7 +45760,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.contact.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -45553,7 +45769,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GENDER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.gender.name}}",
                 label: "Gender",
                 isEditable: true,
                 tooltip: "",
@@ -45561,7 +45778,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DATEBIRTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.datebirth.name}}",
                 label: "Date of Birth",
                 isEditable: true,
                 tooltip: "",
@@ -45572,7 +45790,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -45580,7 +45799,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PLACENAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.placename.name}}",
                 label: "Place Name",
                 isEditable: true,
                 tooltip: "",
@@ -45588,7 +45808,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RESIDETYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.residetype.name}}",
                 label: "Residence Type",
                 isEditable: true,
                 tooltip: "",
@@ -45596,7 +45817,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HOMEPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.homephone.name}}",
                 label: "Home Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45604,7 +45826,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CELLPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.cellphone.name}}",
                 label: "Cell Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45612,7 +45835,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.email.name}}",
                 label: "Email",
                 isEditable: true,
                 tooltip: "",
@@ -45620,7 +45844,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SMS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.sms.name}}",
                 label: "SMS or Text",
                 isEditable: true,
                 tooltip: "",
@@ -45628,7 +45853,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "MEDICCOND",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.mediccond.name}}",
                 label: "Medical Condition",
                 isEditable: true,
                 tooltip: "",
@@ -45636,7 +45862,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPECMEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.specmeds.name}}",
                 label: "Special Medications Required",
                 isEditable: true,
                 tooltip: "",
@@ -45648,7 +45875,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDICATION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.medication.name}}",
                 label: "Medications Required",
                 isEditable: true,
                 tooltip: "",
@@ -45656,7 +45884,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPECEQUIP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.specequip.name}}",
                 label: "Special Equipment Required",
                 isEditable: true,
                 tooltip: "",
@@ -45664,7 +45893,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SERANIMAL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.seranimal.name}}",
                 label: "Service Animal Present",
                 isEditable: true,
                 tooltip: "",
@@ -45676,7 +45906,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TRANSPORT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.transport.name}}",
                 label: "Transportation Required",
                 isEditable: true,
                 tooltip: "",
@@ -45688,7 +45919,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EVACPLAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.evacplan.name}}",
                 label: "Evacuation Plan Present",
                 isEditable: true,
                 tooltip: "",
@@ -45700,7 +45932,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "COMMENTS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.comments.name}}",
                 label: "Comments",
                 isEditable: true,
                 tooltip: "",
@@ -45708,7 +45941,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ECONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.econtact.name}}",
                 label: "Emergency Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -45716,7 +45950,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EHOMEPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.ehomephone.name}}",
                 label: "Emergency Contact Home Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45724,7 +45959,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ECELLPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.ecellphone.name}}",
                 label: "Emergency Contact Cell Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45732,7 +45968,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.eemail.name}}",
                 label: "Emergency Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -45740,7 +45977,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ESMS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.esms.name}}",
                 label: "Emergency Contact SMS or Text",
                 isEditable: true,
                 tooltip: "",
@@ -45748,7 +45986,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PCONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pcontact.name}}",
                 label: "Physician Name",
                 isEditable: true,
                 tooltip: "",
@@ -45756,7 +45995,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PWORKPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pworkphone.name}}",
                 label: "Physician's Work Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45764,7 +46004,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pemail.name}}",
                 label: "Physician's Email",
                 isEditable: true,
                 tooltip: "",
@@ -45772,7 +46013,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BEGINDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.begindate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -45783,7 +46025,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ENDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -45794,7 +46037,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -45805,7 +46049,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -45827,10 +46072,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Emergency Shelter",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -45838,7 +46085,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -45846,7 +46094,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -45854,7 +46103,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -45862,7 +46112,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -45870,7 +46121,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -45878,7 +46130,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -45886,7 +46139,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -45894,7 +46148,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -45902,7 +46157,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -45914,7 +46170,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -45926,7 +46183,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -45938,7 +46196,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -45946,7 +46205,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -45954,7 +46214,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -45962,7 +46223,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -45970,7 +46232,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -45978,7 +46241,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -45986,7 +46250,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -45997,7 +46262,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -46008,7 +46274,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -46016,7 +46283,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -46027,7 +46295,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -46049,10 +46318,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - School",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer1.itemId}}",
           popupInfo: {
-            title: "School: {NAME}",
+            title:
+              "School: {{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46060,7 +46331,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -46068,7 +46340,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}",
                 label: "Name of Facility",
                 isEditable: true,
                 tooltip: "",
@@ -46076,7 +46349,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.owner.name}}",
                 label: "Owner Name",
                 isEditable: true,
                 tooltip: "",
@@ -46084,7 +46358,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.owntype.name}}",
                 label: "Owner Type",
                 isEditable: true,
                 tooltip: "",
@@ -46092,7 +46367,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SUBTYPEFIELD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.subtypefield.name}}",
                 label: "Subtype Field",
                 isEditable: true,
                 tooltip: "",
@@ -46104,7 +46380,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FEATURECODE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.featurecode.name}}",
                 label: "Feature Code",
                 isEditable: true,
                 tooltip: "",
@@ -46112,7 +46389,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -46120,7 +46398,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "MUNICIPALITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.municipality.name}}",
                 label: "Municipality Name",
                 isEditable: true,
                 tooltip: "",
@@ -46128,7 +46407,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.state.name}}",
                 label: "State Name",
                 isEditable: true,
                 tooltip: "",
@@ -46136,7 +46416,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPTUREMETH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.capturemeth.name}}",
                 label: "Capture Method",
                 isEditable: true,
                 tooltip: "",
@@ -46144,7 +46425,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCATIONTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.locationtype.name}}",
                 label: "Location Type",
                 isEditable: true,
                 tooltip: "",
@@ -46152,7 +46434,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DESCRIPT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.descript.name}}",
                 label: "Description",
                 isEditable: true,
                 tooltip: "",
@@ -46160,7 +46443,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NUMSTUDENT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.numstudent.name}}",
                 label: "# of Students",
                 isEditable: true,
                 tooltip: "",
@@ -46172,7 +46456,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FACAREA",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.facarea.name}}",
                 label: "Facility Area",
                 isEditable: true,
                 tooltip: "",
@@ -46184,7 +46469,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -46195,7 +46481,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -46217,10 +46504,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayerForDashBoardMap - Hospital",
           itemId: "{{4efe5f693de34620934787ead6693f19.layer0.itemId}}",
           popupInfo: {
-            title: "Hospital: {NAME}",
+            title:
+              "Hospital: {{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46228,7 +46517,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -46236,7 +46526,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}",
                 label: "Name of Facility",
                 isEditable: true,
                 tooltip: "",
@@ -46244,7 +46535,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.owner.name}}",
                 label: "Owner Name",
                 isEditable: true,
                 tooltip: "",
@@ -46252,7 +46544,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.owntype.name}}",
                 label: "Owner Type",
                 isEditable: true,
                 tooltip: "",
@@ -46260,7 +46553,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SUBTYPEFIELD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.subtypefield.name}}",
                 label: "Subtype Field",
                 isEditable: true,
                 tooltip: "",
@@ -46272,7 +46566,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FEATURECODE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.featurecode.name}}",
                 label: "Feature Code",
                 isEditable: true,
                 tooltip: "",
@@ -46280,7 +46575,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -46288,7 +46584,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "AGENCYURL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.agencyurl.name}}",
                 label: "Website",
                 isEditable: true,
                 tooltip: "",
@@ -46296,7 +46593,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPERDAYS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.operdays.name}}",
                 label: "Operational Days",
                 isEditable: true,
                 tooltip: "",
@@ -46304,7 +46602,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPERHOURS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.operhours.name}}",
                 label: "Operational Hours",
                 isEditable: true,
                 tooltip: "",
@@ -46312,7 +46611,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -46324,7 +46624,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.contact.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -46332,7 +46633,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.phone.name}}",
                 label: "Phone",
                 isEditable: true,
                 tooltip: "",
@@ -46340,7 +46642,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.email.name}}",
                 label: "Email",
                 isEditable: true,
                 tooltip: "",
@@ -46382,10 +46685,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - Activity Stands",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer8.itemId}}",
           popupInfo: {
-            title: "Activity Stands: {StandID}",
+            title:
+              "Activity Stands: {{{b19aec399444407da84fffe2a55d4151.layer8.fields.standid.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46393,7 +46698,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -46401,7 +46707,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.standid.name}}",
                 label: "Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -46409,7 +46716,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HarvestActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.harvestactivityid.name}}",
                 label: "Harvest Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -46417,7 +46725,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityStandPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activitystandpercent.name}}",
                 label: "Activty Stand Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46429,7 +46738,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityStandArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activitystandarea.name}}",
                 label: "Activity Stand Area",
                 isEditable: true,
                 tooltip: "",
@@ -46441,7 +46751,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -46449,7 +46760,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -46460,7 +46772,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -46468,7 +46781,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -46479,7 +46793,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -46498,10 +46813,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - ChemicalProduct",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer7.itemId}}",
           popupInfo: {
-            title: "ChemicalProduct: {ProductName}",
+            title:
+              "ChemicalProduct: {{{b19aec399444407da84fffe2a55d4151.layer7.fields.productname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46509,7 +46826,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalProductID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.chemicalproductid.name}}",
                 label: "Chemical Product ID",
                 isEditable: true,
                 tooltip: "",
@@ -46521,7 +46839,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ProductName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.productname.name}}",
                 label: "Product Name",
                 isEditable: true,
                 tooltip: "",
@@ -46529,7 +46848,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.chemicaltype.name}}",
                 label: "Chemical Type",
                 isEditable: true,
                 tooltip: "",
@@ -46537,7 +46857,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EPARegistrationNumber",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.eparegistrationnumber.name}}",
                 label: "EPA Registration Number",
                 isEditable: true,
                 tooltip: "",
@@ -46545,7 +46866,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActiveIngredient",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activeingredient.name}}",
                 label: "Active Ingredient",
                 isEditable: true,
                 tooltip: "",
@@ -46553,7 +46875,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActiveIngredientPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activeingredientpercent.name}}",
                 label: "Active Ingredient Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46565,7 +46888,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NitrogenPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.nitrogenpercent.name}}",
                 label: "Nitrogen Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46577,7 +46901,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PhosphorusPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.phosphoruspercent.name}}",
                 label: "Phosphorus Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46589,7 +46914,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PotassiumPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.potassiumpercent.name}}",
                 label: "Potassium Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46601,7 +46927,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "BoronPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.boronpercent.name}}",
                 label: "Boron Percent",
                 isEditable: true,
                 tooltip: "",
@@ -46613,7 +46940,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -46621,7 +46949,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -46629,7 +46958,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -46637,7 +46967,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -46648,7 +46979,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -46656,7 +46988,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -46667,7 +47000,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -46686,10 +47020,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - ChemicalApplication",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer6.itemId}}",
           popupInfo: {
-            title: "ChemicalApplication: {ApplicationRate}",
+            title:
+              "ChemicalApplication: {{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationrate.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46697,7 +47033,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -46705,7 +47042,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ApplicationRate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationrate.name}}",
                 label: "Application Rate",
                 isEditable: true,
                 tooltip: "",
@@ -46717,7 +47055,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ApplicationUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationunitofmeasure.name}}",
                 label: "Application Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -46725,7 +47064,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalCarrier",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalcarrier.name}}",
                 label: "Chemical Carrier",
                 isEditable: true,
                 tooltip: "",
@@ -46733,7 +47073,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalApplicationID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalapplicationid.name}}",
                 label: "Chemical Application ID",
                 isEditable: true,
                 tooltip: "",
@@ -46745,7 +47086,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.globalid.name}}",
                 label: "Chemical Application ID",
                 isEditable: false,
                 tooltip: "",
@@ -46753,7 +47095,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalProductID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalproductid.name}}",
                 label: "Chemical Product ID",
                 isEditable: true,
                 tooltip: "",
@@ -46765,7 +47108,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ChemicalRate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalrate.name}}",
                 label: "Chemical Rate",
                 isEditable: true,
                 tooltip: "",
@@ -46777,7 +47121,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ChemicalUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalunitofmeasure.name}}",
                 label: "Chemical Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -46785,7 +47130,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -46796,7 +47142,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -46804,7 +47151,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -46815,7 +47163,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -46834,10 +47183,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - ActivityWeather",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer5.itemId}}",
           popupInfo: {
-            title: "ActivityWeather: {WeatherDate}",
+            title:
+              "ActivityWeather: {{{b19aec399444407da84fffe2a55d4151.layer5.fields.weatherdate.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46845,7 +47196,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -46853,7 +47205,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WeatherDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.weatherdate.name}}",
                 label: "Weather Date",
                 isEditable: true,
                 tooltip: "",
@@ -46864,7 +47217,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Temperature",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.temperature.name}}",
                 label: "Temperature",
                 isEditable: true,
                 tooltip: "",
@@ -46876,7 +47230,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TemperatureUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.temperatureunitofmeasure.name}}",
                 label: "Temperature Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -46884,7 +47239,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WindSpeed",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.windspeed.name}}",
                 label: "Wind Speed",
                 isEditable: true,
                 tooltip: "",
@@ -46896,7 +47252,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "WindSpeedUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.windspeedunitofmeasure.name}}",
                 label: "Wind Speed Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -46904,7 +47261,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WindDirection",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.winddirection.name}}",
                 label: "Wind Direction",
                 isEditable: true,
                 tooltip: "",
@@ -46912,7 +47270,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RelativeHumidityPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.relativehumiditypercent.name}}",
                 label: "Relative Humidity (Percent)",
                 isEditable: true,
                 tooltip: "",
@@ -46924,7 +47283,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -46932,7 +47292,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -46943,7 +47304,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -46951,7 +47313,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -46962,7 +47325,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -46981,10 +47345,12 @@ const expected: common.IItemTemplate[] = [
           title: "TestLayer2FromWebApp - Harvest Crops",
           itemId: "{{b19aec399444407da84fffe2a55d4151.layer4.itemId}}",
           popupInfo: {
-            title: "Harvest Crops: {CropName}",
+            title:
+              "Harvest Crops: {{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -46992,7 +47358,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CropCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropcategory.name}}",
                 label: "Crop Category",
                 isEditable: true,
                 tooltip: "",
@@ -47004,7 +47371,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CropName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}",
                 label: "Crop Name",
                 isEditable: true,
                 tooltip: "",
@@ -47012,7 +47380,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SpeciesName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.speciesname.name}}",
                 label: "Species Name",
                 isEditable: true,
                 tooltip: "",
@@ -47020,7 +47389,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EstimatedVolume",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.estimatedvolume.name}}",
                 label: "Estimated Volume",
                 isEditable: true,
                 tooltip: "",
@@ -47032,7 +47402,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "VolumeUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.volumeunitofmeasure.name}}",
                 label: "Volume Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -47040,7 +47411,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -47048,7 +47420,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -47056,7 +47429,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -47067,7 +47441,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -47075,7 +47450,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -47086,7 +47462,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",

@@ -186,7 +186,10 @@ export function convertItemToTemplate(
               }
               break;
             case "web map":
-              webmap.convertItemToTemplate(itemTemplate);
+              webappPromise = webmap.convertItemToTemplate(
+                itemTemplate,
+                authentication
+              );
               break;
             case "web mapping application":
               webappPromise = webmappingapplication.convertItemToTemplate(
@@ -510,6 +513,10 @@ export function postProcessFieldReferences(
       break;
     case "dashboard":
       dashboard.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+      break;
+    case "web map":
+      webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+      break;
   }
   return solutionTemplate;
 }

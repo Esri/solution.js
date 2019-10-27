@@ -328,4 +328,13 @@ export interface IDatasourceInfo {
    * Application types like dashboard can reference datasources via realtive widget reference ids
    */
   references?: any[];
+  /**
+   * The details on any relationships that the datasource is involved in
+   */
+  relationships: any[];
+  /**
+   * The layers adminLayerInfo
+   * Used to fetch relationship info in some cases
+   */
+  adminLayerInfo: any;
 }

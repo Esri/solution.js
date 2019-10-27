@@ -82,7 +82,6 @@ import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
-import * as common from "@esri/solution-common";
 
 let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";

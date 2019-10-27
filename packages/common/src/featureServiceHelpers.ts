@@ -30,8 +30,12 @@
   IUpdate,
   IPostProcessArgs
 } from "@esri/solution-common/src/interfaces";*/
-import * as common from "@esri/solution-common";
+
 import * as auth from "@esri/arcgis-rest-auth";
+import * as interfaces from "./interfaces";
+import * as generalHelpers from "./generalHelpers";
+import * as templatization from "./templatization";
+import * as restHelpers from "./restHelpers";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -46,14 +50,14 @@ import * as auth from "@esri/arcgis-rest-auth";
  * @protected
  */
 export function templatize(
-  itemTemplate: common.IItemTemplate,
-  dependencies: common.IDependency[]
-): common.IItemTemplate {
+  itemTemplate: interfaces.IItemTemplate,
+  dependencies: interfaces.IDependency[]
+): interfaces.IItemTemplate {
   // Common templatizations
-  const id: string = common.cloneObject(itemTemplate.item.id);
+  const id: string = generalHelpers.cloneObject(itemTemplate.item.id);
 
   itemTemplate.item.url = _templatize(id, "url");
-  itemTemplate.item.id = common.templatizeTerm(id, id, ".itemId");
+  itemTemplate.item.id = templatization.templatizeTerm(id, id, ".itemId");
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];
@@ -65,21 +69,23 @@ export function templatize(
   const _items: any[] = layers.concat(tables);
 
   // templatize the service references serviceItemId
-  itemTemplate.properties.service.serviceItemId = common.templatizeTerm(
+  itemTemplate.properties.service.serviceItemId = templatization.templatizeTerm(
     itemTemplate.properties.service.serviceItemId,
     itemTemplate.properties.service.serviceItemId,
     ".itemId"
   );
 
-  if (common.getProp(itemTemplate, "properties.service.fullExtent")) {
-    itemTemplate.properties.service.fullExtent = common.templatizeTerm(
+  if (generalHelpers.getProp(itemTemplate, "properties.service.fullExtent")) {
+    itemTemplate.properties.service.fullExtent = templatization.templatizeTerm(
       id,
       id,
       ".fullExtent"
     );
   }
-  if (common.getProp(itemTemplate, "properties.service.initialExtent")) {
-    itemTemplate.properties.service.initialExtent = common.templatizeTerm(
+  if (
+    generalHelpers.getProp(itemTemplate, "properties.service.initialExtent")
+  ) {
+    itemTemplate.properties.service.initialExtent = templatization.templatizeTerm(
       id,
       id,
       ".initialExtent"
@@ -110,7 +116,7 @@ export function deleteViewProps(layer: any) {
   const props: string[] = ["definitionQuery"];
 
   props.forEach(prop => {
-    common.deleteProp(layer, prop);
+    generalHelpers.deleteProp(layer, prop);
   });
 }
 
@@ -231,10 +237,10 @@ export function _cachePopupInfo(
  * @protected
  */
 export function updateTemplate(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   createResponse: any
-): common.IItemTemplate {
+): interfaces.IItemTemplate {
   // Add the new item to the template dictionary
   templateDictionary[itemTemplate.itemId] = Object.assign(
     templateDictionary[itemTemplate.itemId] || {},
@@ -246,7 +252,7 @@ export function updateTemplate(
   );
   // Update the item template now that the new service has been created
   itemTemplate.itemId = createResponse.serviceItemId;
-  return common.replaceInTemplate(itemTemplate, templateDictionary);
+  return templatization.replaceInTemplate(itemTemplate, templateDictionary);
 }
 
 /**
@@ -273,8 +279,8 @@ export function getLayerSettings(
       layerId: id,
       itemId: itemId
     };
-    common.deleteProp(layerInfos[id], "newFields");
-    common.deleteProp(layerInfos[id], "sourceFields");
+    generalHelpers.deleteProp(layerInfos[id], "newFields");
+    generalHelpers.deleteProp(layerInfos[id], "sourceFields");
   });
   return settings;
 }
@@ -289,7 +295,7 @@ export function getLayerSettings(
  * @param settings The settings object used to de-templatize the various templates within the item.
  */
 export function updateSettingsFieldInfos(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   settings: any
 ): void {
   const dependencies = itemTemplate.dependencies;
@@ -332,7 +338,7 @@ export function deTemplatizeFieldInfos(
   fieldInfoKeys.forEach(id => {
     if (fieldInfos[id].hasOwnProperty("templates")) {
       fieldInfos[id].templates = JSON.parse(
-        common.replaceInTemplate(
+        templatization.replaceInTemplate(
           JSON.stringify(fieldInfos[id].templates),
           settings
         )
@@ -342,20 +348,23 @@ export function deTemplatizeFieldInfos(
     if (fieldInfos[id].hasOwnProperty("adminLayerInfo")) {
       adminLayerInfos[id].viewLayerDefinition.table.relatedTables =
         fieldInfos[id].adminLayerInfo;
-      common.deleteProp(fieldInfos[id], "adminLayerInfo");
+      generalHelpers.deleteProp(fieldInfos[id], "adminLayerInfo");
     }
 
     if (fieldInfos[id].hasOwnProperty("types")) {
       fieldInfos[id].types = JSON.parse(
-        common.replaceInTemplate(JSON.stringify(fieldInfos[id].types), settings)
+        templatization.replaceInTemplate(
+          JSON.stringify(fieldInfos[id].types),
+          settings
+        )
       );
     }
   });
 
   return {
-    popupInfos: common.replaceInTemplate(popupInfos, settings),
-    fieldInfos: common.replaceInTemplate(fieldInfos, settings),
-    adminLayerInfos: common.replaceInTemplate(adminLayerInfos, settings)
+    popupInfos: templatization.replaceInTemplate(popupInfos, settings),
+    fieldInfos: templatization.replaceInTemplate(fieldInfos, settings),
+    adminLayerInfos: templatization.replaceInTemplate(adminLayerInfos, settings)
   };
 }
 
@@ -368,7 +377,9 @@ export function deTemplatizeFieldInfos(
  * @param itemTemplate The current itemTemplate being processed.
  * @return array of layers and tables
  */
-export function getLayersAndTables(itemTemplate: common.IItemTemplate): any[] {
+export function getLayersAndTables(
+  itemTemplate: interfaces.IItemTemplate
+): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
   (properties.layers || []).forEach(function(layer: any) {
@@ -399,7 +410,7 @@ export function getLayersAndTables(itemTemplate: common.IItemTemplate): any[] {
  * @protected
  */
 export function addFeatureServiceLayersAndTables(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
   requestOptions: auth.IUserRequestOptions,
@@ -436,26 +447,31 @@ export function addFeatureServiceLayersAndTables(
           ).then(
             r => {
               // Update relationships and layer definitions
-              const updates: common.IUpdate[] = common.getLayerUpdates({
-                message: "updated layer definition",
-                objects: r.layerInfos.fieldInfos,
-                itemTemplate: r.itemTemplate,
-                authentication: requestOptions.authentication,
-                progressTickCallback
-              } as common.IPostProcessArgs);
+              const updates: interfaces.IUpdate[] = restHelpers.getLayerUpdates(
+                {
+                  message: "updated layer definition",
+                  objects: r.layerInfos.fieldInfos,
+                  itemTemplate: r.itemTemplate,
+                  authentication: requestOptions.authentication,
+                  progressTickCallback
+                } as interfaces.IPostProcessArgs
+              );
               // Process the updates sequentially
               updates
                 .reduce((prev, update) => {
                   return prev.then(() => {
-                    return common.getRequest(update);
+                    return restHelpers.getRequest(update);
                   });
                 }, Promise.resolve())
-                .then(() => resolve(), (e: any) => reject(common.fail(e)));
+                .then(
+                  () => resolve(),
+                  (e: any) => reject(generalHelpers.fail(e))
+                );
             },
-            e => reject(common.fail(e))
+            e => reject(generalHelpers.fail(e))
           );
         },
-        e => reject(common.fail(e))
+        e => reject(generalHelpers.fail(e))
       );
     } else {
       resolve();
@@ -487,7 +503,7 @@ export function updateFeatureServiceDefinition(
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   progressTickCallback?: () => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -511,7 +527,7 @@ export function updateFeatureServiceDefinition(
         // bring over the fieldInfos from the source layer
         updateSettingsFieldInfos(itemTemplate, templateDictionary);
         // update adminLayerInfo before add to definition with view source fieldInfo settings
-        item.adminLayerInfo = common.replaceInTemplate(
+        item.adminLayerInfo = templatization.replaceInTemplate(
           item.adminLayerInfo,
           templateDictionary
         );
@@ -529,17 +545,17 @@ export function updateFeatureServiceDefinition(
       } else {
         // Portal will fail if the geometryField is null
         if (item.adminLayerInfo) {
-          common.deleteProp(item.adminLayerInfo, "geometryField");
+          generalHelpers.deleteProp(item.adminLayerInfo, "geometryField");
         }
         options.tables.push(item);
       }
     });
-    common.addToServiceDefinition(serviceUrl, options).then(
+    restHelpers.addToServiceDefinition(serviceUrl, options).then(
       () => {
         progressTickCallback && progressTickCallback();
         resolve();
       },
-      e => reject(common.fail(e))
+      e => reject(generalHelpers.fail(e))
     );
   });
 }
@@ -558,7 +574,7 @@ export function updateFeatureServiceDefinition(
  * @protected
  */
 export function updateLayerFieldReferences(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   fieldInfos: any,
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
@@ -585,7 +601,7 @@ export function updateLayerFieldReferences(
           layerInfos
         });
       },
-      e => rejectFn(common.fail(e))
+      e => rejectFn(generalHelpers.fail(e))
     );
   });
 }
@@ -604,7 +620,7 @@ export function updateLayerFieldReferences(
  * @protected
  */
 export function postProcessFields(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
@@ -619,12 +635,12 @@ export function postProcessFields(
 
     const serviceData: any = itemTemplate.properties;
     Promise.all([
-      common.getLayers(
+      restHelpers.getLayers(
         url,
         serviceData["layers"],
         requestOptions.authentication
       ),
-      common.getLayers(
+      restHelpers.getLayers(
         url,
         serviceData["tables"],
         requestOptions.authentication
@@ -691,7 +707,7 @@ export function postProcessFields(
           )
         );
       },
-      e => rejectFn(common.fail(e))
+      e => rejectFn(generalHelpers.fail(e))
     );
   });
 }
@@ -785,14 +801,15 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
  * @protected
  */
 export function updatePopupInfo(
-  itemTemplate: common.IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   popupInfos: any
 ): void {
   ["layers", "tables"].forEach(type => {
-    const _items: any[] = common.getProp(itemTemplate, "data." + type);
+    const _items: any[] = generalHelpers.getProp(itemTemplate, "data." + type);
     if (_items && Array.isArray(_items)) {
       _items.forEach((item: any) => {
-        item.popupInfo = common.getProp(popupInfos, type + "." + item.id) || {};
+        item.popupInfo =
+          generalHelpers.getProp(popupInfos, type + "." + item.id) || {};
       });
     }
   });
@@ -817,7 +834,7 @@ export function _templatize(
     return value;
   } else {
     return String(
-      common.templatizeTerm(
+      templatization.templatizeTerm(
         basePath,
         basePath,
         "." + String(value).toLowerCase() + (suffix ? "." + suffix : "")
@@ -857,8 +874,8 @@ export function _templatizeProperty(
 export function _templatizeLayer(
   dataItem: any,
   adminItem: any,
-  itemTemplate: common.IItemTemplate,
-  dependencies: common.IDependency[]
+  itemTemplate: interfaces.IItemTemplate,
+  dependencies: interfaces.IDependency[]
 ): void {
   // Templatize all properties that contain field references
   _templatizeLayerFieldReferences(
@@ -876,14 +893,14 @@ export function _templatizeLayer(
   updates.forEach(update => {
     if (update.hasOwnProperty("name")) {
       // templatize the name but leave the current name as the optional default
-      update.name = common.templatizeTerm(
+      update.name = templatization.templatizeTerm(
         update["serviceItemId"] + ".layer" + update.id,
         update["serviceItemId"] + ".layer" + update.id,
         ".name||" + update.name
       );
     }
     if (update.hasOwnProperty("extent")) {
-      update.extent = common.templatizeTerm(
+      update.extent = templatization.templatizeTerm(
         update["serviceItemId"],
         update["serviceItemId"],
         ".fullExtent"
@@ -891,7 +908,7 @@ export function _templatizeLayer(
     }
 
     if (update.hasOwnProperty("serviceItemId")) {
-      update["serviceItemId"] = common.templatizeTerm(
+      update["serviceItemId"] = templatization.templatizeTerm(
         update["serviceItemId"],
         update["serviceItemId"],
         ".itemId"
@@ -920,7 +937,7 @@ export function _templatizeLayerFieldReferences(
   dataItem: any,
   itemID: string,
   layer: any,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
   const path: string = itemID + ".layer" + layer.id + ".fields";
@@ -957,13 +974,13 @@ export function _templatizeLayerFieldReferences(
  */
 export function _templatizeAdminLayerInfo(
   layer: any,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): any {
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
 
-  common.deleteProp(adminLayerInfo, "xssTrustedFields");
-  common.deleteProp(adminLayerInfo, "tableName");
+  generalHelpers.deleteProp(adminLayerInfo, "xssTrustedFields");
+  generalHelpers.deleteProp(adminLayerInfo, "tableName");
 
   // Remove unnecessary properties and templatize key properties from viewLayerDefinition
   if (adminLayerInfo.viewLayerDefinition) {
@@ -1007,9 +1024,9 @@ export function _templatizeAdminLayerInfo(
  */
 export function _processAdminObject(
   object: any,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
-  common.deleteProp(object, "sourceId");
+  generalHelpers.deleteProp(object, "sourceId");
   if (object.hasOwnProperty("sourceServiceName")) {
     object.sourceServiceName = _templatizeSourceServiceName(
       object.sourceServiceName,
@@ -1028,7 +1045,7 @@ export function _processAdminObject(
  */
 export function _templatizeSourceServiceName(
   lookupName: string,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): string | string[] | undefined {
   const deps = dependencies.filter(
     dependency => dependency.name === lookupName
@@ -1045,10 +1062,10 @@ export function _templatizeSourceServiceName(
  */
 export function _templatizeAdminLayerInfoFields(
   layer: any,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
   // templatize the source layer fields
-  const table = common.getProp(
+  const table = generalHelpers.getProp(
     layer,
     "adminLayerInfo.viewLayerDefinition.table"
   );
@@ -1061,7 +1078,7 @@ export function _templatizeAdminLayerInfoFields(
 
     // templatize the releated table fields
     const relatedTables =
-      common.getProp(
+      generalHelpers.getProp(
         layer,
         "adminLayerInfo.viewLayerDefinition.table.relatedTables"
       ) || [];
@@ -1094,7 +1111,7 @@ export function _templatizeAdminLayerInfoFields(
 
 export function _getDependantItemId(
   lookupName: string,
-  dependencies: common.IDependency[]
+  dependencies: interfaces.IDependency[]
 ): string {
   const deps = dependencies.filter(
     dependency => dependency.name === lookupName
@@ -1279,7 +1296,7 @@ export function _templatizeFieldName(
     const rels = name.split("/");
     const relationshipId: any = rels[1];
 
-    const adminRelatedTables: any = common.getProp(
+    const adminRelatedTables: any = generalHelpers.getProp(
       layer,
       "adminLayerInfo.viewLayerDefinition.table.relatedTables"
     );
@@ -1290,7 +1307,10 @@ export function _templatizeFieldName(
       const relatedTable: any = relatedTables[relationshipId];
       // the layers relationships stores the property as relatedTableId
       // the layers adminLayerInfo relatedTables stores the property as sourceLayerId
-      const prop: string = common.getProp(relatedTable, "relatedTableId")
+      const prop: string = generalHelpers.getProp(
+        relatedTable,
+        "relatedTableId"
+      )
         ? "relatedTableId"
         : "sourceLayerId";
       const _basePath: string =
@@ -1474,6 +1494,7 @@ export function _templatizeSimpleName(
   suffix: string
 ): string {
   fieldNames.forEach(name => {
+    // look for the name but not if its followed by }}
     const regEx = new RegExp("\\b" + name + "\\b", "gm");
     if (expression && regEx.test(expression)) {
       expression = expression.replace(
@@ -1800,7 +1821,7 @@ export function _templatizeLabelingInfo(
 export function _templatizeTemplates(layer: any, basePath: string): void {
   const templates: any[] = layer.templates || [];
   templates.forEach(t => {
-    const attributes: any = common.getProp(t, "prototype.attributes");
+    const attributes: any = generalHelpers.getProp(t, "prototype.attributes");
     const _attributes: any = _templatizeKeys(attributes, basePath, "name");
     if (_attributes) {
       t.prototype.attributes = _attributes;
@@ -1820,7 +1841,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
       const templates: any[] = type.templates;
       if (templates && templates.length > 0) {
         templates.forEach((t: any) => {
-          const attributes = common.getProp(t, "prototype.attributes");
+          const attributes = generalHelpers.getProp(t, "prototype.attributes");
           const _attributes: any = _templatizeKeys(
             attributes,
             basePath,
@@ -1920,7 +1941,7 @@ export function _templatizeDefinitionQuery(
 export function _getNameMapping(fieldInfos: any, id: string): any {
   // create name mapping
   const fInfo: any = fieldInfos[id];
-  const nameMapping: common.IStringValuePair = {};
+  const nameMapping: interfaces.IStringValuePair = {};
   const newFields = fInfo.newFields;
   const newFieldNames: string[] = newFields.map((f: any) => f.name);
   const sourceFields: any[] = fInfo.sourceFields;
@@ -1989,9 +2010,9 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
       }
     });
 
-    common.deleteProp(fInfo, "sourceSchemaChangesAllowed");
-    common.deleteProp(fInfo, "editFieldsInfo");
-    common.deleteProp(fInfo, "newEditFieldsInfo");
+    generalHelpers.deleteProp(fInfo, "sourceSchemaChangesAllowed");
+    generalHelpers.deleteProp(fInfo, "editFieldsInfo");
+    generalHelpers.deleteProp(fInfo, "newEditFieldsInfo");
   }
   return nameMapping;
 }
@@ -1999,6 +2020,6 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
 //#endregion
 
 export interface IPopupInfos {
-  layers: common.INumberValuePair;
-  tables: common.INumberValuePair;
+  layers: interfaces.INumberValuePair;
+  tables: interfaces.INumberValuePair;
 }

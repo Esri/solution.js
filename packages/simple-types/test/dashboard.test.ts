@@ -183,14 +183,18 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
           itemId: "AAABBBCCC123",
           ids: [],
           layerId: 0,
-          fields: []
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
         },
         {
           basePath: "",
           itemId: "AAABBBCCC123",
           ids: [],
           layerId: 1,
-          fields: []
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
         }
       ];
 

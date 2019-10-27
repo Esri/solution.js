@@ -435,7 +435,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         ids: [],
         itemId: itemId,
         basePath: "",
-        fields: []
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {}
       };
       const actual: boolean = hasDatasource([datasource], itemId, layerId);
       expect(actual).toBe(true);
@@ -449,7 +451,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         ids: [],
         itemId: itemId,
         basePath: "",
-        fields: []
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {}
       };
       const actual: boolean = hasDatasource(
         [datasource],
@@ -467,7 +471,9 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         ids: [],
         itemId: itemId,
         basePath: "",
-        fields: []
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {}
       };
       const actual: boolean = hasDatasource([datasource], itemId, 1);
       expect(actual).toBe(false);
