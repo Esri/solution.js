@@ -24,7 +24,6 @@
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as fsUtils from "./featureServiceHelpers";
 
 //#endregion
 
@@ -79,7 +78,7 @@ export function convertItemToTemplate(
                       );
 
                       // resolve the template with templatized values
-                      resolve(fsUtils.templatize(itemTemplate, dependencies));
+                      resolve(common.templatize(itemTemplate, dependencies));
                     },
                     (e: any) => reject(common.fail(e))
                   );
@@ -116,13 +115,6 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    /* console.log(
-      "createItemFromTemplate for a " +
-        template.type +
-        " (" +
-        template.itemId +
-        ")"
-    ); */
     const requestOptions: auth.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
@@ -130,7 +122,7 @@ export function createItemFromTemplate(
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
     // cache the popup info to be added later
-    const popupInfos: fsUtils.IPopupInfos = fsUtils.cachePopupInfos(
+    const popupInfos: common.IPopupInfos = common.cachePopupInfos(
       newItemTemplate.data
     );
 
@@ -147,13 +139,13 @@ export function createItemFromTemplate(
 
           if (createResponse.success) {
             // Detemplatize what we can now that the service has been created
-            newItemTemplate = fsUtils.updateTemplate(
+            newItemTemplate = common.updateTemplate(
               newItemTemplate,
               templateDictionary,
               createResponse
             );
             // Add the layers and tables to the feature service
-            fsUtils
+            common
               .addFeatureServiceLayersAndTables(
                 newItemTemplate,
                 templateDictionary,
@@ -163,7 +155,7 @@ export function createItemFromTemplate(
               )
               .then(
                 () => {
-                  newItemTemplate = fsUtils.updateTemplate(
+                  newItemTemplate = common.updateTemplate(
                     newItemTemplate,
                     templateDictionary,
                     createResponse

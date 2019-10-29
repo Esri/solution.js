@@ -308,6 +308,10 @@ export interface IDatasourceInfo {
    */
   layerId: number;
   /**
+   * The webmap layer id eg. "TestLayerForDashBoardMap_632"
+   */
+  id?: string;
+  /**
    * The id for the layer from a map could be referenced by more than one map for a solution
    */
   ids: string[];
@@ -319,4 +323,18 @@ export interface IDatasourceInfo {
    * The fields this datasource contains
    */
   fields: any[];
+  /**
+   * The ralative ids for references to a datasource
+   * Application types like dashboard can reference datasources via realtive widget reference ids
+   */
+  references?: any[];
+  /**
+   * The details on any relationships that the datasource is involved in
+   */
+  relationships: any[];
+  /**
+   * The layers adminLayerInfo
+   * Used to fetch relationship info in some cases
+   */
+  adminLayerInfo: any;
 }

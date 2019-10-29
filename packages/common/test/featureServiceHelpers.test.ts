@@ -82,7 +82,6 @@ import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
-import * as common from "@esri/solution-common";
 
 let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
@@ -740,6 +739,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + 0,
           layerId: "0",
           fields: {
@@ -761,6 +761,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + 1,
           layerId: "1",
           fields: {
@@ -794,7 +795,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const settings = getLayerSettings(fieldInfos, serviceUrl);
+      const settings = getLayerSettings(
+        fieldInfos,
+        serviceUrl,
+        "33298a2612ba4899adc41180c435425f"
+      );
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });
@@ -930,6 +935,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       const expectedSettings: any = {
         layer0: {
+          itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + 0,
           layerId: "0",
           fields: {
@@ -956,6 +962,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         },
         layer1: {
+          itemId: "33298a2612ba4899adc41180c435425f",
           url: serviceUrl + "/" + 1,
           layerId: "1",
           fields: {
@@ -996,7 +1003,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           deleteFields: ["createdate"]
         }
       };
-      const settings: any = getLayerSettings(fieldInfos, serviceUrl);
+      const settings: any = getLayerSettings(
+        fieldInfos,
+        serviceUrl,
+        "33298a2612ba4899adc41180c435425f"
+      );
       expect(fieldInfos).toEqual(expectedFieldInfos);
       expect(settings).toEqual(expectedSettings);
     });

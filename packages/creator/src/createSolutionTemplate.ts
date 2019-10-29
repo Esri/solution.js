@@ -329,7 +329,11 @@ export function postProcessFieldReferences(
   const templateTypeHash: any = _getTemplateTypeHash(templates);
 
   return templates.map(template => {
-    if (template.type === "Web Mapping Application") {
+    if (
+      template.type === "Web Mapping Application" ||
+      template.type === "Dashboard" ||
+      template.type === "Web Map"
+    ) {
       const webMapFSDependencies: string[] = _getWebMapFSDependencies(
         template,
         templateTypeHash
@@ -386,7 +390,9 @@ export function _getDatasourceInfos(
             fields: obj.fields,
             basePath: t.itemId + ".layer" + obj.id + ".fields",
             url: common.getProp(t, "item.url"),
-            ids: []
+            ids: [],
+            relationships: obj.relationships || [],
+            adminLayerInfo: obj.adminLayerInfo || {}
           });
         }
       });
@@ -427,20 +433,30 @@ export function _updateWebMapHashInfo(
   template: common.IItemTemplate,
   hashItem: any
 ) {
-  const operationalLayers: any[] = common.getProp(
-    template,
-    "data.operationalLayers"
-  );
-  if (operationalLayers && operationalLayers.length > 0) {
-    hashItem.operationalLayers = [];
-    operationalLayers.forEach(layer => {
-      if (layer.layerType === "ArcGISFeatureLayer") {
-        const opLayer: any = {};
-        opLayer[common.cleanId(layer.itemId)] = {
+  const operationalLayers: any[] =
+    common.getProp(template, "data.operationalLayers") || [];
+
+  const tables: any[] = common.getProp(template, "data.tables") || [];
+  const layersAndTables: any[] = operationalLayers.concat(tables);
+  if (layersAndTables && layersAndTables.length > 0) {
+    hashItem.layersAndTables = [];
+    layersAndTables.forEach(layer => {
+      const obj: any = {};
+      let itemId: any;
+      if (layer.itemId) {
+        itemId = layer.itemId;
+      } else if (layer.url && layer.url.indexOf("{{") > -1) {
+        // some layers like heatmap layer don't have a itemId
+        itemId = layer.url
+          .replace("{{", "")
+          .replace(/([.]layer([0-9]|[1-9][0-9])[.]url)[}]{2}/, "");
+      }
+      if (itemId) {
+        obj[common.cleanLayerBasedItemId(itemId)] = {
           id: layer.id,
           url: layer.url
         };
-        hashItem.operationalLayers.push(opLayer);
+        hashItem.layersAndTables.push(obj);
       }
     });
   }
@@ -466,7 +482,7 @@ export function _addMapLayerIds(
 
   return datasourceInfos.map(ds => {
     webMapIds.forEach(webMapId => {
-      templateTypeHash[webMapId].operationalLayers.forEach((opLayer: any) => {
+      templateTypeHash[webMapId].layersAndTables.forEach((opLayer: any) => {
         const opLayerInfo: any = opLayer[ds.itemId];
         const url: string =
           ds.url && !isNaN(ds.layerId)

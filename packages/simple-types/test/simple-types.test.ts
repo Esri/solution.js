@@ -22,15 +22,17 @@ import {
   getGroupTitle,
   convertItemToTemplate,
   createItemFromTemplate,
-  updateGroup
+  updateGroup,
+  postProcessFieldReferences
 } from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
-
+import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import { IItemTemplate } from "../../common/src/interfaces";
 import { UserSession } from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
+import { stat } from "mz/fs";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new UserSession({
@@ -297,19 +299,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
           dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
           dispatchers: {
-            serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+            serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
             url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
           },
           assignments: {
-            serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+            serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
             url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
           },
           workers: {
-            serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+            serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
             url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
           },
           tracks: {
-            serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+            serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
             url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
             enabled: true,
             updateInterval: 300
@@ -1350,19 +1352,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
         dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}",
+          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
           url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
         },
         assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.itemId}}",
+          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
           url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
         },
         workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.itemId}}",
+          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
           url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
         },
         tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.itemId}}",
+          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
           url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
           enabled: true,
           updateInterval: 300
@@ -2359,9 +2361,93 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
   });
 
   describe("postProcessFieldReferences", () => {
-    xit("postProcessFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should process dashboard field references", () => {
+      const template: common.IItemTemplate = common.cloneObject(
+        staticDashboardMocks._initialDashboardTemplate
+      );
+      const datasourceInfos: common.IDatasourceInfo[] = common.cloneObject(
+        staticDashboardMocks.datasourceInfos
+      );
+      const expected: common.IItemTemplate = common.cloneObject(
+        staticDashboardMocks.expectedTemplate
+      );
+
+      // we don't first convert the item to template so the itemIds are not templatized
+      // clean those out for this test.
+      // This should be handled differently when removing the static mock items in favor of standard mock items.
+
+      // Clean datasource itemIds
+      expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.headerPanel.selectors[4].datasets[0].dataSource.itemId
+      );
+      expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.leftPanel.selectors[0].datasets[0].dataSource.itemId
+      );
+      expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.leftPanel.selectors[4].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[3].datasets[1].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.widgets[3].datasets[1].dataSource.itemId
+      );
+      expected.data.widgets[3].datasets[2].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.widgets[3].datasets[2].dataSource.itemId
+      );
+      expected.data.widgets[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.widgets[4].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[6].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.widgets[6].datasets[0].dataSource.itemId
+      );
+      expected.data.widgets[8].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.widgets[8].datasets[0].dataSource.itemId
+      );
+      expected.data.urlParameters[4].datasets[0].dataSource.itemId = common.cleanLayerBasedItemId(
+        expected.data.urlParameters[4].datasets[0].dataSource.itemId
+      );
+
+      // clean map itemId
+      expected.data.widgets[0].itemId = common.cleanItemId(
+        expected.data.widgets[0].itemId
+      );
+
+      // clean layerIds
+      expected.data.headerPanel.selectors[4].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.headerPanel.selectors[4].datasets[0].dataSource.layerId
+      );
+      expected.data.leftPanel.selectors[0].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.leftPanel.selectors[0].datasets[0].dataSource.layerId
+      );
+      expected.data.leftPanel.selectors[4].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.leftPanel.selectors[4].datasets[0].dataSource.layerId
+      );
+      expected.data.widgets[3].datasets[1].dataSource.layerId = common.cleanLayerId(
+        expected.data.widgets[3].datasets[1].dataSource.layerId
+      );
+      expected.data.widgets[3].datasets[2].dataSource.layerId = common.cleanLayerId(
+        expected.data.widgets[3].datasets[2].dataSource.layerId
+      );
+      expected.data.widgets[4].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.widgets[4].datasets[0].dataSource.layerId
+      );
+      expected.data.widgets[6].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.widgets[6].datasets[0].dataSource.layerId
+      );
+      expected.data.widgets[8].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.widgets[8].datasets[0].dataSource.layerId
+      );
+      expected.data.urlParameters[4].datasets[0].dataSource.layerId = common.cleanLayerId(
+        expected.data.urlParameters[4].datasets[0].dataSource.layerId
+      );
+
+      // clean dependencies
+      expected.dependencies = [];
+
+      const actual = postProcessFieldReferences(
+        template,
+        datasourceInfos,
+        "Dashboard"
+      );
+      expect(actual).toEqual(expected);
     });
   });
 });
