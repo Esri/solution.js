@@ -3482,7 +3482,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail without popup", () => {
       const layerDefinition: any = {};
       const layer: any = {};
-      const fieldNames: any = ["A", "B", "AA", "BB"];
+      const fieldNames: any = ["A", "B", "AA", "BB", "name"];
       _templatizePopupInfo(
         layerDefinition,
         layer,
@@ -3609,7 +3609,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      const fieldNames: string[] = ["A", "B"];
+      const fieldNames: string[] = ["A", "B", "name"];
 
       const relatedBasePath = itemId + ".layer" + relatedTableId + ".fields";
 
@@ -3738,7 +3738,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      const expectedFieldNames: string[] = ["A", "B"];
+      const expectedFieldNames: string[] = ["A", "B", "name"];
 
       _templatizePopupInfo(
         layerDefinition,
@@ -3855,7 +3855,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ]
       };
 
-      const fieldNames: string[] = ["A", "B"];
+      const fieldNames: string[] = ["A", "B", "name"];
 
       const expectedLayerDef: any = {
         popupInfo: {
@@ -3983,7 +3983,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     it("should not fail when empty", () => {
       const obj: any = {};
       const prop: string = "";
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       _templatizeName(obj, prop, fieldNames, basePath);
       expect(obj).toEqual({});
     });
@@ -3993,7 +3993,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         propName: "SomeAwords and SomeBwords and A and B and C and stuff"
       };
       const prop: string = "propName";
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       const expected: any = {
         propName:
           "SomeAwords and SomeBwords and {{" +
@@ -4046,21 +4046,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_templatizeDefinitionEditor", () => {
     it("should not fail with undefined layer", () => {
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = undefined;
       _templatizeDefinitionEditor(layer, basePath, fieldNames);
       expect(layer).toBeUndefined();
     });
 
     it("should not fail without definitionEditor", () => {
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {};
       _templatizeDefinitionEditor(layer, basePath, fieldNames);
       expect(layer).toEqual({});
     });
 
     it("should not fail with empty definitionEditor", () => {
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionEditor: {}
       };
@@ -4072,7 +4072,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should templatize field references in definitionEditor", () => {
-      const fieldNames: string[] = ["A", "B", "C"];
+      const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionEditor: {
           parameterizedExpression:
@@ -4164,14 +4164,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_templatizeDefinitionExpression", () => {
     it("should not fail with undefined", () => {
-      const fieldNames: any[] = ["A", "B", "C"];
+      const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = undefined;
       _templatizeDefinitionExpression(layer, basePath, fieldNames);
       expect(layer).toBeUndefined();
     });
 
     it("should not fail without definitionExpression", () => {
-      const fieldNames: any[] = ["A", "B", "C"];
+      const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = {};
       const expected: any = {};
       _templatizeDefinitionExpression(layer, basePath, fieldNames);
@@ -4179,7 +4179,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should not fail with empty definitionExpression", () => {
-      const fieldNames: any[] = ["A", "B", "C"];
+      const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionExpression: ""
       };
@@ -4192,7 +4192,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should templatize field references within definitionExpression", () => {
-      const fieldNames: any[] = ["A", "B", "C"];
+      const fieldNames: any[] = ["A", "B", "C", "name"];
       const layer: any = {
         definitionExpression: "A IS ABC AND B LIKE C"
       };
@@ -4213,7 +4213,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_templatizeSimpleName", () => {
     it("should not fail with undefined", () => {
-      const fieldNames: any[] = ["A", "B", "C", "D"];
+      const fieldNames: any[] = ["A", "B", "C", "D", "name"];
       let expression;
       expression = _templatizeSimpleName(
         expression,
@@ -4225,7 +4225,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should not fail with empty expression", () => {
-      const fieldNames: any[] = ["A", "B", "C", "D"];
+      const fieldNames: any[] = ["A", "B", "C", "D", "name"];
       let expression: string = "";
       expression = _templatizeSimpleName(
         expression,
@@ -4237,7 +4237,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should templatize field references in an expression", () => {
-      const fieldNames: any[] = ["A", "B", "C", "D"];
+      const fieldNames: any[] = ["A", "B", "C", "D", "name"];
 
       // test case in expression
       let expression =
@@ -4260,6 +4260,30 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           ".d.name}} SOMEOTHERABC)"
       );
     });
+
+    it("should not templatize .name}} when we have a field called name", () => {
+      const fieldNames: any[] = ["A", "B", "name", "C", "D"];
+      const expression: string =
+        "(A = N'{0}') AND (B = N'{1}') AND (C = N'{2}') AND (D = N'{3}')";
+      const actual: string = _templatizeSimpleName(
+        expression,
+        basePath,
+        fieldNames,
+        "name"
+      );
+
+      const expected: string =
+        "({{" +
+        basePath +
+        ".a.name}} = N'{0}') AND ({{" +
+        basePath +
+        ".b.name}} = N'{1}') AND ({{" +
+        basePath +
+        ".c.name}} = N'{2}') AND ({{" +
+        basePath +
+        ".d.name}} = N'{3}')";
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_templatizeDrawingInfo", () => {
@@ -4273,7 +4297,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = undefined;
@@ -4291,7 +4316,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
       const layer: any = { drawingInfo: {} };
       const expected: any = { drawingInfo: {} };
@@ -4309,7 +4335,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4362,7 +4389,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4405,7 +4433,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4518,7 +4547,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4555,7 +4585,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4640,7 +4671,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         "POP40_CY",
         "POP50_CY",
         "POP60_CY",
-        "Inclination"
+        "Inclination",
+        "name"
       ];
 
       const layer: any = {
@@ -4710,7 +4742,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle $feature. notation", () => {
-      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP"];
+      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP", "name"];
       let text: string =
         "Round((($feature.POP_16UP - $feature.EMP_CY)/$feature.POP_16UP)*100,2) + '%'";
       let expected: string =
@@ -4753,7 +4785,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle $feature[] notation", () => {
-      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP"];
+      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP", "name"];
       let text: string = '$feature["EMP_CY"]';
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
@@ -4768,7 +4800,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle $feature[] notation with join", () => {
-      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP"];
+      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP", "name"];
       let text: string = '$feature["COUNTY_ID.EMP_CY"]';
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
@@ -4787,7 +4819,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it('should handle "fieldName" notation', () => {
-      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP"];
+      const fieldNames: string[] = ["POP_16UP", "EMP_CY", "POP_16UP", "name"];
       let text: any = 'var names = ["EMP_CY"]';
       fieldNames.forEach((name: string) => {
         text = _templatizeArcadeExpressions(text, name, basePath);
@@ -4828,7 +4860,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("_templatizeLabelingInfo", () => {
     it("should not fail without labelingInfo", () => {
-      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES"];
+      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
 
       // test without
       const labelingInfo: any[] = [];
@@ -4837,7 +4869,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should templatize field references in labelingInfo", () => {
-      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES"];
+      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
       const labelingInfo: any[] = [
         {
           labelExpression: "[Description]",
@@ -5081,7 +5113,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const layer: any = {
         viewDefinitionQuery: "a is not A is B isNot but BB is and CCC"
       };
-      const fieldNames: any = ["A", "BB", "CCC"];
+      const fieldNames: any = ["A", "BB", "CCC", "name"];
       const expected: any = {
         viewDefinitionQuery:
           "a is not {{" +
