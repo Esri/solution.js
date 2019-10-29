@@ -149,10 +149,7 @@ export function convertItemToTemplate(
           let webappPromise = Promise.resolve(itemTemplate);
           switch (itemInfo.type.toLowerCase()) {
             case "dashboard":
-              webappPromise = dashboard.convertItemToTemplate(
-                itemTemplate,
-                authentication
-              );
+              dashboard.convertItemToTemplate(itemTemplate, authentication);
               break;
             case "form":
               itemTemplate.dependencies = itemTemplate.dependencies.concat(
@@ -189,7 +186,10 @@ export function convertItemToTemplate(
               }
               break;
             case "web map":
-              webmap.convertItemToTemplate(itemTemplate);
+              webappPromise = webmap.convertItemToTemplate(
+                itemTemplate,
+                authentication
+              );
               break;
             case "web mapping application":
               webappPromise = webmappingapplication.convertItemToTemplate(
@@ -510,6 +510,12 @@ export function postProcessFieldReferences(
         solutionTemplate,
         datasourceInfos
       );
+      break;
+    case "dashboard":
+      dashboard.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+      break;
+    case "web map":
+      webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
       break;
   }
   return solutionTemplate;

@@ -214,7 +214,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         service: {
           somePropNotInItem: true,
           isView: true,
-          capabilities: "Query"
+          capabilities: "Query",
+          spatialReference: {
+            wkid: 102100
+          }
         },
         layers: [
           {
@@ -224,13 +227,12 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         tables: []
       };
 
-      const item: any = {
-        id: "0",
-        name: "A"
-      };
-
       const template: any = {
-        item,
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        item: {
+          id: "0",
+          name: "A"
+        },
         data: {},
         properties
       };
@@ -238,7 +240,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const templateDictionary: any = {
         folderId: "aabb123456",
         isPortal: true,
-        solutionItemId: "sol1234567890"
+        solutionItemId: "sol1234567890",
+        initiative: initiative,
+        ab766cba0dd44ec080420acc10990282: {},
+        organization: { geometryServiceUrl: geometryServiceUrl }
       };
 
       createFeatureService(

@@ -4864,12 +4864,14 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -4877,7 +4879,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -4885,7 +4888,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -4893,7 +4897,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -4901,7 +4906,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -4909,7 +4915,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -4917,7 +4924,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -4925,7 +4933,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -4933,7 +4942,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -4941,7 +4951,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -4953,7 +4964,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -4965,7 +4977,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -4977,7 +4990,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -4985,7 +4999,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -4993,7 +5008,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -5001,7 +5017,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -5009,7 +5026,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -5017,7 +5035,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -5025,7 +5044,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -5036,7 +5056,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closedate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -5047,7 +5068,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -5055,7 +5077,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -5066,7 +5089,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -13757,2453 +13781,381 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     type: "esriFieldTypeString",
                     alias: "Status",
                     required: true,
-                    length: 1,
-                    localizedNames: {
-                      ar: "الحالة",
-                      bs: "Status",
-                      cs: "Stav",
-                      da: "Status",
-                      de: "Status",
-                      el: "Κατάσταση",
-                      en: "Status",
-                      es: "Estado",
-                      et: "Staatus",
-                      fi: "Tila",
-                      fr: "Statut",
-                      he: "סטטוס",
-                      hi: "स्थिति",
-                      hr: "Status",
-                      id: "Status",
-                      it: "Stato",
-                      ja: "ステータス",
-                      ko: "상태",
-                      lt: "Būsena",
-                      lv: "Statuss",
-                      nb: "Status",
-                      nl: "Status",
-                      pl: "Stan",
-                      "pt-br": "Status",
-                      "pt-pt": "Estado",
-                      ro: "Stare",
-                      ru: "Статус",
-                      sr: "Status",
-                      sv: "Status",
-                      th: "สถานะ",
-                      tr: "Durum",
-                      vi: "Trạng thái",
-                      "zh-cn": "状态",
-                      "zh-hk": "狀態",
-                      "zh-tw": "狀態"
-                    }
+                    length: 1
                   },
                   {
                     name: "Score",
                     type: "esriFieldTypeDouble",
                     alias: "Score",
-                    required: true,
-                    localizedNames: {
-                      ar: "نقاط",
-                      bs: "Bodovi",
-                      cs: "Skóre",
-                      da: "Score",
-                      de: "Punktzahl",
-                      el: "Βαθμολογία",
-                      en: "Score",
-                      es: "Puntuación",
-                      et: "Skoor",
-                      fi: "Pisteet",
-                      fr: "Score",
-                      he: "ציון",
-                      hi: "स्कोर",
-                      hr: "Bodovi",
-                      id: "Skor",
-                      it: "Punteggio",
-                      ja: "スコア",
-                      ko: "점수",
-                      lt: "Įvertinimas",
-                      lv: "Rezultāts",
-                      nb: "Poengsum",
-                      nl: "Score",
-                      pl: "Wynik",
-                      "pt-br": "Pontuação",
-                      "pt-pt": "Pontuação",
-                      ro: "Scor",
-                      ru: "Очки",
-                      sr: "Ocena",
-                      sv: "Poäng",
-                      th: "คะแนน",
-                      tr: "Puan",
-                      vi: "Điểm số",
-                      "zh-cn": "得分",
-                      "zh-hk": "得分",
-                      "zh-tw": "得分"
-                    }
+                    required: true
                   },
                   {
                     name: "Match_addr",
                     type: "esriFieldTypeString",
                     alias: "Match_addr",
                     required: true,
-                    length: 500,
-                    localizedNames: {
-                      ar: "عنوان مطابق",
-                      bs: "Pronađi podudaranje adresa",
-                      cs: "Odpovídající adresa",
-                      da: "Match adresse",
-                      de: "Übereinstimmende Adresse",
-                      el: "Αντιστοίχιση διεύθυνσης",
-                      en: "Match_addr",
-                      es: "Cotejar dirección",
-                      et: "Aadressi sobitamine",
-                      fi: "Osoitteen täsmäytys",
-                      fr: "Apparier l'adresse",
-                      he: "כתובת תואמת",
-                      hi: "मिलान पता",
-                      hr: "Pronađi podudaranje adresa",
-                      id: "Cocokkan Alamat",
-                      it: "Indirizzo corrispondente",
-                      ja: "一致した住所",
-                      ko: "주소 일치",
-                      lt: "Adreso atitiktis",
-                      lv: "Atbilstoša adrese",
-                      nb: "Match adresse",
-                      nl: "Koppelen aan adres",
-                      pl: "Dopasuj adres",
-                      "pt-br": "Endereço Correspondentes",
-                      "pt-pt": "Endereço Correspondente",
-                      ro: "Potrivire adresă",
-                      ru: "Подпись",
-                      sr: "Poklopi adresu",
-                      sv: "Matcha adress",
-                      th: "จับคู่ที่อยู่",
-                      tr: "Adres Eşleştir",
-                      vi: "Khớp với Địa chỉ",
-                      "zh-cn": "匹配地址",
-                      "zh-hk": "符合地址",
-                      "zh-tw": "符合地址"
-                    }
+                    length: 500
                   },
                   {
                     name: "LongLabel",
                     type: "esriFieldTypeString",
                     alias: "LongLabel",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "لافتة تسمية طويلة",
-                      bs: "Dugačka oznaka",
-                      cs: "Dlouhý popisek",
-                      da: "Lang etiket",
-                      de: "Lange Beschriftung",
-                      el: "Μεγάλη ετικέτα",
-                      en: "LongLabel",
-                      es: "Etiqueta larga",
-                      et: "Pikk silt",
-                      fi: "Pitkä tunnusteksti",
-                      fr: "Etiquette longue",
-                      he: "תווית ארוכה",
-                      hi: "लंबी पर्ची",
-                      hr: "Dugačka oznaka",
-                      id: "Label Panjang",
-                      it: "Etichetta lunga",
-                      ja: "長いラベル",
-                      ko: "긴 레이블",
-                      lt: "Ilgas užrašas",
-                      lv: "Garš kartes teksts",
-                      nb: "Lang etikett",
-                      nl: "Lang label",
-                      pl: "Długa etykieta",
-                      "pt-br": "Rótulo Longo",
-                      "pt-pt": "Rótulo Longo",
-                      ro: "Etichetă lungă",
-                      ru: "Длинная подпись",
-                      sr: "Duga oznaka",
-                      sv: "Lång etikett",
-                      th: "ตัวอักษรยาว",
-                      tr: "Uzun Etiket",
-                      vi: "Nhãn dài",
-                      "zh-cn": "长标注",
-                      "zh-hk": "長標籤",
-                      "zh-tw": "長標籤"
-                    }
+                    length: 500
                   },
                   {
                     name: "ShortLabel",
                     type: "esriFieldTypeString",
                     alias: "ShortLabel",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "لافتة تسمية قصيرة",
-                      bs: "Kratka oznaka",
-                      cs: "Krátký popisek",
-                      da: "Kort etiket",
-                      de: "Kurze Beschriftung",
-                      el: "Μικρή ετικέτα",
-                      en: "ShortLabel",
-                      es: "Etiqueta corta",
-                      et: "Lühike silt",
-                      fi: "Lyhyt tunnusteksti",
-                      fr: "Etiquette courte",
-                      he: "תוויות קצרה",
-                      hi: "छोटी पर्ची",
-                      hr: "Kratka oznaka",
-                      id: "Label Pendek",
-                      it: "Etichetta corta",
-                      ja: "短いラベル",
-                      ko: "짧은 레이블",
-                      lt: "Trumpas užrašas",
-                      lv: "Īss kartes teksts",
-                      nb: "Kort etikett",
-                      nl: "Kort label",
-                      pl: "Krótka etykieta",
-                      "pt-br": "Rótulo Curto",
-                      "pt-pt": "Rótulo Curto",
-                      ro: "Etichetă scurtă",
-                      ru: "Краткая подпись",
-                      sr: "Kratka oznaka",
-                      sv: "Kort etikett",
-                      th: "ตัวอักษรสั้น",
-                      tr: "Kısa Etiket",
-                      vi: "Nhãn ngắn",
-                      "zh-cn": "短标注",
-                      "zh-hk": "短標籤",
-                      "zh-tw": "短標籤"
-                    }
+                    length: 500
                   },
                   {
                     name: "Addr_type",
                     type: "esriFieldTypeString",
                     alias: "Addr_type",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع العنوان",
-                      bs: "Vrsta adrese",
-                      cs: "Typ adresy",
-                      da: "Adressetype",
-                      de: "Adresstyp",
-                      el: "Τύπος διεύθυνσης",
-                      en: "Addr_type",
-                      es: "Tipo de dirección",
-                      et: "Aadressi tüüp",
-                      fi: "Osoitetyyppi",
-                      fr: "Type d’adresse",
-                      he: "סוג כתובת",
-                      hi: "पता प्रकार",
-                      hr: "Vrsta adrese",
-                      id: "Tipe Alamat",
-                      it: "Tipo indirizzo",
-                      ja: "住所タイプ",
-                      ko: "주소 유형",
-                      lt: "Adreso tipas",
-                      lv: "Adreses tips",
-                      nb: "Adressetype",
-                      nl: "Addrestype",
-                      pl: "Rodzaj adresu",
-                      "pt-br": "Tipo de Endereço",
-                      "pt-pt": "Tipo de Endereço",
-                      ro: "Tip adresă",
-                      ru: "Тип результата",
-                      sr: "Tip adrese",
-                      sv: "Adresstyp",
-                      th: "ประเภทที่อยู่",
-                      tr: "Adres Türü",
-                      vi: "Loại địa chỉ",
-                      "zh-cn": "地址类型",
-                      "zh-hk": "位址類型",
-                      "zh-tw": "位址類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "Type",
                     type: "esriFieldTypeString",
                     alias: "Type",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "النوع",
-                      bs: "Vrsta",
-                      cs: "Typ",
-                      da: "Type",
-                      de: "Typ",
-                      el: "Τύπος",
-                      en: "Type",
-                      es: "Tipo",
-                      et: "Tüüp",
-                      fi: "Tyyppi",
-                      fr: "Type",
-                      he: "סוג",
-                      hi: "प्रकार",
-                      hr: "Vrsta",
-                      id: "Tipe",
-                      it: "Tipologia",
-                      ja: "タイプ",
-                      ko: "유형",
-                      lt: "Tipas",
-                      lv: "Tips",
-                      nb: "Type",
-                      nl: "Type",
-                      pl: "Typ",
-                      "pt-br": "Tipo",
-                      "pt-pt": "Tipo",
-                      ro: "Tip",
-                      ru: "Тип",
-                      sr: "Tip",
-                      sv: "Typ",
-                      th: "ชนิด",
-                      tr: "Tür",
-                      vi: "Loại",
-                      "zh-cn": "类型",
-                      "zh-hk": "類型",
-                      "zh-tw": "類型"
-                    }
+                    length: 50
                   },
                   {
                     name: "PlaceName",
                     type: "esriFieldTypeString",
                     alias: "PlaceName",
                     required: false,
-                    length: 200,
-                    localizedNames: {
-                      ar: "اسم المكان",
-                      bs: "Naziv mjesta",
-                      cs: "Název místa",
-                      da: "Stednavn",
-                      de: "Ortsname",
-                      el: "Όνομα μέρους",
-                      en: "PlaceName",
-                      es: "Nombre del lugar",
-                      et: "Kohanimi",
-                      fi: "Paikannimi",
-                      fr: "Nom de lieu",
-                      he: "שם מקום",
-                      hi: "स्थान का नाम",
-                      hr: "Naziv mjesta",
-                      id: "Nama Tempat",
-                      it: "Nome località",
-                      ja: "場所名",
-                      ko: "장소 이름",
-                      lt: "Vietos pavadinimas",
-                      lv: "Vietas nosaukums",
-                      nb: "Stedsnavn",
-                      nl: "Plaatsnaam",
-                      pl: "Nazwa miejsca",
-                      "pt-br": "Nome do Lugar",
-                      "pt-pt": "Nome do Local",
-                      ro: "Nume loc",
-                      ru: "Название",
-                      sr: "Ime mesta",
-                      sv: "Platsens namn",
-                      th: "ชื่อสถานที่",
-                      tr: "Yer Adı",
-                      vi: "Tên Địa điểm",
-                      "zh-cn": "地名",
-                      "zh-hk": "地點名稱",
-                      "zh-tw": "地點名稱"
-                    }
+                    length: 200
                   },
                   {
                     name: "Place_addr",
                     type: "esriFieldTypeString",
                     alias: "Place_addr",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "عنوان المكان",
-                      bs: "Adresa mjesta",
-                      cs: "Adresa místa",
-                      da: "Stedadresse",
-                      de: "Adresse",
-                      el: "Διεύθυνση μέρους",
-                      en: "Place_addr",
-                      es: "Dirección de lugar",
-                      et: "Koha-aadress",
-                      fi: "Paikan osoite",
-                      fr: "Site et adresse",
-                      he: "כתובת של מקום",
-                      hi: "स्थान का पता",
-                      hr: "Adresa mjesta",
-                      id: "Place Address",
-                      it: "Indirizzo località",
-                      ja: "場所の住所",
-                      ko: "장소 주소",
-                      lt: "Vietos adresas",
-                      lv: "Vietas adrese",
-                      nb: "Stedsadresse",
-                      nl: "Plaats adres",
-                      pl: "Adres miejsca",
-                      "pt-br": "Endereço de Lugar",
-                      "pt-pt": "Endereço do Local",
-                      ro: "Adresă loc",
-                      ru: "Полный адрес",
-                      sr: "Adresa mesta",
-                      sv: "Platsens adress",
-                      th: "ที่อยู่ของสถานที่",
-                      tr: "Yer Adresi",
-                      vi: "Địa chỉ của Địa điểm",
-                      "zh-cn": "地点地址",
-                      "zh-hk": "地點地址",
-                      "zh-tw": "地點地址"
-                    }
+                    length: 500
                   },
                   {
                     name: "Phone",
                     type: "esriFieldTypeString",
                     alias: "Phone",
                     required: false,
-                    length: 25,
-                    localizedNames: {
-                      ar: "الهاتف",
-                      bs: "Telefon",
-                      cs: "Telefon",
-                      da: "Telefon",
-                      de: "Telefon",
-                      el: "Τηλέφωνο",
-                      en: "Phone",
-                      es: "Teléfono",
-                      et: "Telefon",
-                      fi: "Puhelin",
-                      fr: "Téléphone",
-                      he: "טלפון",
-                      hi: "फ़ोन",
-                      hr: "Telefon",
-                      id: "Telepon",
-                      it: "Telefono",
-                      ja: "電話",
-                      ko: "휴대전화",
-                      lt: "Telefonas",
-                      lv: "Tālrunis",
-                      nb: "Telefon",
-                      nl: "Telefoon",
-                      pl: "Telefon",
-                      "pt-br": "Telefone",
-                      "pt-pt": "Telefone",
-                      ro: "Telefon",
-                      ru: "Телефон",
-                      sr: "Telefon",
-                      sv: "Telefon",
-                      th: "โทรศัพท์",
-                      tr: "Telefon",
-                      vi: "Điện thoại",
-                      "zh-cn": "电话",
-                      "zh-hk": "手提電話",
-                      "zh-tw": "手提電話"
-                    }
+                    length: 25
                   },
                   {
                     name: "URL",
                     type: "esriFieldTypeString",
                     alias: "URL",
                     required: false,
-                    length: 250,
-                    localizedNames: {
-                      ar: "عنوان URL",
-                      bs: "URL",
-                      cs: "Adresa URL",
-                      da: "URL",
-                      de: "URL",
-                      el: "URL",
-                      en: "URL",
-                      es: "Dirección URL",
-                      et: "URL",
-                      fi: "URL-osoite",
-                      fr: "URL",
-                      he: "URL",
-                      hi: "URL",
-                      hr: "URL",
-                      id: "URL",
-                      it: "URL",
-                      ja: "URL",
-                      ko: "URL",
-                      lt: "URL",
-                      lv: "URL",
-                      nb: "URL",
-                      nl: "URL",
-                      pl: "Adres URL",
-                      "pt-br": "URL",
-                      "pt-pt": "URL",
-                      ro: "URL",
-                      ru: "URL",
-                      sr: "URL adresa",
-                      sv: "URL",
-                      th: "URL",
-                      tr: "URL",
-                      vi: "URL",
-                      "zh-cn": "URL",
-                      "zh-hk": "URL",
-                      "zh-tw": "URL"
-                    }
+                    length: 250
                   },
                   {
                     name: "Rank",
                     type: "esriFieldTypeDouble",
                     alias: "Rank",
-                    required: false,
-                    localizedNames: {
-                      ar: "رتبة",
-                      bs: "Rang",
-                      cs: "Priorita",
-                      da: "Rangordn",
-                      de: "Rangstufe",
-                      el: "Κατάταξη",
-                      en: "Rank",
-                      es: "Clasificar",
-                      et: "Järk",
-                      fi: "Sijaluku",
-                      fr: "Classement",
-                      he: "דרגה",
-                      hi: "रैंक",
-                      hr: "Rang",
-                      id: "Peringkat",
-                      it: "Rango",
-                      ja: "ランク",
-                      ko: "랭크",
-                      lt: "Kategorija",
-                      lv: "Rangs",
-                      nb: "Ranger",
-                      nl: "Rang",
-                      pl: "Ocena",
-                      "pt-br": "Classificação",
-                      "pt-pt": "Posição",
-                      ro: "Poziţie ierarhică",
-                      ru: "Ранг",
-                      sr: "Rang",
-                      sv: "Rangordning",
-                      th: "Rank",
-                      tr: "Sıra",
-                      vi: "Cấp độ",
-                      "zh-cn": "等级",
-                      "zh-hk": "等級",
-                      "zh-tw": "等級"
-                    }
+                    required: false
                   },
                   {
                     name: "AddBldg",
                     type: "esriFieldTypeString",
                     alias: "BuildingName",
                     required: false,
-                    length: 125,
-                    localizedNames: {
-                      ar: "اسم المبني",
-                      bs: "Naziv zgrade",
-                      cs: "Název budovy",
-                      da: "Bygningens navn",
-                      de: "Name des Gebäudes",
-                      el: "Όνομα κτιρίου",
-                      en: "BuildingName",
-                      es: "Nombre del edificio",
-                      et: "Ehitise nimi",
-                      fi: "Rakennuksen nimi",
-                      fr: "Nom de bâtiment",
-                      he: "שם בניין",
-                      hi: "इमारत का नाम",
-                      hr: "Naziv zgrade",
-                      id: "Nama Gedung",
-                      it: "Nome edificio",
-                      ja: "建物名",
-                      ko: "건물 이름",
-                      lt: "Pastato pavadinimas",
-                      lv: "Ēkas nosaukums",
-                      nb: "Navn på bygning",
-                      nl: "Naam van gebouw",
-                      pl: "Nazwa budynku",
-                      "pt-br": "Nome do Edifício",
-                      "pt-pt": "Nome do Edifício",
-                      ro: "Denumire clădire",
-                      ru: "Название здания",
-                      sr: "Ime zgrade",
-                      sv: "Byggnadens namn",
-                      th: "ชื่ออาคาร",
-                      tr: "Bina Adı",
-                      vi: "Tên Tòa nhà",
-                      "zh-cn": "建筑物名称",
-                      "zh-hk": "建築物名稱",
-                      "zh-tw": "建築物名稱"
-                    }
+                    length: 125
                   },
                   {
                     name: "AddNum",
                     type: "esriFieldTypeString",
                     alias: "AddressNumber",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان",
-                      bs: "Kućni broj",
-                      cs: "Číslo adresy",
-                      da: "Adressenummer",
-                      de: "Adressennummer",
-                      el: "Αριθμός διεύθυνσης",
-                      en: "AddressNumber",
-                      es: "Número de dirección",
-                      et: "Aadressinumber",
-                      fi: "Osoitenumero",
-                      fr: "Numéro d'adresse",
-                      he: "מספר הכתובת",
-                      hi: "पता संख्या",
-                      hr: "Kućni broj",
-                      id: "Nomor Alamat",
-                      it: "Numero indirizzo",
-                      ja: "番地",
-                      ko: "주소 번호",
-                      lt: "Adreso numeris",
-                      lv: "Adrese, numurs",
-                      nb: "Adressenummer",
-                      nl: "Adresnummer",
-                      pl: "Numer w adresie",
-                      "pt-br": "Número de Endereço",
-                      "pt-pt": "Numero de Polícia",
-                      ro: "Număr adresă",
-                      ru: "Номер дома",
-                      sr: "Ulični broj",
-                      sv: "Adressnummer",
-                      th: "ตัวเลขที่อยู่",
-                      tr: "Adres Numarası",
-                      vi: "Số nhà",
-                      "zh-cn": "地址编号",
-                      "zh-hk": "地址號碼",
-                      "zh-tw": "地址號碼"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddNumFrom",
                     type: "esriFieldTypeString",
                     alias: "AddNumFrom",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان من",
-                      bs: "Kućni brojevi od",
-                      cs: "Počáteční číslo adresy",
-                      da: "Adressenummer fra",
-                      de: "Adressennummer von",
-                      el: "Αρχικός αριθμός διεύθυνσης",
-                      en: "AddNumFrom",
-                      es: "De número de dirección",
-                      et: "Aadressinumber (alates)",
-                      fi: "Osoitenumero alkaen",
-                      fr: "Numéro d'adresse de départ",
-                      he: "מספר הכתובת מ-",
-                      hi: "पता संख्या से",
-                      hr: "Kućni brojevi od",
-                      id: "Nomor Alamat Asal",
-                      it: "Numero indirizzo Da",
-                      ja: "開始番地",
-                      ko: "주소 시작 번호",
-                      lt: "Adreso numeris nuo",
-                      lv: "Adrese, numurs no",
-                      nb: "Adressenummer fra",
-                      nl: "Adresnummer van",
-                      pl: "Początkowy numer w adresie",
-                      "pt-br": "Número de Endereço De",
-                      "pt-pt": "Numero de Polícia desde",
-                      ro: "Număr adresă de la",
-                      ru: "Начало сегмента",
-                      sr: "Ulični broj od",
-                      sv: "Adressnummer från",
-                      th: "ตัวเลขที่อยู่จาก",
-                      tr: "Adres Numarası Başlangıcı",
-                      vi: "Số nhà Từ",
-                      "zh-cn": "地址编号自",
-                      "zh-hk": "地址號碼開頭",
-                      "zh-tw": "地址號碼開頭"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddNumTo",
                     type: "esriFieldTypeString",
                     alias: "AddNumTo",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان إلى",
-                      bs: "Kućni brojevi do",
-                      cs: "Koncové číslo adresy",
-                      da: "Adressenummer til",
-                      de: "Adressennummer bis",
-                      el: "Τελικός αριθμός διεύθυνσης",
-                      en: "AddNumTo",
-                      es: "A número de dirección",
-                      et: "Aadressinumber (kuni)",
-                      fi: "Osoitenumero päättyen",
-                      fr: "Numéro d'adresse d'arrivée",
-                      he: "מספר הכתובת אל",
-                      hi: "पता संख्या को",
-                      hr: "Kućni brojevi do",
-                      id: "Nomor Alamat Tujuan",
-                      it: "Numero indirizzo A",
-                      ja: "終了番地",
-                      ko: "주소 끝 번호",
-                      lt: "Adreso numeris iki",
-                      lv: "Adrese, numurs līdz",
-                      nb: "Adressenummer til",
-                      nl: "Adresnummer tot",
-                      pl: "Końcowy numer w adresie",
-                      "pt-br": "Número de Endereço Para",
-                      "pt-pt": "Numero de Polícia até",
-                      ro: "Număr adresă către",
-                      ru: "Конец сегмента",
-                      sr: "Ulični broj do",
-                      sv: "Adressnummer till",
-                      th: "ตัวเลขที่อยู่ถึง",
-                      tr: "Adres Numarası Bitişi",
-                      vi: "Số nhà Đến",
-                      "zh-cn": "地址编号至",
-                      "zh-hk": "地址號碼結尾",
-                      "zh-tw": "地址號碼結尾"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddRange",
                     type: "esriFieldTypeString",
                     alias: "AddressRange",
                     required: false,
-                    length: 100,
-                    localizedNames: {
-                      ar: "نطاق العنوان",
-                      bs: "Raspon kućnih brojeva",
-                      cs: "Rozsah adresy",
-                      da: "Adresseområde",
-                      de: "Adressenbereich",
-                      el: "Εύρος διευθύνσεων",
-                      en: "AddressRange",
-                      es: "Rango de direcciones",
-                      et: "Aadressivahemik",
-                      fi: "Osoiteväli",
-                      fr: "Plage d'adresses",
-                      he: "טווח הכתובת",
-                      hi: "पता रेंज",
-                      hr: "Raspon kućnih brojeva",
-                      id: "Rentang Alamat",
-                      it: "Intervallo indirizzi",
-                      ja: "住所範囲",
-                      ko: "주소 범위",
-                      lt: "Adresų intervalas",
-                      lv: "Adrese, diapazons",
-                      nb: "Adresseområde",
-                      nl: "Adresbereik",
-                      pl: "Zakres adresów",
-                      "pt-br": "Intervalo de Endereço",
-                      "pt-pt": "Intervalo de Números de Polícia",
-                      ro: "Interval adresă",
-                      ru: "Сегмент",
-                      sr: "Opseg adrese",
-                      sv: "Adressintervall",
-                      th: "ช่วงของที่อยู่",
-                      tr: "Adres Aralığı",
-                      vi: "Khoảng địa chỉ",
-                      "zh-cn": "地址范围",
-                      "zh-hk": "地址範圍",
-                      "zh-tw": "地址範圍"
-                    }
+                    length: 100
                   },
                   {
                     name: "Side",
                     type: "esriFieldTypeString",
                     alias: "Side",
                     required: false,
-                    length: 1,
-                    localizedNames: {
-                      ar: "جانب",
-                      bs: "Strana",
-                      cs: "Strana",
-                      da: "Side",
-                      de: "Seite",
-                      el: "Πλευρά",
-                      en: "Side",
-                      es: "Lado",
-                      et: "Külg",
-                      fi: "Sivu",
-                      fr: "Côté",
-                      he: "צד",
-                      hi: "बगल",
-                      hr: "Strana",
-                      id: "Sisi",
-                      it: "Lato",
-                      ja: "側",
-                      ko: "측면",
-                      lt: "Pusė",
-                      lv: "Puse",
-                      nb: "Side",
-                      nl: "Kant",
-                      pl: "Strona",
-                      "pt-br": "Lado",
-                      "pt-pt": "Lado",
-                      ro: "Parte",
-                      ru: "Сторона улицы",
-                      sr: "Strana",
-                      sv: "Sida",
-                      th: "ข้าง",
-                      tr: "Taraf",
-                      vi: "Cạnh",
-                      "zh-cn": "边",
-                      "zh-hk": "側邊",
-                      "zh-tw": "側邊"
-                    }
+                    length: 1
                   },
                   {
                     name: "StPreDir",
                     type: "esriFieldTypeString",
                     alias: "StPreDir",
                     required: false,
-                    length: 5,
-                    localizedNames: {
-                      ar: "اتجاه بادئة الشارع",
-                      bs: "Smjer prefiksa ulice",
-                      cs: "Počáteční označení ulice určující směr",
-                      da: "Gade-præfiks-retning",
-                      de: "Richtungspräfix der Straße",
-                      el: "Κατεύθυνση προθέματος οδού",
-                      en: "StPreDir",
-                      es: "Dirección de prefijo de calle",
-                      et: "Tänava eesliite suund",
-                      fi: "Kadun etuliitteen suunta",
-                      fr: "Direction de préfixe de rue",
-                      he: "כיוון קידומת רחוב",
-                      hi: "सड़क पूर्व-संकेत दिशा",
-                      hr: "Smjer prefiksa ulice",
-                      id: "Arah Awalan Jalan",
-                      it: "Direzione prefisso stradale",
-                      ja: "道路の方向の接頭辞",
-                      ko: "도로 접두사 방향",
-                      lt: "Gatvės krypties santrumpa",
-                      lv: "Ielas prefikss, virziens",
-                      nb: "Gateprefiks, retning",
-                      nl: "Straat voorvoegsel richting",
-                      pl: "Prefiks nazwy ulicy - kierunek",
-                      "pt-br": "Direção de Prefixo de Rua",
-                      "pt-pt": "Direcção do Prefixo de Rua",
-                      ro: "Indicaţie prefix stradă",
-                      ru: "Преф. часть улицы",
-                      sr: "Smer za prefiks ulice",
-                      sv: "Gatuprefix, riktning",
-                      th: "ทิศทางของคำนำหน้าถนน",
-                      tr: "Cadde Yönü Öneki",
-                      vi: "Hướng Tiền tố Đường",
-                      "zh-cn": "街道前缀方向",
-                      "zh-hk": "街道前綴方向",
-                      "zh-tw": "街道前綴方向"
-                    }
+                    length: 5
                   },
                   {
                     name: "StPreType",
                     type: "esriFieldTypeString",
                     alias: "StPreType",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "نوع بادئة الشارع",
-                      bs: "Vrsta prefiksa ulice",
-                      cs: "Počáteční označení ulice určující typ",
-                      da: "Gade-præfiks-type",
-                      de: "Typpräfix der Straße",
-                      el: "Τύπος προθέματος οδού",
-                      en: "StPreType",
-                      es: "Tipo de prefijo de calle",
-                      et: "Tänava eesliite tüüp",
-                      fi: "Kadun etuliitteen tyyppi",
-                      fr: "Type de préfixe de rue",
-                      he: "סוג קידומת רחוב",
-                      hi: "सड़क पूर्व-संकेत प्रकार",
-                      hr: "Vrsta prefiksa ulice",
-                      id: "Tipe Awalan Jalan",
-                      it: "Tipo prefisso stradale",
-                      ja: "道路の接頭辞タイプ",
-                      ko: "도로 접두사 유형",
-                      lt: "Gatvės tipo santrumpa",
-                      lv: "Ielas prefikss, tips",
-                      nb: "Gateprefiks, type",
-                      nl: "Straat voorvoegsel type",
-                      pl: "Prefiks nazwy ulicy - typ",
-                      "pt-br": "Tipo de Prefixo de Rua",
-                      "pt-pt": "Tipo de Prefixo de Rua",
-                      ro: "Tip prefix stradă",
-                      ru: "Преф. тип улицы",
-                      sr: "Tip za prefiks ulice",
-                      sv: "Gatuprefix, typ",
-                      th: "ประเภทของคำนำหน้าถนน",
-                      tr: "Cadde Türü Öneki",
-                      vi: "Loại Tiền tố Đường",
-                      "zh-cn": "街道前缀类型",
-                      "zh-hk": "街道前綴類型",
-                      "zh-tw": "街道前綴類型"
-                    }
+                    length: 50
                   },
                   {
                     name: "StName",
                     type: "esriFieldTypeString",
                     alias: "StName",
                     required: false,
-                    length: 125,
-                    localizedNames: {
-                      ar: "اسم الشارع",
-                      bs: "Naziv ulice",
-                      cs: "Název ulice",
-                      da: "Gadenavn",
-                      de: "Straßenname",
-                      el: "Οδός",
-                      en: "StName",
-                      es: "Nombre de calle",
-                      et: "Tänava nimi",
-                      fi: "Kadun nimi",
-                      fr: "Nom de la rue",
-                      he: "שם רחוב",
-                      hi: "सड़क का नाम",
-                      hr: "Naziv ulice",
-                      id: "Nama Jalan",
-                      it: "Nome strada",
-                      ja: "道路名",
-                      ko: "도로 이름",
-                      lt: "Gatvės pavadinimas",
-                      lv: "Ielas nosaukums",
-                      nb: "Gatenavn",
-                      nl: "Straatnaam",
-                      pl: "Nazwa ulicy",
-                      "pt-br": "Nome da Rua",
-                      "pt-pt": "Nome de Rua",
-                      ro: "Nume stradă",
-                      ru: "Название улицы",
-                      sr: "Ime ulice",
-                      sv: "Gatunamn",
-                      th: "ชื่อถนน",
-                      tr: "Sokak Adı",
-                      vi: "Tên Đường phố",
-                      "zh-cn": "街道名称",
-                      "zh-hk": "街道名稱",
-                      "zh-tw": "街道名稱"
-                    }
+                    length: 125
                   },
                   {
                     name: "StType",
                     type: "esriFieldTypeString",
                     alias: "StType",
                     required: false,
-                    length: 30,
-                    localizedNames: {
-                      ar: "نوع الشارع",
-                      bs: "Vrsta ulice",
-                      cs: "Typ ulice",
-                      da: "Gadetype",
-                      de: "Straßenart",
-                      el: "Τύπος οδού",
-                      en: "StType",
-                      es: "Tipo de calle",
-                      et: "Tänava tüüp",
-                      fi: "Kadun tyyppi",
-                      fr: "Type de rue",
-                      he: "סוג רחוב",
-                      hi: "सड़क का प्रकार",
-                      hr: "Vrsta ulice",
-                      id: "Tipe Jalan",
-                      it: "Tipo strada",
-                      ja: "道路タイプ",
-                      ko: "도로 유형",
-                      lt: "Gatvės tipas",
-                      lv: "Ielas tips",
-                      nb: "Gatetype",
-                      nl: "Straattype",
-                      pl: "Typ ulicy",
-                      "pt-br": "Tipo de Rua",
-                      "pt-pt": "Tipo de Rua",
-                      ro: "Tip stradă",
-                      ru: "Тип улицы",
-                      sr: "Tip ulice",
-                      sv: "Gatutyp",
-                      th: "ประเภทของถนน",
-                      tr: "Cadde Türü",
-                      vi: "Loại Đường",
-                      "zh-cn": "街道类型",
-                      "zh-hk": "街道類型",
-                      "zh-tw": "街道類型"
-                    }
+                    length: 30
                   },
                   {
                     name: "StDir",
                     type: "esriFieldTypeString",
                     alias: "StDir",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "اتجاه الشارع",
-                      bs: "Smjer ulice",
-                      cs: "Směr ulice",
-                      da: "Gaderetning",
-                      de: "Richtung der Straße",
-                      el: "Κατεύθυνση οδού",
-                      en: "StDir",
-                      es: "Dirección de calle",
-                      et: "Tänava suund",
-                      fi: "Kadun suunta",
-                      fr: "Direction de rue",
-                      he: "כיוון רחוב",
-                      hi: "सड़क की दिशा",
-                      hr: "Smjer ulice",
-                      id: "Arah Jalan",
-                      it: "Direzione stradale",
-                      ja: "道路の方向",
-                      ko: "도로 방향",
-                      lt: "Gatvės kryptis",
-                      lv: "Ielas virziens",
-                      nb: "Gateretning",
-                      nl: "Straatrichting",
-                      pl: "Kierunek ulicy",
-                      "pt-br": "Direção de Rua",
-                      "pt-pt": "Direcção da Rua",
-                      ro: "Indicaţie stradă",
-                      ru: "Часть улицы",
-                      sr: "Smer ulice",
-                      sv: "Gatans riktning",
-                      th: "ทิศทางถนน",
-                      tr: "Cadde Yönü",
-                      vi: "Bảng chỉ đường",
-                      "zh-cn": "街道方向",
-                      "zh-hk": "街道方向",
-                      "zh-tw": "街道方向"
-                    }
+                    length: 20
                   },
                   {
                     name: "BldgType",
                     type: "esriFieldTypeString",
                     alias: "BldgType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع وحدة المبنى",
-                      bs: "Vrsta građevne jedinice",
-                      cs: "Typ bytové jednotky",
-                      da: "Bygningsenhedstype",
-                      de: "Typ der Gebäudeeinheit",
-                      el: "Τύπος κτιριακής μονάδας",
-                      en: "BldgType",
-                      es: "Tipo de unidad de edificio",
-                      et: "Ehitise tüüp",
-                      fi: "Rakennuselementin tyyppi",
-                      fr: "Type d'unité de bâtiment",
-                      he: "סוג יחידת בניין",
-                      hi: "इमारत इकार्इ प्रकार",
-                      hr: "Vrsta građevne jedinice",
-                      id: "Tipe Unit Gedung",
-                      it: "Tipo di unità immobiliare",
-                      ja: "建物ユニット タイプ",
-                      ko: "건물 단위 유형",
-                      lt: "Pastato tipas",
-                      lv: "Ēkas vienības tips",
-                      nb: "Bygningsenhetstype",
-                      nl: "Gebouw unittype",
-                      pl: "Typ elementu budowlanego",
-                      "pt-br": "Tipo da Unidade de Construção",
-                      "pt-pt": "Tipo de Unidade de Edifício",
-                      ro: "Tip clădire",
-                      ru: "Тип здания",
-                      sr: "Tip stambene jedinice",
-                      sv: "Typ av byggelement",
-                      th: "ประเภทของอาคาร",
-                      tr: "Bina Birimi Türü",
-                      vi: "Loại Đơn nguyên Xây dựng",
-                      "zh-cn": "建筑单元类型",
-                      "zh-hk": "大樓單元類型",
-                      "zh-tw": "大樓單元類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "BldgName",
                     type: "esriFieldTypeString",
                     alias: "BldgName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم وحدة المبنى",
-                      bs: "Naziv građevne jedinice",
-                      cs: "Název bytové jednotky",
-                      da: "Bygningsenhedsnavn",
-                      de: "Name der Gebäudeeinheit",
-                      el: "Όνομα κτιριακής μονάδας",
-                      en: "BldgName",
-                      es: "Nombre de unidad de edificio",
-                      et: "Ehitise nimi",
-                      fi: "Rakennuselementin nimi",
-                      fr: "Nom d'unité de bâtiment",
-                      he: "שם יחידת בניין",
-                      hi: "इमारत इकार्इ नाम",
-                      hr: "Naziv građevne jedinice",
-                      id: "Nama Unit Gedung",
-                      it: "Nome unità immobiliare",
-                      ja: "建物ユニット名",
-                      ko: "건물 단위 이름",
-                      lt: "Pastato pavadinimas",
-                      lv: "Ēkas vienības nosaukums",
-                      nb: "Bygningsenhetsnavn",
-                      nl: "Gebouw unitnaam",
-                      pl: "Nazwa elementu budowlanego",
-                      "pt-br": "Nome da Unidade de Construção",
-                      "pt-pt": "Nome da Unidade de Edifício",
-                      ro: "Nume clădire",
-                      ru: "Здание",
-                      sr: "Naziv stambene jedinice",
-                      sv: "Namn på byggelement",
-                      th: "ชื่อของอาคาร",
-                      tr: "Bina Birimi Adı",
-                      vi: "Tên Đơn nguyên Xây dựng",
-                      "zh-cn": "建筑单元名称",
-                      "zh-hk": "大樓單元名稱",
-                      "zh-tw": "大樓單元名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "LevelType",
                     type: "esriFieldTypeString",
                     alias: "LevelType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع المستوى",
-                      bs: "Vrsta razine",
-                      cs: "Typ úrovně",
-                      da: "Niveautype",
-                      de: "Typ der Ebene",
-                      el: "Τύπος επιπέδου",
-                      en: "LevelType",
-                      es: "Tipo de nivel",
-                      et: "Taseme tüüp",
-                      fi: "Tason tyyppi",
-                      fr: "Type de niveau",
-                      he: "סוג רמה",
-                      hi: "स्तर का प्रकार",
-                      hr: "Vrsta razine",
-                      id: "Tipe Level",
-                      it: "Tipo di livello",
-                      ja: "レベル タイプ",
-                      ko: "레벨 유형",
-                      lt: "Lygmens tipas",
-                      lv: "Līmeņa tips",
-                      nb: "Nivåtype",
-                      nl: "Niveautype",
-                      pl: "Typ poziomu",
-                      "pt-br": "Tipo de Nível",
-                      "pt-pt": "Tipo de Nível",
-                      ro: "Tip nivel",
-                      ru: "Тип этажа",
-                      sr: "Tip nivoa",
-                      sv: "Nivåns typ",
-                      th: "ระดับของประเภท",
-                      tr: "Düzey Türü",
-                      vi: "Loại Cấp độ",
-                      "zh-cn": "级别类型",
-                      "zh-hk": "級別類型",
-                      "zh-tw": "級別類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "LevelName",
                     type: "esriFieldTypeString",
                     alias: "LevelName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم المستوى",
-                      bs: "Naziv razine",
-                      cs: "Název úrovně",
-                      da: "Niveaunavn",
-                      de: "Name der Ebene",
-                      el: "Όνομα επιπέδου",
-                      en: "LevelName",
-                      es: "Nombre de nivel",
-                      et: "Taseme nimi",
-                      fi: "Tason nimi",
-                      fr: "Nom de niveau",
-                      he: "שם רמה",
-                      hi: "स्तर का नाम",
-                      hr: "Naziv razine",
-                      id: "Level Name",
-                      it: "Nome livello",
-                      ja: "レベル名",
-                      ko: "레벨 이름",
-                      lt: "Lygmens pavadinimas",
-                      lv: "Līmeņa nosaukums",
-                      nb: "Nivånavn",
-                      nl: "Niveaunaam",
-                      pl: "Nazwa poziomu",
-                      "pt-br": "Nome do Nível",
-                      "pt-pt": "Nome do Nível",
-                      ro: "Nume nivel",
-                      ru: "Этаж",
-                      sr: "Ime nivoa",
-                      sv: "Nivåns namn",
-                      th: "ระดับของชื่อ",
-                      tr: "Düzey Adı",
-                      vi: "Tên Cấp độ",
-                      "zh-cn": "级别名称",
-                      "zh-hk": "級別名稱",
-                      "zh-tw": "級別名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "UnitType",
                     type: "esriFieldTypeString",
                     alias: "UnitType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع الوحدة",
-                      bs: "Vrsta jedinice",
-                      cs: "Typ jednotky",
-                      da: "Enhedstype",
-                      de: "Typ der Einheit",
-                      el: "Τύπος μονάδας",
-                      en: "UnitType",
-                      es: "Tipo de unidad",
-                      et: "Üksuse tüüp",
-                      fi: "Yksikön tyyppi",
-                      fr: "Type d'unité",
-                      he: "סוג יחידה",
-                      hi: "इकार्इ का प्रकार",
-                      hr: "Vrsta jedinice",
-                      id: "Tipe Unit",
-                      it: "Tipo di unità",
-                      ja: "ユニット タイプ",
-                      ko: "단위 유형",
-                      lt: "Vieneto tipas",
-                      lv: "Vienības tips",
-                      nb: "Enhetstype",
-                      nl: "Unittype",
-                      pl: "Typ elementu",
-                      "pt-br": "Tipo da Unidade",
-                      "pt-pt": "Tipo de Unidade",
-                      ro: "Tip unitate",
-                      ru: "Тип субадреса",
-                      sr: "Tip jedinice",
-                      sv: "Enhetens typ",
-                      th: "หน่วยของประเภท",
-                      tr: "Birim Türü",
-                      vi: "Loại Đơn vị",
-                      "zh-cn": "单位类型",
-                      "zh-hk": "單元類型",
-                      "zh-tw": "單元類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "UnitName",
                     type: "esriFieldTypeString",
                     alias: "UnitName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم الوحدة",
-                      bs: "Naziv jedinice",
-                      cs: "Název jednotky",
-                      da: "Enhedsnavn",
-                      de: "Name der Einheit",
-                      el: "Όνομα μονάδας",
-                      en: "UnitName",
-                      es: "Nombre de unidad",
-                      et: "Üksuse nimi",
-                      fi: "Yksikön nimi",
-                      fr: "Nom d'unité",
-                      he: "שם יחידה",
-                      hi: "इकार्इ का नाम",
-                      hr: "Naziv jedinice",
-                      id: "Nama Unit",
-                      it: "Nome unità",
-                      ja: "ユニット名",
-                      ko: "단위 이름",
-                      lt: "Vieneto pavadinimas",
-                      lv: "Vienības nosaukums",
-                      nb: "Enhetsnavn",
-                      nl: "Unitnaam",
-                      pl: "Nazwa elementu",
-                      "pt-br": "Nome da Unidade",
-                      "pt-pt": "Nome da Unidade",
-                      ro: "Numele unitate",
-                      ru: "Имя субадреса",
-                      sr: "Naziv jedinice",
-                      sv: "Enhetens namn",
-                      th: "หน่วงของชื่อ",
-                      tr: "Birim Adı",
-                      vi: "Tên Đơn vị",
-                      "zh-cn": "单位名称",
-                      "zh-hk": "單元名稱",
-                      "zh-tw": "單元名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "SubAddr",
                     type: "esriFieldTypeString",
                     alias: "SubAddress",
                     required: false,
-                    length: 250,
-                    localizedNames: {
-                      ar: "عنوان فرعي",
-                      bs: "Podadresa",
-                      cs: "Dílčí adresa",
-                      da: "Underadresse",
-                      de: "Unteradresse",
-                      el: "Δευτερεύουσα διεύθυνση",
-                      en: "SubAddress",
-                      es: "Subdirección",
-                      et: "Alamaadress",
-                      fi: "Osoitteen tarkennus",
-                      fr: "Sous-adresse",
-                      he: "כתובת משנה",
-                      hi: "उपपता",
-                      hr: "Podadresa",
-                      id: "Sub-alamat",
-                      it: "Sottoindirizzo",
-                      ja: "サブアドレス",
-                      ko: "하위 주소",
-                      lt: "Antrinis adresas",
-                      lv: "Apakšadrese",
-                      nb: "Deladresse",
-                      nl: "Subadres",
-                      pl: "Adres dodatkowy",
-                      "pt-br": "Subendereço:",
-                      "pt-pt": "Sub-endereço",
-                      ro: "Adresă secundară:",
-                      ru: "Субадрес",
-                      sr: "Podadresa",
-                      sv: "Underadress",
-                      th: "ที่อยู่ย่อย",
-                      tr: "Alt Adres",
-                      vi: "Địa chỉ phụ",
-                      "zh-cn": "子地址",
-                      "zh-hk": "子地址",
-                      "zh-tw": "子地址"
-                    }
+                    length: 250
                   },
                   {
                     name: "StAddr",
                     type: "esriFieldTypeString",
                     alias: "StAddr",
                     required: false,
-                    length: 300,
-                    localizedNames: {
-                      ar: "عنوان الشارع",
-                      bs: "Adresa ulice",
-                      cs: "Adresa ulice",
-                      da: "Gade",
-                      de: "Straßenadresse",
-                      el: "Οδός και αριθμός",
-                      en: "StAddr",
-                      es: "Calle",
-                      et: "Tänava aadress",
-                      fi: "Katuosoite",
-                      fr: "Adresse",
-                      he: "כתובת רחוב",
-                      hi: "सड़क का पता",
-                      hr: "Adresa ulice",
-                      id: "Alamat Jalan",
-                      it: "Indirizzo stradale",
-                      ja: "住所",
-                      ko: "도로 주소",
-                      lt: "Adresas",
-                      lv: "Ielas adrese",
-                      nb: "Gateadresse",
-                      nl: "Adres met straatnaam",
-                      pl: "Adres ulicy",
-                      "pt-br": "Endereço da Rua",
-                      "pt-pt": "Endereço de Rua",
-                      ro: "Adresă stradală",
-                      ru: "Адрес",
-                      sr: "Adresa ulice",
-                      sv: "Gatuadress",
-                      th: "ที่อยู่ถนน",
-                      tr: "Sokak Adresi",
-                      vi: "Địa chỉ Đường phố",
-                      "zh-cn": "街道地址",
-                      "zh-hk": "街道地址",
-                      "zh-tw": "街道地址"
-                    }
+                    length: 300
                   },
                   {
                     name: "Block",
                     type: "esriFieldTypeString",
                     alias: "Block",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "كتلة",
-                      bs: "Blok",
-                      cs: "S plným koncem",
-                      da: "Blok",
-                      de: "Block",
-                      el: "Τετράγωνο",
-                      en: "Block",
-                      es: "Bloque",
-                      et: "Kvartal",
-                      fi: "Kortteli",
-                      fr: "Ilot",
-                      he: "בלוק",
-                      hi: "ब्लॉक",
-                      hr: "Blok",
-                      id: "Blok",
-                      it: "Blocco",
-                      ja: "ブロック",
-                      ko: "블록",
-                      lt: "Blokas",
-                      lv: "Kvartāls",
-                      nb: "Kvartal",
-                      nl: "Buurt",
-                      pl: "Blok",
-                      "pt-br": "Bloco",
-                      "pt-pt": "Bloco",
-                      ro: "Cvartal",
-                      ru: "Блок",
-                      sr: "Blok",
-                      sv: "Block",
-                      th: "บล็อค",
-                      tr: "Blok",
-                      vi: "Khu nhà",
-                      "zh-cn": "街区",
-                      "zh-hk": "街區",
-                      "zh-tw": "街區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Sector",
                     type: "esriFieldTypeString",
                     alias: "Sector",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "قطاع",
-                      bs: "Sektor",
-                      cs: "Sektor",
-                      da: "Sektor",
-                      de: "Sektor",
-                      el: "Τομέας",
-                      en: "Sector",
-                      es: "Sector",
-                      et: "Sektor",
-                      fi: "Sektori",
-                      fr: "Secteur",
-                      he: "סקטור",
-                      hi: "सेक्टर",
-                      hr: "Sektor",
-                      id: "Sektor",
-                      it: "Settore",
-                      ja: "セクター",
-                      ko: "부문",
-                      lt: "Sektorius",
-                      lv: "Sektors",
-                      nb: "Sektor",
-                      nl: "Sector",
-                      pl: "Sektor",
-                      "pt-br": "Setor",
-                      "pt-pt": "Sector",
-                      ro: "Sector",
-                      ru: "Сектор",
-                      sr: "Sektor",
-                      sv: "Sektor",
-                      th: "แผนก",
-                      tr: "Sektör",
-                      vi: "Ngành",
-                      "zh-cn": "行业",
-                      "zh-hk": "部門",
-                      "zh-tw": "部門"
-                    }
+                    length: 120
                   },
                   {
                     name: "Nbrhd",
                     type: "esriFieldTypeString",
                     alias: "Neighborhood",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مجاورة",
-                      bs: "Četvrt",
-                      cs: "Čtvrť",
-                      da: "Lokalområde",
-                      de: "Nachbarschaft",
-                      el: "Γειτονιά",
-                      en: "Neighborhood",
-                      es: "Barrio",
-                      et: "Linnaosa",
-                      fi: "Kaupunginosa",
-                      fr: "Quartier",
-                      he: "שכונה",
-                      hi: "आस-पड़ोस",
-                      hr: "Četvrt",
-                      id: "Lingkungan",
-                      it: "Vicinato",
-                      ja: "近郊",
-                      ko: "네이버후드",
-                      lt: "Apylinkė",
-                      lv: "Apkārtne",
-                      nb: "Nabolag",
-                      nl: "Omgeving",
-                      pl: "Dzielnica",
-                      "pt-br": "Bairro",
-                      "pt-pt": "Bairro",
-                      ro: "Cartier",
-                      ru: "Окрестность",
-                      sr: "Susedstvo",
-                      sv: "Grannskap",
-                      th: "บริเวณใกล้เคียง",
-                      tr: "Komşu",
-                      vi: "Vùng lân cận",
-                      "zh-cn": "住宅区",
-                      "zh-hk": "街區",
-                      "zh-tw": "街區"
-                    }
+                    length: 120
                   },
                   {
                     name: "District",
                     type: "esriFieldTypeString",
                     alias: "District",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مقاطعة",
-                      bs: "Okrug",
-                      cs: "Oblast",
-                      da: "Distrikt",
-                      de: "Bezirk",
-                      el: "Περιφέρεια",
-                      en: "District",
-                      es: "Distrito",
-                      et: "Rajoon",
-                      fi: "Piiri",
-                      fr: "Secteur",
-                      he: "מחוז",
-                      hi: "जिला",
-                      hr: "Okrug",
-                      id: "Distrik",
-                      it: "Distretto",
-                      ja: "地区",
-                      ko: "구역",
-                      lt: "Rajonas",
-                      lv: "Rajons",
-                      nb: "Distrikt",
-                      nl: "District",
-                      pl: "Okręg",
-                      "pt-br": "Distrito",
-                      "pt-pt": "Distrito",
-                      ro: "District",
-                      ru: "Район",
-                      sr: "Oblast",
-                      sv: "Distrikt",
-                      th: "ตำบล",
-                      tr: "Bölge",
-                      vi: "Quận",
-                      "zh-cn": "行政区",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "City",
                     type: "esriFieldTypeString",
                     alias: "City",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مدينة",
-                      bs: "Grad",
-                      cs: "Město",
-                      da: "By",
-                      de: "Stadt",
-                      el: "Πόλη",
-                      en: "City",
-                      es: "Ciudad",
-                      et: "Linn",
-                      fi: "Kaupunki",
-                      fr: "Ville",
-                      he: "עיר",
-                      hi: "शहर",
-                      hr: "Grad",
-                      id: "Kota",
-                      it: "Città",
-                      ja: "都市",
-                      ko: "도시",
-                      lt: "Miestas",
-                      lv: "Pilsēta",
-                      nb: "Poststed",
-                      nl: "Plaats",
-                      pl: "Miasto",
-                      "pt-br": "Cidade",
-                      "pt-pt": "Cidade",
-                      ro: "Oraş",
-                      ru: "Город",
-                      sr: "Grad",
-                      sv: "Ort",
-                      th: "เมือง",
-                      tr: "Şehir",
-                      vi: "Thành phố",
-                      "zh-cn": "城市",
-                      "zh-hk": "市",
-                      "zh-tw": "市"
-                    }
+                    length: 120
                   },
                   {
                     name: "MetroArea",
                     type: "esriFieldTypeString",
                     alias: "MetroArea",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "منطقة متروبوليتان",
-                      bs: "Metropolitansko područje",
-                      cs: "Metropolitní oblast",
-                      da: "Storbyområde",
-                      de: "Ballungsgebiet",
-                      el: "Μητροπολιτική περιοχή",
-                      en: "MetroArea",
-                      es: "Área metropolitana",
-                      et: "Suurlinna piirkond",
-                      fi: "Kaupunkialue",
-                      fr: "Agglomération",
-                      he: "אזור מטרופולין",
-                      hi: "महानगरीय क्षेत्र",
-                      hr: "Metropolitansko područje",
-                      id: "Area Metropolitan",
-                      it: "Area metropolitana",
-                      ja: "都市圏",
-                      ko: "대도시권",
-                      lt: "Didmiesčio sritis",
-                      lv: "Lielpilsētas teritorija",
-                      nb: "Storbyområde",
-                      nl: "Stedelijk gebied",
-                      pl: "Obszar metropolitalny",
-                      "pt-br": "Área Metropolitana",
-                      "pt-pt": "Área Metropolitana",
-                      ro: "Zonă metropolitană",
-                      ru: "Городская агломерация",
-                      sr: "Gradska oblast",
-                      sv: "Storstadsområde",
-                      th: "บริเวณเมือง",
-                      tr: "Metropolitan Alanı",
-                      vi: "Khu vực Đô thị",
-                      "zh-cn": "大都市区",
-                      "zh-hk": "大都市區",
-                      "zh-tw": "大都市區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Subregion",
                     type: "esriFieldTypeString",
                     alias: "Subregion",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "منطقة فرعية",
-                      bs: "Podregija",
-                      cs: "Spádová oblast",
-                      da: "Underregion",
-                      de: "Subregion",
-                      el: "Υποπεριοχή",
-                      en: "Subregion",
-                      es: "Subregión",
-                      et: "Alampiirkond",
-                      fi: "Osa-alue",
-                      fr: "Sous-région",
-                      he: "תת-אזור",
-                      hi: "उपक्षेत्र",
-                      hr: "Podregija",
-                      id: "Sub-wilayah",
-                      it: "Sottoregione",
-                      ja: "小区域",
-                      ko: "읍/면/동",
-                      lt: "Paregionis",
-                      lv: "Apakšreģions",
-                      nb: "Underregion",
-                      nl: "Subregio",
-                      pl: "Podregion",
-                      "pt-br": "Subregião",
-                      "pt-pt": "Sub-região",
-                      ro: "Subregiune",
-                      ru: "Подрегион",
-                      sr: "Podregion",
-                      sv: "Underregion",
-                      th: "ภูมิภาคย่อย",
-                      tr: "Alt Bölge",
-                      vi: "Tiểu vùng",
-                      "zh-cn": "亚区",
-                      "zh-hk": "亞區",
-                      "zh-tw": "亞區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Region",
                     type: "esriFieldTypeString",
                     alias: "Region",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "المنطقة",
-                      bs: "Regija",
-                      cs: "Region",
-                      da: "Region",
-                      de: "Region",
-                      el: "Περιοχή",
-                      en: "Region",
-                      es: "Región",
-                      et: "Piirkond",
-                      fi: "Alue",
-                      fr: "Région",
-                      he: "איזור",
-                      hi: "क्षेत्र",
-                      hr: "Regija",
-                      id: "Wilayah",
-                      it: "Regione",
-                      ja: "地域",
-                      ko: "지역",
-                      lt: "Regionas",
-                      lv: "Reģions",
-                      nb: "Region",
-                      nl: "Regio",
-                      pl: "Region",
-                      "pt-br": "Região",
-                      "pt-pt": "Região",
-                      ro: "Regiune",
-                      ru: "Регион",
-                      sr: "Region",
-                      sv: "Region",
-                      th: "ภูมิภาค",
-                      tr: "Bölge",
-                      vi: "Vùng",
-                      "zh-cn": "地区",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "RegionAbbr",
                     type: "esriFieldTypeString",
                     alias: "RegionAbbr",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اختصار المنطقة",
-                      bs: "Kratica regije",
-                      cs: "Zkratka regionu",
-                      da: "Regionsforkortelse",
-                      de: "Abkürzung der Region",
-                      el: "Συντομογραφία περιοχής",
-                      en: "RegionAbbr",
-                      es: "Abreviatura de región",
-                      et: "Regiooni lühend",
-                      fi: "Alueen lyhenne",
-                      fr: "Abréviation de région",
-                      he: "קיצור של אזור",
-                      hi: "क्षेत्र संक्षिप्त नाम",
-                      hr: "Kratica regije",
-                      id: "Singkatan Wilayah",
-                      it: "Abbreviazione regione",
-                      ja: "地域の略称",
-                      ko: "지역 약어",
-                      lt: "Regiono santrumpa",
-                      lv: "Reģiona saīsinājums",
-                      nb: "Forkortelse for region",
-                      nl: "Regio-afkorting",
-                      pl: "Skrót nazwy regionu",
-                      "pt-br": "Abreviação de Região",
-                      "pt-pt": "Abreviatura da Região",
-                      ro: "Abreviere regiune",
-                      ru: "Сокр. региона",
-                      sr: "Skraćenica regiona",
-                      sv: "Regionförkortning",
-                      th: "ชื่อย่อภูมิภาค",
-                      tr: "Bölge Kısaltması",
-                      vi: "Tên viết tắt của Khu vực",
-                      "zh-cn": "地区缩写",
-                      "zh-hk": "地區縮寫",
-                      "zh-tw": "地區縮寫"
-                    }
+                    length: 50
                   },
                   {
                     name: "Territory",
                     type: "esriFieldTypeString",
                     alias: "Territory",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "الإقليم",
-                      bs: "Teritorij",
-                      cs: "Území",
-                      da: "Territorie",
-                      de: "Gebiet",
-                      el: "Επικράτεια",
-                      en: "Territory",
-                      es: "Territorio",
-                      et: "Territoorium",
-                      fi: "Alue",
-                      fr: "Secteur",
-                      he: "טריטוריה",
-                      hi: "प्रदेश",
-                      hr: "Teritorij",
-                      id: "Wilayah",
-                      it: "Territorio",
-                      ja: "テリトリー",
-                      ko: "지역",
-                      lt: "Teritorija",
-                      lv: "Teritorija",
-                      nb: "Territorium",
-                      nl: "Gebied",
-                      pl: "Obszar",
-                      "pt-br": "Território",
-                      "pt-pt": "Território",
-                      ro: "Teritoriu",
-                      ru: "Округ",
-                      sr: "Teritorija",
-                      sv: "Region",
-                      th: "อาณาเขต",
-                      tr: "Bölge",
-                      vi: "Khu vực",
-                      "zh-cn": "区域",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Zone",
                     type: "esriFieldTypeString",
                     alias: "Zone",
                     required: false,
-                    length: 100,
-                    localizedNames: {
-                      ar: "منطقة",
-                      bs: "Zona",
-                      cs: "Zóna",
-                      da: "Zone",
-                      de: "Zone",
-                      el: "Ζώνη",
-                      en: "Zone",
-                      es: "Zona",
-                      et: "Tsoon",
-                      fi: "Kaista",
-                      fr: "Zone",
-                      he: "אזור",
-                      hi: "अंचल",
-                      hr: "Zona",
-                      id: "Zona",
-                      it: "Zona",
-                      ja: "ゾーン",
-                      ko: "구역",
-                      lt: "Sritis",
-                      lv: "Zona",
-                      nb: "Sone",
-                      nl: "Zone",
-                      pl: "Strefa",
-                      "pt-br": "Zona",
-                      "pt-pt": "Zona",
-                      ro: "Zonă",
-                      ru: "Зона",
-                      sr: "Zona",
-                      sv: "Zon",
-                      th: "โซน",
-                      tr: "Bölge",
-                      vi: "Khu vực",
-                      "zh-cn": "区域",
-                      "zh-hk": "區域",
-                      "zh-tw": "區域"
-                    }
+                    length: 100
                   },
                   {
                     name: "Postal",
                     type: "esriFieldTypeString",
                     alias: "Postal",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "بريدي",
-                      bs: "Poštanski broj",
-                      cs: "Poštovní",
-                      da: "Postnummer",
-                      de: "Postalisch",
-                      el: "Ταχυδρομική",
-                      en: "Postal",
-                      es: "Postal",
-                      et: "Postiaadress",
-                      fi: "Postinumero",
-                      fr: "Postal",
-                      he: "של דואר",
-                      hi: "पोस्टल",
-                      hr: "Poštanski broj",
-                      id: "Pos",
-                      it: "Postale",
-                      ja: "郵便番号",
-                      ko: "우편 번호",
-                      lt: "Pašto",
-                      lv: "Pasts",
-                      nb: "Post",
-                      nl: "Postcode",
-                      pl: "Pocztowy",
-                      "pt-br": "Código Postal",
-                      "pt-pt": "Código postal",
-                      ro: "Cod poştal",
-                      ru: "Почтовый код",
-                      sr: "Poštanski region",
-                      sv: "Postnummer",
-                      th: "รหัสไปรษณีย์",
-                      tr: "Posta",
-                      vi: "Bưu điện",
-                      "zh-cn": "邮政编码",
-                      "zh-hk": "郵遞區號",
-                      "zh-tw": "郵遞區號"
-                    }
+                    length: 20
                   },
                   {
                     name: "PostalExt",
                     type: "esriFieldTypeString",
                     alias: "PostalExt",
                     required: false,
-                    length: 10,
-                    localizedNames: {
-                      ar: "الامتداد البريدي",
-                      bs: "Ekstenzija poštanskog broja",
-                      cs: "Poštovní rozšíření",
-                      da: "Post-udstrækning",
-                      de: "Erweiterung der Postanschrift",
-                      el: "Ταχυδρομική επέκταση",
-                      en: "PostalExt",
-                      es: "Extensión postal",
-                      et: "Postiindeks",
-                      fi: "Postinumeron tarkenne",
-                      fr: "Extension postale",
-                      he: "שלוחת דואר",
-                      hi: "डाक विस्तार",
-                      hr: "Ekstenzija poštanskog broja",
-                      id: "Ekstensi Pos",
-                      it: "Estensione postale",
-                      ja: "追加の郵便番号",
-                      ko: "우편 번호 확장 코드",
-                      lt: "Pašto kodo plėtinys",
-                      lv: "Pasta paplašinājums",
-                      nb: "Utvidet postnummer",
-                      nl: "Uitbreiding van postadres",
-                      pl: "Kod pocztowy",
-                      "pt-br": "Extensão do Postal",
-                      "pt-pt": "Extensão Postal",
-                      ro: "Extensie poştală",
-                      ru: "Расширение почтового кода",
-                      sr: "Proširenje poštanskog regiona",
-                      sv: "Utökat postnummer",
-                      th: "รหัสไปรณีย์เสริม",
-                      tr: "Posta Uzantısı",
-                      vi: "Mở rộng Bưu điện",
-                      "zh-cn": "邮政编码扩展",
-                      "zh-hk": "郵遞區號延伸",
-                      "zh-tw": "郵遞區號延伸"
-                    }
+                    length: 10
                   },
                   {
                     name: "Country",
                     type: "esriFieldTypeString",
                     alias: "Country",
                     required: false,
-                    length: 30,
-                    localizedNames: {
-                      ar: "بلد",
-                      bs: "Zemlja",
-                      cs: "Země",
-                      da: "Land",
-                      de: "Land",
-                      el: "Χώρα",
-                      en: "Country",
-                      es: "País",
-                      et: "Riik",
-                      fi: "Maa",
-                      fr: "Pays",
-                      he: "ארץ",
-                      hi: "देश",
-                      hr: "Zemlja",
-                      id: "Negara",
-                      it: "Paese",
-                      ja: "国",
-                      ko: "국가",
-                      lt: "Šalis",
-                      lv: "Valsts",
-                      nb: "Land",
-                      nl: "Land",
-                      pl: "Kraj",
-                      "pt-br": "País",
-                      "pt-pt": "País",
-                      ro: "Ţară",
-                      ru: "Страна",
-                      sr: "Zemlja",
-                      sv: "Land",
-                      th: "ประเทศ",
-                      tr: "Ülke",
-                      vi: "Quốc gia",
-                      "zh-cn": "国家",
-                      "zh-hk": "國家",
-                      "zh-tw": "國家"
-                    }
+                    length: 30
                   },
                   {
                     name: "LangCode",
                     type: "esriFieldTypeString",
                     alias: "LangCode",
                     required: false,
-                    length: 5,
-                    localizedNames: {
-                      ar: "كود اللغة",
-                      bs: "Jezični kod",
-                      cs: "Kód jazyka",
-                      da: "Sprogkode",
-                      de: "Sprachencode",
-                      el: "Κωδικός γλώσσας",
-                      en: "LangCode",
-                      es: "Código de lenguaje",
-                      et: "Keelekood",
-                      fi: "Kielikoodi",
-                      fr: "Code de la langue",
-                      he: "קוד שפה",
-                      hi: "भाषा कोड",
-                      hr: "Jezični kod",
-                      id: "Kode Bahasa",
-                      it: "Codice lingua",
-                      ja: "言語コード",
-                      ko: "언어 코드",
-                      lt: "Kalbos kodas",
-                      lv: "Valodas kods",
-                      nb: "Språkkode",
-                      nl: "Taalcode",
-                      pl: "Kod języka",
-                      "pt-br": "Código de Idioma",
-                      "pt-pt": "Código do Idioma",
-                      ro: "Cod de limbă",
-                      ru: "Код языка",
-                      sr: "Kod jezika",
-                      sv: "Språkkod",
-                      th: "โค้ดภาษา",
-                      tr: "Dil Kodu",
-                      vi: "Mã Ngôn ngữ",
-                      "zh-cn": "语言代码",
-                      "zh-hk": "語言代碼",
-                      "zh-tw": "語言代碼"
-                    }
+                    length: 5
                   },
                   {
                     name: "Distance",
                     type: "esriFieldTypeDouble",
                     alias: "Distance",
-                    required: false,
-                    localizedNames: {
-                      ar: "المسافة",
-                      bs: "Udaljenost",
-                      cs: "Velikost",
-                      da: "Afstand",
-                      de: "Entfernung",
-                      el: "Απόσταση",
-                      en: "Distance",
-                      es: "Distancia",
-                      et: "Vahemaa",
-                      fi: "Etäisyys",
-                      fr: "Distance",
-                      he: "מרחק",
-                      hi: "दूरी",
-                      hr: "Udaljenost",
-                      id: "Jarak",
-                      it: "Distanza",
-                      ja: "距離",
-                      ko: "거리",
-                      lt: "Atstumas",
-                      lv: "Attālums",
-                      nb: "Avstand",
-                      nl: "Afstand",
-                      pl: "Odległość",
-                      "pt-br": "Distância",
-                      "pt-pt": "Distância",
-                      ro: "Distanţă",
-                      ru: "Расстояние",
-                      sr: "Rastojanje",
-                      sv: "Avstånd",
-                      th: "ระยะทาง",
-                      tr: "Mesafe",
-                      vi: "Khoảng cách",
-                      "zh-cn": "距离",
-                      "zh-hk": "距離",
-                      "zh-tw": "距離"
-                    }
+                    required: false
                   },
                   {
                     name: "X",
                     type: "esriFieldTypeDouble",
                     alias: "X",
-                    required: false,
-                    localizedNames: {
-                      ar: "X",
-                      bs: "X",
-                      cs: "X",
-                      da: "X",
-                      de: "X",
-                      el: "X",
-                      en: "X",
-                      es: "X",
-                      et: "X",
-                      fi: "X",
-                      fr: "X",
-                      he: "X",
-                      hi: "X",
-                      hr: "X",
-                      id: "X",
-                      it: "X",
-                      ja: "X",
-                      ko: "X",
-                      lt: "X",
-                      lv: "X",
-                      nb: "X",
-                      nl: "X",
-                      pl: "X",
-                      "pt-br": "X",
-                      "pt-pt": "X",
-                      ro: "X",
-                      ru: "X",
-                      sr: "X",
-                      sv: "X",
-                      th: "เอ๊ก",
-                      tr: "X",
-                      vi: "X",
-                      "zh-cn": "X",
-                      "zh-hk": "X",
-                      "zh-tw": "X"
-                    }
+                    required: false
                   },
                   {
                     name: "Y",
                     type: "esriFieldTypeDouble",
                     alias: "Y",
-                    required: false,
-                    localizedNames: {
-                      ar: "Y",
-                      bs: "Y",
-                      cs: "Y",
-                      da: "J",
-                      de: "Y",
-                      el: "Y",
-                      en: "Y",
-                      es: "Y",
-                      et: "Y",
-                      fi: "Y",
-                      fr: "Y",
-                      he: "Y",
-                      hi: "Y",
-                      hr: "Y",
-                      id: "Y",
-                      it: "Y",
-                      ja: "Y",
-                      ko: "Y",
-                      lt: "Y",
-                      lv: "Y",
-                      nb: "J",
-                      nl: "Y",
-                      pl: "Y",
-                      "pt-br": "Y",
-                      "pt-pt": "Y",
-                      ro: "Y",
-                      ru: "Y",
-                      sr: "Y",
-                      sv: "Y",
-                      th: "วาย",
-                      tr: "Y",
-                      vi: "Y",
-                      "zh-cn": "Y",
-                      "zh-hk": "Y",
-                      "zh-tw": "Y"
-                    }
+                    required: false
                   },
                   {
                     name: "DisplayX",
                     type: "esriFieldTypeDouble",
                     alias: "DisplayX",
-                    required: false,
-                    localizedNames: {
-                      ar: "عرض X",
-                      bs: "Prikaži X",
-                      cs: "Zobrazení X",
-                      da: "Visning X",
-                      de: "X-Anzeigewert",
-                      el: "Εμφάνιση Χ",
-                      en: "DisplayX",
-                      es: "Mostrar X",
-                      et: "Kuva X",
-                      fi: "Näytön X-koordinaatti",
-                      fr: "Affichage X",
-                      he: "תצוגת X",
-                      hi: "X प्रदर्शित करें",
-                      hr: "Prikaži X",
-                      id: "Display X",
-                      it: "Visualizza X",
-                      ja: "表示 X",
-                      ko: "X 표시",
-                      lt: "Rodyti X",
-                      lv: "Parādīt X",
-                      nb: "Vis X",
-                      nl: "Display X",
-                      pl: "Wyświetl X",
-                      "pt-br": "Exibir X",
-                      "pt-pt": "Exibir X",
-                      ro: "Afişare X",
-                      ru: "Показ. X",
-                      sr: "Prikaz X",
-                      sv: "Visa X",
-                      th: "แสดง X",
-                      tr: "X Görüntüsü",
-                      vi: "Hiển thị X",
-                      "zh-cn": "显示 X",
-                      "zh-hk": "顯示 X",
-                      "zh-tw": "顯示 X"
-                    }
+                    required: false
                   },
                   {
                     name: "DisplayY",
                     type: "esriFieldTypeDouble",
                     alias: "DisplayY",
-                    required: false,
-                    localizedNames: {
-                      ar: "عرض Y",
-                      bs: "Prikaži Y",
-                      cs: "Zobrazení Y",
-                      da: "Visning Y",
-                      de: "Y-Anzeigewert",
-                      el: "Εμφάνιση Υ",
-                      en: "DisplayY",
-                      es: "Mostrar Y",
-                      et: "Kuva Y",
-                      fi: "Näytön Y-koordinaatti",
-                      fr: "Affichage Y",
-                      he: "תצוגת Y",
-                      hi: "Y प्रदर्शित करें",
-                      hr: "Prikaži Y",
-                      id: "Display Y",
-                      it: "Visualizza Y",
-                      ja: "表示 Y",
-                      ko: "Y 표시",
-                      lt: "Rodyti Y",
-                      lv: "Parādīt Y",
-                      nb: "Vis Y",
-                      nl: "Display Y",
-                      pl: "Wyświetl Y",
-                      "pt-br": "Exibir Y",
-                      "pt-pt": "Exibir Y",
-                      ro: "Afişare Y",
-                      ru: "Показ. Y",
-                      sr: "Prikaz Y",
-                      sv: "Visa Y",
-                      th: "แสดง Y",
-                      tr: "Y Görüntüsü",
-                      vi: "Hiển thị Y",
-                      "zh-cn": "显示 Y",
-                      "zh-hk": "顯示 Y",
-                      "zh-tw": "顯示 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "Xmin",
                     type: "esriFieldTypeDouble",
                     alias: "Xmin",
-                    required: false,
-                    localizedNames: {
-                      ar: "قيمة الحد الأدنى لـ X",
-                      bs: "Minimalni X",
-                      cs: "Minimální X",
-                      da: "Minimum X",
-                      de: "X-Minimum",
-                      el: "Ελάχιστη τιμή Χ",
-                      en: "Xmin",
-                      es: "X mínimo",
-                      et: "Väikseim X",
-                      fi: "X:n vähimmäisarvo",
-                      fr: "X minimum",
-                      he: "מינימום X",
-                      hi: "न्यूनतम X",
-                      hr: "Minimalni X",
-                      id: "X minimum",
-                      it: "Minimo X",
-                      ja: "最小 X",
-                      ko: "X의 최소값",
-                      lt: "Min. X",
-                      lv: "Minimālā X",
-                      nb: "Minimum X",
-                      nl: "Minimum X",
-                      pl: "Minimum X",
-                      "pt-br": "X Mínimo",
-                      "pt-pt": "X Mínimo",
-                      ro: "Minim X",
-                      ru: "Мин. X",
-                      sr: "Minimum X",
-                      sv: "Lägsta X:",
-                      th: "มินิมัม X",
-                      tr: "Minimum X",
-                      vi: "Giá trị tối thiểu X",
-                      "zh-cn": "X 最小值",
-                      "zh-hk": "最小值 X",
-                      "zh-tw": "最小值 X"
-                    }
+                    required: false
                   },
                   {
                     name: "Xmax",
                     type: "esriFieldTypeDouble",
                     alias: "Xmax",
-                    required: false,
-                    localizedNames: {
-                      ar: "الحد الأقصى لـ X",
-                      bs: "Maksimalni X",
-                      cs: "Maximální X",
-                      da: "Maksimum X",
-                      de: "Maximum X",
-                      el: "Μέγιστη τιμή Χ",
-                      en: "Xmax",
-                      es: "X máximo",
-                      et: "Suurim X",
-                      fi: "X:n enimmäisarvo",
-                      fr: "X maximum",
-                      he: "מקסימום X",
-                      hi: "अधिकतम X",
-                      hr: "Maksimalni X",
-                      id: "X maksimum",
-                      it: "Massimo X",
-                      ja: "最大 X",
-                      ko: "X의 최대값",
-                      lt: "Maks. X",
-                      lv: "Maksimālā X",
-                      nb: "Maksimum X",
-                      nl: "Maximum X",
-                      pl: "Maksimum X",
-                      "pt-br": "X Máximo",
-                      "pt-pt": "X Máximo",
-                      ro: "Maxim X",
-                      ru: "Макс. X",
-                      sr: "Maksimum X",
-                      sv: "Högsta X:",
-                      th: "แม็กซิมัม X",
-                      tr: "Maksimum X",
-                      vi: "Giá trị tối đa X",
-                      "zh-cn": "X 最大值",
-                      "zh-hk": "最大值 X",
-                      "zh-tw": "最大值 X"
-                    }
+                    required: false
                   },
                   {
                     name: "Ymin",
                     type: "esriFieldTypeDouble",
                     alias: "Ymin",
-                    required: false,
-                    localizedNames: {
-                      ar: "قيمة الحد الأدنى لـ Y",
-                      bs: "Minimalni Y",
-                      cs: "Minimální Y",
-                      da: "Minimum Y",
-                      de: "Y-Minimum",
-                      el: "Ελάχιστη τιμή Υ",
-                      en: "Ymin",
-                      es: "Y mínimo",
-                      et: "Väikseim Y",
-                      fi: "Y:n vähimmäisarvo",
-                      fr: "Y minimum",
-                      he: "מינימום Y",
-                      hi: "न्यूनतम Y",
-                      hr: "Minimalni Y",
-                      id: "Y minimum",
-                      it: "Minimo Y",
-                      ja: "最小 Y",
-                      ko: "Y의 최소값",
-                      lt: "Min. Y",
-                      lv: "Minimālā Y",
-                      nb: "Minimum Y",
-                      nl: "Minimum Y",
-                      pl: "Minimum Y",
-                      "pt-br": "Y Máximo",
-                      "pt-pt": "Y Mínimo",
-                      ro: "Minim Y",
-                      ru: "Мин. Y",
-                      sr: "Minimum Y",
-                      sv: "Lägsta Y:",
-                      th: "มินิมัม Y",
-                      tr: "Minimum Y",
-                      vi: "Giá trị tối thiểu Y",
-                      "zh-cn": "Y 最小值",
-                      "zh-hk": "最小值 Y",
-                      "zh-tw": "最小值 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "Ymax",
                     type: "esriFieldTypeDouble",
                     alias: "Ymax",
-                    required: false,
-                    localizedNames: {
-                      ar: "الحد الأقصى لـ Y",
-                      bs: "Maksimalni Y",
-                      cs: "Maximální Y",
-                      da: "Maksimum Y",
-                      de: "Maximum Y",
-                      el: "Μέγιστη τιμή Υ",
-                      en: "Ymax",
-                      es: "Y máximo",
-                      et: "Suurim Y",
-                      fi: "Y:n enimmäisarvo",
-                      fr: "Y maximum",
-                      he: "מקסימום Y",
-                      hi: "अधिकतम Y",
-                      hr: "Maksimalni Y",
-                      id: "Y maksimum",
-                      it: "Massimo Y",
-                      ja: "最大 Y",
-                      ko: "Y의 최대값",
-                      lt: "Maks. Y",
-                      lv: "Maksimālā Y",
-                      nb: "Maksimum Y",
-                      nl: "Maximum Y",
-                      pl: "Maksimum Y",
-                      "pt-br": "Y Máximo",
-                      "pt-pt": "Y Máximo",
-                      ro: "Maxim Y",
-                      ru: "Макс. Y",
-                      sr: "Maksimum Y",
-                      sv: "Högsta Y:",
-                      th: "แม็กซิมัม Y",
-                      tr: "Maksimum Y",
-                      vi: "Giá trị tối đa Y",
-                      "zh-cn": "Y 最大值",
-                      "zh-hk": "最大值 Y",
-                      "zh-tw": "最大值 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "ExInfo",
                     type: "esriFieldTypeString",
                     alias: "ExtraInfo",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "معلومات إضافية",
-                      bs: "Dodatne informacije",
-                      cs: "Dodatečné informace",
-                      da: "Ekstra oplysninger",
-                      de: "Zusätzliche Informationen",
-                      el: "Περισσότερες πληροφορίες",
-                      en: "ExtraInfo",
-                      es: "Información adicional",
-                      et: "Lisateave",
-                      fi: "Lisätiedot",
-                      fr: "Informations supplémentaires",
-                      he: "מידע נוסף",
-                      hi: "अतिरिक्त सूचना",
-                      hr: "Dodatne informacije",
-                      id: "Info Tambahan",
-                      it: "Informazioni aggiuntive",
-                      ja: "詳細情報",
-                      ko: "추가 정보",
-                      lt: "Papildoma informacija",
-                      lv: "Papildinformācija",
-                      nb: "Ekstra info",
-                      nl: "Extra info",
-                      pl: "Dodatkowe informacje",
-                      "pt-br": "Informações Extras",
-                      "pt-pt": "Informação Extra",
-                      ro: "Informaţii suplimentare",
-                      ru: "Неучтенное",
-                      sr: "Dodatne informacije",
-                      sv: "Extra info",
-                      th: "ข้อมูลพิเศษ",
-                      tr: "Ek Bilgi",
-                      vi: "Thông tin Bổ sung",
-                      "zh-cn": "其他信息",
-                      "zh-hk": "額外資訊",
-                      "zh-tw": "額外資訊"
-                    }
+                    length: 500
                   }
                 ]
               }
@@ -16260,7 +14212,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           "external~08595057759890956": {
             type: "Features",
             portalUrl: "{{organization.portalBaseUrl}}",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
             isDynamic: false,
             label: "School",
             url: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}",
@@ -17150,7 +15102,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer3.itemId}}",
           popupInfo: {
             title: "Stands: {StandName}",
             fieldInfos: [
@@ -17277,7 +15229,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Property",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer2.itemId}}",
           popupInfo: {
             title: "Property: {PropertyName}",
             fieldInfos: [
@@ -17388,7 +15340,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Chemical Activity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer1.itemId}}",
           popupInfo: {
             title: "Chemical Activity: {ActivityStatus}",
             fieldInfos: [
@@ -17641,7 +15593,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - HarvestActivity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer0.itemId}}",
           popupInfo: {
             title: "HarvestActivity: {HarvestUnitName}",
             fieldInfos: [
@@ -17937,7 +15889,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Incident Area",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer7.itemId}}",
           popupInfo: {
             title: "Incident Area: {INCIDENTID}",
             fieldInfos: [
@@ -18099,7 +16051,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - DemographicPolygons",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer6.itemId}}",
           popupInfo: {
             title: "DemographicPolygons: {NAME10}",
             fieldInfos: [
@@ -18313,7 +16265,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Road Closure",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer5.itemId}}",
           popupInfo: {
             title: "Road Closure: {BLOCKNM}",
             fieldInfos: [
@@ -18495,7 +16447,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Bridges",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer4.itemId}}",
           popupInfo: {
             title: "Bridges: {NAME}",
             fieldInfos: [
@@ -18781,7 +16733,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Assistance",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer3.itemId}}",
           popupInfo: {
             title: "Emergency Assistance: {PLACENAME}",
             fieldInfos: [
@@ -19082,7 +17034,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
             title: "Emergency Shelter: {FACNAME}",
             fieldInfos: [
@@ -19304,7 +17256,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - School",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer1.itemId}}",
           popupInfo: {
             title: "School: {NAME}",
             fieldInfos: [
@@ -19472,7 +17424,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Hospital",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer0.itemId}}",
           popupInfo: {
             title: "Hospital: {NAME}",
             fieldInfos: [
@@ -19637,7 +17589,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer8.url}}",
           id: "TestLayer2FromWebApp_5860",
           title: "TestLayer2FromWebApp - Activity Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer8.itemId}}",
           popupInfo: {
             title: "Activity Stands: {StandID}",
             fieldInfos: [
@@ -19753,7 +17705,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer7.url}}",
           id: "TestLayer2FromWebApp_8278",
           title: "TestLayer2FromWebApp - ChemicalProduct",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer7.itemId}}",
           popupInfo: {
             title: "ChemicalProduct: {ProductName}",
             fieldInfos: [
@@ -19941,7 +17893,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer6.url}}",
           id: "TestLayer2FromWebApp_8866",
           title: "TestLayer2FromWebApp - ChemicalApplication",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer6.itemId}}",
           popupInfo: {
             title: "ChemicalApplication: {ApplicationRate}",
             fieldInfos: [
@@ -20089,7 +18041,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer5.url}}",
           id: "TestLayer2FromWebApp_6326",
           title: "TestLayer2FromWebApp - ActivityWeather",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer5.itemId}}",
           popupInfo: {
             title: "ActivityWeather: {WeatherDate}",
             fieldInfos: [
@@ -20236,7 +18188,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
           id: "TestLayer2FromWebApp_4230",
           title: "TestLayer2FromWebApp - Harvest Crops",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer4.itemId}}",
           popupInfo: {
             title: "Harvest Crops: {CropName}",
             fieldInfos: [
@@ -34924,12 +32876,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -34937,7 +32891,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -34945,7 +32900,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -34953,7 +32909,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -34961,7 +32918,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -34969,7 +32927,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -34977,7 +32936,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -34985,7 +32945,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -34993,7 +32954,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -35001,7 +32963,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -35013,7 +32976,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -35025,7 +32989,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -35037,7 +33002,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -35045,7 +33011,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -35053,7 +33020,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -35061,7 +33029,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -35069,7 +33038,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -35077,7 +33047,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -35085,7 +33056,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -35096,7 +33068,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closedate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -35107,7 +33080,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -35115,7 +33089,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -35126,7 +33101,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -44236,7 +42212,7 @@ const expected: common.IItemTemplate[] = [
                       }
                     },
                     TestLayer2FromWebApp_6326: {
-                      "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer5.fields.activityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -44278,7 +42254,7 @@ const expected: common.IItemTemplate[] = [
                       }
                     },
                     TestLayer2FromWebApp_8866: {
-                      "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer6.fields.activityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -44320,7 +42296,7 @@ const expected: common.IItemTemplate[] = [
                       }
                     },
                     TestLayer2FromWebApp_8278: {
-                      "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalproductid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer7.fields.chemicalproductid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -44370,24 +42346,24 @@ const expected: common.IItemTemplate[] = [
                         Required: false,
                         Disabled: false
                       },
-                      "{{b19aec399444407da84fffe2a55d4151.layer0.fields.notes.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer7.fields.notes.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       }
                     },
                     TestLayer2FromWebApp_5860: {
-                      "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activityid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
                       },
-                      "{{b19aec399444407da84fffe2a55d4151.layer3.fields.standid.name}}": {
+                      "{{b19aec399444407da84fffe2a55d4151.layer8.fields.standid.name}}": {
                         Hide: false,
                         Required: false,
                         Disabled: false
@@ -44543,2453 +42519,381 @@ const expected: common.IItemTemplate[] = [
                     type: "esriFieldTypeString",
                     alias: "Status",
                     required: true,
-                    length: 1,
-                    localizedNames: {
-                      ar: "الحالة",
-                      bs: "Status",
-                      cs: "Stav",
-                      da: "Status",
-                      de: "Status",
-                      el: "Κατάσταση",
-                      en: "Status",
-                      es: "Estado",
-                      et: "Staatus",
-                      fi: "Tila",
-                      fr: "Statut",
-                      he: "סטטוס",
-                      hi: "स्थिति",
-                      hr: "Status",
-                      id: "Status",
-                      it: "Stato",
-                      ja: "ステータス",
-                      ko: "상태",
-                      lt: "Būsena",
-                      lv: "Statuss",
-                      nb: "Status",
-                      nl: "Status",
-                      pl: "Stan",
-                      "pt-br": "Status",
-                      "pt-pt": "Estado",
-                      ro: "Stare",
-                      ru: "Статус",
-                      sr: "Status",
-                      sv: "Status",
-                      th: "สถานะ",
-                      tr: "Durum",
-                      vi: "Trạng thái",
-                      "zh-cn": "状态",
-                      "zh-hk": "狀態",
-                      "zh-tw": "狀態"
-                    }
+                    length: 1
                   },
                   {
                     name: "Score",
                     type: "esriFieldTypeDouble",
                     alias: "Score",
-                    required: true,
-                    localizedNames: {
-                      ar: "نقاط",
-                      bs: "Bodovi",
-                      cs: "Skóre",
-                      da: "Score",
-                      de: "Punktzahl",
-                      el: "Βαθμολογία",
-                      en: "Score",
-                      es: "Puntuación",
-                      et: "Skoor",
-                      fi: "Pisteet",
-                      fr: "Score",
-                      he: "ציון",
-                      hi: "स्कोर",
-                      hr: "Bodovi",
-                      id: "Skor",
-                      it: "Punteggio",
-                      ja: "スコア",
-                      ko: "점수",
-                      lt: "Įvertinimas",
-                      lv: "Rezultāts",
-                      nb: "Poengsum",
-                      nl: "Score",
-                      pl: "Wynik",
-                      "pt-br": "Pontuação",
-                      "pt-pt": "Pontuação",
-                      ro: "Scor",
-                      ru: "Очки",
-                      sr: "Ocena",
-                      sv: "Poäng",
-                      th: "คะแนน",
-                      tr: "Puan",
-                      vi: "Điểm số",
-                      "zh-cn": "得分",
-                      "zh-hk": "得分",
-                      "zh-tw": "得分"
-                    }
+                    required: true
                   },
                   {
                     name: "Match_addr",
                     type: "esriFieldTypeString",
                     alias: "Match_addr",
                     required: true,
-                    length: 500,
-                    localizedNames: {
-                      ar: "عنوان مطابق",
-                      bs: "Pronađi podudaranje adresa",
-                      cs: "Odpovídající adresa",
-                      da: "Match adresse",
-                      de: "Übereinstimmende Adresse",
-                      el: "Αντιστοίχιση διεύθυνσης",
-                      en: "Match_addr",
-                      es: "Cotejar dirección",
-                      et: "Aadressi sobitamine",
-                      fi: "Osoitteen täsmäytys",
-                      fr: "Apparier l'adresse",
-                      he: "כתובת תואמת",
-                      hi: "मिलान पता",
-                      hr: "Pronađi podudaranje adresa",
-                      id: "Cocokkan Alamat",
-                      it: "Indirizzo corrispondente",
-                      ja: "一致した住所",
-                      ko: "주소 일치",
-                      lt: "Adreso atitiktis",
-                      lv: "Atbilstoša adrese",
-                      nb: "Match adresse",
-                      nl: "Koppelen aan adres",
-                      pl: "Dopasuj adres",
-                      "pt-br": "Endereço Correspondentes",
-                      "pt-pt": "Endereço Correspondente",
-                      ro: "Potrivire adresă",
-                      ru: "Подпись",
-                      sr: "Poklopi adresu",
-                      sv: "Matcha adress",
-                      th: "จับคู่ที่อยู่",
-                      tr: "Adres Eşleştir",
-                      vi: "Khớp với Địa chỉ",
-                      "zh-cn": "匹配地址",
-                      "zh-hk": "符合地址",
-                      "zh-tw": "符合地址"
-                    }
+                    length: 500
                   },
                   {
                     name: "LongLabel",
                     type: "esriFieldTypeString",
                     alias: "LongLabel",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "لافتة تسمية طويلة",
-                      bs: "Dugačka oznaka",
-                      cs: "Dlouhý popisek",
-                      da: "Lang etiket",
-                      de: "Lange Beschriftung",
-                      el: "Μεγάλη ετικέτα",
-                      en: "LongLabel",
-                      es: "Etiqueta larga",
-                      et: "Pikk silt",
-                      fi: "Pitkä tunnusteksti",
-                      fr: "Etiquette longue",
-                      he: "תווית ארוכה",
-                      hi: "लंबी पर्ची",
-                      hr: "Dugačka oznaka",
-                      id: "Label Panjang",
-                      it: "Etichetta lunga",
-                      ja: "長いラベル",
-                      ko: "긴 레이블",
-                      lt: "Ilgas užrašas",
-                      lv: "Garš kartes teksts",
-                      nb: "Lang etikett",
-                      nl: "Lang label",
-                      pl: "Długa etykieta",
-                      "pt-br": "Rótulo Longo",
-                      "pt-pt": "Rótulo Longo",
-                      ro: "Etichetă lungă",
-                      ru: "Длинная подпись",
-                      sr: "Duga oznaka",
-                      sv: "Lång etikett",
-                      th: "ตัวอักษรยาว",
-                      tr: "Uzun Etiket",
-                      vi: "Nhãn dài",
-                      "zh-cn": "长标注",
-                      "zh-hk": "長標籤",
-                      "zh-tw": "長標籤"
-                    }
+                    length: 500
                   },
                   {
                     name: "ShortLabel",
                     type: "esriFieldTypeString",
                     alias: "ShortLabel",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "لافتة تسمية قصيرة",
-                      bs: "Kratka oznaka",
-                      cs: "Krátký popisek",
-                      da: "Kort etiket",
-                      de: "Kurze Beschriftung",
-                      el: "Μικρή ετικέτα",
-                      en: "ShortLabel",
-                      es: "Etiqueta corta",
-                      et: "Lühike silt",
-                      fi: "Lyhyt tunnusteksti",
-                      fr: "Etiquette courte",
-                      he: "תוויות קצרה",
-                      hi: "छोटी पर्ची",
-                      hr: "Kratka oznaka",
-                      id: "Label Pendek",
-                      it: "Etichetta corta",
-                      ja: "短いラベル",
-                      ko: "짧은 레이블",
-                      lt: "Trumpas užrašas",
-                      lv: "Īss kartes teksts",
-                      nb: "Kort etikett",
-                      nl: "Kort label",
-                      pl: "Krótka etykieta",
-                      "pt-br": "Rótulo Curto",
-                      "pt-pt": "Rótulo Curto",
-                      ro: "Etichetă scurtă",
-                      ru: "Краткая подпись",
-                      sr: "Kratka oznaka",
-                      sv: "Kort etikett",
-                      th: "ตัวอักษรสั้น",
-                      tr: "Kısa Etiket",
-                      vi: "Nhãn ngắn",
-                      "zh-cn": "短标注",
-                      "zh-hk": "短標籤",
-                      "zh-tw": "短標籤"
-                    }
+                    length: 500
                   },
                   {
                     name: "Addr_type",
                     type: "esriFieldTypeString",
                     alias: "Addr_type",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع العنوان",
-                      bs: "Vrsta adrese",
-                      cs: "Typ adresy",
-                      da: "Adressetype",
-                      de: "Adresstyp",
-                      el: "Τύπος διεύθυνσης",
-                      en: "Addr_type",
-                      es: "Tipo de dirección",
-                      et: "Aadressi tüüp",
-                      fi: "Osoitetyyppi",
-                      fr: "Type d’adresse",
-                      he: "סוג כתובת",
-                      hi: "पता प्रकार",
-                      hr: "Vrsta adrese",
-                      id: "Tipe Alamat",
-                      it: "Tipo indirizzo",
-                      ja: "住所タイプ",
-                      ko: "주소 유형",
-                      lt: "Adreso tipas",
-                      lv: "Adreses tips",
-                      nb: "Adressetype",
-                      nl: "Addrestype",
-                      pl: "Rodzaj adresu",
-                      "pt-br": "Tipo de Endereço",
-                      "pt-pt": "Tipo de Endereço",
-                      ro: "Tip adresă",
-                      ru: "Тип результата",
-                      sr: "Tip adrese",
-                      sv: "Adresstyp",
-                      th: "ประเภทที่อยู่",
-                      tr: "Adres Türü",
-                      vi: "Loại địa chỉ",
-                      "zh-cn": "地址类型",
-                      "zh-hk": "位址類型",
-                      "zh-tw": "位址類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "Type",
                     type: "esriFieldTypeString",
                     alias: "Type",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "النوع",
-                      bs: "Vrsta",
-                      cs: "Typ",
-                      da: "Type",
-                      de: "Typ",
-                      el: "Τύπος",
-                      en: "Type",
-                      es: "Tipo",
-                      et: "Tüüp",
-                      fi: "Tyyppi",
-                      fr: "Type",
-                      he: "סוג",
-                      hi: "प्रकार",
-                      hr: "Vrsta",
-                      id: "Tipe",
-                      it: "Tipologia",
-                      ja: "タイプ",
-                      ko: "유형",
-                      lt: "Tipas",
-                      lv: "Tips",
-                      nb: "Type",
-                      nl: "Type",
-                      pl: "Typ",
-                      "pt-br": "Tipo",
-                      "pt-pt": "Tipo",
-                      ro: "Tip",
-                      ru: "Тип",
-                      sr: "Tip",
-                      sv: "Typ",
-                      th: "ชนิด",
-                      tr: "Tür",
-                      vi: "Loại",
-                      "zh-cn": "类型",
-                      "zh-hk": "類型",
-                      "zh-tw": "類型"
-                    }
+                    length: 50
                   },
                   {
                     name: "PlaceName",
                     type: "esriFieldTypeString",
                     alias: "PlaceName",
                     required: false,
-                    length: 200,
-                    localizedNames: {
-                      ar: "اسم المكان",
-                      bs: "Naziv mjesta",
-                      cs: "Název místa",
-                      da: "Stednavn",
-                      de: "Ortsname",
-                      el: "Όνομα μέρους",
-                      en: "PlaceName",
-                      es: "Nombre del lugar",
-                      et: "Kohanimi",
-                      fi: "Paikannimi",
-                      fr: "Nom de lieu",
-                      he: "שם מקום",
-                      hi: "स्थान का नाम",
-                      hr: "Naziv mjesta",
-                      id: "Nama Tempat",
-                      it: "Nome località",
-                      ja: "場所名",
-                      ko: "장소 이름",
-                      lt: "Vietos pavadinimas",
-                      lv: "Vietas nosaukums",
-                      nb: "Stedsnavn",
-                      nl: "Plaatsnaam",
-                      pl: "Nazwa miejsca",
-                      "pt-br": "Nome do Lugar",
-                      "pt-pt": "Nome do Local",
-                      ro: "Nume loc",
-                      ru: "Название",
-                      sr: "Ime mesta",
-                      sv: "Platsens namn",
-                      th: "ชื่อสถานที่",
-                      tr: "Yer Adı",
-                      vi: "Tên Địa điểm",
-                      "zh-cn": "地名",
-                      "zh-hk": "地點名稱",
-                      "zh-tw": "地點名稱"
-                    }
+                    length: 200
                   },
                   {
                     name: "Place_addr",
                     type: "esriFieldTypeString",
                     alias: "Place_addr",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "عنوان المكان",
-                      bs: "Adresa mjesta",
-                      cs: "Adresa místa",
-                      da: "Stedadresse",
-                      de: "Adresse",
-                      el: "Διεύθυνση μέρους",
-                      en: "Place_addr",
-                      es: "Dirección de lugar",
-                      et: "Koha-aadress",
-                      fi: "Paikan osoite",
-                      fr: "Site et adresse",
-                      he: "כתובת של מקום",
-                      hi: "स्थान का पता",
-                      hr: "Adresa mjesta",
-                      id: "Place Address",
-                      it: "Indirizzo località",
-                      ja: "場所の住所",
-                      ko: "장소 주소",
-                      lt: "Vietos adresas",
-                      lv: "Vietas adrese",
-                      nb: "Stedsadresse",
-                      nl: "Plaats adres",
-                      pl: "Adres miejsca",
-                      "pt-br": "Endereço de Lugar",
-                      "pt-pt": "Endereço do Local",
-                      ro: "Adresă loc",
-                      ru: "Полный адрес",
-                      sr: "Adresa mesta",
-                      sv: "Platsens adress",
-                      th: "ที่อยู่ของสถานที่",
-                      tr: "Yer Adresi",
-                      vi: "Địa chỉ của Địa điểm",
-                      "zh-cn": "地点地址",
-                      "zh-hk": "地點地址",
-                      "zh-tw": "地點地址"
-                    }
+                    length: 500
                   },
                   {
                     name: "Phone",
                     type: "esriFieldTypeString",
                     alias: "Phone",
                     required: false,
-                    length: 25,
-                    localizedNames: {
-                      ar: "الهاتف",
-                      bs: "Telefon",
-                      cs: "Telefon",
-                      da: "Telefon",
-                      de: "Telefon",
-                      el: "Τηλέφωνο",
-                      en: "Phone",
-                      es: "Teléfono",
-                      et: "Telefon",
-                      fi: "Puhelin",
-                      fr: "Téléphone",
-                      he: "טלפון",
-                      hi: "फ़ोन",
-                      hr: "Telefon",
-                      id: "Telepon",
-                      it: "Telefono",
-                      ja: "電話",
-                      ko: "휴대전화",
-                      lt: "Telefonas",
-                      lv: "Tālrunis",
-                      nb: "Telefon",
-                      nl: "Telefoon",
-                      pl: "Telefon",
-                      "pt-br": "Telefone",
-                      "pt-pt": "Telefone",
-                      ro: "Telefon",
-                      ru: "Телефон",
-                      sr: "Telefon",
-                      sv: "Telefon",
-                      th: "โทรศัพท์",
-                      tr: "Telefon",
-                      vi: "Điện thoại",
-                      "zh-cn": "电话",
-                      "zh-hk": "手提電話",
-                      "zh-tw": "手提電話"
-                    }
+                    length: 25
                   },
                   {
                     name: "URL",
                     type: "esriFieldTypeString",
                     alias: "URL",
                     required: false,
-                    length: 250,
-                    localizedNames: {
-                      ar: "عنوان URL",
-                      bs: "URL",
-                      cs: "Adresa URL",
-                      da: "URL",
-                      de: "URL",
-                      el: "URL",
-                      en: "URL",
-                      es: "Dirección URL",
-                      et: "URL",
-                      fi: "URL-osoite",
-                      fr: "URL",
-                      he: "URL",
-                      hi: "URL",
-                      hr: "URL",
-                      id: "URL",
-                      it: "URL",
-                      ja: "URL",
-                      ko: "URL",
-                      lt: "URL",
-                      lv: "URL",
-                      nb: "URL",
-                      nl: "URL",
-                      pl: "Adres URL",
-                      "pt-br": "URL",
-                      "pt-pt": "URL",
-                      ro: "URL",
-                      ru: "URL",
-                      sr: "URL adresa",
-                      sv: "URL",
-                      th: "URL",
-                      tr: "URL",
-                      vi: "URL",
-                      "zh-cn": "URL",
-                      "zh-hk": "URL",
-                      "zh-tw": "URL"
-                    }
+                    length: 250
                   },
                   {
                     name: "Rank",
                     type: "esriFieldTypeDouble",
                     alias: "Rank",
-                    required: false,
-                    localizedNames: {
-                      ar: "رتبة",
-                      bs: "Rang",
-                      cs: "Priorita",
-                      da: "Rangordn",
-                      de: "Rangstufe",
-                      el: "Κατάταξη",
-                      en: "Rank",
-                      es: "Clasificar",
-                      et: "Järk",
-                      fi: "Sijaluku",
-                      fr: "Classement",
-                      he: "דרגה",
-                      hi: "रैंक",
-                      hr: "Rang",
-                      id: "Peringkat",
-                      it: "Rango",
-                      ja: "ランク",
-                      ko: "랭크",
-                      lt: "Kategorija",
-                      lv: "Rangs",
-                      nb: "Ranger",
-                      nl: "Rang",
-                      pl: "Ocena",
-                      "pt-br": "Classificação",
-                      "pt-pt": "Posição",
-                      ro: "Poziţie ierarhică",
-                      ru: "Ранг",
-                      sr: "Rang",
-                      sv: "Rangordning",
-                      th: "Rank",
-                      tr: "Sıra",
-                      vi: "Cấp độ",
-                      "zh-cn": "等级",
-                      "zh-hk": "等級",
-                      "zh-tw": "等級"
-                    }
+                    required: false
                   },
                   {
                     name: "AddBldg",
                     type: "esriFieldTypeString",
                     alias: "BuildingName",
                     required: false,
-                    length: 125,
-                    localizedNames: {
-                      ar: "اسم المبني",
-                      bs: "Naziv zgrade",
-                      cs: "Název budovy",
-                      da: "Bygningens navn",
-                      de: "Name des Gebäudes",
-                      el: "Όνομα κτιρίου",
-                      en: "BuildingName",
-                      es: "Nombre del edificio",
-                      et: "Ehitise nimi",
-                      fi: "Rakennuksen nimi",
-                      fr: "Nom de bâtiment",
-                      he: "שם בניין",
-                      hi: "इमारत का नाम",
-                      hr: "Naziv zgrade",
-                      id: "Nama Gedung",
-                      it: "Nome edificio",
-                      ja: "建物名",
-                      ko: "건물 이름",
-                      lt: "Pastato pavadinimas",
-                      lv: "Ēkas nosaukums",
-                      nb: "Navn på bygning",
-                      nl: "Naam van gebouw",
-                      pl: "Nazwa budynku",
-                      "pt-br": "Nome do Edifício",
-                      "pt-pt": "Nome do Edifício",
-                      ro: "Denumire clădire",
-                      ru: "Название здания",
-                      sr: "Ime zgrade",
-                      sv: "Byggnadens namn",
-                      th: "ชื่ออาคาร",
-                      tr: "Bina Adı",
-                      vi: "Tên Tòa nhà",
-                      "zh-cn": "建筑物名称",
-                      "zh-hk": "建築物名稱",
-                      "zh-tw": "建築物名稱"
-                    }
+                    length: 125
                   },
                   {
                     name: "AddNum",
                     type: "esriFieldTypeString",
                     alias: "AddressNumber",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان",
-                      bs: "Kućni broj",
-                      cs: "Číslo adresy",
-                      da: "Adressenummer",
-                      de: "Adressennummer",
-                      el: "Αριθμός διεύθυνσης",
-                      en: "AddressNumber",
-                      es: "Número de dirección",
-                      et: "Aadressinumber",
-                      fi: "Osoitenumero",
-                      fr: "Numéro d'adresse",
-                      he: "מספר הכתובת",
-                      hi: "पता संख्या",
-                      hr: "Kućni broj",
-                      id: "Nomor Alamat",
-                      it: "Numero indirizzo",
-                      ja: "番地",
-                      ko: "주소 번호",
-                      lt: "Adreso numeris",
-                      lv: "Adrese, numurs",
-                      nb: "Adressenummer",
-                      nl: "Adresnummer",
-                      pl: "Numer w adresie",
-                      "pt-br": "Número de Endereço",
-                      "pt-pt": "Numero de Polícia",
-                      ro: "Număr adresă",
-                      ru: "Номер дома",
-                      sr: "Ulični broj",
-                      sv: "Adressnummer",
-                      th: "ตัวเลขที่อยู่",
-                      tr: "Adres Numarası",
-                      vi: "Số nhà",
-                      "zh-cn": "地址编号",
-                      "zh-hk": "地址號碼",
-                      "zh-tw": "地址號碼"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddNumFrom",
                     type: "esriFieldTypeString",
                     alias: "AddNumFrom",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان من",
-                      bs: "Kućni brojevi od",
-                      cs: "Počáteční číslo adresy",
-                      da: "Adressenummer fra",
-                      de: "Adressennummer von",
-                      el: "Αρχικός αριθμός διεύθυνσης",
-                      en: "AddNumFrom",
-                      es: "De número de dirección",
-                      et: "Aadressinumber (alates)",
-                      fi: "Osoitenumero alkaen",
-                      fr: "Numéro d'adresse de départ",
-                      he: "מספר הכתובת מ-",
-                      hi: "पता संख्या से",
-                      hr: "Kućni brojevi od",
-                      id: "Nomor Alamat Asal",
-                      it: "Numero indirizzo Da",
-                      ja: "開始番地",
-                      ko: "주소 시작 번호",
-                      lt: "Adreso numeris nuo",
-                      lv: "Adrese, numurs no",
-                      nb: "Adressenummer fra",
-                      nl: "Adresnummer van",
-                      pl: "Początkowy numer w adresie",
-                      "pt-br": "Número de Endereço De",
-                      "pt-pt": "Numero de Polícia desde",
-                      ro: "Număr adresă de la",
-                      ru: "Начало сегмента",
-                      sr: "Ulični broj od",
-                      sv: "Adressnummer från",
-                      th: "ตัวเลขที่อยู่จาก",
-                      tr: "Adres Numarası Başlangıcı",
-                      vi: "Số nhà Từ",
-                      "zh-cn": "地址编号自",
-                      "zh-hk": "地址號碼開頭",
-                      "zh-tw": "地址號碼開頭"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddNumTo",
                     type: "esriFieldTypeString",
                     alias: "AddNumTo",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "رقم العنوان إلى",
-                      bs: "Kućni brojevi do",
-                      cs: "Koncové číslo adresy",
-                      da: "Adressenummer til",
-                      de: "Adressennummer bis",
-                      el: "Τελικός αριθμός διεύθυνσης",
-                      en: "AddNumTo",
-                      es: "A número de dirección",
-                      et: "Aadressinumber (kuni)",
-                      fi: "Osoitenumero päättyen",
-                      fr: "Numéro d'adresse d'arrivée",
-                      he: "מספר הכתובת אל",
-                      hi: "पता संख्या को",
-                      hr: "Kućni brojevi do",
-                      id: "Nomor Alamat Tujuan",
-                      it: "Numero indirizzo A",
-                      ja: "終了番地",
-                      ko: "주소 끝 번호",
-                      lt: "Adreso numeris iki",
-                      lv: "Adrese, numurs līdz",
-                      nb: "Adressenummer til",
-                      nl: "Adresnummer tot",
-                      pl: "Końcowy numer w adresie",
-                      "pt-br": "Número de Endereço Para",
-                      "pt-pt": "Numero de Polícia até",
-                      ro: "Număr adresă către",
-                      ru: "Конец сегмента",
-                      sr: "Ulični broj do",
-                      sv: "Adressnummer till",
-                      th: "ตัวเลขที่อยู่ถึง",
-                      tr: "Adres Numarası Bitişi",
-                      vi: "Số nhà Đến",
-                      "zh-cn": "地址编号至",
-                      "zh-hk": "地址號碼結尾",
-                      "zh-tw": "地址號碼結尾"
-                    }
+                    length: 50
                   },
                   {
                     name: "AddRange",
                     type: "esriFieldTypeString",
                     alias: "AddressRange",
                     required: false,
-                    length: 100,
-                    localizedNames: {
-                      ar: "نطاق العنوان",
-                      bs: "Raspon kućnih brojeva",
-                      cs: "Rozsah adresy",
-                      da: "Adresseområde",
-                      de: "Adressenbereich",
-                      el: "Εύρος διευθύνσεων",
-                      en: "AddressRange",
-                      es: "Rango de direcciones",
-                      et: "Aadressivahemik",
-                      fi: "Osoiteväli",
-                      fr: "Plage d'adresses",
-                      he: "טווח הכתובת",
-                      hi: "पता रेंज",
-                      hr: "Raspon kućnih brojeva",
-                      id: "Rentang Alamat",
-                      it: "Intervallo indirizzi",
-                      ja: "住所範囲",
-                      ko: "주소 범위",
-                      lt: "Adresų intervalas",
-                      lv: "Adrese, diapazons",
-                      nb: "Adresseområde",
-                      nl: "Adresbereik",
-                      pl: "Zakres adresów",
-                      "pt-br": "Intervalo de Endereço",
-                      "pt-pt": "Intervalo de Números de Polícia",
-                      ro: "Interval adresă",
-                      ru: "Сегмент",
-                      sr: "Opseg adrese",
-                      sv: "Adressintervall",
-                      th: "ช่วงของที่อยู่",
-                      tr: "Adres Aralığı",
-                      vi: "Khoảng địa chỉ",
-                      "zh-cn": "地址范围",
-                      "zh-hk": "地址範圍",
-                      "zh-tw": "地址範圍"
-                    }
+                    length: 100
                   },
                   {
                     name: "Side",
                     type: "esriFieldTypeString",
                     alias: "Side",
                     required: false,
-                    length: 1,
-                    localizedNames: {
-                      ar: "جانب",
-                      bs: "Strana",
-                      cs: "Strana",
-                      da: "Side",
-                      de: "Seite",
-                      el: "Πλευρά",
-                      en: "Side",
-                      es: "Lado",
-                      et: "Külg",
-                      fi: "Sivu",
-                      fr: "Côté",
-                      he: "צד",
-                      hi: "बगल",
-                      hr: "Strana",
-                      id: "Sisi",
-                      it: "Lato",
-                      ja: "側",
-                      ko: "측면",
-                      lt: "Pusė",
-                      lv: "Puse",
-                      nb: "Side",
-                      nl: "Kant",
-                      pl: "Strona",
-                      "pt-br": "Lado",
-                      "pt-pt": "Lado",
-                      ro: "Parte",
-                      ru: "Сторона улицы",
-                      sr: "Strana",
-                      sv: "Sida",
-                      th: "ข้าง",
-                      tr: "Taraf",
-                      vi: "Cạnh",
-                      "zh-cn": "边",
-                      "zh-hk": "側邊",
-                      "zh-tw": "側邊"
-                    }
+                    length: 1
                   },
                   {
                     name: "StPreDir",
                     type: "esriFieldTypeString",
                     alias: "StPreDir",
                     required: false,
-                    length: 5,
-                    localizedNames: {
-                      ar: "اتجاه بادئة الشارع",
-                      bs: "Smjer prefiksa ulice",
-                      cs: "Počáteční označení ulice určující směr",
-                      da: "Gade-præfiks-retning",
-                      de: "Richtungspräfix der Straße",
-                      el: "Κατεύθυνση προθέματος οδού",
-                      en: "StPreDir",
-                      es: "Dirección de prefijo de calle",
-                      et: "Tänava eesliite suund",
-                      fi: "Kadun etuliitteen suunta",
-                      fr: "Direction de préfixe de rue",
-                      he: "כיוון קידומת רחוב",
-                      hi: "सड़क पूर्व-संकेत दिशा",
-                      hr: "Smjer prefiksa ulice",
-                      id: "Arah Awalan Jalan",
-                      it: "Direzione prefisso stradale",
-                      ja: "道路の方向の接頭辞",
-                      ko: "도로 접두사 방향",
-                      lt: "Gatvės krypties santrumpa",
-                      lv: "Ielas prefikss, virziens",
-                      nb: "Gateprefiks, retning",
-                      nl: "Straat voorvoegsel richting",
-                      pl: "Prefiks nazwy ulicy - kierunek",
-                      "pt-br": "Direção de Prefixo de Rua",
-                      "pt-pt": "Direcção do Prefixo de Rua",
-                      ro: "Indicaţie prefix stradă",
-                      ru: "Преф. часть улицы",
-                      sr: "Smer za prefiks ulice",
-                      sv: "Gatuprefix, riktning",
-                      th: "ทิศทางของคำนำหน้าถนน",
-                      tr: "Cadde Yönü Öneki",
-                      vi: "Hướng Tiền tố Đường",
-                      "zh-cn": "街道前缀方向",
-                      "zh-hk": "街道前綴方向",
-                      "zh-tw": "街道前綴方向"
-                    }
+                    length: 5
                   },
                   {
                     name: "StPreType",
                     type: "esriFieldTypeString",
                     alias: "StPreType",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "نوع بادئة الشارع",
-                      bs: "Vrsta prefiksa ulice",
-                      cs: "Počáteční označení ulice určující typ",
-                      da: "Gade-præfiks-type",
-                      de: "Typpräfix der Straße",
-                      el: "Τύπος προθέματος οδού",
-                      en: "StPreType",
-                      es: "Tipo de prefijo de calle",
-                      et: "Tänava eesliite tüüp",
-                      fi: "Kadun etuliitteen tyyppi",
-                      fr: "Type de préfixe de rue",
-                      he: "סוג קידומת רחוב",
-                      hi: "सड़क पूर्व-संकेत प्रकार",
-                      hr: "Vrsta prefiksa ulice",
-                      id: "Tipe Awalan Jalan",
-                      it: "Tipo prefisso stradale",
-                      ja: "道路の接頭辞タイプ",
-                      ko: "도로 접두사 유형",
-                      lt: "Gatvės tipo santrumpa",
-                      lv: "Ielas prefikss, tips",
-                      nb: "Gateprefiks, type",
-                      nl: "Straat voorvoegsel type",
-                      pl: "Prefiks nazwy ulicy - typ",
-                      "pt-br": "Tipo de Prefixo de Rua",
-                      "pt-pt": "Tipo de Prefixo de Rua",
-                      ro: "Tip prefix stradă",
-                      ru: "Преф. тип улицы",
-                      sr: "Tip za prefiks ulice",
-                      sv: "Gatuprefix, typ",
-                      th: "ประเภทของคำนำหน้าถนน",
-                      tr: "Cadde Türü Öneki",
-                      vi: "Loại Tiền tố Đường",
-                      "zh-cn": "街道前缀类型",
-                      "zh-hk": "街道前綴類型",
-                      "zh-tw": "街道前綴類型"
-                    }
+                    length: 50
                   },
                   {
                     name: "StName",
                     type: "esriFieldTypeString",
                     alias: "StName",
                     required: false,
-                    length: 125,
-                    localizedNames: {
-                      ar: "اسم الشارع",
-                      bs: "Naziv ulice",
-                      cs: "Název ulice",
-                      da: "Gadenavn",
-                      de: "Straßenname",
-                      el: "Οδός",
-                      en: "StName",
-                      es: "Nombre de calle",
-                      et: "Tänava nimi",
-                      fi: "Kadun nimi",
-                      fr: "Nom de la rue",
-                      he: "שם רחוב",
-                      hi: "सड़क का नाम",
-                      hr: "Naziv ulice",
-                      id: "Nama Jalan",
-                      it: "Nome strada",
-                      ja: "道路名",
-                      ko: "도로 이름",
-                      lt: "Gatvės pavadinimas",
-                      lv: "Ielas nosaukums",
-                      nb: "Gatenavn",
-                      nl: "Straatnaam",
-                      pl: "Nazwa ulicy",
-                      "pt-br": "Nome da Rua",
-                      "pt-pt": "Nome de Rua",
-                      ro: "Nume stradă",
-                      ru: "Название улицы",
-                      sr: "Ime ulice",
-                      sv: "Gatunamn",
-                      th: "ชื่อถนน",
-                      tr: "Sokak Adı",
-                      vi: "Tên Đường phố",
-                      "zh-cn": "街道名称",
-                      "zh-hk": "街道名稱",
-                      "zh-tw": "街道名稱"
-                    }
+                    length: 125
                   },
                   {
                     name: "StType",
                     type: "esriFieldTypeString",
                     alias: "StType",
                     required: false,
-                    length: 30,
-                    localizedNames: {
-                      ar: "نوع الشارع",
-                      bs: "Vrsta ulice",
-                      cs: "Typ ulice",
-                      da: "Gadetype",
-                      de: "Straßenart",
-                      el: "Τύπος οδού",
-                      en: "StType",
-                      es: "Tipo de calle",
-                      et: "Tänava tüüp",
-                      fi: "Kadun tyyppi",
-                      fr: "Type de rue",
-                      he: "סוג רחוב",
-                      hi: "सड़क का प्रकार",
-                      hr: "Vrsta ulice",
-                      id: "Tipe Jalan",
-                      it: "Tipo strada",
-                      ja: "道路タイプ",
-                      ko: "도로 유형",
-                      lt: "Gatvės tipas",
-                      lv: "Ielas tips",
-                      nb: "Gatetype",
-                      nl: "Straattype",
-                      pl: "Typ ulicy",
-                      "pt-br": "Tipo de Rua",
-                      "pt-pt": "Tipo de Rua",
-                      ro: "Tip stradă",
-                      ru: "Тип улицы",
-                      sr: "Tip ulice",
-                      sv: "Gatutyp",
-                      th: "ประเภทของถนน",
-                      tr: "Cadde Türü",
-                      vi: "Loại Đường",
-                      "zh-cn": "街道类型",
-                      "zh-hk": "街道類型",
-                      "zh-tw": "街道類型"
-                    }
+                    length: 30
                   },
                   {
                     name: "StDir",
                     type: "esriFieldTypeString",
                     alias: "StDir",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "اتجاه الشارع",
-                      bs: "Smjer ulice",
-                      cs: "Směr ulice",
-                      da: "Gaderetning",
-                      de: "Richtung der Straße",
-                      el: "Κατεύθυνση οδού",
-                      en: "StDir",
-                      es: "Dirección de calle",
-                      et: "Tänava suund",
-                      fi: "Kadun suunta",
-                      fr: "Direction de rue",
-                      he: "כיוון רחוב",
-                      hi: "सड़क की दिशा",
-                      hr: "Smjer ulice",
-                      id: "Arah Jalan",
-                      it: "Direzione stradale",
-                      ja: "道路の方向",
-                      ko: "도로 방향",
-                      lt: "Gatvės kryptis",
-                      lv: "Ielas virziens",
-                      nb: "Gateretning",
-                      nl: "Straatrichting",
-                      pl: "Kierunek ulicy",
-                      "pt-br": "Direção de Rua",
-                      "pt-pt": "Direcção da Rua",
-                      ro: "Indicaţie stradă",
-                      ru: "Часть улицы",
-                      sr: "Smer ulice",
-                      sv: "Gatans riktning",
-                      th: "ทิศทางถนน",
-                      tr: "Cadde Yönü",
-                      vi: "Bảng chỉ đường",
-                      "zh-cn": "街道方向",
-                      "zh-hk": "街道方向",
-                      "zh-tw": "街道方向"
-                    }
+                    length: 20
                   },
                   {
                     name: "BldgType",
                     type: "esriFieldTypeString",
                     alias: "BldgType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع وحدة المبنى",
-                      bs: "Vrsta građevne jedinice",
-                      cs: "Typ bytové jednotky",
-                      da: "Bygningsenhedstype",
-                      de: "Typ der Gebäudeeinheit",
-                      el: "Τύπος κτιριακής μονάδας",
-                      en: "BldgType",
-                      es: "Tipo de unidad de edificio",
-                      et: "Ehitise tüüp",
-                      fi: "Rakennuselementin tyyppi",
-                      fr: "Type d'unité de bâtiment",
-                      he: "סוג יחידת בניין",
-                      hi: "इमारत इकार्इ प्रकार",
-                      hr: "Vrsta građevne jedinice",
-                      id: "Tipe Unit Gedung",
-                      it: "Tipo di unità immobiliare",
-                      ja: "建物ユニット タイプ",
-                      ko: "건물 단위 유형",
-                      lt: "Pastato tipas",
-                      lv: "Ēkas vienības tips",
-                      nb: "Bygningsenhetstype",
-                      nl: "Gebouw unittype",
-                      pl: "Typ elementu budowlanego",
-                      "pt-br": "Tipo da Unidade de Construção",
-                      "pt-pt": "Tipo de Unidade de Edifício",
-                      ro: "Tip clădire",
-                      ru: "Тип здания",
-                      sr: "Tip stambene jedinice",
-                      sv: "Typ av byggelement",
-                      th: "ประเภทของอาคาร",
-                      tr: "Bina Birimi Türü",
-                      vi: "Loại Đơn nguyên Xây dựng",
-                      "zh-cn": "建筑单元类型",
-                      "zh-hk": "大樓單元類型",
-                      "zh-tw": "大樓單元類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "BldgName",
                     type: "esriFieldTypeString",
                     alias: "BldgName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم وحدة المبنى",
-                      bs: "Naziv građevne jedinice",
-                      cs: "Název bytové jednotky",
-                      da: "Bygningsenhedsnavn",
-                      de: "Name der Gebäudeeinheit",
-                      el: "Όνομα κτιριακής μονάδας",
-                      en: "BldgName",
-                      es: "Nombre de unidad de edificio",
-                      et: "Ehitise nimi",
-                      fi: "Rakennuselementin nimi",
-                      fr: "Nom d'unité de bâtiment",
-                      he: "שם יחידת בניין",
-                      hi: "इमारत इकार्इ नाम",
-                      hr: "Naziv građevne jedinice",
-                      id: "Nama Unit Gedung",
-                      it: "Nome unità immobiliare",
-                      ja: "建物ユニット名",
-                      ko: "건물 단위 이름",
-                      lt: "Pastato pavadinimas",
-                      lv: "Ēkas vienības nosaukums",
-                      nb: "Bygningsenhetsnavn",
-                      nl: "Gebouw unitnaam",
-                      pl: "Nazwa elementu budowlanego",
-                      "pt-br": "Nome da Unidade de Construção",
-                      "pt-pt": "Nome da Unidade de Edifício",
-                      ro: "Nume clădire",
-                      ru: "Здание",
-                      sr: "Naziv stambene jedinice",
-                      sv: "Namn på byggelement",
-                      th: "ชื่อของอาคาร",
-                      tr: "Bina Birimi Adı",
-                      vi: "Tên Đơn nguyên Xây dựng",
-                      "zh-cn": "建筑单元名称",
-                      "zh-hk": "大樓單元名稱",
-                      "zh-tw": "大樓單元名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "LevelType",
                     type: "esriFieldTypeString",
                     alias: "LevelType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع المستوى",
-                      bs: "Vrsta razine",
-                      cs: "Typ úrovně",
-                      da: "Niveautype",
-                      de: "Typ der Ebene",
-                      el: "Τύπος επιπέδου",
-                      en: "LevelType",
-                      es: "Tipo de nivel",
-                      et: "Taseme tüüp",
-                      fi: "Tason tyyppi",
-                      fr: "Type de niveau",
-                      he: "סוג רמה",
-                      hi: "स्तर का प्रकार",
-                      hr: "Vrsta razine",
-                      id: "Tipe Level",
-                      it: "Tipo di livello",
-                      ja: "レベル タイプ",
-                      ko: "레벨 유형",
-                      lt: "Lygmens tipas",
-                      lv: "Līmeņa tips",
-                      nb: "Nivåtype",
-                      nl: "Niveautype",
-                      pl: "Typ poziomu",
-                      "pt-br": "Tipo de Nível",
-                      "pt-pt": "Tipo de Nível",
-                      ro: "Tip nivel",
-                      ru: "Тип этажа",
-                      sr: "Tip nivoa",
-                      sv: "Nivåns typ",
-                      th: "ระดับของประเภท",
-                      tr: "Düzey Türü",
-                      vi: "Loại Cấp độ",
-                      "zh-cn": "级别类型",
-                      "zh-hk": "級別類型",
-                      "zh-tw": "級別類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "LevelName",
                     type: "esriFieldTypeString",
                     alias: "LevelName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم المستوى",
-                      bs: "Naziv razine",
-                      cs: "Název úrovně",
-                      da: "Niveaunavn",
-                      de: "Name der Ebene",
-                      el: "Όνομα επιπέδου",
-                      en: "LevelName",
-                      es: "Nombre de nivel",
-                      et: "Taseme nimi",
-                      fi: "Tason nimi",
-                      fr: "Nom de niveau",
-                      he: "שם רמה",
-                      hi: "स्तर का नाम",
-                      hr: "Naziv razine",
-                      id: "Level Name",
-                      it: "Nome livello",
-                      ja: "レベル名",
-                      ko: "레벨 이름",
-                      lt: "Lygmens pavadinimas",
-                      lv: "Līmeņa nosaukums",
-                      nb: "Nivånavn",
-                      nl: "Niveaunaam",
-                      pl: "Nazwa poziomu",
-                      "pt-br": "Nome do Nível",
-                      "pt-pt": "Nome do Nível",
-                      ro: "Nume nivel",
-                      ru: "Этаж",
-                      sr: "Ime nivoa",
-                      sv: "Nivåns namn",
-                      th: "ระดับของชื่อ",
-                      tr: "Düzey Adı",
-                      vi: "Tên Cấp độ",
-                      "zh-cn": "级别名称",
-                      "zh-hk": "級別名稱",
-                      "zh-tw": "級別名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "UnitType",
                     type: "esriFieldTypeString",
                     alias: "UnitType",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "نوع الوحدة",
-                      bs: "Vrsta jedinice",
-                      cs: "Typ jednotky",
-                      da: "Enhedstype",
-                      de: "Typ der Einheit",
-                      el: "Τύπος μονάδας",
-                      en: "UnitType",
-                      es: "Tipo de unidad",
-                      et: "Üksuse tüüp",
-                      fi: "Yksikön tyyppi",
-                      fr: "Type d'unité",
-                      he: "סוג יחידה",
-                      hi: "इकार्इ का प्रकार",
-                      hr: "Vrsta jedinice",
-                      id: "Tipe Unit",
-                      it: "Tipo di unità",
-                      ja: "ユニット タイプ",
-                      ko: "단위 유형",
-                      lt: "Vieneto tipas",
-                      lv: "Vienības tips",
-                      nb: "Enhetstype",
-                      nl: "Unittype",
-                      pl: "Typ elementu",
-                      "pt-br": "Tipo da Unidade",
-                      "pt-pt": "Tipo de Unidade",
-                      ro: "Tip unitate",
-                      ru: "Тип субадреса",
-                      sr: "Tip jedinice",
-                      sv: "Enhetens typ",
-                      th: "หน่วยของประเภท",
-                      tr: "Birim Türü",
-                      vi: "Loại Đơn vị",
-                      "zh-cn": "单位类型",
-                      "zh-hk": "單元類型",
-                      "zh-tw": "單元類型"
-                    }
+                    length: 20
                   },
                   {
                     name: "UnitName",
                     type: "esriFieldTypeString",
                     alias: "UnitName",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اسم الوحدة",
-                      bs: "Naziv jedinice",
-                      cs: "Název jednotky",
-                      da: "Enhedsnavn",
-                      de: "Name der Einheit",
-                      el: "Όνομα μονάδας",
-                      en: "UnitName",
-                      es: "Nombre de unidad",
-                      et: "Üksuse nimi",
-                      fi: "Yksikön nimi",
-                      fr: "Nom d'unité",
-                      he: "שם יחידה",
-                      hi: "इकार्इ का नाम",
-                      hr: "Naziv jedinice",
-                      id: "Nama Unit",
-                      it: "Nome unità",
-                      ja: "ユニット名",
-                      ko: "단위 이름",
-                      lt: "Vieneto pavadinimas",
-                      lv: "Vienības nosaukums",
-                      nb: "Enhetsnavn",
-                      nl: "Unitnaam",
-                      pl: "Nazwa elementu",
-                      "pt-br": "Nome da Unidade",
-                      "pt-pt": "Nome da Unidade",
-                      ro: "Numele unitate",
-                      ru: "Имя субадреса",
-                      sr: "Naziv jedinice",
-                      sv: "Enhetens namn",
-                      th: "หน่วงของชื่อ",
-                      tr: "Birim Adı",
-                      vi: "Tên Đơn vị",
-                      "zh-cn": "单位名称",
-                      "zh-hk": "單元名稱",
-                      "zh-tw": "單元名稱"
-                    }
+                    length: 50
                   },
                   {
                     name: "SubAddr",
                     type: "esriFieldTypeString",
                     alias: "SubAddress",
                     required: false,
-                    length: 250,
-                    localizedNames: {
-                      ar: "عنوان فرعي",
-                      bs: "Podadresa",
-                      cs: "Dílčí adresa",
-                      da: "Underadresse",
-                      de: "Unteradresse",
-                      el: "Δευτερεύουσα διεύθυνση",
-                      en: "SubAddress",
-                      es: "Subdirección",
-                      et: "Alamaadress",
-                      fi: "Osoitteen tarkennus",
-                      fr: "Sous-adresse",
-                      he: "כתובת משנה",
-                      hi: "उपपता",
-                      hr: "Podadresa",
-                      id: "Sub-alamat",
-                      it: "Sottoindirizzo",
-                      ja: "サブアドレス",
-                      ko: "하위 주소",
-                      lt: "Antrinis adresas",
-                      lv: "Apakšadrese",
-                      nb: "Deladresse",
-                      nl: "Subadres",
-                      pl: "Adres dodatkowy",
-                      "pt-br": "Subendereço:",
-                      "pt-pt": "Sub-endereço",
-                      ro: "Adresă secundară:",
-                      ru: "Субадрес",
-                      sr: "Podadresa",
-                      sv: "Underadress",
-                      th: "ที่อยู่ย่อย",
-                      tr: "Alt Adres",
-                      vi: "Địa chỉ phụ",
-                      "zh-cn": "子地址",
-                      "zh-hk": "子地址",
-                      "zh-tw": "子地址"
-                    }
+                    length: 250
                   },
                   {
                     name: "StAddr",
                     type: "esriFieldTypeString",
                     alias: "StAddr",
                     required: false,
-                    length: 300,
-                    localizedNames: {
-                      ar: "عنوان الشارع",
-                      bs: "Adresa ulice",
-                      cs: "Adresa ulice",
-                      da: "Gade",
-                      de: "Straßenadresse",
-                      el: "Οδός και αριθμός",
-                      en: "StAddr",
-                      es: "Calle",
-                      et: "Tänava aadress",
-                      fi: "Katuosoite",
-                      fr: "Adresse",
-                      he: "כתובת רחוב",
-                      hi: "सड़क का पता",
-                      hr: "Adresa ulice",
-                      id: "Alamat Jalan",
-                      it: "Indirizzo stradale",
-                      ja: "住所",
-                      ko: "도로 주소",
-                      lt: "Adresas",
-                      lv: "Ielas adrese",
-                      nb: "Gateadresse",
-                      nl: "Adres met straatnaam",
-                      pl: "Adres ulicy",
-                      "pt-br": "Endereço da Rua",
-                      "pt-pt": "Endereço de Rua",
-                      ro: "Adresă stradală",
-                      ru: "Адрес",
-                      sr: "Adresa ulice",
-                      sv: "Gatuadress",
-                      th: "ที่อยู่ถนน",
-                      tr: "Sokak Adresi",
-                      vi: "Địa chỉ Đường phố",
-                      "zh-cn": "街道地址",
-                      "zh-hk": "街道地址",
-                      "zh-tw": "街道地址"
-                    }
+                    length: 300
                   },
                   {
                     name: "Block",
                     type: "esriFieldTypeString",
                     alias: "Block",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "كتلة",
-                      bs: "Blok",
-                      cs: "S plným koncem",
-                      da: "Blok",
-                      de: "Block",
-                      el: "Τετράγωνο",
-                      en: "Block",
-                      es: "Bloque",
-                      et: "Kvartal",
-                      fi: "Kortteli",
-                      fr: "Ilot",
-                      he: "בלוק",
-                      hi: "ब्लॉक",
-                      hr: "Blok",
-                      id: "Blok",
-                      it: "Blocco",
-                      ja: "ブロック",
-                      ko: "블록",
-                      lt: "Blokas",
-                      lv: "Kvartāls",
-                      nb: "Kvartal",
-                      nl: "Buurt",
-                      pl: "Blok",
-                      "pt-br": "Bloco",
-                      "pt-pt": "Bloco",
-                      ro: "Cvartal",
-                      ru: "Блок",
-                      sr: "Blok",
-                      sv: "Block",
-                      th: "บล็อค",
-                      tr: "Blok",
-                      vi: "Khu nhà",
-                      "zh-cn": "街区",
-                      "zh-hk": "街區",
-                      "zh-tw": "街區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Sector",
                     type: "esriFieldTypeString",
                     alias: "Sector",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "قطاع",
-                      bs: "Sektor",
-                      cs: "Sektor",
-                      da: "Sektor",
-                      de: "Sektor",
-                      el: "Τομέας",
-                      en: "Sector",
-                      es: "Sector",
-                      et: "Sektor",
-                      fi: "Sektori",
-                      fr: "Secteur",
-                      he: "סקטור",
-                      hi: "सेक्टर",
-                      hr: "Sektor",
-                      id: "Sektor",
-                      it: "Settore",
-                      ja: "セクター",
-                      ko: "부문",
-                      lt: "Sektorius",
-                      lv: "Sektors",
-                      nb: "Sektor",
-                      nl: "Sector",
-                      pl: "Sektor",
-                      "pt-br": "Setor",
-                      "pt-pt": "Sector",
-                      ro: "Sector",
-                      ru: "Сектор",
-                      sr: "Sektor",
-                      sv: "Sektor",
-                      th: "แผนก",
-                      tr: "Sektör",
-                      vi: "Ngành",
-                      "zh-cn": "行业",
-                      "zh-hk": "部門",
-                      "zh-tw": "部門"
-                    }
+                    length: 120
                   },
                   {
                     name: "Nbrhd",
                     type: "esriFieldTypeString",
                     alias: "Neighborhood",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مجاورة",
-                      bs: "Četvrt",
-                      cs: "Čtvrť",
-                      da: "Lokalområde",
-                      de: "Nachbarschaft",
-                      el: "Γειτονιά",
-                      en: "Neighborhood",
-                      es: "Barrio",
-                      et: "Linnaosa",
-                      fi: "Kaupunginosa",
-                      fr: "Quartier",
-                      he: "שכונה",
-                      hi: "आस-पड़ोस",
-                      hr: "Četvrt",
-                      id: "Lingkungan",
-                      it: "Vicinato",
-                      ja: "近郊",
-                      ko: "네이버후드",
-                      lt: "Apylinkė",
-                      lv: "Apkārtne",
-                      nb: "Nabolag",
-                      nl: "Omgeving",
-                      pl: "Dzielnica",
-                      "pt-br": "Bairro",
-                      "pt-pt": "Bairro",
-                      ro: "Cartier",
-                      ru: "Окрестность",
-                      sr: "Susedstvo",
-                      sv: "Grannskap",
-                      th: "บริเวณใกล้เคียง",
-                      tr: "Komşu",
-                      vi: "Vùng lân cận",
-                      "zh-cn": "住宅区",
-                      "zh-hk": "街區",
-                      "zh-tw": "街區"
-                    }
+                    length: 120
                   },
                   {
                     name: "District",
                     type: "esriFieldTypeString",
                     alias: "District",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مقاطعة",
-                      bs: "Okrug",
-                      cs: "Oblast",
-                      da: "Distrikt",
-                      de: "Bezirk",
-                      el: "Περιφέρεια",
-                      en: "District",
-                      es: "Distrito",
-                      et: "Rajoon",
-                      fi: "Piiri",
-                      fr: "Secteur",
-                      he: "מחוז",
-                      hi: "जिला",
-                      hr: "Okrug",
-                      id: "Distrik",
-                      it: "Distretto",
-                      ja: "地区",
-                      ko: "구역",
-                      lt: "Rajonas",
-                      lv: "Rajons",
-                      nb: "Distrikt",
-                      nl: "District",
-                      pl: "Okręg",
-                      "pt-br": "Distrito",
-                      "pt-pt": "Distrito",
-                      ro: "District",
-                      ru: "Район",
-                      sr: "Oblast",
-                      sv: "Distrikt",
-                      th: "ตำบล",
-                      tr: "Bölge",
-                      vi: "Quận",
-                      "zh-cn": "行政区",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "City",
                     type: "esriFieldTypeString",
                     alias: "City",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "مدينة",
-                      bs: "Grad",
-                      cs: "Město",
-                      da: "By",
-                      de: "Stadt",
-                      el: "Πόλη",
-                      en: "City",
-                      es: "Ciudad",
-                      et: "Linn",
-                      fi: "Kaupunki",
-                      fr: "Ville",
-                      he: "עיר",
-                      hi: "शहर",
-                      hr: "Grad",
-                      id: "Kota",
-                      it: "Città",
-                      ja: "都市",
-                      ko: "도시",
-                      lt: "Miestas",
-                      lv: "Pilsēta",
-                      nb: "Poststed",
-                      nl: "Plaats",
-                      pl: "Miasto",
-                      "pt-br": "Cidade",
-                      "pt-pt": "Cidade",
-                      ro: "Oraş",
-                      ru: "Город",
-                      sr: "Grad",
-                      sv: "Ort",
-                      th: "เมือง",
-                      tr: "Şehir",
-                      vi: "Thành phố",
-                      "zh-cn": "城市",
-                      "zh-hk": "市",
-                      "zh-tw": "市"
-                    }
+                    length: 120
                   },
                   {
                     name: "MetroArea",
                     type: "esriFieldTypeString",
                     alias: "MetroArea",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "منطقة متروبوليتان",
-                      bs: "Metropolitansko područje",
-                      cs: "Metropolitní oblast",
-                      da: "Storbyområde",
-                      de: "Ballungsgebiet",
-                      el: "Μητροπολιτική περιοχή",
-                      en: "MetroArea",
-                      es: "Área metropolitana",
-                      et: "Suurlinna piirkond",
-                      fi: "Kaupunkialue",
-                      fr: "Agglomération",
-                      he: "אזור מטרופולין",
-                      hi: "महानगरीय क्षेत्र",
-                      hr: "Metropolitansko područje",
-                      id: "Area Metropolitan",
-                      it: "Area metropolitana",
-                      ja: "都市圏",
-                      ko: "대도시권",
-                      lt: "Didmiesčio sritis",
-                      lv: "Lielpilsētas teritorija",
-                      nb: "Storbyområde",
-                      nl: "Stedelijk gebied",
-                      pl: "Obszar metropolitalny",
-                      "pt-br": "Área Metropolitana",
-                      "pt-pt": "Área Metropolitana",
-                      ro: "Zonă metropolitană",
-                      ru: "Городская агломерация",
-                      sr: "Gradska oblast",
-                      sv: "Storstadsområde",
-                      th: "บริเวณเมือง",
-                      tr: "Metropolitan Alanı",
-                      vi: "Khu vực Đô thị",
-                      "zh-cn": "大都市区",
-                      "zh-hk": "大都市區",
-                      "zh-tw": "大都市區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Subregion",
                     type: "esriFieldTypeString",
                     alias: "Subregion",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "منطقة فرعية",
-                      bs: "Podregija",
-                      cs: "Spádová oblast",
-                      da: "Underregion",
-                      de: "Subregion",
-                      el: "Υποπεριοχή",
-                      en: "Subregion",
-                      es: "Subregión",
-                      et: "Alampiirkond",
-                      fi: "Osa-alue",
-                      fr: "Sous-région",
-                      he: "תת-אזור",
-                      hi: "उपक्षेत्र",
-                      hr: "Podregija",
-                      id: "Sub-wilayah",
-                      it: "Sottoregione",
-                      ja: "小区域",
-                      ko: "읍/면/동",
-                      lt: "Paregionis",
-                      lv: "Apakšreģions",
-                      nb: "Underregion",
-                      nl: "Subregio",
-                      pl: "Podregion",
-                      "pt-br": "Subregião",
-                      "pt-pt": "Sub-região",
-                      ro: "Subregiune",
-                      ru: "Подрегион",
-                      sr: "Podregion",
-                      sv: "Underregion",
-                      th: "ภูมิภาคย่อย",
-                      tr: "Alt Bölge",
-                      vi: "Tiểu vùng",
-                      "zh-cn": "亚区",
-                      "zh-hk": "亞區",
-                      "zh-tw": "亞區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Region",
                     type: "esriFieldTypeString",
                     alias: "Region",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "المنطقة",
-                      bs: "Regija",
-                      cs: "Region",
-                      da: "Region",
-                      de: "Region",
-                      el: "Περιοχή",
-                      en: "Region",
-                      es: "Región",
-                      et: "Piirkond",
-                      fi: "Alue",
-                      fr: "Région",
-                      he: "איזור",
-                      hi: "क्षेत्र",
-                      hr: "Regija",
-                      id: "Wilayah",
-                      it: "Regione",
-                      ja: "地域",
-                      ko: "지역",
-                      lt: "Regionas",
-                      lv: "Reģions",
-                      nb: "Region",
-                      nl: "Regio",
-                      pl: "Region",
-                      "pt-br": "Região",
-                      "pt-pt": "Região",
-                      ro: "Regiune",
-                      ru: "Регион",
-                      sr: "Region",
-                      sv: "Region",
-                      th: "ภูมิภาค",
-                      tr: "Bölge",
-                      vi: "Vùng",
-                      "zh-cn": "地区",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "RegionAbbr",
                     type: "esriFieldTypeString",
                     alias: "RegionAbbr",
                     required: false,
-                    length: 50,
-                    localizedNames: {
-                      ar: "اختصار المنطقة",
-                      bs: "Kratica regije",
-                      cs: "Zkratka regionu",
-                      da: "Regionsforkortelse",
-                      de: "Abkürzung der Region",
-                      el: "Συντομογραφία περιοχής",
-                      en: "RegionAbbr",
-                      es: "Abreviatura de región",
-                      et: "Regiooni lühend",
-                      fi: "Alueen lyhenne",
-                      fr: "Abréviation de région",
-                      he: "קיצור של אזור",
-                      hi: "क्षेत्र संक्षिप्त नाम",
-                      hr: "Kratica regije",
-                      id: "Singkatan Wilayah",
-                      it: "Abbreviazione regione",
-                      ja: "地域の略称",
-                      ko: "지역 약어",
-                      lt: "Regiono santrumpa",
-                      lv: "Reģiona saīsinājums",
-                      nb: "Forkortelse for region",
-                      nl: "Regio-afkorting",
-                      pl: "Skrót nazwy regionu",
-                      "pt-br": "Abreviação de Região",
-                      "pt-pt": "Abreviatura da Região",
-                      ro: "Abreviere regiune",
-                      ru: "Сокр. региона",
-                      sr: "Skraćenica regiona",
-                      sv: "Regionförkortning",
-                      th: "ชื่อย่อภูมิภาค",
-                      tr: "Bölge Kısaltması",
-                      vi: "Tên viết tắt của Khu vực",
-                      "zh-cn": "地区缩写",
-                      "zh-hk": "地區縮寫",
-                      "zh-tw": "地區縮寫"
-                    }
+                    length: 50
                   },
                   {
                     name: "Territory",
                     type: "esriFieldTypeString",
                     alias: "Territory",
                     required: false,
-                    length: 120,
-                    localizedNames: {
-                      ar: "الإقليم",
-                      bs: "Teritorij",
-                      cs: "Území",
-                      da: "Territorie",
-                      de: "Gebiet",
-                      el: "Επικράτεια",
-                      en: "Territory",
-                      es: "Territorio",
-                      et: "Territoorium",
-                      fi: "Alue",
-                      fr: "Secteur",
-                      he: "טריטוריה",
-                      hi: "प्रदेश",
-                      hr: "Teritorij",
-                      id: "Wilayah",
-                      it: "Territorio",
-                      ja: "テリトリー",
-                      ko: "지역",
-                      lt: "Teritorija",
-                      lv: "Teritorija",
-                      nb: "Territorium",
-                      nl: "Gebied",
-                      pl: "Obszar",
-                      "pt-br": "Território",
-                      "pt-pt": "Território",
-                      ro: "Teritoriu",
-                      ru: "Округ",
-                      sr: "Teritorija",
-                      sv: "Region",
-                      th: "อาณาเขต",
-                      tr: "Bölge",
-                      vi: "Khu vực",
-                      "zh-cn": "区域",
-                      "zh-hk": "地區",
-                      "zh-tw": "地區"
-                    }
+                    length: 120
                   },
                   {
                     name: "Zone",
                     type: "esriFieldTypeString",
                     alias: "Zone",
                     required: false,
-                    length: 100,
-                    localizedNames: {
-                      ar: "منطقة",
-                      bs: "Zona",
-                      cs: "Zóna",
-                      da: "Zone",
-                      de: "Zone",
-                      el: "Ζώνη",
-                      en: "Zone",
-                      es: "Zona",
-                      et: "Tsoon",
-                      fi: "Kaista",
-                      fr: "Zone",
-                      he: "אזור",
-                      hi: "अंचल",
-                      hr: "Zona",
-                      id: "Zona",
-                      it: "Zona",
-                      ja: "ゾーン",
-                      ko: "구역",
-                      lt: "Sritis",
-                      lv: "Zona",
-                      nb: "Sone",
-                      nl: "Zone",
-                      pl: "Strefa",
-                      "pt-br": "Zona",
-                      "pt-pt": "Zona",
-                      ro: "Zonă",
-                      ru: "Зона",
-                      sr: "Zona",
-                      sv: "Zon",
-                      th: "โซน",
-                      tr: "Bölge",
-                      vi: "Khu vực",
-                      "zh-cn": "区域",
-                      "zh-hk": "區域",
-                      "zh-tw": "區域"
-                    }
+                    length: 100
                   },
                   {
                     name: "Postal",
                     type: "esriFieldTypeString",
                     alias: "Postal",
                     required: false,
-                    length: 20,
-                    localizedNames: {
-                      ar: "بريدي",
-                      bs: "Poštanski broj",
-                      cs: "Poštovní",
-                      da: "Postnummer",
-                      de: "Postalisch",
-                      el: "Ταχυδρομική",
-                      en: "Postal",
-                      es: "Postal",
-                      et: "Postiaadress",
-                      fi: "Postinumero",
-                      fr: "Postal",
-                      he: "של דואר",
-                      hi: "पोस्टल",
-                      hr: "Poštanski broj",
-                      id: "Pos",
-                      it: "Postale",
-                      ja: "郵便番号",
-                      ko: "우편 번호",
-                      lt: "Pašto",
-                      lv: "Pasts",
-                      nb: "Post",
-                      nl: "Postcode",
-                      pl: "Pocztowy",
-                      "pt-br": "Código Postal",
-                      "pt-pt": "Código postal",
-                      ro: "Cod poştal",
-                      ru: "Почтовый код",
-                      sr: "Poštanski region",
-                      sv: "Postnummer",
-                      th: "รหัสไปรษณีย์",
-                      tr: "Posta",
-                      vi: "Bưu điện",
-                      "zh-cn": "邮政编码",
-                      "zh-hk": "郵遞區號",
-                      "zh-tw": "郵遞區號"
-                    }
+                    length: 20
                   },
                   {
                     name: "PostalExt",
                     type: "esriFieldTypeString",
                     alias: "PostalExt",
                     required: false,
-                    length: 10,
-                    localizedNames: {
-                      ar: "الامتداد البريدي",
-                      bs: "Ekstenzija poštanskog broja",
-                      cs: "Poštovní rozšíření",
-                      da: "Post-udstrækning",
-                      de: "Erweiterung der Postanschrift",
-                      el: "Ταχυδρομική επέκταση",
-                      en: "PostalExt",
-                      es: "Extensión postal",
-                      et: "Postiindeks",
-                      fi: "Postinumeron tarkenne",
-                      fr: "Extension postale",
-                      he: "שלוחת דואר",
-                      hi: "डाक विस्तार",
-                      hr: "Ekstenzija poštanskog broja",
-                      id: "Ekstensi Pos",
-                      it: "Estensione postale",
-                      ja: "追加の郵便番号",
-                      ko: "우편 번호 확장 코드",
-                      lt: "Pašto kodo plėtinys",
-                      lv: "Pasta paplašinājums",
-                      nb: "Utvidet postnummer",
-                      nl: "Uitbreiding van postadres",
-                      pl: "Kod pocztowy",
-                      "pt-br": "Extensão do Postal",
-                      "pt-pt": "Extensão Postal",
-                      ro: "Extensie poştală",
-                      ru: "Расширение почтового кода",
-                      sr: "Proširenje poštanskog regiona",
-                      sv: "Utökat postnummer",
-                      th: "รหัสไปรณีย์เสริม",
-                      tr: "Posta Uzantısı",
-                      vi: "Mở rộng Bưu điện",
-                      "zh-cn": "邮政编码扩展",
-                      "zh-hk": "郵遞區號延伸",
-                      "zh-tw": "郵遞區號延伸"
-                    }
+                    length: 10
                   },
                   {
                     name: "Country",
                     type: "esriFieldTypeString",
                     alias: "Country",
                     required: false,
-                    length: 30,
-                    localizedNames: {
-                      ar: "بلد",
-                      bs: "Zemlja",
-                      cs: "Země",
-                      da: "Land",
-                      de: "Land",
-                      el: "Χώρα",
-                      en: "Country",
-                      es: "País",
-                      et: "Riik",
-                      fi: "Maa",
-                      fr: "Pays",
-                      he: "ארץ",
-                      hi: "देश",
-                      hr: "Zemlja",
-                      id: "Negara",
-                      it: "Paese",
-                      ja: "国",
-                      ko: "국가",
-                      lt: "Šalis",
-                      lv: "Valsts",
-                      nb: "Land",
-                      nl: "Land",
-                      pl: "Kraj",
-                      "pt-br": "País",
-                      "pt-pt": "País",
-                      ro: "Ţară",
-                      ru: "Страна",
-                      sr: "Zemlja",
-                      sv: "Land",
-                      th: "ประเทศ",
-                      tr: "Ülke",
-                      vi: "Quốc gia",
-                      "zh-cn": "国家",
-                      "zh-hk": "國家",
-                      "zh-tw": "國家"
-                    }
+                    length: 30
                   },
                   {
                     name: "LangCode",
                     type: "esriFieldTypeString",
                     alias: "LangCode",
                     required: false,
-                    length: 5,
-                    localizedNames: {
-                      ar: "كود اللغة",
-                      bs: "Jezični kod",
-                      cs: "Kód jazyka",
-                      da: "Sprogkode",
-                      de: "Sprachencode",
-                      el: "Κωδικός γλώσσας",
-                      en: "LangCode",
-                      es: "Código de lenguaje",
-                      et: "Keelekood",
-                      fi: "Kielikoodi",
-                      fr: "Code de la langue",
-                      he: "קוד שפה",
-                      hi: "भाषा कोड",
-                      hr: "Jezični kod",
-                      id: "Kode Bahasa",
-                      it: "Codice lingua",
-                      ja: "言語コード",
-                      ko: "언어 코드",
-                      lt: "Kalbos kodas",
-                      lv: "Valodas kods",
-                      nb: "Språkkode",
-                      nl: "Taalcode",
-                      pl: "Kod języka",
-                      "pt-br": "Código de Idioma",
-                      "pt-pt": "Código do Idioma",
-                      ro: "Cod de limbă",
-                      ru: "Код языка",
-                      sr: "Kod jezika",
-                      sv: "Språkkod",
-                      th: "โค้ดภาษา",
-                      tr: "Dil Kodu",
-                      vi: "Mã Ngôn ngữ",
-                      "zh-cn": "语言代码",
-                      "zh-hk": "語言代碼",
-                      "zh-tw": "語言代碼"
-                    }
+                    length: 5
                   },
                   {
                     name: "Distance",
                     type: "esriFieldTypeDouble",
                     alias: "Distance",
-                    required: false,
-                    localizedNames: {
-                      ar: "المسافة",
-                      bs: "Udaljenost",
-                      cs: "Velikost",
-                      da: "Afstand",
-                      de: "Entfernung",
-                      el: "Απόσταση",
-                      en: "Distance",
-                      es: "Distancia",
-                      et: "Vahemaa",
-                      fi: "Etäisyys",
-                      fr: "Distance",
-                      he: "מרחק",
-                      hi: "दूरी",
-                      hr: "Udaljenost",
-                      id: "Jarak",
-                      it: "Distanza",
-                      ja: "距離",
-                      ko: "거리",
-                      lt: "Atstumas",
-                      lv: "Attālums",
-                      nb: "Avstand",
-                      nl: "Afstand",
-                      pl: "Odległość",
-                      "pt-br": "Distância",
-                      "pt-pt": "Distância",
-                      ro: "Distanţă",
-                      ru: "Расстояние",
-                      sr: "Rastojanje",
-                      sv: "Avstånd",
-                      th: "ระยะทาง",
-                      tr: "Mesafe",
-                      vi: "Khoảng cách",
-                      "zh-cn": "距离",
-                      "zh-hk": "距離",
-                      "zh-tw": "距離"
-                    }
+                    required: false
                   },
                   {
                     name: "X",
                     type: "esriFieldTypeDouble",
                     alias: "X",
-                    required: false,
-                    localizedNames: {
-                      ar: "X",
-                      bs: "X",
-                      cs: "X",
-                      da: "X",
-                      de: "X",
-                      el: "X",
-                      en: "X",
-                      es: "X",
-                      et: "X",
-                      fi: "X",
-                      fr: "X",
-                      he: "X",
-                      hi: "X",
-                      hr: "X",
-                      id: "X",
-                      it: "X",
-                      ja: "X",
-                      ko: "X",
-                      lt: "X",
-                      lv: "X",
-                      nb: "X",
-                      nl: "X",
-                      pl: "X",
-                      "pt-br": "X",
-                      "pt-pt": "X",
-                      ro: "X",
-                      ru: "X",
-                      sr: "X",
-                      sv: "X",
-                      th: "เอ๊ก",
-                      tr: "X",
-                      vi: "X",
-                      "zh-cn": "X",
-                      "zh-hk": "X",
-                      "zh-tw": "X"
-                    }
+                    required: false
                   },
                   {
                     name: "Y",
                     type: "esriFieldTypeDouble",
                     alias: "Y",
-                    required: false,
-                    localizedNames: {
-                      ar: "Y",
-                      bs: "Y",
-                      cs: "Y",
-                      da: "J",
-                      de: "Y",
-                      el: "Y",
-                      en: "Y",
-                      es: "Y",
-                      et: "Y",
-                      fi: "Y",
-                      fr: "Y",
-                      he: "Y",
-                      hi: "Y",
-                      hr: "Y",
-                      id: "Y",
-                      it: "Y",
-                      ja: "Y",
-                      ko: "Y",
-                      lt: "Y",
-                      lv: "Y",
-                      nb: "J",
-                      nl: "Y",
-                      pl: "Y",
-                      "pt-br": "Y",
-                      "pt-pt": "Y",
-                      ro: "Y",
-                      ru: "Y",
-                      sr: "Y",
-                      sv: "Y",
-                      th: "วาย",
-                      tr: "Y",
-                      vi: "Y",
-                      "zh-cn": "Y",
-                      "zh-hk": "Y",
-                      "zh-tw": "Y"
-                    }
+                    required: false
                   },
                   {
                     name: "DisplayX",
                     type: "esriFieldTypeDouble",
                     alias: "DisplayX",
-                    required: false,
-                    localizedNames: {
-                      ar: "عرض X",
-                      bs: "Prikaži X",
-                      cs: "Zobrazení X",
-                      da: "Visning X",
-                      de: "X-Anzeigewert",
-                      el: "Εμφάνιση Χ",
-                      en: "DisplayX",
-                      es: "Mostrar X",
-                      et: "Kuva X",
-                      fi: "Näytön X-koordinaatti",
-                      fr: "Affichage X",
-                      he: "תצוגת X",
-                      hi: "X प्रदर्शित करें",
-                      hr: "Prikaži X",
-                      id: "Display X",
-                      it: "Visualizza X",
-                      ja: "表示 X",
-                      ko: "X 표시",
-                      lt: "Rodyti X",
-                      lv: "Parādīt X",
-                      nb: "Vis X",
-                      nl: "Display X",
-                      pl: "Wyświetl X",
-                      "pt-br": "Exibir X",
-                      "pt-pt": "Exibir X",
-                      ro: "Afişare X",
-                      ru: "Показ. X",
-                      sr: "Prikaz X",
-                      sv: "Visa X",
-                      th: "แสดง X",
-                      tr: "X Görüntüsü",
-                      vi: "Hiển thị X",
-                      "zh-cn": "显示 X",
-                      "zh-hk": "顯示 X",
-                      "zh-tw": "顯示 X"
-                    }
+                    required: false
                   },
                   {
                     name: "DisplayY",
                     type: "esriFieldTypeDouble",
                     alias: "DisplayY",
-                    required: false,
-                    localizedNames: {
-                      ar: "عرض Y",
-                      bs: "Prikaži Y",
-                      cs: "Zobrazení Y",
-                      da: "Visning Y",
-                      de: "Y-Anzeigewert",
-                      el: "Εμφάνιση Υ",
-                      en: "DisplayY",
-                      es: "Mostrar Y",
-                      et: "Kuva Y",
-                      fi: "Näytön Y-koordinaatti",
-                      fr: "Affichage Y",
-                      he: "תצוגת Y",
-                      hi: "Y प्रदर्शित करें",
-                      hr: "Prikaži Y",
-                      id: "Display Y",
-                      it: "Visualizza Y",
-                      ja: "表示 Y",
-                      ko: "Y 표시",
-                      lt: "Rodyti Y",
-                      lv: "Parādīt Y",
-                      nb: "Vis Y",
-                      nl: "Display Y",
-                      pl: "Wyświetl Y",
-                      "pt-br": "Exibir Y",
-                      "pt-pt": "Exibir Y",
-                      ro: "Afişare Y",
-                      ru: "Показ. Y",
-                      sr: "Prikaz Y",
-                      sv: "Visa Y",
-                      th: "แสดง Y",
-                      tr: "Y Görüntüsü",
-                      vi: "Hiển thị Y",
-                      "zh-cn": "显示 Y",
-                      "zh-hk": "顯示 Y",
-                      "zh-tw": "顯示 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "Xmin",
                     type: "esriFieldTypeDouble",
                     alias: "Xmin",
-                    required: false,
-                    localizedNames: {
-                      ar: "قيمة الحد الأدنى لـ X",
-                      bs: "Minimalni X",
-                      cs: "Minimální X",
-                      da: "Minimum X",
-                      de: "X-Minimum",
-                      el: "Ελάχιστη τιμή Χ",
-                      en: "Xmin",
-                      es: "X mínimo",
-                      et: "Väikseim X",
-                      fi: "X:n vähimmäisarvo",
-                      fr: "X minimum",
-                      he: "מינימום X",
-                      hi: "न्यूनतम X",
-                      hr: "Minimalni X",
-                      id: "X minimum",
-                      it: "Minimo X",
-                      ja: "最小 X",
-                      ko: "X의 최소값",
-                      lt: "Min. X",
-                      lv: "Minimālā X",
-                      nb: "Minimum X",
-                      nl: "Minimum X",
-                      pl: "Minimum X",
-                      "pt-br": "X Mínimo",
-                      "pt-pt": "X Mínimo",
-                      ro: "Minim X",
-                      ru: "Мин. X",
-                      sr: "Minimum X",
-                      sv: "Lägsta X:",
-                      th: "มินิมัม X",
-                      tr: "Minimum X",
-                      vi: "Giá trị tối thiểu X",
-                      "zh-cn": "X 最小值",
-                      "zh-hk": "最小值 X",
-                      "zh-tw": "最小值 X"
-                    }
+                    required: false
                   },
                   {
                     name: "Xmax",
                     type: "esriFieldTypeDouble",
                     alias: "Xmax",
-                    required: false,
-                    localizedNames: {
-                      ar: "الحد الأقصى لـ X",
-                      bs: "Maksimalni X",
-                      cs: "Maximální X",
-                      da: "Maksimum X",
-                      de: "Maximum X",
-                      el: "Μέγιστη τιμή Χ",
-                      en: "Xmax",
-                      es: "X máximo",
-                      et: "Suurim X",
-                      fi: "X:n enimmäisarvo",
-                      fr: "X maximum",
-                      he: "מקסימום X",
-                      hi: "अधिकतम X",
-                      hr: "Maksimalni X",
-                      id: "X maksimum",
-                      it: "Massimo X",
-                      ja: "最大 X",
-                      ko: "X의 최대값",
-                      lt: "Maks. X",
-                      lv: "Maksimālā X",
-                      nb: "Maksimum X",
-                      nl: "Maximum X",
-                      pl: "Maksimum X",
-                      "pt-br": "X Máximo",
-                      "pt-pt": "X Máximo",
-                      ro: "Maxim X",
-                      ru: "Макс. X",
-                      sr: "Maksimum X",
-                      sv: "Högsta X:",
-                      th: "แม็กซิมัม X",
-                      tr: "Maksimum X",
-                      vi: "Giá trị tối đa X",
-                      "zh-cn": "X 最大值",
-                      "zh-hk": "最大值 X",
-                      "zh-tw": "最大值 X"
-                    }
+                    required: false
                   },
                   {
                     name: "Ymin",
                     type: "esriFieldTypeDouble",
                     alias: "Ymin",
-                    required: false,
-                    localizedNames: {
-                      ar: "قيمة الحد الأدنى لـ Y",
-                      bs: "Minimalni Y",
-                      cs: "Minimální Y",
-                      da: "Minimum Y",
-                      de: "Y-Minimum",
-                      el: "Ελάχιστη τιμή Υ",
-                      en: "Ymin",
-                      es: "Y mínimo",
-                      et: "Väikseim Y",
-                      fi: "Y:n vähimmäisarvo",
-                      fr: "Y minimum",
-                      he: "מינימום Y",
-                      hi: "न्यूनतम Y",
-                      hr: "Minimalni Y",
-                      id: "Y minimum",
-                      it: "Minimo Y",
-                      ja: "最小 Y",
-                      ko: "Y의 최소값",
-                      lt: "Min. Y",
-                      lv: "Minimālā Y",
-                      nb: "Minimum Y",
-                      nl: "Minimum Y",
-                      pl: "Minimum Y",
-                      "pt-br": "Y Máximo",
-                      "pt-pt": "Y Mínimo",
-                      ro: "Minim Y",
-                      ru: "Мин. Y",
-                      sr: "Minimum Y",
-                      sv: "Lägsta Y:",
-                      th: "มินิมัม Y",
-                      tr: "Minimum Y",
-                      vi: "Giá trị tối thiểu Y",
-                      "zh-cn": "Y 最小值",
-                      "zh-hk": "最小值 Y",
-                      "zh-tw": "最小值 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "Ymax",
                     type: "esriFieldTypeDouble",
                     alias: "Ymax",
-                    required: false,
-                    localizedNames: {
-                      ar: "الحد الأقصى لـ Y",
-                      bs: "Maksimalni Y",
-                      cs: "Maximální Y",
-                      da: "Maksimum Y",
-                      de: "Maximum Y",
-                      el: "Μέγιστη τιμή Υ",
-                      en: "Ymax",
-                      es: "Y máximo",
-                      et: "Suurim Y",
-                      fi: "Y:n enimmäisarvo",
-                      fr: "Y maximum",
-                      he: "מקסימום Y",
-                      hi: "अधिकतम Y",
-                      hr: "Maksimalni Y",
-                      id: "Y maksimum",
-                      it: "Massimo Y",
-                      ja: "最大 Y",
-                      ko: "Y의 최대값",
-                      lt: "Maks. Y",
-                      lv: "Maksimālā Y",
-                      nb: "Maksimum Y",
-                      nl: "Maximum Y",
-                      pl: "Maksimum Y",
-                      "pt-br": "Y Máximo",
-                      "pt-pt": "Y Máximo",
-                      ro: "Maxim Y",
-                      ru: "Макс. Y",
-                      sr: "Maksimum Y",
-                      sv: "Högsta Y:",
-                      th: "แม็กซิมัม Y",
-                      tr: "Maksimum Y",
-                      vi: "Giá trị tối đa Y",
-                      "zh-cn": "Y 最大值",
-                      "zh-hk": "最大值 Y",
-                      "zh-tw": "最大值 Y"
-                    }
+                    required: false
                   },
                   {
                     name: "ExInfo",
                     type: "esriFieldTypeString",
                     alias: "ExtraInfo",
                     required: false,
-                    length: 500,
-                    localizedNames: {
-                      ar: "معلومات إضافية",
-                      bs: "Dodatne informacije",
-                      cs: "Dodatečné informace",
-                      da: "Ekstra oplysninger",
-                      de: "Zusätzliche Informationen",
-                      el: "Περισσότερες πληροφορίες",
-                      en: "ExtraInfo",
-                      es: "Información adicional",
-                      et: "Lisateave",
-                      fi: "Lisätiedot",
-                      fr: "Informations supplémentaires",
-                      he: "מידע נוסף",
-                      hi: "अतिरिक्त सूचना",
-                      hr: "Dodatne informacije",
-                      id: "Info Tambahan",
-                      it: "Informazioni aggiuntive",
-                      ja: "詳細情報",
-                      ko: "추가 정보",
-                      lt: "Papildoma informacija",
-                      lv: "Papildinformācija",
-                      nb: "Ekstra info",
-                      nl: "Extra info",
-                      pl: "Dodatkowe informacje",
-                      "pt-br": "Informações Extras",
-                      "pt-pt": "Informação Extra",
-                      ro: "Informaţii suplimentare",
-                      ru: "Неучтенное",
-                      sr: "Dodatne informacije",
-                      sv: "Extra info",
-                      th: "ข้อมูลพิเศษ",
-                      tr: "Ek Bilgi",
-                      vi: "Thông tin Bổ sung",
-                      "zh-cn": "其他信息",
-                      "zh-hk": "額外資訊",
-                      "zh-tw": "額外資訊"
-                    }
+                    length: 500
                   }
                 ]
               }
@@ -47046,7 +42950,7 @@ const expected: common.IItemTemplate[] = [
           "external~08595057759890956": {
             type: "Features",
             portalUrl: "{{organization.portalBaseUrl}}",
-            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+            itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
             isDynamic: false,
             label: "School",
             url: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}",
@@ -48037,12 +43941,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer3.itemId}}",
           popupInfo: {
-            title: "Stands: {StandName}",
+            title:
+              "Stands: {{{b19aec399444407da84fffe2a55d4151.layer3.fields.standname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48050,7 +43956,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.standid.name}}",
                 label: "Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -48058,7 +43965,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
                 label: "Property ID",
                 isEditable: true,
                 tooltip: "",
@@ -48066,7 +43974,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ParentStandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.parentstandid.name}}",
                 label: "Parent Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -48074,7 +43983,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.standname.name}}",
                 label: "Stand Name",
                 isEditable: true,
                 tooltip: "",
@@ -48082,7 +43992,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -48090,7 +44001,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -48102,7 +44014,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -48114,7 +44027,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -48125,7 +44039,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -48133,7 +44048,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -48144,7 +44060,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -48164,12 +44081,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Property",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer2.itemId}}",
           popupInfo: {
-            title: "Property: {PropertyName}",
+            title:
+              "Property: {{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48177,7 +44096,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
                 label: "Property ID",
                 isEditable: true,
                 tooltip: "",
@@ -48185,7 +44105,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PropertyName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}",
                 label: "Property Name",
                 isEditable: true,
                 tooltip: "",
@@ -48193,7 +44114,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -48201,7 +44123,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -48213,7 +44136,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -48225,7 +44149,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -48236,7 +44161,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -48244,7 +44170,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -48255,7 +44182,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer2.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -48275,12 +44203,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - Chemical Activity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer1.itemId}}",
           popupInfo: {
-            title: "Chemical Activity: {ActivityStatus}",
+            title:
+              "Chemical Activity: {{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitystatus.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48288,7 +44218,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityStatus",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitystatus.name}}",
                 label: "Activity Status",
                 isEditable: true,
                 tooltip: "",
@@ -48296,7 +44227,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StartDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.startdate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -48307,7 +44239,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EndDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -48318,7 +44251,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityOwner",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activityowner.name}}",
                 label: "Activity Owner",
                 isEditable: true,
                 tooltip: "",
@@ -48326,7 +44260,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "IsActivityForSitePrep",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.isactivityforsiteprep.name}}",
                 label: "Is Activity tor Site Prep",
                 isEditable: true,
                 tooltip: "",
@@ -48334,7 +44269,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activitymethod.name}}",
                 label: "Logging Method",
                 isEditable: true,
                 tooltip: "",
@@ -48342,7 +44278,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -48350,7 +44287,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CostType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.costtype.name}}",
                 label: "Cost Type",
                 isEditable: true,
                 tooltip: "",
@@ -48358,7 +44296,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RateType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.ratetype.name}}",
                 label: "Rate Type",
                 isEditable: true,
                 tooltip: "",
@@ -48366,7 +44305,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "UnitCostPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitcostplanned.name}}",
                 label: "Unit Cost Planned",
                 isEditable: true,
                 tooltip: "",
@@ -48378,7 +44318,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitquantityplanned.name}}",
                 label: "Unit Quantity Planned",
                 isEditable: true,
                 tooltip: "",
@@ -48390,7 +44331,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitCostActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitcostactual.name}}",
                 label: "Unit Cost Actual",
                 isEditable: true,
                 tooltip: "",
@@ -48402,7 +44344,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.unitquantityactual.name}}",
                 label: "Unit Quantity Actual",
                 isEditable: true,
                 tooltip: "",
@@ -48414,7 +44357,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -48422,7 +44366,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivtySubCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activtysubcategory.name}}",
                 label: "Activity Sub Category",
                 isEditable: true,
                 tooltip: "",
@@ -48434,7 +44379,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.activityarea.name}}",
                 label: "Area",
                 isEditable: true,
                 tooltip: "",
@@ -48446,7 +44392,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AreaUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.areaunitofmeasure.name}}",
                 label: "Area Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -48454,7 +44401,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -48466,7 +44414,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -48478,7 +44427,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -48489,7 +44439,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -48497,7 +44448,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -48508,7 +44460,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer1.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -48528,12 +44481,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayer2FromWebApp - HarvestActivity",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer0.itemId}}",
           popupInfo: {
-            title: "HarvestActivity: {HarvestUnitName}",
+            title:
+              "HarvestActivity: {{{b19aec399444407da84fffe2a55d4151.layer0.fields.harvestunitname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48541,7 +44496,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivitySubCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitysubcategory.name}}",
                 label: "Activity Sub Category",
                 isEditable: true,
                 tooltip: "",
@@ -48553,7 +44509,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitymethod.name}}",
                 label: "Harvest Method",
                 isEditable: true,
                 tooltip: "",
@@ -48561,7 +44518,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StartDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.startdate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -48572,7 +44530,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EndDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -48583,7 +44542,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityStatus",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activitystatus.name}}",
                 label: "Activity Status",
                 isEditable: true,
                 tooltip: "",
@@ -48591,7 +44551,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityOwner",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activityowner.name}}",
                 label: "Activity Owner",
                 isEditable: true,
                 tooltip: "",
@@ -48599,7 +44560,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.activityarea.name}}",
                 label: "Area",
                 isEditable: true,
                 tooltip: "",
@@ -48611,7 +44573,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AreaUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.areaunitofmeasure.name}}",
                 label: "Area Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -48619,7 +44582,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "IsActivityForSitePrep",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.isactivityforsiteprep.name}}",
                 label: "Is Activity tor Site Prep",
                 isEditable: true,
                 tooltip: "",
@@ -48627,7 +44591,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HarvestUnitName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.harvestunitname.name}}",
                 label: "Harvest Unit Name",
                 isEditable: true,
                 tooltip: "",
@@ -48635,7 +44600,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LoggingMethod",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.loggingmethod.name}}",
                 label: "LoggingMethod",
                 isEditable: true,
                 tooltip: "",
@@ -48643,7 +44609,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LoggingConditionClass",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.loggingconditionclass.name}}",
                 label: "Logging Condition Classification",
                 isEditable: true,
                 tooltip: "",
@@ -48651,7 +44618,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TerrainSlopeType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.terrainslopetype.name}}",
                 label: "Terrain Slope Type",
                 isEditable: true,
                 tooltip: "",
@@ -48659,7 +44627,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OptimalHarvestDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.optimalharvestdate.name}}",
                 label: "Optimal Harvest Date",
                 isEditable: true,
                 tooltip: "",
@@ -48670,7 +44639,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CostType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.costtype.name}}",
                 label: "Cost Type",
                 isEditable: true,
                 tooltip: "",
@@ -48678,7 +44648,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RateType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.ratetype.name}}",
                 label: "Rate Type",
                 isEditable: true,
                 tooltip: "",
@@ -48686,7 +44657,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "UnitCostPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitcostplanned.name}}",
                 label: "Unit Cost Planned",
                 isEditable: true,
                 tooltip: "",
@@ -48698,7 +44670,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityPlanned",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitquantityplanned.name}}",
                 label: "Unit Quantity Planned",
                 isEditable: true,
                 tooltip: "",
@@ -48710,7 +44683,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitCostActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitcostactual.name}}",
                 label: "Unit Cost Actual",
                 isEditable: true,
                 tooltip: "",
@@ -48722,7 +44696,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "UnitQuantityActual",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.unitquantityactual.name}}",
                 label: "Unit Quantity Actual",
                 isEditable: true,
                 tooltip: "",
@@ -48734,7 +44709,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -48742,7 +44718,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -48750,7 +44727,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -48762,7 +44740,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -48774,7 +44753,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -48785,7 +44765,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -48793,7 +44774,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -48804,7 +44786,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -48824,12 +44807,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Incident Area",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer7.itemId}}",
           popupInfo: {
-            title: "Incident Area: {INCIDENTID}",
+            title:
+              "Incident Area: {{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentid.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48837,7 +44822,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentid.name}}",
                 label: "Incident Number",
                 isEditable: true,
                 tooltip: "",
@@ -48845,7 +44831,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidentnm.name}}",
                 label: "Incident Name",
                 isEditable: true,
                 tooltip: "",
@@ -48853,7 +44840,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CATEGORY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.category.name}}",
                 label: "Category",
                 isEditable: true,
                 tooltip: "",
@@ -48861,7 +44849,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTTP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.incidenttp.name}}",
                 label: "Incident Type",
                 isEditable: true,
                 tooltip: "",
@@ -48869,7 +44858,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COLLTIME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.colltime.name}}",
                 label: "Collection Time",
                 isEditable: true,
                 tooltip: "",
@@ -48880,7 +44870,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "REPTIME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.reptime.name}}",
                 label: "Report Time",
                 isEditable: true,
                 tooltip: "",
@@ -48891,7 +44882,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DESCRIP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.descrip.name}}",
                 label: "Description",
                 isEditable: true,
                 tooltip: "",
@@ -48899,7 +44891,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.locdesc.name}}",
                 label: "Location Description",
                 isEditable: true,
                 tooltip: "",
@@ -48907,7 +44900,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SEVERITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.severity.name}}",
                 label: "Severity",
                 isEditable: true,
                 tooltip: "",
@@ -48915,7 +44909,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SEVDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.sevdesc.name}}",
                 label: "Severity Description",
                 isEditable: true,
                 tooltip: "",
@@ -48923,7 +44918,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GROWTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.growth.name}}",
                 label: "Growth",
                 isEditable: true,
                 tooltip: "",
@@ -48931,7 +44927,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -48942,7 +44939,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -48950,7 +44948,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -48962,7 +44961,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer7.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -48986,12 +44986,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - DemographicPolygons",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer6.itemId}}",
           popupInfo: {
-            title: "DemographicPolygons: {NAME10}",
+            title:
+              "DemographicPolygons: {{{4efe5f693de34620934787ead6693f19.layer6.fields.name10.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -48999,7 +45001,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STATEFP10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.statefp10.name}}",
                 label: "STATEFP10",
                 isEditable: true,
                 tooltip: "",
@@ -49007,7 +45010,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COUNTYFP10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.countyfp10.name}}",
                 label: "COUNTYFP10",
                 isEditable: true,
                 tooltip: "",
@@ -49015,7 +45019,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TRACTCE10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.tractce10.name}}",
                 label: "TRACTCE10",
                 isEditable: true,
                 tooltip: "",
@@ -49023,7 +45028,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.name10.name}}",
                 label: "NAME10",
                 isEditable: true,
                 tooltip: "",
@@ -49031,7 +45037,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAMELSAD10",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.namelsad10.name}}",
                 label: "NAMELSAD10",
                 isEditable: true,
                 tooltip: "",
@@ -49039,7 +45046,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.id.name}}",
                 label: "ID",
                 isEditable: true,
                 tooltip: "",
@@ -49047,7 +45055,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORIG_ID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.orig_id.name}}",
                 label: "ORIG_ID",
                 isEditable: true,
                 tooltip: "",
@@ -49059,7 +45068,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "sourceCountry",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.sourcecountry.name}}",
                 label: "sourceCountry",
                 isEditable: true,
                 tooltip: "",
@@ -49067,7 +45077,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CHILD_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.child_cy.name}}",
                 label: "2015 Children (Age <14)",
                 isEditable: true,
                 tooltip: "",
@@ -49079,7 +45090,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "SENIORS_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.seniors_cy.name}}",
                 label: "2015 Seniors (Age 65+)",
                 isEditable: true,
                 tooltip: "",
@@ -49091,7 +45103,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TOTPOP_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.totpop_cy.name}}",
                 label: "2015 Total Population",
                 isEditable: true,
                 tooltip: "",
@@ -49103,7 +45116,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PACSOVEH0",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.pacsoveh0.name}}",
                 label:
                   "2009-2013 ACS Owner Households with no vehicles available",
                 isEditable: true,
@@ -49116,7 +45130,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSLANGBAS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acslangbas.name}}",
                 label: "ACS Pop 5+: Lang at Home Base",
                 isEditable: true,
                 tooltip: "",
@@ -49128,7 +45143,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSHHDIS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acshhdis.name}}",
                 label: "ACS HHs w/1+ Pers w/Disability",
                 isEditable: true,
                 tooltip: "",
@@ -49140,7 +45156,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ACSSNAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.acssnap.name}}",
                 label: "ACS HHs w/Food Stamps/SNAP",
                 isEditable: true,
                 tooltip: "",
@@ -49152,7 +45169,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDAGE_CY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.medage_cy.name}}",
                 label: "Median Age",
                 isEditable: true,
                 tooltip: "",
@@ -49164,7 +45182,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Area",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.shape__area.name}}",
                 label: "Shape__Area",
                 isEditable: false,
                 tooltip: "",
@@ -49176,7 +45195,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer6.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -49200,12 +45220,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Road Closure",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer5.itemId}}",
           popupInfo: {
-            title: "Road Closure: {BLOCKNM}",
+            title:
+              "Road Closure: {{{4efe5f693de34620934787ead6693f19.layer5.fields.blocknm.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -49213,7 +45235,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blocknm.name}}",
                 label: "Road Closure",
                 isEditable: true,
                 tooltip: "",
@@ -49221,7 +45244,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCDESC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.locdesc.name}}",
                 label: "Location",
                 isEditable: true,
                 tooltip: "",
@@ -49229,7 +45253,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blocktype.name}}",
                 label: "Reason",
                 isEditable: true,
                 tooltip: "",
@@ -49237,7 +45262,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "COMMENT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.comment.name}}",
                 label: "Comments",
                 isEditable: true,
                 tooltip: "",
@@ -49245,7 +45271,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLCLOSE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.fullclose.name}}",
                 label: "Full Closure",
                 isEditable: true,
                 tooltip: "",
@@ -49253,7 +45280,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALTROUTE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.altroute.name}}",
                 label: "Alternate Route",
                 isEditable: true,
                 tooltip: "",
@@ -49261,7 +45289,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STARTDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.startdate.name}}",
                 label: "Starts",
                 isEditable: true,
                 tooltip: "",
@@ -49272,7 +45301,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ENDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.enddate.name}}",
                 label: "Ends",
                 isEditable: true,
                 tooltip: "",
@@ -49283,7 +45313,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.contact.name}}",
                 label: "Contact Information",
                 isEditable: true,
                 tooltip: "",
@@ -49291,7 +45322,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PERMITID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.permitid.name}}",
                 label: "Permit Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -49299,7 +45331,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.incidentid.name}}",
                 label: "Incident Number",
                 isEditable: true,
                 tooltip: "",
@@ -49307,7 +45340,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "INCIDENTNM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.incidentnm.name}}",
                 label: "Incident Name",
                 isEditable: true,
                 tooltip: "",
@@ -49315,7 +45349,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -49326,7 +45361,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -49334,7 +45370,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DIRECTION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.direction.name}}",
                 label: "DIRECTION",
                 isEditable: true,
                 tooltip: "",
@@ -49342,7 +45379,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BLOCKOCCUR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.blockoccur.name}}",
                 label: "BLOCKOCCUR",
                 isEditable: true,
                 tooltip: "",
@@ -49350,7 +45388,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACTIVE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.active.name}}",
                 label: "Active",
                 isEditable: true,
                 tooltip: "",
@@ -49358,7 +45397,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "Shape__Length",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer5.fields.shape__length.name}}",
                 label: "Shape__Length",
                 isEditable: false,
                 tooltip: "",
@@ -49382,12 +45422,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Bridges",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer4.itemId}}",
           popupInfo: {
-            title: "Bridges: {NAME}",
+            title:
+              "Bridges: {{{4efe5f693de34620934787ead6693f19.layer4.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -49395,7 +45437,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -49403,7 +45446,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.name.name}}",
                 label: "Bridge Name",
                 isEditable: true,
                 tooltip: "",
@@ -49411,7 +45455,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGETYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgetype.name}}",
                 label: "Bridge Type",
                 isEditable: true,
                 tooltip: "",
@@ -49419,7 +45464,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGENUM",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgenum.name}}",
                 label: "Official Bridge Number",
                 isEditable: true,
                 tooltip: "",
@@ -49427,7 +45473,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BRIDGEDESGN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.bridgedesgn.name}}",
                 label: "Bridge Design",
                 isEditable: true,
                 tooltip: "",
@@ -49435,7 +45482,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "TRAFFICTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.traffictype.name}}",
                 label: "Traffic Type",
                 isEditable: true,
                 tooltip: "",
@@ -49443,7 +45491,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DESIGNLOAD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.designload.name}}",
                 label: "Design Load Rating",
                 isEditable: true,
                 tooltip: "",
@@ -49451,7 +45500,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPANTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.spantype.name}}",
                 label: "Span Type",
                 isEditable: true,
                 tooltip: "",
@@ -49459,7 +45509,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPANLENGTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.spanlength.name}}",
                 label: "Span Length",
                 isEditable: true,
                 tooltip: "",
@@ -49471,7 +45522,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMSPAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.numspan.name}}",
                 label: "Number of Spans",
                 isEditable: true,
                 tooltip: "",
@@ -49483,7 +45535,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DECKTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.decktype.name}}",
                 label: "Deck Type",
                 isEditable: true,
                 tooltip: "",
@@ -49491,7 +45544,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DECKTHICK",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.deckthick.name}}",
                 label: "Deck Thickness",
                 isEditable: true,
                 tooltip: "",
@@ -49503,7 +45557,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LNONSTR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lnonstr.name}}",
                 label: "Lanes on Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -49515,7 +45570,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LNUNSTR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lnunstr.name}}",
                 label: "Lanes Under Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -49527,7 +45583,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDIAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.median.name}}",
                 label: "Median on Bridge",
                 isEditable: true,
                 tooltip: "",
@@ -49535,7 +45592,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "APPWIDTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.appwidth.name}}",
                 label: "Approach Width",
                 isEditable: true,
                 tooltip: "",
@@ -49547,7 +45605,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DOWELLENG",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.dowelleng.name}}",
                 label: "Dowel Length",
                 isEditable: true,
                 tooltip: "",
@@ -49559,7 +45618,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "DOWELSIZE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.dowelsize.name}}",
                 label: "Dowel Size",
                 isEditable: true,
                 tooltip: "",
@@ -49571,7 +45631,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "AVGTRAFFIC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.avgtraffic.name}}",
                 label: "Daily Traffic Volume",
                 isEditable: true,
                 tooltip: "",
@@ -49583,7 +45644,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "YRTRAFFIC",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.yrtraffic.name}}",
                 label: "Year Traffic Counted",
                 isEditable: true,
                 tooltip: "",
@@ -49594,7 +45656,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "INSTALLDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.installdate.name}}",
                 label: "Install Date",
                 isEditable: true,
                 tooltip: "",
@@ -49605,7 +45668,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONDITION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.condition.name}}",
                 label: "Condition",
                 isEditable: true,
                 tooltip: "",
@@ -49613,7 +45677,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNEDBY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.ownedby.name}}",
                 label: "Owned By",
                 isEditable: true,
                 tooltip: "",
@@ -49625,7 +45690,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MAINTBY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.maintby.name}}",
                 label: "Managed By",
                 isEditable: true,
                 tooltip: "",
@@ -49637,7 +45703,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -49648,7 +45715,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer4.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -49668,12 +45736,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Assistance",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer3.itemId}}",
           popupInfo: {
-            title: "Emergency Assistance: {PLACENAME}",
+            title:
+              "Emergency Assistance: {{{4efe5f693de34620934787ead6693f19.layer3.fields.placename.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -49681,7 +45751,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CONTACTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.contactid.name}}",
                 label: "Contact ID",
                 isEditable: true,
                 tooltip: "",
@@ -49689,7 +45760,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.contact.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -49697,7 +45769,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GENDER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.gender.name}}",
                 label: "Gender",
                 isEditable: true,
                 tooltip: "",
@@ -49705,7 +45778,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DATEBIRTH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.datebirth.name}}",
                 label: "Date of Birth",
                 isEditable: true,
                 tooltip: "",
@@ -49716,7 +45790,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -49724,7 +45799,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PLACENAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.placename.name}}",
                 label: "Place Name",
                 isEditable: true,
                 tooltip: "",
@@ -49732,7 +45808,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RESIDETYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.residetype.name}}",
                 label: "Residence Type",
                 isEditable: true,
                 tooltip: "",
@@ -49740,7 +45817,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HOMEPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.homephone.name}}",
                 label: "Home Phone",
                 isEditable: true,
                 tooltip: "",
@@ -49748,7 +45826,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CELLPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.cellphone.name}}",
                 label: "Cell Phone",
                 isEditable: true,
                 tooltip: "",
@@ -49756,7 +45835,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.email.name}}",
                 label: "Email",
                 isEditable: true,
                 tooltip: "",
@@ -49764,7 +45844,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SMS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.sms.name}}",
                 label: "SMS or Text",
                 isEditable: true,
                 tooltip: "",
@@ -49772,7 +45853,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "MEDICCOND",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.mediccond.name}}",
                 label: "Medical Condition",
                 isEditable: true,
                 tooltip: "",
@@ -49780,7 +45862,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPECMEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.specmeds.name}}",
                 label: "Special Medications Required",
                 isEditable: true,
                 tooltip: "",
@@ -49792,7 +45875,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "MEDICATION",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.medication.name}}",
                 label: "Medications Required",
                 isEditable: true,
                 tooltip: "",
@@ -49800,7 +45884,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SPECEQUIP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.specequip.name}}",
                 label: "Special Equipment Required",
                 isEditable: true,
                 tooltip: "",
@@ -49808,7 +45893,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SERANIMAL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.seranimal.name}}",
                 label: "Service Animal Present",
                 isEditable: true,
                 tooltip: "",
@@ -49820,7 +45906,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TRANSPORT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.transport.name}}",
                 label: "Transportation Required",
                 isEditable: true,
                 tooltip: "",
@@ -49832,7 +45919,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "EVACPLAN",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.evacplan.name}}",
                 label: "Evacuation Plan Present",
                 isEditable: true,
                 tooltip: "",
@@ -49844,7 +45932,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "COMMENTS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.comments.name}}",
                 label: "Comments",
                 isEditable: true,
                 tooltip: "",
@@ -49852,7 +45941,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ECONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.econtact.name}}",
                 label: "Emergency Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -49860,7 +45950,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EHOMEPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.ehomephone.name}}",
                 label: "Emergency Contact Home Phone",
                 isEditable: true,
                 tooltip: "",
@@ -49868,7 +45959,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ECELLPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.ecellphone.name}}",
                 label: "Emergency Contact Cell Phone",
                 isEditable: true,
                 tooltip: "",
@@ -49876,7 +45968,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.eemail.name}}",
                 label: "Emergency Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -49884,7 +45977,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ESMS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.esms.name}}",
                 label: "Emergency Contact SMS or Text",
                 isEditable: true,
                 tooltip: "",
@@ -49892,7 +45986,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PCONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pcontact.name}}",
                 label: "Physician Name",
                 isEditable: true,
                 tooltip: "",
@@ -49900,7 +45995,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PWORKPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pworkphone.name}}",
                 label: "Physician's Work Phone",
                 isEditable: true,
                 tooltip: "",
@@ -49908,7 +46004,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.pemail.name}}",
                 label: "Physician's Email",
                 isEditable: true,
                 tooltip: "",
@@ -49916,7 +46013,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BEGINDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.begindate.name}}",
                 label: "Start Date",
                 isEditable: true,
                 tooltip: "",
@@ -49927,7 +46025,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ENDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.enddate.name}}",
                 label: "End Date",
                 isEditable: true,
                 tooltip: "",
@@ -49938,7 +46037,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -49949,7 +46049,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -49969,12 +46070,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Emergency Shelter",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer2.itemId}}",
           popupInfo: {
-            title: "Emergency Shelter: {FACNAME}",
+            title:
+              "Emergency Shelter: {{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -49982,7 +46085,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facilityid.name}}",
                 label: "Emergency Facility ID",
                 isEditable: true,
                 tooltip: "",
@@ -49990,7 +46094,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.facname.name}}",
                 label: "Name",
                 isEditable: true,
                 tooltip: "",
@@ -49998,7 +46103,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.fulladdr.name}}",
                 label: "Site Address",
                 isEditable: true,
                 tooltip: "",
@@ -50006,7 +46112,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ORGANIZ",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.organiz.name}}",
                 label: "Organization",
                 isEditable: true,
                 tooltip: "",
@@ -50014,7 +46121,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "REDXMODEL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.redxmodel.name}}",
                 label: "Red Cross Model",
                 isEditable: true,
                 tooltip: "",
@@ -50022,7 +46130,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCNAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocname.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -50030,7 +46139,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCEMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocemail.name}}",
                 label: "Contact Email",
                 isEditable: true,
                 tooltip: "",
@@ -50038,7 +46148,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "POCPHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.pocphone.name}}",
                 label: "Contact Phone",
                 isEditable: true,
                 tooltip: "",
@@ -50046,7 +46157,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPACITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.capacity.name}}",
                 label: "Total Capacity",
                 isEditable: true,
                 tooltip: "",
@@ -50058,7 +46170,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -50070,7 +46183,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OCCUPANCY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.occupancy.name}}",
                 label: "Current Occupancy",
                 isEditable: true,
                 tooltip: "",
@@ -50082,7 +46196,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "HOURSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.hoursoper.name}}",
                 label: "Hours Operation",
                 isEditable: true,
                 tooltip: "",
@@ -50090,7 +46205,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HANDICAP",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.handicap.name}}",
                 label: "Handicap Accessible",
                 isEditable: true,
                 tooltip: "",
@@ -50098,7 +46214,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "BACKPOWER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.backpower.name}}",
                 label: "Generator",
                 isEditable: true,
                 tooltip: "",
@@ -50106,7 +46223,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ALLOWPETS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.allowpets.name}}",
                 label: "Allows Pets / Animals",
                 isEditable: true,
                 tooltip: "",
@@ -50114,7 +46232,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DAYSOPER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.daysoper.name}}",
                 label: "Days Operation",
                 isEditable: true,
                 tooltip: "",
@@ -50122,7 +46241,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ACCESSRES",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.accessres.name}}",
                 label: "Access Restrictions",
                 isEditable: true,
                 tooltip: "",
@@ -50130,7 +46250,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPENDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opendate.name}}",
                 label: "Open Date",
                 isEditable: true,
                 tooltip: "",
@@ -50141,7 +46262,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CLOSEDDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.closeddate.name}}",
                 label: "Closed Date",
                 isEditable: true,
                 tooltip: "",
@@ -50152,7 +46274,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "OPSSTATUS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.opsstatus.name}}",
                 label: "Operational Status",
                 isEditable: true,
                 tooltip: "",
@@ -50160,7 +46283,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -50171,7 +46295,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer2.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -50191,12 +46316,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - School",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer1.itemId}}",
           popupInfo: {
-            title: "School: {NAME}",
+            title:
+              "School: {{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50204,7 +46331,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -50212,7 +46340,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.name.name}}",
                 label: "Name of Facility",
                 isEditable: true,
                 tooltip: "",
@@ -50220,7 +46349,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.owner.name}}",
                 label: "Owner Name",
                 isEditable: true,
                 tooltip: "",
@@ -50228,7 +46358,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.owntype.name}}",
                 label: "Owner Type",
                 isEditable: true,
                 tooltip: "",
@@ -50236,7 +46367,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SUBTYPEFIELD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.subtypefield.name}}",
                 label: "Subtype Field",
                 isEditable: true,
                 tooltip: "",
@@ -50248,7 +46380,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FEATURECODE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.featurecode.name}}",
                 label: "Feature Code",
                 isEditable: true,
                 tooltip: "",
@@ -50256,7 +46389,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -50264,7 +46398,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "MUNICIPALITY",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.municipality.name}}",
                 label: "Municipality Name",
                 isEditable: true,
                 tooltip: "",
@@ -50272,7 +46407,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "STATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.state.name}}",
                 label: "State Name",
                 isEditable: true,
                 tooltip: "",
@@ -50280,7 +46416,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CAPTUREMETH",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.capturemeth.name}}",
                 label: "Capture Method",
                 isEditable: true,
                 tooltip: "",
@@ -50288,7 +46425,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "LOCATIONTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.locationtype.name}}",
                 label: "Location Type",
                 isEditable: true,
                 tooltip: "",
@@ -50296,7 +46434,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "DESCRIPT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.descript.name}}",
                 label: "Description",
                 isEditable: true,
                 tooltip: "",
@@ -50304,7 +46443,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NUMSTUDENT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.numstudent.name}}",
                 label: "# of Students",
                 isEditable: true,
                 tooltip: "",
@@ -50316,7 +46456,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FACAREA",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.facarea.name}}",
                 label: "Facility Area",
                 isEditable: true,
                 tooltip: "",
@@ -50328,7 +46469,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTUPDATE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.lastupdate.name}}",
                 label: "Last Update Date",
                 isEditable: true,
                 tooltip: "",
@@ -50339,7 +46481,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "LASTEDITOR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer1.fields.lasteditor.name}}",
                 label: "Last Editor",
                 isEditable: true,
                 tooltip: "",
@@ -50359,12 +46502,14 @@ const expected: common.IItemTemplate[] = [
           visibility: true,
           opacity: 1,
           title: "TestLayerForDashBoardMap - Hospital",
-          itemId: "{{4efe5f693de34620934787ead6693f19.itemId}}",
+          itemId: "{{4efe5f693de34620934787ead6693f19.layer0.itemId}}",
           popupInfo: {
-            title: "Hospital: {NAME}",
+            title:
+              "Hospital: {{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50372,7 +46517,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FACILITYID",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.facilityid.name}}",
                 label: "Facility Identifier",
                 isEditable: true,
                 tooltip: "",
@@ -50380,7 +46526,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NAME",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.name.name}}",
                 label: "Name of Facility",
                 isEditable: true,
                 tooltip: "",
@@ -50388,7 +46535,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNER",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.owner.name}}",
                 label: "Owner Name",
                 isEditable: true,
                 tooltip: "",
@@ -50396,7 +46544,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OWNTYPE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.owntype.name}}",
                 label: "Owner Type",
                 isEditable: true,
                 tooltip: "",
@@ -50404,7 +46553,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SUBTYPEFIELD",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.subtypefield.name}}",
                 label: "Subtype Field",
                 isEditable: true,
                 tooltip: "",
@@ -50416,7 +46566,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "FEATURECODE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.featurecode.name}}",
                 label: "Feature Code",
                 isEditable: true,
                 tooltip: "",
@@ -50424,7 +46575,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "FULLADDR",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.fulladdr.name}}",
                 label: "Full Address",
                 isEditable: true,
                 tooltip: "",
@@ -50432,7 +46584,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "AGENCYURL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.agencyurl.name}}",
                 label: "Website",
                 isEditable: true,
                 tooltip: "",
@@ -50440,7 +46593,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPERDAYS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.operdays.name}}",
                 label: "Operational Days",
                 isEditable: true,
                 tooltip: "",
@@ -50448,7 +46602,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "OPERHOURS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.operhours.name}}",
                 label: "Operational Hours",
                 isEditable: true,
                 tooltip: "",
@@ -50456,7 +46611,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "NUMBEDS",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.numbeds.name}}",
                 label: "# of Beds Available",
                 isEditable: true,
                 tooltip: "",
@@ -50468,7 +46624,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CONTACT",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.contact.name}}",
                 label: "Contact Name",
                 isEditable: true,
                 tooltip: "",
@@ -50476,7 +46633,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "PHONE",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.phone.name}}",
                 label: "Phone",
                 isEditable: true,
                 tooltip: "",
@@ -50484,7 +46642,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EMAIL",
+                fieldName:
+                  "{{4efe5f693de34620934787ead6693f19.layer0.fields.email.name}}",
                 label: "Email",
                 isEditable: true,
                 tooltip: "",
@@ -50524,12 +46683,14 @@ const expected: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer8.url}}",
           id: "TestLayer2FromWebApp_5860",
           title: "TestLayer2FromWebApp - Activity Stands",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer8.itemId}}",
           popupInfo: {
-            title: "Activity Stands: {StandID}",
+            title:
+              "Activity Stands: {{{b19aec399444407da84fffe2a55d4151.layer8.fields.standid.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50537,7 +46698,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -50545,7 +46707,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "StandID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.standid.name}}",
                 label: "Stand ID",
                 isEditable: true,
                 tooltip: "",
@@ -50553,7 +46716,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "HarvestActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.harvestactivityid.name}}",
                 label: "Harvest Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -50561,7 +46725,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityStandPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activitystandpercent.name}}",
                 label: "Activty Stand Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50573,7 +46738,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ActivityStandArea",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.activitystandarea.name}}",
                 label: "Activity Stand Area",
                 isEditable: true,
                 tooltip: "",
@@ -50585,7 +46751,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -50593,7 +46760,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -50604,7 +46772,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -50612,7 +46781,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -50623,7 +46793,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer8.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -50640,12 +46811,14 @@ const expected: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer7.url}}",
           id: "TestLayer2FromWebApp_8278",
           title: "TestLayer2FromWebApp - ChemicalProduct",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer7.itemId}}",
           popupInfo: {
-            title: "ChemicalProduct: {ProductName}",
+            title:
+              "ChemicalProduct: {{{b19aec399444407da84fffe2a55d4151.layer7.fields.productname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50653,7 +46826,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalProductID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.chemicalproductid.name}}",
                 label: "Chemical Product ID",
                 isEditable: true,
                 tooltip: "",
@@ -50665,7 +46839,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ProductName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.productname.name}}",
                 label: "Product Name",
                 isEditable: true,
                 tooltip: "",
@@ -50673,7 +46848,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalType",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.chemicaltype.name}}",
                 label: "Chemical Type",
                 isEditable: true,
                 tooltip: "",
@@ -50681,7 +46857,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EPARegistrationNumber",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.eparegistrationnumber.name}}",
                 label: "EPA Registration Number",
                 isEditable: true,
                 tooltip: "",
@@ -50689,7 +46866,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActiveIngredient",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activeingredient.name}}",
                 label: "Active Ingredient",
                 isEditable: true,
                 tooltip: "",
@@ -50697,7 +46875,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActiveIngredientPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activeingredientpercent.name}}",
                 label: "Active Ingredient Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50709,7 +46888,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "NitrogenPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.nitrogenpercent.name}}",
                 label: "Nitrogen Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50721,7 +46901,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PhosphorusPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.phosphoruspercent.name}}",
                 label: "Phosphorus Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50733,7 +46914,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "PotassiumPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.potassiumpercent.name}}",
                 label: "Potassium Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50745,7 +46927,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "BoronPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.boronpercent.name}}",
                 label: "Boron Percent",
                 isEditable: true,
                 tooltip: "",
@@ -50757,7 +46940,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Notes",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.notes.name}}",
                 label: "Notes",
                 isEditable: true,
                 tooltip: "",
@@ -50765,7 +46949,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -50773,7 +46958,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -50781,7 +46967,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -50792,7 +46979,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -50800,7 +46988,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -50811,7 +47000,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer7.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -50828,12 +47018,14 @@ const expected: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer6.url}}",
           id: "TestLayer2FromWebApp_8866",
           title: "TestLayer2FromWebApp - ChemicalApplication",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer6.itemId}}",
           popupInfo: {
-            title: "ChemicalApplication: {ApplicationRate}",
+            title:
+              "ChemicalApplication: {{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationrate.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50841,7 +47033,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -50849,7 +47042,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ApplicationRate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationrate.name}}",
                 label: "Application Rate",
                 isEditable: true,
                 tooltip: "",
@@ -50861,7 +47055,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ApplicationUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.applicationunitofmeasure.name}}",
                 label: "Application Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -50869,7 +47064,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalCarrier",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalcarrier.name}}",
                 label: "Chemical Carrier",
                 isEditable: true,
                 tooltip: "",
@@ -50877,7 +47073,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalApplicationID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalapplicationid.name}}",
                 label: "Chemical Application ID",
                 isEditable: true,
                 tooltip: "",
@@ -50889,7 +47086,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.globalid.name}}",
                 label: "Chemical Application ID",
                 isEditable: false,
                 tooltip: "",
@@ -50897,7 +47095,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ChemicalProductID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalproductid.name}}",
                 label: "Chemical Product ID",
                 isEditable: true,
                 tooltip: "",
@@ -50909,7 +47108,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ChemicalRate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalrate.name}}",
                 label: "Chemical Rate",
                 isEditable: true,
                 tooltip: "",
@@ -50921,7 +47121,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "ChemicalUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.chemicalunitofmeasure.name}}",
                 label: "Chemical Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -50929,7 +47130,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -50940,7 +47142,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -50948,7 +47151,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -50959,7 +47163,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer6.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -50976,12 +47181,14 @@ const expected: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer5.url}}",
           id: "TestLayer2FromWebApp_6326",
           title: "TestLayer2FromWebApp - ActivityWeather",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer5.itemId}}",
           popupInfo: {
-            title: "ActivityWeather: {WeatherDate}",
+            title:
+              "ActivityWeather: {{{b19aec399444407da84fffe2a55d4151.layer5.fields.weatherdate.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -50989,7 +47196,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -50997,7 +47205,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WeatherDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.weatherdate.name}}",
                 label: "Weather Date",
                 isEditable: true,
                 tooltip: "",
@@ -51008,7 +47217,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Temperature",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.temperature.name}}",
                 label: "Temperature",
                 isEditable: true,
                 tooltip: "",
@@ -51020,7 +47230,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "TemperatureUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.temperatureunitofmeasure.name}}",
                 label: "Temperature Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -51028,7 +47239,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WindSpeed",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.windspeed.name}}",
                 label: "Wind Speed",
                 isEditable: true,
                 tooltip: "",
@@ -51040,7 +47252,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "WindSpeedUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.windspeedunitofmeasure.name}}",
                 label: "Wind Speed Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -51048,7 +47261,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "WindDirection",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.winddirection.name}}",
                 label: "Wind Direction",
                 isEditable: true,
                 tooltip: "",
@@ -51056,7 +47270,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "RelativeHumidityPercent",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.relativehumiditypercent.name}}",
                 label: "Relative Humidity (Percent)",
                 isEditable: true,
                 tooltip: "",
@@ -51068,7 +47283,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.globalid.name}}",
                 label: "GlobalID",
                 isEditable: false,
                 tooltip: "",
@@ -51076,7 +47292,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -51087,7 +47304,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -51095,7 +47313,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -51106,7 +47325,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer5.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",
@@ -51123,12 +47343,14 @@ const expected: common.IItemTemplate[] = [
           url: "{{b19aec399444407da84fffe2a55d4151.layer4.url}}",
           id: "TestLayer2FromWebApp_4230",
           title: "TestLayer2FromWebApp - Harvest Crops",
-          itemId: "{{b19aec399444407da84fffe2a55d4151.itemId}}",
+          itemId: "{{b19aec399444407da84fffe2a55d4151.layer4.itemId}}",
           popupInfo: {
-            title: "Harvest Crops: {CropName}",
+            title:
+              "Harvest Crops: {{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}}",
             fieldInfos: [
               {
-                fieldName: "OBJECTID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.objectid.name}}",
                 label: "OBJECTID",
                 isEditable: false,
                 tooltip: "",
@@ -51136,7 +47358,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CropCategory",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropcategory.name}}",
                 label: "Crop Category",
                 isEditable: true,
                 tooltip: "",
@@ -51148,7 +47371,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "CropName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}",
                 label: "Crop Name",
                 isEditable: true,
                 tooltip: "",
@@ -51156,7 +47380,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "SpeciesName",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.speciesname.name}}",
                 label: "Species Name",
                 isEditable: true,
                 tooltip: "",
@@ -51164,7 +47389,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EstimatedVolume",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.estimatedvolume.name}}",
                 label: "Estimated Volume",
                 isEditable: true,
                 tooltip: "",
@@ -51176,7 +47402,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "VolumeUnitOfMeasure",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.volumeunitofmeasure.name}}",
                 label: "Volume Unit of Measure",
                 isEditable: true,
                 tooltip: "",
@@ -51184,7 +47411,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "ActivityID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}",
                 label: "Activity ID",
                 isEditable: false,
                 tooltip: "",
@@ -51192,7 +47420,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "GlobalID",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.globalid.name}}",
                 label: "",
                 isEditable: false,
                 tooltip: "",
@@ -51200,7 +47429,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "CreationDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.creationdate.name}}",
                 label: "CreationDate",
                 isEditable: false,
                 tooltip: "",
@@ -51211,7 +47441,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Creator",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.creator.name}}",
                 label: "Creator",
                 isEditable: false,
                 tooltip: "",
@@ -51219,7 +47450,8 @@ const expected: common.IItemTemplate[] = [
                 stringFieldOption: "textbox"
               },
               {
-                fieldName: "EditDate",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.editdate.name}}",
                 label: "EditDate",
                 isEditable: false,
                 tooltip: "",
@@ -51230,7 +47462,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               {
-                fieldName: "Editor",
+                fieldName:
+                  "{{b19aec399444407da84fffe2a55d4151.layer4.fields.editor.name}}",
                 label: "Editor",
                 isEditable: false,
                 tooltip: "",

@@ -95,7 +95,17 @@ export function convertItemToTemplate(
               "data.widgetOnScreen.widgets"
             ).then(
               updatedItemTemplate => {
-                resolve(updatedItemTemplate);
+                templatizeValues(
+                  updatedItemTemplate,
+                  authentication,
+                  portalUrl,
+                  "data.values"
+                ).then(
+                  _updatedItemTemplate => {
+                    resolve(_updatedItemTemplate);
+                  },
+                  e => reject(common.fail(e))
+                );
               },
               e => reject(common.fail(e))
             );
@@ -122,10 +132,18 @@ export function templatizeDatasources(
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
-        if (common.getProp(ds, "itemId")) {
-          ds.itemId = common.templatizeTerm(ds.itemId, ds.itemId, ".itemId");
-        }
+        const itemId: any = common.getProp(ds, "itemId");
         if (common.getProp(ds, "url")) {
+          if (itemId) {
+            const layerId = ds.url.substr(
+              (ds.url as string).lastIndexOf("/") + 1
+            );
+            ds.itemId = common.templatizeTerm(
+              itemId,
+              itemId,
+              ".layer" + layerId + ".itemId"
+            );
+          }
           const urlResults: any = findUrls(
             ds.url,
             portalUrl,
@@ -147,6 +165,9 @@ export function templatizeDatasources(
             }
           );
         } else {
+          if (itemId) {
+            ds.itemId = common.templatizeTerm(itemId, itemId, ".itemId");
+          }
           resolve(itemTemplate);
         }
       });
@@ -189,14 +210,64 @@ export function templatizeWidgets(
       }
     });
 
-    const sWidgets: string = JSON.stringify(widgets);
-    handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
-      response => {
-        common.setProp(itemTemplate, widgetPath, JSON.parse(response));
-        resolve(itemTemplate);
-      },
-      e => reject(common.fail(e))
-    );
+    if (serviceRequests.length > 0) {
+      const sWidgets: string = JSON.stringify(widgets);
+      handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
+        response => {
+          common.setProp(itemTemplate, widgetPath, JSON.parse(response));
+          resolve(itemTemplate);
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(itemTemplate);
+    }
+  });
+}
+
+export function templatizeValues(
+  itemTemplate: common.IItemTemplate,
+  authentication: auth.UserSession,
+  portalUrl: string,
+  widgetPath: string
+): Promise<common.IItemTemplate> {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    // update properties of values collection for web app templates
+    let values: any = common.getProp(itemTemplate, widgetPath);
+    let serviceRequests: any[] = [];
+    let requestUrls: string[] = [];
+
+    if (values) {
+      if (common.getProp(values, "icon")) {
+        setValues(values, ["icon"], common.PLACEHOLDER_SERVER_NAME);
+      }
+
+      const sConfig: string = JSON.stringify(values);
+      const urlResults: any = findUrls(
+        sConfig,
+        portalUrl,
+        requestUrls,
+        serviceRequests,
+        authentication
+      );
+
+      values = JSON.parse(urlResults.testString);
+      serviceRequests = urlResults.serviceRequests;
+      requestUrls = urlResults.requestUrls;
+    }
+
+    if (serviceRequests.length > 0) {
+      const sWidgets: string = JSON.stringify(values);
+      handleServiceRequests(serviceRequests, requestUrls, sWidgets).then(
+        response => {
+          common.setProp(itemTemplate, widgetPath, JSON.parse(response));
+          resolve(itemTemplate);
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve(itemTemplate);
+    }
   });
 }
 
@@ -438,6 +509,7 @@ export function postProcessFieldReferences(
   solutionTemplate: common.IItemTemplate,
   datasourceInfos: common.IDatasourceInfo[]
 ): common.IItemTemplate {
+  // handle datasources common for WAB apps
   const dataSources: any = common.getProp(
     solutionTemplate,
     "data.dataSource.dataSources"
@@ -445,10 +517,7 @@ export function postProcessFieldReferences(
   if (dataSources && Object.keys(dataSources).length > 0) {
     Object.keys(dataSources).forEach(k => {
       const ds: any = dataSources[k];
-      dataSources[k] = _templatizeDatasourceFieldReferences(
-        ds,
-        datasourceInfos
-      );
+      dataSources[k] = _templatizeObject(ds, datasourceInfos);
     });
     common.setProp(
       solutionTemplate,
@@ -457,6 +526,7 @@ export function postProcessFieldReferences(
     );
   }
 
+  // handle widgets common for WAB apps
   const paths: string[] = [
     "data.widgetPool.widgets",
     "data.widgetOnScreen.widgets"
@@ -467,10 +537,20 @@ export function postProcessFieldReferences(
       common.setProp(
         solutionTemplate,
         path,
-        _templatizeWidgetFieldReferences(widgets, datasourceInfos)
+        _templatizeObjectArray(widgets, datasourceInfos)
       );
     }
   });
+
+  // handle values common for web app templates
+  const values: any = common.getProp(solutionTemplate, "data.values");
+  if (values) {
+    common.setProp(
+      solutionTemplate,
+      "data.values",
+      _templatizeObject(values, datasourceInfos)
+    );
+  }
 
   return solutionTemplate;
 }
@@ -478,50 +558,38 @@ export function postProcessFieldReferences(
 /**
  * Templatize field references for given dataSource from the web application.
  *
- * @param dataSource The dataSource object from the web application.
+ * @param obj The dataSource or widget object from the web application.
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns The dataSource with templatized field references
  */
-export function _templatizeDatasourceFieldReferences(
-  dataSource: any,
+export function _templatizeObject(
+  obj: any,
   datasourceInfos: common.IDatasourceInfo[]
 ): any {
-  dataSource = _prioritizedTests(dataSource, datasourceInfos);
+  obj = _prioritizedTests(obj, datasourceInfos);
   const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(
-    dataSource,
+    obj,
     datasourceInfos
   );
   replaceOrder.forEach(ds => {
-    dataSource = common.templatizeFieldReferences(
-      dataSource,
-      ds.fields,
-      ds.basePath
-    );
+    obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
   });
-  return dataSource;
+  return obj;
 }
 
 /**
- * Templatize field references for the widgets from the web application.
+ * Templatize field references from an array of various objects from the web application.
  *
- * @param widgets A list of widgets from the web application.
+ * @param objects A list of widgets or objects from the web application that may contain field references.
  * @param datasourceInfos A list of datasource info objects that contain key values to templatize field references
  * @returns The widgets with templatized field references
  */
-export function _templatizeWidgetFieldReferences(
-  widgets: any[],
+export function _templatizeObjectArray(
+  objects: any[],
   datasourceInfos: common.IDatasourceInfo[]
 ): any {
-  return widgets.map(widget => {
-    widget = _prioritizedTests(widget, datasourceInfos);
-    const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(
-      widget,
-      datasourceInfos
-    );
-    replaceOrder.forEach(ds => {
-      widget = common.templatizeFieldReferences(widget, ds.fields, ds.basePath);
-    });
-    return widget;
+  return objects.map(obj => {
+    return _templatizeObject(obj, datasourceInfos);
   });
 }
 
@@ -715,20 +783,38 @@ export function _templatizeParentByWebMapLayerId(
     });
   } else if (typeof obj === "object") {
     for (const i in obj) {
-      if (obj[i] != null && typeof obj[i] === "object") {
-        // some widgets store the layerId as a key to a collection of details that contain field references
-        if (idTest.test(i)) {
-          obj[i] = common.templatizeFieldReferences(
-            obj[i],
-            ds.fields,
-            ds.basePath
+      if (obj[i] !== null) {
+        // In some web application templates they store a stringified version of an object that can
+        // contain multiple layer references at a very high level on the main values collection.
+        // This was causing many other more typical layer references to be set incorrectly as the first
+        // layerId found in this high level string would be used against the main object.
+        let parsedProp: any;
+        try {
+          parsedProp = JSON.parse(obj[i]);
+        } catch (error) {
+          parsedProp = undefined;
+        }
+        if (parsedProp && typeof parsedProp === "object") {
+          clone[i] = JSON.stringify(
+            _templatizeParentByWebMapLayerId(parsedProp, ds, id)
           );
+        } else if (typeof obj[i] === "object") {
+          // some widgets store the layerId as a key to a collection of details that contain field references
+          if (idTest.test(i)) {
+            obj[i] = common.templatizeFieldReferences(
+              obj[i],
+              ds.fields,
+              ds.basePath
+            );
+          }
+          clone[i] = _templatizeParentByWebMapLayerId(obj[i], ds, id);
+        } else {
+          if (idTest.test(obj[i])) {
+            obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+          }
+          clone[i] = obj[i];
         }
-        clone[i] = _templatizeParentByWebMapLayerId(obj[i], ds, id);
       } else {
-        if (idTest.test(obj[i])) {
-          obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
-        }
         clone[i] = obj[i];
       }
     }
