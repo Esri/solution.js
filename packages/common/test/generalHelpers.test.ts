@@ -72,20 +72,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         }, done.fail);
       });
     });
-
-    describe("blobToFile", () => {
-      xit("blobToFile", done => {
-        console.warn("========== TODO blobToFile ========== ");
-        done.fail();
-      });
-    });
-
-    describe("blobToText", () => {
-      xit("blobToText", done => {
-        console.warn("========== TODO blobToText ========== ");
-        done.fail();
-      });
-    });
   }
 
   describe("cloneObject", () => {
@@ -320,13 +306,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const vals = getProps(o, ["one.two", "one.color", "thing.three"]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
-    });
-  });
-
-  describe("setProp", () => {
-    xit("setProp", done => {
-      console.warn("========== TODO setProp ========== ");
-      done.fail();
     });
   });
 
