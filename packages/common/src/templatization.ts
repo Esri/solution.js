@@ -208,9 +208,13 @@ export function templatizeFieldReferences(
   fields.forEach(field => {
     objString = objString.replace(
       // needs to ensure that its not already been templatized
-      // cannot be followed by .name and cannot be proceeded by fieldName in case of {{01922837.name.name}}
+      // cannot be followed by .name and cannot be proceeded by fieldName. in case of {{01922837.name.name}} and cannot be followed by }}
       new RegExp(
-        "\\b" + field.name + "\\b(?![.name])(?<![.]" + field.name + ")",
+        "(?<!" +
+          field.name +
+          "[.])\\b" +
+          field.name +
+          "\\b(?![.]name)(?![}]{2})",
         "g"
       ),
       templatizeToLowerCase(basePath, field.name + ".name")

@@ -711,7 +711,7 @@ export function _prioritizedTests(
       return ds;
     }
   });
-  if (hasDatasources.length > 1) {
+  if (hasDatasources.length > 0) {
     hasDatasources.forEach(ds => {
       // specific url reference is the most common
       obj = _templatizeParentByURL(obj, ds);

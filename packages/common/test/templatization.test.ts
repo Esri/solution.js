@@ -177,7 +177,7 @@ describe("Module `templatization`: common functions involving the adlib library"
   });
 
   describe("templatizeFieldReferences", () => {
-    it("templatizeFieldReferences", () => {
+    it("will not templatize fieldnames that have already been templatized", () => {
       const obj: any = {
         field1: {
           fieldname: "test"
@@ -190,7 +190,11 @@ describe("Module `templatization`: common functions involving the adlib library"
         },
         field4: {
           fieldname: "{{0019226378376276.layer0.fields.name.name}}"
-        }
+        },
+        expression:
+          "$feature.name {name} name $feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}}",
+        expression2:
+          "$feature.test {test} test $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}"
       };
       const fields: any[] = [
         {
@@ -214,7 +218,11 @@ describe("Module `templatization`: common functions involving the adlib library"
         },
         field4: {
           fieldname: "{{0019226378376276.layer0.fields.name.name}}"
-        }
+        },
+        expression:
+          "$feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}} $feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}}",
+        expression2:
+          "$feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}} $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}"
       };
 
       const actual = templatization.templatizeFieldReferences(
