@@ -33934,8 +33934,7 @@ const expected: common.IItemTemplate[] = [
                         name:
                           "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
                         type: "esriFieldTypeString",
-                        alias:
-                          "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
+                        alias: "Last Editor",
                         length: 50,
                         editable: true,
                         nullable: true,
@@ -34313,14 +34312,13 @@ const expected: common.IItemTemplate[] = [
                     {
                       fieldName:
                         "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
-                      label:
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
+                      label: "Last Editor",
                       visible: true,
                       type: "esriFieldTypeString",
                       duplicate: false,
                       isRecognizedValues: [
                         "{{4efe5f693de34620934787ead6693f19.layer3.fields.lasteditor.name}}",
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}"
+                        "Last Editor"
                       ]
                     }
                   ]
@@ -38087,8 +38085,7 @@ const expected: common.IItemTemplate[] = [
                           type: "stat",
                           value: {
                             type: "avg",
-                            field:
-                              "{{4efe5f693de34620934787ead6693f19.layer0.fields.numbeds.name}}"
+                            field: "NUMBEDS"
                           }
                         }
                       },
@@ -39172,7 +39169,7 @@ const expected: common.IItemTemplate[] = [
                         "{{4efe5f693de34620934787ead6693f19.layer4.fields.lasteditor.name}}",
                       type: "esriFieldTypeString",
                       alias:
-                        "Last {{b19aec399444407da84fffe2a55d4151.layer3.fields.editor.name}}",
+                        "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
                       length: 50,
                       editable: true,
                       nullable: true,
@@ -41039,7 +41036,7 @@ const expected: common.IItemTemplate[] = [
                     fieldInfos: [
                       {
                         fieldName:
-                          "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
+                          "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
                         isEditable: true,
                         visible: true
                       },
@@ -43276,8 +43273,7 @@ const expected: common.IItemTemplate[] = [
                   name:
                     "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.lasteditor.name}}",
                   type: "esriFieldTypeString",
-                  alias:
-                    "Last {{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                  alias: "Last Editor",
                   sqlType: "sqlTypeOther",
                   length: 50,
                   nullable: true,
@@ -43302,11 +43298,9 @@ const expected: common.IItemTemplate[] = [
               geometryType: "esriGeometryPoint",
               fields: [
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  name: "OBJECTID",
                   type: "esriFieldTypeOID",
-                  alias:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  alias: "OBJECTID",
                   sqlType: "sqlTypeOther",
                   nullable: false,
                   editable: false,
@@ -43314,8 +43308,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.facilityid.name}}",
+                  name: "FACILITYID",
                   type: "esriFieldTypeString",
                   alias: "Facility Identifier",
                   sqlType: "sqlTypeOther",
@@ -43326,8 +43319,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.name.name}}",
+                  name: "NAME",
                   type: "esriFieldTypeString",
                   alias: "Name of Facility",
                   sqlType: "sqlTypeOther",
@@ -43338,8 +43330,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.owner.name}}",
+                  name: "OWNER",
                   type: "esriFieldTypeString",
                   alias: "Owner Name",
                   sqlType: "sqlTypeOther",
@@ -43350,8 +43341,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.owntype.name}}",
+                  name: "OWNTYPE",
                   type: "esriFieldTypeString",
                   alias: "Owner Type",
                   sqlType: "sqlTypeOther",
@@ -43362,8 +43352,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.subtypefield.name}}",
+                  name: "SUBTYPEFIELD",
                   type: "esriFieldTypeInteger",
                   alias: "Subtype Field",
                   sqlType: "sqlTypeOther",
@@ -43373,8 +43362,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.featurecode.name}}",
+                  name: "FEATURECODE",
                   type: "esriFieldTypeString",
                   alias: "Feature Code",
                   sqlType: "sqlTypeOther",
@@ -43385,8 +43373,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.fulladdr.name}}",
+                  name: "FULLADDR",
                   type: "esriFieldTypeString",
                   alias: "Full Address",
                   sqlType: "sqlTypeOther",
@@ -43397,8 +43384,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.agencyurl.name}}",
+                  name: "AGENCYURL",
                   type: "esriFieldTypeString",
                   alias: "Website",
                   sqlType: "sqlTypeOther",
@@ -43409,8 +43395,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.operdays.name}}",
+                  name: "OPERDAYS",
                   type: "esriFieldTypeString",
                   alias: "Operational Days",
                   sqlType: "sqlTypeOther",
@@ -43442,8 +43427,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.operhours.name}}",
+                  name: "OPERHOURS",
                   type: "esriFieldTypeString",
                   alias: "Operational Hours",
                   sqlType: "sqlTypeOther",
@@ -43479,8 +43463,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.numbeds.name}}",
+                  name: "NUMBEDS",
                   type: "esriFieldTypeSmallInteger",
                   alias: "# of Beds Available",
                   sqlType: "sqlTypeOther",
@@ -43490,8 +43473,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.contact.name}}",
+                  name: "CONTACT",
                   type: "esriFieldTypeString",
                   alias: "Contact Name",
                   sqlType: "sqlTypeOther",
@@ -43502,8 +43484,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.phone.name}}",
+                  name: "PHONE",
                   type: "esriFieldTypeString",
                   alias: "Phone",
                   sqlType: "sqlTypeOther",
@@ -43514,8 +43495,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.email.name}}",
+                  name: "EMAIL",
                   type: "esriFieldTypeString",
                   alias: "Email",
                   sqlType: "sqlTypeOther",
@@ -43526,14 +43506,11 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 }
               ],
-              displayField:
-                "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.name.name}}",
+              displayField: "NAME",
               objectIdField: {
-                name:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                name: "OBJECTID",
                 type: "esriFieldTypeOID",
-                alias:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                alias: "OBJECTID",
                 sqlType: "sqlTypeOther",
                 nullable: false,
                 editable: false,
@@ -43550,11 +43527,9 @@ const expected: common.IItemTemplate[] = [
             dataSchema: {
               fields: [
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  name: "OBJECTID",
                   type: "esriFieldTypeOID",
-                  alias:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  alias: "OBJECTID",
                   sqlType: "sqlTypeOther",
                   nullable: false,
                   editable: false,
@@ -43562,8 +43537,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropcategory.name}}",
+                  name: "CropCategory",
                   type: "esriFieldTypeInteger",
                   alias: "Crop Category",
                   sqlType: "sqlTypeOther",
@@ -43573,8 +43547,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: 0
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}",
+                  name: "CropName",
                   type: "esriFieldTypeString",
                   alias: "Crop Name",
                   sqlType: "sqlTypeOther",
@@ -43585,8 +43558,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.speciesname.name}}",
+                  name: "SpeciesName",
                   type: "esriFieldTypeString",
                   alias: "Species Name",
                   sqlType: "sqlTypeOther",
@@ -43597,8 +43569,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.estimatedvolume.name}}",
+                  name: "EstimatedVolume",
                   type: "esriFieldTypeDouble",
                   alias: "Estimated Volume",
                   sqlType: "sqlTypeOther",
@@ -43608,8 +43579,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.volumeunitofmeasure.name}}",
+                  name: "VolumeUnitOfMeasure",
                   type: "esriFieldTypeString",
                   alias: "Volume Unit of Measure",
                   sqlType: "sqlTypeOther",
@@ -43641,11 +43611,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer4.fields.activityid.name}}",
+                  name: "ActivityID",
                   type: "esriFieldTypeGUID",
-                  alias:
-                    "Activity {{934a9ef8efa7448fa8ddf7b13cef0240.layer6.fields.id.name}}",
+                  alias: "Activity ID",
                   sqlType: "sqlTypeOther",
                   length: 38,
                   nullable: true,
@@ -43654,8 +43622,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.globalid.name}}",
+                  name: "GlobalID",
                   type: "esriFieldTypeGlobalID",
                   alias: "",
                   sqlType: "sqlTypeOther",
@@ -43666,11 +43633,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
+                  name: "CreationDate",
                   type: "esriFieldTypeDate",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
+                  alias: "CreationDate",
                   sqlType: "sqlTypeOther",
                   length: 8,
                   nullable: true,
@@ -43679,11 +43644,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
+                  name: "Creator",
                   type: "esriFieldTypeString",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
+                  alias: "Creator",
                   sqlType: "sqlTypeOther",
                   length: 128,
                   nullable: true,
@@ -43692,11 +43655,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
+                  name: "EditDate",
                   type: "esriFieldTypeDate",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
+                  alias: "EditDate",
                   sqlType: "sqlTypeOther",
                   length: 8,
                   nullable: true,
@@ -43705,11 +43666,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                  name: "Editor",
                   type: "esriFieldTypeString",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                  alias: "Editor",
                   sqlType: "sqlTypeOther",
                   length: 128,
                   nullable: true,
@@ -43718,22 +43677,18 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 }
               ],
-              displayField:
-                "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropname.name}}",
+              displayField: "CropName",
               objectIdField: {
-                name:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                name: "OBJECTID",
                 type: "esriFieldTypeOID",
-                alias:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                alias: "OBJECTID",
                 sqlType: "sqlTypeOther",
                 nullable: false,
                 editable: false,
                 domain: null,
                 defaultValue: null
               },
-              typeIdField:
-                "{{b19aec399444407da84fffe2a55d4151.layer4.fields.cropcategory.name}}"
+              typeIdField: "CropCategory"
             }
           },
           "widget~widgets_Query_Widget_21~2": {
@@ -43744,11 +43699,9 @@ const expected: common.IItemTemplate[] = [
               geometryType: "esriGeometryPolygon",
               fields: [
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  name: "OBJECTID",
                   type: "esriFieldTypeOID",
-                  alias:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                  alias: "OBJECTID",
                   sqlType: "sqlTypeOther",
                   nullable: false,
                   editable: false,
@@ -43756,11 +43709,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
+                  name: "PropertyID",
                   type: "esriFieldTypeString",
-                  alias:
-                    "Property {{934a9ef8efa7448fa8ddf7b13cef0240.layer6.fields.id.name}}",
+                  alias: "Property ID",
                   sqlType: "sqlTypeOther",
                   length: 25,
                   nullable: true,
@@ -43769,8 +43720,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}",
+                  name: "PropertyName",
                   type: "esriFieldTypeString",
                   alias: "Property Name",
                   sqlType: "sqlTypeOther",
@@ -43781,8 +43731,7 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.globalid.name}}",
+                  name: "GlobalID",
                   type: "esriFieldTypeGlobalID",
                   alias: "",
                   sqlType: "sqlTypeOther",
@@ -43793,11 +43742,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer6.fields.shape__area.name}}",
+                  name: "Shape__Area",
                   type: "esriFieldTypeDouble",
-                  alias:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer6.fields.shape__area.name}}",
+                  alias: "Shape__Area",
                   sqlType: "sqlTypeDouble",
                   nullable: true,
                   editable: false,
@@ -43805,11 +43752,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.fields.shape__length.name}}",
+                  name: "Shape__Length",
                   type: "esriFieldTypeDouble",
-                  alias:
-                    "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.fields.shape__length.name}}",
+                  alias: "Shape__Length",
                   sqlType: "sqlTypeDouble",
                   nullable: true,
                   editable: false,
@@ -43817,11 +43762,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
+                  name: "CreationDate",
                   type: "esriFieldTypeDate",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creationdate.name}}",
+                  alias: "CreationDate",
                   sqlType: "sqlTypeOther",
                   length: 8,
                   nullable: true,
@@ -43830,11 +43773,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
+                  name: "Creator",
                   type: "esriFieldTypeString",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.creator.name}}",
+                  alias: "Creator",
                   sqlType: "sqlTypeOther",
                   length: 128,
                   nullable: true,
@@ -43843,11 +43784,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
+                  name: "EditDate",
                   type: "esriFieldTypeDate",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editdate.name}}",
+                  alias: "EditDate",
                   sqlType: "sqlTypeOther",
                   length: 8,
                   nullable: true,
@@ -43856,11 +43795,9 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 },
                 {
-                  name:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                  name: "Editor",
                   type: "esriFieldTypeString",
-                  alias:
-                    "{{b19aec399444407da84fffe2a55d4151.layer0.fields.editor.name}}",
+                  alias: "Editor",
                   sqlType: "sqlTypeOther",
                   length: 128,
                   nullable: true,
@@ -43869,14 +43806,11 @@ const expected: common.IItemTemplate[] = [
                   defaultValue: null
                 }
               ],
-              displayField:
-                "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyname.name}}",
+              displayField: "PropertyName",
               objectIdField: {
-                name:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                name: "OBJECTID",
                 type: "esriFieldTypeOID",
-                alias:
-                  "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields.objectid.name}}",
+                alias: "OBJECTID",
                 sqlType: "sqlTypeOther",
                 nullable: false,
                 editable: false,

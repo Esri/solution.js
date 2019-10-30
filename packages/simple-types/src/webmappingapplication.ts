@@ -589,7 +589,11 @@ export function _templatizeObjectArray(
   datasourceInfos: common.IDatasourceInfo[]
 ): any {
   return objects.map(obj => {
-    return _templatizeObject(obj, datasourceInfos);
+    // only templatize the config and lower
+    if (obj.config) {
+      obj.config = _templatizeObject(obj.config, datasourceInfos);
+    }
+    return obj;
   });
 }
 
@@ -607,7 +611,12 @@ export function _getReplaceOrder(
   datasourceInfos: common.IDatasourceInfo[]
 ) {
   const objString: string = JSON.stringify(obj);
-  return datasourceInfos.sort((a, b) => {
+
+  // If we don't find any layer url, web map layer id, service url, agol itemId then remove the datasource.
+  const _datasourceInfos: common.IDatasourceInfo[] = datasourceInfos.filter(
+    ds => _getSortOrder(ds, objString) < 4
+  );
+  return _datasourceInfos.sort((a, b) => {
     return _getSortOrder(a, objString) - _getSortOrder(b, objString);
   });
 }
