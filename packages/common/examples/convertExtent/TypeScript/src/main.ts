@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common createExtent TypeScript example
+// @esri/solution-common convertExtent TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
