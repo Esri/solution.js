@@ -14,7 +14,6 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import { request } from "@esri/arcgis-rest-request";
 
@@ -35,7 +34,7 @@ const WEBMAP_APP_URL_PART: string = "/home/webmap/viewer.html?webmap=";
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
@@ -78,7 +77,7 @@ export function convertItemToTemplate(
  */
 export function _extractDependencies(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     let dependencies: string[] = [];
@@ -137,7 +136,7 @@ export function _getWebmapLayerIds(layerList: any[]): string[] {
 export function _getAnalysisLayerIds(
   layerList: any[],
   dependencies: string[],
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: any = {};

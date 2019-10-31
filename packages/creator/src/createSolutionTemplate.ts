@@ -20,7 +20,6 @@
  * @module createSolutionItem
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionFeatureLayer from "@esri/solution-feature-layer";
@@ -67,7 +66,7 @@ export function createItemTemplate(
   portalSharingUrl: string,
   solutionItemId: string,
   itemId: string,
-  requestOptions: auth.IUserRequestOptions,
+  requestOptions: common.IUserRequestOptions,
   existingTemplates: common.IItemTemplate[]
 ): Promise<boolean> {
   return new Promise((resolve, reject) => {
@@ -268,11 +267,11 @@ export function createSolutionTemplate(
   solutionItemId: string,
   ids: string[],
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
     let solutionTemplates: common.IItemTemplate[] = [];

@@ -14,7 +14,6 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import { request } from "@esri/arcgis-rest-request";
 
@@ -22,7 +21,7 @@ import { request } from "@esri/arcgis-rest-request";
 
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Remove org base URL and app id, e.g.,
@@ -120,7 +119,7 @@ export function convertItemToTemplate(
 
 export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string
 ) {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -179,7 +178,7 @@ export function templatizeDatasources(
 
 export function templatizeWidgets(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string,
   widgetPath: string
 ): Promise<common.IItemTemplate> {
@@ -227,7 +226,7 @@ export function templatizeWidgets(
 
 export function templatizeValues(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string,
   widgetPath: string
 ): Promise<common.IItemTemplate> {
@@ -313,7 +312,7 @@ export function findUrls(
   portalUrl: string,
   requestUrls: string[],
   serviceRequests: any[],
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ) {
   const options: any = {
     f: "json",
@@ -385,7 +384,7 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading

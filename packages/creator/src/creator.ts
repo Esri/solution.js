@@ -20,7 +20,6 @@
  * @module creator
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as createSolutionTemplate from "./createSolutionTemplate";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -32,14 +31,14 @@ export function createSolution(
   groupId: string,
   templateDictionary: any,
   portalSubset: common.IPortalSubset,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<string> {
   let percentDone = 1; // Let the caller know that we've started
   progressCallback(percentDone);
 
   return new Promise<string>((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
 

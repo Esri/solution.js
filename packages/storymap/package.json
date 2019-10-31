@@ -12,7 +12,6 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.6.0",
     "@esri/arcgis-rest-request": "^2.6.0",
     "@esri/solution-common": "^0.5.7",
     "@esri/solution-simple-types": "^0.5.7",

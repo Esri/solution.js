@@ -30,12 +30,11 @@ import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMo
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import { IItemTemplate } from "../../common/src/interfaces";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import { stat } from "mz/fs";
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
+const MOCK_USER_SESSION = new common.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",

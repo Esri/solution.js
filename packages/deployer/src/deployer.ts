@@ -20,7 +20,6 @@
  * @module deployer
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import * as portal from "@esri/arcgis-rest-portal";
@@ -31,7 +30,7 @@ export function deploySolution(
   itemInfoCard: common.ISolutionInfoCard,
   templateDictionary: any,
   portalSubset: common.IPortalSubset,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
@@ -42,7 +41,7 @@ export function deploySolution(
       portalBaseUrl: portalSubset.portalUrl
     };
 
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
 

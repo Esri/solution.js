@@ -20,7 +20,6 @@
  * @module simple-types
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as form from "./form";
@@ -34,7 +33,7 @@ import * as workforce from "./workforce";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -259,9 +258,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -466,7 +465,7 @@ export function getGroupTitle(name: string, id: string): Promise<any> {
 
 export function updateGroup(
   newItemTemplate: common.IItemTemplate,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {

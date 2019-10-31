@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as auth from "@esri/arcgis-rest-auth";
 import { queryFeatures, addFeatures } from "@esri/arcgis-rest-feature-layer";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
@@ -163,7 +162,7 @@ export function _templatize(data: any, keyProperties: string[]): any {
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
@@ -199,7 +198,7 @@ export function _updateDispatchers(
   dispatchers: any,
   name: string,
   fullName: string,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (dispatchers && dispatchers.url) {

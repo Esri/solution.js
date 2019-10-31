@@ -14,7 +14,6 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 
 /**
@@ -80,7 +79,7 @@ interface IDashboardDatasource {
  */
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): common.IItemTemplate {
   return _extractDependencies(itemTemplate);
 }

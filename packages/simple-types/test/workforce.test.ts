@@ -18,18 +18,17 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
+import * as common from "@esri/solution-common";
 import * as workforce from "../src/workforce";
-import * as interfaces from "../../common/src/interfaces";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-import * as auth from "@esri/arcgis-rest-auth";
 
 import { TOMORROW } from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+const MOCK_USER_SESSION = new common.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -51,7 +50,7 @@ afterEach(() => {
 describe("Module `workforce`: manages the creation and deployment of wprkforce project item types", () => {
   describe("convertItemToTemplate", () => {
     it("should extract dependencies", () => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -77,7 +76,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should templatize key properties in the template", () => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -148,7 +147,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
 
   describe("fineTuneCreatedItem", () => {
     it("should update dispatchers service", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -180,7 +179,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should handle error on update dispatchers", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -204,7 +203,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should handle error on getUser", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -221,7 +220,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should not update dispatchers service if it contains records", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -250,7 +249,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should handle failure to add features", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -285,7 +284,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should handle error on add dispatcher features", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -319,7 +318,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should have success === false when query does not return a features property", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -346,7 +345,7 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
     });
 
     it("should have success === false when dispatchers does not have url", done => {
-      const itemTemplate: interfaces.IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
