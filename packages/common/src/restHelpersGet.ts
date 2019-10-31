@@ -20,9 +20,22 @@
  * @module restHelpersGet
  */
 
+export {
+  IGetRelatedItemsResponse,
+  IUpdateItemOptions,
+  createGroup as rest_createGroup,
+  getItem as rest_getItem,
+  getGroup as rest_getGroup,
+  getItemResources as rest_getItemResources,
+  getPortal as rest_getPortal,
+  searchGroups as rest_searchGroups,
+  updateItem as rest_updateItem
+} from "@esri/arcgis-rest-portal";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 

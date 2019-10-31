@@ -22,7 +22,6 @@
 
 import * as common from "@esri/solution-common";
 import * as createSolutionTemplate from "./createSolutionTemplate";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -49,7 +48,7 @@ export function createSolution(
 
     // Fetch group item info and use it to create the solution item
     const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
-      portal.getGroup(groupId, requestOptions).then(groupItem => {
+      common.rest_getGroup(groupId, requestOptions).then(groupItem => {
         /* console.log(
           'Creating solution "' +
             (solutionName || groupItem.title) +
@@ -141,14 +140,14 @@ export function createSolution(
               solutionData.templates = createSolutionTemplate.postProcessFieldReferences(
                 solutionTemplates
               );
-              const updateOptions: portal.IUpdateItemOptions = {
+              const updateOptions: common.IUpdateItemOptions = {
                 item: {
                   id: solutionItemId,
                   text: solutionData
                 },
                 ...requestOptions
               };
-              portal.updateItem(updateOptions).then(() => {
+              common.rest_updateItem(updateOptions).then(() => {
                 progressCallback(0);
                 resolve(solutionItemId);
               }, reject);

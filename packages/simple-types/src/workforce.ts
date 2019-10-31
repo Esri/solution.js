@@ -202,7 +202,7 @@ export function _updateDispatchers(
   return new Promise<boolean>((resolve, reject) => {
     if (dispatchers && dispatchers.url) {
       common
-        .queryFeatures({
+        .rest_queryFeatures({
           url: dispatchers.url,
           where: "userId = '" + name + "'",
           authentication: destinationAuthentication
@@ -212,7 +212,7 @@ export function _updateDispatchers(
             if (results && results.features) {
               if (results.features.length === 0) {
                 common
-                  .addFeatures({
+                  .rest_addFeatures({
                     url: dispatchers.url,
                     features: [
                       {

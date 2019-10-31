@@ -23,7 +23,6 @@
 import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as form from "./form";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
 import * as workforce from "./workforce";
@@ -67,8 +66,8 @@ export function convertItemToTemplate(
       // }
 
       // Request item resources
-      const resourcePromise = portal
-        .getItemResources(itemTemplate.itemId, {
+      const resourcePromise = common
+        .rest_getItemResources(itemTemplate.itemId, {
           authentication: authentication
         })
         .then(resourcesResponse => {
@@ -94,7 +93,7 @@ export function convertItemToTemplate(
       // Perform type-specific handling
       let dataPromise = Promise.resolve({});
       let relatedPromise = Promise.resolve(
-        {} as portal.IGetRelatedItemsResponse
+        {} as common.IGetRelatedItemsResponse
       );
       switch (itemInfo.type.toLowerCase()) {
         case "dashboard":
@@ -130,7 +129,7 @@ export function convertItemToTemplate(
         resourcePromise,
         relatedPromise.catch(
           () =>
-            ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
+            ({ total: 0, relatedItems: [] } as common.IGetRelatedItemsResponse)
         )
       ]).then(
         responses => {
@@ -240,14 +239,16 @@ export function convertItemToTemplate(
         groupContents => {
           itemTemplate.type = "Group";
           itemTemplate.dependencies = groupContents;
-          portal.getGroup(itemInfo.id, { authentication: authentication }).then(
-            groupResponse => {
-              groupResponse.id = itemTemplate.item.id;
-              itemTemplate.item = groupResponse;
-              resolve(itemTemplate);
-            },
-            () => resolve(itemTemplate)
-          );
+          common
+            .rest_getGroup(itemInfo.id, { authentication: authentication })
+            .then(
+              groupResponse => {
+                groupResponse.id = itemTemplate.item.id;
+                itemTemplate.item = groupResponse;
+                resolve(itemTemplate);
+              },
+              () => resolve(itemTemplate)
+            );
         },
         () => resolve(itemTemplate)
       );
@@ -380,8 +381,8 @@ export function createItemFromTemplate(
           // Set the item title with a valid name for the ORG
           newItemTemplate.item.title = title;
           newItemTemplate.item.access = "private";
-          portal
-            .createGroup({
+          common
+            .rest_createGroup({
               group: newItemTemplate.item,
               authentication: destinationAuthentication
             })
@@ -443,7 +444,7 @@ export function createItemFromTemplate(
 
 export function getGroupTitle(name: string, id: string): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    portal.searchGroups(name).then(
+    common.rest_searchGroups(name).then(
       searchResult => {
         // if we find a group call the func again with a new name
         const results: any[] = common.getProp(searchResult, "results");

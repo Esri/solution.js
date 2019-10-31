@@ -22,7 +22,6 @@
 
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -62,7 +61,7 @@ export function deploySolution(
     );
 
     // Determine if we are deploying to portal
-    const portalDef = portal.getPortal(portalSubset.id, requestOptions);
+    const portalDef = common.rest_getPortal(portalSubset.id, requestOptions);
 
     // Await completion of async actions
     Promise.all([
@@ -222,12 +221,12 @@ export function deploySolution(
                           // Create solution item using internal representation & and the updated data JSON
                           item.data = itemData;
                           item.typeKeywords = ["Solution", "Deployed"];
-                          const updatedItemInfo: portal.IUpdateItemOptions = {
+                          const updatedItemInfo: common.IUpdateItemOptions = {
                             item: item,
                             authentication: destinationAuthentication,
                             folderId: templateDictionary.folderId
                           };
-                          portal.updateItem(updatedItemInfo).then(
+                          common.rest_updateItem(updatedItemInfo).then(
                             () => {
                               progressCallback(100);
                               delete updatedItemInfo.item.data;
