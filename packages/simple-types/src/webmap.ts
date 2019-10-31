@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import { request } from "@esri/arcgis-rest-request";
 
 /**
  * The portion of a Webmap URL between the server and the map id.
@@ -168,7 +167,7 @@ export function _getAnalysisLayerIds(
       // find itemId
       let i: number = 0;
       const serviceRequests: any[] = layers.map(layer =>
-        request(layer.url, options)
+        common.rest_request(layer.url, options)
       );
       Promise.all(serviceRequests).then(
         serviceResponses => {

@@ -15,7 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import { request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -343,7 +342,7 @@ export function findUrls(
       } else if (url.indexOf("FeatureServer") > -1) {
         if (requestUrls.indexOf(url) === -1) {
           requestUrls.push(url);
-          serviceRequests.push(request(url, options));
+          serviceRequests.push(common.rest_request(url, options));
         }
       }
     });

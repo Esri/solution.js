@@ -20,6 +20,12 @@
  * @module restHelpers
  */
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export { request as rest_request } from "@esri/arcgis-rest-request";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
 import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
