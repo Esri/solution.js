@@ -145,6 +145,9 @@
 
         //------------------------------------------------------------------------------------------------------------//
 
+        /**
+         * Gets templates from an organization and shows them as a checklist in the div "sourceSolutionsDiv".
+         */
         function getSourceTemplates () {
           removeItem("sourceSolutionsListDiv");
           fadeItemOut("copiedSolutionsDiv");
@@ -155,11 +158,11 @@
           haveSourceTemplates = false;
           updateCopyBtn();
 
-          sourceAuthentication = getRequestAuthentication(
+          sourceAuthentication = main.getRequestAuthentication(
             document.getElementById("srcUsername").value, document.getElementById("srcPassword").value,
             document.getElementById("srcPortal").value + "/sharing/rest");
 
-          getTemplates(sourceAuthentication)
+          main.getTemplates(sourceAuthentication)
           .then(
             searchResponse => {
               removeItem("sourceSolutionsDiv_busySymbol");
@@ -184,7 +187,10 @@
           );
         }
 
-        function getDestinationTemplates () {
+        /**
+         * Gets templates from an organization and shows them as a list in the div "destinationSolutionsDiv".
+         */
+         function getDestinationTemplates () {
           removeItem("destinationSolutionsListDiv");
           fadeItemOut("copiedSolutionsDiv");
           removeItem("copiedSolutionsListDiv");
@@ -194,11 +200,11 @@
           haveDestinationAccess = false;
           updateCopyBtn();
 
-          destinationAuthentication = getRequestAuthentication(
+          destinationAuthentication = main.getRequestAuthentication(
             document.getElementById("destUsername").value, document.getElementById("destPassword").value,
             document.getElementById("destPortal").value + "/sharing/rest");
 
-          getTemplates(destinationAuthentication)
+          main.getTemplates(destinationAuthentication)
           .then(
             searchResponse => {
               removeItem("destinationSolutionsDiv_busySymbol");
@@ -220,6 +226,9 @@
           );
         }
 
+        /**
+         * Copies checked templates in list in the div "sourceSolutionsList" to the destination organization.
+         */
         function copyTemplates () {
           removeItem("copiedSolutionsListDiv");
           var sourceSolutionsList = document.getElementById("sourceSolutionsList");
@@ -244,7 +253,7 @@
             .then(
               responses => {
                 listDiv.innerHTML = responses.join("<br>");
-                if (responses.filter(response => !response.success).length === 0) {
+                if (responses.filter(response => !JSON.parse(response).success).length === 0) {
                   getDestinationTemplates();
                 }
               }
@@ -254,69 +263,10 @@
           }
         }
 
-        //------------------------------------------------------------------------------------------------------------//
-
         /**
-         * Creates a UserSession.
-         * @param {string} usernameElementId HTML element with username
-         * @param {string} passwordElementId HTML element with password
-         * @param {string?} portal Base url for the portal you want to make the request to; defaults
-         *        to 'https://www.arcgis.com/sharing/rest'
-         * @return {object} auth.UserSession object
-         * @see @esri/arcgis-rest-auth
-         * @see @esri/arcgis-rest-request
+         * Updates the visibility of copy button based on presence of templates in source organization and
+         * access to destination organization.
          */
-        function getRequestAuthentication (username, password, portal) {
-          var userSessionOptions = {
-            username: username || undefined,
-            password: password || undefined,
-            portal: portal || "https://www.arcgis.com/sharing/rest"
-          };
-
-          return new auth.UserSession(userSessionOptions)
-        }
-
-        /**
-         *
-         *
-         * @param {string} authentication
-         */
-        function getTemplates (authentication) {
-          return new Promise((resolve, reject) => {
-            var requestOptions = {
-              authentication: authentication
-            }
-
-            portal.getPortal(null, requestOptions)
-            .then(
-              portalResponse => {
-                if (!portalResponse.user) {
-                  reject("Unable to log in");
-                  return;
-                }
-
-                let availSolnsQuery = "type:Solution typekeywords:Solution,Template";
-                if (portalResponse.user.orgId) {
-                  availSolnsQuery += " orgid:" + portalResponse.user.orgId;
-                }
-                const pagingParam = { start: 1, num: 100 };
-                const searchOptions =
-                {
-                  q: availSolnsQuery
-                  , ...requestOptions
-                  , ...pagingParam
-                };
-                portal.searchItems(searchOptions)
-                .then(
-                  searchResponse => resolve(searchResponse),
-                  error => reject(error)
-                );
-              },
-              error => reject(error)
-            );
-          });
-        }
-
         function updateCopyBtn () {
           var btnItem = document.getElementById("copyBtn");
           if (btnItem) {

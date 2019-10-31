@@ -19,6 +19,14 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionCommon from "@esri/solution-common";
 
+/**
+ * Copies an item.
+ *
+ * @param itemId Id of item in source
+ * @param sourceAuthentication Authentication for source
+ * @param destinationAuthentication Authentication for destination; can be same as source for copying
+ * within source organization
+ */
 export function copyItemInfo(
   itemId: string,
   sourceAuthentication: auth.UserSession,
@@ -99,7 +107,7 @@ export function copyItemInfo(
             itemDataFile,
             itemMetadataFile,
             itemResourceFiles,
-            "public"
+            itemBase.access
           )
           .then(
             (createResponse: portal.ICreateItemResponse) => {
@@ -134,4 +142,71 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
     spatialReference: sourceItem.spatialReference
   };
   return copyableItem;
+}
+
+/**
+ * Creates a UserSession.
+ *
+ * @param username
+ * @param password
+ * @param portalUrl Base url for the portal you want to make the request to; defaults
+ *        to 'https://www.arcgis.com/sharing/rest'
+ * @return auth.UserSession object
+ * @see @esri/arcgis-rest-auth
+ * @see @esri/arcgis-rest-request
+ */
+export function getRequestAuthentication(
+  username: string,
+  password: string,
+  portalUrl: string
+): auth.UserSession {
+  const userSessionOptions = {
+    username: username || undefined,
+    password: password || undefined,
+    portal: portalUrl || "https://www.arcgis.com/sharing/rest"
+  };
+
+  return new auth.UserSession(userSessionOptions);
+}
+
+/**
+ * Gets items with "Solution,Template" type keywords.
+ *
+ * @param authentication Authentication for server to query
+ */
+export function getTemplates(
+  authentication: auth.UserSession
+): Promise<portal.ISearchResult<portal.IItem>> {
+  return new Promise((resolve, reject) => {
+    const requestOptions = {
+      authentication: authentication
+    };
+
+    portal.getPortal(null, requestOptions).then(
+      portalResponse => {
+        if (!portalResponse.user) {
+          reject("Unable to log in");
+          return;
+        }
+
+        let availSolnsQuery = "type:Solution typekeywords:Solution,Template";
+        if (portalResponse.user.orgId) {
+          availSolnsQuery += " orgid:" + portalResponse.user.orgId;
+        }
+        const pagingParam = { start: 1, num: 100 };
+        const searchOptions = {
+          q: availSolnsQuery,
+          ...requestOptions,
+          ...pagingParam
+        };
+        portal
+          .searchItems(searchOptions)
+          .then(
+            searchResponse => resolve(searchResponse),
+            error => reject(error)
+          );
+      },
+      error => reject(error)
+    );
+  });
 }
