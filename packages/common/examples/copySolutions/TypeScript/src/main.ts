@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common copyItemInfo TypeScript example
+// @esri/solution-common copySolutions TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionCommon from "@esri/solution-common";
 
+/**
+ * Copies an item.
+ *
+ * @param itemId Id of item in source
+ * @param sourceAuthentication Authentication for source
+ * @param destinationAuthentication Authentication for destination; can be same as source for copying
+ * within source organization
+ */
 export function copyItemInfo(
   itemId: string,
-  authentication: auth.UserSession
+  sourceAuthentication: auth.UserSession,
+  destinationAuthentication: auth.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -30,25 +39,28 @@ export function copyItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
+    const itemBaseDef = solutionCommon.getItemBase(
+      itemId,
+      sourceAuthentication
+    );
     const itemDataDef = new Promise<File>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
           solutionCommon
-            .getItemDataAsFile(itemId, itemBase.name, authentication)
+            .getItemDataAsFile(itemId, itemBase.name, sourceAuthentication)
             .then(resolve2, (error: any) => reject2(error));
         }
       );
     });
     const itemMetadataDef = solutionCommon.getItemMetadataAsFile(
       itemId,
-      authentication
+      sourceAuthentication
     );
     const itemResourcesDef = solutionCommon.getItemResourcesFiles(
       itemId,
-      authentication
+      sourceAuthentication
     );
 
     Promise.all([
@@ -69,7 +81,7 @@ export function copyItemInfo(
           itemId,
           itemBase.thumbnail,
           false,
-          authentication
+          sourceAuthentication
         );
 
         // Summarize what we have
@@ -90,12 +102,12 @@ export function copyItemInfo(
           .createFullItem(
             getCopyableItemBaseProperties(itemBase),
             undefined, // folder id
-            authentication,
+            destinationAuthentication,
             itemThumbnailUrl,
             itemDataFile,
             itemMetadataFile,
             itemResourceFiles,
-            "public"
+            itemBase.access
           )
           .then(
             (createResponse: portal.ICreateItemResponse) => {
@@ -130,4 +142,71 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
     spatialReference: sourceItem.spatialReference
   };
   return copyableItem;
+}
+
+/**
+ * Creates a UserSession.
+ *
+ * @param username
+ * @param password
+ * @param portalUrl Base url for the portal you want to make the request to; defaults
+ *        to 'https://www.arcgis.com/sharing/rest'
+ * @return auth.UserSession object
+ * @see @esri/arcgis-rest-auth
+ * @see @esri/arcgis-rest-request
+ */
+export function getRequestAuthentication(
+  username: string,
+  password: string,
+  portalUrl: string
+): auth.UserSession {
+  const userSessionOptions = {
+    username: username || undefined,
+    password: password || undefined,
+    portal: portalUrl || "https://www.arcgis.com/sharing/rest"
+  };
+
+  return new auth.UserSession(userSessionOptions);
+}
+
+/**
+ * Gets items with "Solution,Template" type keywords.
+ *
+ * @param authentication Authentication for server to query
+ */
+export function getTemplates(
+  authentication: auth.UserSession
+): Promise<portal.ISearchResult<portal.IItem>> {
+  return new Promise((resolve, reject) => {
+    const requestOptions = {
+      authentication: authentication
+    };
+
+    portal.getPortal(null, requestOptions).then(
+      portalResponse => {
+        if (!portalResponse.user) {
+          reject("Unable to log in");
+          return;
+        }
+
+        let availSolnsQuery = "type:Solution typekeywords:Solution,Template";
+        if (portalResponse.user.orgId) {
+          availSolnsQuery += " orgid:" + portalResponse.user.orgId;
+        }
+        const pagingParam = { start: 1, num: 100 };
+        const searchOptions = {
+          q: availSolnsQuery,
+          ...requestOptions,
+          ...pagingParam
+        };
+        portal
+          .searchItems(searchOptions)
+          .then(
+            searchResponse => resolve(searchResponse),
+            error => reject(error)
+          );
+      },
+      error => reject(error)
+    );
+  });
 }

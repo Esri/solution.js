@@ -20,6 +20,13 @@
  * @module featureServiceHelpers
  */
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export {
+  queryFeatures as rest_queryFeatures,
+  addFeatures as rest_addFeatures
+} from "@esri/arcgis-rest-feature-layer";
+
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 /*import {

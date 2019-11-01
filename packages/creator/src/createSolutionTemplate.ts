@@ -20,9 +20,7 @@
  * @module createSolutionItem
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
 import * as solutionStoryMap from "@esri/solution-storymap";
@@ -67,7 +65,7 @@ export function createItemTemplate(
   portalSharingUrl: string,
   solutionItemId: string,
   itemId: string,
-  requestOptions: auth.IUserRequestOptions,
+  requestOptions: common.IUserRequestOptions,
   existingTemplates: common.IItemTemplate[]
 ): Promise<boolean> {
   return new Promise((resolve, reject) => {
@@ -94,7 +92,7 @@ export function createItemTemplate(
       //   * add JSONs to solution item's data JSON accumulation
       // Fetch the item
       /* console.log("fetching item " + itemId); */
-      portal.getItem(itemId, requestOptions).then(
+      common.rest_getItem(itemId, requestOptions).then(
         itemInfo => {
           if (common.getProp(itemInfo, "extent")) {
             // @ts-ignore
@@ -190,7 +188,7 @@ export function createItemTemplate(
         () => {
           // If item query fails, try URL for group base section
           /* console.log("fetching group " + itemId); */
-          portal.getGroup(itemId, requestOptions).then(
+          common.rest_getGroup(itemId, requestOptions).then(
             itemInfo => {
               solutionSimpleTypes
                 .convertItemToTemplate(
@@ -268,11 +266,11 @@ export function createSolutionTemplate(
   solutionItemId: string,
   ids: string[],
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
     let solutionTemplates: common.IItemTemplate[] = [];
