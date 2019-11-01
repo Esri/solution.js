@@ -564,15 +564,21 @@ export function postProcessFieldReferences(
  */
 export function _templatizeObject(
   obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
+  templatizeKeys: boolean = false
 ): any {
-  obj = _prioritizedTests(obj, datasourceInfos);
+  obj = _prioritizedTests(obj, datasourceInfos, templatizeKeys);
   const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(
     obj,
     datasourceInfos
   );
   replaceOrder.forEach(ds => {
-    obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+    obj = common.templatizeFieldReferences(
+      obj,
+      ds.fields,
+      ds.basePath,
+      templatizeKeys
+    );
   });
   return obj;
 }
@@ -588,10 +594,16 @@ export function _templatizeObjectArray(
   objects: any[],
   datasourceInfos: common.IDatasourceInfo[]
 ): any {
+  const updateKeyObjects: string[] = ["SmartEditor", "Screening"];
   return objects.map(obj => {
     // only templatize the config and lower
     if (obj.config) {
-      obj.config = _templatizeObject(obj.config, datasourceInfos);
+      const templatizeKeys: boolean = updateKeyObjects.indexOf(obj.name) > -1;
+      obj.config = _templatizeObject(
+        obj.config,
+        datasourceInfos,
+        templatizeKeys
+      );
     }
     return obj;
   });
@@ -687,7 +699,8 @@ export function _getSortOrder(
  */
 export function _prioritizedTests(
   obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
+  templatizeKeys: boolean
 ): any {
   const objString: string = JSON.stringify(obj);
   const hasDatasources = datasourceInfos.filter(ds => {
@@ -714,11 +727,11 @@ export function _prioritizedTests(
   if (hasDatasources.length > 0) {
     hasDatasources.forEach(ds => {
       // specific url reference is the most common
-      obj = _templatizeParentByURL(obj, ds);
+      obj = _templatizeParentByURL(obj, ds, templatizeKeys);
       if (ds.ids.length > 0) {
         // the second most common is to use the layerId from the webmap
         ds.ids.forEach(id => {
-          obj = _templatizeParentByWebMapLayerId(obj, ds, id);
+          obj = _templatizeParentByWebMapLayerId(obj, ds, id, templatizeKeys);
         });
       }
     });
@@ -737,7 +750,8 @@ export function _prioritizedTests(
  */
 export function _templatizeParentByURL(
   obj: { [index: string]: any },
-  ds: common.IDatasourceInfo
+  ds: common.IDatasourceInfo,
+  templatizeKeys: boolean
 ): any {
   let clone: { [index: string]: any } = {};
   const url = ds.url;
@@ -750,15 +764,20 @@ export function _templatizeParentByURL(
 
   if (Array.isArray(obj)) {
     clone = obj.map(c => {
-      return _templatizeParentByURL(c, ds);
+      return _templatizeParentByURL(c, ds, templatizeKeys);
     });
   } else if (typeof obj === "object") {
     for (const i in obj) {
       if (obj[i] != null && typeof obj[i] === "object") {
-        clone[i] = _templatizeParentByURL(obj[i], ds);
+        clone[i] = _templatizeParentByURL(obj[i], ds, templatizeKeys);
       } else {
         if (urlTest && urlTest.test(obj[i])) {
-          obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+          obj = common.templatizeFieldReferences(
+            obj,
+            ds.fields,
+            ds.basePath,
+            templatizeKeys
+          );
         }
         clone[i] = obj[i];
       }
@@ -782,13 +801,14 @@ export function _templatizeParentByURL(
 export function _templatizeParentByWebMapLayerId(
   obj: { [index: string]: any },
   ds: common.IDatasourceInfo,
-  id: string
+  id: string,
+  templatizeKeys: boolean
 ): any {
   let clone: { [index: string]: any } = {};
   const idTest: any = new RegExp(id, "gm");
   if (Array.isArray(obj)) {
     clone = obj.map(c => {
-      return _templatizeParentByWebMapLayerId(c, ds, id);
+      return _templatizeParentByWebMapLayerId(c, ds, id, templatizeKeys);
     });
   } else if (typeof obj === "object") {
     for (const i in obj) {
@@ -805,21 +825,32 @@ export function _templatizeParentByWebMapLayerId(
         }
         if (parsedProp && typeof parsedProp === "object") {
           clone[i] = JSON.stringify(
-            _templatizeParentByWebMapLayerId(parsedProp, ds, id)
+            _templatizeParentByWebMapLayerId(parsedProp, ds, id, templatizeKeys)
           );
         } else if (typeof obj[i] === "object") {
           // some widgets store the layerId as a key to a collection of details that contain field references
-          if (idTest.test(i)) {
+          if (idTest.test(i) && templatizeKeys) {
             obj[i] = common.templatizeFieldReferences(
               obj[i],
               ds.fields,
-              ds.basePath
+              ds.basePath,
+              templatizeKeys
             );
           }
-          clone[i] = _templatizeParentByWebMapLayerId(obj[i], ds, id);
+          clone[i] = _templatizeParentByWebMapLayerId(
+            obj[i],
+            ds,
+            id,
+            templatizeKeys
+          );
         } else {
           if (idTest.test(obj[i])) {
-            obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+            obj = common.templatizeFieldReferences(
+              obj,
+              ds.fields,
+              ds.basePath,
+              templatizeKeys
+            );
           }
           clone[i] = obj[i];
         }

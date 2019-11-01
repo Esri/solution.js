@@ -41068,7 +41068,7 @@ const expected: common.IItemTemplate[] = [
                       },
                       {
                         fieldName:
-                          "{{b19aec399444407da84fffe2a55d4151.layer3.fields.propertyid.name}}",
+                          "{{b19aec399444407da84fffe2a55d4151.layer2.fields.propertyid.name}}",
                         isEditable: true,
                         visible: true
                       },
