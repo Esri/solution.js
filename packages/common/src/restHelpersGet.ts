@@ -23,9 +23,6 @@
 export {
   IGetRelatedItemsResponse,
   IUpdateItemOptions,
-  createGroup as rest_createGroup,
-  getItem as rest_getItem,
-  getGroup as rest_getGroup,
   getItemResources as rest_getItemResources,
   getPortal as rest_getPortal,
   searchGroups as rest_searchGroups,
@@ -38,10 +35,42 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
+import * as types from "@esri/arcgis-rest-types";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
+
+export function createGroup(
+  groupItem: any,
+  authentication: auth.UserSession
+): Promise<{ success: boolean; group: portal.IGroup }> {
+  const requestOptions = {
+    group: groupItem,
+    authentication: authentication
+  };
+  return portal.createGroup(requestOptions);
+}
+
+export function getGroup(
+  id: string,
+  authentication: auth.UserSession
+): Promise<types.IGroup> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getGroup(id, requestOptions);
+}
+
+export function getItem(
+  id: string,
+  authentication: auth.UserSession
+): Promise<types.IItem> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getItem(id, requestOptions);
+}
 
 /**
  * Gets a Blob from a web site.

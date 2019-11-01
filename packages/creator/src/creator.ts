@@ -37,10 +37,6 @@ export function createSolution(
   progressCallback(percentDone);
 
   return new Promise<string>((resolve, reject) => {
-    const requestOptions: common.IUserRequestOptions = {
-      authentication: destinationAuthentication
-    };
-
     const solutionData: common.ISolutionItemData = {
       metadata: {},
       templates: []
@@ -48,7 +44,7 @@ export function createSolution(
 
     // Fetch group item info and use it to create the solution item
     const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
-      common.rest_getGroup(groupId, requestOptions).then(groupItem => {
+      common.getGroup(groupId, destinationAuthentication).then(groupItem => {
         /* console.log(
           'Creating solution "' +
             (solutionName || groupItem.title) +
@@ -71,15 +67,15 @@ export function createSolution(
           .createItemWithData(
             solutionItem,
             solutionData,
-            requestOptions.authentication,
+            destinationAuthentication,
             undefined
           )
           .then(updateResponse => {
             progressCallback((percentDone += 2));
 
             if (groupItem.thumbnail) {
-              // Copy the group's thumbnail to the new item; need to add token to thumbnail because requestOptions
-              // only applies to updating solution item, not fetching group thumbnail image
+              // Copy the group's thumbnail to the new item; need to add token to thumbnail because
+              // destinationAuthentication only applies to updating solution item, not fetching group thumbnail image
               const groupItemThumbnail =
                 common.generateSourceThumbnailUrl(
                   portalSubset.restUrl,
@@ -93,7 +89,7 @@ export function createSolution(
                 .addThumbnailFromUrl(
                   groupItemThumbnail,
                   updateResponse.id,
-                  requestOptions.authentication
+                  destinationAuthentication
                 )
                 .then(() => itemResolve(updateResponse.id), itemReject);
             } else {
@@ -106,7 +102,7 @@ export function createSolution(
     // Fetch group contents
     const groupContentsDef = common.getGroupContents(
       groupId,
-      requestOptions.authentication
+      destinationAuthentication
     );
 
     // When we have the solution item and the group contents, we can add the contents to the solution
@@ -140,6 +136,10 @@ export function createSolution(
               solutionData.templates = createSolutionTemplate.postProcessFieldReferences(
                 solutionTemplates
               );
+
+              const requestOptions: common.IUserRequestOptions = {
+                authentication: destinationAuthentication
+              };
               const updateOptions: common.IUpdateItemOptions = {
                 item: {
                   id: solutionItemId,

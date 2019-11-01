@@ -239,16 +239,14 @@ export function convertItemToTemplate(
         groupContents => {
           itemTemplate.type = "Group";
           itemTemplate.dependencies = groupContents;
-          common
-            .rest_getGroup(itemInfo.id, { authentication: authentication })
-            .then(
-              groupResponse => {
-                groupResponse.id = itemTemplate.item.id;
-                itemTemplate.item = groupResponse;
-                resolve(itemTemplate);
-              },
-              () => resolve(itemTemplate)
-            );
+          common.getGroup(itemInfo.id, authentication).then(
+            groupResponse => {
+              groupResponse.id = itemTemplate.item.id;
+              itemTemplate.item = groupResponse;
+              resolve(itemTemplate);
+            },
+            () => resolve(itemTemplate)
+          );
         },
         () => resolve(itemTemplate)
       );
@@ -382,10 +380,7 @@ export function createItemFromTemplate(
           newItemTemplate.item.title = title;
           newItemTemplate.item.access = "private";
           common
-            .rest_createGroup({
-              group: newItemTemplate.item,
-              authentication: destinationAuthentication
-            })
+            .createGroup(newItemTemplate.item, destinationAuthentication)
             .then(
               createResponse => {
                 progressTickCallback();
