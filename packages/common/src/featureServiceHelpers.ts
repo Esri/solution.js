@@ -1253,7 +1253,7 @@ export function _templatizeName(
     fieldNames.forEach(name => {
       // Only test and replace instance of the name so any enclosing characters
       // will be retained
-      const regEx = new RegExp("(\\b" + name + "\\b)", "gm");
+      const regEx = new RegExp("(\\b" + name + "\\b(?![}]{2}))", "gm");
       if (regEx.test(object[property])) {
         object[property] = object[property].replace(
           regEx,
@@ -1502,7 +1502,7 @@ export function _templatizeSimpleName(
 ): string {
   fieldNames.forEach(name => {
     // look for the name but not if its followed by }}
-    const regEx = new RegExp("\\b" + name + "\\b", "gm");
+    const regEx = new RegExp("\\b" + name + "\\b(?![}]{2})", "gm");
     if (expression && regEx.test(expression)) {
       expression = expression.replace(
         regEx,

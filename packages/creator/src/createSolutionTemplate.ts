@@ -486,7 +486,11 @@ export function _addMapLayerIds(
           ds.url && !isNaN(ds.layerId)
             ? ds.url.replace(/[.]/, ".layer" + ds.layerId + ".")
             : "";
-        if (opLayerInfo && url === opLayerInfo.url) {
+        if (
+          opLayerInfo &&
+          url === opLayerInfo.url &&
+          ds.ids.indexOf(opLayerInfo.id) < 0
+        ) {
           ds.ids.push(opLayerInfo.id);
         }
       });
