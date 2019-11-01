@@ -18,7 +18,6 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as webmappingapplication from "../src/webmappingapplication";
 
@@ -32,7 +31,7 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 describe("Module `webmappingapplication`: manages the creation and deployment of web mapping application item types", () => {
   // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new auth.UserSession({
+  const MOCK_USER_SESSION = new common.UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",

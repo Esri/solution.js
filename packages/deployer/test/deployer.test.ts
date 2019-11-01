@@ -41,13 +41,13 @@ import {
   get200Failure
 } from "../../common/test/mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-import { UserSession } from "@esri/arcgis-rest-auth";
 import * as templates from "../../common/test/mocks/templates";
+import * as common from "@esri/solution-common";
 import * as deployer from "../src/deployer";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-let MOCK_USER_SESSION: UserSession;
+let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
   MOCK_USER_SESSION = createRuntimeMockUserSession(new Date().getDate());

@@ -22,6 +22,10 @@ import * as auth from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
 /**
  * Flag for storing an item's binary resources.
  */
