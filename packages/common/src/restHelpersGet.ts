@@ -20,9 +20,21 @@
  * @module restHelpersGet
  */
 
-export {
+import * as generalHelpers from "./generalHelpers";
+import * as portal from "@esri/arcgis-rest-portal";
+import * as request from "@esri/arcgis-rest-request";
+import {
   IGetRelatedItemsResponse,
-  IUpdateItemOptions,
+  IGroup,
+  IItem,
+  ItemRelationshipType,
+  IPagingParams,
+  UserSession
+} from "./interfaces";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export {
   getItemResources as rest_getItemResources,
   getPortal as rest_getPortal,
   searchGroups as rest_searchGroups,
@@ -31,20 +43,12 @@ export {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-import * as auth from "@esri/arcgis-rest-auth";
-import * as generalHelpers from "./generalHelpers";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
-import * as types from "@esri/arcgis-rest-types";
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
 export function createGroup(
   groupItem: any,
-  authentication: auth.UserSession
-): Promise<{ success: boolean; group: portal.IGroup }> {
+  authentication: UserSession
+): Promise<{ success: boolean; group: IGroup }> {
   const requestOptions = {
     group: groupItem,
     authentication: authentication
@@ -54,8 +58,8 @@ export function createGroup(
 
 export function getGroup(
   id: string,
-  authentication: auth.UserSession
-): Promise<types.IGroup> {
+  authentication: UserSession
+): Promise<IGroup> {
   const requestOptions = {
     authentication: authentication
   };
@@ -64,8 +68,8 @@ export function getGroup(
 
 export function getItem(
   id: string,
-  authentication: auth.UserSession
-): Promise<types.IItem> {
+  authentication: UserSession
+): Promise<IItem> {
   const requestOptions = {
     authentication: authentication
   };
@@ -81,7 +85,7 @@ export function getItem(
  */
 export function getBlob(
   url: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     // Get the blob from the URL
@@ -113,7 +117,7 @@ export function getBlob(
 export function getBlobAsFile(
   url: string,
   filename: string,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   ignoreErrors: number[] = []
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
@@ -136,7 +140,7 @@ export function getBlobAsFile(
  */
 export function getBlobCheckForError(
   url: string,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   ignoreErrors: number[] = []
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
@@ -176,7 +180,7 @@ export function getBlobCheckForError(
  */
 export function getGroupContents(
   groupId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     const pagingParams: portal.IPagingParams = {
@@ -204,7 +208,7 @@ export function getGroupContents(
  */
 export function getItemBase(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   const itemParam: request.IRequestOptions = {
     authentication: authentication
@@ -223,7 +227,7 @@ export function getItemBase(
 export function getItemDataAsFile(
   itemId: string,
   filename: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
@@ -244,7 +248,7 @@ export function getItemDataAsFile(
  */
 export function getItemDataAsJson(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
@@ -263,7 +267,7 @@ export function getItemDataAsJson(
  */
 export function getItemDataBlob(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemDataBlobUrl(itemId, authentication);
@@ -284,7 +288,7 @@ export function getItemDataBlob(
  */
 export function getItemDataBlobUrl(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): string {
   return `${getPortalSharingUrlFromAuth(
     authentication
@@ -300,7 +304,7 @@ export function getItemDataBlobUrl(
  */
 export function getItemMetadataAsFile(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     getItemMetadataBlob(itemId, authentication).then(
@@ -322,7 +326,7 @@ export function getItemMetadataAsFile(
  */
 export function getItemMetadataBlob(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemMetadataBlobUrl(itemId, authentication);
@@ -343,7 +347,7 @@ export function getItemMetadataBlob(
  */
 export function getItemMetadataBlobUrl(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): string {
   return `${getPortalSharingUrlFromAuth(
     authentication
@@ -361,10 +365,10 @@ export function getItemMetadataBlobUrl(
  */
 export function getItemRelatedItems(
   itemId: string,
-  relationshipType: portal.ItemRelationshipType | portal.ItemRelationshipType[],
+  relationshipType: ItemRelationshipType | ItemRelationshipType[],
   direction: "forward" | "reverse",
-  authentication: auth.UserSession
-): Promise<portal.IGetRelatedItemsResponse> {
+  authentication: UserSession
+): Promise<IGetRelatedItemsResponse> {
   // Get item related items
   const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
     id: itemId,
@@ -384,7 +388,7 @@ export function getItemRelatedItems(
  */
 export function getItemResourcesFiles(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<File[]> {
   return new Promise<File[]>((resolve, reject) => {
     const pagingParams: portal.IPagingParams = {
@@ -416,7 +420,7 @@ export function getItemThumbnail(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     if (!thumbnailUrlPart) {
@@ -452,7 +456,7 @@ export function getItemThumbnailUrl(
   itemId: string,
   thumbnailUrlPart: string,
   isGroup: boolean,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): string {
   return (
     getPortalSharingUrlFromAuth(authentication) +
@@ -470,7 +474,7 @@ export function getItemThumbnailUrl(
  * @returns Portal sharing url to be used in API requests, defaulting to `https://www.arcgis.com/sharing/rest`
  */
 export function getPortalSharingUrlFromAuth(
-  authentication: auth.UserSession
+  authentication: UserSession
 ): string {
   // If auth was passed, use that portal
   return generalHelpers.getProp(authentication, "portal");
@@ -482,7 +486,7 @@ export function getPortalSharingUrlFromAuth(
  * @param authentication Credentials for the request to AGO
  * @returns Portal url to be used in API requests, defaulting to `https://www.arcgis.com`
  */
-export function getPortalUrlFromAuth(authentication: auth.UserSession): string {
+export function getPortalUrlFromAuth(authentication: UserSession): string {
   return getPortalSharingUrlFromAuth(authentication).replace(
     "/sharing/rest",
     ""
@@ -547,8 +551,8 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
  */
 export function _getGroupContentsTranche(
   groupId: string,
-  pagingParams: portal.IPagingParams,
-  authentication: auth.UserSession
+  pagingParams: IPagingParams,
+  authentication: UserSession
 ): Promise<string[]> {
   return new Promise((resolve, reject) => {
     // Fetch group items
@@ -593,8 +597,8 @@ export function _getGroupContentsTranche(
  */
 export function _getItemResourcesTranche(
   itemId: string,
-  pagingParams: portal.IPagingParams,
-  authentication: auth.UserSession
+  pagingParams: IPagingParams,
+  authentication: UserSession
 ): Promise<Array<Promise<File>>> {
   return new Promise<Array<Promise<File>>>((resolve, reject) => {
     // Fetch resources

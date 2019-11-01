@@ -20,25 +20,29 @@
  * @module restHelpers
  */
 
-// ------------------------------------------------------------------------------------------------------------------ //
-
-export { request as rest_request } from "@esri/arcgis-rest-request";
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import {
+  IAddFolderResponse,
+  ICreateItemResponse,
+  ICreateServiceResult,
   IDependency,
+  IExtent,
   IFeatureServiceProperties,
   IItemTemplate,
+  IPostProcessArgs,
+  ISpatialReference,
   IUpdate,
-  IPostProcessArgs
+  IUpdateItemResponse,
+  UserSession
 } from "./interfaces";
 import { replaceInTemplate } from "./templatization";
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -66,11 +70,11 @@ export function addToServiceDefinition(
  * @return Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(
-  extent: serviceAdmin.IExtent,
-  outSR: serviceAdmin.ISpatialReference,
+  extent: IExtent,
+  outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: auth.UserSession
-): Promise<serviceAdmin.IExtent> {
+  authentication: UserSession
+): Promise<IExtent> {
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -157,9 +161,9 @@ export function convertExtent(
  */
 export function createFeatureService(
   newItemTemplate: IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   templateDictionary: any
-): Promise<serviceAdmin.ICreateServiceResult> {
+): Promise<ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
     _getCreateServiceOptions(
@@ -197,13 +201,13 @@ export function createFeatureService(
 export function createFullItem(
   itemInfo: any,
   folderId: string | undefined,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   itemThumbnailUrl?: string,
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
   access = "private"
-): Promise<portal.ICreateItemResponse> {
+): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
     const createOptions: portal.ICreateItemOptions = {
@@ -315,10 +319,10 @@ export function createFullItem(
 export function createItemWithData(
   itemInfo: any,
   dataInfo: any,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   folderId: string | undefined,
   access = "private"
-): Promise<portal.ICreateItemResponse> {
+): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
     const createOptions: portal.ICreateItemOptions = {
@@ -377,10 +381,10 @@ export function createItemWithData(
  */
 export function createUniqueFolder(
   folderTitleRoot: string,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   suffix = 0
-): Promise<portal.IAddFolderResponse> {
-  return new Promise<portal.IAddFolderResponse>((resolve, reject) => {
+): Promise<IAddFolderResponse> {
+  return new Promise<IAddFolderResponse>((resolve, reject) => {
     const folderName =
       folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
     const folderCreationParam = {
@@ -426,7 +430,7 @@ export function createUniqueFolder(
  */
 export function extractDependencies(
   itemTemplate: IItemTemplate,
-  authentication?: auth.UserSession
+  authentication?: UserSession
 ): Promise<IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
@@ -460,7 +464,7 @@ export function extractDependencies(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
@@ -575,7 +579,7 @@ export function getRequest(update: IUpdate): Promise<void> {
  */
 export function getServiceLayersAndTables(
   itemTemplate: IItemTemplate,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<IItemTemplate> {
   return new Promise<IItemTemplate>((resolve, reject) => {
     // To have enough information for reconstructing the service, we'll supplement
@@ -603,7 +607,7 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<IFeatureServiceProperties> {
   return new Promise<IFeatureServiceProperties>((resolve, reject) => {
     const properties: IFeatureServiceProperties = {
@@ -641,7 +645,7 @@ export function getFeatureServiceProperties(
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const shareOptions: portal.IGroupSharingOptions = {
@@ -663,7 +667,7 @@ export function updateItem(
   serviceItemId: string,
   itemInfo: any,
   data: any,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   access?: string | undefined,
   progressTickCallback?: () => void
 ): Promise<void> {
@@ -714,7 +718,7 @@ export function updateItem(
 export function updateItemURL(
   id: string,
   url: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL
@@ -749,9 +753,9 @@ export function updateItemURL(
 export function _addItemDataFile(
   itemId: string,
   dataFile: File,
-  authentication: auth.UserSession
-): Promise<portal.IUpdateItemResponse> {
-  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addItemData: (data: any) => void = (data: any) => {
       const addDataOptions: portal.IAddItemDataOptions = {
         id: itemId,
@@ -784,9 +788,9 @@ export function _addItemDataFile(
 export function _addItemMetadataFile(
   itemId: string,
   metadataFile: File,
-  authentication: auth.UserSession
-): Promise<portal.IUpdateItemResponse> {
-  return new Promise<portal.IUpdateItemResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addMetadataOptions: portal.IUpdateItemOptions = {
       item: {
         id: itemId
@@ -828,7 +832,7 @@ export function _countRelationships(layers: any[]): number {
  */
 export function _getCreateServiceOptions(
   newItemTemplate: IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
