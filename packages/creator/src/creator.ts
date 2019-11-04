@@ -137,20 +137,16 @@ export function createSolution(
                 solutionTemplates
               );
 
-              const requestOptions: common.IUserRequestOptions = {
-                authentication: destinationAuthentication
+              const itemInfo: common.IItemUpdate = {
+                id: solutionItemId,
+                text: solutionData
               };
-              const updateOptions: common.IUpdateItemOptions = {
-                item: {
-                  id: solutionItemId,
-                  text: solutionData
-                },
-                ...requestOptions
-              };
-              common.rest_updateItem(updateOptions).then(() => {
-                progressCallback(0);
-                resolve(solutionItemId);
-              }, reject);
+              common
+                .updateItem(itemInfo, destinationAuthentication)
+                .then(() => {
+                  progressCallback(0);
+                  resolve(solutionItemId);
+                }, reject);
             },
             e => reject(common.fail(e))
           );

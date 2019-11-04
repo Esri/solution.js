@@ -67,9 +67,7 @@ export function convertItemToTemplate(
 
       // Request item resources
       const resourcePromise = common
-        .rest_getItemResources(itemTemplate.itemId, {
-          authentication: authentication
-        })
+        .getItemResources(itemTemplate.itemId, authentication)
         .then(resourcesResponse => {
           // Save resources to solution item
           itemTemplate.resources = (resourcesResponse.resources as any[]).map(
@@ -374,7 +372,11 @@ export function createItemFromTemplate(
         );
     } else {
       // handle group
-      getGroupTitle(newItemTemplate.item.title, newItemTemplate.itemId).then(
+      getAvailableGroupTitle(
+        newItemTemplate.item.title,
+        newItemTemplate.itemId,
+        destinationAuthentication
+      ).then(
         title => {
           // Set the item title with a valid name for the ORG
           newItemTemplate.item.title = title;
@@ -437,14 +439,22 @@ export function createItemFromTemplate(
   });
 }
 
-export function getGroupTitle(name: string, id: string): Promise<any> {
+export function getAvailableGroupTitle(
+  name: string,
+  id: string,
+  authentication: common.UserSession
+): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    common.rest_searchGroups(name).then(
+    common.searchGroups(name, authentication).then(
       searchResult => {
         // if we find a group call the func again with a new name
         const results: any[] = common.getProp(searchResult, "results");
         if (results && results.length > 0) {
-          getGroupTitle(name + "_" + id, common.getUTCTimestamp()).then(
+          getAvailableGroupTitle(
+            name + "_" + id,
+            common.getUTCTimestamp(),
+            authentication
+          ).then(
             title => {
               resolve(title);
             },
@@ -461,7 +471,7 @@ export function getGroupTitle(name: string, id: string): Promise<any> {
 
 export function updateGroup(
   newItemTemplate: common.IItemTemplate,
-  destinationAuthentication: common.UserSession,
+  authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
@@ -469,11 +479,7 @@ export function updateGroup(
     const groupId: string = newItemTemplate.itemId;
     newItemTemplate.dependencies.forEach(d => {
       defArray.push(
-        common.shareItem(
-          groupId,
-          templateDictionary[d].itemId,
-          destinationAuthentication
-        )
+        common.shareItem(groupId, templateDictionary[d].itemId, authentication)
       );
     });
     Promise.all(defArray).then(

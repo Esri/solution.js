@@ -30,8 +30,9 @@ export {
   IGroup,
   IItem,
   IPagingParams,
+  IPortal,
   ItemRelationshipType,
-  IUpdateItemOptions,
+  ISearchResult,
   IUpdateItemResponse
 } from "@esri/arcgis-rest-portal";
 export {
@@ -165,6 +166,11 @@ export interface IItemTemplateConversions {
  */
 export interface IItemTypeModuleMap {
   [itemType: string]: IItemTemplateConversions;
+}
+
+export interface IItemUpdate {
+  id: string;
+  [key: string]: any;
 }
 
 /**

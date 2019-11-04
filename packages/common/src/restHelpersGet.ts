@@ -29,32 +29,13 @@ import {
   IItem,
   ItemRelationshipType,
   IPagingParams,
+  IPortal,
   UserSession
 } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export {
-  getItemResources as rest_getItemResources,
-  getPortal as rest_getPortal,
-  searchGroups as rest_searchGroups,
-  updateItem as rest_updateItem
-} from "@esri/arcgis-rest-portal";
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
-
-export function createGroup(
-  groupItem: any,
-  authentication: UserSession
-): Promise<{ success: boolean; group: IGroup }> {
-  const requestOptions = {
-    group: groupItem,
-    authentication: authentication
-  };
-  return portal.createGroup(requestOptions);
-}
 
 export function getGroup(
   id: string,
@@ -74,6 +55,26 @@ export function getItem(
     authentication: authentication
   };
   return portal.getItem(id, requestOptions);
+}
+
+export function getItemResources(
+  id: string,
+  authentication: UserSession
+): Promise<IItem> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getItemResources(id, requestOptions);
+}
+
+export function getPortal(
+  id: string,
+  authentication: UserSession
+): Promise<IPortal> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getPortal(id, requestOptions);
 }
 
 /**

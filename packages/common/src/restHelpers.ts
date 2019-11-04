@@ -31,8 +31,11 @@ import {
   IDependency,
   IExtent,
   IFeatureServiceProperties,
+  IGroup,
   IItemTemplate,
+  IItemUpdate,
   IPostProcessArgs,
+  ISearchResult,
   ISpatialReference,
   IUpdate,
   IUpdateItemResponse,
@@ -303,6 +306,17 @@ export function createFullItem(
       e => reject(generalHelpers.fail(e))
     );
   });
+}
+
+export function createGroup(
+  groupItem: any,
+  authentication: UserSession
+): Promise<{ success: boolean; group: IGroup }> {
+  const requestOptions = {
+    group: groupItem,
+    authentication: authentication
+  };
+  return portal.createGroup(requestOptions);
 }
 
 /**
@@ -642,6 +656,17 @@ export function getFeatureServiceProperties(
   });
 }
 
+export function searchGroups(
+  searchString: string,
+  authentication: UserSession
+): Promise<ISearchResult<IGroup>> {
+  const searchOptions: portal.ISearchOptions = {
+    q: searchString,
+    authentication: authentication
+  };
+  return portal.searchGroups(searchOptions);
+}
+
 export function shareItem(
   groupId: string,
   id: string,
@@ -664,15 +689,28 @@ export function shareItem(
 }
 
 export function updateItem(
+  itemInfo: IItemUpdate,
+  authentication: UserSession,
+  folderId?: string
+): Promise<IUpdateItemResponse> {
+  const updateOptions: portal.IUpdateItemOptions = {
+    item: itemInfo,
+    folderId: folderId,
+    authentication: authentication
+  };
+  return portal.updateItem(updateOptions);
+}
+
+export function updateItemExtended(
   serviceItemId: string,
-  itemInfo: any,
+  itemInfo: IItemUpdate,
   data: any,
   authentication: UserSession,
   access?: string | undefined,
   progressTickCallback?: () => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const updateOptions: any = {
+    const updateOptions: portal.IUpdateItemOptions = {
       item: itemInfo,
       params: {
         text: data

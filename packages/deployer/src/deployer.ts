@@ -40,10 +40,6 @@ export function deploySolution(
       portalBaseUrl: portalSubset.portalUrl
     };
 
-    const requestOptions: common.IUserRequestOptions = {
-      authentication: destinationAuthentication
-    };
-
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
     const solutionItemDataDef = common.getItemDataAsJson(
       sourceId,
@@ -61,7 +57,10 @@ export function deploySolution(
     );
 
     // Determine if we are deploying to portal
-    const portalDef = common.rest_getPortal(portalSubset.id, requestOptions);
+    const portalDef = common.getPortal(
+      portalSubset.id,
+      destinationAuthentication
+    );
 
     // Await completion of async actions
     Promise.all([
@@ -96,7 +95,7 @@ export function deploySolution(
             portalExtent,
             { wkid: 4326 },
             portalResponse.helperServices.geometry.url,
-            requestOptions.authentication
+            destinationAuthentication
           )
           .then(
             function(wgs84Extent) {
@@ -221,24 +220,25 @@ export function deploySolution(
                           // Create solution item using internal representation & and the updated data JSON
                           item.data = itemData;
                           item.typeKeywords = ["Solution", "Deployed"];
-                          const updatedItemInfo: common.IUpdateItemOptions = {
-                            item: item,
-                            authentication: destinationAuthentication,
-                            folderId: templateDictionary.folderId
-                          };
-                          common.rest_updateItem(updatedItemInfo).then(
-                            () => {
-                              progressCallback(100);
-                              delete updatedItemInfo.item.data;
-                              resolve({
-                                item: updatedItemInfo.item,
-                                data: itemData
-                              });
-                            },
-                            e => {
-                              reject(common.fail(e));
-                            }
-                          );
+                          common
+                            .updateItem(
+                              item,
+                              destinationAuthentication,
+                              templateDictionary.folderId
+                            )
+                            .then(
+                              () => {
+                                progressCallback(100);
+                                delete item.data;
+                                resolve({
+                                  item: item,
+                                  data: itemData
+                                });
+                              },
+                              e => {
+                                reject(common.fail(e));
+                              }
+                            );
                         },
                         e => {
                           reject(common.fail(e));
