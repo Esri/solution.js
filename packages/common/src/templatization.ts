@@ -198,17 +198,24 @@ export function templatizeToLowerCase(basePath: string, value: string): string {
 export function templatizeFieldReferences(
   obj: any,
   fields: any[],
-  basePath: string
+  basePath: string,
+  templatizeKeys: boolean = false
 ): any {
   let objString: string = JSON.stringify(obj);
   fields.forEach(field => {
+    let expression: string =
+      "(?<![{]{2})(?<!" +
+      field.name +
+      "[.])\\b" +
+      field.name +
+      "\\b(?![.])(?![}]{2})";
+    if (!templatizeKeys) {
+      expression += '(?!":)';
+    }
     objString = objString.replace(
       // needs to ensure that its not already been templatized
-      // cannot be followed by .name and cannot be proceeded by fieldName in case of {{01922837.name.name}}
-      new RegExp(
-        "\\b" + field.name + "\\b(?![.name])(?<![.]" + field.name + ")",
-        "g"
-      ),
+      // cannot be followed by .name and cannot be proceeded by fieldName. in case of {{01922837.name.name}} and cannot be followed by }}
+      new RegExp(expression, "g"),
       templatizeToLowerCase(basePath, field.name + ".name")
     );
   });
