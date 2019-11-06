@@ -20,6 +20,8 @@
  * @module featureServiceHelpers
  */
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
 export {
   queryFeatures as rest_queryFeatures,
   addFeatures as rest_addFeatures
@@ -28,17 +30,10 @@ export {
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
 import * as auth from "@esri/arcgis-rest-auth";
+import * as interfaces from "./interfaces";
 import * as generalHelpers from "./generalHelpers";
 import * as templatization from "./templatization";
 import * as restHelpers from "./restHelpers";
-import {
-  IDependency,
-  IItemTemplate,
-  INumberValuePair,
-  IPostProcessArgs,
-  IStringValuePair,
-  IUpdate
-} from "./interfaces";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
 
@@ -53,9 +48,9 @@ import {
  * @protected
  */
 export function templatize(
-  itemTemplate: IItemTemplate,
-  dependencies: IDependency[]
-): IItemTemplate {
+  itemTemplate: interfaces.IItemTemplate,
+  dependencies: interfaces.IDependency[]
+): interfaces.IItemTemplate {
   // Common templatizations
   const id: string = generalHelpers.cloneObject(itemTemplate.item.id);
 
@@ -240,10 +235,10 @@ export function _cachePopupInfo(
  * @protected
  */
 export function updateTemplate(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   createResponse: any
-): IItemTemplate {
+): interfaces.IItemTemplate {
   // Add the new item to the template dictionary
   templateDictionary[itemTemplate.itemId] = Object.assign(
     templateDictionary[itemTemplate.itemId] || {},
@@ -298,7 +293,7 @@ export function getLayerSettings(
  * @param settings The settings object used to de-templatize the various templates within the item.
  */
 export function updateSettingsFieldInfos(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   settings: any
 ): void {
   const dependencies = itemTemplate.dependencies;
@@ -380,7 +375,9 @@ export function deTemplatizeFieldInfos(
  * @param itemTemplate The current itemTemplate being processed.
  * @return array of layers and tables
  */
-export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
+export function getLayersAndTables(
+  itemTemplate: interfaces.IItemTemplate
+): any[] {
   const properties: any = itemTemplate.properties;
   const layersAndTables: any[] = [];
   (properties.layers || []).forEach(function(layer: any) {
@@ -411,7 +408,7 @@ export function getLayersAndTables(itemTemplate: IItemTemplate): any[] {
  * @protected
  */
 export function addFeatureServiceLayersAndTables(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
   requestOptions: auth.IUserRequestOptions,
@@ -448,13 +445,15 @@ export function addFeatureServiceLayersAndTables(
           ).then(
             r => {
               // Update relationships and layer definitions
-              const updates: IUpdate[] = restHelpers.getLayerUpdates({
-                message: "updated layer definition",
-                objects: r.layerInfos.fieldInfos,
-                itemTemplate: r.itemTemplate,
-                authentication: requestOptions.authentication,
-                progressTickCallback
-              } as IPostProcessArgs);
+              const updates: interfaces.IUpdate[] = restHelpers.getLayerUpdates(
+                {
+                  message: "updated layer definition",
+                  objects: r.layerInfos.fieldInfos,
+                  itemTemplate: r.itemTemplate,
+                  authentication: requestOptions.authentication,
+                  progressTickCallback
+                } as interfaces.IPostProcessArgs
+              );
               // Process the updates sequentially
               updates
                 .reduce((prev, update) => {
@@ -502,7 +501,7 @@ export function updateFeatureServiceDefinition(
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   progressTickCallback?: () => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -573,7 +572,7 @@ export function updateFeatureServiceDefinition(
  * @protected
  */
 export function updateLayerFieldReferences(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   fieldInfos: any,
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
@@ -619,7 +618,7 @@ export function updateLayerFieldReferences(
  * @protected
  */
 export function postProcessFields(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   layerInfos: any,
   popupInfos: any,
   adminLayerInfos: any,
@@ -800,7 +799,7 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
  * @protected
  */
 export function updatePopupInfo(
-  itemTemplate: IItemTemplate,
+  itemTemplate: interfaces.IItemTemplate,
   popupInfos: any
 ): void {
   ["layers", "tables"].forEach(type => {
@@ -873,8 +872,8 @@ export function _templatizeProperty(
 export function _templatizeLayer(
   dataItem: any,
   adminItem: any,
-  itemTemplate: IItemTemplate,
-  dependencies: IDependency[]
+  itemTemplate: interfaces.IItemTemplate,
+  dependencies: interfaces.IDependency[]
 ): void {
   // Templatize all properties that contain field references
   _templatizeLayerFieldReferences(
@@ -936,7 +935,7 @@ export function _templatizeLayerFieldReferences(
   dataItem: any,
   itemID: string,
   layer: any,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
   // This is the value that will be used as the template for adlib replacement
   const path: string = itemID + ".layer" + layer.id + ".fields";
@@ -973,7 +972,7 @@ export function _templatizeLayerFieldReferences(
  */
 export function _templatizeAdminLayerInfo(
   layer: any,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): any {
   // Create new instance of adminLayerInfo to update for clone
   const adminLayerInfo = Object.assign({}, layer.adminLayerInfo);
@@ -1023,7 +1022,7 @@ export function _templatizeAdminLayerInfo(
  */
 export function _processAdminObject(
   object: any,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
   generalHelpers.deleteProp(object, "sourceId");
   if (object.hasOwnProperty("sourceServiceName")) {
@@ -1044,7 +1043,7 @@ export function _processAdminObject(
  */
 export function _templatizeSourceServiceName(
   lookupName: string,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): string | string[] | undefined {
   const deps = dependencies.filter(
     dependency => dependency.name === lookupName
@@ -1061,7 +1060,7 @@ export function _templatizeSourceServiceName(
  */
 export function _templatizeAdminLayerInfoFields(
   layer: any,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): void {
   // templatize the source layer fields
   const table = generalHelpers.getProp(
@@ -1110,7 +1109,7 @@ export function _templatizeAdminLayerInfoFields(
 
 export function _getDependantItemId(
   lookupName: string,
-  dependencies: IDependency[]
+  dependencies: interfaces.IDependency[]
 ): string {
   const deps = dependencies.filter(
     dependency => dependency.name === lookupName
@@ -1940,7 +1939,7 @@ export function _templatizeDefinitionQuery(
 export function _getNameMapping(fieldInfos: any, id: string): any {
   // create name mapping
   const fInfo: any = fieldInfos[id];
-  const nameMapping: IStringValuePair = {};
+  const nameMapping: interfaces.IStringValuePair = {};
   const newFields = fInfo.newFields;
   const newFieldNames: string[] = newFields.map((f: any) => f.name);
   const sourceFields: any[] = fInfo.sourceFields;
@@ -2019,6 +2018,6 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
 //#endregion
 
 export interface IPopupInfos {
-  layers: INumberValuePair;
-  tables: INumberValuePair;
+  layers: interfaces.INumberValuePair;
+  tables: interfaces.INumberValuePair;
 }

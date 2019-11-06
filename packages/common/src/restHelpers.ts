@@ -24,24 +24,8 @@ import * as generalHelpers from "./generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
-import {
-  IAddFolderResponse,
-  ICreateItemResponse,
-  ICreateServiceResult,
-  IDependency,
-  IExtent,
-  IFeatureServiceProperties,
-  IGroup,
-  IItemTemplate,
-  IItemUpdate,
-  IPostProcessArgs,
-  ISearchResult,
-  ISpatialReference,
-  IUpdate,
-  IUpdateItemResponse,
-  UserSession
-} from "./interfaces";
-import { replaceInTemplate } from "./templatization";
+import * as interfaces from "./interfaces";
+import * as templatization from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -73,11 +57,11 @@ export function addToServiceDefinition(
  * @return Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(
-  extent: IExtent,
-  outSR: ISpatialReference,
+  extent: interfaces.IExtent,
+  outSR: interfaces.ISpatialReference,
   geometryServiceUrl: string,
-  authentication: UserSession
-): Promise<IExtent> {
+  authentication: interfaces.UserSession
+): Promise<interfaces.IExtent> {
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -163,10 +147,10 @@ export function convertExtent(
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
-  newItemTemplate: IItemTemplate,
-  authentication: UserSession,
+  newItemTemplate: interfaces.IItemTemplate,
+  authentication: interfaces.UserSession,
   templateDictionary: any
-): Promise<ICreateServiceResult> {
+): Promise<interfaces.ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
     _getCreateServiceOptions(
@@ -204,13 +188,13 @@ export function createFeatureService(
 export function createFullItem(
   itemInfo: any,
   folderId: string | undefined,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   itemThumbnailUrl?: string,
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
   access = "private"
-): Promise<ICreateItemResponse> {
+): Promise<interfaces.ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
     const createOptions: portal.ICreateItemOptions = {
@@ -310,8 +294,8 @@ export function createFullItem(
 
 export function createGroup(
   groupItem: any,
-  authentication: UserSession
-): Promise<{ success: boolean; group: IGroup }> {
+  authentication: interfaces.UserSession
+): Promise<{ success: boolean; group: interfaces.IGroup }> {
   const requestOptions = {
     group: groupItem,
     authentication: authentication
@@ -333,10 +317,10 @@ export function createGroup(
 export function createItemWithData(
   itemInfo: any,
   dataInfo: any,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   folderId: string | undefined,
   access = "private"
-): Promise<ICreateItemResponse> {
+): Promise<interfaces.ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
     const createOptions: portal.ICreateItemOptions = {
@@ -395,10 +379,10 @@ export function createItemWithData(
  */
 export function createUniqueFolder(
   folderTitleRoot: string,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   suffix = 0
-): Promise<IAddFolderResponse> {
-  return new Promise<IAddFolderResponse>((resolve, reject) => {
+): Promise<interfaces.IAddFolderResponse> {
+  return new Promise<interfaces.IAddFolderResponse>((resolve, reject) => {
     const folderName =
       folderTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
     const folderCreationParam = {
@@ -443,9 +427,9 @@ export function createUniqueFolder(
  * @return A promise that will resolve a list of dependencies
  */
 export function extractDependencies(
-  itemTemplate: IItemTemplate,
-  authentication?: UserSession
-): Promise<IDependency[]> {
+  itemTemplate: interfaces.IItemTemplate,
+  authentication?: interfaces.UserSession
+): Promise<interfaces.IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
@@ -478,7 +462,7 @@ export function extractDependencies(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  authentication: UserSession
+  authentication: interfaces.UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (!Array.isArray(layerList) || layerList.length === 0) {
@@ -512,17 +496,19 @@ export function getLayers(
 /**
  * Add additional options to a layers definition.
  *
- * @param args The IPostProcessArgs for the request(s)
+ * @param args The interfaces.IPostProcessArgs for the request(s)
  * @return An array of update instructions
  * @protected
  */
-export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
+export function getLayerUpdates(
+  args: interfaces.IPostProcessArgs
+): interfaces.IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
   );
 
-  const updates: IUpdate[] = [];
+  const updates: interfaces.IUpdate[] = [];
   const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
   updates.push(refresh);
   Object.keys(args.objects).forEach(id => {
@@ -563,7 +549,7 @@ export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
  * @return A promise that will resolve when service definition call has completed
  * @protected
  */
-export function getRequest(update: IUpdate): Promise<void> {
+export function getRequest(update: interfaces.IUpdate): Promise<void> {
   return new Promise((resolveFn, rejectFn) => {
     const options: request.IRequestOptions = {
       params: update.params,
@@ -592,10 +578,10 @@ export function getRequest(update: IUpdate): Promise<void> {
  * @protected
  */
 export function getServiceLayersAndTables(
-  itemTemplate: IItemTemplate,
-  authentication: UserSession
-): Promise<IItemTemplate> {
-  return new Promise<IItemTemplate>((resolve, reject) => {
+  itemTemplate: interfaces.IItemTemplate,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IItemTemplate> {
+  return new Promise<interfaces.IItemTemplate>((resolve, reject) => {
     // To have enough information for reconstructing the service, we'll supplement
     // the item and data sections with sections for the service, full layers, and
     // full tables
@@ -621,45 +607,47 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: UserSession
-): Promise<IFeatureServiceProperties> {
-  return new Promise<IFeatureServiceProperties>((resolve, reject) => {
-    const properties: IFeatureServiceProperties = {
-      service: {},
-      layers: [],
-      tables: []
-    };
+  authentication: interfaces.UserSession
+): Promise<interfaces.IFeatureServiceProperties> {
+  return new Promise<interfaces.IFeatureServiceProperties>(
+    (resolve, reject) => {
+      const properties: interfaces.IFeatureServiceProperties = {
+        service: {},
+        layers: [],
+        tables: []
+      };
 
-    // Get the service description
-    request
-      .request(serviceUrl + "?f=json", {
-        authentication: authentication
-      })
-      .then(
-        serviceData => {
-          properties.service = serviceData;
+      // Get the service description
+      request
+        .request(serviceUrl + "?f=json", {
+          authentication: authentication
+        })
+        .then(
+          serviceData => {
+            properties.service = serviceData;
 
-          Promise.all([
-            getLayers(serviceUrl, serviceData["layers"], authentication),
-            getLayers(serviceUrl, serviceData["tables"], authentication)
-          ]).then(
-            results => {
-              properties.layers = results[0];
-              properties.tables = results[1];
-              resolve(properties);
-            },
-            (e: any) => reject(generalHelpers.fail(e))
-          );
-        },
-        (e: any) => reject(generalHelpers.fail(e))
-      );
-  });
+            Promise.all([
+              getLayers(serviceUrl, serviceData["layers"], authentication),
+              getLayers(serviceUrl, serviceData["tables"], authentication)
+            ]).then(
+              results => {
+                properties.layers = results[0];
+                properties.tables = results[1];
+                resolve(properties);
+              },
+              (e: any) => reject(generalHelpers.fail(e))
+            );
+          },
+          (e: any) => reject(generalHelpers.fail(e))
+        );
+    }
+  );
 }
 
 export function searchGroups(
   searchString: string,
-  authentication: UserSession
-): Promise<ISearchResult<IGroup>> {
+  authentication: interfaces.UserSession
+): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
   const searchOptions: portal.ISearchOptions = {
     q: searchString,
     authentication: authentication
@@ -670,7 +658,7 @@ export function searchGroups(
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: interfaces.UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const shareOptions: portal.IGroupSharingOptions = {
@@ -689,10 +677,10 @@ export function shareItem(
 }
 
 export function updateItem(
-  itemInfo: IItemUpdate,
-  authentication: UserSession,
+  itemInfo: interfaces.IItemUpdate,
+  authentication: interfaces.UserSession,
   folderId?: string
-): Promise<IUpdateItemResponse> {
+): Promise<interfaces.IUpdateItemResponse> {
   const updateOptions: portal.IUpdateItemOptions = {
     item: itemInfo,
     folderId: folderId,
@@ -703,9 +691,9 @@ export function updateItem(
 
 export function updateItemExtended(
   serviceItemId: string,
-  itemInfo: IItemUpdate,
+  itemInfo: interfaces.IItemUpdate,
   data: any,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   access?: string | undefined,
   progressTickCallback?: () => void
 ): Promise<void> {
@@ -756,7 +744,7 @@ export function updateItemExtended(
 export function updateItemURL(
   id: string,
   url: string,
-  authentication: UserSession
+  authentication: interfaces.UserSession
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Update its URL
@@ -791,9 +779,9 @@ export function updateItemURL(
 export function _addItemDataFile(
   itemId: string,
   dataFile: File,
-  authentication: UserSession
-): Promise<IUpdateItemResponse> {
-  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+  authentication: interfaces.UserSession
+): Promise<interfaces.IUpdateItemResponse> {
+  return new Promise<interfaces.IUpdateItemResponse>((resolve, reject) => {
     const addItemData: (data: any) => void = (data: any) => {
       const addDataOptions: portal.IAddItemDataOptions = {
         id: itemId,
@@ -826,9 +814,9 @@ export function _addItemDataFile(
 export function _addItemMetadataFile(
   itemId: string,
   metadataFile: File,
-  authentication: UserSession
-): Promise<IUpdateItemResponse> {
-  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+  authentication: interfaces.UserSession
+): Promise<interfaces.IUpdateItemResponse> {
+  return new Promise<interfaces.IUpdateItemResponse>((resolve, reject) => {
     const addMetadataOptions: portal.IUpdateItemOptions = {
       item: {
         id: itemId
@@ -869,8 +857,8 @@ export function _countRelationships(layers: any[]): number {
  * @protected
  */
 export function _getCreateServiceOptions(
-  newItemTemplate: IItemTemplate,
-  authentication: UserSession,
+  newItemTemplate: interfaces.IItemTemplate,
+  authentication: interfaces.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -927,11 +915,11 @@ export function _getCreateServiceOptions(
       extent => {
         templateDictionary[itemId].initialExtent = extent;
         templateDictionary[itemId].fullExtent = extent;
-        createOptions.item = replaceInTemplate(
+        createOptions.item = templatization.replaceInTemplate(
           createOptions.item,
           templateDictionary
         );
-        createOptions.params = replaceInTemplate(
+        createOptions.params = templatization.replaceInTemplate(
           createOptions.params,
           templateDictionary
         );
@@ -945,11 +933,13 @@ export function _getCreateServiceOptions(
 /**
  * Add relationships to all layers in one call to retain fully functioning composite relationships
  *
- * @param args The IPostProcessArgs for the request(s)
+ * @param args The interfaces.IPostProcessArgs for the request(s)
  * @return Any relationships that should be updated for the service
  * @protected
  */
-export function _getRelationshipUpdates(args: IPostProcessArgs): any {
+export function _getRelationshipUpdates(
+  args: interfaces.IPostProcessArgs
+): any {
   const rels: any = {
     layers: []
   };
@@ -974,7 +964,7 @@ export function _getRelationshipUpdates(args: IPostProcessArgs): any {
  * @param obj parameters for the request
  * @param args various arguments to help support the request
  * @param type type of update the request will handle
- * @return IUpdate that has the request url and arguments
+ * @return interfaces.IUpdate that has the request url and arguments
  * @protected
  */
 export function _getUpdate(
@@ -983,7 +973,7 @@ export function _getUpdate(
   obj: any,
   args: any,
   type: "delete" | "update" | "add" | "refresh"
-): IUpdate {
+): interfaces.IUpdate {
   const ops: any = {
     delete: {
       url: url + "/" + id + "/deleteFromDefinition",
