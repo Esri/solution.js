@@ -149,8 +149,8 @@ export function convertItemToTemplate(
               break;
             case "form":
               itemTemplate.dependencies = itemTemplate.dependencies.concat(
-                relatedItemsResponse.relatedItems.map(
-                  relatedItem => relatedItem.id
+                (relatedItemsResponse as any).relatedItems.map(
+                  (relatedItem: { id: any }) => relatedItem.id
                 )
               );
 
