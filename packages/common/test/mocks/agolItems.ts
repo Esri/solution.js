@@ -968,15 +968,15 @@ function getItemTypeAbbrev(type: string): string {
   let abbrev = "xxx";
   switch (type) {
     case "ArcGIS Pro Add In":
-      abbrev = "xxx";
+      abbrev = "pro";
       break;
 
     case "Code Attachment":
-      abbrev = "xxx";
+      abbrev = "cod";
       break;
 
     case "Code Sample":
-      abbrev = "xxx";
+      abbrev = "sam";
       break;
 
     case "Dashboard":
@@ -984,19 +984,19 @@ function getItemTypeAbbrev(type: string): string {
       break;
 
     case "Desktop Add In":
-      abbrev = "xxx";
+      abbrev = "dai";
       break;
 
     case "Desktop Application Template":
-      abbrev = "xxx";
+      abbrev = "dat";
       break;
 
     case "Document Link":
-      abbrev = "xxx";
+      abbrev = "doc";
       break;
 
     case "Feature Collection":
-      abbrev = "xxx";
+      abbrev = "col";
       break;
 
     case "Feature Service":
@@ -1008,35 +1008,35 @@ function getItemTypeAbbrev(type: string): string {
       break;
 
     case "Geoprocessing Package":
-      abbrev = "xxx";
+      abbrev = "gpk";
       break;
 
     case "Geoprocessing Sample":
-      abbrev = "xxx";
+      abbrev = "geo";
       break;
 
     case "Layer Package":
-      abbrev = "xxx";
+      abbrev = "lyr";
       break;
 
     case "Map Template":
-      abbrev = "xxx";
+      abbrev = "mpt";
       break;
 
     case "Operation View":
-      abbrev = "xxx";
+      abbrev = "opv";
       break;
 
     case "Pro Map":
-      abbrev = "xxx";
+      abbrev = "prm";
       break;
 
     case "Project Package":
-      abbrev = "xxx";
+      abbrev = "ppk";
       break;
 
     case "Project Template":
-      abbrev = "xxx";
+      abbrev = "prt";
       break;
 
     case "Solution":
@@ -1052,7 +1052,7 @@ function getItemTypeAbbrev(type: string): string {
       break;
 
     case "Workforce Project":
-      abbrev = "xxx";
+      abbrev = "wrk";
       break;
 
     case "Unsupported":
@@ -1087,6 +1087,7 @@ function getAGOLItemFundamentals(type: string, url = ""): any {
     documentation: null,
     extent: [],
     categories: [],
+    contentStatus: null,
     lastModified: -1,
     spatialReference: null,
     accessInformation: "Esri, Inc.",

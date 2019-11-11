@@ -1016,6 +1016,7 @@ function getItemTemplateFundamentals(
       documentation: null,
       extent: "{{initiative.extent:optional}}",
       categories: [],
+      contentStatus: null,
       spatialReference: null,
       accessInformation: "Esri, Inc.",
       licenseInfo: null,

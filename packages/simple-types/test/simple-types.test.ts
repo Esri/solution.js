@@ -573,6 +573,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             id: "{{map1234567890.itemId}}",
             type: "Web Map",
             categories: [],
+            contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: [],
@@ -686,6 +687,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             id: "{{dsh1234567890.itemId}}",
             type: "Dashboard",
             categories: [],
+            contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: [],
@@ -772,6 +774,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             id: "{{frm1234567890.itemId}}",
             type: "Form",
             categories: [],
+            contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: [],
@@ -842,7 +845,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
                     "Overdoses, fatalities, and other drug related incidents.",
                   thumbnail: "thumbnail/OpioidIncidents.png",
                   documentation: null,
-                  extent: [[-131.0, 16.0], [-57.0, 58.0]],
+                  extent: [
+                    [-131.0, 16.0],
+                    [-57.0, 58.0]
+                  ],
                   categories: [],
                   spatialReference: null,
                   accessInformation: "Esri",
@@ -916,7 +922,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       // Blobs are only available in the browser
-      it("should handle web mapping applications", done => {
+      it("should handle web mapping application with missing data", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -932,6 +938,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             id: "{{wma1234567890.itemId}}",
             type: "Web Mapping Application",
             categories: [],
+            contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: [],
@@ -1111,6 +1118,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           id: "abc0cab401af4828a25cc6eaeb59fb69",
           type: "Web Mapping Application",
           title: "Voting Centers",
+          contentStatus: null,
           url:
             "https://myOrg.arcgis.com/home/item.html?id=abc123da3c304dd0bf46dee75ac31aae"
         };
@@ -1137,6 +1145,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             type: "Web Mapping Application",
             categories: undefined,
+            contentStatus: null,
             culture: undefined,
             description: undefined,
             extent: undefined,

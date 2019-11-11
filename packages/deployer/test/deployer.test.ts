@@ -260,6 +260,7 @@ describe("Module `deploySolution`", () => {
                     "/content/items/svc1234567890/info/thumbnail/ago_downloaded.png",
                   documentation: null,
                   categories: [],
+                  contentStatus: null,
                   spatialReference: null,
                   extent: undefined,
                   accessInformation: "Esri, Inc.",
