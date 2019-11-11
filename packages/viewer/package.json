@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "to do",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -12,7 +12,7 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.5.7",
+    "@esri/solution-common": "^0.5.8",
     "rollup": "^1.22.0"
   },
   "dependencies": {
