@@ -21,7 +21,7 @@
  */
 
 import * as adlib from "adlib";
-import * as interfaces from "./interfaces";
+import { IItemTemplate } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -61,9 +61,7 @@ export const PLACEHOLDER_NA_SERVER_NAME: string =
 export const PLACEHOLDER_PRINT_SERVER_NAME: string =
   "{{organization.printServerUrl}}";
 
-export function createInitializedGroupTemplate(
-  itemInfo: any
-): interfaces.IItemTemplate {
+export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -75,9 +73,7 @@ export function createInitializedGroupTemplate(
   return itemTemplate;
 }
 
-export function createInitializedItemTemplate(
-  itemInfo: any
-): interfaces.IItemTemplate {
+export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -107,7 +103,7 @@ export function createInitializedItemTemplate(
 export function createPlaceholderTemplate(
   id: string,
   type = ""
-): interfaces.IItemTemplate {
+): IItemTemplate {
   return {
     itemId: id,
     type,
@@ -133,7 +129,7 @@ export function createPlaceholderTemplate(
  * @protected
  */
 export function findTemplateIndexInList(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
 ): number {
   const baseId = id;
@@ -150,9 +146,9 @@ export function findTemplateIndexInList(
  * @return Matching template or null
  */
 export function findTemplateInList(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
-): interfaces.IItemTemplate | null {
+): IItemTemplate | null {
   const childId = findTemplateIndexInList(templates, id);
   return childId >= 0 ? templates[childId] : null;
 }

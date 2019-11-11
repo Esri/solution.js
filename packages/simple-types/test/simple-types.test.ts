@@ -19,7 +19,7 @@
  */
 
 import {
-  getGroupTitle,
+  getAvailableGroupTitle,
   convertItemToTemplate,
   createItemFromTemplate,
   updateGroup,
@@ -1495,14 +1495,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
           { success: true, group: { id: newItemID } }
         );
-
       createItemFromTemplate(
         itemTemplate,
         [],
@@ -1543,7 +1542,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .post(
@@ -1585,7 +1584,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .post(
@@ -1669,7 +1668,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .post(
@@ -1716,7 +1715,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.item.title = "Dam Inspection Assignments";
 
       fetchMock.get(
-        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
         mockItems.get400Failure()
       );
 
@@ -1761,7 +1760,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     //     }];
 
     //     fetchMock
-    //       .get("https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments", searchResult)
+    //       .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token", searchResult)
     //       .post("https://myorg.maps.arcgis.com/sharing/rest/community/createGroup", { "success": true, "group": { "id": newItemID } })
     //       .post("http://someurl/", mockItems.get400Failure());
 
@@ -1946,11 +1945,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const id: string = "abc0cab401af4828a25cc6eaeb59fb69";
 
       fetchMock.get(
-        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
         mockItems.get400Failure()
       );
 
-      getGroupTitle(name, id).then(r => {
+      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(r => {
         done.fail();
       }, done);
     });
@@ -2009,15 +2008,15 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69&token=fake-token",
           mockItems.get400Failure()
         );
 
-      getGroupTitle(name, id).then(r => {
+      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(r => {
         done.fail();
       }, done);
     });
@@ -2036,11 +2035,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       fetchMock.get(
-        "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
         searchResult
       );
 
-      getGroupTitle(name, id).then(response => {
+      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
         expect(response).toEqual(name);
         done();
       }, done.fail);
@@ -2100,15 +2099,15 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments_abc0cab401af4828a25cc6eaeb59fb69&token=fake-token",
           emptySearchResult
         );
 
-      getGroupTitle(name, id).then(response => {
+      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
         expect(response).toEqual(name + "_" + id);
         done();
       }, done.fail);
@@ -2198,7 +2197,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments",
+          "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
           searchResult
         )
         .get(
@@ -2207,10 +2206,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .get("*", emptySearchResult);
 
-      getGroupTitle(name, id).then(response => {
+      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
         // this should have a current time stamp appended after "title"_"id"_
         expect(response).toContain(
-          "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69_"
+          "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69"
         );
         done();
       }, done.fail);

@@ -46,9 +46,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
 
   let infoLookupTemplate: any;
 
+  beforeEach(() => {
+    infoLookupTemplate = common.cloneObject(_infoLookupTemplate);
+  });
+
   afterEach(() => {
     fetchMock.restore();
-    infoLookupTemplate = common.cloneObject(_infoLookupTemplate);
   });
 
   describe("convertItemToTemplate", () => {

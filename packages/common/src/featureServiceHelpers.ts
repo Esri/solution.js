@@ -29,15 +29,6 @@ export {
 
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
-/*import {
-  INumberValuePair,
-  IStringValuePair,
-  IItemTemplate,
-  IDependency,
-  IUpdate,
-  IPostProcessArgs
-} from "@esri/solution-common/src/interfaces";*/
-
 import * as auth from "@esri/arcgis-rest-auth";
 import * as interfaces from "./interfaces";
 import * as generalHelpers from "./generalHelpers";

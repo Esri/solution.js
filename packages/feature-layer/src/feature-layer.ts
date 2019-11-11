@@ -161,7 +161,7 @@ export function createItemFromTemplate(
                   );
                   // Update the item with snippet, description, popupInfo, ect.
                   common
-                    .updateItem(
+                    .updateItemExtended(
                       createResponse.serviceItemId,
                       newItemTemplate.item,
                       newItemTemplate.data,

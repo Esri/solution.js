@@ -18,11 +18,28 @@
  * Provides common interfaces.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
+import { UserSession } from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+export {
+  IAddFolderResponse,
+  ICreateItemResponse,
+  IGetRelatedItemsResponse,
+  IGroup,
+  IItem,
+  IPagingParams,
+  IPortal,
+  ItemRelationshipType,
+  ISearchResult,
+  IUpdateItemResponse
+} from "@esri/arcgis-rest-portal";
+export {
+  ICreateServiceResult,
+  IExtent,
+  ISpatialReference
+} from "@esri/arcgis-rest-service-admin";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -132,14 +149,14 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    authentication: auth.UserSession
+    authentication: UserSession
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
     resourceFilePaths: IDeployFileCopyPath[],
-    storageAuthentication: auth.UserSession,
+    storageAuthentication: UserSession,
     templateDictionary: any,
-    destinationAuthentication: auth.UserSession,
+    destinationAuthentication: UserSession,
     progressTickCallback: () => void
   ): Promise<string>;
 }
@@ -149,6 +166,11 @@ export interface IItemTemplateConversions {
  */
 export interface IItemTypeModuleMap {
   [itemType: string]: IItemTemplateConversions;
+}
+
+export interface IItemUpdate {
+  id: string;
+  [key: string]: any;
 }
 
 /**
@@ -192,7 +214,7 @@ export interface IPostProcessArgs {
   /**
    * Credentials for the request
    */
-  authentication: auth.UserSession;
+  authentication: UserSession;
 
   /**
    * Callback for IProgressUpdate

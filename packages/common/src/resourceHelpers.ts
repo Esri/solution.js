@@ -47,13 +47,17 @@
  *   5. undo the unique folder and filename into the original folder and filename
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
-import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
+import {
+  EFileType,
+  IDeployFileCopyPath,
+  IDeployFilename,
+  ISourceFileCopyPath,
+  UserSession
+} from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -68,7 +72,7 @@ import * as restHelpersGet from "./restHelpersGet";
 export function addMetadataFromBlob(
   blob: Blob,
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -88,7 +92,7 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
@@ -119,7 +123,7 @@ export function addResourceFromBlob(
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -137,7 +141,7 @@ export function addThumbnailFromBlob(
 export function addThumbnailFromUrl(
   url: string,
   itemId: string,
-  authentication: auth.UserSession
+  authentication: UserSession
 ): Promise<any> {
   const updateOptions: portal.IUpdateItemOptions = {
     item: {
@@ -160,18 +164,18 @@ export function addThumbnailFromUrl(
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
-  storageAuthentication: auth.UserSession,
-  filePaths: interfaces.IDeployFileCopyPath[],
+  storageAuthentication: UserSession,
+  filePaths: IDeployFileCopyPath[],
   destinationItemId: string,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        // case interfaces.EFileType.Form:
+        // case EFileType.Form:
         //   return Promise.resolve();
 
-        case interfaces.EFileType.Metadata:
+        case EFileType.Metadata:
           return copyMetadata(
             {
               url: filePath.url,
@@ -182,7 +186,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case interfaces.EFileType.Resource:
+        case EFileType.Resource:
           return copyResource(
             {
               url: filePath.url,
@@ -195,7 +199,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case interfaces.EFileType.Thumbnail:
+        case EFileType.Thumbnail:
           return addThumbnailFromUrl(
             filePath.url,
             destinationItemId,
@@ -220,10 +224,10 @@ export function copyFilesFromStorageItem(
  * @return A promise which resolves to a list of the filenames under which the resource/metadata/thumbnails are stored
  */
 export function copyFilesToStorageItem(
-  sourceUserSession: auth.UserSession,
-  filePaths: interfaces.ISourceFileCopyPath[],
+  sourceUserSession: UserSession,
+  filePaths: ISourceFileCopyPath[],
   storageItemId: string,
-  storageAuthentication: auth.UserSession
+  storageAuthentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
@@ -255,11 +259,11 @@ export function copyFilesToStorageItem(
 export function copyMetadata(
   source: {
     url: string;
-    authentication: auth.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
-    authentication: auth.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -297,13 +301,13 @@ export function copyMetadata(
 export function copyResource(
   source: {
     url: string;
-    authentication: auth.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
     folder: string;
     filename: string;
-    authentication: auth.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -354,7 +358,7 @@ export function generateGroupFilePaths(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string
-): interfaces.ISourceFileCopyPath[] {
+): ISourceFileCopyPath[] {
   if (!thumbnailUrlPart) {
     return [];
   }
@@ -401,13 +405,13 @@ export function generateMetadataStorageFilename(
  */
 export function generateResourceFilenameFromStorage(
   storageResourceFilename: string
-): interfaces.IDeployFilename {
-  let type = interfaces.EFileType.Resource;
+): IDeployFilename {
+  let type = EFileType.Resource;
   let [folder, filename] = storageResourceFilename.split("/");
   if (folder.endsWith("_info_thumbnail")) {
-    type = interfaces.EFileType.Thumbnail;
+    type = EFileType.Thumbnail;
   } else if (folder.endsWith("_info_metadata")) {
-    type = interfaces.EFileType.Metadata;
+    type = EFileType.Metadata;
     filename = "metadata.xml";
   } else {
     const folderStart = folder.indexOf("_");
@@ -464,7 +468,7 @@ export function generateSourceItemFilePaths(
   itemId: string,
   thumbnailUrlPart: string,
   resourceFilenames: string[]
-): interfaces.ISourceFileCopyPath[] {
+): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
       url: generateSourceResourceUrl(
@@ -572,7 +576,7 @@ export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
   resourceFilenames: string[]
-): interfaces.IDeployFileCopyPath[] {
+): IDeployFileCopyPath[] {
   return resourceFilenames && resourceFilenames.map
     ? resourceFilenames.map(resourceFilename => {
         return {
