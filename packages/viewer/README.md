@@ -16,7 +16,7 @@
 
 # @esri/solution-viewer
 
-> Manages the creation and deployment of Story Map item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
+> Simplifies access to [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
 ### [API Reference](https://esri.github.io/solution.js/api/viewer/)
 

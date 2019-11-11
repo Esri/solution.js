@@ -1,7 +1,7 @@
 {
   "name": "@esri/solution-viewer",
   "version": "0.5.8",
-  "description": "to do",
+  "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
   "module": "dist/esm/index.js",
