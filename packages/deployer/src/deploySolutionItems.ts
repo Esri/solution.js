@@ -22,9 +22,7 @@
 
 /* tslint:disable:no-unnecessary-type-assertion */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionFeatureLayer from "@esri/solution-feature-layer";
 import * as solutionSimpleTypes from "@esri/solution-simple-types";
 import * as solutionStoryMap from "@esri/solution-storymap";
@@ -67,9 +65,9 @@ export function deploySolutionItems(
   portalSharingUrl: string,
   storageItemId: string,
   templates: common.IItemTemplate[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -134,9 +132,9 @@ export function deploySolutionItems(
 export function _createItemFromTemplateWhenReady(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   templateDictionary[template.itemId] = {};

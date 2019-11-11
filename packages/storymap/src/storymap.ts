@@ -20,7 +20,6 @@
  * @module storymap
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as simpleTypes from "@esri/solution-simple-types";
 
@@ -28,7 +27,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 
 export function convertItemToTemplate(
   itemInfo: any,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
     if (itemInfo.type === "StoryMap") {
@@ -44,9 +43,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {

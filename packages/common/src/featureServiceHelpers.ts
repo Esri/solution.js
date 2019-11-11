@@ -20,16 +20,14 @@
  * @module featureServiceHelpers
  */
 
-//#region Imports -------------------------------------------------------------------------------------------------------//
+// ------------------------------------------------------------------------------------------------------------------ //
 
-/*import {
-  INumberValuePair,
-  IStringValuePair,
-  IItemTemplate,
-  IDependency,
-  IUpdate,
-  IPostProcessArgs
-} from "@esri/solution-common/src/interfaces";*/
+export {
+  queryFeatures as rest_queryFeatures,
+  addFeatures as rest_addFeatures
+} from "@esri/arcgis-rest-feature-layer";
+
+//#region Imports -------------------------------------------------------------------------------------------------------//
 
 import * as auth from "@esri/arcgis-rest-auth";
 import * as interfaces from "./interfaces";
@@ -1246,7 +1244,7 @@ export function _templatizeName(
     fieldNames.forEach(name => {
       // Only test and replace instance of the name so any enclosing characters
       // will be retained
-      const regEx = new RegExp("(\\b" + name + "\\b)", "gm");
+      const regEx = new RegExp("(\\b" + name + "\\b(?![}]{2}))", "gm");
       if (regEx.test(object[property])) {
         object[property] = object[property].replace(
           regEx,
@@ -1495,7 +1493,7 @@ export function _templatizeSimpleName(
 ): string {
   fieldNames.forEach(name => {
     // look for the name but not if its followed by }}
-    const regEx = new RegExp("\\b" + name + "\\b", "gm");
+    const regEx = new RegExp("\\b" + name + "\\b(?![}]{2})", "gm");
     if (expression && regEx.test(expression)) {
       expression = expression.replace(
         regEx,

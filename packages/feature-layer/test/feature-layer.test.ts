@@ -28,7 +28,6 @@ import {
   checkForArcgisRestSuccessRequestError
 } from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
-import * as auth from "@esri/arcgis-rest-auth";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 
@@ -50,7 +49,7 @@ beforeEach(() => {
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+const MOCK_USER_SESSION = new common.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",

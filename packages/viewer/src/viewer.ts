@@ -20,16 +20,14 @@
  * @module viewer
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function getSolutionHierarchy(
   groupId: string,
   destUrl: string,
-  userSession: auth.UserSession
+  userSession: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     resolve("getSolutionHierarchy");

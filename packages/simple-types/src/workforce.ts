@@ -15,8 +15,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as auth from "@esri/arcgis-rest-auth";
-import { queryFeatures, addFeatures } from "@esri/arcgis-rest-feature-layer";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
 
@@ -163,7 +161,7 @@ export function _templatize(data: any, keyProperties: string[]): any {
  */
 export function fineTuneCreatedItem(
   newlyCreatedItem: common.IItemTemplate,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     destinationAuthentication.getUser().then(
@@ -199,60 +197,64 @@ export function _updateDispatchers(
   dispatchers: any,
   name: string,
   fullName: string,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (dispatchers && dispatchers.url) {
-      queryFeatures({
-        url: dispatchers.url,
-        where: "userId = '" + name + "'",
-        authentication: destinationAuthentication
-      }).then(
-        (results: any) => {
-          if (results && results.features) {
-            if (results.features.length === 0) {
-              addFeatures({
-                url: dispatchers.url,
-                features: [
-                  {
-                    attributes: {
-                      name: fullName,
-                      userId: name
-                    }
-                  }
-                ],
-                authentication: destinationAuthentication
-              }).then(
-                addResults => {
-                  if (addResults && addResults.addResults) {
-                    resolve(true);
-                  } else {
-                    reject(
-                      common.fail({
-                        success: false,
-                        message: "Failed to add dispatch record."
-                      })
-                    );
-                  }
-                },
-                e =>
-                  reject(
-                    common.fail({
-                      success: false,
-                      message: "Failed to add dispatch record.",
-                      error: e
-                    })
-                  )
-              );
+      common
+        .rest_queryFeatures({
+          url: dispatchers.url,
+          where: "userId = '" + name + "'",
+          authentication: destinationAuthentication
+        })
+        .then(
+          (results: any) => {
+            if (results && results.features) {
+              if (results.features.length === 0) {
+                common
+                  .rest_addFeatures({
+                    url: dispatchers.url,
+                    features: [
+                      {
+                        attributes: {
+                          name: fullName,
+                          userId: name
+                        }
+                      }
+                    ],
+                    authentication: destinationAuthentication
+                  })
+                  .then(
+                    addResults => {
+                      if (addResults && addResults.addResults) {
+                        resolve(true);
+                      } else {
+                        reject(
+                          common.fail({
+                            success: false,
+                            message: "Failed to add dispatch record."
+                          })
+                        );
+                      }
+                    },
+                    e =>
+                      reject(
+                        common.fail({
+                          success: false,
+                          message: "Failed to add dispatch record.",
+                          error: e
+                        })
+                      )
+                  );
+              } else {
+                resolve(true);
+              }
             } else {
-              resolve(true);
+              resolve(false);
             }
-          } else {
-            resolve(false);
-          }
-        },
-        e => reject(common.fail(e))
-      );
+          },
+          e => reject(common.fail(e))
+        );
     } else {
       resolve(false);
     }

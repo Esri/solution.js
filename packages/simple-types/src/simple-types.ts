@@ -20,11 +20,9 @@
  * @module simple-types
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as form from "./form";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
 import * as workforce from "./workforce";
@@ -34,7 +32,7 @@ import * as workforce from "./workforce";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   isGroup = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -68,10 +66,8 @@ export function convertItemToTemplate(
       // }
 
       // Request item resources
-      const resourcePromise = portal
-        .getItemResources(itemTemplate.itemId, {
-          authentication: authentication
-        })
+      const resourcePromise = common
+        .getItemResources(itemTemplate.itemId, authentication)
         .then(resourcesResponse => {
           // Save resources to solution item
           itemTemplate.resources = (resourcesResponse.resources as any[]).map(
@@ -95,7 +91,7 @@ export function convertItemToTemplate(
       // Perform type-specific handling
       let dataPromise = Promise.resolve({});
       let relatedPromise = Promise.resolve(
-        {} as portal.IGetRelatedItemsResponse
+        {} as common.IGetRelatedItemsResponse
       );
       switch (itemInfo.type.toLowerCase()) {
         case "dashboard":
@@ -131,7 +127,7 @@ export function convertItemToTemplate(
         resourcePromise,
         relatedPromise.catch(
           () =>
-            ({ total: 0, relatedItems: [] } as portal.IGetRelatedItemsResponse)
+            ({ total: 0, relatedItems: [] } as common.IGetRelatedItemsResponse)
         )
       ]).then(
         responses => {
@@ -153,8 +149,8 @@ export function convertItemToTemplate(
               break;
             case "form":
               itemTemplate.dependencies = itemTemplate.dependencies.concat(
-                relatedItemsResponse.relatedItems.map(
-                  relatedItem => relatedItem.id
+                (relatedItemsResponse as any).relatedItems.map(
+                  (relatedItem: { id: any }) => relatedItem.id
                 )
               );
 
@@ -241,7 +237,7 @@ export function convertItemToTemplate(
         groupContents => {
           itemTemplate.type = "Group";
           itemTemplate.dependencies = groupContents;
-          portal.getGroup(itemInfo.id, { authentication: authentication }).then(
+          common.getGroup(itemInfo.id, authentication).then(
             groupResponse => {
               groupResponse.id = itemTemplate.item.id;
               itemTemplate.item = groupResponse;
@@ -259,9 +255,9 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -376,16 +372,17 @@ export function createItemFromTemplate(
         );
     } else {
       // handle group
-      getGroupTitle(newItemTemplate.item.title, newItemTemplate.itemId).then(
+      getAvailableGroupTitle(
+        newItemTemplate.item.title,
+        newItemTemplate.itemId,
+        destinationAuthentication
+      ).then(
         title => {
           // Set the item title with a valid name for the ORG
           newItemTemplate.item.title = title;
           newItemTemplate.item.access = "private";
-          portal
-            .createGroup({
-              group: newItemTemplate.item,
-              authentication: destinationAuthentication
-            })
+          common
+            .createGroup(newItemTemplate.item, destinationAuthentication)
             .then(
               createResponse => {
                 progressTickCallback();
@@ -442,14 +439,22 @@ export function createItemFromTemplate(
   });
 }
 
-export function getGroupTitle(name: string, id: string): Promise<any> {
+export function getAvailableGroupTitle(
+  name: string,
+  id: string,
+  authentication: common.UserSession
+): Promise<any> {
   return new Promise<string>((resolve, reject) => {
-    portal.searchGroups(name).then(
+    common.searchGroups(name, authentication).then(
       searchResult => {
         // if we find a group call the func again with a new name
         const results: any[] = common.getProp(searchResult, "results");
         if (results && results.length > 0) {
-          getGroupTitle(name + "_" + id, common.getUTCTimestamp()).then(
+          getAvailableGroupTitle(
+            name + "_" + id,
+            common.getUTCTimestamp(),
+            authentication
+          ).then(
             title => {
               resolve(title);
             },
@@ -466,7 +471,7 @@ export function getGroupTitle(name: string, id: string): Promise<any> {
 
 export function updateGroup(
   newItemTemplate: common.IItemTemplate,
-  destinationAuthentication: auth.UserSession,
+  authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
@@ -474,11 +479,7 @@ export function updateGroup(
     const groupId: string = newItemTemplate.itemId;
     newItemTemplate.dependencies.forEach(d => {
       defArray.push(
-        common.shareItem(
-          groupId,
-          templateDictionary[d].itemId,
-          destinationAuthentication
-        )
+        common.shareItem(groupId, templateDictionary[d].itemId, authentication)
       );
     });
     Promise.all(defArray).then(

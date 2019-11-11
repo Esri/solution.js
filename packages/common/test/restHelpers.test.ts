@@ -27,6 +27,7 @@ import {
   createItemWithData,
   updateItemURL,
   updateItem,
+  updateItemExtended,
   getServiceLayersAndTables,
   _countRelationships,
   getLayers,
@@ -1559,7 +1560,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const progressTickCallback: any = function(opts: any) {
         return opts;
       };
-      updateItem(
+      updateItemExtended(
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
@@ -1583,7 +1584,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const progressTickCallback: any = function(opts: any) {
         return opts;
       };
-      updateItem(
+      updateItemExtended(
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
@@ -1610,7 +1611,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const progressTickCallback: any = function(opts: any) {
         return opts;
       };
-      updateItem(
+      updateItemExtended(
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
@@ -1637,7 +1638,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const progressTickCallback: any = function(opts: any) {
         return opts;
       };
-      updateItem(
+      updateItemExtended(
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,
@@ -1664,7 +1665,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const progressTickCallback: any = function(opts: any) {
         return opts;
       };
-      updateItem(
+      updateItemExtended(
         "svc1234567890",
         itemTemplate.item,
         itemTemplate.data,

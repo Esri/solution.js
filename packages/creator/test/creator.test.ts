@@ -22,12 +22,11 @@ import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import { TOMORROW } from "../../common/test/mocks/utils";
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as creator from "../src/creator";
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+const MOCK_USER_SESSION = new common.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -78,7 +77,7 @@ describe("Module `creator`", () => {
           portalUrl: "",
           urlKey: ""
         } as common.IPortalSubset;
-        const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
+        const destinationAuthentication: common.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 
@@ -186,7 +185,7 @@ describe("Module `creator`", () => {
           portalUrl: "",
           urlKey: ""
         } as common.IPortalSubset;
-        const destinationAuthentication: auth.UserSession = MOCK_USER_SESSION;
+        const destinationAuthentication: common.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 

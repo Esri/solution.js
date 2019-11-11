@@ -177,7 +177,7 @@ describe("Module `templatization`: common functions involving the adlib library"
   });
 
   describe("templatizeFieldReferences", () => {
-    it("templatizeFieldReferences", () => {
+    it("will not templatize fieldnames that have already been templatized", () => {
       const obj: any = {
         field1: {
           fieldname: "test"
@@ -190,7 +190,19 @@ describe("Module `templatization`: common functions involving the adlib library"
         },
         field4: {
           fieldname: "{{0019226378376276.layer0.fields.name.name}}"
-        }
+        },
+        expression:
+          "$feature.name {name} name $feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}}",
+        expression2:
+          "$feature.test {test} test $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}",
+        icon:
+          "{{test.portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
+        generic: "{{test}}",
+        generic2: "{{something.test}}",
+        generic3: "{{something.test.something}}",
+        generic4: "{{something.test.something.somethingElse}}",
+        generic5: '$feature["COUNTY_ID.name"]',
+        generic6: '$feature["name"]'
       };
       const fields: any[] = [
         {
@@ -214,6 +226,51 @@ describe("Module `templatization`: common functions involving the adlib library"
         },
         field4: {
           fieldname: "{{0019226378376276.layer0.fields.name.name}}"
+        },
+        expression:
+          "$feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}} $feature.{{0019226378376276.layer0.fields.name.name}} {{{0019226378376276.layer0.fields.name.name}}} {{0019226378376276.layer0.fields.name.name}}",
+        expression2:
+          "$feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}} $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}",
+        icon:
+          "{{test.portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
+        generic: "{{test}}",
+        generic2: "{{something.test}}",
+        generic3: "{{something.test.something}}",
+        generic4: "{{something.test.something.somethingElse}}",
+        generic5:
+          '$feature["COUNTY_ID.{{0019226378376276.layer0.fields.name.name}}"]',
+        generic6: '$feature["{{0019226378376276.layer0.fields.name.name}}"]'
+      };
+
+      const actual = templatization.templatizeFieldReferences(
+        obj,
+        fields,
+        basePath
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("will not templatize keys", () => {
+      const obj: any = {
+        name: "name",
+        test: {
+          prop: "name: "
+        }
+      };
+      const fields: any[] = [
+        {
+          name: "test"
+        },
+        {
+          name: "name"
+        }
+      ];
+      const basePath: string = "0019226378376276.layer0.fields";
+
+      const expected: any = {
+        name: "{{0019226378376276.layer0.fields.name.name}}",
+        test: {
+          prop: "{{0019226378376276.layer0.fields.name.name}}: "
         }
       };
 
@@ -221,6 +278,40 @@ describe("Module `templatization`: common functions involving the adlib library"
         obj,
         fields,
         basePath
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("will templatize keys", () => {
+      const obj: any = {
+        name: "name",
+        test: {
+          prop: "name: "
+        }
+      };
+      const fields: any[] = [
+        {
+          name: "test"
+        },
+        {
+          name: "name"
+        }
+      ];
+      const basePath: string = "0019226378376276.layer0.fields";
+
+      const expected: any = {
+        "{{0019226378376276.layer0.fields.name.name}}":
+          "{{0019226378376276.layer0.fields.name.name}}",
+        "{{0019226378376276.layer0.fields.test.name}}": {
+          prop: "{{0019226378376276.layer0.fields.name.name}}: "
+        }
+      };
+
+      const actual = templatization.templatizeFieldReferences(
+        obj,
+        fields,
+        basePath,
+        true
       );
       expect(actual).toEqual(expected);
     });

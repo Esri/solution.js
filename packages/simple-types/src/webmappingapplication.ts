@@ -14,15 +14,13 @@
  | limitations under the License.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
-import { request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Remove org base URL and app id, e.g.,
@@ -120,7 +118,7 @@ export function convertItemToTemplate(
 
 export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string
 ) {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -179,7 +177,7 @@ export function templatizeDatasources(
 
 export function templatizeWidgets(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string,
   widgetPath: string
 ): Promise<common.IItemTemplate> {
@@ -227,7 +225,7 @@ export function templatizeWidgets(
 
 export function templatizeValues(
   itemTemplate: common.IItemTemplate,
-  authentication: auth.UserSession,
+  authentication: common.UserSession,
   portalUrl: string,
   widgetPath: string
 ): Promise<common.IItemTemplate> {
@@ -313,7 +311,7 @@ export function findUrls(
   portalUrl: string,
   requestUrls: string[],
   serviceRequests: any[],
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ) {
   const options: any = {
     f: "json",
@@ -344,7 +342,7 @@ export function findUrls(
       } else if (url.indexOf("FeatureServer") > -1) {
         if (requestUrls.indexOf(url) === -1) {
           requestUrls.push(url);
-          serviceRequests.push(request(url, options));
+          serviceRequests.push(common.rest_request(url, options));
         }
       }
     });
@@ -385,7 +383,7 @@ export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession
+  destinationAuthentication: common.UserSession
 ): Promise<void> {
   return new Promise<void>(resolve => {
     // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
@@ -564,15 +562,21 @@ export function postProcessFieldReferences(
  */
 export function _templatizeObject(
   obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
+  templatizeKeys: boolean = false
 ): any {
-  obj = _prioritizedTests(obj, datasourceInfos);
+  obj = _prioritizedTests(obj, datasourceInfos, templatizeKeys);
   const replaceOrder: common.IDatasourceInfo[] = _getReplaceOrder(
     obj,
     datasourceInfos
   );
   replaceOrder.forEach(ds => {
-    obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+    obj = common.templatizeFieldReferences(
+      obj,
+      ds.fields,
+      ds.basePath,
+      templatizeKeys
+    );
   });
   return obj;
 }
@@ -588,8 +592,18 @@ export function _templatizeObjectArray(
   objects: any[],
   datasourceInfos: common.IDatasourceInfo[]
 ): any {
+  const updateKeyObjects: string[] = ["SmartEditor", "Screening"];
   return objects.map(obj => {
-    return _templatizeObject(obj, datasourceInfos);
+    // only templatize the config and lower
+    if (obj.config) {
+      const templatizeKeys: boolean = updateKeyObjects.indexOf(obj.name) > -1;
+      obj.config = _templatizeObject(
+        obj.config,
+        datasourceInfos,
+        templatizeKeys
+      );
+    }
+    return obj;
   });
 }
 
@@ -607,7 +621,12 @@ export function _getReplaceOrder(
   datasourceInfos: common.IDatasourceInfo[]
 ) {
   const objString: string = JSON.stringify(obj);
-  return datasourceInfos.sort((a, b) => {
+
+  // If we don't find any layer url, web map layer id, service url, agol itemId then remove the datasource.
+  const _datasourceInfos: common.IDatasourceInfo[] = datasourceInfos.filter(
+    ds => _getSortOrder(ds, objString) < 4
+  );
+  return _datasourceInfos.sort((a, b) => {
     return _getSortOrder(a, objString) - _getSortOrder(b, objString);
   });
 }
@@ -678,7 +697,8 @@ export function _getSortOrder(
  */
 export function _prioritizedTests(
   obj: any,
-  datasourceInfos: common.IDatasourceInfo[]
+  datasourceInfos: common.IDatasourceInfo[],
+  templatizeKeys: boolean
 ): any {
   const objString: string = JSON.stringify(obj);
   const hasDatasources = datasourceInfos.filter(ds => {
@@ -702,14 +722,14 @@ export function _prioritizedTests(
       return ds;
     }
   });
-  if (hasDatasources.length > 1) {
+  if (hasDatasources.length > 0) {
     hasDatasources.forEach(ds => {
       // specific url reference is the most common
-      obj = _templatizeParentByURL(obj, ds);
+      obj = _templatizeParentByURL(obj, ds, templatizeKeys);
       if (ds.ids.length > 0) {
         // the second most common is to use the layerId from the webmap
         ds.ids.forEach(id => {
-          obj = _templatizeParentByWebMapLayerId(obj, ds, id);
+          obj = _templatizeParentByWebMapLayerId(obj, ds, id, templatizeKeys);
         });
       }
     });
@@ -728,7 +748,8 @@ export function _prioritizedTests(
  */
 export function _templatizeParentByURL(
   obj: { [index: string]: any },
-  ds: common.IDatasourceInfo
+  ds: common.IDatasourceInfo,
+  templatizeKeys: boolean
 ): any {
   let clone: { [index: string]: any } = {};
   const url = ds.url;
@@ -741,15 +762,20 @@ export function _templatizeParentByURL(
 
   if (Array.isArray(obj)) {
     clone = obj.map(c => {
-      return _templatizeParentByURL(c, ds);
+      return _templatizeParentByURL(c, ds, templatizeKeys);
     });
   } else if (typeof obj === "object") {
     for (const i in obj) {
       if (obj[i] != null && typeof obj[i] === "object") {
-        clone[i] = _templatizeParentByURL(obj[i], ds);
+        clone[i] = _templatizeParentByURL(obj[i], ds, templatizeKeys);
       } else {
         if (urlTest && urlTest.test(obj[i])) {
-          obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+          obj = common.templatizeFieldReferences(
+            obj,
+            ds.fields,
+            ds.basePath,
+            templatizeKeys
+          );
         }
         clone[i] = obj[i];
       }
@@ -773,13 +799,14 @@ export function _templatizeParentByURL(
 export function _templatizeParentByWebMapLayerId(
   obj: { [index: string]: any },
   ds: common.IDatasourceInfo,
-  id: string
+  id: string,
+  templatizeKeys: boolean
 ): any {
   let clone: { [index: string]: any } = {};
   const idTest: any = new RegExp(id, "gm");
   if (Array.isArray(obj)) {
     clone = obj.map(c => {
-      return _templatizeParentByWebMapLayerId(c, ds, id);
+      return _templatizeParentByWebMapLayerId(c, ds, id, templatizeKeys);
     });
   } else if (typeof obj === "object") {
     for (const i in obj) {
@@ -796,21 +823,32 @@ export function _templatizeParentByWebMapLayerId(
         }
         if (parsedProp && typeof parsedProp === "object") {
           clone[i] = JSON.stringify(
-            _templatizeParentByWebMapLayerId(parsedProp, ds, id)
+            _templatizeParentByWebMapLayerId(parsedProp, ds, id, templatizeKeys)
           );
         } else if (typeof obj[i] === "object") {
           // some widgets store the layerId as a key to a collection of details that contain field references
-          if (idTest.test(i)) {
+          if (idTest.test(i) && templatizeKeys) {
             obj[i] = common.templatizeFieldReferences(
               obj[i],
               ds.fields,
-              ds.basePath
+              ds.basePath,
+              templatizeKeys
             );
           }
-          clone[i] = _templatizeParentByWebMapLayerId(obj[i], ds, id);
+          clone[i] = _templatizeParentByWebMapLayerId(
+            obj[i],
+            ds,
+            id,
+            templatizeKeys
+          );
         } else {
           if (idTest.test(obj[i])) {
-            obj = common.templatizeFieldReferences(obj, ds.fields, ds.basePath);
+            obj = common.templatizeFieldReferences(
+              obj,
+              ds.fields,
+              ds.basePath,
+              templatizeKeys
+            );
           }
           clone[i] = obj[i];
         }

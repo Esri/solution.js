@@ -18,7 +18,7 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
+import * as common from "@esri/solution-common";
 import * as webmap from "../src/webmap";
 
 import { TOMORROW } from "./lib/utils";
@@ -29,7 +29,7 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 
 describe("Module `webmap`: manages the creation and deployment of web map item types", () => {
   // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new auth.UserSession({
+  const MOCK_USER_SESSION = new common.UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",

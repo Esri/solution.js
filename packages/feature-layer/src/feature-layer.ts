@@ -22,7 +22,6 @@
 
 //#region Imports ----------------------------------------------------------------------------------------------//
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 
 //#endregion
@@ -40,10 +39,10 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: authentication
     };
 
@@ -109,13 +108,13 @@ export function convertItemToTemplate(
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: auth.UserSession,
+  storageAuthentication: common.UserSession,
   templateDictionary: any,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    const requestOptions: auth.IUserRequestOptions = {
+    const requestOptions: common.IUserRequestOptions = {
       authentication: destinationAuthentication
     };
 
@@ -162,7 +161,7 @@ export function createItemFromTemplate(
                   );
                   // Update the item with snippet, description, popupInfo, ect.
                   common
-                    .updateItem(
+                    .updateItemExtended(
                       createResponse.serviceItemId,
                       newItemTemplate.item,
                       newItemTemplate.data,

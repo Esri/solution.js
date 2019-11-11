@@ -20,7 +20,7 @@
  * @module generalHelpers
  */
 
-import * as interfaces from "./interfaces";
+import { IDatasourceInfo } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -266,7 +266,7 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
  * @return Boolean indicating result
  */
 export function hasDatasource(
-  datasourceInfos: interfaces.IDatasourceInfo[],
+  datasourceInfos: IDatasourceInfo[],
   itemId: string,
   layerId: number
 ): boolean {

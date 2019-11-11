@@ -20,10 +20,8 @@
  * @module deployer
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -31,7 +29,7 @@ export function deploySolution(
   itemInfoCard: common.ISolutionInfoCard,
   templateDictionary: any,
   portalSubset: common.IPortalSubset,
-  destinationAuthentication: auth.UserSession,
+  destinationAuthentication: common.UserSession,
   progressCallback: (percentDone: number) => void
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
@@ -40,10 +38,6 @@ export function deploySolution(
     progressCallback(percentDone);
     templateDictionary.organization = {
       portalBaseUrl: portalSubset.portalUrl
-    };
-
-    const requestOptions: auth.IUserRequestOptions = {
-      authentication: destinationAuthentication
     };
 
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
@@ -63,7 +57,10 @@ export function deploySolution(
     );
 
     // Determine if we are deploying to portal
-    const portalDef = portal.getPortal(portalSubset.id, requestOptions);
+    const portalDef = common.getPortal(
+      portalSubset.id,
+      destinationAuthentication
+    );
 
     // Await completion of async actions
     Promise.all([
@@ -98,7 +95,7 @@ export function deploySolution(
             portalExtent,
             { wkid: 4326 },
             portalResponse.helperServices.geometry.url,
-            requestOptions.authentication
+            destinationAuthentication
           )
           .then(
             function(wgs84Extent) {
@@ -223,24 +220,25 @@ export function deploySolution(
                           // Create solution item using internal representation & and the updated data JSON
                           item.data = itemData;
                           item.typeKeywords = ["Solution", "Deployed"];
-                          const updatedItemInfo: portal.IUpdateItemOptions = {
-                            item: item,
-                            authentication: destinationAuthentication,
-                            folderId: templateDictionary.folderId
-                          };
-                          portal.updateItem(updatedItemInfo).then(
-                            () => {
-                              progressCallback(100);
-                              delete updatedItemInfo.item.data;
-                              resolve({
-                                item: updatedItemInfo.item,
-                                data: itemData
-                              });
-                            },
-                            e => {
-                              reject(common.fail(e));
-                            }
-                          );
+                          common
+                            .updateItem(
+                              item,
+                              destinationAuthentication,
+                              templateDictionary.folderId
+                            )
+                            .then(
+                              () => {
+                                progressCallback(100);
+                                delete item.data;
+                                resolve({
+                                  item: item,
+                                  data: itemData
+                                });
+                              },
+                              e => {
+                                reject(common.fail(e));
+                              }
+                            );
                         },
                         e => {
                           reject(common.fail(e));
