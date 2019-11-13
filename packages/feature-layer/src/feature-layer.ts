@@ -39,7 +39,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  templatizeFieldReferences: boolean = false
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const requestOptions: common.IUserRequestOptions = {
@@ -77,7 +78,13 @@ export function convertItemToTemplate(
                       );
 
                       // resolve the template with templatized values
-                      resolve(common.templatize(itemTemplate, dependencies));
+                      resolve(
+                        common.templatize(
+                          itemTemplate,
+                          dependencies,
+                          templatizeFieldReferences
+                        )
+                      );
                     },
                     (e: any) => reject(common.fail(e))
                   );

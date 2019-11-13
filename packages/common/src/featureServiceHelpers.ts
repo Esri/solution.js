@@ -49,7 +49,8 @@ import * as restHelpers from "./restHelpers";
  */
 export function templatize(
   itemTemplate: interfaces.IItemTemplate,
-  dependencies: interfaces.IDependency[]
+  dependencies: interfaces.IDependency[],
+  templatizeFieldReferences: boolean
 ): interfaces.IItemTemplate {
   // Common templatizations
   const id: string = generalHelpers.cloneObject(itemTemplate.item.id);
@@ -99,7 +100,13 @@ export function templatize(
     // templatize the source service json
     const _item: any =
       matchingItems.length === 1 ? matchingItems[0] : undefined;
-    _templatizeLayer(_item, jsonItem, itemTemplate, dependencies);
+    _templatizeLayer(
+      _item,
+      jsonItem,
+      itemTemplate,
+      dependencies,
+      templatizeFieldReferences
+    );
   });
 
   return itemTemplate;
@@ -873,15 +880,18 @@ export function _templatizeLayer(
   dataItem: any,
   adminItem: any,
   itemTemplate: interfaces.IItemTemplate,
-  dependencies: interfaces.IDependency[]
+  dependencies: interfaces.IDependency[],
+  templatizeFieldReferences: boolean
 ): void {
   // Templatize all properties that contain field references
-  _templatizeLayerFieldReferences(
-    dataItem,
-    itemTemplate.itemId,
-    adminItem,
-    dependencies
-  );
+  if (templatizeFieldReferences) {
+    _templatizeLayerFieldReferences(
+      dataItem,
+      itemTemplate.itemId,
+      adminItem,
+      dependencies
+    );
+  }
 
   const updates: any[] = [adminItem];
   if (dataItem) {

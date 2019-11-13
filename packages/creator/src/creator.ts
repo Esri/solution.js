@@ -31,7 +31,8 @@ export function createSolution(
   templateDictionary: any,
   portalSubset: common.IPortalSubset,
   destinationAuthentication: common.UserSession,
-  progressCallback: (percentDone: number) => void
+  progressCallback: (percentDone: number) => void,
+  templatizeFields: boolean = false
 ): Promise<string> {
   let percentDone = 1; // Let the caller know that we've started
   progressCallback(percentDone);
@@ -133,9 +134,11 @@ export function createSolution(
               progressCallback(98);
 
               // Update solution item with its data JSON
-              solutionData.templates = createSolutionTemplate.postProcessFieldReferences(
-                solutionTemplates
-              );
+              solutionData.templates = templatizeFields
+                ? createSolutionTemplate.postProcessFieldReferences(
+                    solutionTemplates
+                  )
+                : solutionTemplates;
 
               const itemInfo: common.IItemUpdate = {
                 id: solutionItemId,
