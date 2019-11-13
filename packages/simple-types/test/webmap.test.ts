@@ -777,9 +777,79 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("_templatize", () => {
-    xit("_templatize", done => {
-      console.warn("========== TODO _templatize ==========");
-      done.fail();
+    it("can templatize drawingInfo", () => {
+      const drawingInfo: any = {
+        renderer: {
+          visualVariables: [
+            {
+              field: "A"
+            }
+          ],
+          authoringInfo: {},
+          type: "uniqueValue",
+          field1: "A",
+          defaultSymbol: {},
+          uniqueValueInfos: []
+        }
+      };
+
+      const objs: any[] = [
+        {
+          id: "TestLayerForDashBoardMap_632",
+          layerDefinition: {
+            drawingInfo: drawingInfo
+          },
+          field: {
+            name: "A"
+          }
+        }
+      ];
+      const datasourceInfos: common.IDatasourceInfo[] = [
+        {
+          fields: [
+            {
+              name: "A"
+            }
+          ],
+          ids: ["TestLayerForDashBoardMap_632"],
+          adminLayerInfo: {},
+          relationships: [],
+          layerId: 0,
+          itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+          basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields",
+          url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}"
+        }
+      ];
+
+      const expectedDrawingInfo: any = {
+        renderer: {
+          visualVariables: [
+            {
+              field: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.a.name}}"
+            }
+          ],
+          authoringInfo: {},
+          type: "uniqueValue",
+          field1: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.a.name}}",
+          defaultSymbol: {},
+          uniqueValueInfos: []
+        }
+      };
+
+      const expected: any[] = [
+        {
+          id: "TestLayerForDashBoardMap_632",
+          layerDefinition: {
+            drawingInfo: expectedDrawingInfo
+          },
+          field: {
+            name: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields.a.name}}"
+          }
+        }
+      ];
+
+      const actual: any[] = webmap._templatize(objs, datasourceInfos);
+      expect(actual).toEqual(expected);
     });
   });
 

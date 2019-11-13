@@ -185,7 +185,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         dependencies: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies);
+      templatize(itemTemplate, dependencies, true);
       expect(itemTemplate).toEqual(expected);
       expect(dependencies).toEqual([]);
     });
@@ -352,7 +352,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         dependencies: [],
         estimatedDeploymentCostFactor: 0
       };
-      templatize(itemTemplate, dependencies);
+      templatize(itemTemplate, dependencies, true);
       expect(itemTemplate).toEqual(expected);
     });
   });

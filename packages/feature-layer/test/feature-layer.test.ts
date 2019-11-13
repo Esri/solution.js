@@ -65,7 +65,10 @@ const MOCK_USER_SESSION = new common.UserSession({
 const geometryServiceUrl: string = "http://utility/geomServer";
 
 const _initiative: any = {
-  orgExtent: [[0, 0], [1, 1]],
+  orgExtent: [
+    [0, 0],
+    [1, 1]
+  ],
   defaultExtent: {
     xmin: 0,
     ymin: 0,
@@ -173,7 +176,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           );
 
         featureLayer
-          .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            true
+          )
           .then(r => {
             // verify the state up front
             expect(r.item.id).toEqual(expectedId);
