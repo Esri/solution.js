@@ -51,8 +51,8 @@ export function getItemTemplatePart(
   type: string,
   dependencies = [] as string[],
   url = ""
-): any {
-  let templatePart: any = null;
+): interfaces.IItemTemplate {
+  let templatePart: interfaces.IItemTemplate = null;
 
   // Supported item types
   switch (type) {
@@ -994,7 +994,7 @@ function getItemTemplateFundamentals(
   typePrefix: string,
   dependencies = [] as string[],
   url = ""
-): any {
+): interfaces.IItemTemplate {
   return {
     itemId: typePrefix + "1234567890",
     type: type,
@@ -1035,9 +1035,11 @@ function getItemTemplateFundamentals(
       commentsEnabled: false,
       groupDesignations: null
     },
+    data: undefined,
+    resources: [],
     dependencies: dependencies,
-    estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0),
-    resources: []
+    properties: null,
+    estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
   };
 }
 

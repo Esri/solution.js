@@ -239,7 +239,8 @@ describe("Module `deploySolution`", () => {
                 dependencies: ["svc1234567890"],
                 estimatedDeploymentCostFactor: 4,
                 resources: [],
-                data: webMapData
+                data: webMapData,
+                properties: null
               },
               {
                 itemId: "svc1234567890",
