@@ -16,7 +16,6 @@
 // @esri/solution-common getItemInfo TypeScript example
 
 import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
 import * as solutionCommon from "@esri/solution-common";
 
 export function getItemInfo(
@@ -218,23 +217,19 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
     const file = blob as File;
 
     if (blob.type === "application/json") {
-      solutionCommon
-        .blobToJson(blob)
-        .then(
-          text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
-          error => resolve("<i>problem extracting JSON: " + error + "</i>")
-        );
+      solutionCommon.blobToJson(blob).then(
+        text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
+        error => resolve("<i>problem extracting JSON: " + error + "</i>")
+      );
     } else if (
       blob.type.startsWith("text/plain") ||
       blob.type === "text/xml" ||
       blob.type === "application/xml"
     ) {
-      solutionCommon
-        .blobToText(blob)
-        .then(
-          text => resolve(textAreaHtml(text)),
-          error => resolve("<i>problem extracting text: " + error + "</i>")
-        );
+      solutionCommon.blobToText(blob).then(
+        text => resolve(textAreaHtml(text)),
+        error => resolve("<i>problem extracting text: " + error + "</i>")
+      );
     } else if (blob.type.startsWith("image/")) {
       let html =
         '<img src="' +

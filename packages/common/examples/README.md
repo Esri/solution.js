@@ -19,34 +19,20 @@ These examples illustrate the use of the solution-common package.
 ### convertExtent
 
 Gets the extents of an ArcGIS Online portal and converts them to WGS84 (wkid 4326).
+Includes the RunKit example for [@esri/solution-common](https://www.npmjs.com/package/@esri/solution-common).
 
-Flavors:
-* JavaScript; uses npm for solution.js
-* JavaScriptLocal; uses local copy of solution.js
-* RunKit; example for [@esri/solution-common](https://www.npmjs.com/package/@esri/solution-common)
-* TypeScript; uses npm for solution.js
 
 ### copyItemInfo
 
 Makes a copy of an ArcGIS Online item.
 
-Flavors:
-* TypeScript; uses npm for solution.js
-
 ### copySolutions
 
 Copies an ArcGIS Online solution from one organization to another.
 
-Flavors:
-* TypeScript; uses npm for solution.js
-
 ### getItemInfo
 
 Gets information about an ArcGIS Online item.
-
-Flavors:
-* JavaScript; uses npm for solution.js
-* TypeScript; uses npm for solution.js
 
 ### Frequently Asked Questions
 
