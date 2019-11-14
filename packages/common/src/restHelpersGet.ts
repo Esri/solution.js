@@ -80,7 +80,7 @@ export function getBlob(
       request.request(url, blobRequestOptions).then(
         response => {
           // Extract the blob from the response
-          response.blob().then(resolve, (err: any) => reject(err));
+          response.blob().then(resolve);
         },
         err => reject(err)
       );

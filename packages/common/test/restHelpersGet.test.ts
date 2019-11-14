@@ -96,8 +96,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         }, done.fail);
       });
 
-      it("can handle an exception from the REST endpoint request.request", done => {
-        // ???
+      it("can handle an error from the REST endpoint request.request", done => {
         const url: string = "https://myserver/images/thumbnail.png";
 
         const getUrl = "https://myserver/images/thumbnail.png";
@@ -105,11 +104,11 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         fetchMock
           .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
           .post(getUrl + "/rest/info", expectedServerInfo)
-          .post(getUrl, mockItems.get500Failure(), { sendAsJson: false });
-
-        restHelpersGet
-          .getBlob(url, MOCK_USER_SESSION)
-          .then(done, (err: any) => done.fail(err));
+          .post(getUrl, 503);
+        restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(
+          () => done.fail(),
+          () => done()
+        );
       });
     });
   }
