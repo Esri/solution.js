@@ -18,21 +18,7 @@
  * Provides tests for general helper functions.
  */
 
-import {
-  blobToJson,
-  cleanItemId,
-  cloneObject,
-  fail,
-  getProp,
-  getProps,
-  deleteProp,
-  deleteProps,
-  hasAnyKeyword,
-  hasTypeKeyword,
-  getUTCTimestamp,
-  hasDatasource,
-  _padPositiveNum
-} from "../src/generalHelpers";
+import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
@@ -48,7 +34,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           type: "application/json"
         });
 
-        blobToJson(blob).then(extractedJson => {
+        generalHelpers.blobToJson(blob).then(extractedJson => {
           expect(extractedJson).toEqual(srcJson);
           done();
         }, done.fail);
@@ -57,7 +43,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       it("fails to extract JSON from a blob 1", done => {
         const blob: Blob = new Blob([], { type: "application/json" });
 
-        blobToJson(blob).then(extractedJson => {
+        generalHelpers.blobToJson(blob).then(extractedJson => {
           expect(extractedJson).toBeNull();
           done();
         }, done.fail);
@@ -66,7 +52,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       it("fails to extract JSON from a blob 2", done => {
         const blob: Blob = null;
 
-        blobToJson(blob).then(extractedJson => {
+        generalHelpers.blobToJson(blob).then(extractedJson => {
           expect(extractedJson).toBeNull();
           done();
         }, done.fail);
@@ -80,7 +66,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         color: "red",
         length: 12
       } as any;
-      const c = cloneObject(obj);
+      const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
 
       ["color", "length"].map(prop => {
@@ -97,7 +83,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           type: "string"
         }
       } as any;
-      const c = cloneObject(obj);
+      const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
       expect(c.field).not.toBe(obj.field);
 
@@ -118,7 +104,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           type: null
         }
       } as any;
-      const c = cloneObject(obj);
+      const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
       expect(c.field).not.toBe(obj.field);
       expect(c.field.type).toBe(null);
@@ -159,7 +145,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         ]
       } as any;
 
-      const c = cloneObject(obj);
+      const c = generalHelpers.cloneObject(obj);
       expect(c).not.toBe(obj);
       expect(c.field).not.toBe(obj.field);
       expect(c.names).not.toBe(obj.names);
@@ -189,7 +175,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   describe("deleteProp", () => {
     it("should handle missing prop", () => {
       const testObject: any = {};
-      deleteProp(testObject, "prop1");
+      generalHelpers.deleteProp(testObject, "prop1");
       expect(testObject).toEqual({});
     });
 
@@ -201,7 +187,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expected: any = {
         prop2: true
       };
-      deleteProp(testObject, "prop1");
+      generalHelpers.deleteProp(testObject, "prop1");
       expect(testObject).toEqual(expected);
     });
   });
@@ -209,7 +195,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   describe("deleteProps", () => {
     it("should handle missing props", () => {
       const testObject: any = {};
-      deleteProps(testObject, ["prop1", "prop2"]);
+      generalHelpers.deleteProps(testObject, ["prop1", "prop2"]);
       expect(testObject).toEqual({});
     });
 
@@ -222,7 +208,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const expected: any = {
         prop2: true
       };
-      deleteProps(testObject, ["prop1", "prop3"]);
+      generalHelpers.deleteProps(testObject, ["prop1", "prop3"]);
       expect(testObject).toEqual(expected);
     });
   });
@@ -231,25 +217,25 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     it("can return failure with no error argument", () => {
       const error: any = undefined;
       const expected: any = { success: false };
-      expect(fail(error)).toEqual(expected);
+      expect(generalHelpers.fail(error)).toEqual(expected);
     });
 
     it("can return failure with no error property on error argument", () => {
       const error: any = "Error";
       const expected: any = { success: false, error: "Error" };
-      expect(fail(error)).toEqual(expected);
+      expect(generalHelpers.fail(error)).toEqual(expected);
     });
 
     it("can return failure with error property on error argument", () => {
       const error: any = { error: "Error" };
       const expected: any = { success: false, error: "Error" };
-      expect(fail(error)).toEqual(expected);
+      expect(generalHelpers.fail(error)).toEqual(expected);
     });
   });
 
   describe("getProp", () => {
     it("should return a property given a path", () => {
-      expect(getProp({ color: "red" }, "color")).toEqual(
+      expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual(
         "red",
         "should return the prop"
       );
@@ -257,7 +243,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
     it("should return a deep property given a path", () => {
       expect(
-        getProp({ color: { r: "ff", g: "00", b: "ff" } }, "color.r")
+        generalHelpers.getProp(
+          { color: { r: "ff", g: "00", b: "ff" } },
+          "color.r"
+        )
       ).toEqual("ff", "should return the prop");
     });
   });
@@ -278,7 +267,10 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         }
       };
 
-      const vals = getProps(o, ["one.two.three.color", "one.two.threeB.color"]);
+      const vals = generalHelpers.getProps(o, [
+        "one.two.three.color",
+        "one.two.threeB.color"
+      ]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
       expect(vals.indexOf("orange")).toBeGreaterThan(-1, "should have orange");
@@ -291,7 +283,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           color: "red"
         }
       };
-      const vals = getProps(o, ["one.two", "one.color"]);
+      const vals = generalHelpers.getProps(o, ["one.two", "one.color"]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
     });
@@ -303,7 +295,11 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           color: "red"
         }
       };
-      const vals = getProps(o, ["one.two", "one.color", "thing.three"]);
+      const vals = generalHelpers.getProps(o, [
+        "one.two",
+        "one.color",
+        "thing.three"
+      ]);
       expect(vals.length).toEqual(2, "should return two values");
       expect(vals.indexOf("red")).toBeGreaterThan(-1, "should have red");
     });
@@ -311,7 +307,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
   describe("getUTCTimestamp", () => {
     it("can get a well formed timestamp", () => {
-      const timestamp: string = getUTCTimestamp();
+      const timestamp: string = generalHelpers.getUTCTimestamp();
       const exp: string = "^\\d{8}_\\d{4}_\\d{5}$";
       const regEx = new RegExp(exp, "gm");
       expect(regEx.test(timestamp)).toBe(true);
@@ -323,7 +319,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const model: any = {};
       const keywords: string[] = [];
       const expected: boolean = false;
-      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
     });
 
     it("can handle empty keywords argument", () => {
@@ -334,7 +330,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keywords: string[] = [];
       const expected: boolean = false;
-      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
     });
 
     it("can test for a set of keywords from model.item.typeKeywords", () => {
@@ -345,7 +341,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keywords: string[] = ["A"];
       const expected: boolean = true;
-      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
     });
 
     it("can test for a set of keywords from model.typeKeywords", () => {
@@ -354,7 +350,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keywords: string[] = ["C"];
       const expected: boolean = true;
-      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
     });
 
     it("can handle an actual set of keywords from model.item.typeKeywords", () => {
@@ -372,7 +368,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keywords: string[] = ["WAB2D", "WAB3D", "Web AppBuilder"];
       const expected: boolean = true;
-      expect(hasAnyKeyword(model, keywords)).toBe(expected);
+      expect(generalHelpers.hasAnyKeyword(model, keywords)).toBe(expected);
     });
   });
 
@@ -381,7 +377,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       const model: any = {};
       const keyword: string = "";
       const expected: boolean = false;
-      expect(hasTypeKeyword(model, keyword)).toBe(expected);
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
     });
 
     it("can handle an object with item.typeKeywords", () => {
@@ -392,7 +388,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keyword: string = "A";
       const expected: boolean = true;
-      expect(hasTypeKeyword(model, keyword)).toBe(expected);
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
     });
 
     it("can handle an object with typeKeywords", () => {
@@ -401,7 +397,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       const keyword: string = "B";
       const expected: boolean = true;
-      expect(hasTypeKeyword(model, keyword)).toBe(expected);
+      expect(generalHelpers.hasTypeKeyword(model, keyword)).toBe(expected);
     });
   });
 
@@ -418,7 +414,11 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         relationships: [],
         adminLayerInfo: {}
       };
-      const actual: boolean = hasDatasource([datasource], itemId, layerId);
+      const actual: boolean = generalHelpers.hasDatasource(
+        [datasource],
+        itemId,
+        layerId
+      );
       expect(actual).toBe(true);
     });
 
@@ -434,7 +434,7 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         relationships: [],
         adminLayerInfo: {}
       };
-      const actual: boolean = hasDatasource(
+      const actual: boolean = generalHelpers.hasDatasource(
         [datasource],
         itemId + "1",
         layerId
@@ -454,20 +454,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
         relationships: [],
         adminLayerInfo: {}
       };
-      const actual: boolean = hasDatasource([datasource], itemId, 1);
+      const actual: boolean = generalHelpers.hasDatasource(
+        [datasource],
+        itemId,
+        1
+      );
       expect(actual).toBe(false);
     });
   });
 
   describe("cleanItemId", () => {
     it("should handle empty id", () => {
-      expect(cleanItemId(null)).toBeNull();
-      expect(cleanItemId(undefined)).toBeUndefined();
-      expect(cleanItemId("")).toEqual("");
+      expect(generalHelpers.cleanItemId(null)).toBeNull();
+      expect(generalHelpers.cleanItemId(undefined)).toBeUndefined();
+      expect(generalHelpers.cleanItemId("")).toEqual("");
     });
 
     it("should remove template braces and itemId property", () => {
-      expect(cleanItemId("{{itm1234567890.itemId}}")).toEqual("itm1234567890");
+      expect(generalHelpers.cleanItemId("{{itm1234567890.itemId}}")).toEqual(
+        "itm1234567890"
+      );
     });
   });
 
@@ -479,26 +485,44 @@ describe("Module `generalHelpers`: common utility functions shared across packag
   });
 
   describe("cleanLayerId", () => {
-    xit("cleanLayerId", done => {
-      console.warn("========== TODO cleanLayerId ========== ");
-      done.fail();
+    it("handles a null or empty string", () => {
+      expect(generalHelpers.cleanLayerId(null)).toEqual(null);
+      expect(generalHelpers.cleanLayerId("")).toEqual("");
+    });
+
+    it("handles a templatized layer id", () => {
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
+        )
+      ).toEqual(0);
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer5.layerId}}"
+        )
+      ).toEqual(5);
+      expect(
+        generalHelpers.cleanLayerId(
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
+        )
+      ).toEqual(12);
     });
   });
 
   describe("_padPositiveNum", () => {
     it("handles numbers wider than minimum width", () => {
-      expect(_padPositiveNum(0, 0)).toEqual("0");
-      expect(_padPositiveNum(123, 0)).toEqual("123");
+      expect(generalHelpers._padPositiveNum(0, 0)).toEqual("0");
+      expect(generalHelpers._padPositiveNum(123, 0)).toEqual("123");
     });
 
     it("handles numbers the same width as the minimum width", () => {
-      expect(_padPositiveNum(0, 1)).toEqual("0");
-      expect(_padPositiveNum(123, 3)).toEqual("123");
+      expect(generalHelpers._padPositiveNum(0, 1)).toEqual("0");
+      expect(generalHelpers._padPositiveNum(123, 3)).toEqual("123");
     });
 
     it("handles numbers narrower than the minimum width", () => {
-      expect(_padPositiveNum(0, 10)).toEqual("0000000000");
-      expect(_padPositiveNum(123, 10)).toEqual("0000000123");
+      expect(generalHelpers._padPositiveNum(0, 10)).toEqual("0000000000");
+      expect(generalHelpers._padPositiveNum(123, 10)).toEqual("0000000123");
     });
   });
 });
