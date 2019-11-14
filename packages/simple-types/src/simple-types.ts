@@ -122,14 +122,7 @@ export function convertItemToTemplate(
 
       // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
       // tslint:disable-next-line:no-floating-promises
-      Promise.all([
-        dataPromise,
-        resourcePromise,
-        relatedPromise.catch(
-          () =>
-            ({ total: 0, relatedItems: [] } as common.IGetRelatedItemsResponse)
-        )
-      ]).then(
+      Promise.all([dataPromise, resourcePromise, relatedPromise]).then(
         responses => {
           const [
             itemDataResponse,

@@ -90,7 +90,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get500Failure()
           )
           .post(
-            "https://www.arcgis.com/sharing//content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
 
@@ -998,7 +998,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
     }
 
-    xit("should catch fetch errors", done => {
+    it("should catch fetch errors", done => {
       // TODO resolve Karma internal error triggered by this test
       const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.item = mockItems.getAGOLItem("Form", null);
@@ -1007,16 +1007,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       fetchMock
         .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
+          mockItems.get500Failure()
+        )
+        .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
-          utils.create404Error()
+          mockItems.get500Failure()
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
-          utils.create404Error()
+          mockItems.get500Failure()
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-          utils.create404Error()
+          mockItems.get500Failure()
         );
 
       convertItemToTemplate(
@@ -1024,7 +1028,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.item,
         MOCK_USER_SESSION
       ).then(newItemTemplate => {
-        expect(newItemTemplate.data).toBeUndefined();
+        expect(newItemTemplate.data).toBeNull();
         expect(newItemTemplate.resources).toEqual([]);
         expect(newItemTemplate.dependencies).toEqual([]);
         done();
@@ -1086,7 +1090,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            utils.create404Error()
+            mockItems.get500Failure()
           );
 
         convertItemToTemplate(

@@ -18,6 +18,7 @@
  * Provides common interfaces.
  */
 
+import * as portal from "@esri/arcgis-rest-portal";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -26,7 +27,6 @@ export { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 export {
   IAddFolderResponse,
   ICreateItemResponse,
-  IGetRelatedItemsResponse,
   IGroup,
   IItem,
   IPagingParams,
@@ -89,6 +89,29 @@ export interface IFeatureServiceProperties {
   service: any;
   layers: any[];
   tables: any[];
+}
+
+export interface IGetRelatedItemsResponse
+  extends portal.IGetRelatedItemsResponse {
+  total: number;
+  start: number;
+  num: number;
+  nextStart: number;
+  relatedItems: portal.IItem[];
+}
+
+export interface IGetResourcesResponse {
+  total: number;
+  start: number;
+  num: number;
+  nextStart: number;
+  resources: IResource[];
+}
+
+export interface IResource {
+  resource: string;
+  created: number;
+  size: number;
 }
 
 /**

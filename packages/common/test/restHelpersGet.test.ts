@@ -22,6 +22,7 @@ import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "../src/generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "../src/restHelpersGet";
+import * as interfaces from "../src/interfaces";
 
 import * as utils from "./mocks/utils";
 import * as fetchMock from "fetch-mock";
@@ -54,6 +55,22 @@ const SERVER_INFO = {
   authInfo: {}
 };
 
+const noRelatedItemsResponse: interfaces.IGetRelatedItemsResponse = {
+  total: 0,
+  start: 1,
+  num: 0,
+  nextStart: -1,
+  relatedItems: []
+};
+
+const noResourcesResponse: interfaces.IGetResourcesResponse = {
+  total: 0,
+  start: 1,
+  num: 0,
+  nextStart: -1,
+  resources: []
+};
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -77,6 +94,22 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           expect(response).toEqual(expected);
           done();
         }, done.fail);
+      });
+
+      it("can handle an exception from the REST endpoint request.request", done => {
+        // ???
+        const url: string = "https://myserver/images/thumbnail.png";
+
+        const getUrl = "https://myserver/images/thumbnail.png";
+        const expectedServerInfo = SERVER_INFO;
+        fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(getUrl + "/rest/info", expectedServerInfo)
+          .post(getUrl, mockItems.get500Failure(), { sendAsJson: false });
+
+        restHelpersGet
+          .getBlob(url, MOCK_USER_SESSION)
+          .then(done, (err: any) => done.fail(err));
       });
     });
   }
@@ -519,8 +552,14 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const expected = { total: 0, relatedItems: [] as any[] };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/relatedItems" +
-          "?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemId +
+          "/relatedItems" +
+          "?f=json&direction=" +
+          direction +
+          "&relationshipType=" +
+          relationshipType +
+          "&token=fake-token",
         expected
       );
       restHelpersGet
@@ -546,8 +585,14 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const expected = { total: 0, relatedItems: [] as any[] };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/relatedItems" +
-          "?f=json&direction=reverse&relationshipTypes=Survey2Service%2CService2Service&token=fake-token",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemId +
+          "/relatedItems" +
+          "?f=json&direction=" +
+          direction +
+          "&relationshipTypes=" +
+          relationshipType.join("%2C") +
+          "&token=fake-token",
         expected
       );
       restHelpersGet
@@ -636,8 +681,14 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/relatedItems" +
-          "?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemId +
+          "/relatedItems" +
+          "?f=json&direction=" +
+          direction +
+          "&relationshipType=" +
+          relationshipType +
+          "&token=fake-token",
         expected
       );
       restHelpersGet
@@ -651,6 +702,58 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           expect(response).toEqual(expected);
           done();
         }, done.fail);
+    });
+
+    it("can handle an exception from the REST endpoint portal.getRelatedItems", done => {
+      const itemId = "itm1234567890";
+      const relationshipType = "Survey2Service";
+      const direction = "forward";
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemId +
+          "/relatedItems" +
+          "?f=json&direction=" +
+          direction +
+          "&relationshipType=" +
+          relationshipType +
+          "&token=fake-token",
+        mockItems.get500Failure()
+      );
+      restHelpersGet
+        .getItemRelatedItems(
+          itemId,
+          relationshipType,
+          direction,
+          MOCK_USER_SESSION
+        )
+        .then(
+          response => {
+            expect(response).toEqual(noRelatedItemsResponse);
+            done();
+          },
+          (err: any) => done.fail(err)
+        );
+    });
+  });
+
+  describe("getItemResources", () => {
+    it("can handle an exception from the REST endpoint portal.getItemResources", done => {
+      const itemId = "itm1234567890";
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemId +
+          "/resources",
+        mockItems.get500Failure()
+      );
+      restHelpersGet.getItemResources(itemId, MOCK_USER_SESSION).then(
+        response => {
+          expect(response).toEqual(noResourcesResponse);
+          done();
+        },
+        (err: any) => done.fail(err)
+      );
     });
   });
 

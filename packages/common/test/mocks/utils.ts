@@ -222,12 +222,6 @@ export function checkForArcgisRestSuccessRequestError(error: any): boolean {
   );
 }
 
-export function create404Error(errorMessage = "404 error"): any {
-  return () => {
-    throw new Error(errorMessage);
-  };
-}
-
 export function createMockSettings(
   solutionName = "",
   folderId = null as string,
