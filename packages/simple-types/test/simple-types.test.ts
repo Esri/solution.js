@@ -998,45 +998,45 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
     }
 
-    it("should catch fetch errors", done => {
-      // TODO resolve Karma internal error triggered by this test
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
-      itemTemplate.item = mockItems.getAGOLItem("Form", null);
-      itemTemplate.itemId = itemTemplate.item.id;
-      itemTemplate.item.thumbnail = null;
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
-          mockItems.get500Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
-          mockItems.get500Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
-          mockItems.get500Failure()
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-          mockItems.get500Failure()
-        );
-
-      convertItemToTemplate(
-        itemTemplate.item.id,
-        itemTemplate.item,
-        MOCK_USER_SESSION
-      ).then(newItemTemplate => {
-        expect(newItemTemplate.data).toBeNull();
-        expect(newItemTemplate.resources).toEqual([]);
-        expect(newItemTemplate.dependencies).toEqual([]);
-        done();
-      }, done.fail);
-    });
-
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
+      it("should catch fetch errors", done => {
+        // TODO resolve Karma internal error triggered by this test
+        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.item = mockItems.getAGOLItem("Form", null);
+        itemTemplate.itemId = itemTemplate.item.id;
+        itemTemplate.item.thumbnail = null;
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
+            mockItems.get500Failure()
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+            mockItems.get500Failure()
+          );
+
+        convertItemToTemplate(
+          itemTemplate.item.id,
+          itemTemplate.item,
+          MOCK_USER_SESSION
+        ).then(newItemTemplate => {
+          expect(newItemTemplate.data).toBeNull();
+          expect(newItemTemplate.resources).toEqual([]);
+          expect(newItemTemplate.dependencies).toEqual([]);
+          done();
+        }, done.fail);
+      });
+
       it("should catch wrapup errors", done => {
         const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
