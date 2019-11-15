@@ -87,10 +87,11 @@ export function topologicallySortItems(
   function visit(vertexId: string) {
     verticesToVisit[vertexId] = SortVisitColor.Gray; // visited, in progress
 
-    // Visit dependents if not already visited
-    const template = templatization.findTemplateInList(templates, vertexId);
-    const dependencies: string[] =
-      template && template.dependencies ? template.dependencies : [];
+    // Visit dependents if not already visited; template has to be in templates list because calls to visit()
+    // are based on verticiesToVisit[], which is initialized using the templates list
+    const template =
+      templates[templatization.findTemplateIndexInList(templates, vertexId)];
+    const dependencies: string[] = template.dependencies || [];
     dependencies.forEach(function(dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {
         // if not yet visited
@@ -98,6 +99,8 @@ export function topologicallySortItems(
       } else if (verticesToVisit[dependencyId] === SortVisitColor.Gray) {
         // visited, in progress
         throw Error("Cyclical dependency graph detected");
+      } else {
+        // finished
       }
     });
 

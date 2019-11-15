@@ -199,12 +199,10 @@ export function getTemplates(
           ...requestOptions,
           ...pagingParam
         };
-        portal
-          .searchItems(searchOptions)
-          .then(
-            searchResponse => resolve(searchResponse),
-            error => reject(error)
-          );
+        portal.searchItems(searchOptions).then(
+          searchResponse => resolve(searchResponse),
+          error => reject(error)
+        );
       },
       error => reject(error)
     );

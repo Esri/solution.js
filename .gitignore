@@ -86,6 +86,7 @@ test.html
 # Tools, notes, outputs
 __*.*
 __*
+.vscode/
 
 # Temporary build products
 packages/**/*.js

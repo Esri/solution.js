@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common createExtent JavaScript example</title>
+  <title>@esri/solution-common createExtent TypeScript example</title>
   <!--
    | Copyright 2019 Esri
    |
@@ -42,50 +42,25 @@
         "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.6.0/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.6.0/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.6.0/dist/umd/request.umd.min",
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common"
+        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.5.8/dist/umd/common.umd.min"
       }
     });
 
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/solution-common"],
-      function (auth, portal, solutionCommon) {
+    require(["src/main"],
+      function (main) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
 
         function go () {
-          var portalId = document.getElementById("id").value;
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
 
-          var usOptions = {};
-          var destinationUserSession = new auth.UserSession(usOptions);
-
-          // Get the extents of a portal
-          portal.getPortal(portalId, { authentication: destinationUserSession })
-            .then(function (portalResponse) {
-              var portalExtent = portalResponse.defaultExtent;
-              let html = "";
-
-              html += "<h4>Source extents</h4>";
-              if (!portalId) {
-                html += "<i>Using sample extents</i><br/>";
-              }
-              html += "<pre>" + JSON.stringify(portalExtent, null, 4) + "</pre>";
-
-              // Convert the extents
-              const outSR = { wkid: 4326 };
-              const geometryServiceUrl =
-                "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
-              // tslint:disable-next-line: no-floating-promises
-              solutionCommon
-                .convertExtent(portalExtent, outSR, geometryServiceUrl, destinationUserSession)
-                .then(conversionResponse => {
-                  html += "<h4>Projected extents</h4>";
-                  html += "<pre>" + JSON.stringify(conversionResponse, null, 4) + "</pre>";
-
-                  document.getElementById("output").innerHTML = html;
-                });
-            });
+          main.convertPortalExtents(document.getElementById("id").value).then(
+            html => {
+              document.getElementById("output").innerHTML = html;
+            }
+          );
         }
       });
   </script>

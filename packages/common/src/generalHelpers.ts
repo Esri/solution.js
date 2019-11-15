@@ -170,16 +170,13 @@ export function getProp(obj: { [index: string]: any }, path: string): any {
  * @return Array of the values plucked from the object; only defined values are returned
  */
 export function getProps(obj: any, props: string[]): any {
-  return props.reduce(
-    (a, p) => {
-      const v = getProp(obj, p);
-      if (v) {
-        a.push(v);
-      }
-      return a;
-    },
-    [] as any[]
-  );
+  return props.reduce((a, p) => {
+    const v = getProp(obj, p);
+    if (v) {
+      a.push(v);
+    }
+    return a;
+  }, [] as any[]);
 }
 
 /**
@@ -304,7 +301,7 @@ export function cleanLayerBasedItemId(id: any): any {
  * returns 0
  */
 export function cleanLayerId(id: any) {
-  return id.toString
+  return id?.toString()
     ? parseInt(
         id
           .toString()
