@@ -907,7 +907,7 @@ export function _getCreateServiceOptions(
 
     // project the portals extent to match that of the service
     convertExtent(
-      templateDictionary.initiative.defaultExtent,
+      templateDictionary.organization.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.geometryServerUrl,
       authentication

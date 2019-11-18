@@ -99,8 +99,8 @@ export function deploySolution(
           )
           .then(
             function(wgs84Extent) {
-              templateDictionary.initiative = Object.assign(
-                templateDictionary.initiative || {},
+              templateDictionary.organization = Object.assign(
+                templateDictionary.organization || {},
                 {
                   orgExtent:
                     wgs84Extent.xmin +

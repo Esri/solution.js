@@ -146,8 +146,11 @@ const projectedGeometries: any[] = [
   }
 ];
 
-const initiative: any = {
-  orgExtent: [[0, 0], [1, 1]],
+const organization: any = {
+  orgExtent: [
+    [0, 0],
+    [1, 1]
+  ],
   defaultExtent: {
     xmin: 0,
     ymin: 0,
@@ -242,9 +245,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       createFeatureService(
@@ -323,9 +328,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       createFeatureService(
@@ -1352,7 +1359,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         '{"success":true}'
       );
 
-      getRequest(update).then(() => done(), error => done.fail(error));
+      getRequest(update).then(
+        () => done(),
+        error => done.fail(error)
+      );
     });
 
     it("should handle error", done => {
@@ -1888,9 +1898,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       itemTemplate.item.name = "A";
@@ -1934,9 +1946,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       itemTemplate.itemId = "ab766cba0dd44ec080420acc10990282";
@@ -2009,9 +2023,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       fetchMock.post(
@@ -2082,9 +2098,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: true,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       fetchMock.post(
@@ -2159,9 +2177,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       fetchMock.post(
@@ -2234,9 +2254,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderId: "aabb123456",
         isPortal: false,
         solutionItemId: "sol1234567890",
-        initiative: initiative,
         ab766cba0dd44ec080420acc10990282: {},
-        organization: { geometryServiceUrl: geometryServiceUrl }
+        organization: Object.assign(
+          { geometryServiceUrl: geometryServiceUrl },
+          organization
+        )
       };
 
       fetchMock.post(

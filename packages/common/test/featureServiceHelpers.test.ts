@@ -87,7 +87,7 @@ let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".layer0.fields";
 
-const _initiative: any = {
+const _organization: any = {
   orgExtent: {
     xmin: 0,
     ymin: 0,
@@ -2440,7 +2440,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2504,7 +2504,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       addFeatureServiceLayersAndTables(
@@ -2567,7 +2567,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2641,7 +2641,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
