@@ -330,19 +330,14 @@ describe("Module `deploySolution`", () => {
           solutionItemId: "map1234567890",
           svc1234567890: {
             def: {},
-            initialExtent: {
-              xmin: -9821384.714217981,
-              ymin: 5117339.123090005,
-              xmax: -9797228.384715842,
-              ymax: 5137789.39951188,
-              spatialReference: { wkid: 102100 }
-            },
-            fullExtent: {
-              xmin: -9821384.714217981,
-              ymin: 5117339.123090005,
-              xmax: -9797228.384715842,
-              ymax: 5137789.39951188,
-              spatialReference: { wkid: 102100 }
+            organization: {
+              defaultExtent: {
+                xmin: -9821384.714217981,
+                ymin: 5117339.123090005,
+                xmax: -9797228.384715842,
+                ymax: 5137789.39951188,
+                spatialReference: { wkid: 102100 }
+              }
             },
             itemId: "svc1234567890",
             url: featureServerUrl,

@@ -146,8 +146,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{4efe5f693de34620934787ead6693f19.initialExtent}}",
-        fullExtent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+        initialExtent:
+          "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
+        fullExtent:
+          "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -321,7 +323,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -695,7 +698,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -1048,7 +1052,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -1746,7 +1751,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -2384,7 +2390,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -3220,7 +3227,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -3828,7 +3836,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -4220,7 +4229,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -18385,8 +18395,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.initialExtent}}",
-        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+        initialExtent:
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
+        fullExtent:
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -18560,7 +18572,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -18935,7 +18948,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -19288,7 +19302,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -19986,7 +20001,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -20624,7 +20640,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -21460,7 +21477,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -22068,7 +22086,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -22460,7 +22479,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -23128,8 +23148,10 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102008,
           latestWkid: 102008
         },
-        initialExtent: "{{b19aec399444407da84fffe2a55d4151.initialExtent}}",
-        fullExtent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+        initialExtent:
+          "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
+        fullExtent:
+          "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -23355,7 +23377,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -24200,7 +24223,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -24975,7 +24999,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -25290,7 +25315,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -28158,8 +28184,10 @@ const expected: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{4efe5f693de34620934787ead6693f19.initialExtent}}",
-        fullExtent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+        initialExtent:
+          "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
+        fullExtent:
+          "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -28333,7 +28361,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -28707,7 +28736,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -29060,7 +29090,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -29758,7 +29789,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -30396,7 +30428,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -31232,7 +31265,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -31840,7 +31874,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -32232,7 +32267,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent:
+            "{{4efe5f693de34620934787ead6693f19.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -47487,8 +47523,10 @@ const expected: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.initialExtent}}",
-        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+        initialExtent:
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
+        fullExtent:
+          "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -47662,7 +47700,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -48037,7 +48076,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -48390,7 +48430,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -49088,7 +49129,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -49726,7 +49768,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -50562,7 +50605,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -51170,7 +51214,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -51562,7 +51607,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent:
+            "{{934a9ef8efa7448fa8ddf7b13cef0240.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -52230,8 +52276,10 @@ const expected: common.IItemTemplate[] = [
           wkid: 102008,
           latestWkid: 102008
         },
-        initialExtent: "{{b19aec399444407da84fffe2a55d4151.initialExtent}}",
-        fullExtent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+        initialExtent:
+          "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
+        fullExtent:
+          "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -52457,7 +52505,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -53302,7 +53351,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -54077,7 +54127,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -54392,7 +54443,8 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent:
+            "{{b19aec399444407da84fffe2a55d4151.organization.defaultExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",

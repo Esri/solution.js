@@ -165,8 +165,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{DEF456.itemId}}",
-            fullExtent: "{{ABC123.fullExtent}}",
-            initialExtent: "{{ABC123.initialExtent}}"
+            fullExtent: "{{ABC123.organization.defaultExtent}}",
+            initialExtent: "{{ABC123.organization.defaultExtent}}"
           },
           layers: [
             {
@@ -279,8 +279,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
-            fullExtent: "{{ab766cba0dd44ec080420acc10990282.fullExtent}}",
-            initialExtent: "{{ab766cba0dd44ec080420acc10990282.initialExtent}}",
+            fullExtent:
+              "{{ab766cba0dd44ec080420acc10990282.organization.defaultExtent}}",
+            initialExtent:
+              "{{ab766cba0dd44ec080420acc10990282.organization.defaultExtent}}",
             layers: [
               {
                 id: 0,
