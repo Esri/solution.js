@@ -913,12 +913,7 @@ export function _getCreateServiceOptions(
       authentication
     ).then(
       extent => {
-        templateDictionary[itemId].organization = Object.assign(
-          templateDictionary[itemId].organization || {},
-          {
-            defaultExtent: extent
-          }
-        );
+        templateDictionary[itemId].solutionExtent = extent;
         createOptions.item = templatization.replaceInTemplate(
           createOptions.item,
           templateDictionary

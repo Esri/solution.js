@@ -88,7 +88,7 @@ const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".layer0.fields";
 
 const _organization: any = {
-  orgExtent: {
+  defaultExtent: {
     xmin: 0,
     ymin: 0,
     xmax: 1,
@@ -165,8 +165,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{DEF456.itemId}}",
-            fullExtent: "{{ABC123.organization.defaultExtent}}",
-            initialExtent: "{{ABC123.organization.defaultExtent}}"
+            fullExtent: "{{ABC123.solutionExtent}}",
+            initialExtent: "{{ABC123.solutionExtent}}"
           },
           layers: [
             {
@@ -279,10 +279,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
-            fullExtent:
-              "{{ab766cba0dd44ec080420acc10990282.organization.defaultExtent}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             initialExtent:
-              "{{ab766cba0dd44ec080420acc10990282.organization.defaultExtent}}",
+              "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             layers: [
               {
                 id: 0,

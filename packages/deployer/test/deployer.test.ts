@@ -315,7 +315,6 @@ describe("Module `deploySolution`", () => {
               "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
             geometryServerUrl:
               "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer",
-            orgExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
             defaultExtent: {
               xmin: -9821384.714217981,
               ymin: 5117339.123090005,
@@ -325,19 +324,18 @@ describe("Module `deploySolution`", () => {
             },
             spatialReference: { wkid: 102100 }
           },
+          solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
           folderId: "a4468da125a64526b359b70d8ba4a9dd",
           isPortal: false,
           solutionItemId: "map1234567890",
           svc1234567890: {
             def: {},
-            organization: {
-              defaultExtent: {
-                xmin: -9821384.714217981,
-                ymin: 5117339.123090005,
-                xmax: -9797228.384715842,
-                ymax: 5137789.39951188,
-                spatialReference: { wkid: 102100 }
-              }
+            solutionExtent: {
+              xmin: -9821384.714217981,
+              ymin: 5117339.123090005,
+              xmax: -9797228.384715842,
+              ymax: 5137789.39951188,
+              spatialReference: { wkid: 102100 }
             },
             itemId: "svc1234567890",
             url: featureServerUrl,
