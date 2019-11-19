@@ -11,13 +11,15 @@
     "@esri/arcgis-rest-service-admin": "^2.6.0",
     "@esri/solution-common": "^0.5.8",
     "@types/requirejs": "^2.1.31",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1"
   },
-  "scripts": {},
+  "scripts": {
+    "build": "start cmd.exe /c \".\\node_modules\\.bin\\tsc.cmd -p .\\tsconfig.json\""
+  },
   "repository": {},
   "contributors": [],
   "bugs": {
