@@ -85,9 +85,13 @@ describe("Module `createSolutionTemplate`", () => {
   });
 
   describe("_replaceTemplate", () => {
-    xit("_replaceTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("returns false when no template is found", () => {
+      const actual: boolean = createSolutionTemplate._replaceTemplate(
+        [],
+        "",
+        initialSolutionTemplates[0]
+      );
+      expect(actual).toBeFalsy();
     });
   });
 });
