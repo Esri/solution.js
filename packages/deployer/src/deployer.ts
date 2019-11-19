@@ -99,21 +99,21 @@ export function deploySolution(
           )
           .then(
             function(wgs84Extent) {
-              templateDictionary.initiative = Object.assign(
-                templateDictionary.initiative || {},
+              templateDictionary.organization = Object.assign(
+                templateDictionary.organization || {},
                 {
-                  orgExtent:
-                    wgs84Extent.xmin +
-                    "," +
-                    wgs84Extent.ymin +
-                    "," +
-                    wgs84Extent.xmax +
-                    "," +
-                    wgs84Extent.ymax,
                   defaultExtent: portalExtent,
                   spatialReference: portalExtent.spatialReference
                 }
               );
+              templateDictionary.solutionItemExtent =
+                wgs84Extent.xmin +
+                "," +
+                wgs84Extent.ymin +
+                "," +
+                wgs84Extent.xmax +
+                "," +
+                wgs84Extent.ymax;
 
               const totalEstimatedCost =
                 _estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
