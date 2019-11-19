@@ -64,11 +64,7 @@ const MOCK_USER_SESSION = new common.UserSession({
 
 const geometryServiceUrl: string = "http://utility/geomServer";
 
-const _initiative: any = {
-  orgExtent: [
-    [0, 0],
-    [1, 1]
-  ],
+const _organization: any = {
   defaultExtent: {
     xmin: 0,
     ymin: 0,
@@ -82,6 +78,11 @@ const _initiative: any = {
     wkid: 102100
   }
 };
+
+const _solutionItemExtent: any = [
+  [0, 0],
+  [1, 1]
+];
 
 afterEach(() => {
   fetchMock.restore();
@@ -466,9 +467,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
             svc1234567890: {},
-            organization: { geometryServiceUrl: geometryServiceUrl }
+            organization: Object.assign(
+              { geometryServiceUrl: geometryServiceUrl },
+              _organization
+            ),
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {
@@ -563,7 +567,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         url: expectedUrl
       };
 
-      settings.initiative = _initiative;
+      settings.organization = Object.assign(
+        settings.organization || {},
+        _organization
+      );
+      settings.solutionItemExtent = _solutionItemExtent;
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
       createResponse.success = true;
@@ -715,8 +723,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
-            svc1234567890: {}
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {
@@ -801,9 +810,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
             svc1234567890: {},
-            organization: { geometryServiceUrl: geometryServiceUrl }
+            organization: Object.assign(
+              { geometryServiceUrl: geometryServiceUrl },
+              _organization
+            ),
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {
@@ -886,8 +898,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
-            svc1234567890: {}
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {
@@ -950,9 +963,12 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
             svc1234567890: {},
-            organization: { geometryServiceUrl: geometryServiceUrl }
+            organization: Object.assign(
+              { geometryServiceUrl: geometryServiceUrl },
+              _organization
+            ),
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {
@@ -1058,8 +1074,9 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           [],
           MOCK_USER_SESSION,
           {
-            initiative: _initiative,
-            svc1234567890: {}
+            organization: _organization,
+            svc1234567890: {},
+            solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
           function() {

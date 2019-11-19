@@ -96,22 +96,23 @@ export function createItemTemplate(
         itemInfo => {
           if (common.getProp(itemInfo, "extent")) {
             // @ts-ignore
-            itemInfo.extent = "{{initiative.orgExtent:optional}}";
+            itemInfo.extent = "{{solutionItemExtent}}";
           }
           // Check if this is the solution's thumbnail
           if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
             // Set the thumbnail
             const thumbnailUrl =
               portalSharingUrl + "/content/items/" + itemId + "/data";
-            common
-              .getBlob(thumbnailUrl, authentication)
-              .then(
-                blob =>
-                  common
-                    .addThumbnailFromBlob(blob, solutionItemId, authentication)
-                    .then(() => resolve(true), () => resolve(true)),
-                () => resolve(true)
-              );
+            common.getBlob(thumbnailUrl, authentication).then(
+              blob =>
+                common
+                  .addThumbnailFromBlob(blob, solutionItemId, authentication)
+                  .then(
+                    () => resolve(true),
+                    () => resolve(true)
+                  ),
+              () => resolve(true)
+            );
           } else {
             const itemHandler: common.IItemTemplateConversions =
               moduleMap[itemInfo.type.toLowerCase()];

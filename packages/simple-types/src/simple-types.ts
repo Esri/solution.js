@@ -60,11 +60,6 @@ export function convertItemToTemplate(
     );
 
     if (!isGroup) {
-      // Use the initiative's extent
-      // if (itemTemplate.item.extent) {
-      //   itemTemplate.item.extent = "{{initiative.extent:optional}}";
-      // }
-
       // Request item resources
       const resourcePromise = common
         .getItemResources(itemTemplate.itemId, authentication)
