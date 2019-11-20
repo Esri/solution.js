@@ -524,10 +524,11 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                     s: "{{organization.portalBaseUrl}}"
                   },
                   geocodeProps: {
-                    service: "{{organization.geocodeServerUrl}}"
+                    service:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
                   },
                   routeProps: {
-                    service: "{{organization.naServerUrl}}"
+                    service: "{{organization.helperServices.route.url}}"
                   }
                 }
               }
@@ -675,10 +676,11 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                       "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
-                    service: "{{organization.geocodeServerUrl}}"
+                    service:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
                   },
                   routeProps: {
-                    service: "{{organization.naServerUrl}}"
+                    service: "{{organization.helperServices.route.url}}"
                   }
                 }
               }
@@ -698,10 +700,11 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                       "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   geocodeProps: {
-                    service: "{{organization.geocodeServerUrl}}"
+                    service:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
                   },
                   routeProps: {
-                    service: "{{organization.naServerUrl}}"
+                    service: "{{organization.helperServices.route.url}}"
                   }
                 }
               }
@@ -2015,14 +2018,16 @@ const expectedInfoLookupTemplate: any = {
         sources: [
           {
             locator: {
-              url: "{{organization.geocodeServerUrl}}",
+              url:
+                "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
               _url: {
-                path: "{{organization.geocodeServerUrl}}",
+                path:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                 query: null
               },
               normalization: true
             },
-            url: "{{organization.geocodeServerUrl}}",
+            url: "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
             northLat: "Ymax",
             southLat: "Ymin",
             eastLon: "Xmax",

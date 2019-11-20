@@ -31,6 +31,7 @@ export {
   IItem,
   IPagingParams,
   IPortal,
+  IUser,
   ItemRelationshipType,
   ISearchResult,
   IUpdateItemResponse

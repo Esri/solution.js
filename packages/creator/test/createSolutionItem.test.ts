@@ -5207,7 +5207,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
       logo: "{{organization.portalBaseUrl}}/app-logo.png",
-      geometryService: "{{organization.geometryServerUrl}}",
+      geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
         widgets: [
@@ -5337,7 +5337,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               showInfoWindowOnSelect: true,
               sources: [
                 {
-                  url: "{{organization.geocodeServerUrl}}",
+                  url:
+                    "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                   name: "ArcGIS World Geocoding Service",
                   singleEnabled: true,
                   multiEnabled: true,
@@ -6714,7 +6715,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               zoomToFeature: false,
               intersectSearchedLocation: false,
               enableProximitySearch: true,
-              routeService: "{{organization.naServerUrl}}",
+              routeService: "{{organization.helperServices.route.url}}",
               directionLengthUnit: {
                 bufferUnit: "UNIT_STATUTE_MILE",
                 routeUnit: "MILES",
@@ -6836,7 +6837,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "Find address or place",
@@ -7152,7 +7154,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
             uri: "widgets/SituationAwareness/Widget",
             config: {
               geocodeService: {
-                url: "{{organization.geocodeServerUrl}}"
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
               },
               enableRouting: true,
               bufferRange: {
@@ -9864,7 +9867,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "ArcGIS World Geocoding Service",
@@ -13765,7 +13769,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               geocoderSettings: {
-                url: "{{organization.geocodeServerUrl}}",
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                 fields: [
                   {
                     name: "Loc_name",
@@ -33219,7 +33224,7 @@ const expected: common.IItemTemplate[] = [
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
       logo: "{{organization.portalBaseUrl}}/app-logo.png",
-      geometryService: "{{organization.geometryServerUrl}}",
+      geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
         widgets: [
@@ -33350,7 +33355,8 @@ const expected: common.IItemTemplate[] = [
               showInfoWindowOnSelect: true,
               sources: [
                 {
-                  url: "{{organization.geocodeServerUrl}}",
+                  url:
+                    "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                   name: "ArcGIS World Geocoding Service",
                   singleEnabled: true,
                   multiEnabled: true,
@@ -34918,7 +34924,7 @@ const expected: common.IItemTemplate[] = [
               zoomToFeature: false,
               intersectSearchedLocation: false,
               enableProximitySearch: true,
-              routeService: "{{organization.naServerUrl}}",
+              routeService: "{{organization.helperServices.route.url}}",
               directionLengthUnit: {
                 bufferUnit: "UNIT_STATUTE_MILE",
                 routeUnit: "MILES",
@@ -35048,7 +35054,8 @@ const expected: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "Find address or place",
@@ -35396,7 +35403,8 @@ const expected: common.IItemTemplate[] = [
             uri: "widgets/SituationAwareness/Widget",
             config: {
               geocodeService: {
-                url: "{{organization.geocodeServerUrl}}"
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
               },
               enableRouting: true,
               bufferRange: {
@@ -38312,7 +38320,8 @@ const expected: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "ArcGIS World Geocoding Service",
@@ -42500,7 +42509,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               geocoderSettings: {
-                url: "{{organization.geocodeServerUrl}}",
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                 fields: [
                   {
                     name: "Loc_name",
