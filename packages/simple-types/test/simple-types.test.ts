@@ -572,6 +572,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           item: {
             id: "{{map1234567890.itemId}}",
             type: "Web Map",
+            accessInformation: "Esri, Inc.",
             categories: [],
             contentStatus: null,
             culture: "en-us",
@@ -686,6 +687,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           item: {
             id: "{{dsh1234567890.itemId}}",
             type: "Dashboard",
+            accessInformation: "Esri, Inc.",
             categories: [],
             contentStatus: null,
             culture: "en-us",
@@ -773,6 +775,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           item: {
             id: "{{frm1234567890.itemId}}",
             type: "Form",
+            accessInformation: "Esri, Inc.",
             categories: [],
             contentStatus: null,
             culture: "en-us",
@@ -937,6 +940,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           item: {
             id: "{{wma1234567890.itemId}}",
             type: "Web Mapping Application",
+            accessInformation: "Esri, Inc.",
             categories: [],
             contentStatus: null,
             culture: "en-us",
@@ -1148,6 +1152,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "Voting Centers",
             id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             type: "Web Mapping Application",
+            accessInformation: undefined,
             categories: undefined,
             contentStatus: null,
             culture: undefined,

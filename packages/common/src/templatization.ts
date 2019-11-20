@@ -77,6 +77,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
+    accessInformation: itemInfo.accessInformation,
     categories: itemInfo.categories,
     contentStatus: itemInfo.contentStatus,
     culture: itemInfo.culture,
