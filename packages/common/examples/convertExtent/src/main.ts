@@ -15,15 +15,14 @@
  */
 // @esri/solution-common convertExtent TypeScript example
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restTypes from "@esri/arcgis-rest-types";
-import * as solutionCommon from "@esri/solution-common";
+import * as common from "@esri/solution-common";
 
 export function convertPortalExtents(portalId: string): Promise<string> {
   return new Promise<string>(resolve => {
-    const usOptions: auth.IUserSessionOptions = {};
-    const authorization: auth.UserSession = new auth.UserSession(usOptions);
+    const usOptions: common.IUserSessionOptions = {};
+    const authorization: common.UserSession = new common.UserSession(usOptions);
 
     // Get the extents of a portal
     // tslint:disable-next-line: no-floating-promises
@@ -44,7 +43,7 @@ export function convertPortalExtents(portalId: string): Promise<string> {
         const geometryServiceUrl: string =
           "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
         // tslint:disable-next-line: no-floating-promises
-        solutionCommon
+        common
           .convertExtent(portalExtent, outSR, geometryServiceUrl, authorization)
           .then(conversionResponse => {
             html += "<h4>Projected extents</h4>";

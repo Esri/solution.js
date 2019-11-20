@@ -15,13 +15,11 @@
  */
 // @esri/solution-common copyItemInfo TypeScript example
 
-import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as solutionCommon from "@esri/solution-common";
+import * as common from "@esri/solution-common";
 
 export function copyItemInfo(
   itemId: string,
-  authentication: auth.UserSession
+  authentication: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -30,23 +28,23 @@ export function copyItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
+    const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<File>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          solutionCommon
+          common
             .getItemDataAsFile(itemId, itemBase.name, authentication)
-            .then(resolve2, (error: any) => reject2(error));
+            .then(resolve2, (error: any) => reject2(JSON.stringify(error)));
         }
       );
     });
-    const itemMetadataDef = solutionCommon.getItemMetadataAsFile(
+    const itemMetadataDef = common.getItemMetadataAsFile(
       itemId,
       authentication
     );
-    const itemResourcesDef = solutionCommon.getItemResourcesFiles(
+    const itemResourcesDef = common.getItemResourcesFiles(
       itemId,
       authentication
     );
@@ -65,7 +63,7 @@ export function copyItemInfo(
           itemResourceFiles
         ] = responses;
         // Construct the thumbnail URL from the item base info
-        const itemThumbnailUrl = solutionCommon.getItemThumbnailUrl(
+        const itemThumbnailUrl = common.getItemThumbnailUrl(
           itemId,
           itemBase.thumbnail,
           false,
@@ -86,7 +84,7 @@ export function copyItemInfo(
         console.log("itemResources", itemResourceFiles);
 
         // Create the copy after extracting properties that aren't specific to the source
-        solutionCommon
+        common
           .createFullItem(
             getCopyableItemBaseProperties(itemBase),
             undefined, // folder id
@@ -98,7 +96,7 @@ export function copyItemInfo(
             "public"
           )
           .then(
-            (createResponse: portal.ICreateItemResponse) => {
+            (createResponse: common.ICreateItemResponse) => {
               resolve(JSON.stringify(createResponse));
             },
             (error: any) => reject(JSON.stringify(error))
