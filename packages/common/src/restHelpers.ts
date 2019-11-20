@@ -33,6 +33,12 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+export function searchItems(
+  search: string | portal.ISearchOptions | portal.SearchQueryBuilder
+): Promise<interfaces.ISearchResult<interfaces.IItem>> {
+  return portal.searchItems(search);
+}
+
 export function addToServiceDefinition(
   url: string,
   options: any

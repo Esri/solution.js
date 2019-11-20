@@ -29,7 +29,6 @@ export {
 
 //#region Imports -------------------------------------------------------------------------------------------------------//
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as interfaces from "./interfaces";
 import * as generalHelpers from "./generalHelpers";
 import * as templatization from "./templatization";
@@ -418,7 +417,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  requestOptions: auth.IUserRequestOptions,
+  requestOptions: interfaces.IUserRequestOptions,
   progressTickCallback?: () => void
 ): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -504,7 +503,7 @@ export function updateFeatureServiceDefinition(
   serviceUrl: string,
   listToAdd: any[],
   templateDictionary: any,
-  requestOptions: auth.IUserRequestOptions,
+  requestOptions: interfaces.IUserRequestOptions,
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
@@ -584,7 +583,7 @@ export function updateLayerFieldReferences(
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: auth.IUserRequestOptions,
+  requestOptions: interfaces.IUserRequestOptions,
   progressTickCallback?: () => void
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
@@ -630,7 +629,7 @@ export function postProcessFields(
   popupInfos: any,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: auth.IUserRequestOptions
+  requestOptions: interfaces.IUserRequestOptions
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     const id = itemTemplate.itemId;

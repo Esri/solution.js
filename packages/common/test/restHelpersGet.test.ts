@@ -32,8 +32,8 @@ import * as mockItems from "../test/mocks/agolItems";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a auth.UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+// Set up a interfaces.UserSession to use in all these tests
+const MOCK_USER_SESSION = new interfaces.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -911,7 +911,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
   describe("getPortalSharingUrlFromAuth", () => {
     it("gets a default portal sharing url with authentication but no portal", () => {
-      const mockUserSession = new auth.UserSession({
+      const mockUserSession = new interfaces.UserSession({
         clientId: "clientId",
         redirectUri: "https://example-app.com/redirect-uri",
         token: "fake-token",
@@ -936,7 +936,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
   describe("getPortalUrlFromAuth", () => {
     it("gets a default portal url with authentication but no portal", () => {
-      const mockUserSession = new auth.UserSession({
+      const mockUserSession = new interfaces.UserSession({
         clientId: "clientId",
         redirectUri: "https://example-app.com/redirect-uri",
         token: "fake-token",

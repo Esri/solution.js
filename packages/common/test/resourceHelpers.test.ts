@@ -32,7 +32,7 @@ import * as fetchMock from "fetch-mock";
 
 describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new auth.UserSession({
+  const MOCK_USER_SESSION = new interfaces.UserSession({
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",

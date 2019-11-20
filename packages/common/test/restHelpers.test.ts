@@ -53,7 +53,12 @@ import {
   getSampleMetadata,
   getSampleTextAsBlob
 } from "../test/mocks/utils";
-import { IItemTemplate, IPostProcessArgs, IUpdate } from "../src/interfaces";
+import {
+  IItemTemplate,
+  IPostProcessArgs,
+  IUpdate,
+  UserSession
+} from "../src/interfaces";
 import * as auth from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../test/mocks/agolItems";
@@ -87,8 +92,8 @@ beforeEach(() => {
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a auth.UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+// Set up a UserSession to use in all these tests
+const MOCK_USER_SESSION = new UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -147,7 +152,10 @@ const projectedGeometries: any[] = [
 ];
 
 const initiative: any = {
-  orgExtent: [[0, 0], [1, 1]],
+  orgExtent: [
+    [0, 0],
+    [1, 1]
+  ],
   defaultExtent: {
     xmin: 0,
     ymin: 0,
@@ -270,7 +278,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       jasmine.clock().uninstall();
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
-      const sessionWithMockedTime: auth.UserSession = createRuntimeMockUserSession(
+      const sessionWithMockedTime: UserSession = createRuntimeMockUserSession(
         setMockDateTime(now)
       );
 
@@ -1352,7 +1360,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         '{"success":true}'
       );
 
-      getRequest(update).then(() => done(), error => done.fail(error));
+      getRequest(update).then(
+        () => done(),
+        error => done.fail(error)
+      );
     });
 
     it("should handle error", done => {
@@ -1879,7 +1890,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1925,7 +1936,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL empty service", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1971,7 +1982,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2046,7 +2057,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2120,7 +2131,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values when name contains guid", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2196,7 +2207,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: UserSession = new UserSession({
         username: "jsmith",
         password: "123456"
       });
