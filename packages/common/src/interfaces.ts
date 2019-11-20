@@ -23,7 +23,11 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
+export {
+  IUserRequestOptions,
+  IUserSessionOptions,
+  UserSession
+} from "@esri/arcgis-rest-auth";
 export {
   IAddFolderResponse,
   ICreateItemResponse,
@@ -51,6 +55,20 @@ export enum EFileType {
   Metadata,
   Resource,
   Thumbnail
+}
+
+/**
+ * Options for creating a solution item.
+ */
+export interface ICreateSolutionOptions {
+  title?: string; // default: random string from common.createId()
+  snippet?: string; // default: ""
+  description?: string; // default: ""
+  tags?: string[]; // default: []
+  thumbnailUrl?: string; // default: ""
+  templateDictionary?: any;
+  templatizeFields?: boolean; // default: false
+  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
 }
 
 /**
@@ -106,12 +124,6 @@ export interface IGetResourcesResponse {
   num: number;
   nextStart: number;
   resources: IResource[];
-}
-
-export interface IResource {
-  resource: string;
-  created: number;
-  size: number;
 }
 
 /**
@@ -243,6 +255,12 @@ export interface IPostProcessArgs {
    * Callback for IProgressUpdate
    */
   progressTickCallback: any;
+}
+
+export interface IResource {
+  resource: string;
+  created: number;
+  size: number;
 }
 
 /**
