@@ -61,6 +61,23 @@ export const PLACEHOLDER_NA_SERVER_NAME: string =
 export const PLACEHOLDER_PRINT_SERVER_NAME: string =
   "{{organization.printServerUrl}}";
 
+/**
+ * Creates a random 8-character alphanumeric string that begins with an alphabetic character.
+ *
+ * @return An alphanumeric string in the range [a0000000..zzzzzzzz]
+ */
+export function createId(): string {
+  // Return a random number, but beginning with an alphabetic character so that it can be used as a valid
+  // dotable property name. Used for unique identifiers that do not require the rigor of a full UUID -
+  // i.e. node ids, process ids, etc.
+  const min = 0.2777777777777778; // 0.a in base 36
+  const max = 0.9999999999996456; // 0.zzzzzzzz in base 36
+  return (_getRandomNumberInRange(min, max).toString(36) + "0000000").substr(
+    2,
+    8
+  );
+}
+
 export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
@@ -99,7 +116,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
  *
  * @param id AGO id of item
  * @param type AGO item type; defaults to ""
- * @return Empty template containing supplied id, optional type, and a key created using the function _createId()
+ * @return Empty template containing supplied id, optional type, and a key created using the function createId()
  */
 export function createPlaceholderTemplate(
   id: string,
@@ -108,7 +125,7 @@ export function createPlaceholderTemplate(
   return {
     itemId: id,
     type,
-    key: _createId(),
+    key: createId(),
     item: {
       id,
       type
@@ -224,23 +241,6 @@ export function templatizeFieldReferences(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Creates a random 8-character alphanumeric string that begins with an alphabetic character.
- *
- * @return An alphanumeric string in the range [a0000000..zzzzzzzz]
- */
-export function _createId(): string {
-  // Return a random number, but beginning with an alphabetic character so that it can be used as a valid
-  // dotable property name. Used for unique identifiers that do not require the rigor of a full UUID -
-  // i.e. node ids, process ids, etc.
-  const min = 0.2777777777777778; // 0.a in base 36
-  const max = 0.9999999999996456; // 0.zzzzzzzz in base 36
-  return (_getRandomNumberInRange(min, max).toString(36) + "0000000").substr(
-    2,
-    8
-  );
-}
 
 /**
  * Creates a random number between two values.
