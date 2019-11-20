@@ -21,4 +21,4 @@
  */
 
 export * from "./creator";
-export * from "./createSolutionTemplate";
+export * from "./createItemTemplate";

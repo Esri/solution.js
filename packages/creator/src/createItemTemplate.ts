@@ -21,32 +21,32 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as solutionFeatureLayer from "@esri/solution-feature-layer";
-import * as solutionSimpleTypes from "@esri/solution-simple-types";
-import * as solutionStoryMap from "@esri/solution-storymap";
+import * as featureLayer from "@esri/solution-feature-layer";
+import * as simpleTypes from "@esri/solution-simple-types";
+import * as storyMap from "@esri/solution-storymap";
 
 /**
  * Mapping from item type to module with type-specific template-handling code
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  dashboard: solutionSimpleTypes,
+  dashboard: simpleTypes,
 
   // //??? Temporary assignments
-  "project package": solutionSimpleTypes,
-  "workforce project": solutionSimpleTypes,
+  "project package": simpleTypes,
+  "workforce project": simpleTypes,
   // //???
 
-  "feature layer": solutionFeatureLayer,
-  "feature service": solutionFeatureLayer,
-  form: solutionSimpleTypes,
-  group: solutionSimpleTypes,
+  "feature layer": featureLayer,
+  "feature service": featureLayer,
+  form: simpleTypes,
+  group: simpleTypes,
   // "openstreetmap": solutionStoryMap,
   // "project package": solutionStoryMap,
   // "storymap": solutionStoryMap,
   // table: solutionFeatureLayer,
   // vectortilelayer: solutionFeatureLayer,
-  "web map": solutionSimpleTypes,
-  "web mapping application": solutionSimpleTypes
+  "web map": simpleTypes,
+  "web mapping application": simpleTypes
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -62,9 +62,9 @@ const moduleMap: common.IItemTypeModuleMap = {
  * @protected
  */
 export function createItemTemplate(
-  portalSharingUrl: string,
   solutionItemId: string,
   itemId: string,
+  templateDictionary: any,
   authentication: common.UserSession,
   existingTemplates: common.IItemTemplate[]
 ): Promise<boolean> {
@@ -102,16 +102,17 @@ export function createItemTemplate(
           if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
             // Set the thumbnail
             const thumbnailUrl =
-              portalSharingUrl + "/content/items/" + itemId + "/data";
-            common
-              .getBlob(thumbnailUrl, authentication)
-              .then(
-                blob =>
-                  common
-                    .addThumbnailFromBlob(blob, solutionItemId, authentication)
-                    .then(() => resolve(true), () => resolve(true)),
-                () => resolve(true)
-              );
+              authentication.portal + "/content/items/" + itemId + "/data";
+            common.getBlob(thumbnailUrl, authentication).then(
+              blob =>
+                common
+                  .addThumbnailFromBlob(blob, solutionItemId, authentication)
+                  .then(
+                    () => resolve(true),
+                    () => resolve(true)
+                  ),
+              () => resolve(true)
+            );
           } else {
             const itemHandler: common.IItemTemplateConversions =
               moduleMap[itemInfo.type.toLowerCase()];
@@ -157,9 +158,9 @@ export function createItemTemplate(
                         ) {
                           dependentDfds.push(
                             createItemTemplate(
-                              portalSharingUrl,
                               solutionItemId,
                               dependentId,
+                              templateDictionary,
                               authentication,
                               existingTemplates
                             )
@@ -182,7 +183,7 @@ export function createItemTemplate(
           /* console.log("fetching group " + itemId); */
           common.getGroup(itemId, authentication).then(
             itemInfo => {
-              solutionSimpleTypes
+              simpleTypes
                 .convertItemToTemplate(
                   solutionItemId,
                   itemInfo,
@@ -220,9 +221,9 @@ export function createItemTemplate(
                         ) {
                           dependentDfds.push(
                             createItemTemplate(
-                              portalSharingUrl,
                               solutionItemId,
                               dependentId,
+                              templateDictionary,
                               authentication,
                               existingTemplates
                             )
@@ -243,60 +244,6 @@ export function createItemTemplate(
         }
       );
     }
-  });
-}
-
-/**
- * Creates a solution template.
- *
- * @param ids List of AGO id strings
- * @param destinationRequestOptions Options for creating solution item in AGO
- * @return A promise without value
- */
-export function createSolutionTemplate(
-  portalSharingUrl: string,
-  solutionItemId: string,
-  ids: string[],
-  templateDictionary: any,
-  destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    let solutionTemplates: common.IItemTemplate[] = [];
-
-    // Handle a list of one or more AGO ids by stepping through the list
-    // and calling this function recursively
-    const getItemsPromise: Array<Promise<boolean>> = [];
-
-    ids.forEach(itemId => {
-      getItemsPromise.push(
-        createItemTemplate(
-          portalSharingUrl,
-          solutionItemId,
-          itemId,
-          destinationAuthentication,
-          solutionTemplates
-        )
-      );
-      progressTickCallback();
-    });
-    Promise.all(getItemsPromise).then(
-      () => {
-        // Remove remnant placeholder items from the templates list
-        const origLen = solutionTemplates.length;
-        solutionTemplates = solutionTemplates.filter(
-          template => template.type // `type` needs to be defined
-        );
-        /* console.log(
-          "removed " +
-            (origLen - solutionTemplates.length) +
-            " placeholder templates"
-        ); */
-
-        resolve(solutionTemplates);
-      },
-      e => reject(common.fail(e))
-    );
   });
 }
 
@@ -353,6 +300,8 @@ export function postProcessFieldReferences(
     return template;
   });
 }
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Get common properties that will support the templatization of field references
@@ -513,8 +462,6 @@ export function _getWebMapFSDependencies(
   });
   return webMapFSDependencies;
 }
-
-// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Replaces a template entry in a list of templates
