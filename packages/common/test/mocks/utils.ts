@@ -793,7 +793,7 @@ export function getPortalResponse() {
     templatesGroupQuery: 'title:"Web Application Templates" AND owner:esri_en',
     thumbnail: "",
     units: "english",
-    urlKey: "arcgis4localgov2",
+    urlKey: "myorg",
     useVectorBasemaps: true,
     vectorBasemapGalleryGroupQuery:
       'title:"United States Vector Basemaps" AND owner:Esri_cy_US',

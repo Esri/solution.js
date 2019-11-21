@@ -36,9 +36,6 @@ export function deploySolution(
     const sourceId = itemInfoCard.id;
     let percentDone = 1; // Let the caller know that we've started
     progressCallback(percentDone);
-    templateDictionary.organization = {
-      portalBaseUrl: portalSubset.portalUrl
-    };
 
     // Fetch solution item's data info (partial item info is supplied via function's parameters)
     const solutionItemDataDef = common.getItemDataAsJson(
@@ -87,6 +84,17 @@ export function deploySolution(
           templateDictionary.organization || {},
           portalResponse
         );
+
+        const scheme: string = portalResponse.allSSL ? "https" : "http";
+        const urlKey: string = common.getProp(portalResponse, "urlKey");
+        const customBaseUrl: string = common.getProp(
+          portalResponse,
+          "customBaseUrl"
+        );
+        templateDictionary.organization.portalBaseUrl =
+          urlKey && customBaseUrl
+            ? `${scheme}://${urlKey}.${customBaseUrl}`
+            : portalSubset.portalUrl;
 
         templateDictionary.user = responses[3];
 
