@@ -298,6 +298,18 @@ export function createItemFromTemplate(
                 itemId: createResponse.id
               };
 
+              // Set the appItemId manually to get around cases where the path was incorrectly set
+              // in legacy deployments
+              if (
+                newItemTemplate.type.toLowerCase() === "web mapping application"
+              ) {
+                common.setProp(
+                  newItemTemplate,
+                  "data.appItemId",
+                  createResponse.id
+                );
+              }
+
               // Update the template again now that we have the new item id
               newItemTemplate = common.replaceInTemplate(
                 newItemTemplate,
