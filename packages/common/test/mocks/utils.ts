@@ -228,10 +228,12 @@ export function createMockSettings(
   access = "private"
 ): any {
   const settings: any = {
-    organization: {
-      orgUrl,
-      portalBaseUrl: portalUrl
-    },
+    organization: Object.assign(
+      {
+        portalBaseUrl: portalUrl
+      },
+      getPortalResponse()
+    ),
     solutionName,
     folderId,
     access
@@ -809,6 +811,158 @@ export function getPortalResponse() {
     supportsOAuth: true,
     currentVersion: "7.2",
     allowedOrigins: [] as any[]
+  };
+}
+
+export function getUserResponse() {
+  return {
+    username: "LocalGovDeployCasey",
+    id: "7f7dfdd4d9184e188eb44c2356ad74d9",
+    fullName: "Casey Jones",
+    firstName: "Casey",
+    lastName: "Jones",
+    preferredView: "GIS",
+    description: null as any,
+    email: "casey@esri.com",
+    userType: "arcgisonly",
+    idpUsername: null as any,
+    favGroupId: "318a6b072baa453bba5383cd103d8628",
+    lastLogin: 1573839621000,
+    mfaEnabled: false,
+    access: "org",
+    storageUsage: 2069559555,
+    storageQuota: 2199023255552,
+    orgId: "org1234567890",
+    role: "org_admin",
+    privileges: [
+      "features:user:edit",
+      "features:user:fullEdit",
+      "marketplace:admin:manage",
+      "marketplace:admin:purchase",
+      "marketplace:admin:startTrial",
+      "opendata:user:designateGroup",
+      "opendata:user:openDataAdmin",
+      "portal:admin:assignToGroups",
+      "portal:admin:categorizeItems",
+      "portal:admin:changeUserRoles",
+      "portal:admin:createUpdateCapableGroup",
+      "portal:admin:deleteGroups",
+      "portal:admin:deleteItems",
+      "portal:admin:deleteUsers",
+      "portal:admin:disableUsers",
+      "portal:admin:inviteUsers",
+      "portal:admin:manageCollaborations",
+      "portal:admin:manageCredits",
+      "portal:admin:manageEnterpriseGroups",
+      "portal:admin:manageLicenses",
+      "portal:admin:manageRoles",
+      "portal:admin:manageSecurity",
+      "portal:admin:manageServers",
+      "portal:admin:manageUtilityServices",
+      "portal:admin:manageWebsite",
+      "portal:admin:reassignGroups",
+      "portal:admin:reassignItems",
+      "portal:admin:reassignUsers",
+      "portal:admin:shareToGroup",
+      "portal:admin:shareToOrg",
+      "portal:admin:shareToPublic",
+      "portal:admin:updateGroups",
+      "portal:admin:updateItemCategorySchema",
+      "portal:admin:updateItems",
+      "portal:admin:updateUsers",
+      "portal:admin:viewGroups",
+      "portal:admin:viewItems",
+      "portal:admin:viewUsers",
+      "portal:publisher:bulkPublishFromDataStores",
+      "portal:publisher:publishFeatures",
+      "portal:publisher:publishScenes",
+      "portal:publisher:publishServerGPServices",
+      "portal:publisher:publishServerServices",
+      "portal:publisher:publishTiles",
+      "portal:publisher:registerDataStores",
+      "portal:user:categorizeItems",
+      "portal:user:createGroup",
+      "portal:user:createItem",
+      "portal:user:joinGroup",
+      "portal:user:joinNonOrgGroup",
+      "portal:user:shareGroupToOrg",
+      "portal:user:shareGroupToPublic",
+      "portal:user:shareToGroup",
+      "portal:user:shareToOrg",
+      "portal:user:shareToPublic",
+      "portal:user:viewOrgGroups",
+      "portal:user:viewOrgItems",
+      "portal:user:viewOrgUsers",
+      "portal:user:viewTracks",
+      "premium:publisher:createAdvancedNotebooks",
+      "premium:publisher:createNotebooks",
+      "premium:publisher:geoanalytics",
+      "premium:publisher:rasteranalysis",
+      "premium:user:demographics",
+      "premium:user:elevation",
+      "premium:user:featurereport",
+      "premium:user:geocode",
+      "premium:user:geoenrichment",
+      "premium:user:networkanalysis",
+      "premium:user:spatialanalysis"
+    ],
+    level: "2",
+    userLicenseTypeId: "creatorUT",
+    disabled: false,
+    tags: [] as string[],
+    culture: "en-US",
+    cultureFormat: "us",
+    region: "US",
+    units: "english",
+    thumbnail: null as any,
+    created: 1551469472000,
+    modified: 1559775285000,
+    provider: "arcgis",
+    groups: [
+      {
+        id: "22547723baa14ba89ea3845f8b7b4e79",
+        title: "Homeless Activity Manager_811d0bbc9a4942fe9f1375088c4ed099",
+        isInvitationOnly: true,
+        owner: "casey",
+        description:
+          "This group is required to configure the Crowdsource Manager application and used to share maps with health and human service personnel to manage reports of homeless individuals and encampments in the community.",
+        snippet:
+          "This group is required to configure the Crowdsource Manager application and used to share maps with health and human service personnel to manage reports of homeless individuals and encampments in the community.",
+        tags: [
+          "Homelessness",
+          "Health and Human Services",
+          "Public Safety",
+          "Homeless Activity",
+          "Encampments"
+        ],
+        phone: null as any,
+        sortField: "title",
+        sortOrder: "asc",
+        isViewOnly: true,
+        thumbnail: null as any,
+        created: 1573600936000,
+        modified: 1573600937000,
+        access: "private",
+        capabilities: [] as string[],
+        isFav: false,
+        isReadOnly: false,
+        protected: false,
+        autoJoin: false,
+        notificationsEnabled: false,
+        provider: null as any,
+        providerGroupName: null as any,
+        leavingDisallowed: false,
+        hiddenMembers: false,
+        displaySettings: {
+          itemTypes: ""
+        },
+        userMembership: {
+          username: "casey",
+          memberType: "owner",
+          applications: 0
+        }
+      }
+    ]
   };
 }
 

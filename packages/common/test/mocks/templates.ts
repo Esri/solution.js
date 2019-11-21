@@ -1014,7 +1014,7 @@ function getItemTemplateFundamentals(
         typePrefix +
         "1234567890/info/thumbnail/ago_downloaded.png",
       documentation: null,
-      extent: "{{organization.extent:optional}}",
+      extent: "{{solutionItemExtent}}",
       categories: [],
       contentStatus: null,
       spatialReference: null,

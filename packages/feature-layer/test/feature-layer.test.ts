@@ -20,13 +20,7 @@
 
 import * as featureLayer from "../src/feature-layer";
 import * as common from "../../common/src/interfaces";
-
-import {
-  TOMORROW,
-  createMockSettings,
-  createRuntimeMockUserSession,
-  checkForArcgisRestSuccessRequestError
-} from "../../common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
@@ -53,31 +47,16 @@ const MOCK_USER_SESSION = new common.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
-  tokenExpires: TOMORROW,
+  tokenExpires: utils.TOMORROW,
   refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
+  refreshTokenExpires: utils.TOMORROW,
   refreshTokenTTL: 1440,
   username: "casey",
   password: "123456",
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
-const geometryServiceUrl: string = "http://utility/geomServer";
-
-const _organization: any = {
-  defaultExtent: {
-    xmin: 0,
-    ymin: 0,
-    xmax: 1,
-    ymax: 1,
-    spatialReference: {
-      wkid: 102100
-    }
-  },
-  spatialReference: {
-    wkid: 102100
-  }
-};
+const _organization: any = utils.getPortalResponse();
 
 const _solutionItemExtent: any = [
   [0, 0],
@@ -417,7 +396,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         tableDefQuery
       );
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -468,10 +447,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           {
             svc1234567890: {},
-            organization: Object.assign(
-              { geometryServiceUrl: geometryServiceUrl },
-              _organization
-            ),
+            organization: _organization,
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
@@ -559,7 +535,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         tableDefQuery
       );
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings.isPortal = true;
       settings[expectedId] = {
@@ -673,7 +649,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -776,7 +752,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -811,10 +787,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           {
             svc1234567890: {},
-            organization: Object.assign(
-              { geometryServiceUrl: geometryServiceUrl },
-              _organization
-            ),
+            organization: _organization,
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
@@ -868,7 +841,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -933,7 +906,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.tables[0].serviceItemId = id;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -964,10 +937,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           {
             svc1234567890: {},
-            organization: Object.assign(
-              { geometryServiceUrl: geometryServiceUrl },
-              _organization
-            ),
+            organization: _organization,
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
@@ -1024,7 +994,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -1127,7 +1097,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -1212,7 +1182,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       itemTemplate.properties.service.tables = [];
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,

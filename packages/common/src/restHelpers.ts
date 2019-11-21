@@ -909,7 +909,7 @@ export function _getCreateServiceOptions(
     convertExtent(
       templateDictionary.organization.defaultExtent,
       serviceInfo.service.spatialReference,
-      templateDictionary.organization.geometryServerUrl,
+      templateDictionary.organization.helperServices.geometry.url,
       authentication
     ).then(
       extent => {
