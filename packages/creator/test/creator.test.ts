@@ -260,7 +260,8 @@ describe("Module `creator`", () => {
             templateDictionary,
             portalSubset,
             destinationAuthentication,
-            progressCallback
+            progressCallback,
+            true
           )
           .then(
             solutionId => {

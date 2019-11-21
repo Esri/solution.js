@@ -18,28 +18,8 @@
  * Provides tests for functions involving the deployment of a Solution.
  */
 
-import {
-  PORTAL_SUBSET,
-  getSuccessResponse,
-  getCreateFolderResponse,
-  getTransformationsResponse,
-  getProjectResponse,
-  getPortalResponse,
-  getTokenResponse,
-  UTILITY_SERVER_INFO,
-  PROGRESS_CALLBACK,
-  getCreateServiceResponse,
-  createRuntimeMockUserSession
-} from "../../common/test/mocks/utils";
-import {
-  getAGOLService,
-  getAGOLLayerOrTable,
-  getAGOLItem,
-  getAGOLItemData,
-  getTrimmedAGOLItem,
-  get400Failure,
-  get200Failure
-} from "../../common/test/mocks/agolItems";
+import * as utils from "../../common/test/mocks/utils";
+import * as mockItems from "../../common/test/mocks/agolItems";
 import * as fetchMock from "fetch-mock";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
@@ -50,7 +30,7 @@ import * as deployer from "../src/deployer";
 let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
-  MOCK_USER_SESSION = createRuntimeMockUserSession(new Date().getDate());
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession(new Date().getDate());
 });
 
 describe("Module `deploySolution`", () => {
@@ -73,14 +53,14 @@ describe("Module `deploySolution`", () => {
         ]);
 
         const templateDictionary: any = {};
-        const portalSubset: any = PORTAL_SUBSET;
+        const portalSubset: any = utils.PORTAL_SUBSET;
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const featureServerUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
         // get mock items
-        const layer: any = getAGOLLayerOrTable(
+        const layer: any = mockItems.getAGOLLayerOrTable(
           0,
           "ROW Permits",
           "Feature Layer",
@@ -98,7 +78,7 @@ describe("Module `deploySolution`", () => {
           ],
           true
         );
-        const table: any = getAGOLLayerOrTable(
+        const table: any = mockItems.getAGOLLayerOrTable(
           1,
           "ROW Permit Comment",
           "Table",
@@ -117,67 +97,75 @@ describe("Module `deploySolution`", () => {
           true
         );
 
-        const expectedService: any = getAGOLService([layer], [table]);
-        const expectedMap: any = getTrimmedAGOLItem(
-          getAGOLItem(
+        const expectedService: any = mockItems.getAGOLService([layer], [table]);
+        const expectedMap: any = mockItems.getTrimmedAGOLItem(
+          mockItems.getAGOLItem(
             "Web Map",
             "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
           )
         );
-        expectedMap.extent = undefined;
+        expectedMap.extent = "-88.226,41.708,-88.009,41.844";
         expectedMap.thumbnail =
-          PORTAL_SUBSET.restUrl +
+          utils.PORTAL_SUBSET.restUrl +
           "/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
-        const webMapData: any = getAGOLItemData("Web Map");
+        const webMapData: any = mockItems.getAGOLItemData("Web Map");
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
           )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
-            UTILITY_SERVER_INFO
+            utils.UTILITY_SERVER_INFO
           )
           .post(
             geometryServer + "/findTransformations",
-            getTransformationsResponse()
+            utils.getTransformationsResponse()
           )
-          .post(geometryServer + "/project", getProjectResponse())
+          .post(geometryServer + "/project", utils.getProjectResponse())
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
             })
           )
           .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-            getCreateServiceResponse()
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+            utils.getCreateServiceResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/move",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               itemId: "svc1234567890",
               owner: "casey",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -185,31 +173,31 @@ describe("Module `deploySolution`", () => {
           )
           .post(
             featureServerAdminUrl + "/addToDefinition",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               layers: [{ name: "ROW Permits", id: 0 }],
               tables: [{ name: "ROW Permit Comment", id: 1 }]
             })
           )
           .post(featureServerAdminUrl + "/0?f=json", layer)
           .post(featureServerAdminUrl + "/1?f=json", table)
-          .post(featureServerAdminUrl + "/refresh", getSuccessResponse())
+          .post(featureServerAdminUrl + "/refresh", utils.getSuccessResponse())
           .post(
             featureServerAdminUrl + "/0/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
             featureServerAdminUrl + "/1/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
-            getSuccessResponse({ id: "svc1234567890" })
+            utils.getSuccessResponse({ id: "svc1234567890" })
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/update",
-            getSuccessResponse({ id: "map1234567890" })
+            utils.getSuccessResponse({ id: "map1234567890" })
           );
 
         const expected: any = {
@@ -257,13 +245,13 @@ describe("Module `deploySolution`", () => {
                   tags: ["test"],
                   snippet: "Snippet of an AGOL item",
                   thumbnail:
-                    PORTAL_SUBSET.restUrl +
+                    utils.PORTAL_SUBSET.restUrl +
                     "/content/items/svc1234567890/info/thumbnail/ago_downloaded.png",
                   documentation: null,
                   categories: [],
                   contentStatus: null,
                   spatialReference: null,
-                  extent: undefined,
+                  extent: "-88.226,41.708,-88.009,41.844",
                   accessInformation: "Esri, Inc.",
                   licenseInfo: null,
                   culture: "en-us",
@@ -304,42 +292,25 @@ describe("Module `deploySolution`", () => {
           }
         };
 
+        delete portalResponse.portalThumbnail;
+        delete portalResponse.defaultBasemap.baseMapLayers[0].resourceInfo
+          .layers[0].subLayerIds;
+        delete portalResponse.portalProperties.sharedTheme.logo.small;
         const expectedTemplate: any = {
-          organization: {
-            portalBaseUrl: PORTAL_SUBSET.portalUrl,
-            geocodeServerUrl:
-              "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer",
-            naServerUrl:
-              "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World",
-            printServiceUrl:
-              "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
-            geometryServerUrl:
-              "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer"
-          },
+          organization: Object.assign(
+            {
+              portalBaseUrl: "https://myorg.maps.arcgis.com"
+            },
+            portalResponse
+          ),
+          user: utils.getUserResponse(),
+          solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
           folderId: "a4468da125a64526b359b70d8ba4a9dd",
           isPortal: false,
-          initiative: {
-            orgExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
-            defaultExtent: {
-              xmin: -9821384.714217981,
-              ymin: 5117339.123090005,
-              xmax: -9797228.384715842,
-              ymax: 5137789.39951188,
-              spatialReference: { wkid: 102100 }
-            },
-            spatialReference: { wkid: 102100 }
-          },
           solutionItemId: "map1234567890",
           svc1234567890: {
             def: {},
-            initialExtent: {
-              xmin: -9821384.714217981,
-              ymin: 5117339.123090005,
-              xmax: -9797228.384715842,
-              ymax: 5137789.39951188,
-              spatialReference: { wkid: 102100 }
-            },
-            fullExtent: {
+            solutionExtent: {
               xmin: -9821384.714217981,
               ymin: 5117339.123090005,
               xmax: -9797228.384715842,
@@ -455,7 +426,7 @@ describe("Module `deploySolution`", () => {
             templateDictionary,
             portalSubset,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             function(actual) {
@@ -477,50 +448,58 @@ describe("Module `deploySolution`", () => {
           templates.getItemTemplatePart("Feature Service")
         ]);
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
           )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
-            UTILITY_SERVER_INFO
+            utils.UTILITY_SERVER_INFO
           )
           .post(
             geometryServer + "/findTransformations",
-            getTransformationsResponse()
+            utils.getTransformationsResponse()
           )
-          .post(geometryServer + "/project", getProjectResponse())
+          .post(geometryServer + "/project", utils.getProjectResponse())
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
-            get200Failure()
+            mockItems.get200Failure()
           );
 
         deployer
           .deploySolution(
             itemInfo.item,
             {},
-            PORTAL_SUBSET,
+            utils.PORTAL_SUBSET,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => {
@@ -538,34 +517,42 @@ describe("Module `deploySolution`", () => {
           templates.getItemTemplatePart("Feature Service")
         ]);
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
 
         fetchMock
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
-            get400Failure()
+            mockItems.get400Failure()
           );
 
         deployer
           .deploySolution(
             itemInfo.item,
             {},
-            PORTAL_SUBSET,
+            utils.PORTAL_SUBSET,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => {
@@ -583,45 +570,53 @@ describe("Module `deploySolution`", () => {
           templates.getItemTemplatePart("Feature Service")
         ]);
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
           )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
-            UTILITY_SERVER_INFO
+            utils.UTILITY_SERVER_INFO
           )
           .post(
             geometryServer + "/findTransformations",
-            getTransformationsResponse()
+            utils.getTransformationsResponse()
           )
-          .post(geometryServer + "/project", get400Failure());
+          .post(geometryServer + "/project", mockItems.get400Failure());
 
         deployer
           .deploySolution(
             itemInfo.item,
             {},
-            PORTAL_SUBSET,
+            utils.PORTAL_SUBSET,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => {
@@ -643,7 +638,7 @@ describe("Module `deploySolution`", () => {
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
         // get mock items
-        const layer: any = getAGOLLayerOrTable(
+        const layer: any = mockItems.getAGOLLayerOrTable(
           0,
           "ROW Permits",
           "Feature Layer",
@@ -661,7 +656,7 @@ describe("Module `deploySolution`", () => {
           ],
           true
         );
-        const table: any = getAGOLLayerOrTable(
+        const table: any = mockItems.getAGOLLayerOrTable(
           1,
           "ROW Permit Comment",
           "Table",
@@ -680,53 +675,61 @@ describe("Module `deploySolution`", () => {
           true
         );
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
           )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
-            UTILITY_SERVER_INFO
+            utils.UTILITY_SERVER_INFO
           )
           .post(
             geometryServer + "/findTransformations",
-            getTransformationsResponse()
+            utils.getTransformationsResponse()
           )
-          .post(geometryServer + "/project", getProjectResponse())
+          .post(geometryServer + "/project", utils.getProjectResponse())
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
             })
           )
           .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-            getCreateServiceResponse()
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+            utils.getCreateServiceResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/move",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               itemId: "svc1234567890",
               owner: "casey",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -734,40 +737,40 @@ describe("Module `deploySolution`", () => {
           )
           .post(
             featureServerAdminUrl + "/addToDefinition",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               layers: [{ name: "ROW Permits", id: 0 }],
               tables: [{ name: "ROW Permit Comment", id: 1 }]
             })
           )
           .post(featureServerAdminUrl + "/0?f=json", layer)
           .post(featureServerAdminUrl + "/1?f=json", table)
-          .post(featureServerAdminUrl + "/refresh", getSuccessResponse())
+          .post(featureServerAdminUrl + "/refresh", utils.getSuccessResponse())
           .post(
             featureServerAdminUrl + "/0/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
             featureServerAdminUrl + "/1/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
-            getSuccessResponse({ id: "svc1234567890" })
+            utils.getSuccessResponse({ id: "svc1234567890" })
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/update",
-            get400Failure()
+            mockItems.get400Failure()
           );
 
         deployer
           .deploySolution(
             itemInfo.item,
             {},
-            PORTAL_SUBSET,
+            utils.PORTAL_SUBSET,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => {
@@ -789,7 +792,7 @@ describe("Module `deploySolution`", () => {
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
         // get mock items
-        const layer: any = getAGOLLayerOrTable(
+        const layer: any = mockItems.getAGOLLayerOrTable(
           0,
           "ROW Permits",
           "Feature Layer",
@@ -807,7 +810,7 @@ describe("Module `deploySolution`", () => {
           ],
           true
         );
-        const table: any = getAGOLLayerOrTable(
+        const table: any = mockItems.getAGOLLayerOrTable(
           1,
           "ROW Permit Comment",
           "Table",
@@ -826,53 +829,61 @@ describe("Module `deploySolution`", () => {
           true
         );
 
-        const portalResponse: any = getPortalResponse();
+        const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
           )
           .get(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
-          .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
-            getCreateFolderResponse()
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
           )
-          .post(PORTAL_SUBSET.restUrl + "/generateToken", getTokenResponse())
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            utils.getCreateFolderResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
-            UTILITY_SERVER_INFO
+            utils.UTILITY_SERVER_INFO
           )
           .post(
             geometryServer + "/findTransformations",
-            getTransformationsResponse()
+            utils.getTransformationsResponse()
           )
-          .post(geometryServer + "/project", getProjectResponse())
+          .post(geometryServer + "/project", utils.getProjectResponse())
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               id: "map1234567890",
               folder: "44468da125a64526b359b70d8ba4a9dd"
             })
           )
           .post(
-            PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
-            getCreateServiceResponse()
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+            utils.getCreateServiceResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/move",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               itemId: "svc1234567890",
               owner: "casey",
               folder: "44468da125a64526b359b70d8ba4a9dd"
@@ -880,35 +891,35 @@ describe("Module `deploySolution`", () => {
           )
           .post(
             featureServerAdminUrl + "/addToDefinition",
-            getSuccessResponse({
+            utils.getSuccessResponse({
               layers: [{ name: "ROW Permits", id: 0 }],
               tables: [{ name: "ROW Permit Comment", id: 1 }]
             })
           )
           .post(featureServerAdminUrl + "/0?f=json", layer)
           .post(featureServerAdminUrl + "/1?f=json", table)
-          .post(featureServerAdminUrl + "/refresh", getSuccessResponse())
+          .post(featureServerAdminUrl + "/refresh", utils.getSuccessResponse())
           .post(
             featureServerAdminUrl + "/0/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
             featureServerAdminUrl + "/1/updateDefinition",
-            getSuccessResponse()
+            utils.getSuccessResponse()
           )
           .post(
-            PORTAL_SUBSET.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
-            get400Failure()
+            mockItems.get400Failure()
           );
 
         deployer
           .deploySolution(
             itemInfo.item,
             {},
-            PORTAL_SUBSET,
+            utils.PORTAL_SUBSET,
             MOCK_USER_SESSION,
-            PROGRESS_CALLBACK
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => {

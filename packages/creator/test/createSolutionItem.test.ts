@@ -85,9 +85,13 @@ describe("Module `createItemTemplate`", () => {
   });
 
   describe("_replaceTemplate", () => {
-    xit("_replaceTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("returns false when no template is found", () => {
+      const actual: boolean = createSolutionTemplate._replaceTemplate(
+        [],
+        "",
+        initialSolutionTemplates[0]
+      );
+      expect(actual).toBeFalsy();
     });
   });
 });
@@ -104,7 +108,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       culture: "",
       description:
         "This map contains the collection of data and symbology to be used with the Incident Analysis Viewer as part of Situational Awareness.",
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayerForDashBoardMap",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
@@ -146,8 +150,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{4efe5f693de34620934787ead6693f19.initialExtent}}",
-        fullExtent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+        initialExtent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
+        fullExtent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -321,7 +325,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -695,7 +699,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -1048,7 +1052,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -1746,7 +1750,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -2384,7 +2388,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -3220,7 +3224,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -3828,7 +3832,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -4220,7 +4224,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -4836,7 +4840,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -5156,7 +5160,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -5203,7 +5207,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
       logo: "{{organization.portalBaseUrl}}/app-logo.png",
-      geometryService: "{{organization.geometryServerUrl}}",
+      geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
         widgets: [
@@ -5333,7 +5337,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               showInfoWindowOnSelect: true,
               sources: [
                 {
-                  url: "{{organization.geocodeServerUrl}}",
+                  url:
+                    "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                   name: "ArcGIS World Geocoding Service",
                   singleEnabled: true,
                   multiEnabled: true,
@@ -6710,7 +6715,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
               zoomToFeature: false,
               intersectSearchedLocation: false,
               enableProximitySearch: true,
-              routeService: "{{organization.naServerUrl}}",
+              routeService: "{{organization.helperServices.route.url}}",
               directionLengthUnit: {
                 bufferUnit: "UNIT_STATUTE_MILE",
                 routeUnit: "MILES",
@@ -6832,7 +6837,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "Find address or place",
@@ -7148,7 +7154,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
             uri: "widgets/SituationAwareness/Widget",
             config: {
               geocodeService: {
-                url: "{{organization.geocodeServerUrl}}"
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
               },
               enableRouting: true,
               bufferRange: {
@@ -9860,7 +9867,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "ArcGIS World Geocoding Service",
@@ -13761,7 +13769,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                 }
               },
               geocoderSettings: {
-                url: "{{organization.geocodeServerUrl}}",
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                 fields: [
                   {
                     name: "Loc_name",
@@ -15074,7 +15083,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -18343,7 +18352,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       culture: "",
       description:
         "This map contains the collection of data and symbology to be used with the Incident Analysis Viewer as part of Situational Awareness.",
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "LayerForDashboardExteternal",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
@@ -18385,8 +18394,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.initialExtent}}",
-        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
+        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -18560,7 +18569,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -18935,7 +18944,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -19288,7 +19297,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -19986,7 +19995,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -20624,7 +20633,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -21460,7 +21469,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -22068,7 +22077,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -22460,7 +22469,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -23076,7 +23085,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       categories: [],
       culture: "",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
       snippet: null,
@@ -23128,8 +23137,8 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           wkid: 102008,
           latestWkid: 102008
         },
-        initialExtent: "{{b19aec399444407da84fffe2a55d4151.initialExtent}}",
-        fullExtent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+        initialExtent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
+        fullExtent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -23355,7 +23364,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -24200,7 +24209,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -24975,7 +24984,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -25290,7 +25299,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -28116,7 +28125,7 @@ const expected: common.IItemTemplate[] = [
       culture: "",
       description:
         "This map contains the collection of data and symbology to be used with the Incident Analysis Viewer as part of Situational Awareness.",
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayerForDashBoardMap",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
@@ -28158,8 +28167,8 @@ const expected: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{4efe5f693de34620934787ead6693f19.initialExtent}}",
-        fullExtent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+        initialExtent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
+        fullExtent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -28333,7 +28342,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -28707,7 +28716,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -29060,7 +29069,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -29758,7 +29767,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -30396,7 +30405,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -31232,7 +31241,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -31840,7 +31849,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -32232,7 +32241,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{4efe5f693de34620934787ead6693f19.fullExtent}}",
+          extent: "{{4efe5f693de34620934787ead6693f19.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -32848,7 +32857,7 @@ const expected: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -33168,7 +33177,7 @@ const expected: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -33215,7 +33224,7 @@ const expected: common.IItemTemplate[] = [
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
       logo: "{{organization.portalBaseUrl}}/app-logo.png",
-      geometryService: "{{organization.geometryServerUrl}}",
+      geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
         widgets: [
@@ -33346,7 +33355,8 @@ const expected: common.IItemTemplate[] = [
               showInfoWindowOnSelect: true,
               sources: [
                 {
-                  url: "{{organization.geocodeServerUrl}}",
+                  url:
+                    "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                   name: "ArcGIS World Geocoding Service",
                   singleEnabled: true,
                   multiEnabled: true,
@@ -34914,7 +34924,7 @@ const expected: common.IItemTemplate[] = [
               zoomToFeature: false,
               intersectSearchedLocation: false,
               enableProximitySearch: true,
-              routeService: "{{organization.naServerUrl}}",
+              routeService: "{{organization.helperServices.route.url}}",
               directionLengthUnit: {
                 bufferUnit: "UNIT_STATUTE_MILE",
                 routeUnit: "MILES",
@@ -35044,7 +35054,8 @@ const expected: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "Find address or place",
@@ -35392,7 +35403,8 @@ const expected: common.IItemTemplate[] = [
             uri: "widgets/SituationAwareness/Widget",
             config: {
               geocodeService: {
-                url: "{{organization.geocodeServerUrl}}"
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
               },
               enableRouting: true,
               bufferRange: {
@@ -38308,7 +38320,8 @@ const expected: common.IItemTemplate[] = [
                     type: "query"
                   },
                   {
-                    url: "{{organization.geocodeServerUrl}}",
+                    url:
+                      "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                     name: "ArcGIS World Geocoding Service",
                     singleLineFieldName: "SingleLine",
                     placeholder: "ArcGIS World Geocoding Service",
@@ -42496,7 +42509,8 @@ const expected: common.IItemTemplate[] = [
                 }
               },
               geocoderSettings: {
-                url: "{{organization.geocodeServerUrl}}",
+                url:
+                  "{{organization.helperServices.geocode:getDefaultLocatorURL}}",
                 fields: [
                   {
                     name: "Loc_name",
@@ -43847,7 +43861,7 @@ const expected: common.IItemTemplate[] = [
       categories: [],
       culture: "en-us",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: null,
       snippet: null,
@@ -47445,7 +47459,7 @@ const expected: common.IItemTemplate[] = [
       culture: "",
       description:
         "This map contains the collection of data and symbology to be used with the Incident Analysis Viewer as part of Situational Awareness.",
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "LayerForDashboardExteternal",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
@@ -47487,8 +47501,8 @@ const expected: common.IItemTemplate[] = [
           wkid: 102100,
           latestWkid: 3857
         },
-        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.initialExtent}}",
-        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+        initialExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
+        fullExtent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -47662,7 +47676,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -48037,7 +48051,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -48390,7 +48404,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -49088,7 +49102,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -49726,7 +49740,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPoint",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -50562,7 +50576,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolyline",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "uniqueValue",
@@ -51170,7 +51184,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -51562,7 +51576,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.fullExtent}}",
+          extent: "{{934a9ef8efa7448fa8ddf7b13cef0240.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -52178,7 +52192,7 @@ const expected: common.IItemTemplate[] = [
       categories: [],
       culture: "",
       description: null,
-      extent: "{{initiative.orgExtent:optional}}",
+      extent: "{{solutionItemExtent}}",
       licenseInfo: null,
       name: "TestLayer2FromWebApp",
       snippet: null,
@@ -52230,8 +52244,8 @@ const expected: common.IItemTemplate[] = [
           wkid: 102008,
           latestWkid: 102008
         },
-        initialExtent: "{{b19aec399444407da84fffe2a55d4151.initialExtent}}",
-        fullExtent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+        initialExtent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
+        fullExtent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
         allowGeometryUpdates: true,
         units: "esriMeters",
         supportsAppend: true,
@@ -52457,7 +52471,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -53302,7 +53316,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               field1:
@@ -54077,7 +54091,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",
@@ -54392,7 +54406,7 @@ const expected: common.IItemTemplate[] = [
           geometryType: "esriGeometryPolygon",
           minScale: 0,
           maxScale: 0,
-          extent: "{{b19aec399444407da84fffe2a55d4151.fullExtent}}",
+          extent: "{{b19aec399444407da84fffe2a55d4151.solutionExtent}}",
           drawingInfo: {
             renderer: {
               type: "simple",

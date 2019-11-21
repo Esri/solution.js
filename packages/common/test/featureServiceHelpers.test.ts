@@ -87,8 +87,8 @@ let itemTemplate: IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".layer0.fields";
 
-const _initiative: any = {
-  orgExtent: {
+const _organization: any = {
+  defaultExtent: {
     xmin: 0,
     ymin: 0,
     xmax: 1,
@@ -165,8 +165,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{DEF456.itemId}}",
-            fullExtent: "{{ABC123.fullExtent}}",
-            initialExtent: "{{ABC123.initialExtent}}"
+            fullExtent: "{{ABC123.solutionExtent}}",
+            initialExtent: "{{ABC123.solutionExtent}}"
           },
           layers: [
             {
@@ -279,8 +279,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         properties: {
           service: {
             serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
-            fullExtent: "{{ab766cba0dd44ec080420acc10990282.fullExtent}}",
-            initialExtent: "{{ab766cba0dd44ec080420acc10990282.initialExtent}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
+            initialExtent:
+              "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
             layers: [
               {
                 id: 0,
@@ -2440,7 +2441,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2504,7 +2505,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       addFeatureServiceLayersAndTables(
@@ -2567,7 +2568,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);
@@ -2641,7 +2642,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
-        initiative: _initiative
+        organization: _organization
       };
 
       const createResponse: any = mockItems.getAGOLService([], [], true);

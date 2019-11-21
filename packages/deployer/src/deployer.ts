@@ -62,12 +62,15 @@ export function deploySolution(
       destinationAuthentication
     );
 
+    const userDef = common.getUser(destinationAuthentication);
+
     // Await completion of async actions
     Promise.all([
       // TODO IE11 does not support Promise
       solutionItemDataDef,
       folderCreationDef,
-      portalDef
+      portalDef,
+      userDef
     ]).then(
       responses => {
         const item = { ...itemInfoCard } as any;
@@ -80,14 +83,12 @@ export function deploySolution(
 
         const portalResponse = responses[2];
         templateDictionary.isPortal = portalResponse.isPortal;
-        templateDictionary.organization.geocodeServerUrl =
-          portalResponse.helperServices.geocode[0].url;
-        templateDictionary.organization.naServerUrl =
-          portalResponse.helperServices.route.url;
-        templateDictionary.organization.printServiceUrl =
-          portalResponse.helperServices.printTask.url;
-        templateDictionary.organization.geometryServerUrl =
-          portalResponse.helperServices.geometry.url;
+        templateDictionary.organization = Object.assign(
+          templateDictionary.organization || {},
+          portalResponse
+        );
+
+        templateDictionary.user = responses[3];
 
         const portalExtent: any = portalResponse.defaultExtent;
         common
@@ -99,21 +100,14 @@ export function deploySolution(
           )
           .then(
             function(wgs84Extent) {
-              templateDictionary.initiative = Object.assign(
-                templateDictionary.initiative || {},
-                {
-                  orgExtent:
-                    wgs84Extent.xmin +
-                    "," +
-                    wgs84Extent.ymin +
-                    "," +
-                    wgs84Extent.xmax +
-                    "," +
-                    wgs84Extent.ymax,
-                  defaultExtent: portalExtent,
-                  spatialReference: portalExtent.spatialReference
-                }
-              );
+              templateDictionary.solutionItemExtent =
+                wgs84Extent.xmin +
+                "," +
+                wgs84Extent.ymin +
+                "," +
+                wgs84Extent.xmax +
+                "," +
+                wgs84Extent.ymax;
 
               const totalEstimatedCost =
                 _estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation

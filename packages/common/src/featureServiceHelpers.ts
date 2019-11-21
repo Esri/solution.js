@@ -77,7 +77,7 @@ export function templatize(
     itemTemplate.properties.service.fullExtent = templatization.templatizeTerm(
       id,
       id,
-      ".fullExtent"
+      ".solutionExtent"
     );
   }
   if (
@@ -86,7 +86,7 @@ export function templatize(
     itemTemplate.properties.service.initialExtent = templatization.templatizeTerm(
       id,
       id,
-      ".initialExtent"
+      ".solutionExtent"
     );
   }
 
@@ -910,7 +910,7 @@ export function _templatizeLayer(
       update.extent = templatization.templatizeTerm(
         update["serviceItemId"],
         update["serviceItemId"],
-        ".fullExtent"
+        ".solutionExtent"
       );
     }
 

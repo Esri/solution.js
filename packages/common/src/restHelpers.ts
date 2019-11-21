@@ -913,14 +913,13 @@ export function _getCreateServiceOptions(
 
     // project the portals extent to match that of the service
     convertExtent(
-      templateDictionary.initiative.defaultExtent,
+      templateDictionary.organization.defaultExtent,
       serviceInfo.service.spatialReference,
-      templateDictionary.organization.geometryServerUrl,
+      templateDictionary.organization.helperServices.geometry.url,
       authentication
     ).then(
       extent => {
-        templateDictionary[itemId].initialExtent = extent;
-        templateDictionary[itemId].fullExtent = extent;
+        templateDictionary[itemId].solutionExtent = extent;
         createOptions.item = templatization.replaceInTemplate(
           createOptions.item,
           templateDictionary

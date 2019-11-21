@@ -20,6 +20,7 @@
 
 import * as interfaces from "../src/interfaces";
 import * as templatization from "../src/templatization";
+import * as utils from "../test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -106,9 +107,36 @@ describe("Module `templatization`: common functions involving the adlib library"
   });
 
   describe("replaceInTemplate", () => {
-    xit("replaceInTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should handle helper services", () => {
+      const template: any = {
+        item: {
+          printProp: "{{organization.helperServices.printTask.url}}",
+          routeProp: "{{organization.helperServices.route.url}}",
+          geomProp: "{{organization.helperServices.geometry.url}}",
+          geocodeProp:
+            "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
+        }
+      };
+      const templateDictionary: any = {
+        organization: utils.getPortalResponse()
+      };
+      const expected: any = {
+        item: {
+          printProp:
+            "https://utility.arcgisonline.com/arcgis/rest/services/Utilities/PrintingTools/GPServer/Export%20Web%20Map%20Task",
+          routeProp:
+            "https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World",
+          geomProp:
+            "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer",
+          geocodeProp:
+            "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer"
+        }
+      };
+      const actual: any = templatization.replaceInTemplate(
+        template,
+        templateDictionary
+      );
+      expect(actual).toEqual(expected);
     });
   });
 

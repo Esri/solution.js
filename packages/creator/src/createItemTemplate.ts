@@ -96,7 +96,7 @@ export function createItemTemplate(
         itemInfo => {
           if (common.getProp(itemInfo, "extent")) {
             // @ts-ignore
-            itemInfo.extent = "{{initiative.orgExtent:optional}}";
+            itemInfo.extent = "{{solutionItemExtent}}";
           }
           // Check if this is the solution's thumbnail
           if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {

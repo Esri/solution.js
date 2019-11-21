@@ -59,6 +59,12 @@ export function getPortal(
   return portal.getPortal(id, requestOptions);
 }
 
+export function getUser(
+  authentication: interfaces.UserSession
+): Promise<interfaces.IUser> {
+  return authentication.getUser();
+}
+
 /**
  * Gets a Blob from a web site.
  *
