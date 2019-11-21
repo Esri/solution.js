@@ -40,12 +40,12 @@ export function createSolutionFromGroupId(
         const [groupInfo, groupItems] = responses;
 
         // Create a solution from the group's contents, using the group's information as defaults for the solution item
-        const createOptions: common.ICreateSolutionOptions = options || {};
-        createOptions.title = createOptions.title || groupInfo.title;
-        createOptions.snippet = createOptions.snippet || groupInfo.snippet;
+        const createOptions: common.ICreateSolutionOptions = options ?? {};
+        createOptions.title = createOptions.title ?? groupInfo.title;
+        createOptions.snippet = createOptions.snippet ?? groupInfo.snippet;
         createOptions.description =
-          createOptions.description || groupInfo.description;
-        createOptions.tags = createOptions.tags || groupInfo.tags;
+          createOptions.description ?? groupInfo.description;
+        createOptions.tags = createOptions.tags ?? groupInfo.tags;
 
         if (!createOptions.thumbnailUrl && groupInfo.thumbnail) {
           // Copy the group's thumbnail to the new item; need to add token to thumbnail because
@@ -58,6 +58,7 @@ export function createSolutionFromGroupId(
           );
         }
 
+        // Create a solution with the group contents
         createSolutionFromItemIds(
           groupItems,
           authentication,
@@ -100,17 +101,14 @@ export function createSolutionItem(
   return new Promise((resolve, reject) => {
     const solutionItem: any = {
       type: "Solution",
-      title: options!.title || common.createId(),
-      snippet: options!.snippet || "",
-      description: options!.description || "",
-      thumbnailUrl: options!.thumbnailUrl || "",
-      tags: options!.tags || [],
+      title: options?.title ?? common.createId(),
+      snippet: options?.snippet ?? "",
+      description: options?.description ?? "",
+      thumbnailUrl: options?.thumbnailUrl ?? "",
+      tags: options?.tags ?? [],
       typeKeywords: ["Solution", "Template"]
     };
-    if (
-      Array.isArray(options!.additionalTypeKeywords) &&
-      options!.additionalTypeKeywords.length > 0
-    ) {
+    if (Array.isArray(options?.additionalTypeKeywords)) {
       solutionItem.typeKeywords = solutionItem.typeKeywords.concat(
         options!.additionalTypeKeywords
       );
@@ -163,7 +161,7 @@ export function addContentToSolution(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const templateDictionary = options!.templateDictionary || {};
+    const templateDictionary = options?.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
 
     // Handle a list of one or more AGO ids by stepping through the list
@@ -192,7 +190,7 @@ export function addContentToSolution(
         // Update solution item with its data JSON
         const solutionData: common.ISolutionItemData = {
           metadata: {},
-          templates: options!.templatizeFields
+          templates: options?.templatizeFields
             ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
             : solutionTemplates
         };
