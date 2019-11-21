@@ -86,7 +86,7 @@ describe("Module `createItemTemplate`", () => {
 
   describe("_replaceTemplate", () => {
     it("returns false when no template is found", () => {
-      const actual: boolean = createSolutionTemplate._replaceTemplate(
+      const actual: boolean = createItemTemplate._replaceTemplate(
         [],
         "",
         initialSolutionTemplates[0]
