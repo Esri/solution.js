@@ -91,7 +91,7 @@ export function deploySolution(
           portalResponse,
           "customBaseUrl"
         );
-        templateDictionary.organization.portalBaseUrl =
+        templateDictionary.portalBaseUrl =
           urlKey && customBaseUrl
             ? `${scheme}://${urlKey}.${customBaseUrl}`
             : portalSubset.portalUrl;

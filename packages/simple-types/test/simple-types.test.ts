@@ -586,7 +586,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
           data: undefined,
           resources: [
@@ -954,7 +954,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+              "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
           },
           data: undefined,
           resources: [],
@@ -1162,7 +1162,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             thumbnail: undefined,
             typeKeywords: undefined,
             url:
-              "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+              "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             licenseInfo: undefined,
             name: undefined,
             snippet: undefined
@@ -1812,7 +1812,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined
@@ -1887,7 +1887,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined

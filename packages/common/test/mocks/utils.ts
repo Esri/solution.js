@@ -21,8 +21,8 @@ import * as generalHelpers from "../../src/generalHelpers";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
-const orgUrl = "https://myorg.maps.arcgis.com";
-const portalUrl = "https://www.arcgis.com";
+export const ORG_URL = "https://myorg.maps.arcgis.com";
+export const PORTAL_URL = "https://www.arcgis.com";
 
 export const TOMORROW = (function() {
   const now = new Date();
@@ -71,8 +71,8 @@ export const UTILITY_SERVER_INFO = {
 export const PORTAL_SUBSET = {
   name: "Deployment Test",
   id: "abCDefG123456",
-  restUrl: orgUrl + "/sharing/rest",
-  portalUrl: orgUrl,
+  restUrl: PORTAL_URL + "/sharing/rest",
+  portalUrl: PORTAL_URL,
   urlKey: "deploymentTest"
 };
 
@@ -228,12 +228,8 @@ export function createMockSettings(
   access = "private"
 ): any {
   const settings: any = {
-    organization: Object.assign(
-      {
-        portalBaseUrl: portalUrl
-      },
-      getPortalResponse()
-    ),
+    organization: getPortalResponse(),
+    portalBaseUrl: ORG_URL,
     solutionName,
     folderId,
     access
@@ -254,7 +250,7 @@ export function createRuntimeMockUserSession(now: number): UserSession {
     refreshTokenTTL: 1440,
     username: "casey",
     password: "123456",
-    portal: orgUrl + "/sharing/rest"
+    portal: PORTAL_URL + "/sharing/rest"
   });
 }
 

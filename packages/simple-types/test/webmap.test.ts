@@ -70,7 +70,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: null as any,
         resources: [] as any[],
@@ -109,7 +109,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {} as any,
         resources: [] as any[],
@@ -170,7 +170,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
@@ -248,7 +248,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [],
@@ -342,7 +342,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
@@ -451,7 +451,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
@@ -538,10 +538,15 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-        mockItems.get400Failure()
-      );
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          '{"token":"fake-token"}'
+        );
 
       webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
         () => {
@@ -597,7 +602,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [
@@ -696,7 +701,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
         } as any,
         data: {
           operationalLayers: [

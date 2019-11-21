@@ -4857,7 +4857,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
+        "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
     },
     data: {
       operationalLayers: [
@@ -5178,7 +5178,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
+        "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     data: {
       theme: {
@@ -5200,13 +5200,13 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           useLogo: false
         }
       },
-      portalUrl: "{{organization.portalBaseUrl}}",
+      portalUrl: "{{portalBaseUrl}}",
       appId: "",
       authorizedCrossOriginDomains: [],
       title: "TestWABAPP",
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
-      logo: "{{organization.portalBaseUrl}}/app-logo.png",
+      logo: "{{portalBaseUrl}}/app-logo.png",
       geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
@@ -7457,7 +7457,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
         mapOptions: {},
         id: "map",
-        portalUrl: "{{organization.portalBaseUrl}}/",
+        portalUrl: "{{portalBaseUrl}}/",
         appProxy: {
           mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
           proxyItems: []
@@ -7546,7 +7546,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                       },
                       symbol: {
                         url:
-                          "{{organization.portalBaseUrl}}${itemId}/resources/inConfig/6495853091034287.png",
+                          "{{portalBaseUrl}}${itemId}/resources/inConfig/6495853091034287.png",
                         width: 26,
                         height: 26,
                         imageData: "1c31d1d6e4c9368fe9711b75d0948639",
@@ -7605,7 +7605,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
                     },
                     symbol: {
                       url:
-                        "{{organization.portalBaseUrl}}${itemId}/resources/inConfig/5422652170345252.png",
+                        "{{portalBaseUrl}}${itemId}/resources/inConfig/5422652170345252.png",
                       width: 26,
                       height: 26,
                       imageData: "1c31d1d6e4c9368fe9711b75d0948639",
@@ -14214,13 +14214,13 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       isWebTier: false,
       httpProxy: {
         useProxy: true,
-        url: "{{organization.portalBaseUrl}}/sharing/proxy"
+        url: "{{portalBaseUrl}}/sharing/proxy"
       },
       dataSource: {
         dataSources: {
           "external~08595057759890956": {
             type: "Features",
-            portalUrl: "{{organization.portalBaseUrl}}",
+            portalUrl: "{{portalBaseUrl}}",
             itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
             isDynamic: false,
             label: "School",
@@ -15100,7 +15100,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
+        "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
     },
     data: {
       operationalLayers: [
@@ -32874,7 +32874,7 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
+        "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{7e6c41c72d4548d9a312329e0c5a984f.itemId}}"
     },
     data: {
       operationalLayers: [
@@ -33195,7 +33195,7 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
+        "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{6f87e1912d6f4c889bbdcfb14dce7484.itemId}}"
     },
     data: {
       theme: {
@@ -33217,13 +33217,13 @@ const expected: common.IItemTemplate[] = [
           useLogo: false
         }
       },
-      portalUrl: "{{organization.portalBaseUrl}}",
+      portalUrl: "{{portalBaseUrl}}",
       appId: "",
       authorizedCrossOriginDomains: [],
       title: "TestWABAPP",
       subtitle: "with Web AppBuilder for ArcGIS",
       keepAppState: true,
-      logo: "{{organization.portalBaseUrl}}/app-logo.png",
+      logo: "{{portalBaseUrl}}/app-logo.png",
       geometryService: "{{organization.helperServices.geometry.url}}",
       links: [],
       widgetOnScreen: {
@@ -35723,7 +35723,7 @@ const expected: common.IItemTemplate[] = [
         itemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
         mapOptions: {},
         id: "map",
-        portalUrl: "{{organization.portalBaseUrl}}/",
+        portalUrl: "{{portalBaseUrl}}/",
         appProxy: {
           mapItemId: "{{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}",
           proxyItems: []
@@ -35812,7 +35812,7 @@ const expected: common.IItemTemplate[] = [
                       },
                       symbol: {
                         url:
-                          "{{organization.portalBaseUrl}}${itemId}/resources/inConfig/6495853091034287.png",
+                          "{{portalBaseUrl}}${itemId}/resources/inConfig/6495853091034287.png",
                         width: 26,
                         height: 26,
                         imageData: "1c31d1d6e4c9368fe9711b75d0948639",
@@ -35875,7 +35875,7 @@ const expected: common.IItemTemplate[] = [
                     },
                     symbol: {
                       url:
-                        "{{organization.portalBaseUrl}}${itemId}/resources/inConfig/5422652170345252.png",
+                        "{{portalBaseUrl}}${itemId}/resources/inConfig/5422652170345252.png",
                       width: 26,
                       height: 26,
                       imageData: "1c31d1d6e4c9368fe9711b75d0948639",
@@ -42954,13 +42954,13 @@ const expected: common.IItemTemplate[] = [
       isWebTier: false,
       httpProxy: {
         useProxy: true,
-        url: "{{organization.portalBaseUrl}}/sharing/proxy"
+        url: "{{portalBaseUrl}}/sharing/proxy"
       },
       dataSource: {
         dataSources: {
           "external~08595057759890956": {
             type: "Features",
-            portalUrl: "{{organization.portalBaseUrl}}",
+            portalUrl: "{{portalBaseUrl}}",
             itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
             isDynamic: false,
             label: "School",
@@ -43878,7 +43878,7 @@ const expected: common.IItemTemplate[] = [
         "Web Map"
       ],
       url:
-        "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
+        "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{eb6dc49be6f44f76aa195d6de8ce5c48.itemId}}"
     },
     data: {
       operationalLayers: [

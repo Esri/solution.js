@@ -125,7 +125,8 @@ const expectedExtent: any = {
   spatialReference: serviceSR
 };
 
-const geometryServiceUrl: string = "http://utility/geomServer";
+const geometryServiceUrl: string =
+  "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer";
 
 const projectedGeometries: any[] = [
   {
@@ -259,7 +260,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          "https://www.arcgis.com/sharing/rest/content/users/casey/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
@@ -272,7 +273,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/move",
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/move",
           '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}'
         );
 
@@ -1931,6 +1932,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         wkid: 102100
       };
 
+      fetchMock.post(geometryServiceUrl + "/findTransformations", "{}");
+
       _getCreateServiceOptions(
         itemTemplate,
         userSession,
@@ -2225,15 +2228,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         solutionItemExtent: solutionItemExtent
       };
 
-      fetchMock.post(
-        geometryServiceUrl + "/findTransformations",
-        mockItems.get400Failure()
-      );
-
-      fetchMock.post(
-        "http://utility/geomServer/findTransformations/rest/info",
-        '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
-      );
+      fetchMock
+        .post(
+          geometryServiceUrl + "/findTransformations",
+          mockItems.get400Failure()
+        )
+        .post(
+          "http://utility/geomServer/findTransformations/rest/info",
+          '{"error":{"code":403,"message":"Access not allowed request","details":[]}}'
+        );
       _getCreateServiceOptions(
         itemTemplate,
         userSession,

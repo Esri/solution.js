@@ -224,7 +224,7 @@ describe("Module `templatization`: common functions involving the adlib library"
         expression2:
           "$feature.test {test} test $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}",
         icon:
-          "{{test.portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
+          "{{portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
         generic: "{{test}}",
         generic2: "{{something.test}}",
         generic3: "{{something.test.something}}",
@@ -260,7 +260,7 @@ describe("Module `templatization`: common functions involving the adlib library"
         expression2:
           "$feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}} $feature.{{0019226378376276.layer0.fields.test.name}} {{{0019226378376276.layer0.fields.test.name}}} {{0019226378376276.layer0.fields.test.name}}",
         icon:
-          "{{test.portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
+          "{{portalBaseUrl}}${itemId}/resources/inConfig/32951462444715296.png",
         generic: "{{test}}",
         generic2: "{{something.test}}",
         generic3: "{{something.test.something}}",
