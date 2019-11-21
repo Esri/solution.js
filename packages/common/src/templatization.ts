@@ -21,7 +21,7 @@
  */
 
 import * as adlib from "adlib";
-import { IItemTemplate } from "./interfaces";
+import * as interfaces from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,28 +38,34 @@ export const PLACEHOLDER_SERVER_NAME: string = "{{organization.portalBaseUrl}}";
  * @protected
  */
 export const PLACEHOLDER_GEOMETRY_SERVER_NAME: string =
-  "{{organization.geometryServerUrl}}";
+  "{{organization.helperServices.geometry.url}}";
 
 /**
  * A parameterized geocode server name
  * @protected
  */
 export const PLACEHOLDER_GEOCODE_SERVER_NAME: string =
-  "{{organization.geocodeServerUrl}}";
+  "{{organization.helperServices.geocode:getDefaultLocatorURL}}";
 
 /**
  * A parameterized network analyst server name
  * @protected
  */
 export const PLACEHOLDER_NA_SERVER_NAME: string =
-  "{{organization.naServerUrl}}";
+  "{{organization.helperServices.route.url}}";
 
 /**
  * A parameterized network analyst server name
  * @protected
  */
 export const PLACEHOLDER_PRINT_SERVER_NAME: string =
-  "{{organization.printServerUrl}}";
+  "{{organization.helperServices.printTask.url}}";
+
+export const TRANSFORMS: any = {
+  getDefaultLocatorURL(key: string, val: any, settings: any) {
+    return val[0].url;
+  }
+};
 
 /**
  * Creates a random 8-character alphanumeric string that begins with an alphabetic character.
@@ -78,7 +84,9 @@ export function createId(): string {
   );
 }
 
-export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
+export function createInitializedGroupTemplate(
+  itemInfo: any
+): interfaces.IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -90,10 +98,13 @@ export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   return itemTemplate;
 }
 
-export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
+export function createInitializedItemTemplate(
+  itemInfo: any
+): interfaces.IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
+    accessInformation: itemInfo.accessInformation,
     categories: itemInfo.categories,
     contentStatus: itemInfo.contentStatus,
     culture: itemInfo.culture,
@@ -121,7 +132,7 @@ export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
 export function createPlaceholderTemplate(
   id: string,
   type = ""
-): IItemTemplate {
+): interfaces.IItemTemplate {
   return {
     itemId: id,
     type,
@@ -147,7 +158,7 @@ export function createPlaceholderTemplate(
  * @protected
  */
 export function findTemplateIndexInList(
-  templates: IItemTemplate[],
+  templates: interfaces.IItemTemplate[],
   id: string
 ): number {
   const baseId = id;
@@ -164,15 +175,15 @@ export function findTemplateIndexInList(
  * @return Matching template or null
  */
 export function findTemplateInList(
-  templates: IItemTemplate[],
+  templates: interfaces.IItemTemplate[],
   id: string
-): IItemTemplate | null {
+): interfaces.IItemTemplate | null {
   const childId = findTemplateIndexInList(templates, id);
   return childId >= 0 ? templates[childId] : null;
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {
-  return adlib.adlib(template, replacements);
+  return adlib.adlib(template, replacements, TRANSFORMS);
 }
 
 export function templatizeTerm(
