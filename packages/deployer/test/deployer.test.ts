@@ -106,8 +106,8 @@ describe("Module `deploySolution`", () => {
         );
         expectedMap.extent = "-88.226,41.708,-88.009,41.844";
         expectedMap.thumbnail =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
+          utils.ORG_URL +
+          "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
         const webMapData: any = mockItems.getAGOLItemData("Web Map");
 
@@ -245,8 +245,8 @@ describe("Module `deploySolution`", () => {
                   tags: ["test"],
                   snippet: "Snippet of an AGOL item",
                   thumbnail:
-                    utils.PORTAL_SUBSET.restUrl +
-                    "/content/items/svc1234567890/info/thumbnail/ago_downloaded.png",
+                    utils.ORG_URL +
+                    "/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png",
                   documentation: null,
                   categories: [],
                   contentStatus: null,
@@ -297,12 +297,8 @@ describe("Module `deploySolution`", () => {
           .layers[0].subLayerIds;
         delete portalResponse.portalProperties.sharedTheme.logo.small;
         const expectedTemplate: any = {
-          organization: Object.assign(
-            {
-              portalBaseUrl: "https://myorg.maps.arcgis.com"
-            },
-            portalResponse
-          ),
+          organization: portalResponse,
+          portalBaseUrl: "https://myorg.maps.arcgis.com",
           user: utils.getUserResponse(),
           solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
           folderId: "a4468da125a64526b359b70d8ba4a9dd",

@@ -31,7 +31,7 @@ import * as interfaces from "./interfaces";
  * made before attempting to create the item.
  * @protected
  */
-export const PLACEHOLDER_SERVER_NAME: string = "{{organization.portalBaseUrl}}";
+export const PLACEHOLDER_SERVER_NAME: string = "{{portalBaseUrl}}";
 
 /**
  * A parameterized geometry server name

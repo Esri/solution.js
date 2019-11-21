@@ -18,20 +18,12 @@
  * Provides tests for common functions involving the management of item and group resources.
  */
 
-import {
-  getAvailableGroupTitle,
-  convertItemToTemplate,
-  createItemFromTemplate,
-  updateGroup,
-  postProcessFieldReferences
-} from "../src/simple-types";
+import * as simpleTypes from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import { IItemTemplate } from "../../common/src/interfaces";
 import * as common from "@esri/solution-common";
-import { stat } from "mz/fs";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new common.UserSession({
@@ -68,7 +60,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle error on getResources", done => {
-        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Workforce Project",
           null
         );
@@ -94,19 +86,48 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get500Failure()
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          expect(newItemTemplate.resources).toEqual([]);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            expect(newItemTemplate.resources).toEqual([]);
+            done();
+          }, done.fail);
+      });
+
+      it("should handle error on dataPromise", done => {
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Web Mapping Application",
+          null
+        );
+        const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
+        itemTemplate.item = {
+          id: itemId,
+          type: "Web Mapping Application",
+          title: "Dam Inspection Assignments"
+        };
+        itemTemplate.itemId = itemId;
+
+        const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
+        fetchMock.post(url, mockItems.get400Failure());
+
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            done.fail();
+          }, done);
       });
     }
 
     it("should handle error on getGroup", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
       itemTemplate.item.tags = [];
@@ -145,20 +166,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           noResourcesResponse
         );
 
-      convertItemToTemplate(
-        itemTemplate.itemId,
-        itemTemplate.item,
-        MOCK_USER_SESSION,
-        true
-      ).then(newItemTemplate => {
-        delete newItemTemplate.key;
-        expect(newItemTemplate).toEqual(expectedTemplate);
-        done();
-      }, done.fail);
+      simpleTypes
+        .convertItemToTemplate(
+          itemTemplate.itemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          true
+        )
+        .then(newItemTemplate => {
+          delete newItemTemplate.key;
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
     });
 
     it("should handle error on portal getGroup", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
       itemTemplate.item.tags = [];
@@ -267,22 +290,24 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           noResourcesResponse
         );
 
-      convertItemToTemplate(
-        itemTemplate.itemId,
-        itemTemplate.item,
-        MOCK_USER_SESSION,
-        true
-      ).then(newItemTemplate => {
-        delete newItemTemplate.key;
-        expect(newItemTemplate).toEqual(expectedTemplate);
-        done();
-      }, done.fail);
+      simpleTypes
+        .convertItemToTemplate(
+          itemTemplate.itemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          true
+        )
+        .then(newItemTemplate => {
+          delete newItemTemplate.key;
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
     });
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle workforce project", done => {
-        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Workforce Project",
           null
         );
@@ -360,19 +385,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             {}
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          expect(newItemTemplate.data).toEqual(expectedTemplateData);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            expect(newItemTemplate.data).toEqual(expectedTemplateData);
+            done();
+          }, done.fail);
       });
     }
 
     it("should handle a group", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
@@ -544,22 +571,24 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           noResourcesResponse
         );
 
-      convertItemToTemplate(
-        itemTemplate.itemId,
-        itemTemplate.item,
-        MOCK_USER_SESSION,
-        true
-      ).then(newItemTemplate => {
-        delete newItemTemplate.key; // key is randomly generated, and so is not testable
-        expect(newItemTemplate).toEqual(expectedTemplate);
-        done();
-      }, done.fail);
+      simpleTypes
+        .convertItemToTemplate(
+          itemTemplate.itemId,
+          itemTemplate.item,
+          MOCK_USER_SESSION,
+          true
+        )
+        .then(newItemTemplate => {
+          delete newItemTemplate.key; // key is randomly generated, and so is not testable
+          expect(newItemTemplate).toEqual(expectedTemplate);
+          done();
+        }, done.fail);
     });
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle item resource", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -586,7 +615,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+              "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
           data: undefined,
           resources: [
@@ -664,19 +693,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
       });
 
       it("should handle dashboard et al. item types", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.itemId = "dsh1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
         itemTemplate.item.thumbnail = null;
@@ -751,19 +782,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
       });
 
       it("should handle form item type with default filename", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
@@ -913,20 +946,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
       });
 
       // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -954,7 +989,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+              "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
           },
           data: undefined,
           resources: [],
@@ -990,15 +1025,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
       });
     }
 
@@ -1006,7 +1043,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     if (typeof window !== "undefined") {
       it("should catch fetch errors", done => {
         // TODO resolve Karma internal error triggered by this test
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -1029,20 +1066,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get500Failure()
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(newItemTemplate => {
-          expect(newItemTemplate.data).toBeNull();
-          expect(newItemTemplate.resources).toEqual([]);
-          expect(newItemTemplate.dependencies).toEqual([]);
-          done();
-        }, done.fail);
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            expect(newItemTemplate.data).toBeNull();
+            expect(newItemTemplate.resources).toEqual([]);
+            expect(newItemTemplate.dependencies).toEqual([]);
+            done();
+          }, done.fail);
       });
 
       it("should catch wrapup errors", done => {
-        const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -1097,27 +1136,29 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get500Failure()
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(
-          () => done.fail(),
-          response => {
-            expect(response.error.code).toEqual(400);
-            expect(response.error.message).toEqual(
-              "Item info file does not exist or is inaccessible."
-            );
-            done();
-          }
-        );
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(
+            () => done.fail(),
+            response => {
+              expect(response.error.code).toEqual(400);
+              expect(response.error.message).toEqual(
+                "Item info file does not exist or is inaccessible."
+              );
+              done();
+            }
+          );
       });
     }
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle web mapping application", done => {
-        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
         );
@@ -1162,7 +1203,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             thumbnail: undefined,
             typeKeywords: undefined,
             url:
-              "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+              "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             licenseInfo: undefined,
             name: undefined,
             snippet: undefined
@@ -1199,25 +1240,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             { sendAsJson: false }
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(
-          actual => {
-            actual.key = "abcdefgh";
-            expect(actual).toEqual(expected);
-            done();
-          },
-          e => done.fail(e)
-        );
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(
+            actual => {
+              actual.key = "abcdefgh";
+              expect(actual).toEqual(expected);
+              done();
+            },
+            e => done.fail(e)
+          );
       });
     }
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle error on web mapping application", done => {
-        const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
         );
@@ -1273,16 +1316,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get400FailureResponse()
           );
 
-        convertItemToTemplate(
-          itemTemplate.item.id,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        ).then(
-          () => {
-            done();
-          },
-          e => done.fail(e)
-        );
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(
+            () => {
+              done();
+            },
+            e => done.fail(e)
+          );
       });
     }
   });
@@ -1293,7 +1338,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1309,18 +1354,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         mockItems.get400Failure()
       );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(response => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(response => {
+          done.fail();
+        }, done);
     });
 
     it("should handle success === false", done => {
@@ -1328,7 +1375,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1344,18 +1391,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         { success: false }
       );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(response => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(response => {
+          done.fail();
+        }, done);
     });
 
     it("should create workforce project", done => {
@@ -1363,7 +1412,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.data = {
         workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
@@ -1420,24 +1469,26 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { success: true }
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(response => {
-        expect(response).toEqual(newItemID);
-        expect(templateDictionary).toEqual(expected);
-        done();
-      }, done.fail);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(response => {
+          expect(response).toEqual(newItemID);
+          expect(templateDictionary).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
     it("should create and fine tune workforce project", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
       );
@@ -1474,19 +1525,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           addResults: [{}]
         });
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {},
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(r => {
-        expect(r).toEqual(newItemID);
-        done();
-      }, done.fail);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(r => {
+          expect(r).toEqual(newItemID);
+          done();
+        }, done.fail);
     });
 
     it("should create group", done => {
@@ -1494,7 +1547,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -1520,20 +1573,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
           { success: true, group: { id: newItemID } }
         );
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(response => {
-        expect(response).toEqual(newItemID);
-        expect(templateDictionary).toEqual(expected);
-        done();
-      }, done.fail);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(response => {
+          expect(response).toEqual(newItemID);
+          expect(templateDictionary).toEqual(expected);
+          done();
+        }, done.fail);
     });
 
     it("should handle success === false on create group", done => {
@@ -1541,7 +1596,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -1568,25 +1623,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { success: false }
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(response => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(response => {
+          done.fail();
+        }, done);
     });
 
     it("should handle error on create group", done => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -1610,18 +1667,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(() => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(() => {
+          done.fail();
+        }, done);
     });
 
     it("should create group and handle error on update", done => {
@@ -1629,7 +1688,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -1709,25 +1768,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400Failure()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(() => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(() => {
+          done.fail();
+        }, done);
     });
 
     it("should create group and handle error on getGroupTitle", done => {
       const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -1737,18 +1798,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         mockItems.get400Failure()
       );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        templateDictionary,
-        MOCK_USER_SESSION,
-        function() {
-          const a: any = "A";
-        }
-      ).then(() => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          function() {
+            const a: any = "A";
+          }
+        )
+        .then(() => {
+          done.fail();
+        }, done);
     });
 
     //   it("should handle error on copy group resources", done => {
@@ -1795,7 +1858,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     //   });
 
     it("should handle web mapping application", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
       );
@@ -1812,7 +1875,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined
@@ -1851,26 +1914,28 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { success: true }
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {},
-        MOCK_USER_SESSION,
-        function() {
-          const tick = 0;
-        }
-      ).then(
-        actual => {
-          expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
-          done();
-        },
-        e => done.fail(e)
-      );
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
+          }
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+            done();
+          },
+          e => done.fail(e)
+        );
     });
 
     it("should handle error web mapping application", done => {
-      const itemTemplate: IItemTemplate = mockItems.getAGOLItem(
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
       );
@@ -1887,7 +1952,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
         url:
-          "{{organization.portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
         name: undefined,
         snippet: undefined
@@ -1934,26 +1999,28 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400FailureResponse()
         );
 
-      createItemFromTemplate(
-        itemTemplate,
-        [],
-        MOCK_USER_SESSION,
-        {
-          folderId: "folderId",
-          abc0cab401af4828a25cc6eaeb59fb69: {
-            id: "abc1cab401af4828a25cc6eaeb59fb69"
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            folderId: "folderId",
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              id: "abc1cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
           }
-        },
-        MOCK_USER_SESSION,
-        function() {
-          const tick = 0;
-        }
-      ).then(
-        actual => {
-          done.fail();
-        },
-        e => done()
-      );
+        )
+        .then(
+          actual => {
+            done.fail();
+          },
+          e => done()
+        );
     });
   });
 
@@ -1967,9 +2034,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         mockItems.get400Failure()
       );
 
-      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(r => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .getAvailableGroupTitle(name, id, MOCK_USER_SESSION)
+        .then(r => {
+          done.fail();
+        }, done);
     });
 
     it("should handle error when the current title is not available", done => {
@@ -2034,9 +2103,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400Failure()
         );
 
-      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(r => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .getAvailableGroupTitle(name, id, MOCK_USER_SESSION)
+        .then(r => {
+          done.fail();
+        }, done);
     });
 
     it("return a valid title", done => {
@@ -2057,10 +2128,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         searchResult
       );
 
-      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
-        expect(response).toEqual(name);
-        done();
-      }, done.fail);
+      simpleTypes
+        .getAvailableGroupTitle(name, id, MOCK_USER_SESSION)
+        .then(response => {
+          expect(response).toEqual(name);
+          done();
+        }, done.fail);
     });
 
     it("return a valid title when the current title is not available", done => {
@@ -2125,10 +2198,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           emptySearchResult
         );
 
-      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
-        expect(response).toEqual(name + "_" + id);
-        done();
-      }, done.fail);
+      simpleTypes
+        .getAvailableGroupTitle(name, id, MOCK_USER_SESSION)
+        .then(response => {
+          expect(response).toEqual(name + "_" + id);
+          done();
+        }, done.fail);
     });
 
     it("return a valid title when the current title is not available and the title_guid is also not available", done => {
@@ -2224,19 +2299,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .get("*", emptySearchResult);
 
-      getAvailableGroupTitle(name, id, MOCK_USER_SESSION).then(response => {
-        // this should have a current time stamp appended after "title"_"id"_
-        expect(response).toContain(
-          "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69"
-        );
-        done();
-      }, done.fail);
+      simpleTypes
+        .getAvailableGroupTitle(name, id, MOCK_USER_SESSION)
+        .then(response => {
+          // this should have a current time stamp appended after "title"_"id"_
+          expect(response).toContain(
+            "Dam Inspection Assignments_abc0cab401af4828a25cc6eaeb59fb69"
+          );
+          done();
+        }, done.fail);
     });
   });
 
   describe("updateGroup", () => {
     it("should handle error", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
       itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
 
@@ -2296,17 +2373,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400Failure()
         );
 
-      updateGroup(itemTemplate, MOCK_USER_SESSION, {
-        abc0cab401af4828a25cc6eaeb59fb69: {
-          itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-        }
-      }).then(() => {
-        done.fail();
-      }, done);
+      simpleTypes
+        .updateGroup(itemTemplate, MOCK_USER_SESSION, {
+          abc0cab401af4828a25cc6eaeb59fb69: {
+            itemId: "abc2cab401af4828a25cc6eaeb59fb69"
+          }
+        })
+        .then(() => {
+          done.fail();
+        }, done);
     });
 
     it("should share dependencies with group", done => {
-      const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
       itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
       itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
 
@@ -2366,13 +2445,15 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { notSharedWith: [], itemId: "6cf74cfc328c4ae49083666aaa2ed525" }
         );
 
-      updateGroup(itemTemplate, MOCK_USER_SESSION, {
-        abc0cab401af4828a25cc6eaeb59fb69: {
-          itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-        }
-      }).then(() => {
-        done();
-      }, done.fail);
+      simpleTypes
+        .updateGroup(itemTemplate, MOCK_USER_SESSION, {
+          abc0cab401af4828a25cc6eaeb59fb69: {
+            itemId: "abc2cab401af4828a25cc6eaeb59fb69"
+          }
+        })
+        .then(() => {
+          done();
+        }, done.fail);
     });
   });
 
@@ -2458,7 +2539,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       // clean dependencies
       expected.dependencies = [];
 
-      const actual = postProcessFieldReferences(
+      const actual = simpleTypes.postProcessFieldReferences(
         template,
         datasourceInfos,
         "Dashboard"
