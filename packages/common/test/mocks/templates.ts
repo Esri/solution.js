@@ -180,7 +180,7 @@ export function getItemTemplatePart(
         "map",
         dependencies,
         url ||
-          "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+          "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -193,7 +193,7 @@ export function getItemTemplatePart(
         "wma",
         dependencies,
         url ||
-          "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+          "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
@@ -348,12 +348,12 @@ export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
     getItemTemplatePart(
       "Web Map",
       ["svc1234567890"],
-      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
     getItemTemplatePart("Feature Service")
   ];
@@ -366,12 +366,12 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
     getItemTemplatePart(
       "Web Mapping Application",
       ["map1234567890"],
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
     getItemTemplatePart(
       "Web Map",
       ["svc1234567890"],
-      "{{organization.portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
+      "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
     getItemTemplatePart("Feature Service", [])
   ];
@@ -393,7 +393,7 @@ export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.II
     getItemTemplatePart(
       "Web Mapping Application",
       undefined,
-      "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+      "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     )
   ];
 

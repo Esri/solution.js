@@ -172,7 +172,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           id: "{{itm1234567890.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{itm1234567890.itemId}}"
         } as any,
         data: {
           folderId: "{{folderId}}"
@@ -252,7 +252,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             dataSources: {
               external_123456789: {
                 type: "source type",
-                portalUrl: "{{organization.portalBaseUrl}}",
+                portalUrl: "{{portalBaseUrl}}",
                 itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.layer0.itemId}}",
                 isDynamic: false,
                 label: "Point layer",
@@ -400,7 +400,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             dataSources: {
               external_123456789: {
                 type: "source type",
-                portalUrl: "{{organization.portalBaseUrl}}",
+                portalUrl: "{{portalBaseUrl}}",
                 itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.itemId}}",
                 isDynamic: false,
                 label: "Point layer"
@@ -490,7 +490,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
+            "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
           appItemId: "{{myAppItemId.itemId}}",
@@ -510,7 +510,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           widgetPool: {
             widgets: [
               {
-                icon: "{{organization.portalBaseUrl}}/somename.png",
+                icon: "{{portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
                     someHttpUrl:
@@ -521,7 +521,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                       "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   somePortalPath: {
-                    s: "{{organization.portalBaseUrl}}"
+                    s: "{{portalBaseUrl}}"
                   },
                   geocodeProps: {
                     service:
@@ -645,7 +645,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           title: "Voting Centers",
           url:
-            "{{organization.portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
+            "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
           appItemId: "{{myAppItemId.itemId}}",
@@ -665,7 +665,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           widgetPool: {
             widgets: [
               {
-                icon: "{{organization.portalBaseUrl}}/somename.png",
+                icon: "{{portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
                     someHttpUrl:
@@ -689,7 +689,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           widgetOnScreen: {
             widgets: [
               {
-                icon: "{{organization.portalBaseUrl}}/somename.png",
+                icon: "{{portalBaseUrl}}/somename.png",
                 config: {
                   someProperty: {
                     someHttpUrl:
@@ -1414,7 +1414,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         id: "cda1234567890",
         folder: "fld1234567890"
       };
-      fetchMock.post(createUrl, expected);
+      fetchMock
+        .post(createUrl, expected)
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          '{"token":"fake-token"}'
+        );
 
       // Function doesn't reject, so,
       // tslint:disable-next-line:no-floating-promises
@@ -1592,8 +1597,8 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       fetchMock
         .post(createUrl, expected)
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          '{"token":"fake-token"}'
         );
 
       webmappingapplication
@@ -1964,13 +1969,13 @@ const expectedInfoLookupTemplate: any = {
       "Web Map"
     ],
     url:
-      "{{organization.portalBaseUrl}}/apps/InformationLookup/index.html?appid={{7a26dcae7c71439286e9d873c77bb6cc.itemId}}"
+      "{{portalBaseUrl}}/apps/InformationLookup/index.html?appid={{7a26dcae7c71439286e9d873c77bb6cc.itemId}}"
   },
   data: {
     source: "54da82ed8d264bbbb7f9087df8c947c3",
     folderId: null,
     values: {
-      icon: "{{organization.portalBaseUrl}}",
+      icon: "{{portalBaseUrl}}",
       serviceAreaLayerNames: "Service Area",
       serviceAreaLayerNamesSelector:
         '[{"id":"TestLayer2FromWebApp_4042","fields":[],"type":"FeatureLayer"},{"id":"TestLayer2FromWebApp_8439","fields":[],"type":"FeatureLayer"},{"id":"TestLayer2FromWebApp_5607","fields":[],"type":"FeatureLayer"},{"id":"TestLayer2FromWebApp_9409","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_2615","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_8627","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_7797","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_5389","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_5538","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_2914","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_7041","fields":[],"type":"FeatureLayer"},{"id":"TestLayerForDashBoardMap_2892","fields":[],"type":"FeatureLayer"}]',

@@ -226,7 +226,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          "https://www.arcgis.com/sharing/rest/content/users/casey/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
@@ -239,7 +239,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/move",
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/move",
           '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}'
         );
 
