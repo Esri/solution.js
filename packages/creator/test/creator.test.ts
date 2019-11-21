@@ -65,19 +65,10 @@ afterEach(() => {
 describe("Module `creator`", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
-    describe("createSolution", () => {
-      it("createSolution with default name", done => {
-        const solutionName: string = "";
+    describe("createSolutionFromGroupId", () => {
+      it("createSolutionFromGroupId with default name", done => {
         const solutionGroupId: string = "grp1234567890";
-        const templateDictionary: any = {};
-        const portalSubset = {
-          name: "",
-          id: "",
-          restUrl: "https://www.arcgis.com/sharing/rest",
-          portalUrl: "",
-          urlKey: ""
-        } as common.IPortalSubset;
-        const destinationAuthentication: common.UserSession = MOCK_USER_SESSION;
+        const authentication: common.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 
@@ -145,47 +136,30 @@ describe("Module `creator`", () => {
             { success: true, id: expectedSolutionId }
           );
 
-        creator
-          .createSolution(
-            solutionName,
-            solutionGroupId,
-            templateDictionary,
-            portalSubset,
-            destinationAuthentication,
-            progressCallback
-          )
-          .then(
-            solutionId => {
-              expect(solutionId).toEqual(expectedSolutionId);
+        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-              const addSolnCall = fetchMock.calls(
-                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
-              );
-              expect(
-                (addSolnCall[0][1]["body"] as string).indexOf(
-                  "title=" +
-                    mockItems.getAGOLItem("Group").title.replace(/ /g, "%20")
-                ) > 0
-              ).toBeTruthy();
+            const addSolnCall = fetchMock.calls(
+              "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as string).indexOf(
+                "title=" +
+                  mockItems.getAGOLItem("Group").title.replace(/ /g, "%20")
+              ) > 0
+            ).toBeTruthy();
 
-              done();
-            },
-            () => done.fail()
-          );
+            done();
+          },
+          () => done.fail()
+        );
       });
 
-      it("createSolution with specified name", done => {
+      it("createSolutionFromGroupId with specified name", done => {
         const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
-        const templateDictionary: any = {};
-        const portalSubset = {
-          name: "",
-          id: "",
-          restUrl: "https://www.arcgis.com/sharing/rest",
-          portalUrl: "",
-          urlKey: ""
-        } as common.IPortalSubset;
-        const destinationAuthentication: common.UserSession = MOCK_USER_SESSION;
+        const authentication: common.UserSession = MOCK_USER_SESSION;
         // tslint:disable-next-line: no-empty
         const progressCallback = (percentDone: number) => {};
 
@@ -253,16 +227,12 @@ describe("Module `creator`", () => {
             { success: true, id: expectedSolutionId }
           );
 
+        const options: common.ICreateSolutionOptions = {
+          title: solutionName,
+          templatizeFields: true
+        };
         creator
-          .createSolution(
-            solutionName,
-            solutionGroupId,
-            templateDictionary,
-            portalSubset,
-            destinationAuthentication,
-            progressCallback,
-            true
-          )
+          .createSolutionFromGroupId(solutionGroupId, authentication, options)
           .then(
             solutionId => {
               expect(solutionId).toEqual(expectedSolutionId);

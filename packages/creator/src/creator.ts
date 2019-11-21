@@ -209,21 +209,3 @@ export function addContentToSolution(
     );
   });
 }
-
-// Placeholder for tests
-export function createSolution(
-  solutionName: string,
-  groupId: string,
-  templateDictionary: any,
-  portalSubset: common.IPortalSubset,
-  authentication: common.UserSession,
-  progressCallback: (percentDone: number) => void,
-  templatizeFields: boolean = false
-): Promise<string> {
-  const options: common.ICreateSolutionOptions = {
-    title: solutionName,
-    templateDictionary: templateDictionary
-  };
-
-  return createSolutionFromGroupId(groupId, authentication, options);
-}
