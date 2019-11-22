@@ -1,0 +1,8 @@
+{
+  "lerna": "3.19.0",
+  "packages": [
+    "../createSolutionFromGroup",
+    "../../../../packages/*"
+  ],
+  "version": "0.0.1"
+}
