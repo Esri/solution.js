@@ -25,6 +25,14 @@ import * as createItemTemplate from "./createItemTemplate";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Creates a solution item using the contents of a group.
+ *
+ * @param groupId AGO id of group whose contents are to be added to solution
+ * @param authentication Credentials for the request
+ * @param options Customizations for creating the solution
+ * @return A promise that resolves with the AGO id of the new solution
+ */
 export function createSolutionFromGroupId(
   groupId: string,
   authentication: common.UserSession,
@@ -73,6 +81,14 @@ export function createSolutionFromGroupId(
   });
 }
 
+/**
+ * Creates a solution item using a list of AGO item ids.
+ *
+ * @param itemIds AGO ids of items that are to be added to solution
+ * @param authentication Credentials for the request
+ * @param options Customizations for creating the solution
+ * @return A promise that resolves with the AGO id of the new solution
+ */
 export function createSolutionFromItemIds(
   itemIds: string[],
   authentication: common.UserSession,
@@ -94,6 +110,13 @@ export function createSolutionFromItemIds(
   });
 }
 
+/**
+ * Creates an empty solution item.
+ *
+ * @param authentication Credentials for the request
+ * @param options Customizations for creating the solution
+ * @return A promise that resolves with the AGO id of the new solution
+ */
 export function createSolutionItem(
   authentication: common.UserSession,
   options?: common.ICreateSolutionOptions
@@ -148,11 +171,13 @@ export function createSolutionItem(
 }
 
 /**
+ * Adds a list of AGO item ids to a solution item.
  *
- *
- * @param itemIds List of AGO id strings
- * @param authentication Options for updating solution item in AGO
- * @return A promise without value
+ * @param solutionItemId AGO id of solution to receive items
+ * @param itemIds AGO ids of items that are to be added to solution
+ * @param authentication Credentials for the request
+ * @param options Customizations for creating the solution
+ * @return A promise that resolves with the AGO id of the updated solution
  */
 export function addContentToSolution(
   solutionItemId: string,
