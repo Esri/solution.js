@@ -112,7 +112,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.itemId = itemId;
 
         const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
-        fetchMock.post(url, mockItems.get400Failure());
+        fetchMock
+          .post(url, mockItems.get400Failure())
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          );
 
         simpleTypes
           .convertItemToTemplate(

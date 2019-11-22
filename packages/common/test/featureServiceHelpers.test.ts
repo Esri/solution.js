@@ -322,7 +322,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
-          extent: {}, // only set through createSolutionTemplate
+          extent: {}, // only set through createItemTemplate
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}"
         },

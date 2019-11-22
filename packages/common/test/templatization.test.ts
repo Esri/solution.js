@@ -345,8 +345,8 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
-  describe("_createId", () => {
-    xit("_createId", done => {
+  describe("createId", () => {
+    xit("createId", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });

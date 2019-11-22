@@ -21,138 +21,187 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as createSolutionTemplate from "./createSolutionTemplate";
+import * as createItemTemplate from "./createItemTemplate";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function createSolution(
-  solutionName: string,
+export function createSolutionFromGroupId(
   groupId: string,
-  templateDictionary: any,
-  portalSubset: common.IPortalSubset,
-  destinationAuthentication: common.UserSession,
-  progressCallback: (percentDone: number) => void,
-  templatizeFields: boolean = false
+  authentication: common.UserSession,
+  options?: common.ICreateSolutionOptions
 ): Promise<string> {
-  let percentDone = 1; // Let the caller know that we've started
-  progressCallback(percentDone);
+  return new Promise((resolve, reject) => {
+    // Get group information
+    Promise.all([
+      common.getGroup(groupId, authentication),
+      common.getGroupContents(groupId, authentication)
+    ]).then(
+      responses => {
+        const [groupInfo, groupItems] = responses;
 
-  return new Promise<string>((resolve, reject) => {
+        // Create a solution from the group's contents, using the group's information as defaults for the solution item
+        const createOptions: common.ICreateSolutionOptions = options ?? {};
+        createOptions.title = createOptions.title ?? groupInfo.title;
+        createOptions.snippet = createOptions.snippet ?? groupInfo.snippet;
+        createOptions.description =
+          createOptions.description ?? groupInfo.description;
+        createOptions.tags = createOptions.tags ?? groupInfo.tags;
+
+        if (!createOptions.thumbnailUrl && groupInfo.thumbnail) {
+          // Copy the group's thumbnail to the new item; need to add token to thumbnail because
+          // authentication only applies to updating solution item, not fetching group thumbnail image
+          const groupItemThumbnail = common.generateSourceThumbnailUrl(
+            authentication.portal,
+            groupId,
+            groupInfo.thumbnail,
+            true
+          );
+        }
+
+        // Create a solution with the group contents
+        createSolutionFromItemIds(
+          groupItems,
+          authentication,
+          createOptions
+        ).then(
+          createdSolutionId => resolve(createdSolutionId),
+          error => reject(error)
+        );
+      },
+      error => reject(error)
+    );
+  });
+}
+
+export function createSolutionFromItemIds(
+  itemIds: string[],
+  authentication: common.UserSession,
+  options?: common.ICreateSolutionOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Create a solution from the list of items
+    createSolutionItem(authentication, options).then(
+      createdSolutionId => {
+        addContentToSolution(
+          createdSolutionId,
+          itemIds,
+          authentication,
+          options
+        ).then(resolve, error => reject(error));
+      },
+      error => reject(error)
+    );
+  });
+}
+
+export function createSolutionItem(
+  authentication: common.UserSession,
+  options?: common.ICreateSolutionOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const solutionItem: any = {
+      type: "Solution",
+      title: options?.title ?? common.createId(),
+      snippet: options?.snippet ?? "",
+      description: options?.description ?? "",
+      thumbnailUrl: options?.thumbnailUrl ?? "",
+      tags: options?.tags ?? [],
+      typeKeywords: ["Solution", "Template"]
+    };
+    if (Array.isArray(options?.additionalTypeKeywords)) {
+      solutionItem.typeKeywords = solutionItem.typeKeywords.concat(
+        options!.additionalTypeKeywords
+      );
+    }
+
     const solutionData: common.ISolutionItemData = {
       metadata: {},
       templates: []
     };
 
-    // Fetch group item info and use it to create the solution item
-    const solutionItemDef = new Promise<string>((itemResolve, itemReject) => {
-      common.getGroup(groupId, destinationAuthentication).then(groupItem => {
-        /* console.log(
-          'Creating solution "' +
-            (solutionName || groupItem.title) +
-            '" from group ' +
-            groupId
-        ); */
-        progressCallback((percentDone += 2));
+    // Create new solution item using group item info
+    common
+      .createItemWithData(
+        solutionItem,
+        solutionData,
+        authentication,
+        undefined // use top-level folder
+      )
+      .then(
+        updateResponse => {
+          if (solutionItem.thumbnailUrl) {
+            // thumbnailUrl += "?token=" + authentication.token();
+            common
+              .addThumbnailFromUrl(
+                solutionItem.thumbnailUrl,
+                updateResponse.id,
+                authentication
+              )
+              .then(() => resolve(updateResponse.id), reject);
+          } else {
+            resolve(updateResponse.id);
+          }
+        },
+        error => reject(error)
+      );
+  });
+}
 
-        const solutionItem: any = {
-          type: "Solution",
-          title: solutionName || groupItem.title,
-          snippet: groupItem.snippet,
-          description: groupItem.description,
-          tags: groupItem.tags,
-          typeKeywords: ["Solution", "Template"]
-        };
+/**
+ *
+ *
+ * @param itemIds List of AGO id strings
+ * @param authentication Options for updating solution item in AGO
+ * @return A promise without value
+ */
+export function addContentToSolution(
+  solutionItemId: string,
+  itemIds: string[],
+  authentication: common.UserSession,
+  options?: common.ICreateSolutionOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const templateDictionary = options?.templateDictionary ?? {};
+    let solutionTemplates: common.IItemTemplate[] = [];
 
-        // Create new solution item using group item info
-        common
-          .createItemWithData(
-            solutionItem,
-            solutionData,
-            destinationAuthentication,
-            undefined
-          )
-          .then(updateResponse => {
-            progressCallback((percentDone += 2));
+    // Handle a list of one or more AGO ids by stepping through the list
+    // and calling this function recursively
+    const getItemsPromise: Array<Promise<boolean>> = [];
 
-            if (groupItem.thumbnail) {
-              // Copy the group's thumbnail to the new item; need to add token to thumbnail because
-              // destinationAuthentication only applies to updating solution item, not fetching group thumbnail image
-              const groupItemThumbnail =
-                common.generateSourceThumbnailUrl(
-                  portalSubset.restUrl,
-                  groupId,
-                  groupItem.thumbnail,
-                  true
-                ) +
-                "?token=" +
-                destinationAuthentication.token;
-              common
-                .addThumbnailFromUrl(
-                  groupItemThumbnail,
-                  updateResponse.id,
-                  destinationAuthentication
-                )
-                .then(() => itemResolve(updateResponse.id), itemReject);
-            } else {
-              itemResolve(updateResponse.id);
-            }
-          }, itemReject);
-      }, itemReject);
+    itemIds.forEach(itemId => {
+      getItemsPromise.push(
+        createItemTemplate.createItemTemplate(
+          solutionItemId,
+          itemId,
+          templateDictionary,
+          authentication,
+          solutionTemplates
+        )
+      );
+      // progressTickCallback();
     });
-
-    // Fetch group contents
-    const groupContentsDef = common.getGroupContents(
-      groupId,
-      destinationAuthentication
-    );
-
-    // When we have the solution item and the group contents, we can add the contents to the solution
-    Promise.all([solutionItemDef, groupContentsDef]).then(
+    Promise.all(getItemsPromise).then(
       responses => {
-        const [solutionItemId, groupContents] = responses;
-        /* console.log(
-          "Created solution template framework for " + solutionItemId
+        // Remove remnant placeholder items from the templates list
+        solutionTemplates = solutionTemplates.filter(
+          template => template.type // `type` needs to be defined
         );
-        console.log("Group members: " + JSON.stringify(groupContents, null, 2)); */
-        progressCallback((percentDone += 2));
-        const progressPercentStep = (100 - 7) / (groupContents.length + 1); // '7' for previously-reported progress
 
-        // Get the template information for the group contents, including their dependency items
-        createSolutionTemplate
-          .createSolutionTemplate(
-            portalSubset.restUrl,
-            solutionItemId,
-            groupContents,
-            templateDictionary,
-            destinationAuthentication,
-            () => {
-              progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
-            }
-          )
-          .then(
-            (solutionTemplates: common.IItemTemplate[]) => {
-              progressCallback(98);
-
-              // Update solution item with its data JSON
-              solutionData.templates = templatizeFields
-                ? createSolutionTemplate.postProcessFieldReferences(
-                    solutionTemplates
-                  )
-                : solutionTemplates;
-
-              const itemInfo: common.IItemUpdate = {
-                id: solutionItemId,
-                text: solutionData
-              };
-              common
-                .updateItem(itemInfo, destinationAuthentication)
-                .then(() => {
-                  progressCallback(0);
-                  resolve(solutionItemId);
-                }, reject);
-            },
-            e => reject(common.fail(e))
-          );
+        // Update solution item with its data JSON
+        const solutionData: common.ISolutionItemData = {
+          metadata: {},
+          templates: options?.templatizeFields
+            ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
+            : solutionTemplates
+        };
+        const itemInfo: common.IItemUpdate = {
+          id: solutionItemId,
+          text: solutionData
+        };
+        common.updateItem(itemInfo, authentication).then(() => {
+          // progressCallback(0);
+          resolve(solutionItemId);
+        }, reject);
       },
       e => reject(common.fail(e))
     );

@@ -1,7 +1,7 @@
 {
-  "name": "getItemInfo",
+  "name": "createSolutionFromItem",
   "version": "0.0.1",
-  "description": "Example use of @esri/solution-common.",
+  "description": "Example use of @esri/solution-creator to create a solution item from an AGO item.",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
@@ -10,6 +10,7 @@
     "@esri/arcgis-rest-request": "^2.6.0",
     "@esri/arcgis-rest-service-admin": "^2.6.0",
     "@esri/solution-common": "^0.5.8",
+    "@esri/solution-creator": "^0.5.8",
     "@types/requirejs": "^2.1.31",
     "lerna": "^3.19.0",
     "typescript": "^3.7.2"

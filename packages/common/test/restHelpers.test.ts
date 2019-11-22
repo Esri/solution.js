@@ -54,8 +54,8 @@ beforeEach(() => {
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a auth.UserSession to use in all these tests
-const MOCK_USER_SESSION = new auth.UserSession({
+// Set up a interfaces.UserSession to use in all these tests
+const MOCK_USER_SESSION = new interfaces.UserSession({
   clientId: "clientId",
   redirectUri: "https://example-app.com/redirect-uri",
   token: "fake-token",
@@ -220,7 +220,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       jasmine.clock().uninstall();
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
-      const sessionWithMockedTime: auth.UserSession = utils.createRuntimeMockUserSession(
+      const sessionWithMockedTime: interfaces.UserSession = utils.createRuntimeMockUserSession(
         utils.setMockDateTime(now)
       );
 
@@ -1874,7 +1874,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("_getCreateServiceOptions", () => {
     it("can get options for HOSTED empty service", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1918,7 +1918,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL empty service", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -1964,7 +1964,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2037,7 +2037,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for PORTAL service with values and unsupported capabilities", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2109,7 +2109,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values when name contains guid", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });
@@ -2183,7 +2183,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can get options for HOSTED service with values and handle error on convertExtent", done => {
-      const userSession: auth.UserSession = new auth.UserSession({
+      const userSession: interfaces.UserSession = new interfaces.UserSession({
         username: "jsmith",
         password: "123456"
       });

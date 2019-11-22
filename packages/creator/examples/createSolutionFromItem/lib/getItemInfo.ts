@@ -15,11 +15,12 @@
  */
 // @esri/solution-common getItemInfo TypeScript example
 
-import * as common from "@esri/solution-common";
+import * as auth from "@esri/arcgis-rest-auth";
+import * as solutionCommon from "@esri/solution-common";
 
 export function getItemInfo(
   itemId: string,
-  authentication: common.UserSession
+  authentication: solutionCommon.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -28,15 +29,15 @@ export function getItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = common.getItemBase(itemId, authentication);
+    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          common
+          solutionCommon
             .getItemDataAsFile(itemId, itemBase.name, authentication)
-            .then(resolve2, (error: any) => reject2(JSON.stringify(error)));
+            .then(resolve2, (error: any) => reject2(error));
         }
       );
     });
@@ -45,14 +46,17 @@ export function getItemInfo(
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          common
+          solutionCommon
             .getItemThumbnail(itemId, itemBase.thumbnail, false, authentication)
-            .then(resolve3, (error: any) => reject3(JSON.stringify(error)));
+            .then(resolve3, (error: any) => reject3(error));
         }
       );
     });
-    const itemMetadataDef = common.getItemMetadataBlob(itemId, authentication);
-    const itemResourcesDef = common.getItemResourcesFiles(
+    const itemMetadataDef = solutionCommon.getItemMetadataBlob(
+      itemId,
+      authentication
+    );
+    const itemResourcesDef = solutionCommon.getItemResourcesFiles(
       itemId,
       authentication
     );
@@ -85,7 +89,7 @@ export function getItemInfo(
         console.log("itemMetadata", itemMetadataBlob);
         console.log("itemResources", itemResourceFiles);
 
-        const portalUrl = common.getPortalUrlFromAuth(authentication);
+        const portalUrl = solutionCommon.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
         let html =
@@ -142,10 +146,10 @@ export function getItemInfo(
           if (authentication.token) {
             // These queries require authentication
             // Show resources section
-            common
+            solutionCommon
               .getFeatureServiceProperties(itemBase.url, authentication)
               .then(
-                (properties: common.IFeatureServiceProperties) => {
+                (properties: solutionCommon.IFeatureServiceProperties) => {
                   html += "<p>Feature Service Properties<br/>";
 
                   html +=
@@ -213,7 +217,7 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
     const file = blob as File;
 
     if (blob.type === "application/json") {
-      common.blobToJson(blob).then(
+      solutionCommon.blobToJson(blob).then(
         text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
         error => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
@@ -222,7 +226,7 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
       blob.type === "text/xml" ||
       blob.type === "application/xml"
     ) {
-      common.blobToText(blob).then(
+      solutionCommon.blobToText(blob).then(
         text => resolve(textAreaHtml(text)),
         error => resolve("<i>problem extracting text: " + error + "</i>")
       );

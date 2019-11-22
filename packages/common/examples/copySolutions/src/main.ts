@@ -15,9 +15,7 @@
  */
 // @esri/solution-common copySolutions TypeScript example
 
-import * as auth from "@esri/arcgis-rest-auth";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as solutionCommon from "@esri/solution-common";
+import * as common from "@esri/solution-common";
 
 /**
  * Copies an item.
@@ -29,8 +27,8 @@ import * as solutionCommon from "@esri/solution-common";
  */
 export function copyItemInfo(
   itemId: string,
-  sourceAuthentication: auth.UserSession,
-  destinationAuthentication: auth.UserSession
+  sourceAuthentication: common.UserSession,
+  destinationAuthentication: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -39,26 +37,23 @@ export function copyItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(
-      itemId,
-      sourceAuthentication
-    );
+    const itemBaseDef = common.getItemBase(itemId, sourceAuthentication);
     const itemDataDef = new Promise<File>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          solutionCommon
+          common
             .getItemDataAsFile(itemId, itemBase.name, sourceAuthentication)
-            .then(resolve2, (error: any) => reject2(error));
+            .then(resolve2, (error: any) => reject2(JSON.stringify(error)));
         }
       );
     });
-    const itemMetadataDef = solutionCommon.getItemMetadataAsFile(
+    const itemMetadataDef = common.getItemMetadataAsFile(
       itemId,
       sourceAuthentication
     );
-    const itemResourcesDef = solutionCommon.getItemResourcesFiles(
+    const itemResourcesDef = common.getItemResourcesFiles(
       itemId,
       sourceAuthentication
     );
@@ -77,7 +72,7 @@ export function copyItemInfo(
           itemResourceFiles
         ] = responses;
         // Construct the thumbnail URL from the item base info
-        const itemThumbnailUrl = solutionCommon.getItemThumbnailUrl(
+        const itemThumbnailUrl = common.getItemThumbnailUrl(
           itemId,
           itemBase.thumbnail,
           false,
@@ -98,7 +93,7 @@ export function copyItemInfo(
         console.log("itemResources", itemResourceFiles);
 
         // Create the copy after extracting properties that aren't specific to the source
-        solutionCommon
+        common
           .createFullItem(
             getCopyableItemBaseProperties(itemBase),
             undefined, // folder id
@@ -110,7 +105,7 @@ export function copyItemInfo(
             itemBase.access
           )
           .then(
-            (createResponse: portal.ICreateItemResponse) => {
+            (createResponse: common.ICreateItemResponse) => {
               resolve(JSON.stringify(createResponse));
             },
             (error: any) => reject(JSON.stringify(error))
@@ -151,7 +146,7 @@ export function getCopyableItemBaseProperties(sourceItem: any): any {
  * @param password
  * @param portalUrl Base url for the portal you want to make the request to; defaults
  *        to 'https://www.arcgis.com/sharing/rest'
- * @return auth.UserSession object
+ * @return solutionCommon.UserSession object
  * @see @esri/arcgis-rest-auth
  * @see @esri/arcgis-rest-request
  */
@@ -159,14 +154,14 @@ export function getRequestAuthentication(
   username: string,
   password: string,
   portalUrl: string
-): auth.UserSession {
+): common.UserSession {
   const userSessionOptions = {
     username: username || undefined,
     password: password || undefined,
     portal: portalUrl || "https://www.arcgis.com/sharing/rest"
   };
 
-  return new auth.UserSession(userSessionOptions);
+  return new common.UserSession(userSessionOptions);
 }
 
 /**
@@ -175,14 +170,10 @@ export function getRequestAuthentication(
  * @param authentication Authentication for server to query
  */
 export function getTemplates(
-  authentication: auth.UserSession
-): Promise<portal.ISearchResult<portal.IItem>> {
+  authentication: common.UserSession
+): Promise<common.ISearchResult<common.IItem>> {
   return new Promise((resolve, reject) => {
-    const requestOptions = {
-      authentication: authentication
-    };
-
-    portal.getPortal(null, requestOptions).then(
+    common.getPortal(null, authentication).then(
       portalResponse => {
         if (!portalResponse.user) {
           reject("Unable to log in");
@@ -194,12 +185,15 @@ export function getTemplates(
           availSolnsQuery += " orgid:" + portalResponse.user.orgId;
         }
         const pagingParam = { start: 1, num: 100 };
+        const requestOptions = {
+          authentication: authentication
+        };
         const searchOptions = {
           q: availSolnsQuery,
           ...requestOptions,
           ...pagingParam
         };
-        portal.searchItems(searchOptions).then(
+        common.searchItems(searchOptions).then(
           searchResponse => resolve(searchResponse),
           error => reject(error)
         );

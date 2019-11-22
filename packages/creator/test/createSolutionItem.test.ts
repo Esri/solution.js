@@ -19,11 +19,11 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as createSolutionTemplate from "../src/createSolutionTemplate";
+import * as createItemTemplate from "../src/createItemTemplate";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `createSolutionTemplate`", () => {
+describe("Module `createItemTemplate`", () => {
   describe("createItemTemplate", () => {
     xit("createItemTemplate", done => {
       console.warn("========== TODO ==========");
@@ -31,8 +31,8 @@ describe("Module `createSolutionTemplate`", () => {
     });
   });
 
-  describe("createSolutionTemplate", () => {
-    xit("createSolutionTemplate", done => {
+  describe("createItemTemplate", () => {
+    xit("createItemTemplate", done => {
       console.warn("========== TODO ==========");
       done.fail();
     });
@@ -48,7 +48,7 @@ describe("Module `createSolutionTemplate`", () => {
   describe("postProcessFieldReferences", () => {
     if (typeof window !== "undefined") {
       it("postProcessFieldReferences", () => {
-        const actual: common.IItemTemplate[] = createSolutionTemplate.postProcessFieldReferences(
+        const actual: common.IItemTemplate[] = createItemTemplate.postProcessFieldReferences(
           initialSolutionTemplates
         );
         expect(actual).toEqual(expected);
@@ -86,7 +86,7 @@ describe("Module `createSolutionTemplate`", () => {
 
   describe("_replaceTemplate", () => {
     it("returns false when no template is found", () => {
-      const actual: boolean = createSolutionTemplate._replaceTemplate(
+      const actual: boolean = createItemTemplate._replaceTemplate(
         [],
         "",
         initialSolutionTemplates[0]

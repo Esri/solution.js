@@ -215,7 +215,6 @@ export function convertItemToTemplate(
           );
         },
         error => {
-          console.log("simple-types convertItemToTemplate failed", error);
           reject(error);
         }
       );
