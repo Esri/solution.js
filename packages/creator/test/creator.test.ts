@@ -313,54 +313,57 @@ describe("Module `creator`", () => {
       );
     });
 
-    it("createSolutionFromItemIds fails to add items to solution item", done => {
-      const itemIds: string[] = ["itm1234567890"];
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update";
-      const expectedSolutionId = "sln1234567890";
-      const expectedItem = mockItems.getAGOLItem("Web Map");
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("createSolutionFromItemIds fails to add items to solution item", done => {
+        const itemIds: string[] = ["itm1234567890"];
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update";
+        const expectedSolutionId = "sln1234567890";
+        const expectedItem = mockItems.getAGOLItem("Web Map");
 
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: expectedSolutionId }
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
-          JSON.stringify(expectedItem)
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
-          noDataResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
-          noMetadataResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
-          utils.getSampleImage(),
-          { sendAsJson: false }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: expectedSolutionId }
-        )
-        .post(url, { success: false });
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionFromItemIds(itemIds, authentication).then(
-        () => done.fail(),
-        error => {
-          expect(error.success).toBeFalsy();
-          done();
-        }
-      );
-    });
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+            JSON.stringify(expectedItem)
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            noDataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(url, { success: false });
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionFromItemIds(itemIds, authentication).then(
+          () => done.fail(),
+          error => {
+            expect(error.success).toBeFalsy();
+            done();
+          }
+        );
+      });
+    }
   });
 
   describe("createSolutionItem", () => {
