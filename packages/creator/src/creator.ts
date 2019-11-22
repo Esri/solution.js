@@ -181,7 +181,7 @@ export function addContentToSolution(
       // progressTickCallback();
     });
     Promise.all(getItemsPromise).then(
-      () => {
+      responses => {
         // Remove remnant placeholder items from the templates list
         solutionTemplates = solutionTemplates.filter(
           template => template.type // `type` needs to be defined

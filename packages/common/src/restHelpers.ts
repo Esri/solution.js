@@ -687,12 +687,17 @@ export function updateItem(
   authentication: interfaces.UserSession,
   folderId?: string
 ): Promise<interfaces.IUpdateItemResponse> {
-  const updateOptions: portal.IUpdateItemOptions = {
-    item: itemInfo,
-    folderId: folderId,
-    authentication: authentication
-  };
-  return portal.updateItem(updateOptions);
+  return new Promise((resolve, reject) => {
+    const updateOptions: portal.IUpdateItemOptions = {
+      item: itemInfo,
+      folderId: folderId,
+      authentication: authentication
+    };
+    portal.updateItem(updateOptions).then(
+      response => (response.success ? resolve(response) : reject(response)),
+      err => reject(err)
+    );
+  });
 }
 
 export function updateItemExtended(
