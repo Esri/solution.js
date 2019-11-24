@@ -39,6 +39,10 @@ export function createSolutionFromGroupId(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (options?.progressCallback) {
+      options.progressCallback(1); // Let the caller know that we've started
+    }
+
     // Get group information
     Promise.all([
       common.getGroup(groupId, authentication),
@@ -56,9 +60,8 @@ export function createSolutionFromGroupId(
         createOptions.tags = createOptions.tags ?? groupInfo.tags;
 
         if (!createOptions.thumbnailUrl && groupInfo.thumbnail) {
-          // Copy the group's thumbnail to the new item; need to add token to thumbnail because
-          // authentication only applies to updating solution item, not fetching group thumbnail image
-          const groupItemThumbnail = common.generateSourceThumbnailUrl(
+          // Copy the group's thumbnail to the new item
+          createOptions.thumbnailUrl = common.generateSourceThumbnailUrl(
             authentication.portal,
             groupId,
             groupInfo.thumbnail,
@@ -95,6 +98,10 @@ export function createSolutionFromItemIds(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (options?.progressCallback) {
+      options.progressCallback(2); // Let the caller know that we've started
+    }
+
     // Create a solution from the list of items
     createSolutionItem(authentication, options).then(
       createdSolutionId => {
@@ -142,7 +149,7 @@ export function createSolutionItem(
       templates: []
     };
 
-    // Create new solution item using group item info
+    // Create new solution item
     common
       .createItemWithData(
         solutionItem,
@@ -152,6 +159,7 @@ export function createSolutionItem(
       )
       .then(
         updateResponse => {
+          // Thumbnail must be added manually
           if (solutionItem.thumbnailUrl) {
             // thumbnailUrl += "?token=" + authentication.token();
             common
@@ -188,6 +196,25 @@ export function addContentToSolution(
   return new Promise((resolve, reject) => {
     const templateDictionary = options?.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
+    if (options?.progressCallback) {
+      options.progressCallback(4);
+    }
+
+    /*
+    if (options?.progressCallback) {
+      let percentDone = 1; // Let the caller know that we've started
+      options.progressCallback(percentDone);
+
+      options.progressCallback((percentDone += 2));
+      const progressPercentStep = (100 - 7) / (itemIds.length + 1); // '7' for previously-reported progress
+      let progressTickCallback: () => void =
+      () => {
+        options.progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
+      }
+
+      options.progressCallback(0);
+    }
+    */
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
@@ -207,6 +234,10 @@ export function addContentToSolution(
     });
     Promise.all(getItemsPromise).then(
       responses => {
+        if (options?.progressCallback) {
+          options.progressCallback(96);
+        }
+
         // Remove remnant placeholder items from the templates list
         solutionTemplates = solutionTemplates.filter(
           template => template.type // `type` needs to be defined
@@ -224,7 +255,9 @@ export function addContentToSolution(
           text: solutionData
         };
         common.updateItem(itemInfo, authentication).then(() => {
-          // progressCallback(0);
+          if (options?.progressCallback) {
+            options.progressCallback(0);
+          }
           resolve(solutionItemId);
         }, reject);
       },
