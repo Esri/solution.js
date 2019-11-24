@@ -196,44 +196,34 @@ export function addContentToSolution(
   return new Promise((resolve, reject) => {
     const templateDictionary = options?.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
+    let progressTickCallback: () => void = () => void 0;
     if (options?.progressCallback) {
-      options.progressCallback(4);
+      const progressCallback = options.progressCallback;
+      progressCallback(4);
+      let percentDone = 4;
+      const progressPercentStep = (100 - 8) / (itemIds.length + 1); // '8' for surrounding progress reports
+      progressTickCallback = () => {
+        progressCallback((percentDone += progressPercentStep)); // progress tick callback
+      };
     }
-
-    /*
-    if (options?.progressCallback) {
-      let percentDone = 1; // Let the caller know that we've started
-      options.progressCallback(percentDone);
-
-      options.progressCallback((percentDone += 2));
-      const progressPercentStep = (100 - 7) / (itemIds.length + 1); // '7' for previously-reported progress
-      let progressTickCallback: () => void =
-      () => {
-        options.progressCallback((percentDone += progressPercentStep)); // progress tick callback from deployItems
-      }
-
-      options.progressCallback(0);
-    }
-    */
 
     // Handle a list of one or more AGO ids by stepping through the list
     // and calling this function recursively
     const getItemsPromise: Array<Promise<boolean>> = [];
 
     itemIds.forEach(itemId => {
-      getItemsPromise.push(
-        createItemTemplate.createItemTemplate(
-          solutionItemId,
-          itemId,
-          templateDictionary,
-          authentication,
-          solutionTemplates
-        )
+      const createDef = createItemTemplate.createItemTemplate(
+        solutionItemId,
+        itemId,
+        templateDictionary,
+        authentication,
+        solutionTemplates
       );
-      // progressTickCallback();
+      getItemsPromise.push(createDef);
+      createDef.then(progressTickCallback, progressTickCallback);
     });
     Promise.all(getItemsPromise).then(
-      responses => {
+      () => {
         if (options?.progressCallback) {
           options.progressCallback(96);
         }
