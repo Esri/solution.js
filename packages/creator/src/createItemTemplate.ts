@@ -26,27 +26,159 @@ import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
 /**
- * Mapping from item type to module with type-specific template-handling code
+ * Mapping from item type to module with type-specific template-handling code.
+ * All of the AGO types listed in arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js
+ * whether they are supported for solution items or not.
  */
 const moduleMap: common.IItemTypeModuleMap = {
+  "360 vr experience": null,
+  "3d web scene": null,
+  "appbuilder extension": null,
+  "application configuration": null,
+  application: null,
+  "arcgis pro add in": null,
+  "arcgis pro configuration": null,
+  "arcpad package": null,
+  "basemap package": null,
+  "big data analytic": null,
+  "cad drawing": null,
+  "cityengine web scene": null,
+  "code attachment": null,
+  "code sample": null,
+  "color set": null,
+  "compact tile package": null,
+  "csv collection": null,
+  csv: null,
   dashboard: simpleTypes,
-
-  // //??? Temporary assignments
-  "project package": simpleTypes,
-  "workforce project": simpleTypes,
-  // //???
-
-  "feature layer": featureLayer,
+  "data store": null,
+  "deep learning package": null,
+  default: null,
+  "desktop add in": null,
+  "desktop application template": null,
+  "desktop application": null,
+  "desktop style": null,
+  "document link": null,
+  "elevation layer": null,
+  "excalibur imagery project": null,
+  "explorer add in": null,
+  "explorer layer": null,
+  "explorer map": null,
+  "feature collection template": null,
+  "feature collection": null,
   "feature service": featureLayer,
+  feed: null,
+  "file geodatabase": null,
   form: simpleTypes,
+  "geocoding service": null,
+  "geodata service": null,
+  geojson: null,
+  "geometry service": null,
+  geopackage: null,
+  "geoprocessing package": null,
+  "geoprocessing sample": null,
+  "geoprocessing service": null,
+  "globe document": null,
+  "globe service": null,
   group: simpleTypes,
-  // "openstreetmap": solutionStoryMap,
-  // "project package": solutionStoryMap,
-  // "storymap": solutionStoryMap,
-  // table: solutionFeatureLayer,
-  // vectortilelayer: solutionFeatureLayer,
+  "hub initiative": null,
+  "hub page": null,
+  "hub site application": null,
+  "image collection": null,
+  "image service": null,
+  image: null,
+  "insights model": null,
+  "insights page": null,
+  "insights theme": null,
+  "insights workbook": null,
+  "iwork keynote": null,
+  "iwork numbers": null,
+  "iwork pages": null,
+  "kml collection": null,
+  kml: null,
+  "layer package": null,
+  "layer template": null,
+  layer: null,
+  layout: null,
+  "locator package": null,
+  "map document": null,
+  "map image layer": null,
+  "map package": null,
+  "map service": null,
+  "map template": null,
+  markup: null,
+  "microsoft excel": null,
+  "microsoft powerpoint": null,
+  "microsoft word": null,
+  mission: null,
+  "mobile application": null,
+  "mobile basemap package": null,
+  "mobile map package": null,
+  "mobile scene package": null,
+  "native application installer": null,
+  "native application template": null,
+  "native application": null,
+  netcdf: null,
+  "network analysis service": null,
+  notebook: null,
+  "operation view": null,
+  "operations dashboard add in": null,
+  "operations dashboard extension": null,
+  "ortho mapping project": null,
+  pdf: null,
+  "pro layer package": null,
+  "pro layer": null,
+  "pro map package": null,
+  "pro map": null,
+  "pro report": null,
+  "project package": null,
+  "project template": null,
+  "published map": null,
+  "quickcapture project": null,
+  "raster function template": null,
+  "real time analytic": null,
+  "relational database connection": null,
+  "report template": null,
+  "route layer": null,
+  "rule package": null,
+  "scene document": null,
+  "scene layer package": null,
+  "scene service": null,
+  shapefile: null,
+  "site application": null,
+  "site initiative": null,
+  "site page": null,
+  solution: null,
+  "statistical data collection": null,
+  storymap: null,
+  "stream service": null,
+  style: null,
+  "survey123 add in": null,
+  "symbol set": null,
+  table: null,
+  "task file": null,
+  "tile package": null,
+  tool: null,
+  "toolbox package": null,
+  "urban model": null,
+  "vector tile package": null,
+  "vector tile service": null,
+  "viewer configuration": null,
+  "visio document": null,
+  "web experience template": null,
+  "web experience": null,
   "web map": simpleTypes,
-  "web mapping application": simpleTypes
+  "web mapping application": simpleTypes,
+  "web scene": null,
+  wfs: null,
+  "window mobile package": null,
+  "windows mobile package": null,
+  "windows viewer add in": null,
+  "windows viewer configuration": null,
+  wms: null,
+  wmts: null,
+  "workflow manager package": null,
+  "workflow manager service": null,
+  "workforce project": null
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -114,8 +246,7 @@ export function createItemTemplate(
               () => resolve(true)
             );
           } else {
-            const itemHandler: common.IItemTemplateConversions =
-              moduleMap[itemInfo.type.toLowerCase()];
+            const itemHandler = moduleMap[itemInfo.type.toLowerCase()];
             if (!itemHandler) {
               console.warn(
                 "Unimplemented item type (module level) " +
@@ -125,6 +256,12 @@ export function createItemTemplate(
               );
               resolve(true);
             } else {
+              console.log(
+                "Templatizing item type (module level) " +
+                  itemInfo.type +
+                  " for " +
+                  itemInfo.id
+              );
               itemHandler
                 .convertItemToTemplate(solutionItemId, itemInfo, authentication)
                 .then(
