@@ -22,6 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
+import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
@@ -31,154 +32,154 @@ import * as storyMap from "@esri/solution-storymap";
  * whether they are supported for solution items or not.
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  "360 vr experience": null,
-  "3d web scene": null,
-  "appbuilder extension": null,
-  "application configuration": null,
-  application: null,
-  "arcgis pro add in": null,
-  "arcgis pro configuration": null,
-  "arcpad package": null,
-  "basemap package": null,
-  "big data analytic": null,
-  "cad drawing": null,
-  "cityengine web scene": null,
-  "code attachment": null,
-  "code sample": null,
-  "color set": null,
-  "compact tile package": null,
-  "csv collection": null,
-  csv: null,
+  "360 vr experience": undefined,
+  "3d web scene": undefined,
+  "appbuilder extension": undefined,
+  "application configuration": undefined,
+  application: undefined,
+  "arcgis pro add in": undefined,
+  "arcgis pro configuration": undefined,
+  "arcpad package": undefined,
+  "basemap package": undefined,
+  "big data analytic": undefined,
+  "cad drawing": undefined,
+  "cityengine web scene": undefined,
+  "code attachment": undefined,
+  "code sample": undefined,
+  "color set": undefined,
+  "compact tile package": undefined,
+  "csv collection": undefined,
+  csv: undefined,
   dashboard: simpleTypes,
-  "data store": null,
-  "deep learning package": null,
-  default: null,
-  "desktop add in": null,
-  "desktop application template": null,
-  "desktop application": null,
-  "desktop style": null,
-  "document link": null,
-  "elevation layer": null,
-  "excalibur imagery project": null,
-  "explorer add in": null,
-  "explorer layer": null,
-  "explorer map": null,
-  "feature collection template": null,
-  "feature collection": null,
+  "data store": undefined,
+  "deep learning package": undefined,
+  default: undefined,
+  "desktop add in": undefined,
+  "desktop application template": undefined,
+  "desktop application": undefined,
+  "desktop style": undefined,
+  "document link": undefined,
+  "elevation layer": undefined,
+  "excalibur imagery project": undefined,
+  "explorer add in": undefined,
+  "explorer layer": undefined,
+  "explorer map": undefined,
+  "feature collection template": undefined,
+  "feature collection": undefined,
   "feature service": featureLayer,
-  feed: null,
-  "file geodatabase": null,
+  feed: undefined,
+  "file geodatabase": undefined,
   form: simpleTypes,
-  "geocoding service": null,
-  "geodata service": null,
-  geojson: null,
-  "geometry service": null,
-  geopackage: null,
-  "geoprocessing package": null,
-  "geoprocessing sample": null,
-  "geoprocessing service": null,
-  "globe document": null,
-  "globe service": null,
-  group: simpleTypes,
-  "hub initiative": null,
-  "hub page": null,
-  "hub site application": null,
-  "image collection": null,
-  "image service": null,
-  image: null,
-  "insights model": null,
-  "insights page": null,
-  "insights theme": null,
-  "insights workbook": null,
-  "iwork keynote": null,
-  "iwork numbers": null,
-  "iwork pages": null,
-  "kml collection": null,
-  kml: null,
-  "layer package": null,
-  "layer template": null,
-  layer: null,
-  layout: null,
-  "locator package": null,
-  "map document": null,
-  "map image layer": null,
-  "map package": null,
-  "map service": null,
-  "map template": null,
-  markup: null,
-  "microsoft excel": null,
-  "microsoft powerpoint": null,
-  "microsoft word": null,
-  mission: null,
-  "mobile application": null,
-  "mobile basemap package": null,
-  "mobile map package": null,
-  "mobile scene package": null,
-  "native application installer": null,
-  "native application template": null,
-  "native application": null,
-  netcdf: null,
-  "network analysis service": null,
-  notebook: null,
-  "operation view": null,
-  "operations dashboard add in": null,
-  "operations dashboard extension": null,
-  "ortho mapping project": null,
-  pdf: null,
-  "pro layer package": null,
-  "pro layer": null,
-  "pro map package": null,
-  "pro map": null,
-  "pro report": null,
-  "project package": null,
-  "project template": null,
-  "published map": null,
-  "quickcapture project": null,
-  "raster function template": null,
-  "real time analytic": null,
-  "relational database connection": null,
-  "report template": null,
-  "route layer": null,
-  "rule package": null,
-  "scene document": null,
-  "scene layer package": null,
-  "scene service": null,
-  shapefile: null,
-  "site application": null,
-  "site initiative": null,
-  "site page": null,
-  solution: null,
-  "statistical data collection": null,
-  storymap: null,
-  "stream service": null,
-  style: null,
-  "survey123 add in": null,
-  "symbol set": null,
-  table: null,
-  "task file": null,
-  "tile package": null,
-  tool: null,
-  "toolbox package": null,
-  "urban model": null,
-  "vector tile package": null,
-  "vector tile service": null,
-  "viewer configuration": null,
-  "visio document": null,
-  "web experience template": null,
-  "web experience": null,
+  "geocoding service": undefined,
+  "geodata service": undefined,
+  geojson: undefined,
+  "geometry service": undefined,
+  geopackage: undefined,
+  "geoprocessing package": undefined,
+  "geoprocessing sample": undefined,
+  "geoprocessing service": undefined,
+  "globe document": undefined,
+  "globe service": undefined,
+  group: group,
+  "hub initiative": undefined,
+  "hub page": undefined,
+  "hub site application": undefined,
+  "image collection": undefined,
+  "image service": undefined,
+  image: undefined,
+  "insights model": undefined,
+  "insights page": undefined,
+  "insights theme": undefined,
+  "insights workbook": undefined,
+  "iwork keynote": undefined,
+  "iwork numbers": undefined,
+  "iwork pages": undefined,
+  "kml collection": undefined,
+  kml: undefined,
+  "layer package": undefined,
+  "layer template": undefined,
+  layer: undefined,
+  layout: undefined,
+  "locator package": undefined,
+  "map document": undefined,
+  "map image layer": undefined,
+  "map package": undefined,
+  "map service": undefined,
+  "map template": undefined,
+  markup: undefined,
+  "microsoft excel": undefined,
+  "microsoft powerpoint": undefined,
+  "microsoft word": undefined,
+  mission: undefined,
+  "mobile application": undefined,
+  "mobile basemap package": undefined,
+  "mobile map package": undefined,
+  "mobile scene package": undefined,
+  "native application installer": undefined,
+  "native application template": undefined,
+  "native application": undefined,
+  netcdf: undefined,
+  "network analysis service": undefined,
+  notebook: undefined,
+  "operation view": undefined,
+  "operations dashboard add in": undefined,
+  "operations dashboard extension": undefined,
+  "ortho mapping project": undefined,
+  pdf: undefined,
+  "pro layer package": undefined,
+  "pro layer": undefined,
+  "pro map package": undefined,
+  "pro map": undefined,
+  "pro report": undefined,
+  "project package": undefined,
+  "project template": undefined,
+  "published map": undefined,
+  "quickcapture project": undefined,
+  "raster function template": undefined,
+  "real time analytic": undefined,
+  "relational database connection": undefined,
+  "report template": undefined,
+  "route layer": undefined,
+  "rule package": undefined,
+  "scene document": undefined,
+  "scene layer package": undefined,
+  "scene service": undefined,
+  shapefile: undefined,
+  "site application": undefined,
+  "site initiative": undefined,
+  "site page": undefined,
+  solution: undefined,
+  "statistical data collection": undefined,
+  storymap: undefined,
+  "stream service": undefined,
+  style: undefined,
+  "survey123 add in": undefined,
+  "symbol set": undefined,
+  table: undefined,
+  "task file": undefined,
+  "tile package": undefined,
+  tool: undefined,
+  "toolbox package": undefined,
+  "urban model": undefined,
+  "vector tile package": undefined,
+  "vector tile service": undefined,
+  "viewer configuration": undefined,
+  "visio document": undefined,
+  "web experience template": undefined,
+  "web experience": undefined,
   "web map": simpleTypes,
   "web mapping application": simpleTypes,
-  "web scene": null,
-  wfs: null,
-  "window mobile package": null,
-  "windows mobile package": null,
-  "windows viewer add in": null,
-  "windows viewer configuration": null,
-  wms: null,
-  wmts: null,
-  "workflow manager package": null,
-  "workflow manager service": null,
-  "workforce project": null
+  "web scene": undefined,
+  wfs: undefined,
+  "window mobile package": undefined,
+  "windows mobile package": undefined,
+  "windows viewer add in": undefined,
+  "windows viewer configuration": undefined,
+  wms: undefined,
+  wmts: undefined,
+  "workflow manager package": undefined,
+  "workflow manager service": undefined,
+  "workforce project": undefined
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -200,186 +201,116 @@ export function createItemTemplate(
   authentication: common.UserSession,
   existingTemplates: common.IItemTemplate[]
 ): Promise<boolean> {
-  return new Promise((resolve, reject) => {
+  return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
     if (common.findTemplateInList(existingTemplates, itemId)) {
       resolve(true);
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
-      /* console.log(
+      console.log(
         "added placeholder template " +
           itemId +
           " [" +
           existingTemplates.length +
           "]"
-      ); */
+      );
 
-      // For each item,
-      //   * fetch item & data infos
-      //   * create item & data JSONs
-      //   * extract dependency ids & add them into list of group contents
-      //   * templatize select components in item & data JSONs (e.g., extents)
-      //   * copy item's resources, metadata, & thumbnail to solution item as resources
-      //   * add JSONs to solution item's data JSON accumulation
       // Fetch the item
-      /* console.log("fetching item " + itemId); */
-      common.getItem(itemId, authentication).then(
-        itemInfo => {
-          if (common.getProp(itemInfo, "extent")) {
-            // @ts-ignore
-            itemInfo.extent = "{{solutionItemExtent}}";
-          }
-          // Check if this is the solution's thumbnail
-          if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
-            // Set the thumbnail
-            const thumbnailUrl =
-              authentication.portal + "/content/items/" + itemId + "/data";
-            common.getBlob(thumbnailUrl, authentication).then(
-              blob =>
-                common
-                  .addThumbnailFromBlob(blob, solutionItemId, authentication)
-                  .then(
-                    () => resolve(true),
-                    () => resolve(true)
-                  ),
-              () => resolve(true)
+      console.log("fetching item " + itemId + "...");
+      common
+        .getItem(itemId, authentication)
+        .catch(() => {
+          // If item query fails, try fetching item as a group
+          // Change its placeholder from an empty type to the Group type so that we can later distinguish
+          // between items and groups (the base info for a group doesn't include a type property)
+          console.log("fetching group " + itemId + "...");
+          _replaceTemplate(
+            existingTemplates,
+            itemId,
+            common.createPlaceholderTemplate(itemId, "Group")
+          );
+          return common.getGroup(itemId, authentication);
+        })
+        .then(
+          itemInfo => {
+            const placeholder = common.findTemplateInList(
+              existingTemplates,
+              itemId
             );
-          } else {
+            let itemType = placeholder!.type;
+            if (!itemType) {
+              itemType = itemInfo.type;
+              _replaceTemplate(
+                existingTemplates,
+                itemId,
+                common.createPlaceholderTemplate(itemId, itemType)
+              );
+            }
+            console.log("Got item " + itemId + ": " + itemType);
+
             const itemHandler = moduleMap[itemInfo.type.toLowerCase()];
             if (!itemHandler) {
-              console.warn(
-                "Unimplemented item type (module level) " +
-                  itemInfo.type +
-                  " for " +
-                  itemInfo.id
-              );
-              resolve(true);
+              placeholder!.properties["partial"] = true;
             } else {
-              console.log(
-                "Templatizing item type (module level) " +
-                  itemInfo.type +
-                  " for " +
-                  itemInfo.id
-              );
+              // tslint:disable-next-line: no-floating-promises
               itemHandler
                 .convertItemToTemplate(solutionItemId, itemInfo, authentication)
-                .then(
-                  itemTemplate => {
-                    // Set the value keyed by the id to the created template, replacing the placeholder template
-                    _replaceTemplate(
-                      existingTemplates,
-                      itemTemplate.itemId,
-                      itemTemplate
-                    );
+                .then(itemTemplate => {
+                  // Set the value keyed by the id to the created template, replacing the placeholder template
+                  _replaceTemplate(
+                    existingTemplates,
+                    itemTemplate.itemId,
+                    itemTemplate
+                  );
 
-                    // Trace item dependencies
-                    if (itemTemplate.dependencies.length === 0) {
-                      resolve(true);
-                    } else {
-                      // Get its dependencies, asking each to get its dependents via
-                      // recursive calls to this function
-                      const dependentDfds: Array<Promise<boolean>> = [];
-                      /* console.log(
-                        "item " +
-                          itemId +
-                          " has dependencies " +
-                          JSON.stringify(itemTemplate.dependencies)
-                      ); */
-                      itemTemplate.dependencies.forEach(dependentId => {
-                        if (
-                          !common.findTemplateInList(
-                            existingTemplates,
-                            dependentId
+                  // Trace item dependencies
+                  if (itemTemplate.dependencies.length === 0) {
+                    resolve(true);
+                  } else {
+                    // Get its dependencies, asking each to get its dependents via
+                    // recursive calls to this function
+                    const dependentDfds: Array<Promise<boolean>> = [];
+                    console.log(
+                      "item " +
+                        itemId +
+                        " has dependencies " +
+                        JSON.stringify(itemTemplate.dependencies)
+                    );
+                    itemTemplate.dependencies.forEach(dependentId => {
+                      if (
+                        !common.findTemplateInList(
+                          existingTemplates,
+                          dependentId
+                        )
+                      ) {
+                        dependentDfds.push(
+                          createItemTemplate(
+                            solutionItemId,
+                            dependentId,
+                            templateDictionary,
+                            authentication,
+                            existingTemplates
                           )
-                        ) {
-                          dependentDfds.push(
-                            createItemTemplate(
-                              solutionItemId,
-                              dependentId,
-                              templateDictionary,
-                              authentication,
-                              existingTemplates
-                            )
-                          );
-                        }
-                      });
-                      Promise.all(dependentDfds).then(
-                        () => resolve(true),
-                        e => reject(common.fail(e))
-                      );
-                    }
-                  },
-                  e => reject(common.fail(e))
-                );
+                        );
+                      }
+                    });
+                    // tslint:disable-next-line: no-floating-promises
+                    Promise.all(dependentDfds).then(() => resolve(true));
+                  }
+                });
             }
+          },
+          // Id not found or item is not accessible
+          () => {
+            console.log("Unknown item " + itemId);
+            _replaceTemplate(
+              existingTemplates,
+              itemId,
+              common.createPlaceholderTemplate(itemId, "unknown")
+            );
           }
-        },
-        () => {
-          // If item query fails, try URL for group base section
-          /* console.log("fetching group " + itemId); */
-          common.getGroup(itemId, authentication).then(
-            itemInfo => {
-              simpleTypes
-                .convertItemToTemplate(
-                  solutionItemId,
-                  itemInfo,
-                  authentication,
-                  true
-                )
-                .then(
-                  itemTemplate => {
-                    // Set the value keyed by the id to the created template, replacing the placeholder template
-                    _replaceTemplate(
-                      existingTemplates,
-                      itemTemplate.itemId,
-                      itemTemplate
-                    );
-
-                    // Trace item dependencies
-                    if (itemTemplate.dependencies.length === 0) {
-                      resolve(true);
-                    } else {
-                      // Get its dependencies, asking each to get its dependents via
-                      // recursive calls to this function
-                      const dependentDfds: Array<Promise<boolean>> = [];
-                      /* console.log(
-                        "item " +
-                          itemId +
-                          " has dependencies " +
-                          JSON.stringify(itemTemplate.dependencies)
-                      ); */
-                      itemTemplate.dependencies.forEach(dependentId => {
-                        if (
-                          !common.findTemplateInList(
-                            existingTemplates,
-                            dependentId
-                          )
-                        ) {
-                          dependentDfds.push(
-                            createItemTemplate(
-                              solutionItemId,
-                              dependentId,
-                              templateDictionary,
-                              authentication,
-                              existingTemplates
-                            )
-                          );
-                        }
-                      });
-                      Promise.all(dependentDfds).then(
-                        () => resolve(true),
-                        e => reject(common.fail(e))
-                      );
-                    }
-                  },
-                  e => reject(common.fail(e))
-                );
-            },
-            e => reject(common.fail(e))
-          );
-        }
-      );
+        );
     }
   });
 }

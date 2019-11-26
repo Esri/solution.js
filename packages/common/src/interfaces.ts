@@ -202,7 +202,7 @@ export interface IItemTemplateConversions {
 /**
  * Structure for mapping from item type to module with type-specific template-handling code
  */
-type moduleHandler = IItemTemplateConversions | null;
+type moduleHandler = IItemTemplateConversions | undefined;
 export interface IItemTypeModuleMap {
   [itemType: string]: moduleHandler;
 }

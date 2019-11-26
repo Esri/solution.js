@@ -49,6 +49,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `creator`, which contains functions for transforming items into templates
 * `deployer`, which contains functions for deploying item templates into items in a destination organization
 * `feature-layer`, which contains functions for Feature Service items
+* `group`, which contains functions for Groups
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
 * `viewer`, which contains functions to support displaying Solution items

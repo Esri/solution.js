@@ -33,7 +33,7 @@ Logged in as &lt;npm username&gt; on https://registry.npmjs.org/
 5. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
 6. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version. 
+The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
 ```
 npm run prerelease:prepare
 npm run release:prepare
@@ -64,6 +64,21 @@ The publish step
 3. pushes the version to npmjs
 
 Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
+
+---
+
+## Adding a package
+
+1. Launch a git-bash window
+
+2. Log in to npmjs
+
+3. Create package, commit, and push
+
+4. Publish package
+```
+$ npm publish --access public --otp=<2-factor-code>
+```
 
 ---
 
