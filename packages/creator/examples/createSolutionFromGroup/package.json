@@ -11,6 +11,7 @@
     "@esri/arcgis-rest-service-admin": "^2.6.0",
     "@esri/solution-common": "^0.5.8",
     "@esri/solution-creator": "^0.5.8",
+    "@esri/solution-group": "^0.5.8",
     "@types/requirejs": "^2.1.31",
     "lerna": "^3.19.0",
     "typescript": "^3.7.2"
