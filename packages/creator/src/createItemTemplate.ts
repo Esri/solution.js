@@ -247,9 +247,10 @@ export function createItemTemplate(
                 common.createPlaceholderTemplate(itemId, itemType)
               );
             }
+            itemInfo.type = itemType; // Groups don't have this property
             console.log("Got item " + itemId + ": " + itemType);
 
-            const itemHandler = moduleMap[itemInfo.type.toLowerCase()];
+            const itemHandler = moduleMap[itemType.toLowerCase()];
             if (!itemHandler) {
               placeholder!.properties["partial"] = true;
             } else {
