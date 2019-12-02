@@ -243,47 +243,55 @@ export function createItemTemplate(
             const itemHandler = moduleMap[itemType.toLowerCase()];
             if (!itemHandler) {
               placeholder!.properties["partial"] = true;
+              resolve(true);
             } else {
               // tslint:disable-next-line: no-floating-promises
               itemHandler
                 .convertItemToTemplate(solutionItemId, itemInfo, authentication)
-                .then(itemTemplate => {
-                  // Set the value keyed by the id to the created template, replacing the placeholder template
-                  _replaceTemplate(
-                    existingTemplates,
-                    itemTemplate.itemId,
-                    itemTemplate
-                  );
+                .then(
+                  itemTemplate => {
+                    // Set the value keyed by the id to the created template, replacing the placeholder template
+                    _replaceTemplate(
+                      existingTemplates,
+                      itemTemplate.itemId,
+                      itemTemplate
+                    );
 
-                  // Trace item dependencies
-                  if (itemTemplate.dependencies.length === 0) {
-                    resolve(true);
-                  } else {
-                    // Get its dependencies, asking each to get its dependents via
-                    // recursive calls to this function
-                    const dependentDfds: Array<Promise<boolean>> = [];
-                    itemTemplate.dependencies.forEach(dependentId => {
-                      if (
-                        !common.findTemplateInList(
-                          existingTemplates,
-                          dependentId
-                        )
-                      ) {
-                        dependentDfds.push(
-                          createItemTemplate(
-                            solutionItemId,
-                            dependentId,
-                            templateDictionary,
-                            authentication,
-                            existingTemplates
+                    // Trace item dependencies
+                    if (itemTemplate.dependencies.length === 0) {
+                      resolve(true);
+                    } else {
+                      // Get its dependencies, asking each to get its dependents via
+                      // recursive calls to this function
+                      const dependentDfds: Array<Promise<boolean>> = [];
+                      itemTemplate.dependencies.forEach(dependentId => {
+                        if (
+                          !common.findTemplateInList(
+                            existingTemplates,
+                            dependentId
                           )
-                        );
-                      }
-                    });
-                    // tslint:disable-next-line: no-floating-promises
-                    Promise.all(dependentDfds).then(() => resolve(true));
+                        ) {
+                          dependentDfds.push(
+                            createItemTemplate(
+                              solutionItemId,
+                              dependentId,
+                              templateDictionary,
+                              authentication,
+                              existingTemplates
+                            )
+                          );
+                        }
+                      });
+                      // tslint:disable-next-line: no-floating-promises
+                      Promise.all(dependentDfds).then(() => resolve(true));
+                    }
+                  },
+                  error => {
+                    placeholder!.properties["partial"] = true;
+                    placeholder!.properties["error"] = JSON.stringify(error);
+                    resolve(true);
                   }
-                });
+                );
             }
           },
           // Id not found or item is not accessible
