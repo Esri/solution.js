@@ -310,6 +310,7 @@ export function createItemTemplate(
               itemId,
               common.createPlaceholderTemplate(itemId, "unknown")
             );
+            resolve(true);
           }
         );
     }
