@@ -275,12 +275,13 @@ describe("Module `creator`", () => {
     it("createSolutionFromItemIds fails to get item", done => {
       const itemIds: string[] = ["itm1234567890"];
       const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
-        .post(url, { success: true, id: expectedSolutionId })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: expectedSolutionId }
+        )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
           {
@@ -302,14 +303,19 @@ describe("Module `creator`", () => {
               details: []
             }
           }
+        )
+        .post(
+          // for missing item's placeholder
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+          { success: true, id: expectedSolutionId }
         );
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
       creator.createSolutionFromItemIds(itemIds, authentication).then(
-        () => done.fail(),
-        error => {
-          expect(error.success).toBeFalsy();
+        response => {
+          expect(response).toEqual(expectedSolutionId);
           done();
-        }
+        },
+        () => done.fail()
       );
     });
 
