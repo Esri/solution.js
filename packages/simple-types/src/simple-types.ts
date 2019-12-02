@@ -35,16 +35,6 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    console.log(
-      "converting " +
-        itemInfo.type +
-        ' "' +
-        itemInfo.title +
-        '" (' +
-        itemInfo.id +
-        ")..."
-    );
-
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
       itemInfo
@@ -184,28 +174,9 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            /* console.log(
-              "converted " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                ")"
-            ); */
             webappPromise.then(resolve, () => resolve(itemTemplate));
           },
           err => {
-            /* console.log(
-              "unable to convert " +
-                itemInfo.type +
-                ' "' +
-                itemInfo.title +
-                '" (' +
-                itemInfo.id +
-                "): " +
-                JSON.stringify(err, null, 2)
-            ); */
             reject(common.fail(err.response));
           }
         );
@@ -226,14 +197,6 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log(
-      "createItemFromTemplate for a " +
-        template.type +
-        " (" +
-        template.itemId +
-        ")"
-    );
-
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
     newItemTemplate = common.replaceInTemplate(

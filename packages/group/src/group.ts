@@ -30,10 +30,6 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    console.log(
-      "converting Group" + ' "' + itemInfo.title + '" (' + itemInfo.id + ")..."
-    );
-
     // Init template
     const itemTemplate: common.IItemTemplate = common.createInitializedGroupTemplate(
       itemInfo
@@ -75,10 +71,6 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    console.log(
-      "createItemFromTemplate for a Group" + " (" + template.itemId + ")"
-    );
-
     // Replace the templatized symbols in a copy of the template
     let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
     newItemTemplate = common.replaceInTemplate(

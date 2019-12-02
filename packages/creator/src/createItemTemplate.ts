@@ -208,23 +208,14 @@ export function createItemTemplate(
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
-      console.log(
-        "added placeholder template " +
-          itemId +
-          " [" +
-          existingTemplates.length +
-          "]"
-      );
 
       // Fetch the item
-      console.log("fetching item " + itemId + "...");
       common
         .getItem(itemId, authentication)
         .catch(() => {
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
           // between items and groups (the base info for a group doesn't include a type property)
-          console.log("fetching group " + itemId + "...");
           _replaceTemplate(
             existingTemplates,
             itemId,
@@ -248,7 +239,6 @@ export function createItemTemplate(
               );
             }
             itemInfo.type = itemType; // Groups don't have this property
-            console.log("Got item " + itemId + ": " + itemType);
 
             const itemHandler = moduleMap[itemType.toLowerCase()];
             if (!itemHandler) {
@@ -272,12 +262,6 @@ export function createItemTemplate(
                     // Get its dependencies, asking each to get its dependents via
                     // recursive calls to this function
                     const dependentDfds: Array<Promise<boolean>> = [];
-                    console.log(
-                      "item " +
-                        itemId +
-                        " has dependencies " +
-                        JSON.stringify(itemTemplate.dependencies)
-                    );
                     itemTemplate.dependencies.forEach(dependentId => {
                       if (
                         !common.findTemplateInList(
@@ -304,7 +288,6 @@ export function createItemTemplate(
           },
           // Id not found or item is not accessible
           () => {
-            console.log("Unknown item " + itemId);
             _replaceTemplate(
               existingTemplates,
               itemId,
