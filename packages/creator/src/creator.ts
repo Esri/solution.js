@@ -57,9 +57,12 @@ export function createSolutionFromGroupId(
         createOptions.snippet = createOptions.snippet ?? groupInfo.snippet;
         createOptions.description =
           createOptions.description ?? groupInfo.description;
-        createOptions.tags = createOptions.tags ?? groupInfo.tags;
+        createOptions.tags = createOptions.tags ?? groupInfo.tags; // createOptions.thumbnail needs to be a full URL
 
-        if (!createOptions.thumbnailUrl && groupInfo.thumbnail) {
+        /* istanbul ignore else*/ if (
+          !createOptions.thumbnailUrl &&
+          groupInfo.thumbnail
+        ) {
           // Copy the group's thumbnail to the new item
           createOptions.thumbnailUrl = common.generateSourceThumbnailUrl(
             authentication.portal,
@@ -98,18 +101,19 @@ export function createSolutionFromItemIds(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    if (options?.progressCallback) {
-      options.progressCallback(2); // Let the caller know that we've started
+    const createOptions: common.ICreateSolutionOptions = options ?? {};
+    if (createOptions.progressCallback) {
+      createOptions.progressCallback(2); // Let the caller know that we've started
     }
 
     // Create a solution from the list of items
-    createSolutionItem(authentication, options).then(
+    createSolutionItem(authentication, createOptions).then(
       createdSolutionId => {
         addContentToSolution(
           createdSolutionId,
           itemIds,
           authentication,
-          options
+          createOptions
         ).then(resolve, error => reject(error));
       },
       error => reject(error)
@@ -191,13 +195,13 @@ export function addContentToSolution(
   solutionItemId: string,
   itemIds: string[],
   authentication: common.UserSession,
-  options?: common.ICreateSolutionOptions
+  options: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const templateDictionary = options?.templateDictionary ?? {};
+    const templateDictionary = options.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
     let progressTickCallback: () => void = () => void 0;
-    if (options?.progressCallback) {
+    if (options.progressCallback) {
       const progressCallback = options.progressCallback;
       progressCallback(4);
       let percentDone = 4;
@@ -222,43 +226,41 @@ export function addContentToSolution(
       getItemsPromise.push(createDef);
       createDef.then(progressTickCallback, progressTickCallback);
     });
-    Promise.all(getItemsPromise).then(
-      () => {
-        if (options?.progressCallback) {
-          options.progressCallback(96);
-        }
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(getItemsPromise).then(() => {
+      if (options.progressCallback) {
+        options.progressCallback(96);
+      }
 
-        // Remove remnant placeholder items from the templates list
-        solutionTemplates = solutionTemplates.filter(
-          template => template.type // `type` needs to be defined
-        );
+      // Remove remnant placeholder items from the templates list
+      solutionTemplates = solutionTemplates.filter(
+        template => template.type // `type` needs to be defined
+      );
 
-        if (solutionTemplates.length > 0) {
-          // Update solution item with its data JSON
-          const solutionData: common.ISolutionItemData = {
-            metadata: {},
-            templates: options?.templatizeFields
-              ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
-              : solutionTemplates
-          };
-          const itemInfo: common.IItemUpdate = {
-            id: solutionItemId,
-            text: solutionData
-          };
-          common.updateItem(itemInfo, authentication).then(() => {
-            if (options?.progressCallback) {
-              options.progressCallback(0);
-            }
-            resolve(solutionItemId);
-          }, reject);
-        } else {
-          if (options?.progressCallback) {
+      if (solutionTemplates.length > 0) {
+        // Update solution item with its data JSON
+        const solutionData: common.ISolutionItemData = {
+          metadata: {},
+          templates: options.templatizeFields
+            ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
+            : solutionTemplates
+        };
+        const itemInfo: common.IItemUpdate = {
+          id: solutionItemId,
+          text: solutionData
+        };
+        common.updateItem(itemInfo, authentication).then(() => {
+          if (options.progressCallback) {
             options.progressCallback(0);
           }
           resolve(solutionItemId);
+        }, reject);
+      } else {
+        if (options.progressCallback) {
+          options.progressCallback(0);
         }
-      },
-      e => reject(common.fail(e))
-    );
+        resolve(solutionItemId);
+      }
+    });
   });
 }
