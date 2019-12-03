@@ -232,17 +232,14 @@ export function createItemTemplate(
             let itemType = placeholder!.type;
             if (!itemType) {
               itemType = itemInfo.type;
-              _replaceTemplate(
-                existingTemplates,
-                itemId,
-                common.createPlaceholderTemplate(itemId, itemType)
-              );
+              placeholder!.type = itemType;
             }
             itemInfo.type = itemType; // Groups don't have this property
 
             const itemHandler = moduleMap[itemType.toLowerCase()];
             if (!itemHandler) {
               placeholder!.properties["partial"] = true;
+              _replaceTemplate(existingTemplates, itemId, placeholder!);
               resolve(true);
             } else {
               // tslint:disable-next-line: no-floating-promises
@@ -289,6 +286,7 @@ export function createItemTemplate(
                   error => {
                     placeholder!.properties["partial"] = true;
                     placeholder!.properties["error"] = JSON.stringify(error);
+                    _replaceTemplate(existingTemplates, itemId, placeholder!);
                     resolve(true);
                   }
                 );
