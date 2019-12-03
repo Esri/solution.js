@@ -117,6 +117,31 @@ afterEach(() => {
 });
 
 describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
+  describe("searchItems passthru", () => {
+    it("can handle simple search", done => {
+      fetchMock.get(
+        "https://www.arcgis.com/sharing/rest/search?f=json&q=q%3Dredlands%2Bmap",
+        {
+          query: "redlands map",
+          total: 10738,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          results: []
+        }
+      );
+
+      restHelpers.searchItems("q=redlands+map").then(
+        results => {
+          expect(results.query).toEqual("redlands map");
+          expect(results.num).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("addToServiceDefinition", () => {
     it("can handle failure", done => {
       const url =

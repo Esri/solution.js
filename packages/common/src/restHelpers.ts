@@ -33,6 +33,13 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+/**
+ * Searches for items matching a query and that the caller has access to.
+ *
+ * @param search Search string (e.g., "q=redlands+map")
+ * @return Promise resolving with search results
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
+ */
 export function searchItems(
   search: string | portal.ISearchOptions | portal.SearchQueryBuilder
 ): Promise<interfaces.ISearchResult<interfaces.IItem>> {
