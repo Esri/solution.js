@@ -7,6 +7,7 @@
   ..\solution.js\packages\creator\node_modules
   ..\solution.js\packages\deployer\node_modules
   ..\solution.js\packages\feature-layer\node_modules
+  ..\solution.js\packages\file\node_modules
   ..\solution.js\packages\group\node_modules
   ..\solution.js\packages\simple-types\node_modules
   ..\solution.js\packages\storymap\node_modules
@@ -122,6 +123,7 @@ npm deprecate @esri/solution-common@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-creator@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-deployer@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-feature-layer@"<0.5.4" "obsolete" --otp=<2-factor-code>
+npm deprecate @esri/solution-file@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-group@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-simple-types@"<0.5.4" "obsolete" --otp=<2-factor-code>
 npm deprecate @esri/solution-storymap@"<0.5.4" "obsolete" --otp=<2-factor-code>
@@ -150,6 +152,7 @@ npm unpublish @esri/solution-common@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-creator@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-deployer@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-feature-layer@0.5.1 --otp=<2-factor-code>
+npm unpublish @esri/solution-file@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-group@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-simple-types@0.5.1 --otp=<2-factor-code>
 npm unpublish @esri/solution-storymap@0.5.1 --otp=<2-factor-code>
