@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages the creation and deployment of simple item types.
+ * Manages the creation and deployment of group item types.
  *
  * @module simple-types
  */

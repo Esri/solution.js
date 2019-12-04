@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for functions involving the creation of a Solution item.
+ * Provides tests for functions involving the creation of the template of a Solution item via the REST API.
  */
 
 import * as fetchMock from "fetch-mock";

@@ -16,7 +16,7 @@
 
 # @esri/solution-simple-types
 
-> Manages the creation and deployment of simple item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
+> Manages the creation and deployment of group item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
 ### [API Reference](https://esri.github.io/solution.js/api/simple-types/)
 

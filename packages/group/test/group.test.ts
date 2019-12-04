@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for common functions involving the creation and deployment of group item types.
  */
 
 import * as group from "../src/group";
