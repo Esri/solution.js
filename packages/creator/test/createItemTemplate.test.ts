@@ -18,32 +18,132 @@
  * Provides tests for functions involving the creation of a Solution item.
  */
 
+import * as fetchMock from "fetch-mock";
+import * as mockItems from "../../common/test/mocks/agolItems";
+import * as templates from "../../common/test/mocks/templates";
+import * as utils from "../../common/test/mocks/utils";
+
 import * as common from "@esri/solution-common";
 import * as createItemTemplate from "../src/createItemTemplate";
+
+// Set up a UserSession to use in all these tests
+const MOCK_USER_SESSION = new common.UserSession({
+  clientId: "clientId",
+  redirectUri: "https://example-app.com/redirect-uri",
+  token: "fake-token",
+  tokenExpires: utils.TOMORROW,
+  refreshToken: "refreshToken",
+  refreshTokenExpires: utils.TOMORROW,
+  refreshTokenTTL: 1440,
+  username: "casey",
+  password: "123456",
+  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+});
+
+const noDataResponse: any = {};
+const noResourcesResponse: any = {
+  total: 0,
+  start: 1,
+  num: 0,
+  nextStart: -1,
+  resources: []
+};
+const noMetadataResponse: any = {
+  error: {
+    code: 400,
+    messageCode: "CONT_0036",
+    message: "Item info file does not exist or is inaccessible.",
+    details: ["Error getting Item Info from DataStore"]
+  }
+};
+
+afterEach(() => {
+  fetchMock.restore();
+});
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `createItemTemplate`", () => {
-  describe("createItemTemplate", () => {
-    xit("createItemTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
+  // Blobs are only available in the browser
+  if (typeof window !== "undefined") {
+    describe("createItemTemplate", () => {
+      it("basic creation", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "map12345678900";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
 
-  describe("createItemTemplate", () => {
-    xit("createItemTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            mockItems.getAGOLItem("Web Map")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            noDataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
 
-  describe("_getDatasourceInfos", () => {
-    xit("_getDatasourceInfos", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates
+          )
+          .then(
+            response => {
+              expect(response).toBeTruthy();
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("shortcuts if template is already done or in progress", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "map1234567890";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [
+          templates.getItemTemplatePart("Web Map")
+        ];
+
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates
+          )
+          .then(
+            response => {
+              expect(response).toBeTruthy();
+              done();
+            },
+            () => done.fail()
+          );
+      });
     });
-  });
+  }
 
   describe("postProcessFieldReferences", () => {
     if (typeof window !== "undefined") {
@@ -54,6 +154,13 @@ describe("Module `createItemTemplate`", () => {
         expect(actual).toEqual(expected);
       });
     }
+  });
+
+  describe("_getDatasourceInfos", () => {
+    xit("_getDatasourceInfos", done => {
+      console.warn("========== TODO ==========");
+      done.fail();
+    });
   });
 
   describe("_getTemplateTypeHash", () => {
@@ -95,6 +202,8 @@ describe("Module `createItemTemplate`", () => {
     });
   });
 });
+
+// ------------------------------------------------------------------------------------------------------------------ //
 
 const initialSolutionTemplates: common.IItemTemplate[] = [
   {
