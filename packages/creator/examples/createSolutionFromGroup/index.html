@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-creator createSolutionFromItem TypeScript example</title>
+  <title>@esri/solution-creator createSolutionFromGroup TypeScript example</title>
   <!--
    | Copyright 2019 Esri
    |
@@ -29,7 +29,7 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    <label for="id">ID of the item to be put into a solution</label><input type="text" id="id" style="width:256px">
+    <label for="id">ID of the group to be put into a solution</label><input type="text" id="id" style="width:256px">
     <br /><br />
     <i>Credentials in destination organization:</i><br />
     <label for="username">username:</label><input type="text" id="username">
@@ -66,7 +66,7 @@
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
 
-          main.createSolutionFromItem(
+          main.createSolutionFromGroup(
             document.getElementById("id").value,
             new auth.UserSession({
               username: document.getElementById("username").value,

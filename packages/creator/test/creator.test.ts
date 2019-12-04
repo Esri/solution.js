@@ -66,11 +66,156 @@ describe("Module `creator`", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
     describe("createSolutionFromGroupId", () => {
+      it("createSolutionFromGroupId fails to get group", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          );
+        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+          () => done.fail(),
+          response => {
+            expect(response.name).toEqual("ArcGISRequestError");
+            expect(response.code).toEqual("CONT_0004");
+            done();
+          }
+        );
+      });
+
+      it("createSolutionFromGroupId fails to get item", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Web Map")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          )
+          .post(
+            // for missing item's placeholder
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+          response => {
+            expect(response).toEqual(expectedSolutionId);
+            done();
+          },
+          () => done.fail()
+        );
+      });
+
+      it("createSolutionFromGroupId fails to update solution item", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Web Map")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
+            {
+              error: {
+                code: 400,
+                messageCode: "CONT_0004",
+                message: "Item does not exist or is inaccessible.",
+                details: []
+              }
+            }
+          )
+          .post(
+            // for missing item's placeholder
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: false, id: expectedSolutionId }
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeFalsy();
+            done();
+          }
+        );
+      });
+
       it("createSolutionFromGroupId with default name", done => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
-        // tslint:disable-next-line: no-empty
-        const progressCallback = (percentDone: number) => {};
 
         const expectedSolutionId = "sln1234567890";
 
@@ -81,7 +226,7 @@ describe("Module `creator`", () => {
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList("Web Map", 2)
+            mockItems.getAGOLGroupContentsList(2, "Web Map")
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -160,8 +305,6 @@ describe("Module `creator`", () => {
         const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
-        // tslint:disable-next-line: no-empty
-        const progressCallback = (percentDone: number) => {};
 
         const expectedSolutionId = "sln1234567890";
 
@@ -172,7 +315,7 @@ describe("Module `creator`", () => {
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList("Web Map", 2)
+            mockItems.getAGOLGroupContentsList(2, "Web Map")
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
@@ -229,7 +372,190 @@ describe("Module `creator`", () => {
 
         const options: common.ICreateSolutionOptions = {
           title: solutionName,
+          snippet: "createOptions.snippet",
+          description: "createOptions.description",
+          tags: ["createOptions.tags"],
+          templatizeFields: true,
+          templateDictionary: {
+            wma1234567890: {
+              itemId: "wma1234567890",
+              url:
+                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890",
+              name: "a map"
+            }
+          },
+          // tslint:disable-next-line: no-empty
+          progressCallback: () => {}
+        };
+        creator
+          .createSolutionFromGroupId(solutionGroupId, authentication, options)
+          .then(
+            solutionId => {
+              expect(solutionId).toEqual(expectedSolutionId);
+
+              const addSolnCall = fetchMock.calls(
+                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+              );
+              expect(
+                (addSolnCall[0][1]["body"] as string).indexOf(
+                  "title=" + solutionName
+                ) > 0
+              ).toBeTruthy();
+
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("createSolutionFromGroupId with empty group with defaults without progress callback", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(0)
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: expectedSolutionId }
+          );
+
+        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
+
+            const addSolnCall = fetchMock.calls(
+              "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as string).indexOf(
+                "title=" +
+                  mockItems.getAGOLItem("Group").title.replace(/ /g, "%20")
+              ) > 0
+            ).toBeTruthy();
+
+            done();
+          },
+          () => done.fail()
+        );
+      });
+
+      it("createSolutionFromGroupId with empty group without progress callback", done => {
+        const solutionName: string = "scratch_" + common.getUTCTimestamp();
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(0)
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: expectedSolutionId }
+          );
+
+        const options: common.ICreateSolutionOptions = {
+          title: solutionName,
           templatizeFields: true
+        };
+        creator
+          .createSolutionFromGroupId(solutionGroupId, authentication, options)
+          .then(
+            solutionId => {
+              expect(solutionId).toEqual(expectedSolutionId);
+
+              const addSolnCall = fetchMock.calls(
+                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+              );
+              expect(
+                (addSolnCall[0][1]["body"] as string).indexOf(
+                  "title=" + solutionName
+                ) > 0
+              ).toBeTruthy();
+
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("createSolutionFromGroupId with empty group and progress callback", done => {
+        const solutionName: string = "scratch_" + common.getUTCTimestamp();
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(0)
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: expectedSolutionId }
+          );
+
+        const options: common.ICreateSolutionOptions = {
+          title: solutionName,
+          templatizeFields: true,
+          // tslint:disable-next-line: no-empty
+          progressCallback: () => {}
         };
         creator
           .createSolutionFromGroupId(solutionGroupId, authentication, options)
@@ -275,12 +601,13 @@ describe("Module `creator`", () => {
     it("createSolutionFromItemIds fails to get item", done => {
       const itemIds: string[] = ["itm1234567890"];
       const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
 
       fetchMock
-        .post(url, { success: true, id: expectedSolutionId })
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: expectedSolutionId }
+        )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
           {
@@ -302,14 +629,19 @@ describe("Module `creator`", () => {
               details: []
             }
           }
+        )
+        .post(
+          // for missing item's placeholder
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+          { success: true, id: expectedSolutionId }
         );
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
       creator.createSolutionFromItemIds(itemIds, authentication).then(
-        () => done.fail(),
-        error => {
-          expect(error.success).toBeFalsy();
+        response => {
+          expect(response).toEqual(expectedSolutionId);
           done();
-        }
+        },
+        () => done.fail()
       );
     });
 

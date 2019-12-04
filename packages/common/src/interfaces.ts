@@ -70,6 +70,7 @@ export interface ICreateSolutionOptions {
   templateDictionary?: any;
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
+  progressCallback?: (percentDone: number) => void;
 }
 
 /**
@@ -185,7 +186,8 @@ export interface IItemTemplateConversions {
   convertItemToTemplate(
     solutionItemId: string,
     itemInfo: any,
-    authentication: UserSession
+    authentication: UserSession,
+    isGroup?: boolean
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
@@ -200,8 +202,9 @@ export interface IItemTemplateConversions {
 /**
  * Structure for mapping from item type to module with type-specific template-handling code
  */
+type moduleHandler = IItemTemplateConversions | undefined;
 export interface IItemTypeModuleMap {
-  [itemType: string]: IItemTemplateConversions;
+  [itemType: string]: moduleHandler;
 }
 
 export interface IItemUpdate {

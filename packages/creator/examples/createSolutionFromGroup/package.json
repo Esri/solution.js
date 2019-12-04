@@ -1,7 +1,7 @@
 {
-  "name": "createSolutionFromItem",
+  "name": "createSolutionFromGroup",
   "version": "0.0.1",
-  "description": "Example use of @esri/solution-creator to create a solution item from an AGO item.",
+  "description": "Example use of @esri/solution-creator to create a solution item from an AGO group.",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {

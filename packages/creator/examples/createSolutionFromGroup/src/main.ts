@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common createSolutionFromItem TypeScript example
+// @esri/solution-common createSolutionFromGroup TypeScript example
 
 import * as common from "@esri/solution-common";
 import * as creator from "@esri/solution-creator";
 import * as getItemInfo from "../lib/getItemInfo";
 
-export function createSolutionFromItem(
-  itemId: string,
+export function createSolutionFromGroup(
+  groupId: string,
   authentication: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    if (!itemId) {
-      reject("Item's ID is not defined");
+    if (!groupId) {
+      reject("Group's ID is not defined");
       return;
     }
 
     // Create a solution from the supplied id
     const options: common.ICreateSolutionOptions = {
-      title: "item_" + itemId + "_solution"
+      title: "group_" + groupId + "_solution"
     };
-    creator.createSolutionFromItemIds([itemId], authentication, options).then(
+    creator.createSolutionFromGroupId(groupId, authentication, options).then(
       createdSolutionId => {
         getItemInfo.getItemInfo(createdSolutionId, authentication).then(
           itemInfoHtml => resolve(itemInfoHtml),

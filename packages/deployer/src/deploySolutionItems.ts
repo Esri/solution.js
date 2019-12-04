@@ -23,28 +23,164 @@
 /* tslint:disable:no-unnecessary-type-assertion */
 
 import * as common from "@esri/solution-common";
-import * as solutionFeatureLayer from "@esri/solution-feature-layer";
-import * as solutionSimpleTypes from "@esri/solution-simple-types";
-import * as solutionStoryMap from "@esri/solution-storymap";
+import * as featureLayer from "@esri/solution-feature-layer";
+import * as simpleTypes from "@esri/solution-simple-types";
+import * as storyMap from "@esri/solution-storymap";
 
 /**
- * Mapping from item type to module with type-specific template-handling code
+ * Mapping from item type to module with type-specific template-handling code.
+ * All of the AGO types listed in arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js
+ * whether they are supported for solution items or not.
  */
 const moduleMap: common.IItemTypeModuleMap = {
-  // //??? Temporary assignments
-  "project package": solutionSimpleTypes,
-  "workforce project": solutionSimpleTypes,
-  // //???
-
-  dashboard: solutionSimpleTypes,
-  "feature layer": solutionFeatureLayer,
-  "feature service": solutionFeatureLayer,
-  form: solutionSimpleTypes,
-  group: solutionSimpleTypes,
-  table: solutionFeatureLayer,
-  vectortilelayer: solutionFeatureLayer,
-  "web map": solutionSimpleTypes,
-  "web mapping application": solutionSimpleTypes
+  "360 vr experience": undefined,
+  "3d web scene": undefined,
+  "appbuilder extension": undefined,
+  "application configuration": undefined,
+  application: undefined,
+  "arcgis pro add in": undefined,
+  "arcgis pro configuration": undefined,
+  "arcpad package": undefined,
+  "basemap package": undefined,
+  "big data analytic": undefined,
+  "cad drawing": undefined,
+  "cityengine web scene": undefined,
+  "code attachment": undefined,
+  "code sample": undefined,
+  "color set": undefined,
+  "compact tile package": undefined,
+  "csv collection": undefined,
+  csv: undefined,
+  dashboard: simpleTypes,
+  "data store": undefined,
+  "deep learning package": undefined,
+  default: undefined,
+  "desktop add in": undefined,
+  "desktop application template": undefined,
+  "desktop application": undefined,
+  "desktop style": undefined,
+  "document link": undefined,
+  "elevation layer": undefined,
+  "excalibur imagery project": undefined,
+  "explorer add in": undefined,
+  "explorer layer": undefined,
+  "explorer map": undefined,
+  "feature collection template": undefined,
+  "feature collection": undefined,
+  "feature service": featureLayer,
+  feed: undefined,
+  "file geodatabase": undefined,
+  form: simpleTypes,
+  "geocoding service": undefined,
+  "geodata service": undefined,
+  geojson: undefined,
+  "geometry service": undefined,
+  geopackage: undefined,
+  "geoprocessing package": undefined,
+  "geoprocessing sample": undefined,
+  "geoprocessing service": undefined,
+  "globe document": undefined,
+  "globe service": undefined,
+  group: simpleTypes,
+  "hub initiative": undefined,
+  "hub page": undefined,
+  "hub site application": undefined,
+  "image collection": undefined,
+  "image service": undefined,
+  image: undefined,
+  "insights model": undefined,
+  "insights page": undefined,
+  "insights theme": undefined,
+  "insights workbook": undefined,
+  "iwork keynote": undefined,
+  "iwork numbers": undefined,
+  "iwork pages": undefined,
+  "kml collection": undefined,
+  kml: undefined,
+  "layer package": undefined,
+  "layer template": undefined,
+  layer: undefined,
+  layout: undefined,
+  "locator package": undefined,
+  "map document": undefined,
+  "map image layer": undefined,
+  "map package": undefined,
+  "map service": undefined,
+  "map template": undefined,
+  markup: undefined,
+  "microsoft excel": undefined,
+  "microsoft powerpoint": undefined,
+  "microsoft word": undefined,
+  mission: undefined,
+  "mobile application": undefined,
+  "mobile basemap package": undefined,
+  "mobile map package": undefined,
+  "mobile scene package": undefined,
+  "native application installer": undefined,
+  "native application template": undefined,
+  "native application": undefined,
+  netcdf: undefined,
+  "network analysis service": undefined,
+  notebook: undefined,
+  "operation view": undefined,
+  "operations dashboard add in": undefined,
+  "operations dashboard extension": undefined,
+  "ortho mapping project": undefined,
+  pdf: undefined,
+  "pro layer package": undefined,
+  "pro layer": undefined,
+  "pro map package": undefined,
+  "pro map": undefined,
+  "pro report": undefined,
+  "project package": simpleTypes,
+  "project template": undefined,
+  "published map": undefined,
+  "quickcapture project": undefined,
+  "raster function template": undefined,
+  "real time analytic": undefined,
+  "relational database connection": undefined,
+  "report template": undefined,
+  "route layer": undefined,
+  "rule package": undefined,
+  "scene document": undefined,
+  "scene layer package": undefined,
+  "scene service": undefined,
+  shapefile: undefined,
+  "site application": undefined,
+  "site initiative": undefined,
+  "site page": undefined,
+  solution: undefined,
+  "statistical data collection": undefined,
+  storymap: undefined,
+  "stream service": undefined,
+  style: undefined,
+  "survey123 add in": undefined,
+  "symbol set": undefined,
+  table: featureLayer,
+  "task file": undefined,
+  "tile package": undefined,
+  tool: undefined,
+  "toolbox package": undefined,
+  "urban model": undefined,
+  "vector tile package": undefined,
+  "vector tile service": undefined,
+  "viewer configuration": undefined,
+  "visio document": undefined,
+  "web experience template": undefined,
+  "web experience": undefined,
+  "web map": simpleTypes,
+  "web mapping application": simpleTypes,
+  "web scene": undefined,
+  wfs: undefined,
+  "window mobile package": undefined,
+  "windows mobile package": undefined,
+  "windows viewer add in": undefined,
+  "windows viewer configuration": undefined,
+  wms: undefined,
+  wmts: undefined,
+  "workflow manager package": undefined,
+  "workflow manager service": undefined,
+  "workforce project": simpleTypes
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -147,8 +283,7 @@ export function _createItemFromTemplateWhenReady(
     Promise.all(awaitDependencies).then(() => {
       // Find the conversion handler for this item type
       const templateType = template.type.toLowerCase();
-      let itemHandler: common.IItemTemplateConversions =
-        moduleMap[templateType];
+      let itemHandler = moduleMap[templateType];
       if (!itemHandler) {
         console.warn(
           "Unimplemented item type (package level) " +
@@ -160,8 +295,8 @@ export function _createItemFromTemplateWhenReady(
       } else {
         // Handle original Story Maps with next-gen Story Maps
         if (templateType === "web mapping application") {
-          if (solutionStoryMap.isAStoryMap(template)) {
-            itemHandler = solutionStoryMap;
+          if (storyMap.isAStoryMap(template)) {
+            itemHandler = storyMap;
           }
         }
 

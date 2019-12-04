@@ -632,8 +632,8 @@ export function getAGOLItemWithId(
 }
 
 export function getAGOLGroupContentsList(
-  type: string,
-  numToPutIntoGroup: number
+  numToPutIntoGroup: number,
+  type: string = ""
 ): any {
   const group = {
     total: 0,
