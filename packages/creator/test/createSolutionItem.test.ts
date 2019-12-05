@@ -17,17 +17,97 @@
 /**
  * Provides tests for functions involving the creation of a Solution item.
  */
+import * as fetchMock from "fetch-mock";
+import * as mockItems from "../../common/test/mocks/agolItems";
+import * as utils from "../../common/test/mocks/utils";
 
 import * as common from "@esri/solution-common";
 import * as createItemTemplate from "../src/createItemTemplate";
+
+const MOCK_USER_SESSION = new common.UserSession({
+  clientId: "clientId",
+  redirectUri: "https://example-app.com/redirect-uri",
+  token: "fake-token",
+  tokenExpires: utils.TOMORROW,
+  refreshToken: "refreshToken",
+  refreshTokenExpires: utils.TOMORROW,
+  refreshTokenTTL: 1440,
+  username: "casey",
+  password: "123456",
+  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+});
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `createItemTemplate`", () => {
   describe("createItemTemplate", () => {
-    xit("createItemTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should not duplicate templates in list", done => {
+      const templateId: string = "template123456789";
+      const mockTemplate: any = mockItems.getItemTemplate();
+      mockTemplate.itemId = templateId;
+      createItemTemplate
+        .createItemTemplate(
+          "sln0123456789",
+          templateId,
+          {},
+          MOCK_USER_SESSION,
+          [mockTemplate]
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual(true);
+            done();
+          },
+          () => done.fail()
+        );
+    });
+
+    it("should skip items with unknown types", done => {
+      const templateId: string = "template123456789";
+      const mockTemplate: any = mockItems.getItemTemplate();
+      mockTemplate.itemId = templateId;
+      mockTemplate.type = "fake type";
+      const existingTemplates: any[] = [];
+      const expectedExistingTemplates: any[] = [
+        {
+          itemId: "template123456789",
+          type: "fake type",
+          key: "xfakeidx",
+          item: {
+            id: "template123456789",
+            type: ""
+          },
+          data: {},
+          resources: [],
+          dependencies: [],
+          properties: {
+            partial: true
+          },
+          estimatedDeploymentCostFactor: 0
+        }
+      ];
+      // spyOn(common, "createId").and.returnValue("xfakeidx");
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/template123456789?f=json&token=fake-token",
+        mockTemplate
+      );
+      createItemTemplate
+        .createItemTemplate(
+          "sln0123456789",
+          templateId,
+          {},
+          MOCK_USER_SESSION,
+          existingTemplates
+        )
+        .then(
+          actual => {
+            expectedExistingTemplates[0].key = existingTemplates[0].key;
+            expect(existingTemplates).toEqual(expectedExistingTemplates);
+            expect(actual).toEqual(true);
+            done();
+          },
+          () => done.fail()
+        );
     });
   });
 
