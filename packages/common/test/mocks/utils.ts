@@ -1019,6 +1019,37 @@ export function getContentUser() {
   };
 }
 
+export function getGroupResponse(query: string, hasResult: boolean) {
+  return {
+    query: query,
+    total: 1,
+    start: 1,
+    num: 10,
+    nextStart: -1,
+    results: !hasResult
+      ? []
+      : [
+          {
+            id: "2146ddb18dbe4fe1bb11dc9594164549",
+            title: query,
+            isInvitationOnly: false,
+            owner: "casey",
+            description: "",
+            snippet: "",
+            tags: ["test"],
+            phone: "123-456-7890",
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: false,
+            isFav: false,
+            thumbnail: "test.jpg",
+            created: 1258061693000,
+            access: "public"
+          }
+        ]
+  };
+}
+
 export function getCreateServiceResponse(
   url: string = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   id: string = "svc1234567890",

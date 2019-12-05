@@ -1543,6 +1543,42 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchGroups", () => {
+    it("can handle no results", done => {
+      const query: string = "My Group";
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.getGroupResponse(query, false)
+      );
+
+      restHelpers.searchGroups(query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a result", done => {
+      const query: string = "My Group";
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.getGroupResponse(query, true)
+      );
+
+      restHelpers.searchGroups(query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(1);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("shareItem", () => {
     xit("shareItem", done => {
       console.warn("========== TODO ==========");
