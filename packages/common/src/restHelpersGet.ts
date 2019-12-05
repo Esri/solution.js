@@ -65,6 +65,27 @@ export function getUser(
   return authentication.getUser();
 }
 
+export function getUserFolders(
+  authentication: interfaces.UserSession
+): Promise<any[]> {
+  return new Promise<any[]>((resolve, reject) => {
+    const url: string = `${
+      authentication.portal
+    }/content/users/${encodeURIComponent(authentication.username)}`;
+    const userContentRequestOptions = {
+      httpMethod: "GET",
+      authentication: authentication,
+      rawResponse: false
+    } as request.IRequestOptions;
+    request.request(url, userContentRequestOptions).then(
+      response => {
+        resolve(response.folders || []);
+      },
+      err => reject(err)
+    );
+  });
+}
+
 /**
  * Gets a Blob from a web site.
  *

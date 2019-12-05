@@ -255,6 +255,34 @@ export function hasTypeKeyword(jsonObj: any, keyword: string): boolean {
 }
 
 /**
+ * Will return the provided title if it does not exist as a property
+ * in one of the objects at the defined path. Otherwise the title will
+ * have a numerical value attached.
+ *
+ * @param title The root title to test
+ * @param templateDictionary Hash of the facts
+ * @param path to the objects to evaluate for potantial name clashes
+ * @return string The unique title to use
+ */
+export function getUniqueTitle(
+  title: string,
+  templateDictionary: any,
+  path: string
+): string {
+  const objs: any[] = getProp(templateDictionary, path) || [];
+  const titles: string[] = objs.map(obj => {
+    return obj.title;
+  });
+  let newTitle: string = title;
+  let i: number = 0;
+  while (titles.indexOf(newTitle) > -1) {
+    i++;
+    newTitle = title + " " + i;
+  }
+  return newTitle;
+}
+
+/**
  * Tests if an array of DatasourceInfos has a given item and layer id already.
  *
  * @param datasourceInfos Array of DatasourceInfos to evaluate
