@@ -62,7 +62,15 @@ export function getPortal(
 export function getUser(
   authentication: interfaces.UserSession
 ): Promise<interfaces.IUser> {
-  return authentication.getUser();
+  const url: string = `${
+    authentication.portal
+  }/community/users/${encodeURIComponent(authentication.username)}`;
+  const userContentRequestOptions = {
+    httpMethod: "GET",
+    authentication: authentication,
+    rawResponse: false
+  } as request.IRequestOptions;
+  return request.request(url, userContentRequestOptions);
 }
 
 export function getUserFolders(
