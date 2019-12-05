@@ -79,9 +79,10 @@ export function createItemFromTemplate(
     );
 
     // handle group
-    const title: string = getAvailableGroupTitle(
+    const title: string = common.getUniqueTitle(
       newItemTemplate.item.title,
-      templateDictionary
+      templateDictionary,
+      "user.groups"
     );
     // Set the item title with a valid name for the ORG
     newItemTemplate.item.title = title;
@@ -136,23 +137,6 @@ export function createItemFromTemplate(
       e => reject(common.fail(e))
     );
   });
-}
-
-export function getAvailableGroupTitle(
-  name: string,
-  templateDictionary: any
-): string {
-  const groups: any[] = templateDictionary.user.groups;
-  const groupNames: string[] = groups.map(group => {
-    return group.title;
-  });
-  let newTitle: string = name;
-  let i: number = 0;
-  while (groupNames.indexOf(newTitle) > -1) {
-    i++;
-    newTitle = name + " " + i;
-  }
-  return newTitle;
 }
 
 export function updateGroup(
