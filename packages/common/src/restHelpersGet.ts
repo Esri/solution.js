@@ -172,7 +172,7 @@ export function getBlobCheckForError(
           // tslint:disable-next-line: no-floating-promises
           generalHelpers.blobToJson(adjustedBlob).then((json: any) => {
             if (json && json.error) {
-              const code: number = json.error.code;
+              const code: number = json.error?.code || json.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
                 resolve(); // Error, but ignored
               } else {
