@@ -122,6 +122,10 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLItemFundamentals(type, url || undefined);
       break;
 
+    case "GeoJson":
+      item = getAGOLItemFundamentals(type, url || undefined);
+      break;
+
     case "Geoprocessing Package":
       break;
 
@@ -947,109 +951,172 @@ export function getAnImageResponse(): any {
   }
 }
 
-// -- Internals ------------------------------------------------------------------------------------------------------//
+export interface IItemTypeAbbrev {
+  [id: string]: string;
+}
 
-function getItemTypeAbbrev(type: string): string {
+export function getItemTypeAbbrev(type: string): string {
   // Supported item types
-  let abbrev = "xxx";
-  switch (type) {
-    case "ArcGIS Pro Add In":
-      abbrev = "pro";
-      break;
+  return (
+    ({
+      Group: "grp",
 
-    case "Code Attachment":
-      abbrev = "cod";
-      break;
+      ////////////////////////////////////////////////////////
+      // Layer types
+      "Big Data Analytic": "xxx",
+      "Feature Collection": "col",
+      "Feature Service": "svc",
+      Feed: "xxx",
+      "Geocoding Service": "xxx",
+      "Geodata Service": "xxx",
+      "Geometry Service": "xxx",
+      "Geoprocessing Service": "xxx",
+      "Globe Service": "xxx",
+      "Image Service": "xxx",
+      KML: "xxx",
+      "Map Service": "xxx",
+      "Network Analysis Service": "xxx",
+      "Real Time Analytic": "xxx",
+      "Relational Database Connection": "xxx",
+      "Scene Service": "xxx",
+      "Stream Service": "xxx",
+      Tool: "xxx",
+      "Vector Tile Service": "xxx",
+      WFS: "xxx",
+      WMS: "xxx",
+      WMTS: "xxx",
+      "Workflow Manager Service": "xxx",
 
-    case "Code Sample":
-      abbrev = "sam";
-      break;
+      ////////////////////////////////////////////////////////
+      // Map types
+      "3D Web Scene": "xxx",
+      "Web Map": "map",
+      "Web Scene": "xxx",
 
-    case "Dashboard":
-      abbrev = "dsh";
-      break;
+      ////////////////////////////////////////////////////////
+      // App types
+      Application: "xxx",
+      "Data Store": "xxx",
+      "Desktop Application": "xxx",
+      "Excalibur Imagery Project": "xxx",
+      Form: "frm",
+      "Hub Initiative": "xxx",
+      "Hub Page": "xxx",
+      "Hub Site Application": "xxx",
+      "Insights Model": "xxx",
+      "Insights Page": "xxx",
+      "Insights Theme": "xxx",
+      "Insights Workbook": "xxx",
+      Mission: "xxx",
+      "Mobile Application": "xxx",
+      "Native Application": "xxx",
+      Notebook: "xxx",
+      "Ortho Mapping Project": "xxx",
+      "QuickCapture Project": "xxx",
+      "Site Application": "xxx",
+      "Site Initiative": "xxx",
+      "Site Page": "xxx",
+      Solution: "sol",
+      StoryMap: "xxx",
+      "Urban Model": "xxx",
+      "Web Experience Template": "xxx",
+      "Web Experience": "xxx",
+      "Web Mapping Application": "wma",
+      "Workforce Project": "wrk",
 
-    case "Desktop Add In":
-      abbrev = "dai";
-      break;
-
-    case "Desktop Application Template":
-      abbrev = "dat";
-      break;
-
-    case "Document Link":
-      abbrev = "doc";
-      break;
-
-    case "Feature Collection":
-      abbrev = "col";
-      break;
-
-    case "Feature Service":
-      abbrev = "svc";
-      break;
-
-    case "Form":
-      abbrev = "frm";
-      break;
-
-    case "Geoprocessing Package":
-      abbrev = "gpk";
-      break;
-
-    case "Geoprocessing Sample":
-      abbrev = "geo";
-      break;
-
-    case "Layer Package":
-      abbrev = "lyr";
-      break;
-
-    case "Map Template":
-      abbrev = "mpt";
-      break;
-
-    case "Operation View":
-      abbrev = "opv";
-      break;
-
-    case "Pro Map":
-      abbrev = "prm";
-      break;
-
-    case "Project Package":
-      abbrev = "ppk";
-      break;
-
-    case "Project Template":
-      abbrev = "prt";
-      break;
-
-    case "Solution":
-      abbrev = "sol";
-      break;
-
-    case "Web Map":
-      abbrev = "map";
-      break;
-
-    case "Web Mapping Application":
-      abbrev = "wma";
-      break;
-
-    case "Workforce Project":
-      abbrev = "wrk";
-      break;
-
-    case "Unsupported":
-      abbrev = "uns";
-      break;
-
-    case "Group":
-      abbrev = "grp";
-  }
-
-  return abbrev;
+      ////////////////////////////////////////////////////////
+      // File types
+      "360 VR Experience": "xxx",
+      "AppBuilder Extension": "xxx",
+      "AppBuilder Widget Package": "xxx",
+      "Application Configuration": "xxx",
+      "ArcGIS Pro Add In": "pro",
+      "ArcGIS Pro Configuration": "xxx",
+      "ArcPad Package": "xxx",
+      "Basemap Package": "xxx",
+      "CAD Drawing": "xxx",
+      "CityEngine Web Scene": "xxx",
+      "Code Attachment": "cod",
+      "Code Sample": "sam",
+      "Color Set": "xxx",
+      "Compact Tile Package": "xxx",
+      "CSV Collection": "xxx",
+      CSV: "xxx",
+      Dashboard: "dsh",
+      "Deep Learning Package": "xxx",
+      "Desktop Add In": "dai",
+      "Desktop Application Template": "dat",
+      "Desktop Style": "xxx",
+      "Document Link": "doc",
+      "Explorer Add In": "xxx",
+      "Explorer Layer": "xxx",
+      "Explorer Map": "xxx",
+      "Feature Collection Template": "xxx",
+      "File Geodatabase": "xxx",
+      GeoJson: "jsn",
+      GeoPackage: "xxx",
+      "Geoprocessing Package": "gpk",
+      "Geoprocessing Sample": "geo",
+      "Globe Document": "xxx",
+      "Image Collection": "xxx",
+      Image: "xxx",
+      "iWork Keynote": "xxx",
+      "iWork Numbers": "xxx",
+      "iWork Pages": "xxx",
+      "KML Collection": "xxx",
+      "Layer Package": "lyp",
+      "Layer Template": "xxx",
+      Layer: "xxx",
+      Layout: "xxx",
+      "Locator Package": "xxx",
+      "Map Document": "xxx",
+      "Map Package": "xxx",
+      "Map Template": "mpt",
+      "Microsoft Excel": "xxx",
+      "Microsoft Powerpoint": "xxx",
+      "Microsoft Word": "xxx",
+      "Mobile Basemap Package": "xxx",
+      "Mobile Map Package": "xxx",
+      "Mobile Scene Package": "xxx",
+      "Native Application Installer": "xxx",
+      "Native Application Template": "xxx",
+      netCDF: "xxx",
+      "Operation View": "opv",
+      "Operations Dashboard Add In": "xxx",
+      "Operations Dashboard Extension": "xxx",
+      PDF: "xxx",
+      "Pro Layer Package": "xxx",
+      "Pro Layer": "xxx",
+      "Pro Map Package": "prm",
+      "Pro Map": "xxx",
+      "Pro Report": "xxx",
+      "Project Package": "ppk",
+      "Project Template": "prt",
+      "Published Map": "xxx",
+      "Raster function template": "xxx",
+      "Report Template": "xxx",
+      "Rule Package": "xxx",
+      "Scene Document": "xxx",
+      "Scene Package": "xxx",
+      "Service Definition": "xxx",
+      Shapefile: "xxx",
+      "Statistical Data Collection": "xxx",
+      Style: "xxx",
+      "Survey123 Add In": "xxx",
+      "Symbol Set": "xxx",
+      "Task File": "xxx",
+      "Tile Package": "xxx",
+      "Toolbox Package": "xxx",
+      "Vector Tile Package": "xxx",
+      "Viewer Configuration": "xxx",
+      "Visio Document": "xxx",
+      "Window Mobile Package": "xxx",
+      "Windows Mobile Package": "xxx",
+      "Windows Viewer Add In": "xxx",
+      "Windows Viewer Configuration": "xxx",
+      "Workflow Manager Package": "xxx"
+    } as IItemTypeAbbrev)[type] || "xxx"
+  );
 }
 
 function getAGOLItemFundamentals(type: string, url = ""): any {
