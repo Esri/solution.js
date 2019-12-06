@@ -15,7 +15,7 @@
  */
 
 /**
- * Manages the creation and deployment of  item types that contain files.
+ * Manages the creation and deployment of item types that contain files.
  *
  * @module file
  */
