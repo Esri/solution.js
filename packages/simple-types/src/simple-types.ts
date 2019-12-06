@@ -228,82 +228,77 @@ export function createItemFromTemplate(
       .then(
         createResponse => {
           progressTickCallback();
+          // Add the new item to the settings
+          newItemTemplate.itemId = createResponse.id;
+          templateDictionary[template.itemId] = {
+            itemId: createResponse.id
+          };
 
-          if (createResponse.success) {
-            // Add the new item to the settings
-            newItemTemplate.itemId = createResponse.id;
-            templateDictionary[template.itemId] = {
-              itemId: createResponse.id
-            };
-
-            // Set the appItemId manually to get around cases where the path was incorrectly set
-            // in legacy deployments
-            if (
-              newItemTemplate.type.toLowerCase() === "web mapping application"
-            ) {
-              common.setProp(
-                newItemTemplate,
-                "data.appItemId",
-                createResponse.id
-              );
-            }
-
-            // Update the template again now that we have the new item id
-            newItemTemplate = common.replaceInTemplate(
+          // Set the appItemId manually to get around cases where the path was incorrectly set
+          // in legacy deployments
+          if (
+            newItemTemplate.type.toLowerCase() === "web mapping application"
+          ) {
+            common.setProp(
               newItemTemplate,
+              "data.appItemId",
+              createResponse.id
+            );
+          }
+
+          // Update the template again now that we have the new item id
+          newItemTemplate = common.replaceInTemplate(
+            newItemTemplate,
+            templateDictionary
+          );
+
+          // Copy resources, metadata, thumbnail, form
+          const resourcesDef = common.copyFilesFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths,
+            createResponse.id,
+            destinationAuthentication
+          );
+
+          // The item's URL includes its id, so it needs to be updated
+          const updateUrlDef = common.updateItemURL(
+            createResponse.id,
+            common.replaceInTemplate(
+              newItemTemplate.item.url,
               templateDictionary
-            );
+            ),
+            destinationAuthentication
+          );
 
-            // Copy resources, metadata, thumbnail, form
-            const resourcesDef = common.copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.id,
+          // Check for extra processing for web mapping application
+          let customProcDef: Promise<void>;
+          if (template.type.toLowerCase() === "web mapping application") {
+            customProcDef = webmappingapplication.fineTuneCreatedItem(
+              template,
+              newItemTemplate,
+              templateDictionary,
               destinationAuthentication
             );
-
-            // The item's URL includes its id, so it needs to be updated
-            const updateUrlDef = common.updateItemURL(
-              createResponse.id,
-              common.replaceInTemplate(
-                newItemTemplate.item.url,
-                templateDictionary
-              ),
+          } else if (template.type.toLowerCase() === "workforce project") {
+            customProcDef = workforce.fineTuneCreatedItem(
+              newItemTemplate,
               destinationAuthentication
-            );
-
-            // Check for extra processing for web mapping application
-            let customProcDef: Promise<void>;
-            if (template.type.toLowerCase() === "web mapping application") {
-              customProcDef = webmappingapplication.fineTuneCreatedItem(
-                template,
-                newItemTemplate,
-                templateDictionary,
-                destinationAuthentication
-              );
-            } else if (template.type.toLowerCase() === "workforce project") {
-              customProcDef = workforce.fineTuneCreatedItem(
-                newItemTemplate,
-                destinationAuthentication
-              );
-            } else {
-              customProcDef = Promise.resolve();
-            }
-
-            Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
-              () => {
-                progressTickCallback();
-
-                // Update the template dictionary with the new id
-                templateDictionary[template.itemId].itemId = createResponse.id;
-
-                resolve(createResponse.id);
-              },
-              e => reject(common.fail(e))
             );
           } else {
-            reject(common.fail());
+            customProcDef = Promise.resolve();
           }
+
+          Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
+            () => {
+              progressTickCallback();
+
+              // Update the template dictionary with the new id
+              templateDictionary[template.itemId].itemId = createResponse.id;
+
+              resolve(createResponse.id);
+            },
+            e => reject(common.fail(e))
+          );
         },
         e => reject(common.fail(e))
       );

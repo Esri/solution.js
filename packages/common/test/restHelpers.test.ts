@@ -815,13 +815,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const folderTitleRoot = "folder name";
       const suffix = 0;
       const expectedSuccess = successfulFolderCreation(folderTitleRoot, suffix);
+      const user: any = {
+        folders: []
+      };
 
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         JSON.stringify(expectedSuccess)
       );
       restHelpers
-        .createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION)
+        .createUniqueFolder(folderTitleRoot, { user }, MOCK_USER_SESSION)
         .then((response: portal.IAddFolderResponse) => {
           expect(response).toEqual(expectedSuccess);
           done();
@@ -835,23 +838,18 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderTitleRoot,
         expectedSuffix
       );
+      const user: any = {
+        folders: [folderTitleRoot]
+      };
 
-      let suffix = 0;
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         () => {
-          const response =
-            suffix === expectedSuffix
-              ? JSON.stringify(
-                  successfulFolderCreation(folderTitleRoot, suffix)
-                )
-              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
-          ++suffix;
-          return response;
+          return successfulFolderCreation(folderTitleRoot, expectedSuffix);
         }
       );
       restHelpers
-        .createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION)
+        .createUniqueFolder(folderTitleRoot, { user }, MOCK_USER_SESSION)
         .then((response: portal.IAddFolderResponse) => {
           expect(response).toEqual(expectedSuccess);
           done();
@@ -866,22 +864,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         expectedSuffix
       );
 
-      let suffix = 0;
+      const user: any = {
+        folders: ["folder name", "folder name 1"]
+      };
+
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         () => {
-          const response =
-            suffix === expectedSuffix
-              ? JSON.stringify(
-                  successfulFolderCreation(folderTitleRoot, suffix)
-                )
-              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
-          ++suffix;
-          return response;
+          return JSON.stringify(
+            successfulFolderCreation(folderTitleRoot, expectedSuffix)
+          );
         }
       );
       restHelpers
-        .createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION)
+        .createUniqueFolder(folderTitleRoot, { user }, MOCK_USER_SESSION)
         .then((response: portal.IAddFolderResponse) => {
           expect(response).toEqual(expectedSuccess);
           done();
@@ -895,23 +891,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         folderTitleRoot,
         expectedSuffix
       );
+      const user: any = {
+        folders: ["folder name", "folder name 1", "folder name 2"]
+      };
 
-      let suffix = 0;
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
         () => {
-          const response =
-            suffix === expectedSuffix
-              ? JSON.stringify(
-                  successfulFolderCreation(folderTitleRoot, suffix)
-                )
-              : JSON.stringify(failedFolderCreation(folderTitleRoot, suffix));
-          ++suffix;
-          return response;
+          return JSON.stringify(
+            successfulFolderCreation(folderTitleRoot, expectedSuffix)
+          );
         }
       );
       restHelpers
-        .createUniqueFolder(folderTitleRoot, MOCK_USER_SESSION)
+        .createUniqueFolder(folderTitleRoot, { user }, MOCK_USER_SESSION)
         .then((response: portal.IAddFolderResponse) => {
           expect(response).toEqual(expectedSuccess);
           done();
@@ -921,6 +914,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle abbreviated error", done => {
       const folderTitleRoot = "My Folder";
       const userSession = MOCK_USER_SESSION;
+      const user: any = {
+        folders: []
+      };
 
       const createUrl =
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
@@ -933,19 +929,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       fetchMock.post(createUrl, expectedCreate);
 
-      restHelpers.createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail(),
-        response => {
-          expect(response.success).toBeUndefined();
-          expect(response.message).toEqual("400: Unable to create folder.");
-          done();
-        }
-      );
+      restHelpers
+        .createUniqueFolder(folderTitleRoot, { user }, userSession)
+        .then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeUndefined();
+            expect(response.message).toEqual("400: Unable to create folder.");
+            done();
+          }
+        );
     });
 
     it("can handle extended error", done => {
       const folderTitleRoot = "My Folder";
       const userSession = MOCK_USER_SESSION;
+      const user: any = {
+        folders: []
+      };
 
       const createUrl =
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
@@ -958,14 +959,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       fetchMock.post(createUrl, expectedCreate);
 
-      restHelpers.createUniqueFolder(folderTitleRoot, userSession).then(
-        () => done.fail(),
-        response => {
-          expect(response.success).toBeUndefined();
-          expect(response.message).toEqual("400: Unable to create folder.");
-          done();
-        }
-      );
+      restHelpers
+        .createUniqueFolder(folderTitleRoot, { user }, userSession)
+        .then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeUndefined();
+            expect(response.message).toEqual("400: Unable to create folder.");
+            done();
+          }
+        );
     });
   });
 
@@ -1537,6 +1540,42 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           },
           () => done.fail()
         );
+    });
+  });
+
+  describe("searchGroups", () => {
+    it("can handle no results", done => {
+      const query: string = "My Group";
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.getGroupResponse(query, false)
+      );
+
+      restHelpers.searchGroups(query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a result", done => {
+      const query: string = "My Group";
+
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.getGroupResponse(query, true)
+      );
+
+      restHelpers.searchGroups(query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(1);
+          done();
+        },
+        () => done.fail()
+      );
     });
   });
 

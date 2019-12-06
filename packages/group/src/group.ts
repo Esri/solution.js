@@ -1,5 +1,5 @@
 /** @license
- * Copyright 2018 Esri
+ * Copyright 2019 Esri
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 
 /**
- * Manages the creation and deployment of group item types.
+ * Manages the creation and deployment of groups.
  *
- * @module simple-types
+ * @module group
  */
 
 import * as common from "@esri/solution-common";
@@ -79,95 +79,59 @@ export function createItemFromTemplate(
     );
 
     // handle group
-    getAvailableGroupTitle(
+    const title: string = common.getUniqueTitle(
       newItemTemplate.item.title,
-      newItemTemplate.itemId,
-      destinationAuthentication
-    ).then(
-      title => {
-        // Set the item title with a valid name for the ORG
-        newItemTemplate.item.title = title;
-        newItemTemplate.item.access = "private";
-        common
-          .createGroup(newItemTemplate.item, destinationAuthentication)
-          .then(
-            createResponse => {
-              progressTickCallback();
-              if (createResponse.success) {
-                newItemTemplate.itemId = createResponse.group.id;
-                templateDictionary[template.itemId] = {
-                  itemId: createResponse.group.id
-                };
-
-                // Update the template again now that we have the new item id
-                newItemTemplate = common.replaceInTemplate(
-                  newItemTemplate,
-                  templateDictionary
-                );
-
-                // Copy resources
-                common
-                  .copyFilesFromStorageItem(
-                    storageAuthentication,
-                    resourceFilePaths,
-                    createResponse.group.id,
-                    destinationAuthentication
-                  )
-                  .then(
-                    () => {
-                      // Update the template dictionary with the new id
-                      templateDictionary[template.itemId].itemId =
-                        createResponse.group.id;
-
-                      updateGroup(
-                        newItemTemplate,
-                        destinationAuthentication,
-                        templateDictionary
-                      ).then(
-                        () => {
-                          progressTickCallback();
-                          resolve(createResponse.group.id);
-                        },
-                        e => reject(common.fail(e))
-                      );
-                    },
-                    e => reject(common.fail(e))
-                  );
-              } else {
-                reject(common.fail());
-              }
-            },
-            e => reject(common.fail(e))
-          );
-      },
-      e => reject(common.fail(e))
+      templateDictionary,
+      "user.groups"
     );
-  });
-}
+    // Set the item title with a valid name for the ORG
+    newItemTemplate.item.title = title;
+    newItemTemplate.item.access = "private";
+    common.createGroup(newItemTemplate.item, destinationAuthentication).then(
+      createResponse => {
+        progressTickCallback();
+        if (createResponse.success) {
+          newItemTemplate.itemId = createResponse.group.id;
+          templateDictionary[template.itemId] = {
+            itemId: createResponse.group.id
+          };
 
-export function getAvailableGroupTitle(
-  name: string,
-  id: string,
-  authentication: common.UserSession
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    common.searchGroups(name, authentication).then(
-      searchResult => {
-        // if we find a group call the func again with a new name
-        const results: any[] = common.getProp(searchResult, "results");
-        if (results && results.length > 0) {
-          getAvailableGroupTitle(
-            name + "_" + id,
-            common.getUTCTimestamp(),
-            authentication
-          ).then(
-            title => {
-              resolve(title);
-            },
-            e => reject(common.fail(e))
+          // Update the template again now that we have the new item id
+          newItemTemplate = common.replaceInTemplate(
+            newItemTemplate,
+            templateDictionary
           );
+
+          // Copy resources
+          common
+            .copyFilesFromStorageItem(
+              storageAuthentication,
+              resourceFilePaths,
+              createResponse.group.id,
+              destinationAuthentication
+            )
+            .then(
+              () => {
+                // Update the template dictionary with the new id
+                templateDictionary[template.itemId].itemId =
+                  createResponse.group.id;
+
+                updateGroup(
+                  newItemTemplate,
+                  destinationAuthentication,
+                  templateDictionary
+                ).then(
+                  () => {
+                    progressTickCallback();
+                    resolve(createResponse.group.id);
+                  },
+                  e => reject(common.fail(e))
+                );
+              },
+              e => reject(common.fail(e))
+            );
         } else {
-          resolve(name);
+          reject(common.fail());
         }
       },
       e => reject(common.fail(e))

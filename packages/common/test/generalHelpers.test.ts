@@ -401,6 +401,73 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("getUniqueTitle", () => {
+    it("can return base title if it doesn't exist at path", () => {
+      const title: string = "The Title";
+      const templateDictionary: any = {
+        user: {
+          folders: []
+        }
+      };
+      const path: string = "user.folders";
+      const expected: string = "The Title";
+      const actual: string = generalHelpers.getUniqueTitle(
+        title,
+        templateDictionary,
+        path
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("can return base title + 1 if the base title exists", () => {
+      const title: string = "The Title";
+      const templateDictionary: any = {
+        user: {
+          folders: [
+            {
+              title: "The Title"
+            }
+          ]
+        }
+      };
+      const path: string = "user.folders";
+      const expected: string = "The Title 1";
+      const actual: string = generalHelpers.getUniqueTitle(
+        title,
+        templateDictionary,
+        path
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("can return base title + unique number if the base title + 1 exists", () => {
+      const title: string = "The Title";
+      const templateDictionary: any = {
+        user: {
+          folders: [
+            {
+              title: "The Title"
+            },
+            {
+              title: "The Title 1"
+            },
+            {
+              title: "The Title 3"
+            }
+          ]
+        }
+      };
+      const path: string = "user.folders";
+      const expected: string = "The Title 2";
+      const actual: string = generalHelpers.getUniqueTitle(
+        title,
+        templateDictionary,
+        path
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("hasDatasource", () => {
     it("will return true when datasource is found", () => {
       const itemId: string = "solutionItem0123456";
