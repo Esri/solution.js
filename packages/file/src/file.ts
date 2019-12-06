@@ -30,7 +30,129 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    resolve();
+    // Init template
+    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
+      itemInfo
+    );
+    itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
+
+    // Templatize item info property values
+    itemTemplate.item.id = common.templatizeTerm(
+      itemTemplate.item.id,
+      itemTemplate.item.id,
+      ".itemId"
+    );
+
+    // Request file
+    const dataPromise = new Promise<File>(dataResolve => {
+      common
+        .getItemDataAsFile(
+          itemTemplate.itemId,
+          itemTemplate.item.name,
+          authentication
+        )
+        .then(
+          response => {
+            if (!response || response.size === 0) {
+              dataResolve();
+            } else {
+              dataResolve(response);
+            }
+          },
+          () => {
+            dataResolve();
+          }
+        );
+    });
+
+    // Request item resources
+    const resourcePromise = common
+      .getItemResources(itemTemplate.itemId, authentication)
+      .then(resourcesResponse => {
+        // Save resources to solution item
+        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
+          (resourceDetail: any) => resourceDetail.resource
+        );
+        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+          authentication.portal,
+          itemTemplate.itemId,
+          itemTemplate.item.thumbnail,
+          itemTemplate.resources
+        );
+        return common.copyFilesToStorageItem(
+          authentication,
+          resourceItemFilePaths,
+          solutionItemId,
+          authentication
+        );
+      })
+      .catch(() => Promise.resolve([]));
+
+    // Request related items
+    const relatedPromise = Promise.resolve(
+      {} as common.IGetRelatedItemsResponse
+    );
+    /*const relatedPromise = common.getItemRelatedItems(
+      itemTemplate.itemId,
+      "Survey2Service",
+      "forward",
+      authentication
+    );*/
+
+    // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
+    // tslint:disable-next-line:no-floating-promises
+    Promise.all([dataPromise, resourcePromise, relatedPromise]).then(
+      responses => {
+        const [
+          itemDataResponse,
+          savedResourceFilenames,
+          relatedItemsResponse
+        ] = responses;
+        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
+          item => !!item
+        );
+
+        if (itemDataResponse) {
+          // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
+          // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
+          const filename =
+            (itemTemplate.item.name || itemDataResponse.name || "file.zip") +
+            ".zip";
+          itemTemplate.item.name = filename;
+          const storageName = common.generateResourceStorageFilename(
+            itemTemplate.itemId,
+            filename,
+            "info_file"
+          );
+          common
+            .addResourceFromBlob(
+              itemDataResponse,
+              solutionItemId,
+              storageName.folder,
+              storageName.filename,
+              authentication
+            )
+            .then(
+              response => {
+                itemTemplate.resources.push(
+                  storageName.folder + "/" + storageName.filename
+                );
+                resolve(itemTemplate);
+              },
+              error => {
+                itemTemplate.properties["partial"] = true;
+                itemTemplate.properties["error"] = JSON.stringify(error);
+                resolve(itemTemplate);
+              }
+            );
+        } else {
+          resolve(itemTemplate);
+        }
+      },
+      error => {
+        reject(error);
+      }
+    );
   });
 }
 
