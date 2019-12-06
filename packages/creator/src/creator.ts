@@ -226,41 +226,47 @@ export function addContentToSolution(
       getItemsPromise.push(createDef);
       createDef.then(progressTickCallback, progressTickCallback);
     });
-    // tslint:disable-next-line: no-floating-promises
-    Promise.all(getItemsPromise).then(() => {
-      if (options.progressCallback) {
-        options.progressCallback(96);
-      }
 
-      // Remove remnant placeholder items from the templates list
-      solutionTemplates = solutionTemplates.filter(
-        template => template.type // `type` needs to be defined
-      );
+    Promise.all(getItemsPromise).then(
+      () => {
+        if (options.progressCallback) {
+          options.progressCallback(96);
+        }
 
-      if (solutionTemplates.length > 0) {
-        // Update solution item with its data JSON
-        const solutionData: common.ISolutionItemData = {
-          metadata: {},
-          templates: options.templatizeFields
-            ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
-            : solutionTemplates
-        };
-        const itemInfo: common.IItemUpdate = {
-          id: solutionItemId,
-          text: solutionData
-        };
-        common.updateItem(itemInfo, authentication).then(() => {
+        // Remove remnant placeholder items from the templates list
+        solutionTemplates = solutionTemplates.filter(
+          template => template.type // `type` needs to be defined
+        );
+
+        if (solutionTemplates.length > 0) {
+          // Update solution item with its data JSON
+          const solutionData: common.ISolutionItemData = {
+            metadata: {},
+            templates: options.templatizeFields
+              ? createItemTemplate.postProcessFieldReferences(solutionTemplates)
+              : solutionTemplates
+          };
+          const itemInfo: common.IItemUpdate = {
+            id: solutionItemId,
+            text: solutionData
+          };
+          common.updateItem(itemInfo, authentication).then(() => {
+            if (options.progressCallback) {
+              options.progressCallback(0);
+            }
+            resolve(solutionItemId);
+          }, reject);
+        } else {
           if (options.progressCallback) {
             options.progressCallback(0);
           }
           resolve(solutionItemId);
-        }, reject);
-      } else {
-        if (options.progressCallback) {
-          options.progressCallback(0);
         }
+      },
+      error => {
+        console.warn("addContentToSolution failed", JSON.stringify(error));
         resolve(solutionItemId);
       }
-    });
+    );
   });
 }

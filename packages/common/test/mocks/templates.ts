@@ -141,7 +141,7 @@ export function getItemTemplatePart(
     case "Layer Package":
       break;
 
-    case "Map Template": // //??? temporary definition
+    case "Map Template": // // ??? temporary definition
       templatePart = getItemTemplateFundamentals(
         type,
         "mtp",

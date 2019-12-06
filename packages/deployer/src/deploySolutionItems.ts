@@ -282,7 +282,7 @@ export function _createItemFromTemplateWhenReady(
     });
     Promise.all(awaitDependencies).then(() => {
       // Find the conversion handler for this item type
-      const templateType = template.type.toLowerCase();
+      const templateType = template.type;
       let itemHandler = moduleMap[templateType];
       if (!itemHandler) {
         console.warn(

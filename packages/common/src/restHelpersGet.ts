@@ -223,7 +223,9 @@ export function getItemDataAsFile(
     getItemDataBlob(itemId, authentication).then(
       blob =>
         !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
-      reject
+      () => {
+        reject();
+      }
     );
   });
 }
@@ -261,10 +263,11 @@ export function getItemDataBlob(
 ): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
     const url = getItemDataBlobUrl(itemId, authentication);
-
     getBlobCheckForError(url, authentication, [500]).then(
       blob => resolve(_fixTextBlobType(blob)),
-      reject
+      () => {
+        reject();
+      }
     );
   });
 }
@@ -552,7 +555,7 @@ export function getPortalUrlFromAuth(
  */
 export function _fixTextBlobType(blob: Blob): Promise<Blob> {
   return new Promise<Blob>((resolve, reject) => {
-    if (blob && blob.type.startsWith("text/plain")) {
+    if (blob && blob.size > 0 && blob.type.startsWith("text/plain")) {
       generalHelpers.blobToText(blob).then(
         blobText => {
           // Convertible to JSON?
@@ -582,7 +585,7 @@ export function _fixTextBlobType(blob: Blob): Promise<Blob> {
         reject
       );
     } else {
-      // Not typed as plain text, so simply return
+      // Empty or not typed as plain text, so simply return
       resolve(blob);
     }
   });
