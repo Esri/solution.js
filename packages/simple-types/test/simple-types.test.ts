@@ -328,14 +328,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           );
 
         simpleTypes
@@ -402,29 +395,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              itemTemplate.itemId +
-              "/addResources",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           );
 
         simpleTypes
@@ -568,14 +539,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
@@ -660,14 +624,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           );
 
         simpleTypes
@@ -750,14 +707,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
@@ -765,14 +715,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/items/" +
               itemTemplate.itemId +
               "/addResources",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0036",
-                message: "Item info file does not exist or is inaccessible.",
-                details: ["Error getting Item Info from DataStore"]
-              }
-            }
+            mockItems.get400Failure()
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -792,7 +735,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             response => {
               expect(response.error.code).toEqual(400);
               expect(response.error.message).toEqual(
-                "Item info file does not exist or is inaccessible."
+                "Item does not exist or is inaccessible."
               );
               done();
             }
