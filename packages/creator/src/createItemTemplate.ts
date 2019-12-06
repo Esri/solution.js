@@ -20,9 +20,9 @@
  * @module createSolutionItem
  */
 
-import * as file from "@esri/solution-file";
 import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
+import * as file from "@esri/solution-file";
 import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
