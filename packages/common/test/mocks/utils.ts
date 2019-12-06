@@ -962,6 +962,94 @@ export function getUserResponse() {
   };
 }
 
+export function getContentUser() {
+  return {
+    username: "LocalGovDeployCasey",
+    total: 17,
+    start: 1,
+    num: 17,
+    nextStart: -1,
+    currentFolder: null as any,
+    items: [
+      {
+        id: "cd502cb019cb4c8cb7be297eab5ea47c",
+        owner: "LocalGovDeployCasey",
+        created: 1564508371000,
+        isOrgItem: true,
+        modified: 1564508374000,
+        guid: null as any,
+        name: null as any,
+        title: "Test",
+        type: "Application",
+        typeKeywords: ["Application", "Registered App"],
+        description: null as any,
+        tags: ["test"],
+        snippet: null as any,
+        thumbnail: "thumbnail/ago_downloaded.png",
+        documentation: null as any,
+        extent: [] as any[],
+        categories: [] as any[],
+        spatialReference: null as any,
+        accessInformation: null as any,
+        licenseInfo: null as any,
+        culture: "en-us",
+        properties: null as any,
+        url: null as any,
+        proxyFilter: null as any,
+        access: "private",
+        size: 0,
+        appCategories: [] as any[],
+        industries: [] as any[],
+        languages: [] as any[],
+        largeThumbnail: null as any,
+        banner: null as any,
+        screenshots: [] as any[],
+        listed: false,
+        ownerFolder: null as any,
+        protected: false,
+        numComments: 0,
+        numRatings: 0,
+        avgRating: 0,
+        numViews: 0,
+        scoreCompleteness: 33,
+        groupDesignations: null as any
+      }
+    ],
+    folders: [] as any[]
+  };
+}
+
+export function getGroupResponse(query: string, hasResult: boolean) {
+  return {
+    query: query,
+    total: 1,
+    start: 1,
+    num: 10,
+    nextStart: -1,
+    results: !hasResult
+      ? []
+      : [
+          {
+            id: "2146ddb18dbe4fe1bb11dc9594164549",
+            title: query,
+            isInvitationOnly: false,
+            owner: "casey",
+            description: "",
+            snippet: "",
+            tags: ["test"],
+            phone: "123-456-7890",
+            sortField: "title",
+            sortOrder: "asc",
+            isViewOnly: false,
+            isFav: false,
+            thumbnail: "test.jpg",
+            created: 1258061693000,
+            access: "public"
+          }
+        ]
+  };
+}
+
 export function getCreateServiceResponse(
   url: string = "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer",
   id: string = "svc1234567890",

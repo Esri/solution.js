@@ -133,6 +133,11 @@ describe("Module `deploySolution`", () => {
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -299,7 +304,7 @@ describe("Module `deploySolution`", () => {
         const expectedTemplate: any = {
           organization: portalResponse,
           portalBaseUrl: "https://myorg.maps.arcgis.com",
-          user: utils.getUserResponse(),
+          user: Object.assign({ folders: [] }, utils.getUserResponse()),
           solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
           folderId: "a4468da125a64526b359b70d8ba4a9dd",
           isPortal: false,
@@ -466,6 +471,11 @@ describe("Module `deploySolution`", () => {
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -530,6 +540,11 @@ describe("Module `deploySolution`", () => {
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -587,6 +602,11 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
@@ -692,6 +712,11 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
@@ -847,6 +872,11 @@ describe("Module `deploySolution`", () => {
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -907,6 +937,68 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
             mockItems.get400Failure()
+          );
+
+        deployer
+          .deploySolution(
+            itemInfo.item,
+            {},
+            utils.PORTAL_SUBSET,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(
+            () => {
+              done.fail();
+            },
+            () => {
+              done();
+            }
+          );
+      });
+
+      it("can handle error on create Folder", done => {
+        // get templates
+        const itemInfo: any = templates.getSolutionTemplateItem([
+          templates.getItemTemplatePart("Feature Service")
+        ]);
+
+        const portalResponse: any = utils.getPortalResponse();
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/data",
+            itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/abCDefG123456?f=json&token=fake-token",
+            portalResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
+            utils.getUserResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            utils.getContentUser()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/generateToken",
+            utils.getTokenResponse()
+          )
+          .post(
+            "https://utility.arcgisonline.com/arcgis/rest/info",
+            utils.UTILITY_SERVER_INFO
           );
 
         deployer

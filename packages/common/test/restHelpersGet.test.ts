@@ -76,6 +76,19 @@ afterEach(() => {
 });
 
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
+  describe("getUserFolders", () => {
+    it("can handle an exception on get user content", done => {
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey?f=json&token=fake-token",
+        mockItems.get500Failure()
+      );
+      restHelpersGet.getUserFolders(MOCK_USER_SESSION).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+  });
+
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
     describe("getBlob", () => {

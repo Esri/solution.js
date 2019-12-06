@@ -26,6 +26,7 @@ import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
+import * as group from "@esri/solution-group";
 
 /**
  * Mapping from item type to module with type-specific template-handling code.
@@ -81,7 +82,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "geoprocessing service": undefined,
   "globe document": undefined,
   "globe service": undefined,
-  group: simpleTypes,
+  group: group,
   "hub initiative": undefined,
   "hub page": undefined,
   "hub site application": undefined,
