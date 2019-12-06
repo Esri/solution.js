@@ -80,20 +80,6 @@ export function get500Failure(): any {
   };
 }
 
-export function getItemTemplate(): any {
-  return {
-    itemId: "",
-    type: "",
-    key: "",
-    item: {},
-    data: {},
-    resources: [],
-    properties: {},
-    dependencies: [],
-    estimatedDeploymentCostFactor: 0
-  };
-}
-
 export function getAGOLItem(type?: string, url = ""): any {
   let item: any = get400FailureResponse();
 

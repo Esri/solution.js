@@ -47,6 +47,20 @@ export function getSolutionTemplateItem(
   };
 }
 
+export function getItemTemplate(): any {
+  return {
+    itemId: "",
+    type: "",
+    key: "",
+    item: {},
+    data: {},
+    resources: [],
+    properties: {},
+    dependencies: [],
+    estimatedDeploymentCostFactor: 0
+  };
+}
+
 export function getItemTemplatePart(
   type: string,
   dependencies = [] as string[],

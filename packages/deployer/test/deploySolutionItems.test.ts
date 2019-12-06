@@ -28,7 +28,7 @@ import {
   PROGRESS_CALLBACK
 } from "../../common/test/mocks/utils";
 
-import { getItemTemplate } from "../../common/test/mocks/agolItems";
+import { getItemTemplate } from "../../common/test/mocks/templates";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

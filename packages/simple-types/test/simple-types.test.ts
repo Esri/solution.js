@@ -23,6 +23,7 @@ import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 
 // Set up a UserSession to use in all these tests
@@ -129,7 +130,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             itemTemplate.item,
             MOCK_USER_SESSION
           )
-          .then(newItemTemplate => {
+          .then(() => {
             done.fail();
           }, done);
       });
@@ -232,7 +233,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle item resource", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -351,7 +352,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle dashboard et al. item types", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "dsh1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
         itemTemplate.item.thumbnail = null;
@@ -440,7 +441,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle form item type with default filename", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
@@ -605,7 +606,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -687,7 +688,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     if (typeof window !== "undefined") {
       it("should catch fetch errors", done => {
         // TODO resolve Karma internal error triggered by this test
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -725,7 +726,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should catch wrapup errors", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -982,7 +983,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1019,7 +1020,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1056,7 +1057,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.data = {
         workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
