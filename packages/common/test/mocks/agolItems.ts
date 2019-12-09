@@ -89,6 +89,7 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Code Attachment":
+      item = getAGOLItemFundamentals(type);
       break;
 
     case "Code Sample":
@@ -570,6 +571,16 @@ export function getAGOLItemResources(testCase?: string): any {
             access: "inherit"
           }
         ]
+      };
+      break;
+
+    case "one zip":
+      resources = {
+        total: 1,
+        start: 1,
+        num: 1,
+        nextStart: -1,
+        resources: [utils.getSampleZip()]
       };
       break;
   }

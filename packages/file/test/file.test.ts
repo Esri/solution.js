@@ -58,109 +58,275 @@ afterEach(() => {
 /* tslint:disable:no-empty */
 describe("Module `file`: manages the creation and deployment of item types that contain files", () => {
   describe("convertItemToTemplate", () => {
-    it("GeoJson with no data", done => {
-      const solutionItemId: string = "sln1234567890";
-      const agolItem = mockItems.getAGOLItem("GeoJson");
-      agolItem.thumbnail = null;
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("GeoJson with no data", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("GeoJson");
+        agolItem.thumbnail = null;
 
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
-          mockItems.get500Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        );
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          );
 
-      file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
-        .then(
-          response => {
-            expect(response.itemId).toEqual("jsn1234567890");
-            expect(response.type).toEqual("GeoJson");
-            done();
-          },
-          () => done.fail()
-        );
-    });
-
-    it("GeoJson with data", done => {
-      const solutionItemId: string = "sln1234567890";
-      const agolItem = mockItems.getAGOLItem("GeoJson");
-      agolItem.thumbnail = null;
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
-          {}
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: solutionItemId }
-        );
-
-      file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
-        .then(
-          response => {
-            expect(response.itemId).toEqual("jsn1234567890");
-            expect(response.type).toEqual("GeoJson");
-            done();
-          },
-          () => done.fail()
-        );
-    });
-
-    it("GeoJson with bad JSON data", done => {
-      const solutionItemId: string = "sln1234567890";
-      const agolItem = mockItems.getAGOLItem("GeoJson");
-      agolItem.thumbnail = null;
-      const badBlob = new Blob([mockItems.get400Failure()], {
-        type: "application/json"
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("jsn1234567890");
+              expect(response.type).toEqual("GeoJson");
+              done();
+            },
+            () => done.fail()
+          );
       });
 
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
-          mockItems.get400Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
-          noResourcesResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
-          mockItems.get400Failure()
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
-          { success: true, id: solutionItemId }
-        );
+      it("GeoJson with data & resources", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("GeoJson");
+        agolItem.thumbnail = null;
 
-      file
-        .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
-        .then(
-          response => {
-            expect(response.itemId).toEqual("jsn1234567890");
-            expect(response.type).toEqual("GeoJson");
-            done();
-          },
-          () => done.fail()
-        );
-    });
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            {}
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            mockItems.getAGOLItemResources("one png")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources/anImage.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("jsn1234567890");
+              expect(response.type).toEqual("GeoJson");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("Code Attachment with zip data using item name", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("Code Attachment");
+        agolItem.thumbnail = null;
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
+            utils.getSampleZipFile("myZipFile.zip")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("cod1234567890");
+              expect(response.type).toEqual("Code Attachment");
+              expect(response.resources).toEqual([
+                "cod1234567890_info_file/Name of an AGOL item.zip"
+              ]);
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("Code Attachment with zip data using default zip name", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("Code Attachment");
+        agolItem.name = null;
+        agolItem.thumbnail = null;
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
+            utils.getSampleZipFile("")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("cod1234567890");
+              expect(response.type).toEqual("Code Attachment");
+              expect(response.resources).toEqual([
+                "cod1234567890_info_file/file.zip.zip"
+              ]);
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("Code Attachment save fails", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("Code Attachment");
+        agolItem.thumbnail = null;
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
+            utils.getSampleZipFile("myZipFile.zip")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            mockItems.get400Failure()
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("cod1234567890");
+              expect(response.type).toEqual("Code Attachment");
+              expect(response.resources).toEqual([]);
+              expect(response.properties.partial).toBeTruthy();
+              expect(
+                JSON.parse(response.properties.error).originalMessage
+              ).toEqual("Item does not exist or is inaccessible.");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("GeoJson with inaccessible bad JSON data", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("GeoJson");
+        agolItem.thumbnail = null;
+        const badBlob = new Blob([mockItems.get400Failure()], {
+          type: "application/json"
+        });
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("jsn1234567890");
+              expect(response.type).toEqual("GeoJson");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("GeoJson with bad JSON data", done => {
+        const solutionItemId: string = "sln1234567890";
+        const agolItem = mockItems.getAGOLItem("GeoJson");
+        agolItem.thumbnail = null;
+        const badBlob = new Blob([mockItems.get400Failure()], {
+          type: "application/json"
+        });
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png",
+            utils.getSampleImage()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        file
+          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
+          .then(
+            response => {
+              expect(response.itemId).toEqual("jsn1234567890");
+              expect(response.type).toEqual("GeoJson");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+    }
   });
 
   describe("createItemFromTemplate", () => {

@@ -431,7 +431,7 @@ export function getItemResources(
   id: string,
   authentication: interfaces.UserSession
 ): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
+  return new Promise<any>(resolve => {
     try {
       const requestOptions = {
         authentication: authentication

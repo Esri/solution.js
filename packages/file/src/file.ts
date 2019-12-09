@@ -85,8 +85,7 @@ export function convertItemToTemplate(
           solutionItemId,
           authentication
         );
-      })
-      .catch(() => Promise.resolve([]));
+      });
 
     // Request related items
     const relatedPromise = Promise.resolve(
@@ -115,9 +114,7 @@ export function convertItemToTemplate(
         if (itemDataResponse) {
           // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
           // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
-          const filename =
-            (itemTemplate.item.name || itemDataResponse.name || "file.zip") +
-            ".zip";
+          const filename = (itemTemplate.item.name || "file.zip") + ".zip";
           itemTemplate.item.name = filename;
           const storageName = common.generateResourceStorageFilename(
             itemTemplate.itemId,
@@ -148,9 +145,6 @@ export function convertItemToTemplate(
         } else {
           resolve(itemTemplate);
         }
-      },
-      error => {
-        reject(error);
       }
     );
   });
