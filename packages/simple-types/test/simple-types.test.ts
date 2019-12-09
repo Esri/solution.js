@@ -911,10 +911,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             MOCK_USER_SESSION
           )
           .then(
-            () => {
-              done();
-            },
-            e => done.fail(e)
+            () => done.fail(),
+            () => done()
           );
       });
     }

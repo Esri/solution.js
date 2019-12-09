@@ -240,6 +240,7 @@ export function createItemTemplate(
             );
             let itemType = placeholder!.type;
             if (!itemType) {
+              // Groups have this defined when fetched above
               itemType = itemInfo.type;
               placeholder!.type = itemType;
             }
@@ -254,7 +255,6 @@ export function createItemTemplate(
               ); // ???
               resolve(true);
             } else {
-              // tslint:disable-next-line: no-floating-promises
               itemHandler
                 .convertItemToTemplate(solutionItemId, itemInfo, authentication)
                 .then(
@@ -291,23 +291,8 @@ export function createItemTemplate(
                           );
                         }
                       });
-                      Promise.all(dependentDfds).then(
-                        () => {
-                          resolve(true);
-                        },
-                        error => {
-                          placeholder!.properties["partial"] = true;
-                          placeholder!.properties["error"] = JSON.stringify(
-                            error
-                          );
-                          _replaceTemplate(
-                            existingTemplates,
-                            itemId,
-                            placeholder!
-                          );
-                          resolve(true);
-                        }
-                      );
+                      // tslint:disable-next-line: no-floating-promises
+                      Promise.all(dependentDfds).then(() => resolve(true));
                     }
                   },
                   error => {
