@@ -782,14 +782,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
       const shareUrl =
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
-      const expectedShare = {
-        error: {
-          code: 400,
-          messageCode: "CONT_0001",
-          message: "Item does not exist or is inaccessible.",
-          details: [] as any[]
-        }
-      };
+      const expectedShare = mockItems.get400Failure();
       fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
 
       restHelpers

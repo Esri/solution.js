@@ -73,31 +73,19 @@ describe("Module `creator`", () => {
         fetchMock
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           );
         creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
           () => done.fail(),
           response => {
             expect(response.name).toEqual("ArcGISRequestError");
-            expect(response.code).toEqual("CONT_0004");
+            expect(response.message).toEqual(
+              "CONT_0001: Item does not exist or is inaccessible."
+            );
             done();
           }
         );
@@ -123,25 +111,11 @@ describe("Module `creator`", () => {
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           )
           .post(
             // for missing item's placeholder
@@ -178,25 +152,11 @@ describe("Module `creator`", () => {
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
-            {
-              error: {
-                code: 400,
-                messageCode: "CONT_0004",
-                message: "Item does not exist or is inaccessible.",
-                details: []
-              }
-            }
+            mockItems.get400Failure()
           )
           .post(
             // for missing item's placeholder
@@ -610,25 +570,11 @@ describe("Module `creator`", () => {
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
-          {
-            error: {
-              code: 400,
-              messageCode: "CONT_0004",
-              message: "Item does not exist or is inaccessible.",
-              details: []
-            }
-          }
+          mockItems.get400Failure()
         )
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/community/groups/itm1234567890?f=json&token=fake-token",
-          {
-            error: {
-              code: 400,
-              messageCode: "CONT_0004",
-              message: "Item does not exist or is inaccessible.",
-              details: []
-            }
-          }
+          mockItems.get400Failure()
         )
         .post(
           // for missing item's placeholder
