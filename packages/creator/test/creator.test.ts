@@ -722,59 +722,66 @@ describe("Module `creator`", () => {
         () => done.fail()
       );
     });
+    if (typeof window !== "undefined") {
+      it("createSolutionItem with options", done => {
+        const options: common.ICreateSolutionOptions = {
+          title: "Solution Name",
+          snippet: "Solution's snippet",
+          description: "Solution's description",
+          tags: ["Test", "a tag"],
+          thumbnailUrl: "https://myorg.maps.arcgis.com/logo.png",
+          templatizeFields: true,
+          additionalTypeKeywords: ["Esri", "Government Solutions"]
+        };
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+        const expectedSolutionId = "sln1234567890";
 
-    it("createSolutionItem with options", done => {
-      const options: common.ICreateSolutionOptions = {
-        title: "Solution Name",
-        snippet: "Solution's snippet",
-        description: "Solution's description",
-        tags: ["Test", "a tag"],
-        thumbnailUrl: "https://myorg.maps.arcgis.com/logo.png",
-        templatizeFields: true,
-        additionalTypeKeywords: ["Esri", "Government Solutions"]
-      };
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
-      const expectedSolutionId = "sln1234567890";
+        const blob = new Blob(["fake-blob"], { type: "text/plain" });
 
-      fetchMock
-        .post(url, { success: true, id: expectedSolutionId })
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-          { success: true, id: expectedSolutionId }
+        fetchMock
+          .post(url, { success: true, id: expectedSolutionId })
+          .post("https://myorg.maps.arcgis.com/logo.png", blob, {
+            sendAsJson: false
+          })
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionItem(authentication, options).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
+            const fetchOptions: fetchMock.MockOptions = fetchMock.lastOptions(
+              url
+            );
+            const fetchBody = (fetchOptions as fetchMock.MockResponseObject)
+              .body;
+            expect(fetchBody).toEqual(
+              "f=json&type=Solution&title=" +
+                encodeURIComponent(options.title) +
+                "&snippet=" +
+                encodeURIComponent(options.snippet) +
+                "&description=" +
+                encodeURIComponent(options.description) +
+                "&thumbnailUrl=" +
+                encodeURIComponent(options.thumbnailUrl) +
+                "&tags=" +
+                options.tags.map(encodeURIComponent).join("%2C") +
+                "&typeKeywords=" +
+                ["Solution", "Template"]
+                  .concat(options.additionalTypeKeywords)
+                  .map(encodeURIComponent)
+                  .join("%2C") +
+                "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
+            );
+            done();
+          },
+          () => done.fail()
         );
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionItem(authentication, options).then(
-        solutionId => {
-          expect(solutionId).toEqual(expectedSolutionId);
-          const fetchOptions: fetchMock.MockOptions = fetchMock.lastOptions(
-            url
-          );
-          const fetchBody = (fetchOptions as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=" +
-              encodeURIComponent(options.title) +
-              "&snippet=" +
-              encodeURIComponent(options.snippet) +
-              "&description=" +
-              encodeURIComponent(options.description) +
-              "&thumbnailUrl=" +
-              encodeURIComponent(options.thumbnailUrl) +
-              "&tags=" +
-              options.tags.map(encodeURIComponent).join("%2C") +
-              "&typeKeywords=" +
-              ["Solution", "Template"]
-                .concat(options.additionalTypeKeywords)
-                .map(encodeURIComponent)
-                .join("%2C") +
-              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
-          );
-          done();
-        },
-        () => done.fail()
-      );
-    });
+      });
+    }
 
     it("createSolutionItem fails", done => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
