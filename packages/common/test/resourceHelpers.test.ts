@@ -803,7 +803,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  describe("generateSourceItemFilePaths", () => {
+  describe("generateSourceFilePaths", () => {
     it("without resources", () => {
       const portalSharingUrl = "https://www.arcgis.com/sharing";
       const itemId = "8f7ec78195d0479784036387d522e29f";
@@ -824,7 +824,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }
       ];
 
-      const actual = resourceHelpers.generateSourceItemFilePaths(
+      const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
@@ -860,7 +860,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }
       ];
 
-      const actual = resourceHelpers.generateSourceItemFilePaths(
+      const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
@@ -896,7 +896,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }
       ];
 
-      const actual = resourceHelpers.generateSourceItemFilePaths(
+      const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,
@@ -938,7 +938,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }
       ];
 
-      const actual = resourceHelpers.generateSourceItemFilePaths(
+      const actual = resourceHelpers.generateSourceFilePaths(
         portalSharingUrl,
         itemId,
         thumbnailUrlPart,

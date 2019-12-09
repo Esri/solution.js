@@ -73,7 +73,7 @@ export function convertItemToTemplate(
         itemTemplate.resources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
         );
-        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceItemFilePaths(
+        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
           authentication.portal,
           itemTemplate.itemId,
           itemTemplate.item.thumbnail,

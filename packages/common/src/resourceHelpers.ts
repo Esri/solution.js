@@ -123,34 +123,41 @@ export function addResourceFromBlob(
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  isGroup: boolean = false
 ): Promise<any> {
   const updateOptions: any = {
-    item: {
-      id: itemId
-    },
     params: {
       // Pass image in directly because item object is serialized, which discards a blob
       thumbnail: blob
     },
     authentication: authentication
   };
-  return portal.updateItem(updateOptions);
+  updateOptions[isGroup ? "group" : "item"] = {
+    id: itemId
+  };
+
+  return isGroup
+    ? portal.updateGroup(updateOptions)
+    : portal.updateItem(updateOptions);
 }
 
 export function addThumbnailFromUrl(
   url: string,
   itemId: string,
-  authentication: UserSession
+  authentication: UserSession,
+  isGroup: boolean = false
 ): Promise<any> {
-  const updateOptions: portal.IUpdateItemOptions = {
-    item: {
-      id: itemId,
-      thumbnailurl: url
-    },
+  const updateOptions: any = {
     authentication: authentication
   };
-  return portal.updateItem(updateOptions);
+  updateOptions[isGroup ? "group" : "item"] = {
+    id: itemId,
+    thumbnailurl: url
+  };
+  return isGroup
+    ? portal.updateGroup(updateOptions)
+    : portal.updateItem(updateOptions);
 }
 
 /**
@@ -167,7 +174,8 @@ export function copyFilesFromStorageItem(
   storageAuthentication: UserSession,
   filePaths: IDeployFileCopyPath[],
   destinationItemId: string,
-  destinationAuthentication: UserSession
+  destinationAuthentication: UserSession,
+  isGroup: boolean = false
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
@@ -203,7 +211,8 @@ export function copyFilesFromStorageItem(
           return addThumbnailFromUrl(
             filePath.url,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            isGroup
           );
       }
     });
@@ -463,11 +472,12 @@ export function generateResourceStorageFilename(
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
  * @return List of item files' URLs and folder/filenames for storing the files
  */
-export function generateSourceItemFilePaths(
+export function generateSourceFilePaths(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string,
-  resourceFilenames: string[]
+  resourceFilenames: string[],
+  isGroup: boolean = false
 ): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
@@ -481,7 +491,7 @@ export function generateSourceItemFilePaths(
   });
 
   filePaths.push({
-    url: generateSourceMetadataUrl(portalSharingUrl, itemId),
+    url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
 
@@ -490,7 +500,8 @@ export function generateSourceItemFilePaths(
       url: generateSourceThumbnailUrl(
         portalSharingUrl,
         itemId,
-        thumbnailUrlPart
+        thumbnailUrlPart,
+        isGroup
       ),
       ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
     });
@@ -508,11 +519,12 @@ export function generateSourceItemFilePaths(
  */
 export function generateSourceMetadataUrl(
   sourcePortalSharingUrl: string,
-  itemId: string
+  itemId: string,
+  isGroup = false
 ): string {
   return (
     sourcePortalSharingUrl +
-    "/content/items/" +
+    (isGroup ? "/community/groups/" : "/content/items/") +
     itemId +
     "/info/metadata/metadata.xml"
   );

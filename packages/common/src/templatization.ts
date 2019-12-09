@@ -93,7 +93,8 @@ export function createInitializedGroupTemplate(
     description: itemInfo.description,
     snippet: itemInfo.snippet,
     tags: itemInfo.tags,
-    title: itemInfo.title
+    title: itemInfo.title,
+    thumbnail: itemInfo.thumbnail
   };
   return itemTemplate;
 }

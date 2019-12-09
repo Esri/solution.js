@@ -21,14 +21,27 @@
 import * as common from "@esri/solution-common";
 import * as storymap from "../src/storymap";
 import * as mockTemplates from "../../common/test/mocks/templates";
+import * as utils from "../../common/test/mocks/utils";
+
+const now = new Date();
+const MOCK_USER_SESSION = utils.createRuntimeMockUserSession(now.getDate());
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `storymap`", () => {
   describe("convertItemToTemplate", () => {
-    xit("convertItemToTemplate", done => {
-      console.warn("========== TODO ========== storymap convertItemToTemplate");
-      done.fail();
+    it("can handle gracefully while unimplemented", done => {
+      storymap
+        .convertItemToTemplate(
+          {
+            type: "StoryMap"
+          },
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response).toBeUndefined();
+          done();
+        }, done.fail);
     });
   });
 

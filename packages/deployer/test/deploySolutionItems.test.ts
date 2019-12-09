@@ -18,42 +18,36 @@
  * Provides tests for functions involving deployment of items via the REST API.
  */
 
-import {
-  deploySolutionItems,
-  _createItemFromTemplateWhenReady
-} from "../src/deploySolutionItems";
-
-import {
-  createRuntimeMockUserSession,
-  PROGRESS_CALLBACK
-} from "../../common/test/mocks/utils";
-
-import { getItemTemplate } from "../../common/test/mocks/templates";
+import * as deploySolution from "../src/deploySolutionItems";
+import * as utils from "../../common/test/mocks/utils";
+import * as templates from "../../common/test/mocks/templates";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 const now = new Date();
-const MOCK_USER_SESSION = createRuntimeMockUserSession(now.getDate());
+const MOCK_USER_SESSION = utils.createRuntimeMockUserSession(now.getDate());
 
 describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
     it("can handle unimplemented item type gracefully", done => {
-      deploySolutionItems(
-        "",
-        "",
-        [getItemTemplate()],
-        MOCK_USER_SESSION,
-        {},
-        MOCK_USER_SESSION,
-        PROGRESS_CALLBACK
-      ).then(
-        () => {
-          done();
-        },
-        () => {
-          done.fail();
-        }
-      );
+      deploySolution
+        .deploySolutionItems(
+          "",
+          "",
+          [templates.getItemTemplate()],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(
+          () => {
+            done();
+          },
+          () => {
+            done.fail();
+          }
+        );
     });
   });
 
