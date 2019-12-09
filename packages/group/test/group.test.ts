@@ -41,7 +41,7 @@ const MOCK_USER_SESSION = new common.UserSession({
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-const noResourcesResponse: any = {
+const resourcesResponse: any = {
   total: 0,
   start: 1,
   num: 0,
@@ -51,6 +51,7 @@ const noResourcesResponse: any = {
 
 afterEach(() => {
   fetchMock.restore();
+  resourcesResponse.resources = [];
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -74,7 +75,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           description: "Description of an AGOL group",
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
-          tags: []
+          tags: [],
+          thumbnail: "ROWPermitManager.png"
         },
         data: {},
         resources: [],
@@ -94,7 +96,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          noResourcesResponse
+          resourcesResponse
         );
 
       group
@@ -197,7 +199,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           description: "Description of an AGOL group",
           snippet: "Snippet of an AGOL group",
           title: "An AGOL group",
-          tags: []
+          tags: [],
+          thumbnail: "ROWPermitManager.png"
         },
         data: {},
         resources: [],
@@ -217,7 +220,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          noResourcesResponse
+          resourcesResponse
         );
 
       group
@@ -233,87 +236,13 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         }, done.fail);
     });
 
-    it("should handle a group", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
-      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.item = mockItems.getAGOLItem("Group", null);
+    if (typeof window !== "undefined") {
+      it("should handle a group", done => {
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+        itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
-      const groupResource: any = {
-        total: 7,
-        start: 1,
-        num: 7,
-        nextStart: -1,
-        items: [
-          {
-            id: "156bf2715e9e4098961c4a2a6848fa20",
-            owner: "LocalGovDeployment",
-            created: 1550876176000,
-            isOrgItem: true,
-            modified: 1553045028000,
-            guid: null,
-            name: "location_9402a6f176f54415ad4b8cb07598f42d",
-            title: "Location Tracking",
-            type: "Feature Service",
-            typeKeywords: [
-              "ArcGIS Server",
-              "Collector",
-              "Data",
-              "Feature Access",
-              "Feature Service",
-              "Feature Service Template",
-              "Layer",
-              "Layer Template",
-              "Location Tracking",
-              "Platform",
-              "Service",
-              "Service template",
-              "Template",
-              "Hosted Service"
-            ],
-            description:
-              "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
-            tags: ["Dam Safety", "Environment", "Natural Resources"],
-            snippet:
-              "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
-            thumbnail: "thumbnail/thumbnail1552925274760.png",
-            documentation: null,
-            extent: [
-              [-131.82999999999555, 16.22999999999945],
-              [-57.11999999999807, 58.49999999999802]
-            ],
-            categories: [],
-            spatialReference: null,
-            accessInformation: "Esri",
-            licenseInfo: null,
-            culture: "",
-            properties: null,
-            url:
-              "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
-            proxyFilter: null,
-            access: "public",
-            size: 0,
-            appCategories: [],
-            industries: [],
-            languages: [],
-            largeThumbnail: null,
-            banner: null,
-            screenshots: [],
-            listed: false,
-            numComments: 0,
-            numRatings: 0,
-            avgRating: 0,
-            numViews: 106,
-            groupCategories: [],
-            scoreCompleteness: 78,
-            groupDesignations: null
-          }
-        ]
-      };
-
-      const expectedTemplate: any = {
-        itemId: "grp1234567890",
-        type: "Group",
-        item: {
+        const groupResource: any = {
           total: 7,
           start: 1,
           num: 7,
@@ -382,42 +311,325 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
               scoreCompleteness: 78,
               groupDesignations: null
             }
-          ],
-          id: "{{grp1234567890.itemId}}"
-        },
-        data: {},
-        resources: [],
-        dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
-        properties: {},
-        estimatedDeploymentCostFactor: 2
-      };
+          ]
+        };
 
-      fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-          groupResource
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-          groupResource
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-          noResourcesResponse
-        );
+        const expectedTemplate: any = {
+          itemId: "grp1234567890",
+          type: "Group",
+          item: {
+            total: 7,
+            start: 1,
+            num: 7,
+            nextStart: -1,
+            items: [
+              {
+                id: "156bf2715e9e4098961c4a2a6848fa20",
+                owner: "LocalGovDeployment",
+                created: 1550876176000,
+                isOrgItem: true,
+                modified: 1553045028000,
+                guid: null,
+                name: "location_9402a6f176f54415ad4b8cb07598f42d",
+                title: "Location Tracking",
+                type: "Feature Service",
+                typeKeywords: [
+                  "ArcGIS Server",
+                  "Collector",
+                  "Data",
+                  "Feature Access",
+                  "Feature Service",
+                  "Feature Service Template",
+                  "Layer",
+                  "Layer Template",
+                  "Location Tracking",
+                  "Platform",
+                  "Service",
+                  "Service template",
+                  "Template",
+                  "Hosted Service"
+                ],
+                description:
+                  "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+                tags: ["Dam Safety", "Environment", "Natural Resources"],
+                snippet:
+                  "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+                thumbnail: "thumbnail/thumbnail1552925274760.png",
+                documentation: null,
+                extent: [
+                  [-131.82999999999555, 16.22999999999945],
+                  [-57.11999999999807, 58.49999999999802]
+                ],
+                categories: [],
+                spatialReference: null,
+                accessInformation: "Esri",
+                licenseInfo: null,
+                culture: "",
+                properties: null,
+                url:
+                  "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+                proxyFilter: null,
+                access: "public",
+                size: 0,
+                appCategories: [],
+                industries: [],
+                languages: [],
+                largeThumbnail: null,
+                banner: null,
+                screenshots: [],
+                listed: false,
+                numComments: 0,
+                numRatings: 0,
+                avgRating: 0,
+                numViews: 106,
+                groupCategories: [],
+                scoreCompleteness: 78,
+                groupDesignations: null
+              }
+            ],
+            id: "{{grp1234567890.itemId}}"
+          },
+          data: {},
+          resources: [],
+          dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
 
-      group
-        .convertItemToTemplate(
-          itemTemplate.itemId,
-          itemTemplate.item,
-          MOCK_USER_SESSION
-        )
-        .then(newItemTemplate => {
-          delete newItemTemplate.key; // key is randomly generated, and so is not testable
-          expect(newItemTemplate).toEqual(expectedTemplate);
-          done();
-        }, done.fail);
-    });
+        const blob = new Blob(["fake-blob"], { type: "text/plain" });
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            groupResource
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            groupResource
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            resourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            blob,
+            { sendAsJson: false }
+          );
+
+        group
+          .convertItemToTemplate(
+            itemTemplate.itemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
+      });
+
+      it("should resolve empty array if error", done => {
+        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+        itemTemplate.item = mockItems.getAGOLItem("Group", null);
+
+        const groupResource: any = {
+          total: 7,
+          start: 1,
+          num: 7,
+          nextStart: -1,
+          items: [
+            {
+              id: "156bf2715e9e4098961c4a2a6848fa20",
+              owner: "LocalGovDeployment",
+              created: 1550876176000,
+              isOrgItem: true,
+              modified: 1553045028000,
+              guid: null,
+              name: "location_9402a6f176f54415ad4b8cb07598f42d",
+              title: "Location Tracking",
+              type: "Feature Service",
+              typeKeywords: [
+                "ArcGIS Server",
+                "Collector",
+                "Data",
+                "Feature Access",
+                "Feature Service",
+                "Feature Service Template",
+                "Layer",
+                "Layer Template",
+                "Location Tracking",
+                "Platform",
+                "Service",
+                "Service template",
+                "Template",
+                "Hosted Service"
+              ],
+              description:
+                "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+              tags: ["Dam Safety", "Environment", "Natural Resources"],
+              snippet:
+                "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+              thumbnail: "thumbnail/thumbnail1552925274760.png",
+              documentation: null,
+              extent: [
+                [-131.82999999999555, 16.22999999999945],
+                [-57.11999999999807, 58.49999999999802]
+              ],
+              categories: [],
+              spatialReference: null,
+              accessInformation: "Esri",
+              licenseInfo: null,
+              culture: "",
+              properties: null,
+              url:
+                "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+              proxyFilter: null,
+              access: "public",
+              size: 0,
+              appCategories: [],
+              industries: [],
+              languages: [],
+              largeThumbnail: null,
+              banner: null,
+              screenshots: [],
+              listed: false,
+              numComments: 0,
+              numRatings: 0,
+              avgRating: 0,
+              numViews: 106,
+              groupCategories: [],
+              scoreCompleteness: 78,
+              groupDesignations: null
+            }
+          ]
+        };
+
+        const expectedTemplate: any = {
+          itemId: "grp1234567890",
+          type: "Group",
+          item: {
+            total: 7,
+            start: 1,
+            num: 7,
+            nextStart: -1,
+            items: [
+              {
+                id: "156bf2715e9e4098961c4a2a6848fa20",
+                owner: "LocalGovDeployment",
+                created: 1550876176000,
+                isOrgItem: true,
+                modified: 1553045028000,
+                guid: null,
+                name: "location_9402a6f176f54415ad4b8cb07598f42d",
+                title: "Location Tracking",
+                type: "Feature Service",
+                typeKeywords: [
+                  "ArcGIS Server",
+                  "Collector",
+                  "Data",
+                  "Feature Access",
+                  "Feature Service",
+                  "Feature Service Template",
+                  "Layer",
+                  "Layer Template",
+                  "Location Tracking",
+                  "Platform",
+                  "Service",
+                  "Service template",
+                  "Template",
+                  "Hosted Service"
+                ],
+                description:
+                  "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+                tags: ["Dam Safety", "Environment", "Natural Resources"],
+                snippet:
+                  "A feature layer used in the Dam Inspection Assignments Workforce for ArcGIS project to store a record for each point location logged while location tracking is enabled.",
+                thumbnail: "thumbnail/thumbnail1552925274760.png",
+                documentation: null,
+                extent: [
+                  [-131.82999999999555, 16.22999999999945],
+                  [-57.11999999999807, 58.49999999999802]
+                ],
+                categories: [],
+                spatialReference: null,
+                accessInformation: "Esri",
+                licenseInfo: null,
+                culture: "",
+                properties: null,
+                url:
+                  "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/location_9402a6f176f54415ad4b8cb07598f42d/FeatureServer",
+                proxyFilter: null,
+                access: "public",
+                size: 0,
+                appCategories: [],
+                industries: [],
+                languages: [],
+                largeThumbnail: null,
+                banner: null,
+                screenshots: [],
+                listed: false,
+                numComments: 0,
+                numRatings: 0,
+                avgRating: 0,
+                numViews: 106,
+                groupCategories: [],
+                scoreCompleteness: 78,
+                groupDesignations: null
+              }
+            ],
+            id: "{{grp1234567890.itemId}}"
+          },
+          data: {},
+          resources: [],
+          dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        resourcesResponse.resources.push({ resource: "name.png" });
+
+        const blob = new Blob(["fake-blob"], { type: "text/plain" });
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            groupResource
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            groupResource
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            resourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources/name.png",
+            blob,
+            { sendAsJson: false }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            blob,
+            { sendAsJson: false }
+          );
+
+        group
+          .convertItemToTemplate(
+            itemTemplate.itemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            delete newItemTemplate.key; // key is randomly generated, and so is not testable
+            expect(newItemTemplate).toEqual(expectedTemplate);
+            done();
+          }, done.fail);
+      });
+    }
   });
 
   describe("createItemFromTemplate", () => {
