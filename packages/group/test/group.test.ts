@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for common functions involving the creation and deployment of group item types.
  */
 
 import * as group from "../src/group";
@@ -23,6 +23,7 @@ import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 
 // Set up a UserSession to use in all these tests
@@ -59,7 +60,7 @@ afterEach(() => {
 describe("Module `group`: manages the creation and deployment of groups", () => {
   describe("convertItemToTemplate", () => {
     it("should handle error on getGroup", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
       itemTemplate.item.tags = [];
@@ -113,7 +114,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
     });
 
     it("should handle error on portal getGroup", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
       itemTemplate.item.tags = [];
@@ -238,7 +239,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
     if (typeof window !== "undefined") {
       it("should handle a group", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
         itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
@@ -412,7 +413,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             resourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
           );
@@ -431,7 +432,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       });
 
       it("should resolve empty array if error", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
         itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
@@ -612,7 +613,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
           );
@@ -641,7 +642,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       };
       const templateDictionary: any = { user };
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -681,7 +682,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       };
       const templateDictionary: any = { user };
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -714,7 +715,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       };
       const templateDictionary: any = { user };
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -748,7 +749,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       };
       const templateDictionary: any = { user };
 
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
@@ -836,7 +837,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
     //     const templateDictionary: any = {};
     //     const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
 
-    //     const itemTemplate: IItemTemplate = mockItems.getItemTemplate();
+    //     const itemTemplate: IItemTemplate = templates.getItemTemplate();
     //     itemTemplate.itemId = itemId;
     //     itemTemplate.type = "Group";
     //     itemTemplate.item.title = "Dam Inspection Assignments";
@@ -877,7 +878,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
   describe("updateGroup", () => {
     it("should handle error", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
       itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
 
@@ -949,7 +950,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
     });
 
     it("should share dependencies with group", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
       itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
       itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
 

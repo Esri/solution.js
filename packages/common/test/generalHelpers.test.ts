@@ -530,6 +530,100 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("setCreateProp", () => {
+    it("one-item path doesn't exist", () => {
+      const obj = {} as any;
+      generalHelpers.setCreateProp(obj, "level1", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1).toEqual("value");
+    });
+
+    it("two-item path doesn't exist", () => {
+      const obj = {} as any;
+      generalHelpers.setCreateProp(obj, "level1.level2", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1.level2).not.toBeUndefined();
+      expect(obj.level1.level2).toEqual("value");
+    });
+
+    it("three-item path doesn't exist", () => {
+      const obj = {} as any;
+      generalHelpers.setCreateProp(obj, "level1.level2.level3", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1.level2).not.toBeUndefined();
+      expect(obj.level1.level2.level3).not.toBeUndefined();
+      expect(obj.level1.level2.level3).toEqual("value");
+    });
+
+    it("one-item path exists", () => {
+      const obj = {
+        level1: "placeholder"
+      } as any;
+      generalHelpers.setCreateProp(obj, "level1", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1).toEqual("value");
+    });
+
+    it("two-item path exists", () => {
+      const obj = {
+        level1: {
+          level2: "placeholder"
+        }
+      } as any;
+      generalHelpers.setCreateProp(obj, "level1.level2", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1.level2).not.toBeUndefined();
+      expect(obj.level1.level2).toEqual("value");
+    });
+
+    it("three-item path exists", () => {
+      const obj = {
+        level1: {
+          level2: {
+            level3: "placeholder"
+          }
+        }
+      } as any;
+      generalHelpers.setCreateProp(obj, "level1.level2.level3", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1.level2).not.toBeUndefined();
+      expect(obj.level1.level2.level3).not.toBeUndefined();
+      expect(obj.level1.level2.level3).toEqual("value");
+    });
+
+    it("three-item path exists; merges without overwrite", () => {
+      const obj = {
+        level1: {
+          sibling1: 5,
+          level2: {
+            level3: "placeholder",
+            sibling3: 4
+          },
+          sibling2: {
+            siblingChild: "child"
+          }
+        }
+      } as any;
+      const expectedObj = {
+        level1: {
+          sibling1: 5,
+          level2: {
+            level3: "value",
+            sibling3: 4
+          },
+          sibling2: {
+            siblingChild: "child"
+          }
+        }
+      } as any;
+      generalHelpers.setCreateProp(obj, "level1.level2.level3", "value");
+      expect(obj.level1).not.toBeUndefined();
+      expect(obj.level1.level2).not.toBeUndefined();
+      expect(obj.level1.level2.level3).not.toBeUndefined();
+      expect(obj).toEqual(expectedObj);
+    });
+  });
+
   describe("cleanItemId", () => {
     it("should handle empty id", () => {
       expect(generalHelpers.cleanItemId(null)).toBeNull();

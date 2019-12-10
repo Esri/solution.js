@@ -174,11 +174,11 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            webappPromise.then(resolve, () => resolve(itemTemplate));
+            webappPromise.then(resolve, err =>
+              reject(common.fail(err.response))
+            );
           },
-          err => {
-            reject(common.fail(err.response));
-          }
+          err => reject(common.fail(err.response))
         );
       },
       error => {

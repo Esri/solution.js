@@ -132,14 +132,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       it("should ignore ignorable error", done => {
         const url =
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
-        fetchMock.post(url, {
-          error: {
-            code: 400,
-            messageCode: "CONT_0004",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        });
+        fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet
           .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
           .then(file => {
@@ -224,14 +217,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       it("should ignore ignorable error", done => {
         const url =
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
-        fetchMock.post(url, {
-          error: {
-            code: 400,
-            messageCode: "CONT_0004",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        });
+        fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
           .then(blob => {
@@ -243,14 +229,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       it("should return significant error", done => {
         const url =
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
-        fetchMock.post(url, {
-          error: {
-            code: 400,
-            messageCode: "CONT_0004",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        });
+        fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
           () => done.fail(),
           response => {
@@ -507,14 +486,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           itemId,
           MOCK_USER_SESSION
         );
-        fetchMock.post(url, {
-          error: {
-            code: 400,
-            messageCode: "CONT_0004",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        });
+        fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet
           .getItemMetadataAsFile(itemId, MOCK_USER_SESSION)
           .then((json: any) => {
@@ -779,14 +751,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
-        {
-          error: {
-            code: 400,
-            messageCode: "CONT_0001",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        }
+        mockItems.get400Failure()
       );
       restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
         () => done.fail(),
@@ -1335,14 +1300,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
-        {
-          error: {
-            code: 400,
-            messageCode: "CONT_0001",
-            message: "Item does not exist or is inaccessible.",
-            details: []
-          }
-        }
+        mockItems.get400Failure()
       );
       restHelpersGet
         ._getItemResourcesTranche(itemId, pagingParams, MOCK_USER_SESSION)

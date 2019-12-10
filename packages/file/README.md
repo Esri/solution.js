@@ -14,9 +14,9 @@
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
-# @esri/solution-simple-types
+# @esri/solution-file
 
-> Manages the creation and deployment of group item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
+> Manages the creation and deployment of  item types that contain files for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
 ### [API Reference](https://esri.github.io/solution.js/api/simple-types/)
 

@@ -181,6 +181,29 @@ export function getProps(obj: any, props: string[]): any {
 
 /**
  * Sets a deeply nested property of an object.
+ * Creates the full path if it does not exist.
+ *
+ * @param obj Object to set value of
+ * @param path Path into an object, e.g., "data.values.webmap", where "data" is a top-level property in obj
+ * @param value The value to set at the end of the path
+ */
+export function setCreateProp(obj: any, path: string, value: any) {
+  const pathParts: string[] = path.split(".");
+  pathParts.reduce((a: any, b: any, c: any) => {
+    if (c === pathParts.length - 1) {
+      a[b] = value;
+      return value;
+    } else {
+      if (!a[b]) {
+        a[b] = {};
+      }
+      return a[b];
+    }
+  }, obj);
+}
+
+/**
+ * Sets a deeply nested property of an object.
  * Does nothing if the full path does not exist.
  *
  * @param obj Object to set value of

@@ -226,6 +226,7 @@ export function addContentToSolution(
       getItemsPromise.push(createDef);
       createDef.then(progressTickCallback, progressTickCallback);
     });
+
     // tslint:disable-next-line: no-floating-promises
     Promise.all(getItemsPromise).then(() => {
       if (options.progressCallback) {

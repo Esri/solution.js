@@ -128,12 +128,14 @@ export function getItemInfo(
         if (itemResourceFiles.length === 0) {
           html += "<p><i>none</i>";
         } else {
+          html += "<ol>";
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
             const containerId = "resourceOutput" + i;
-            html += '<div id="' + containerId + '">';
+            html += '<li><div id="' + containerId + '">';
             html += await showBlob(itemResourceFiles[i], containerId);
-            html += "</div>";
+            html += "</div></li>";
           }
+          html += "</ol>";
         }
         html += "</p>";
 

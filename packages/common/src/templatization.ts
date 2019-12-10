@@ -155,7 +155,7 @@ export function createPlaceholderTemplate(
  *
  * @param templates A collection of AGO item templates to search
  * @param id AGO id of template to find
- * @return Id of matching template or -1 if not found
+ * @return Offset of of matching template or -1 if not found
  * @protected
  */
 export function findTemplateIndexInList(
@@ -179,8 +179,8 @@ export function findTemplateInList(
   templates: interfaces.IItemTemplate[],
   id: string
 ): interfaces.IItemTemplate | null {
-  const childId = findTemplateIndexInList(templates, id);
-  return childId >= 0 ? templates[childId] : null;
+  const iTemplate = findTemplateIndexInList(templates, id);
+  return iTemplate >= 0 ? templates[iTemplate] : null;
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {

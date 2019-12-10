@@ -1,9 +1,9 @@
 {
-  "name": "@esri/solution-creator",
+  "name": "@esri/solution-file",
   "version": "0.5.8",
-  "description": "Manages the creation of a Solution item for @esri/solution.js.",
+  "description": "Manages the creation and deployment of  item types that contain files for @esri/solution.js.",
   "main": "dist/node/index.js",
-  "unpkg": "dist/umd/creator.umd.min.js",
+  "unpkg": "dist/umd/file.umd.min.js",
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -13,11 +13,6 @@
   ],
   "devDependencies": {
     "@esri/solution-common": "^0.5.8",
-    "@esri/solution-feature-layer": "^0.5.8",
-    "@esri/solution-file": "^0.5.8",
-    "@esri/solution-group": "^0.5.8",
-    "@esri/solution-simple-types": "^0.5.8",
-    "@esri/solution-storymap": "^0.5.8",
     "rollup": "^1.22.0",
     "typescript": "^3.7.3"
   },

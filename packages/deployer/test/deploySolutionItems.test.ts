@@ -20,7 +20,7 @@
 
 import * as deploySolution from "../src/deploySolutionItems";
 import * as utils from "../../common/test/mocks/utils";
-import * as mockItems from "../../common/test/mocks/agolItems";
+import * as templates from "../../common/test/mocks/templates";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -34,7 +34,7 @@ describe("Module `deploySolutionItems`", () => {
         .deploySolutionItems(
           "",
           "",
-          [mockItems.getItemTemplate()],
+          [templates.getItemTemplate()],
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,

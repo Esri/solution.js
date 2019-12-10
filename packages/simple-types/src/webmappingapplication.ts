@@ -158,9 +158,7 @@ export function templatizeDatasources(
               ds.url = response;
               resolve(itemTemplate);
             },
-            e => {
-              reject(common.fail(e));
-            }
+            e => reject(common.fail(e))
           );
         } else {
           if (itemId) {
@@ -416,7 +414,10 @@ export function fineTuneCreatedItem(
           destinationAuthentication,
           templateDictionary.folderId
         )
-        .then(() => resolve(), () => resolve());
+        .then(
+          () => resolve(),
+          () => resolve()
+        );
     } else {
       // Otherwise, nothing extra needed
       resolve();

@@ -165,6 +165,10 @@ EB352600 00002600 00000700 00006373\
   return new Blob([bytes], { type: mimeType });
 }
 
+export function getSampleZipFile(name: string): File {
+  return new File([getSampleZip()], name, { type: "application/zip" });
+}
+
 export function imageAsDataUriToBlob(imageAsDataUri: string): Blob {
   return new Blob([imageAsDataUri], { type: "image/png" });
 }
