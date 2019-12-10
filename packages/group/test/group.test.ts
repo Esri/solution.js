@@ -413,7 +413,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             resourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
           );
@@ -613,7 +613,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
           );
