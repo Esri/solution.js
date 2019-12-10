@@ -249,6 +249,18 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
+          )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(0)
@@ -290,6 +302,18 @@ describe("Module `createItemTemplate`", () => {
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
@@ -356,6 +380,18 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
+          )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             groupContents
@@ -417,6 +453,18 @@ describe("Module `createItemTemplate`", () => {
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
           )
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
