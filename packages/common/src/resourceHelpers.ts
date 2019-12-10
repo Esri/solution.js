@@ -168,6 +168,7 @@ export function addThumbnailFromUrl(
  * @param filePaths List of item files' URLs and folder/filenames for storing the files
  * @param destinationItemId Id of item to receive copy of resource/metadata/thumbnail
  * @param destinationAuthentication Credentials for the request to the destination
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
@@ -470,6 +471,7 @@ export function generateResourceStorageFilename(
  * @param itemId Id of item
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
  * @param resourceFilenames List of resource filenames for an item, e.g., ["file1", "myFolder/file2"]
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @return List of item files' URLs and folder/filenames for storing the files
  */
 export function generateSourceFilePaths(
@@ -515,6 +517,7 @@ export function generateSourceFilePaths(
  *
  * @param sourcePortalSharingUrl Server/sharing
  * @param itemId Id of item
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @return URL string
  */
 export function generateSourceMetadataUrl(
@@ -558,6 +561,7 @@ export function generateSourceResourceUrl(
  * @param sourcePortalSharingUrl Server/sharing
  * @param itemId Id of item
  * @param thumbnailUrlPart Partial path to the thumbnail held in an item's JSON
+ * @param isGroup Boolean to indicate if the files are associated with a group or item
  * @return URL string
  */
 export function generateSourceThumbnailUrl(
