@@ -217,6 +217,16 @@ describe("Module `createItemTemplate`", () => {
           .then(
             response => {
               expect(response).toBeTruthy();
+              const createdTemplate = common.findTemplateInList(
+                existingTemplates,
+                itemId
+              );
+              expect(createdTemplate.properties.partial).not.toBeUndefined();
+              expect(createdTemplate.properties.partial).toBeTruthy();
+              expect(createdTemplate.properties.error).not.toBeUndefined();
+              expect(createdTemplate.properties.error).toEqual(
+                '{"success":false}'
+              );
               done();
             },
             () => done.fail()
