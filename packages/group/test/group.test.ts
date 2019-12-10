@@ -432,7 +432,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       });
 
       it("should resolve empty array if error", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
         itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
