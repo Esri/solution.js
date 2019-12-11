@@ -17,11 +17,12 @@
     "@esri/arcgis-rest-portal": "^2.6.1",
     "@esri/arcgis-rest-request": "^2.6.1",
     "@esri/arcgis-rest-service-admin": "^2.6.1",
+    "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
     "typescript": "^3.7.3"
   },
   "dependencies": {
-    "adlib": "^3.0.0",
+    "adlib": "^3.0.4",
     "tslib": "^1.10.0"
   },
   "scripts": {
