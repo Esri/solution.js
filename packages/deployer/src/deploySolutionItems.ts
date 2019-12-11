@@ -304,8 +304,8 @@ export function _createItemFromTemplateWhenReady(
         resolve("");
       } else {
         // Handle original Story Maps with next-gen Story Maps
-        if (templateType === "web mapping application") {
-          if (storyMap.isAStoryMap(template)) {
+        if (templateType === "Web Mapping Application") {
+          if (storyMap.isAStoryMap(template) && template.data) {
             itemHandler = storyMap;
           }
         }

@@ -74,19 +74,19 @@ export function convertItemToTemplate(
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
     let relatedPromise = Promise.resolve({} as common.IGetRelatedItemsResponse);
-    switch (itemInfo.type.toLowerCase()) {
-      case "dashboard":
-      case "feature service":
-      case "project package":
-      case "workforce project":
-      case "web map":
-      case "web mapping application":
+    switch (itemInfo.type) {
+      case "Dashboard":
+      case "Feature Service":
+      case "Project Package":
+      case "Workforce Project":
+      case "Web Map":
+      case "Web Mapping Application":
         dataPromise = common.getItemDataAsJson(
           itemTemplate.itemId,
           authentication
         );
         break;
-      case "form":
+      case "Form":
         dataPromise = common.getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
@@ -117,11 +117,11 @@ export function convertItemToTemplate(
 
         let wrapupPromise = Promise.resolve();
         let webappPromise = Promise.resolve(itemTemplate);
-        switch (itemInfo.type.toLowerCase()) {
-          case "dashboard":
+        switch (itemInfo.type) {
+          case "Dashboard":
             dashboard.convertItemToTemplate(itemTemplate, authentication);
             break;
-          case "form":
+          case "Form":
             itemTemplate.dependencies = itemTemplate.dependencies.concat(
               (relatedItemsResponse as any).relatedItems.map(
                 (relatedItem: { id: any }) => relatedItem.id
@@ -155,19 +155,21 @@ export function convertItemToTemplate(
               );
             }
             break;
-          case "web map":
+          case "Web Map":
             webappPromise = webmap.convertItemToTemplate(
               itemTemplate,
               authentication
             );
             break;
-          case "web mapping application":
-            webappPromise = webmappingapplication.convertItemToTemplate(
-              itemTemplate,
-              authentication
-            );
+          case "Web Mapping Application":
+            if (itemDataResponse) {
+              webappPromise = webmappingapplication.convertItemToTemplate(
+                itemTemplate,
+                authentication
+              );
+            }
             break;
-          case "workforce project":
+          case "Workforce Project":
             workforce.convertItemToTemplate(itemTemplate);
             break;
         }
@@ -210,7 +212,7 @@ export function createItemFromTemplate(
     // when we templatize field references for web applications we first stringify the components of the
     // web application that could contain field references and then serach for them with a regular expression.
     // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
-    if (template.type.toLowerCase() === "web mapping application") {
+    if (template.type === "Web Mapping Application" && template.data) {
       newItemTemplate = JSON.parse(
         common.replaceInTemplate(
           JSON.stringify(newItemTemplate),
@@ -237,7 +239,8 @@ export function createItemFromTemplate(
           // Set the appItemId manually to get around cases where the path was incorrectly set
           // in legacy deployments
           if (
-            newItemTemplate.type.toLowerCase() === "web mapping application"
+            newItemTemplate.type === "Web Mapping Application" &&
+            template.data
           ) {
             common.setProp(
               newItemTemplate,
@@ -261,25 +264,27 @@ export function createItemFromTemplate(
           );
 
           // The item's URL includes its id, so it needs to be updated
-          const updateUrlDef = common.updateItemURL(
-            createResponse.id,
-            common.replaceInTemplate(
-              newItemTemplate.item.url,
-              templateDictionary
-            ),
-            destinationAuthentication
-          );
+          const updateUrlDef = template.data
+            ? common.updateItemURL(
+                createResponse.id,
+                common.replaceInTemplate(
+                  newItemTemplate.item.url,
+                  templateDictionary
+                ),
+                destinationAuthentication
+              )
+            : Promise.resolve(undefined);
 
           // Check for extra processing for web mapping application
           let customProcDef: Promise<void>;
-          if (template.type.toLowerCase() === "web mapping application") {
+          if (template.type === "Web Mapping Application" && template.data) {
             customProcDef = webmappingapplication.fineTuneCreatedItem(
               template,
               newItemTemplate,
               templateDictionary,
               destinationAuthentication
             );
-          } else if (template.type.toLowerCase() === "workforce project") {
+          } else if (template.type === "Workforce Project") {
             customProcDef = workforce.fineTuneCreatedItem(
               newItemTemplate,
               destinationAuthentication
@@ -319,17 +324,17 @@ export function postProcessFieldReferences(
   datasourceInfos: common.IDatasourceInfo[],
   type: string
 ): common.IItemTemplate {
-  switch (type.toLowerCase()) {
-    case "web mapping application":
+  switch (type) {
+    case "Web Mapping Application":
       webmappingapplication.postProcessFieldReferences(
         solutionTemplate,
         datasourceInfos
       );
       break;
-    case "dashboard":
+    case "Dashboard":
       dashboard.postProcessFieldReferences(solutionTemplate, datasourceInfos);
       break;
-    case "web map":
+    case "Web Map":
       webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
       break;
   }
