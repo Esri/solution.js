@@ -46,11 +46,25 @@ describe("Module `storymap`", () => {
   });
 
   describe("createItemFromTemplate", () => {
-    xit("createItemFromTemplate", done => {
-      console.warn(
-        "========== TODO ========== storymap createItemFromTemplate"
+    it("createItemFromTemplate", done => {
+      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+        "StoryMap"
       );
-      done.fail();
+      storymap
+        .createItemFromTemplate(
+          templateSTO,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          () => {
+            return 0;
+          }
+        )
+        .then(response => {
+          expect(response).toEqual("");
+          done();
+        }, done.fail);
     });
   });
 

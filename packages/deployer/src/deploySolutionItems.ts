@@ -72,6 +72,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   ////////////////////////////////////////////////////////
   // App types
   Application: undefined,
+  Dashboard: simpleTypes,
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
@@ -98,7 +99,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Web Experience Template": undefined,
   "Web Experience": undefined,
   "Web Mapping Application": simpleTypes,
-  "Workforce Project": undefined,
+  "Workforce Project": simpleTypes,
 
   ////////////////////////////////////////////////////////
   // File types
@@ -118,7 +119,6 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Compact Tile Package": file,
   "CSV Collection": file,
   CSV: file,
-  Dashboard: file,
   "Deep Learning Package": file,
   "Desktop Add In": file,
   "Desktop Application Template": file,
@@ -304,8 +304,8 @@ export function _createItemFromTemplateWhenReady(
         resolve("");
       } else {
         // Handle original Story Maps with next-gen Story Maps
-        if (templateType === "web mapping application") {
-          if (storyMap.isAStoryMap(template)) {
+        if (templateType === "Web Mapping Application") {
+          if (storyMap.isAStoryMap(template) && template.data) {
             itemHandler = storyMap;
           }
         }

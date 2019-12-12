@@ -570,6 +570,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
+        // Related to issue: #56
+        // To add support for simple apps such as those that we create for "Getting to Know"
+        // A new app should be created in the users org but we will retain the source URL
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -598,9 +601,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+              "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
           },
-          data: undefined,
+          data: null,
           resources: [],
           dependencies: [],
           properties: {},
@@ -612,7 +615,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
               itemTemplate.itemId +
               "/data",
-            mockItems.get500Failure()
+            200
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
