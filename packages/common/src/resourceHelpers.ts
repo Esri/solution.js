@@ -150,9 +150,10 @@ export function addThumbnailFromUrl(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     restHelpersGet.getBlob(url, authentication).then(async blob => {
-      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(() => {
-        resolve();
-      }, reject);
+      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
+        resolve,
+        reject
+      );
     }, reject);
   });
 }
