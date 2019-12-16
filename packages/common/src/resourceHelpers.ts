@@ -148,16 +148,13 @@ export function addThumbnailFromUrl(
   authentication: UserSession,
   isGroup: boolean = false
 ): Promise<any> {
-  const updateOptions: any = {
-    authentication: authentication
-  };
-  updateOptions[isGroup ? "group" : "item"] = {
-    id: itemId,
-    thumbnailurl: url
-  };
-  return isGroup
-    ? portal.updateGroup(updateOptions)
-    : portal.updateItem(updateOptions);
+  return new Promise<any>((resolve, reject) => {
+    restHelpersGet.getBlob(url, authentication).then(async blob => {
+      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(() => {
+        resolve();
+      }, reject);
+    }, reject);
+  });
 }
 
 /**
