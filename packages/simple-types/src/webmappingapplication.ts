@@ -509,10 +509,11 @@ export function _templatizeIdPaths(
 }
 
 /**
- * Templatizes id properties for the paths provided
+ * Templatizes id property for the path provided
  *
  * @param itemTemplate The solution item template
- * @param paths A list of property paths that contain ids
+ * @param path A path to an id property
+ * @param id The base id to use when templatizing
  * @protected
  */
 export function _templatizeIdPath(
