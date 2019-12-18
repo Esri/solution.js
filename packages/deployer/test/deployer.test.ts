@@ -227,71 +227,12 @@ describe("Module `deploySolution`", () => {
               {
                 itemId: "map1234567890",
                 type: "Web Map",
-                key: "i1a2b3c4",
-                item: expectedMap,
-                dependencies: ["svc1234567890"],
-                estimatedDeploymentCostFactor: 4,
-                resources: [],
-                data: webMapData,
-                properties: null
+                dependencies: ["svc1234567890"]
               },
               {
                 itemId: "svc1234567890",
                 type: "Feature Service",
-                key: "i1a2b3c4",
-                item: {
-                  id: "svc1234567890",
-                  item: "svc1234567890",
-                  name: "Name of an AGOL item",
-                  title: "An AGOL item",
-                  type: "Feature Service",
-                  typeKeywords: ["JavaScript"],
-                  description: "Description of an AGOL item",
-                  tags: ["test"],
-                  snippet: "Snippet of an AGOL item",
-                  thumbnail:
-                    utils.ORG_URL +
-                    "/sharing/rest/content/items/svc1234567890/info/thumbnail/ago_downloaded.png",
-                  documentation: null,
-                  categories: [],
-                  contentStatus: null,
-                  spatialReference: null,
-                  extent: "-88.226,41.708,-88.009,41.844",
-                  accessInformation: "Esri, Inc.",
-                  licenseInfo: null,
-                  culture: "en-us",
-                  properties: null,
-                  url: featureServerUrl,
-                  proxyFilter: null,
-                  access: "public",
-                  appCategories: [],
-                  industries: [],
-                  languages: [],
-                  largeThumbnail: null,
-                  banner: null,
-                  screenshots: [],
-                  listed: false,
-                  commentsEnabled: false,
-                  groupDesignations: null
-                },
-                dependencies: [],
-                estimatedDeploymentCostFactor: 7,
-                resources: [],
-                data: {
-                  tables: [{ id: 1, popupInfo: { title: "table 1" } }],
-                  layers: [
-                    {
-                      id: 0,
-                      popupInfo: { title: "layer 0" },
-                      layerDefinition: { defaultVisibility: true }
-                    }
-                  ]
-                },
-                properties: {
-                  service: expectedService,
-                  layers: [layer],
-                  tables: [table]
-                }
+                dependencies: []
               }
             ]
           }

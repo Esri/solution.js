@@ -748,7 +748,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      it("should handle web mapping application", done => {
+      it("should handle web mapping application 1", done => {
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -800,7 +800,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             snippet: undefined
           } as any,
           data: {
-            appItemId: "{{myAppItemId.itemId}}",
+            appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             values: {
               webmap: "{{myMapId.itemId}}"
             },
@@ -1131,7 +1131,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
     });
 
-    it("should handle web mapping application", done => {
+    it("should handle web mapping application 2", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
@@ -1155,7 +1155,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         snippet: undefined
       };
       itemTemplate.data = {
-        appItemId: "{{myAppItemId.itemId}}",
+        appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         values: {
           webmap: "{{myMapId.itemId}}"
         },
