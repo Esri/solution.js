@@ -218,7 +218,9 @@ export function deploySolution(
                                         return dependId ? dependId : id;
                                       }
                                     );
-                                    return itemTemplate;
+                                    return _purgeTemplateProperties(
+                                      itemTemplate
+                                    );
                                   }
                                 );
 
@@ -273,6 +275,15 @@ export function deploySolution(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+export function _purgeTemplateProperties(itemTemplate: any): any {
+  const retainProps: string[] = ["itemId", "type", "dependencies"];
+  const deleteProps: string[] = Object.keys(itemTemplate).filter(
+    k => retainProps.indexOf(k) < 0
+  );
+  common.deleteProps(itemTemplate, deleteProps);
+  return itemTemplate;
+}
 
 export function _checkedReplaceAll(
   template: string,

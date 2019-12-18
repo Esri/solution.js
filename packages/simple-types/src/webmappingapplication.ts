@@ -55,10 +55,13 @@ export function convertItemToTemplate(
     _templatizeIdPaths(itemTemplate, [
       "data.map.itemId",
       "data.map.appProxy.mapItemId",
-      "data.appItemId",
       "data.values.webmap",
       "data.values.group"
     ]);
+
+    // force the appItemId to be pulled directly from the template item
+    // this is to address solution.js #124
+    _templatizeIdPath(itemTemplate, "data.appItemId", itemTemplate.itemId);
 
     setValues(
       itemTemplate,
@@ -392,32 +395,44 @@ export function fineTuneCreatedItem(
         "Web AppBuilder"
       ])
     ) {
-      common
-        .createItemWithData(
-          {
-            tags: originalTemplate.item.tags,
-            title: originalTemplate.item.title,
-            type: "Code Attachment",
-            typeKeywords: ["Code", "Javascript", "Web Mapping Application"],
-            relationshipType: "WMA2Code",
-            originItemId: newlyCreatedItem.itemId,
-            url:
-              common.replaceInTemplate(
-                common.PLACEHOLDER_SERVER_NAME,
-                templateDictionary
-              ) +
-              "/sharing/rest/content/items/" +
-              newlyCreatedItem.itemId +
-              "/package"
-          },
-          {},
-          destinationAuthentication,
-          templateDictionary.folderId
-        )
-        .then(
-          () => resolve(),
-          () => resolve()
-        );
+      // Update item so properties like appItemId can now be set now that we know the new apps ID
+      const updateOptions: common.IItemUpdate = {
+        id: newlyCreatedItem.itemId,
+        data: newlyCreatedItem.data
+      };
+      const updateDef = common.updateItem(
+        updateOptions,
+        destinationAuthentication
+      );
+
+      const itemInfo = {
+        tags: originalTemplate.item.tags,
+        title: originalTemplate.item.title,
+        type: "Code Attachment",
+        typeKeywords: ["Code", "Javascript", "Web Mapping Application"],
+        relationshipType: "WMA2Code",
+        originItemId: newlyCreatedItem.itemId,
+        url:
+          common.replaceInTemplate(
+            common.PLACEHOLDER_SERVER_NAME,
+            templateDictionary
+          ) +
+          "/sharing/rest/content/items/" +
+          newlyCreatedItem.itemId +
+          "/package"
+      };
+
+      const createItemWithDataDef = common.createItemWithData(
+        itemInfo,
+        {},
+        destinationAuthentication,
+        templateDictionary.folderId
+      );
+
+      Promise.all([updateDef, createItemWithDataDef]).then(
+        () => resolve(),
+        () => resolve()
+      );
     } else {
       // Otherwise, nothing extra needed
       resolve();
@@ -489,12 +504,24 @@ export function _templatizeIdPaths(
 ) {
   paths.forEach(path => {
     const id: any = common.getProp(itemTemplate, path);
-    common.setProp(
-      itemTemplate,
-      path,
-      common.templatizeTerm(id, id, ".itemId")
-    );
+    _templatizeIdPath(itemTemplate, path, id);
   });
+}
+
+/**
+ * Templatizes id property for the path provided
+ *
+ * @param itemTemplate The solution item template
+ * @param path A path to an id property
+ * @param id The base id to use when templatizing
+ * @protected
+ */
+export function _templatizeIdPath(
+  itemTemplate: common.IItemTemplate,
+  path: string,
+  id: string
+) {
+  common.setProp(itemTemplate, path, common.templatizeTerm(id, id, ".itemId"));
 }
 
 /**
