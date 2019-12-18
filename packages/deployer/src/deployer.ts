@@ -282,8 +282,6 @@ export function _purgeTemplateProperties(itemTemplate: any): any {
     k => retainProps.indexOf(k) < 0
   );
   common.deleteProps(itemTemplate, deleteProps);
-  // Until 8.1 set item to be empty object
-  itemTemplate.item = {};
   return itemTemplate;
 }
 
