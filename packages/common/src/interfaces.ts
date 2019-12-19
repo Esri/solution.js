@@ -74,6 +74,20 @@ export interface ICreateSolutionOptions {
 }
 
 /**
+ * Options for deploying a solution item and for creating the solution index item representing the deployment
+ */
+export interface IDeploySolutionOptions {
+  title?: string; // default: copied from solution item
+  snippet?: string; // default: copied from solution item
+  description?: string; // default: copied from solution item
+  tags?: string[]; // default: copied from solution item
+  thumbnailUrl?: string; // default: copied from solution item
+  templateDictionary?: any;
+  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
+  progressCallback?: (percentDone: number) => void;
+}
+
+/**
  * Storage of dependencies.
  */
 export interface IDependency {
@@ -202,7 +216,7 @@ export interface IItemTemplateConversions {
 /**
  * Structure for mapping from item type to module with type-specific template-handling code
  */
-type moduleHandler = IItemTemplateConversions | undefined;
+export type moduleHandler = IItemTemplateConversions | undefined | null;
 export interface IItemTypeModuleMap {
   [itemType: string]: moduleHandler;
 }
@@ -265,24 +279,6 @@ export interface IResource {
   resource: string;
   created: number;
   size: number;
-}
-
-/**
- * Summary of a solution item.
- */
-export interface ISolutionInfoCard {
-  id: string;
-  title: string;
-  snippet: string;
-  description: string;
-  url: string;
-  thumbnailUrl: string;
-  tryitUrl: string;
-  created: number;
-  tags: string[];
-  categories: string;
-  deployCommonId: string;
-  deployVersion: number;
 }
 
 /**
