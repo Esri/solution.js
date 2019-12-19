@@ -26,47 +26,63 @@ import * as deployItems from "./deploySolutionItems";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function deploySolution(
-  itemInfoCard: common.ISolutionInfoCard,
-  templateDictionary: any,
-  portalSubset: common.IPortalSubset,
-  destinationAuthentication: common.UserSession,
-  progressCallback: (percentDone: number) => void
+  templateSolutionId: string,
+  authentication: common.UserSession,
+  options?: common.IDeploySolutionOptions
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
-    const sourceId = itemInfoCard.id;
     let percentDone = 1; // Let the caller know that we've started
-    progressCallback(percentDone);
+    if (options?.progressCallback) {
+      options.progressCallback(percentDone); // Let the caller know that we've started
+    }
+    const templateDictionary = options?.templateDictionary ?? {};
 
-    // Fetch solution item's data info (partial item info is supplied via function's parameters)
+    // Fetch solution item's info
+    const solutionItemBaseDef = common.getItemBase(
+      templateSolutionId,
+      authentication
+    );
     const solutionItemDataDef = common.getItemDataAsJson(
-      sourceId,
-      destinationAuthentication
+      templateSolutionId,
+      authentication
     );
 
     // Determine if we are deploying to portal
-    const portalDef = common.getPortal(
-      portalSubset.id,
-      destinationAuthentication
-    );
+    const portalDef = common.getPortal("", authentication);
 
-    const userDef = common.getUser(destinationAuthentication);
-    const foldersDef = common.getUserFolders(destinationAuthentication);
+    const userDef = common.getUser(authentication);
+    const foldersDef = common.getUserFolders(authentication);
 
     // Await completion of async actions
     Promise.all([
       // TODO IE11 does not support Promise
+      solutionItemBaseDef,
       solutionItemDataDef,
       portalDef,
       userDef,
       foldersDef
     ]).then(
       responses => {
-        const item = { ...itemInfoCard } as any;
-        delete item.deployCommonId;
-        delete item.deployVersion;
-        let itemData = responses[0] as common.ISolutionItemData;
+        const [
+          itemBase,
+          itemData,
+          portalResponse,
+          userResponse,
+          foldersResponse
+        ] = responses;
 
-        const portalResponse = responses[1];
+        const deployOptions: common.IDeploySolutionOptions = options ?? {};
+        deployOptions.title = deployOptions.title ?? itemBase.title;
+        deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
+        deployOptions.description =
+          deployOptions.description ?? itemBase.description;
+        deployOptions.tags = deployOptions.tags ?? itemBase.tags; // deployOptions.thumbnail needs to be a full URL
+
+        delete itemBase.deployCommonId;
+        delete itemBase.deployVersion;
+        // let itemData = responses[0] as common.ISolutionItemData;
+
+        // const portalResponse = responses[1];
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
           templateDictionary.organization || {},
@@ -82,21 +98,23 @@ export function deploySolution(
         templateDictionary.portalBaseUrl =
           urlKey && customBaseUrl
             ? `${scheme}://${urlKey}.${customBaseUrl}`
-            : portalSubset.portalUrl;
+            : authentication.portal;
 
-        templateDictionary.user = responses[2];
-        templateDictionary.user.folders = responses[3];
+        // templateDictionary.user = responses[2];
+        templateDictionary.user = userResponse;
+        // templateDictionary.user.folders = responses[3];
+        templateDictionary.user.folders = foldersResponse;
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
         // suffix if the folder exists, e.g.,
-        //   * Manage Right of Way Activities
-        //   * Manage Right of Way Activities 1
-        //   * Manage Right of Way Activities 2
+        //  * Manage Right of Way Activities
+        //  * Manage Right of Way Activities 1
+        //  * Manage Right of Way Activities 2
         common
           .createUniqueFolder(
-            itemInfoCard.title,
+            itemBase.title,
             templateDictionary,
-            destinationAuthentication
+            authentication
           )
           .then(
             folderResponse => {
@@ -107,7 +125,7 @@ export function deploySolution(
                   portalExtent,
                   { wkid: 4326 },
                   portalResponse.helperServices.geometry.url,
-                  destinationAuthentication
+                  authentication
                 )
                 .then(
                   function(wgs84Extent) {
@@ -125,9 +143,9 @@ export function deploySolution(
                     const progressPercentStep = 100 / totalEstimatedCost;
                     console.log(
                       "Deploying solution " +
-                        item.title +
+                        itemBase.title +
                         " (" +
-                        item.id +
+                        itemBase.id +
                         ") into folder " +
                         folderResponse.folder.title +
                         " (" +
@@ -139,10 +157,14 @@ export function deploySolution(
                       totalEstimatedCost.toString(),
                       progressPercentStep.toFixed(2).toString()
                     );
-                    progressCallback((percentDone += 2 * progressPercentStep)); // for data fetch and folder creation
+                    if (deployOptions.progressCallback) {
+                      deployOptions.progressCallback(
+                        (percentDone += 2 * progressPercentStep)
+                      ); // for data fetch and folder creation
+                    }
 
                     const updateItemInfo = {
-                      ...item,
+                      ...itemBase,
                       type: "Solution",
                       typeKeywords: ["Solution"]
                     };
@@ -150,57 +172,65 @@ export function deploySolution(
                       .createItemWithData(
                         updateItemInfo,
                         {},
-                        destinationAuthentication,
+                        authentication,
                         templateDictionary.folderId
                       )
                       .then(
                         updateResponse => {
-                          const oldID: string = sourceId;
+                          const oldID: string = templateSolutionId;
                           const newID: string = updateResponse.id;
                           console.log("Solution " + newID + " created");
                           templateDictionary.solutionItemId = newID;
-                          item.id = newID;
-                          item.thumbnailUrl = _checkedReplaceAll(
-                            item.thumbnailUrl,
+                          itemBase.id = newID;
+                          itemBase.thumbnailUrl = _checkedReplaceAll(
+                            itemBase.thumbnailUrl,
                             oldID,
                             newID
                           );
-                          item.tryitUrl = _checkedReplaceAll(
-                            item.tryitUrl,
+                          itemBase.tryitUrl = _checkedReplaceAll(
+                            itemBase.tryitUrl,
                             oldID,
                             newID
                           );
-                          item.url = _checkedReplaceAll(item.url, oldID, newID);
+                          itemBase.url = _checkedReplaceAll(
+                            itemBase.url,
+                            oldID,
+                            newID
+                          );
 
                           // Handle the contained item templates
                           deployItems
                             .deploySolutionItems(
-                              portalSubset.restUrl,
-                              sourceId,
+                              authentication.portal,
+                              templateSolutionId,
                               itemData.templates,
-                              destinationAuthentication,
+                              authentication,
                               templateDictionary,
-                              destinationAuthentication,
+                              authentication,
                               () => {
-                                progressCallback(
-                                  (percentDone += progressPercentStep)
-                                ); // progress tick callback from deployItems
+                                if (deployOptions.progressCallback) {
+                                  deployOptions.progressCallback(
+                                    (percentDone += progressPercentStep)
+                                  ); // progress tick callback from deployItems
+                                }
                               }
                             )
                             .then(
                               clonedSolutionItemIds => {
-                                progressCallback(
-                                  (percentDone += progressPercentStep)
-                                ); // for solution item creation
+                                if (deployOptions.progressCallback) {
+                                  deployOptions.progressCallback(
+                                    (percentDone += progressPercentStep)
+                                  ); // for solution item creation
+                                }
 
                                 // Update solution item's data JSON using template dictionary, and then update the
                                 // itemId & dependencies in each item template
-                                itemData = common.replaceInTemplate(
+                                itemBase.data = common.replaceInTemplate(
                                   itemData,
                                   templateDictionary
                                 );
                                 itemData.templates = itemData.templates.map(
-                                  itemTemplate => {
+                                  (itemTemplate: common.IItemTemplate) => {
                                     // Update ids present in template dictionary
                                     const itemId = common.getProp(
                                       templateDictionary,
@@ -225,20 +255,24 @@ export function deploySolution(
                                 );
 
                                 // Create solution item using internal representation & and the updated data JSON
-                                item.data = itemData;
-                                item.typeKeywords = ["Solution", "Deployed"];
+                                itemBase.typeKeywords = [
+                                  "Solution",
+                                  "Deployed"
+                                ];
                                 common
                                   .updateItem(
-                                    item,
-                                    destinationAuthentication,
+                                    itemBase,
+                                    authentication,
                                     templateDictionary.folderId
                                   )
                                   .then(
                                     () => {
-                                      progressCallback(100);
-                                      delete item.data;
+                                      if (deployOptions.progressCallback) {
+                                        deployOptions.progressCallback(100);
+                                      }
+                                      delete itemBase.data;
                                       resolve({
-                                        item: item,
+                                        item: itemBase,
                                         data: itemData
                                       });
                                     },

@@ -362,14 +362,12 @@ describe("Module `deploySolution`", () => {
           }
         };
 
+        const options: common.IDeploySolutionOptions = {
+          templateDictionary: templateDictionary,
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            templateDictionary,
-            portalSubset,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             function(actual) {
               // not concerened with the def here
@@ -440,14 +438,11 @@ describe("Module `deploySolution`", () => {
             mockItems.get200Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -498,14 +493,11 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -567,14 +559,11 @@ describe("Module `deploySolution`", () => {
           )
           .post(geometryServer + "/project", mockItems.get400Failure());
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -726,14 +715,11 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -880,14 +866,11 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -942,14 +925,11 @@ describe("Module `deploySolution`", () => {
             utils.UTILITY_SERVER_INFO
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
