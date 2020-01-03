@@ -12,7 +12,7 @@
     "@esri/solution-common": "^0.5.8",
     "@types/requirejs": "^2.1.31",
     "lerna": "^3.19.0",
-    "typescript": "^3.7.2"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "es6-promise": "^4.2.1",

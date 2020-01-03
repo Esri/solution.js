@@ -19,7 +19,7 @@
     "@esri/solution-simple-types": "^0.5.8",
     "@esri/solution-storymap": "^0.5.8",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "tslib": "^1.10.0"
