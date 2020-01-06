@@ -15,7 +15,6 @@
  */
 // @esri/solution-common getItemInfo TypeScript example
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as solutionCommon from "@esri/solution-common";
 
 export function getItemInfo(
@@ -109,7 +108,7 @@ export function getItemInfo(
           '<div style="width:48%;display:inline-block;">Item</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Data</div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
+          '<div style="width:48%;display:inline-block;"><textarea rows="55" style="width:99%;font-size:x-small">' +
           JSON.stringify(itemBase, null, 2) +
           "</textarea></div>" +
           '<div style="width:2%;display:inline-block;"></div>' +
@@ -198,7 +197,7 @@ export function getItemInfo(
  */
 function textAreaHtml(text: any): string {
   return (
-    '<textarea rows="10" style="width:99%;font-size:x-small">' +
+    '<textarea rows="55" style="width:99%;font-size:x-small">' +
     text +
     "</textarea>"
   );

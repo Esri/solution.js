@@ -19,7 +19,7 @@
     "@esri/arcgis-rest-service-admin": "^2.6.1",
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
     "adlib": "^3.0.4",

@@ -57,11 +57,4 @@ describe("Module `deploySolutionItems`", () => {
       done.fail();
     });
   });
-
-  describe("_topologicallySortItems", () => {
-    xit("_topologicallySortItems", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
 });

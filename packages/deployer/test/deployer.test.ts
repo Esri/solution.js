@@ -53,7 +53,6 @@ describe("Module `deploySolution`", () => {
         ]);
 
         const templateDictionary: any = {};
-        const portalSubset: any = utils.PORTAL_SUBSET;
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const featureServerUrl: string =
@@ -97,7 +96,6 @@ describe("Module `deploySolution`", () => {
           true
         );
 
-        const expectedService: any = mockItems.getAGOLService([layer], [table]);
         const expectedMap: any = mockItems.getTrimmedAGOLItem(
           mockItems.getAGOLItem(
             "Web Map",
@@ -109,19 +107,29 @@ describe("Module `deploySolution`", () => {
           utils.ORG_URL +
           "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
-        const webMapData: any = mockItems.getAGOLItemData("Web Map");
-
         const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -207,12 +215,10 @@ describe("Module `deploySolution`", () => {
 
         const expected: any = {
           item: {
-            commentsEnabled: false,
             id: "map1234567890",
-            itemType: "text",
+            type: "Solution",
             name: null,
             title: "title",
-            type: "Solution",
             typeKeywords: ["Solution", "Deployed"],
             url: "https://www.arcgis.com/home/item.html?id=map1234567890",
             thumbnailUrl: undefined,
@@ -362,21 +368,25 @@ describe("Module `deploySolution`", () => {
           }
         };
 
+        const options: common.IDeploySolutionOptions = {
+          templateDictionary: templateDictionary
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            templateDictionary,
-            portalSubset,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             function(actual) {
               // not concerened with the def here
               templateDictionary["svc1234567890"].def = {};
               expect(templateDictionary).toEqual(expectedTemplate);
               expect(actual).toEqual(expected);
-              done();
+
+              // Repeat with progress callback
+              options.progressCallback = utils.PROGRESS_CALLBACK;
+              deployer
+                .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
+                .then(done, e => {
+                  done.fail(e);
+                });
             },
             e => {
               done.fail(e);
@@ -395,12 +405,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -440,22 +462,14 @@ describe("Module `deploySolution`", () => {
             mockItems.get200Failure()
           );
 
-        deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
-          .then(
-            () => {
-              done.fail();
-            },
-            () => {
-              done();
-            }
-          );
+        deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
       });
 
       it("can handle error on get solution item", done => {
@@ -470,6 +484,11 @@ describe("Module `deploySolution`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl + "/generateToken",
             utils.getTokenResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -490,6 +509,13 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
@@ -498,22 +524,14 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
-        deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
-          .then(
-            () => {
-              done.fail();
-            },
-            () => {
-              done();
-            }
-          );
+        deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
       });
 
       it("can handle error on project", done => {
@@ -527,12 +545,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -567,14 +597,11 @@ describe("Module `deploySolution`", () => {
           )
           .post(geometryServer + "/project", mockItems.get400Failure());
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -633,16 +660,29 @@ describe("Module `deploySolution`", () => {
         );
 
         const portalResponse: any = utils.getPortalResponse();
+        portalResponse.urlKey = null;
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -726,14 +766,18 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          title: "a title",
+          snippet: "a snippet",
+          description: "a description",
+          tags: ["a tag"],
+          thumbnailUrl: "a thumbnailUrl",
+          templateDictionary: null,
+          additionalTypeKeywords: null,
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -796,12 +840,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -880,14 +936,11 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();
@@ -907,12 +960,24 @@ describe("Module `deploySolution`", () => {
         const portalResponse: any = utils.getPortalResponse();
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -942,14 +1007,11 @@ describe("Module `deploySolution`", () => {
             utils.UTILITY_SERVER_INFO
           );
 
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.PROGRESS_CALLBACK
+        };
         deployer
-          .deploySolution(
-            itemInfo.item,
-            {},
-            utils.PORTAL_SUBSET,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             () => {
               done.fail();

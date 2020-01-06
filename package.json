@@ -3,6 +3,8 @@
   "version": "0.5.8",
   "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
     "@semantic-release/commit-analyzer": "^6.3.1",
     "@types/fetch-mock": "^7.3.1",
     "@types/jasmine": "^3.4.0",
@@ -14,6 +16,7 @@
     "codecov": "^3.3.0",
     "commitizen": "^3.1.1",
     "concurrently": "^3.5.1",
+    "core-js": "^3.6.1",
     "coveralls": "^3.0.6",
     "cpx": "^1.5.0",
     "cross-spawn": "^5.1.0",
@@ -48,12 +51,12 @@
     "resolve": "^1.5.0",
     "rimraf": "^2.6.2",
     "rollup": "^1.26.0",
-    "rollup-plugin-commonjs": "^9.3.4",
+    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-filesize": "^6.1.1",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^3.0.3",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-terser": "^4.0.4",
-    "rollup-plugin-typescript2": "^0.24.2",
+    "rollup-plugin-typescript2": "^0.25.3",
     "rollup-plugin-uglify": "^3.0.0",
     "semantic-release": "^15.13.28",
     "shelljs": "^0.7.8",
@@ -65,7 +68,8 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4",
+    "uuid": "^3.3.3"
   },
   "dependencies": {
     "es6-promise": "^4.2.1",

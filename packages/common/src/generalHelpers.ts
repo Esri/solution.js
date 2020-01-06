@@ -112,11 +112,23 @@ export function cloneObject(obj: { [index: string]: any }): any {
  * Deletes a property from an object.
  *
  * @param obj Object with property to delete
- * @param prop Property on object that should be deleted
+ * @param path Path into an object to property, e.g., "data.values.webmap", where "data" is a top-level property
+ *             in obj
  */
-export function deleteProp(obj: any, prop: string): void {
-  if (obj && obj.hasOwnProperty(prop)) {
-    delete obj[prop];
+export function deleteProp(obj: any, path: string): void {
+  const pathParts: string[] = path.split(".");
+
+  if (Array.isArray(obj)) {
+    obj.forEach((child: any) => deleteProp(child, path));
+  } else {
+    const subpath = pathParts.slice(1).join(".");
+    if (typeof obj[pathParts[0]] !== "undefined") {
+      if (pathParts.length === 1) {
+        delete obj[path];
+      } else {
+        deleteProp(obj[pathParts[0]], subpath);
+      }
+    }
   }
 }
 

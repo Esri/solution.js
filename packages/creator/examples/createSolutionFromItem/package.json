@@ -1,10 +1,15 @@
 {
   "name": "createSolutionFromItem",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Example use of @esri/solution-creator to create a solution item from an AGO item.",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
+    "@types/requirejs": "^2.1.31",
+    "lerna": "^3.19.0",
+    "typescript": "^3.7.4"
+  },
+  "dependencies": {
     "@esri/arcgis-rest-auth": "^2.6.1",
     "@esri/arcgis-rest-portal": "^2.6.1",
     "@esri/arcgis-rest-request": "^2.6.1",
@@ -15,11 +20,7 @@
     "@esri/solution-file": "^0.5.8",
     "@esri/solution-group": "^0.5.8",
     "@esri/solution-simple-types": "^0.5.8",
-    "@types/requirejs": "^2.1.31",
-    "lerna": "^3.19.0",
-    "typescript": "^3.7.2"
-  },
-  "dependencies": {
+    "@esri/solution-storymap": "^0.5.8",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "tslib": "^1.10.0"
