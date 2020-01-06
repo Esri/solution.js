@@ -369,8 +369,7 @@ describe("Module `deploySolution`", () => {
         };
 
         const options: common.IDeploySolutionOptions = {
-          templateDictionary: templateDictionary,
-          progressCallback: utils.PROGRESS_CALLBACK
+          templateDictionary: templateDictionary
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -380,7 +379,14 @@ describe("Module `deploySolution`", () => {
               templateDictionary["svc1234567890"].def = {};
               expect(templateDictionary).toEqual(expectedTemplate);
               expect(actual).toEqual(expected);
-              done();
+
+              // Repeat with progress callback
+              options.progressCallback = utils.PROGRESS_CALLBACK;
+              deployer
+                .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
+                .then(done, e => {
+                  done.fail(e);
+                });
             },
             e => {
               done.fail(e);
@@ -456,19 +462,14 @@ describe("Module `deploySolution`", () => {
             mockItems.get200Failure()
           );
 
-        const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
-        };
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-          .then(
-            () => {
-              done.fail();
-            },
-            () => {
-              done();
-            }
-          );
+        deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
       });
 
       it("can handle error on get solution item", done => {
@@ -523,19 +524,14 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
-        const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
-        };
-        deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
-          .then(
-            () => {
-              done.fail();
-            },
-            () => {
-              done();
-            }
-          );
+        deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
+          () => {
+            done.fail();
+          },
+          () => {
+            done();
+          }
+        );
       });
 
       it("can handle error on project", done => {
@@ -664,6 +660,7 @@ describe("Module `deploySolution`", () => {
         );
 
         const portalResponse: any = utils.getPortalResponse();
+        portalResponse.urlKey = null;
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
@@ -770,6 +767,13 @@ describe("Module `deploySolution`", () => {
           );
 
         const options: common.IDeploySolutionOptions = {
+          title: "a title",
+          snippet: "a snippet",
+          description: "a description",
+          tags: ["a tag"],
+          thumbnailUrl: "a thumbnailUrl",
+          templateDictionary: null,
+          additionalTypeKeywords: null,
           progressCallback: utils.PROGRESS_CALLBACK
         };
         deployer

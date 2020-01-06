@@ -86,7 +86,9 @@ export function deploySolution(
           portalResponse
         );
 
-        const scheme: string = portalResponse.allSSL ? "https" : "http";
+        // As of Spring 2020, only HTTPS (see
+        // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
+        const scheme: string = "https"; // portalResponse.allSSL ? "https" : "http";
         const urlKey: string = common.getProp(portalResponse, "urlKey");
         const customBaseUrl: string = common.getProp(
           portalResponse,
