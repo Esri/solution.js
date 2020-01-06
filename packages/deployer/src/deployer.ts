@@ -78,11 +78,8 @@ export function deploySolution(
           deployOptions.description ?? itemBase.description;
         deployOptions.tags = deployOptions.tags ?? itemBase.tags; // deployOptions.thumbnail needs to be a full URL
 
-        delete itemBase.deployCommonId;
-        delete itemBase.deployVersion;
-        // let itemData = responses[0] as common.ISolutionItemData;
+        _purgeItemProperties(itemBase);
 
-        // const portalResponse = responses[1];
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
           templateDictionary.organization || {},
@@ -100,9 +97,7 @@ export function deploySolution(
             ? `${scheme}://${urlKey}.${customBaseUrl}`
             : authentication.portal;
 
-        // templateDictionary.user = responses[2];
         templateDictionary.user = userResponse;
-        // templateDictionary.user.folders = responses[3];
         templateDictionary.user.folders = foldersResponse;
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
@@ -163,11 +158,13 @@ export function deploySolution(
                       ); // for data fetch and folder creation
                     }
 
+                    // Create a deployed Solution item
                     const updateItemInfo = {
                       ...itemBase,
                       type: "Solution",
                       typeKeywords: ["Solution"]
                     };
+
                     common
                       .createItemWithData(
                         updateItemInfo,
@@ -309,6 +306,43 @@ export function deploySolution(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+export function _purgeItemProperties(itemTemplate: any): any {
+  const retainProps: string[] = [
+    "access",
+    "accessInformation",
+    "appCategories",
+    "banner",
+    "categories",
+    "culture",
+    "description",
+    "documentation",
+    "extent",
+    "groupDesignations",
+    "industries",
+    "languages",
+    "largeThumbnail",
+    "licenseInfo",
+    "listed",
+    "name",
+    "properties",
+    "proxyFilter",
+    "screenshots",
+    "snippet",
+    "spatialReference",
+    "tags",
+    "thumbnail",
+    "title",
+    "type",
+    "typeKeywords",
+    "url"
+  ];
+  const deleteProps: string[] = Object.keys(itemTemplate).filter(
+    k => retainProps.indexOf(k) < 0
+  );
+  common.deleteProps(itemTemplate, deleteProps);
+  return itemTemplate;
+}
 
 export function _purgeTemplateProperties(itemTemplate: any): any {
   const retainProps: string[] = ["itemId", "type", "dependencies"];
