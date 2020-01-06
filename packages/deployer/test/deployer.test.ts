@@ -53,7 +53,6 @@ describe("Module `deploySolution`", () => {
         ]);
 
         const templateDictionary: any = {};
-        const portalSubset: any = utils.PORTAL_SUBSET;
         const featureServerAdminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const featureServerUrl: string =
@@ -97,7 +96,6 @@ describe("Module `deploySolution`", () => {
           true
         );
 
-        const expectedService: any = mockItems.getAGOLService([layer], [table]);
         const expectedMap: any = mockItems.getTrimmedAGOLItem(
           mockItems.getAGOLItem(
             "Web Map",
@@ -109,19 +107,29 @@ describe("Module `deploySolution`", () => {
           utils.ORG_URL +
           "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
-        const webMapData: any = mockItems.getAGOLItemData("Web Map");
-
         const portalResponse: any = utils.getPortalResponse();
         const geometryServer: string =
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -207,12 +215,10 @@ describe("Module `deploySolution`", () => {
 
         const expected: any = {
           item: {
-            commentsEnabled: false,
             id: "map1234567890",
-            itemType: "text",
+            type: "Solution",
             name: null,
             title: "title",
-            type: "Solution",
             typeKeywords: ["Solution", "Deployed"],
             url: "https://www.arcgis.com/home/item.html?id=map1234567890",
             thumbnailUrl: undefined,
@@ -393,12 +399,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -468,6 +486,11 @@ describe("Module `deploySolution`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
             portalResponse
           )
@@ -484,6 +507,13 @@ describe("Module `deploySolution`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -519,12 +549,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -626,12 +668,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -782,12 +836,24 @@ describe("Module `deploySolution`", () => {
           portalResponse.helperServices.geometry.url;
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -890,12 +956,24 @@ describe("Module `deploySolution`", () => {
         const portalResponse: any = utils.getPortalResponse();
 
         fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "?f=json&token=fake-token",
+            itemInfo.item
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
+            portalResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
