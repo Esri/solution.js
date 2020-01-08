@@ -108,6 +108,43 @@ export function cloneObject(obj: { [index: string]: any }): any {
   return clone;
 }
 
+export function deleteItemProps(itemTemplate: any): any {
+  const propsToRetain: string[] = [
+    "access",
+    "accessInformation",
+    "appCategories",
+    "banner",
+    "categories",
+    "culture",
+    "description",
+    "documentation",
+    "extent",
+    "groupDesignations",
+    "industries",
+    "languages",
+    "largeThumbnail",
+    "licenseInfo",
+    "listed",
+    "name",
+    "properties",
+    "proxyFilter",
+    "screenshots",
+    "snippet",
+    "spatialReference",
+    "tags",
+    "thumbnail",
+    "title",
+    "type",
+    "typeKeywords",
+    "url"
+  ];
+  const propsToDelete: string[] = Object.keys(itemTemplate).filter(
+    k => propsToRetain.indexOf(k) < 0
+  );
+  deleteProps(itemTemplate, propsToDelete);
+  return itemTemplate;
+}
+
 /**
  * Deletes a property from an object.
  *

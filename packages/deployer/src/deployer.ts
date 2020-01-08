@@ -78,7 +78,7 @@ export function deploySolution(
           deployOptions.description ?? itemBase.description;
         deployOptions.tags = deployOptions.tags ?? itemBase.tags; // deployOptions.thumbnail needs to be a full URL
 
-        _purgeItemProperties(itemBase);
+        common.deleteItemProps(itemBase);
 
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
@@ -308,43 +308,6 @@ export function deploySolution(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
-
-export function _purgeItemProperties(itemTemplate: any): any {
-  const retainProps: string[] = [
-    "access",
-    "accessInformation",
-    "appCategories",
-    "banner",
-    "categories",
-    "culture",
-    "description",
-    "documentation",
-    "extent",
-    "groupDesignations",
-    "industries",
-    "languages",
-    "largeThumbnail",
-    "licenseInfo",
-    "listed",
-    "name",
-    "properties",
-    "proxyFilter",
-    "screenshots",
-    "snippet",
-    "spatialReference",
-    "tags",
-    "thumbnail",
-    "title",
-    "type",
-    "typeKeywords",
-    "url"
-  ];
-  const deleteProps: string[] = Object.keys(itemTemplate).filter(
-    k => retainProps.indexOf(k) < 0
-  );
-  common.deleteProps(itemTemplate, deleteProps);
-  return itemTemplate;
-}
 
 export function _purgeTemplateProperties(itemTemplate: any): any {
   const retainProps: string[] = ["itemId", "type", "dependencies"];
