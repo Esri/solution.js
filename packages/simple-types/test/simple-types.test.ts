@@ -268,6 +268,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "map1234567890_info_thumbnail/banner.png"
           ],
           dependencies: [],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -374,6 +375,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: ["abc", "def", "ghi"],
           resources: [],
           dependencies: [],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -442,6 +444,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: null, // forms don't store info here
           resources: ["frm1234567890_info_form/formData.zip"],
           dependencies: ["srv1234567890"],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -606,6 +609,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: null,
           resources: [],
           dependencies: [],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -814,6 +818,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           },
           resources: [] as any[],
           dependencies: ["myMapId"],
+          circularDependencies: [] as string[],
           properties: {} as any,
           estimatedDeploymentCostFactor: 2
         };
@@ -1387,5 +1392,59 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
       expect(actual).toEqual(expected);
     });
+  });
+
+  describe("postProcessCircularDependencies", () => {
+    if (typeof window !== "undefined") {
+      it("update item", done => {
+        const template: any = {
+          dependencies: ["ABC123", "A"],
+          type: "Workforce Project",
+          itemId: "123ABC"
+        };
+
+        const templateDictionary: any = {
+          ABC123: {
+            itemId: "NEWABC123"
+          }
+        };
+
+        const itemData: any = {
+          groupId: "{{ABC123.itemId}}"
+        };
+
+        const expectedBody: string =
+          "f=json&text=%7B%22groupId%22%3A%22NEWABC123%22%7D&id=123ABC&token=fake-token";
+
+        const updateUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
+            itemData
+          )
+          .post(updateUrl, '{"success":true}');
+
+        simpleTypes
+          .postProcessCircularDependencies(
+            template,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(() => {
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(fetchBody).toEqual(expectedBody);
+            done();
+          }, done.fail);
+      });
+    }
   });
 });

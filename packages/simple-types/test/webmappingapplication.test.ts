@@ -76,6 +76,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -98,6 +99,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -121,6 +123,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { group: "myGroupId" } },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -132,6 +135,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { group: "{{myGroupId.itemId}}" } },
         resources: [] as any[],
         dependencies: ["myGroupId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -162,6 +166,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         } as any,
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -180,6 +185,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         } as any,
         resources: [] as any[],
         dependencies: [] as any[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -230,6 +236,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -265,6 +272,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -326,6 +334,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -378,6 +387,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -412,6 +422,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -480,6 +491,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -538,6 +550,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -635,6 +648,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -714,6 +728,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -790,6 +805,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -865,6 +881,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };

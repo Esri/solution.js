@@ -20,7 +20,6 @@
 
 import * as group from "../src/group";
 import * as utils from "../../common/test/mocks/utils";
-import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
@@ -82,6 +81,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         data: {},
         resources: [],
         dependencies: [],
+        circularDependencies: [],
         properties: {},
         estimatedDeploymentCostFactor: 2
       };
@@ -206,6 +206,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         data: {},
         resources: [],
         dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+        circularDependencies: [],
         properties: {},
         estimatedDeploymentCostFactor: 2
       };
@@ -315,6 +316,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           ]
         };
 
+        resourcesResponse.resources.push({ resource: "name.png" });
+
         const expectedTemplate: any = {
           itemId: "grp1234567890",
           type: "Group",
@@ -393,6 +396,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           data: {},
           resources: [],
           dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -413,6 +417,11 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             resourcesResponse
           )
           .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources/name.png",
+            blob,
+            { sendAsJson: false }
+          )
+          .post(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
@@ -424,14 +433,14 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             itemTemplate.item,
             MOCK_USER_SESSION
           )
-          .then(newItemTemplate => {
-            delete newItemTemplate.key; // key is randomly generated, and so is not testable
-            expect(newItemTemplate).toEqual(expectedTemplate);
+          .then(actual => {
+            delete actual.key; // key is randomly generated, and so is not testable
+            expect(actual).toEqual(expectedTemplate);
             done();
           }, done.fail);
       });
 
-      it("should resolve empty array if error", done => {
+      it("should handle error on getItemResources", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
         itemTemplate.item = mockItems.getAGOLItem("Group", null);
@@ -508,6 +517,8 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           ]
         };
 
+        resourcesResponse.resources.push({ resource: "name.png" });
+
         const expectedTemplate: any = {
           itemId: "grp1234567890",
           type: "Group",
@@ -586,13 +597,10 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           data: {},
           resources: [],
           dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
+          circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
-
-        resourcesResponse.resources.push({ resource: "name.png" });
-
-        const blob = new Blob(["fake-blob"], { type: "text/plain" });
 
         fetchMock
           .get(
@@ -602,21 +610,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             groupResource
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
-            resourcesResponse
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources/name.png",
-            blob,
-            { sendAsJson: false }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
-            blob,
-            { sendAsJson: false }
           );
+
+        spyOn(common, "getItemResources").and.callFake(() => Promise.reject());
 
         group
           .convertItemToTemplate(
@@ -624,9 +620,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
             itemTemplate.item,
             MOCK_USER_SESSION
           )
-          .then(newItemTemplate => {
-            delete newItemTemplate.key; // key is randomly generated, and so is not testable
-            expect(newItemTemplate).toEqual(expectedTemplate);
+          .then(actual => {
+            delete actual.key; // key is randomly generated, and so is not testable
+            expect(actual).toEqual(expectedTemplate);
             done();
           }, done.fail);
       });
@@ -832,48 +828,63 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         }, done);
     });
 
-    //   it("should handle error on copy group resources", done => {
-    //     const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-    //     const templateDictionary: any = {};
-    //     const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
+    if (typeof window !== "undefined") {
+      it("should handle error on copy group resources", done => {
+        const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+        const templateDictionary: any = {};
+        const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
 
-    //     const itemTemplate: IItemTemplate = templates.getItemTemplate();
-    //     itemTemplate.itemId = itemId;
-    //     itemTemplate.type = "Group";
-    //     itemTemplate.item.title = "Dam Inspection Assignments";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        itemTemplate.itemId = itemId;
+        itemTemplate.type = "Group";
+        itemTemplate.item.title = "Dam Inspection Assignments";
 
-    //     const searchResult: any = {
-    //       "query": "Dam Inspection Assignments",
-    //       "total": 12,
-    //       "start": 1,
-    //       "num": 10,
-    //       "nextStart": 11,
-    //       "results": []
-    //     };
+        const searchResult: any = {
+          query: "Dam Inspection Assignments",
+          total: 12,
+          start: 1,
+          num: 10,
+          nextStart: 11,
+          results: []
+        };
 
-    //     const filePaths: any[] = [{
-    //       type: resourceHelpers.EFileType.Resource,
-    //       folder: "aFolder",
-    //       filename: "git_merge.png",
-    //       url: "http://someurl"
-    //     }];
+        const filePaths: any[] = [
+          {
+            type: common.EFileType.Resource,
+            folder: "aFolder",
+            filename: "git_merge.png",
+            url: "http://someurl"
+          }
+        ];
 
-    //     fetchMock
-    //       .get("https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token", searchResult)
-    //       .post("https://myorg.maps.arcgis.com/sharing/rest/community/createGroup", { "success": true, "group": { "id": newItemID } })
-    //       .post("http://someurl/", mockItems.get400Failure());
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
+            searchResult
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
+            { success: true, group: { id: newItemID } }
+          )
+          .post("http://someurl//rest/info", {})
+          .post("http://someurl/", mockItems.get400Failure());
 
-    //     createItemFromTemplate(
-    //       itemTemplate,
-    //       filePaths,
-    //       MOCK_USER_SESSION,
-    //       templateDictionary,
-    //       MOCK_USER_SESSION,
-    //       function () { const a: any = "A"; }
-    //     ).then(() => {
-    //       done.fail();
-    //     }, done);
-    //   });
+        group
+          .createItemFromTemplate(
+            itemTemplate,
+            filePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            function() {
+              const a: any = "A";
+            }
+          )
+          .then(() => {
+            done.fail();
+          }, done);
+      });
+    }
   });
 
   describe("updateGroup", () => {
@@ -939,11 +950,16 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         );
 
       group
-        .updateGroup(itemTemplate, MOCK_USER_SESSION, {
-          abc0cab401af4828a25cc6eaeb59fb69: {
-            itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-          }
-        })
+        ._updateGroup(
+          itemTemplate,
+          MOCK_USER_SESSION,
+          {
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              itemId: "abc2cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          itemTemplate.dependencies
+        )
         .then(() => {
           done.fail();
         }, done);
@@ -1011,11 +1027,16 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         );
 
       group
-        .updateGroup(itemTemplate, MOCK_USER_SESSION, {
-          abc0cab401af4828a25cc6eaeb59fb69: {
-            itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-          }
-        })
+        ._updateGroup(
+          itemTemplate,
+          MOCK_USER_SESSION,
+          {
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              itemId: "abc2cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          itemTemplate.dependencies
+        )
         .then(() => {
           done();
         }, done.fail);

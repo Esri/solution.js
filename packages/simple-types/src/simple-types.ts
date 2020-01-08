@@ -340,3 +340,30 @@ export function postProcessFieldReferences(
   }
   return solutionTemplate;
 }
+
+/**
+ * Calls module specific functions to post process the circular dependencies based on item type
+ *
+ * @param newItemTemplate the items template with key properties
+ * @param authentication The session used to update the new item(s)
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @return A promise that will resolve when circular dependencies have been handled
+ */
+export function postProcessCircularDependencies(
+  newItemTemplate: common.IItemTemplate,
+  authentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  let dataPromise = Promise.resolve();
+  switch (newItemTemplate.type) {
+    case "Workforce Project":
+      dataPromise = workforce.postProcessCircularDependencies(
+        newItemTemplate,
+        authentication,
+        templateDictionary
+      );
+      break;
+  }
+  return dataPromise;
+}

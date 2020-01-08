@@ -752,4 +752,63 @@ describe("Module `creator`", () => {
       );
     });
   });
+
+  describe("_updateDependencyArrays", () => {
+    it("remove from dependencies and add to circularDependencies ", () => {
+      let template: any = {
+        dependencies: ["ABC123"]
+      };
+      let id: string = "ABC123";
+
+      const expected: any = {
+        dependencies: [],
+        circularDependencies: ["ABC123"]
+      };
+
+      creator._updateDependencyArrays(template, id);
+      expect(template).toEqual(expected);
+
+      template = {
+        dependencies: ["ABC1234"],
+        circularDependencies: ["ABC123"]
+      };
+      id = "ABC1234";
+
+      expected.circularDependencies = ["ABC123", "ABC1234"];
+
+      creator._updateDependencyArrays(template, id);
+      expect(template).toEqual(expected);
+    });
+  });
+
+  describe("_postProcessCircularDependencies", () => {
+    it("remove from dependencies and add to circularDependencies ", () => {
+      const templates: any[] = [
+        {
+          dependencies: ["ABC123", "A"],
+          itemId: "123ABC"
+        },
+        {
+          dependencies: ["123ABC", "B"],
+          itemId: "ABC123"
+        }
+      ];
+
+      const expected: any[] = [
+        {
+          dependencies: ["A"],
+          circularDependencies: ["ABC123"],
+          itemId: "123ABC"
+        },
+        {
+          dependencies: ["B"],
+          circularDependencies: ["123ABC"],
+          itemId: "ABC123"
+        }
+      ];
+
+      creator._postProcessCircularDependencies(templates);
+      expect(templates).toEqual(expected);
+    });
+  });
 });
