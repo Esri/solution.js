@@ -339,6 +339,20 @@ export interface IStringValuePair {
 }
 
 /**
+ * A common status response from AGO.
+ */
+export interface IStatusResponse {
+  /**
+   * Success or failure of request
+   */
+  success: boolean;
+  /**
+   * AGO id of item for which request was made
+   */
+  itemId: string;
+}
+
+/**
  * Storage of update info
  */
 export interface IUpdate {
