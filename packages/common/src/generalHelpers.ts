@@ -20,7 +20,7 @@
  * @module generalHelpers
  */
 
-import { IDatasourceInfo } from "./interfaces";
+import * as interfaces from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -326,7 +326,7 @@ export function getUniqueTitle(
  * @return Boolean indicating result
  */
 export function hasDatasource(
-  datasourceInfos: IDatasourceInfo[],
+  datasourceInfos: interfaces.IDatasourceInfo[],
   itemId: string,
   layerId: number
 ): boolean {
@@ -373,6 +373,28 @@ export function cleanLayerId(id: any) {
         10
       )
     : id;
+}
+
+/**
+ * Get template from list of templates by ID
+ *
+ * @param templates Array of item templates to search
+ * @param id of template we are searching for
+ *
+ * @return Template associated with the user provided id argument
+ */
+export function getTemplateById(
+  templates: interfaces.IItemTemplate[],
+  id: string
+): any {
+  let template;
+  (templates || []).some(_template => {
+    if (_template.itemId === id) {
+      template = _template;
+      return true;
+    }
+  });
+  return template;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

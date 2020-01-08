@@ -184,6 +184,41 @@ export function fineTuneCreatedItem(
 }
 
 /**
+ * Gets the Workforce Project data and updates the groupId value now that we know the deployed id
+ *
+ * @param newItemTemplate the items template with key properties
+ * @param authentication The session used to update the new item(s)
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @return A promise that will resolve when circular dependencies have been handled
+ */
+export function postProcessCircularDependencies(
+  newItemTemplate: common.IItemTemplate,
+  authentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    common.getItemDataAsJson(newItemTemplate.itemId, authentication).then(
+      data => {
+        const update: any = common.replaceInTemplate(data, templateDictionary);
+        common
+          .updateItemExtended(
+            newItemTemplate.itemId,
+            { id: newItemTemplate.itemId },
+            update,
+            authentication
+          )
+          .then(
+            () => resolve(),
+            e => reject(common.fail(e))
+          );
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
+/**
  * Updates the dispatchers service to include the current user as a dispatcher
  *
  * @param dispatchers The dispatchers object from the workforce items data

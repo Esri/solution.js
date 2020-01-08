@@ -47,7 +47,7 @@ afterEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `workforce`: manages the creation and deployment of wprkforce project item types", () => {
+describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
     it("should extract dependencies", () => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
@@ -379,5 +379,81 @@ describe("Module `workforce`: manages the creation and deployment of wprkforce p
       console.warn("========== TODO ==========");
       done.fail();
     });
+  });
+
+  describe("postProcessCircularDependencies", () => {
+    if (typeof window !== "undefined") {
+      it("should handle error on update", done => {
+        const template: any = {
+          dependencies: ["ABC123", "A"],
+          type: "Workforce Project",
+          itemId: "123ABC"
+        };
+
+        const templateDictionary: any = {
+          ABC123: {
+            itemId: "NEWABC123"
+          }
+        };
+
+        const itemData: any = {
+          groupId: "{{ABC123.itemId}}"
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
+            itemData
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update",
+            mockItems.get400Failure()
+          );
+
+        workforce
+          .postProcessCircularDependencies(
+            template,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(done.fail, done);
+      });
+
+      it("should handle error on get data", done => {
+        const template: any = {
+          dependencies: ["ABC123", "A"],
+          type: "Workforce Project",
+          itemId: "123ABC"
+        };
+
+        const templateDictionary: any = {
+          ABC123: {
+            itemId: "NEWABC123"
+          }
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
+            mockItems.get400Failure()
+          );
+
+        workforce
+          .postProcessCircularDependencies(
+            template,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(done.fail, done);
+      });
+    }
   });
 });

@@ -239,6 +239,9 @@ export function addContentToSolution(
       );
 
       if (solutionTemplates.length > 0) {
+        // test for and update circular dependencies
+        _postProcessCircularDependencies(solutionTemplates);
+
         // Update solution item with its data JSON
         const solutionData: common.ISolutionItemData = {
           metadata: {},
@@ -261,6 +264,52 @@ export function addContentToSolution(
           options.progressCallback(0);
         }
         resolve(solutionItemId);
+      }
+    });
+  });
+}
+
+/**
+ * Remove the circular dependency id from the dependencies array
+ * and add it to the circularDependencies array
+ *
+ * @param template The item template to process
+ * @param id The id to update the arrays based on
+ */
+export function _updateDependencyArrays(template: any, id: string) {
+  template.dependencies.splice(template.dependencies.indexOf(id), 1);
+  if (Array.isArray(template.circularDependencies)) {
+    template.circularDependencies.push(id);
+  } else {
+    template.circularDependencies = [id];
+  }
+}
+
+/**
+ * Find any one to one circular dependencies and update the
+ * items dependencies and circularDependencies arrays
+ *
+ * @param templates The array of templates to evaluate
+ */
+export function _postProcessCircularDependencies(templates: any[]) {
+  templates.forEach((template: any) => {
+    const id: string = template.itemId;
+    (template.dependencies || []).forEach((dependencyId: string) => {
+      const dependencyTemplate: any = common.getTemplateById(
+        templates,
+        dependencyId
+      );
+      if (dependencyTemplate) {
+        if (
+          (dependencyTemplate.dependencies || []).some(
+            (_dependencyId: string) => _dependencyId === id
+          )
+        ) {
+          // update the current template
+          _updateDependencyArrays(template, dependencyId);
+          // update the current dependant template
+          _updateDependencyArrays(dependencyTemplate, id);
+        }
       }
     });
   });
