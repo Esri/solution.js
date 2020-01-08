@@ -12,11 +12,11 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.5.8",
     "rollup": "^1.22.0",
     "typescript": "^3.7.4"
   },
   "dependencies": {
+    "@esri/solution-common": "^0.5.8",
     "tslib": "^1.10.0"
   },
   "scripts": {

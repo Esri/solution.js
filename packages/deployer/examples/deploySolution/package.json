@@ -10,10 +10,10 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^2.6.1",
-    "@esri/arcgis-rest-portal": "^2.6.1",
-    "@esri/arcgis-rest-request": "^2.6.1",
-    "@esri/arcgis-rest-service-admin": "^2.6.1",
+    "@esri/arcgis-rest-auth": "^2.7.0",
+    "@esri/arcgis-rest-portal": "^2.7.0",
+    "@esri/arcgis-rest-request": "^2.7.0",
+    "@esri/arcgis-rest-service-admin": "^2.7.0",
     "@esri/solution-common": "^0.5.8",
     "@esri/solution-deployer": "^0.5.8",
     "@esri/solution-feature-layer": "^0.5.8",
