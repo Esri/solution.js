@@ -73,6 +73,17 @@ export function getUser(
   return request.request(url, userContentRequestOptions);
 }
 
+export function getUsername(
+  authentication: interfaces.UserSession
+): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    getUser(authentication).then(
+      (user: interfaces.IUser) => resolve(user.username),
+      reject
+    );
+  });
+}
+
 export function getUserFolders(
   authentication: interfaces.UserSession
 ): Promise<any[]> {
