@@ -182,6 +182,12 @@ export interface IItemTemplate {
   dependencies: string[];
 
   /**
+   * List of ids of AGO items needed by this item that are circular in nature
+   * For example group that references Workforce Project when the Workforce Project also references the group
+   */
+  circularDependencies: string[];
+
+  /**
    * Miscellaneous item-specific properties
    */
   properties: any;
@@ -211,6 +217,11 @@ export interface IItemTemplateConversions {
     destinationAuthentication: UserSession,
     progressTickCallback: () => void
   ): Promise<string>;
+  postProcessCircularDependencies?(
+    newItemTemplate: IItemTemplate,
+    authentication: UserSession,
+    templateDictionary: any
+  ): Promise<any>;
 }
 
 /**

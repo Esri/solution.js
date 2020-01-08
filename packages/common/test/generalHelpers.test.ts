@@ -20,6 +20,7 @@
 
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
+import * as mockItems from "../test/mocks/agolItems";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   // Blobs are only available in the browser
@@ -996,6 +997,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
         )
       ).toEqual(12);
+    });
+  });
+
+  describe("getTemplateById", () => {
+    it("return template that matches id", () => {
+      const item0 = mockItems.getAGOLItemWithId("Feature Service", 0);
+      item0.itemId = "ABC123";
+      const item1 = mockItems.getAGOLItemWithId("Feature Service", 1);
+      item1.itemId = "ABC124";
+      const item2 = mockItems.getAGOLItemWithId("Feature Service", 2);
+      item2.itemId = "ABC125";
+
+      const templates: interfaces.IItemTemplate[] = [item0, item1, item2];
+
+      const id: string = "ABC124";
+      const expected: any = item1;
+
+      const actual: any = generalHelpers.getTemplateById(templates, id);
+
+      expect(actual).toEqual(expected);
     });
   });
 

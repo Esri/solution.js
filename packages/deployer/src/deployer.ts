@@ -253,27 +253,44 @@ export function deploySolution(
                                   }
                                 );
 
-                                // Create solution item using internal representation & and the updated data JSON
-                                itemBase.typeKeywords = [
-                                  "Solution",
-                                  "Deployed"
-                                ];
-                                common
-                                  .updateItem(
-                                    itemBase,
+                                deployItems
+                                  .postProcessCircularDependencies(
+                                    itemData.templates,
                                     authentication,
-                                    templateDictionary.folderId
+                                    templateDictionary
                                   )
                                   .then(
                                     () => {
-                                      if (deployOptions.progressCallback) {
-                                        deployOptions.progressCallback(100);
-                                      }
-                                      delete itemBase.data;
-                                      resolve({
-                                        item: itemBase,
-                                        data: itemData
-                                      });
+                                      // Create solution item using internal representation & and the updated data JSON
+                                      itemBase.typeKeywords = [
+                                        "Solution",
+                                        "Deployed"
+                                      ];
+                                      common
+                                        .updateItem(
+                                          itemBase,
+                                          authentication,
+                                          templateDictionary.folderId
+                                        )
+                                        .then(
+                                          () => {
+                                            if (
+                                              deployOptions.progressCallback
+                                            ) {
+                                              deployOptions.progressCallback(
+                                                100
+                                              );
+                                            }
+                                            delete itemBase.data;
+                                            resolve({
+                                              item: itemBase,
+                                              data: itemData
+                                            });
+                                          },
+                                          e => {
+                                            reject(common.fail(e));
+                                          }
+                                        );
                                     },
                                     e => {
                                       reject(common.fail(e));
@@ -347,7 +364,12 @@ export function _purgeItemProperties(itemTemplate: any): any {
 }
 
 export function _purgeTemplateProperties(itemTemplate: any): any {
-  const retainProps: string[] = ["itemId", "type", "dependencies"];
+  const retainProps: string[] = [
+    "itemId",
+    "type",
+    "dependencies",
+    "circularDependencies"
+  ];
   const deleteProps: string[] = Object.keys(itemTemplate).filter(
     k => retainProps.indexOf(k) < 0
   );

@@ -48,7 +48,8 @@ beforeEach(() => {
     data: {},
     estimatedDeploymentCostFactor: 0,
     resources: [],
-    dependencies: []
+    dependencies: [],
+    circularDependencies: []
   };
 });
 
@@ -2052,7 +2053,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
-        dependencies: []
+        dependencies: [],
+        circularDependencies: []
       };
 
       const templateDictionary: any = {
@@ -2123,7 +2125,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
-        dependencies: []
+        dependencies: [],
+        circularDependencies: []
       };
 
       const templateDictionary: any = {
@@ -2198,7 +2201,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
-        dependencies: []
+        dependencies: [],
+        circularDependencies: []
       };
 
       const templateDictionary: any = {
@@ -2271,7 +2275,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
-        dependencies: []
+        dependencies: [],
+        circularDependencies: []
       };
 
       const templateDictionary: any = {

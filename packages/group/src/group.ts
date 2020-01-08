@@ -54,9 +54,8 @@ export function convertItemToTemplate(
             itemTemplate.item = groupResponse;
 
             // Request resources
-            common
-              .getItemResources(itemTemplate.itemId, authentication)
-              .then(resourcesResponse => {
+            common.getItemResources(itemTemplate.itemId, authentication).then(
+              resourcesResponse => {
                 // Save resources to solution item
                 itemTemplate.resources = (resourcesResponse.resources as any[]).map(
                   (resourceDetail: any) => resourceDetail.resource
@@ -81,8 +80,9 @@ export function convertItemToTemplate(
                     );
                     resolve(itemTemplate);
                   }, reject);
-              })
-              .catch(() => Promise.resolve([]));
+              },
+              () => resolve(itemTemplate)
+            );
           },
           () => resolve(itemTemplate)
         );
@@ -147,10 +147,11 @@ export function createItemFromTemplate(
                 templateDictionary[template.itemId].itemId =
                   createResponse.group.id;
 
-                updateGroup(
+                _updateGroup(
                   newItemTemplate,
                   destinationAuthentication,
-                  templateDictionary
+                  templateDictionary,
+                  newItemTemplate.dependencies
                 ).then(
                   () => {
                     progressTickCallback();
@@ -170,24 +171,55 @@ export function createItemFromTemplate(
   });
 }
 
-export function updateGroup(
+/**
+ * Shares dependencies with the group
+ *
+ * @param newItemTemplate the items template with key properties
+ * @param authentication The session used to create the new item(s)
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param dependencies Array of dependencies to share with the group
+ *
+ * @return A promise that will resolve when the items have been shared
+ */
+export function _updateGroup(
   newItemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
-  templateDictionary: any
+  templateDictionary: any,
+  dependencies: string[]
 ): Promise<any> {
   return new Promise<string>((resolve, reject) => {
     const defArray: any[] = [];
     const groupId: string = newItemTemplate.itemId;
-    newItemTemplate.dependencies.forEach(d => {
+    dependencies.forEach(d => {
       defArray.push(
         common.shareItem(groupId, templateDictionary[d].itemId, authentication)
       );
     });
     Promise.all(defArray).then(
-      a => {
-        resolve();
-      },
+      () => resolve(),
       e => reject(common.fail(e))
     );
   });
+}
+
+/**
+ * Shares any circular dependencies with the group
+ *
+ * @param newItemTemplate the items template with key properties
+ * @param authentication The session used to create the new item(s)
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @return A promise that will resolve when circular dependencies have been handled
+ */
+export function postProcessCircularDependencies(
+  newItemTemplate: common.IItemTemplate,
+  authentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  return _updateGroup(
+    newItemTemplate,
+    authentication,
+    templateDictionary,
+    newItemTemplate.circularDependencies
+  );
 }
