@@ -300,11 +300,7 @@ export function _postProcessCircularDependencies(templates: any[]) {
         dependencyId
       );
       if (dependencyTemplate) {
-        if (
-          (dependencyTemplate.dependencies || []).some(
-            (_dependencyId: string) => _dependencyId === id
-          )
-        ) {
+        if (dependencyTemplate.dependencies.indexOf(id) > -1) {
           // update the current template
           _updateDependencyArrays(template, dependencyId);
           // update the current dependant template
