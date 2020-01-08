@@ -427,10 +427,6 @@ describe("Module `deploySolution`", () => {
           portalUrl: "https://www.arcgis.com",
           urlKey: "localdeployment"
         };
-        const destinationAuthentication: any = MOCK_USER_SESSION;
-        const progressCallback: any = () => {
-          const a = "A";
-        };
 
         const solutionResponse: any = {
           metadata: {},
@@ -587,7 +583,16 @@ describe("Module `deploySolution`", () => {
             solutionResponse
           )
           .get(
+            portalSubset.restUrl +
+              "/content/items/c38e59126368495694ca23b7ccacefba?f=json",
+            itemInfoCard
+          )
+          .get(
             portalSubset.restUrl + "/portals/org1234567890?f=json",
+            utils.getPortalResponse()
+          )
+          .get(
+            "https://www.arcgis.com/sharing/rest/portals/self?f=json",
             utils.getPortalResponse()
           )
           .get(
@@ -662,7 +667,7 @@ describe("Module `deploySolution`", () => {
         };
 
         deployer
-          .deploySolution(itemInfoCard.id, destinationAuthentication, options)
+          .deploySolution(itemInfoCard.id, MOCK_USER_SESSION, options)
           .then(() => {
             done.fail();
           }, done);

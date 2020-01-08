@@ -533,6 +533,48 @@ describe("Module `createItemTemplate`", () => {
             () => done.fail()
           );
       });
+
+      it("skips unsupported item types", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "code12345678900";
+        const itemType: string = "Code Attachment";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/code12345678900?f=json&token=fake-token",
+            mockItems.getAGOLItem(itemType)
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            noDataResponse
+          );
+
+        const expectedLog: string =
+          "!----- " +
+          itemId +
+          " " +
+          itemType +
+          " ----- UNSUPPORTED; skipping -----";
+
+        spyOn(console, "log");
+
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates
+          )
+          .then(response => {
+            expect(console.log).toHaveBeenCalledWith(expectedLog);
+            expect(response).toBeTruthy();
+            done();
+          }, done.fail);
+      });
     });
   }
 

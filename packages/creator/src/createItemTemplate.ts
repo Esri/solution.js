@@ -248,7 +248,7 @@ export function createItemTemplate(
             itemInfo.type = itemType; // Groups don't have this property
 
             const itemHandler = moduleMap[itemType];
-            if (!itemHandler) {
+            if (!itemHandler || itemHandler === UNSUPPORTED) {
               if (itemHandler === UNSUPPORTED) {
                 console.log(
                   "!----- " +
