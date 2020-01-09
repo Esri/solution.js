@@ -19,10 +19,10 @@
  */
 
 import * as deploySolution from "../src/deploySolutionItems";
-import * as utils from "../../common/test/mocks/utils";
-import * as templates from "../../common/test/mocks/templates";
-import fetchMock = require("fetch-mock");
+import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as templates from "../../common/test/mocks/templates";
+import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

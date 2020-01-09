@@ -24,14 +24,61 @@ import * as common from "@esri/solution-common";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function getSolutionHierarchy(
-  groupId: string,
-  destUrl: string,
-  userSession: common.UserSession
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    resolve("getSolutionHierarchy");
+/**
+ * Compares two AGO items, fetching them if only their id is supplied.
+ *
+ * @param item1 First item or its AGO id
+ * @param item2 Second item or its AGO id
+ * @param authentication Credentials for the request to AGO
+ * @return True if objects are the same
+ * @see Only comparable properties are compared; see deleteItemProps() in the `common` package
+ */
+export function compareItems(
+  item1: string | any,
+  item2: string | any,
+  authentication: common.UserSession
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    // If an input is a string, fetch the item; otherwise, clone the input because we will modify the
+    // item base to remove incomparable properties
+    let itemBaseDef1: Promise<boolean>;
+    if (typeof item1 === "string") {
+      itemBaseDef1 = common.getItemBase(item1, authentication);
+    } else {
+      itemBaseDef1 = Promise.resolve(common.cloneObject(item1));
+    }
+
+    let itemBaseDef2: Promise<boolean>;
+    if (typeof item2 === "string") {
+      itemBaseDef2 = common.getItemBase(item2, authentication);
+    } else {
+      itemBaseDef2 = Promise.resolve(common.cloneObject(item2));
+    }
+
+    Promise.all([itemBaseDef1, itemBaseDef2]).then(
+      responses => {
+        const [itemBase1, itemBase2] = responses;
+        resolve(
+          _compareJSON(
+            common.deleteItemProps(itemBase1),
+            common.deleteItemProps(itemBase2)
+          )
+        );
+      },
+      e => reject(e)
+    );
   });
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+/**
+ * Compares two JSON objects using JSON.stringify.
+ *
+ * @param json1 First object
+ * @param json2 Second object
+ * @return True if objects are the same
+ */
+export function _compareJSON(json1: any, json2: any): boolean {
+  return JSON.stringify(json1) === JSON.stringify(json2);
+}
