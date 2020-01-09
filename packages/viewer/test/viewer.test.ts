@@ -38,9 +38,9 @@ const MOCK_USER_SESSION = new common.UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
-let sampleItem: any;
+let sampleItemTemplate: any;
 beforeEach(() => {
-  sampleItem = {
+  sampleItemTemplate = {
     item: {
       name: null,
       title: "z2g9f4nv",
@@ -94,7 +94,11 @@ describe("Module `viewer`", () => {
   describe("compareItems", () => {
     it("handles identity with supplied items", done => {
       viewer
-        .compareItems(sampleItem.item, sampleItem.item, MOCK_USER_SESSION)
+        .compareItems(
+          sampleItemTemplate.item,
+          sampleItemTemplate.item,
+          MOCK_USER_SESSION
+        )
         .then(
           match => {
             match ? done() : done.fail();
@@ -106,10 +110,14 @@ describe("Module `viewer`", () => {
     it("handles identity with supplied item ids", done => {
       fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
-        sampleItem.item
+        sampleItemTemplate.item
       );
       viewer
-        .compareItems(sampleItem.item.id, sampleItem.item.id, MOCK_USER_SESSION)
+        .compareItems(
+          sampleItemTemplate.item.id,
+          sampleItemTemplate.item.id,
+          MOCK_USER_SESSION
+        )
         .then(
           match => {
             match ? done() : done.fail();
@@ -124,7 +132,11 @@ describe("Module `viewer`", () => {
         mockItems.get500Failure()
       );
       viewer
-        .compareItems(sampleItem.item.id, sampleItem.item.id, MOCK_USER_SESSION)
+        .compareItems(
+          sampleItemTemplate.item.id,
+          sampleItemTemplate.item.id,
+          MOCK_USER_SESSION
+        )
         .then(
           () => done.fail(),
           () => done()
@@ -150,18 +162,20 @@ describe("Module `viewer`", () => {
     });
 
     it("multiple-level objects", () => {
-      expect(viewer._compareJSON(sampleItem, sampleItem)).toBeTruthy();
-      let clone = common.cloneObject(sampleItem);
-      expect(viewer._compareJSON(sampleItem, clone)).toBeTruthy();
+      expect(
+        viewer._compareJSON(sampleItemTemplate, sampleItemTemplate)
+      ).toBeTruthy();
+      let clone = common.cloneObject(sampleItemTemplate);
+      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeTruthy();
 
       common.deleteItemProps(clone);
       expect(viewer._compareJSON({}, clone)).toBeTruthy();
-      expect(viewer._compareJSON(sampleItem, clone)).toBeFalsy();
+      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeFalsy();
 
-      clone = common.cloneObject(sampleItem.item);
+      clone = common.cloneObject(sampleItemTemplate.item);
       delete clone.id;
       const sampleItemBase = common.deleteItemProps(
-        common.cloneObject(sampleItem.item)
+        common.cloneObject(sampleItemTemplate.item)
       );
       expect(viewer._compareJSON(sampleItemBase, clone)).toBeTruthy();
     });

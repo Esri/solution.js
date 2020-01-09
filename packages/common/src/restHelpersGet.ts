@@ -62,15 +62,7 @@ export function getPortal(
 export function getUser(
   authentication: interfaces.UserSession
 ): Promise<interfaces.IUser> {
-  const url: string = `${
-    authentication.portal
-  }/community/users/${encodeURIComponent(authentication.username)}`;
-  const userContentRequestOptions = {
-    httpMethod: "GET",
-    authentication: authentication,
-    rawResponse: false
-  } as request.IRequestOptions;
-  return request.request(url, userContentRequestOptions);
+  return authentication.getUser();
 }
 
 export function getUsername(

@@ -18,7 +18,6 @@
  * Provides tests for fetch functions involving the arcgis-rest-js library.
  */
 
-import * as auth from "@esri/arcgis-rest-auth";
 import * as generalHelpers from "../src/generalHelpers";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpersGet from "../src/restHelpersGet";
@@ -75,7 +74,25 @@ afterEach(() => {
   fetchMock.restore();
 });
 
+// ------------------------------------------------------------------------------------------------------------------ //
+
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
+  describe("getUsername", () => {
+    it("can get the username from the authentication", done => {
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+        mockItems.getAGOLUser(MOCK_USER_SESSION.username)
+      );
+      restHelpersGet.getUsername(MOCK_USER_SESSION).then(
+        username => {
+          expect(username).toEqual(MOCK_USER_SESSION.username);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("getUserFolders", () => {
     it("can handle an exception on get user content", done => {
       fetchMock.get(
