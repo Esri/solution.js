@@ -355,15 +355,23 @@ export function postProcessCircularDependencies(
   authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
-  let dataPromise = Promise.resolve();
-  switch (newItemTemplate.type) {
-    case "Workforce Project":
-      dataPromise = workforce.postProcessCircularDependencies(
-        newItemTemplate,
-        authentication,
-        templateDictionary
-      );
-      break;
-  }
-  return dataPromise;
+  return new Promise<any>((resolve, reject) => {
+    common.getItemDataAsJson(newItemTemplate.itemId, authentication).then(
+      data => {
+        const update: any = common.replaceInTemplate(data, templateDictionary);
+        common
+          .updateItemExtended(
+            newItemTemplate.itemId,
+            { id: newItemTemplate.itemId },
+            update,
+            authentication
+          )
+          .then(
+            () => resolve(),
+            e => reject(common.fail(e))
+          );
+      },
+      e => reject(common.fail(e))
+    );
+  });
 }
