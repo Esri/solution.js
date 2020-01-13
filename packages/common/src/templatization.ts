@@ -145,6 +145,7 @@ export function createPlaceholderTemplate(
     data: {},
     resources: [],
     dependencies: [],
+    circularDependencies: [],
     properties: {},
     estimatedDeploymentCostFactor: 0
   };

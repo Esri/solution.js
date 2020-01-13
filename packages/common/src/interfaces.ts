@@ -74,6 +74,20 @@ export interface ICreateSolutionOptions {
 }
 
 /**
+ * Options for deploying a solution item and for creating the solution index item representing the deployment
+ */
+export interface IDeploySolutionOptions {
+  title?: string; // default: copied from solution item
+  snippet?: string; // default: copied from solution item
+  description?: string; // default: copied from solution item
+  tags?: string[]; // default: copied from solution item
+  thumbnailUrl?: string; // default: copied from solution item
+  templateDictionary?: any;
+  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
+  progressCallback?: (percentDone: number) => void;
+}
+
+/**
  * Storage of dependencies.
  */
 export interface IDependency {
@@ -168,6 +182,12 @@ export interface IItemTemplate {
   dependencies: string[];
 
   /**
+   * List of ids of AGO items needed by this item that are circular in nature
+   * For example group that references Workforce Project when the Workforce Project also references the group
+   */
+  circularDependencies: string[];
+
+  /**
    * Miscellaneous item-specific properties
    */
   properties: any;
@@ -197,12 +217,17 @@ export interface IItemTemplateConversions {
     destinationAuthentication: UserSession,
     progressTickCallback: () => void
   ): Promise<string>;
+  postProcessCircularDependencies?(
+    newItemTemplate: IItemTemplate,
+    authentication: UserSession,
+    templateDictionary: any
+  ): Promise<any>;
 }
 
 /**
  * Structure for mapping from item type to module with type-specific template-handling code
  */
-type moduleHandler = IItemTemplateConversions | undefined;
+export type moduleHandler = IItemTemplateConversions | undefined | null;
 export interface IItemTypeModuleMap {
   [itemType: string]: moduleHandler;
 }
@@ -268,24 +293,6 @@ export interface IResource {
 }
 
 /**
- * Summary of a solution item.
- */
-export interface ISolutionInfoCard {
-  id: string;
-  title: string;
-  snippet: string;
-  description: string;
-  url: string;
-  thumbnailUrl: string;
-  tryitUrl: string;
-  created: number;
-  tags: string[];
-  categories: string;
-  deployCommonId: string;
-  deployVersion: number;
-}
-
-/**
  * A solution template AGO item
  */
 export interface ISolutionItem {
@@ -340,6 +347,20 @@ export interface ISourceFileCopyPath {
  */
 export interface IStringValuePair {
   [key: string]: any;
+}
+
+/**
+ * A common status response from AGO.
+ */
+export interface IStatusResponse {
+  /**
+   * Success or failure of request
+   */
+  success: boolean;
+  /**
+   * AGO id of item for which request was made
+   */
+  itemId: string;
 }
 
 /**

@@ -47,7 +47,7 @@ afterEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `workforce`: manages the creation and deployment of wprkforce project item types", () => {
+describe("Module `workforce`: manages the creation and deployment of workforce project item types", () => {
   describe("convertItemToTemplate", () => {
     it("should extract dependencies", () => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(

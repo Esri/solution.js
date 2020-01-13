@@ -18,6 +18,7 @@ import { isBoolean, isNullOrUndefined } from "util";
 
 // This file contains examples of items of the type one would expect to get from the AGOL REST API.
 
+import * as interfaces from "../../src/interfaces";
 import * as utils from "./utils";
 
 // -------------------------------------------------------------------------------------------------------------------//
@@ -618,6 +619,28 @@ export function getAGOLGroup(): any {
       memberType: "none"
     },
     collaborationInfo: {}
+  };
+}
+
+export function getAGOLUser(username: string): interfaces.IUser {
+  return {
+    access: "org",
+    created: 1346425801000,
+    culture: "en-US",
+    description: "",
+    disabled: false,
+    email: "casey@esri.com",
+    firstName: "Casey",
+    fullName: "Casey",
+    lastName: "",
+    level: "2",
+    orgId: "org1234567890",
+    preferredView: "",
+    privileges: ["features:user:edit"],
+    provider: "arcgis",
+    region: "US",
+    units: "metric",
+    username: username
   };
 }
 

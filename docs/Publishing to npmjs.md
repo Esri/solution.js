@@ -25,11 +25,11 @@ npm install
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```
 npm login
-Username: &lt;npm username&gt;
-Password: &lt;npm password&gt;
-Email: (this IS public) &lt;Esri email address&gt;
-Enter one-time password from your authenticator app: &lt;e.g., from Okta Verify&gt;
-Logged in as &lt;npm username&gt; on https://registry.npmjs.org/
+Username: <npm username>
+Password: <npm password>
+Email: (this IS public) <Esri email address>
+Enter one-time password from your authenticator app: <e.g., from Okta Verify>
+Logged in as <npm username> on https://registry.npmjs.org/
 ```
 
 5. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code

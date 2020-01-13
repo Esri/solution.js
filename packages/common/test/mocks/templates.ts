@@ -57,6 +57,7 @@ export function getItemTemplate(): any {
     resources: [],
     properties: {},
     dependencies: [],
+    circularDependencies: [],
     estimatedDeploymentCostFactor: 0
   };
 }
@@ -1007,7 +1008,8 @@ function getItemTemplateFundamentals(
   type: string,
   typePrefix: string,
   dependencies = [] as string[],
-  url = ""
+  url = "",
+  circularDependencies = [] as string[]
 ): interfaces.IItemTemplate {
   return {
     itemId: typePrefix + "1234567890",
@@ -1052,6 +1054,7 @@ function getItemTemplateFundamentals(
     data: undefined,
     resources: [],
     dependencies: dependencies,
+    circularDependencies: circularDependencies,
     properties: null,
     estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
   };

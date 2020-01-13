@@ -27,6 +27,7 @@ import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
+const UNSUPPORTED: common.moduleHandler = null;
 /**
  * Mapping from item type to module with type-specific template-handling code.
  * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
@@ -111,7 +112,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Basemap Package": file,
   "CAD Drawing": file,
   "CityEngine Web Scene": file,
-  "Code Attachment": file,
+  "Code Attachment": UNSUPPORTED,
   "Code Sample": file,
   "Color Set": file,
   "Compact Tile Package": file,
@@ -247,12 +248,26 @@ export function createItemTemplate(
             itemInfo.type = itemType; // Groups don't have this property
 
             const itemHandler = moduleMap[itemType];
-            if (!itemHandler) {
-              placeholder!.properties["partial"] = true;
-              _replaceTemplate(existingTemplates, itemId, placeholder!);
-              console.log(
-                "!----- " + itemId + " " + itemType + " ----- UNHANDLED -----"
-              ); // ???
+            if (!itemHandler || itemHandler === UNSUPPORTED) {
+              if (itemHandler === UNSUPPORTED) {
+                console.log(
+                  "!----- " +
+                    itemId +
+                    " " +
+                    itemType +
+                    " ----- UNSUPPORTED; skipping -----"
+                ); // ???
+              } else {
+                placeholder!.properties["partial"] = true;
+                _replaceTemplate(existingTemplates, itemId, placeholder!);
+                console.log(
+                  "!----- " +
+                    itemId +
+                    " " +
+                    itemType +
+                    " ----- UNHANDLED; using placeholder -----"
+                ); // ???
+              }
               resolve(true);
             } else {
               itemHandler

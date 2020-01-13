@@ -334,3 +334,50 @@ export function _createItemFromTemplateWhenReady(
   templateDictionary[template.itemId].def = itemDef;
   return itemDef;
 }
+
+/**
+ * Calls the function to handle the circular dependencies for a given item type on deployment
+ * As these are circular in nature we can't just have them wait on their dependency to finish as usual.
+ * We need both the item and the dependency to be finished before this can run.
+ *
+ * @param templates Array of item templates to evaluate
+ * @param destinationAuthentication Credentials for the requests to the destination
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @return A promise that will resolve once any updates have been made
+ */
+export function postProcessCircularDependencies(
+  templates: common.IItemTemplate[],
+  destinationAuthentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const circularDependencyUpdates = [] as Array<Promise<any>>;
+    templates.forEach(template => {
+      if (
+        template.circularDependencies &&
+        template.circularDependencies.length > 0
+      ) {
+        const itemHandler = moduleMap[template.type];
+        if (itemHandler && itemHandler.postProcessCircularDependencies) {
+          circularDependencyUpdates.push(
+            itemHandler.postProcessCircularDependencies(
+              template,
+              destinationAuthentication,
+              templateDictionary
+            )
+          );
+        }
+      }
+    });
+
+    Promise.all(circularDependencyUpdates).then(
+      () => {
+        resolve();
+      },
+      e => {
+        reject(common.fail(e));
+      }
+    );
+  });
+}

@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -12,11 +12,11 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.5.8",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
+    "@esri/solution-common": "^0.5.9",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -36,7 +36,27 @@
     "type": "git",
     "url": "git+https://github.com/Esri/solution.js.git"
   },
-  "contributors": [],
+  "contributors": [
+    {
+      "name": "Mike Tschudi",
+      "email": "mtschudi@esri.com"
+    },
+    {
+      "name": "Chris Fox",
+      "email": "cfox@esri.com"
+    },
+    {
+      "name": "John Hauck",
+      "email": "jhauck@esri.com"
+    },
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois"
+    }
+  ],
   "bugs": {
     "url": "https://github.com/Esri/solution.js/issues"
   },

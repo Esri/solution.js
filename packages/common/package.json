@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -12,16 +12,16 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.6.1",
-    "@esri/arcgis-rest-feature-layer": "^2.6.1",
-    "@esri/arcgis-rest-portal": "^2.6.1",
-    "@esri/arcgis-rest-request": "^2.6.1",
-    "@esri/arcgis-rest-service-admin": "^2.6.1",
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
+    "@esri/arcgis-rest-auth": "^2.7.0",
+    "@esri/arcgis-rest-feature-layer": "^2.7.0",
+    "@esri/arcgis-rest-portal": "^2.7.0",
+    "@esri/arcgis-rest-request": "^2.7.0",
+    "@esri/arcgis-rest-service-admin": "^2.7.0",
     "adlib": "^3.0.4",
     "tslib": "^1.10.0"
   },

@@ -21,9 +21,10 @@
 import * as common from "@esri/solution-common";
 import * as webmappingapplication from "../src/webmappingapplication";
 
-import { TOMORROW } from "./lib/utils";
+import * as utils from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as mockUtils from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -35,9 +36,9 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     clientId: "clientId",
     redirectUri: "https://example-app.com/redirect-uri",
     token: "fake-token",
-    tokenExpires: TOMORROW,
+    tokenExpires: utils.TOMORROW,
     refreshToken: "refreshToken",
-    refreshTokenExpires: TOMORROW,
+    refreshTokenExpires: utils.TOMORROW,
     refreshTokenTTL: 1440,
     username: "casey",
     password: "123456",
@@ -75,6 +76,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -84,7 +86,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.itemId}}",
+          appItemId: "{{itm1234567890.itemId}}",
           values: {
             webmap: "{{myMapId.itemId}}"
           },
@@ -97,6 +99,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -120,6 +123,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { group: "myGroupId" } },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -131,6 +135,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         data: { values: { group: "{{myGroupId.itemId}}" } },
         resources: [] as any[],
         dependencies: ["myGroupId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -161,6 +166,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         } as any,
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -179,6 +185,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         } as any,
         resources: [] as any[],
         dependencies: [] as any[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -229,6 +236,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -238,7 +246,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.itemId}}",
+          appItemId: "{{itm1234567890.itemId}}",
           values: {
             webmap: "{{myMapId.itemId}}"
           },
@@ -264,6 +272,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -325,6 +334,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -377,6 +387,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -386,7 +397,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: { title: "Voting Centers" } as any,
         data: {
-          appItemId: "{{myAppItemId.itemId}}",
+          appItemId: "{{itm1234567890.itemId}}",
           values: {
             webmap: "{{myMapId.itemId}}"
           },
@@ -411,6 +422,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -479,6 +491,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -493,7 +506,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
-          appItemId: "{{myAppItemId.itemId}}",
+          appItemId: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           values: {
             webmap: "{{myMapId.itemId}}"
           },
@@ -537,6 +550,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -634,6 +648,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -648,7 +663,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
         },
         data: {
-          appItemId: "{{myAppItemId.itemId}}",
+          appItemId: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
           values: {
             webmap: "{{myMapId.itemId}}"
           },
@@ -713,6 +728,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: ["myMapId"],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -789,6 +805,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -864,6 +881,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         },
         resources: [] as any[],
         dependencies: [] as string[],
+        circularDependencies: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
@@ -1505,12 +1523,15 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         id: "cda1234567890",
         folder: "fld1234567890"
       };
+      const updateUrl =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wab1234567890/update";
       fetchMock
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
           '{"token":"fake-token"}'
         )
-        .post(createUrl, expected);
+        .post(createUrl, expected)
+        .post(updateUrl, mockUtils.getSuccessResponse());
 
       // Function doesn't reject, so,
       // tslint:disable-next-line:no-floating-promises
@@ -1522,7 +1543,9 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
           MOCK_USER_SESSION
         )
         .then(() => {
-          const calls = fetchMock.calls(createUrl);
+          let calls = fetchMock.calls(createUrl);
+          expect(calls.length).toEqual(1);
+          calls = fetchMock.calls(updateUrl);
           expect(calls.length).toEqual(1);
           done();
         });

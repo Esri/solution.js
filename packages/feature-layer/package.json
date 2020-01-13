@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-feature-layer",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Manages the creation and deployment of feature layers and services for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/feature-layer.umd.min.js",
@@ -12,11 +12,11 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.5.8",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.4"
   },
   "dependencies": {
+    "@esri/solution-common": "^0.5.9",
     "tslib": "^1.10.0"
   },
   "scripts": {

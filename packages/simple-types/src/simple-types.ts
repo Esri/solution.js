@@ -340,3 +340,38 @@ export function postProcessFieldReferences(
   }
   return solutionTemplate;
 }
+
+/**
+ * Calls module specific functions to post process the circular dependencies based on item type
+ *
+ * @param newItemTemplate the items template with key properties
+ * @param authentication The session used to update the new item(s)
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @return A promise that will resolve when circular dependencies have been handled
+ */
+export function postProcessCircularDependencies(
+  newItemTemplate: common.IItemTemplate,
+  authentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    common.getItemDataAsJson(newItemTemplate.itemId, authentication).then(
+      data => {
+        const update: any = common.replaceInTemplate(data, templateDictionary);
+        common
+          .updateItemExtended(
+            newItemTemplate.itemId,
+            { id: newItemTemplate.itemId },
+            update,
+            authentication
+          )
+          .then(
+            () => resolve(),
+            e => reject(common.fail(e))
+          );
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}

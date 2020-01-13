@@ -21,10 +21,10 @@
  */
 
 import * as generalHelpers from "./generalHelpers";
+import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
-import * as interfaces from "./interfaces";
 import * as templatization from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -640,6 +640,24 @@ export function getFeatureServiceProperties(
   );
 }
 
+/**
+ * Removes an item from AGO.
+ *
+ * @param itemId Id of an item to delete
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the result of the request
+ */
+export function removeItem(
+  itemId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse> {
+  const requestOptions: portal.IUserItemOptions = {
+    id: itemId,
+    authentication: authentication
+  };
+  return portal.removeItem(requestOptions);
+}
+
 export function searchGroups(
   searchString: string,
   authentication: interfaces.UserSession
@@ -870,9 +888,7 @@ export function _getCreateServiceOptions(
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
-    const params: request.IParams = {
-      preserveLayerIds: true
-    };
+    const params: request.IParams = {};
 
     // Retain the existing title but swap with name if it's missing
     itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
@@ -888,14 +904,14 @@ export function _getCreateServiceOptions(
       : baseName + "_" + solutionItemId;
 
     const _item: serviceAdmin.ICreateServiceParams = {
-      ...itemInfo
+      ...itemInfo,
+      preserveLayerIds: true
     };
 
     const createOptions = {
       item: _item,
       folderId,
       params,
-      preserveLayerIds: true,
       authentication: authentication
     };
 

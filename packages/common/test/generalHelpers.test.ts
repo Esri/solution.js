@@ -20,6 +20,7 @@
 
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
+import * as mockItems from "../test/mocks/agolItems";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   // Blobs are only available in the browser
@@ -189,6 +190,335 @@ describe("Module `generalHelpers`: common utility functions shared across packag
       };
       generalHelpers.deleteProp(testObject, "prop1");
       expect(testObject).toEqual(expected);
+    });
+
+    it("handles empty path", () => {
+      const obj: any = {
+        child: 1
+      };
+      generalHelpers.deleteProp(obj, "");
+      expect(obj).toEqual({
+        child: 1
+      });
+    });
+
+    it("handles non-existent property", () => {
+      const obj: any = {
+        child: 1
+      };
+      generalHelpers.deleteProp(obj, "nephew");
+      expect(obj).toEqual({
+        child: 1
+      });
+    });
+
+    it("handles single-level property", () => {
+      const obj: any = {
+        child: 1
+      };
+      generalHelpers.deleteProp(obj, "child");
+      expect(obj).toEqual({});
+    });
+
+    it("handles double-level property", () => {
+      const obj: any = {
+        child: {
+          grandchildA: "a",
+          grandchildB: "b"
+        }
+      };
+      generalHelpers.deleteProp(obj, "child.grandchildB");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: "a"
+        }
+      });
+    });
+
+    it("handles second-level delete of triple-level property", () => {
+      const obj: any = {
+        child: {
+          grandchildA: "a",
+          grandchildB: {
+            greatGrandchildC: {
+              greatGreatGrandchildD: 4
+            }
+          }
+        }
+      };
+      generalHelpers.deleteProp(obj, "child.grandchildB");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: "a"
+        }
+      });
+    });
+
+    it("handles triple-level property", () => {
+      const obj: any = {
+        child: {
+          grandchildA: "a",
+          grandchildB: {
+            greatGrandchildC: {
+              greatGreatGrandchildD: 4
+            }
+          }
+        }
+      };
+      generalHelpers.deleteProp(obj, "child.grandchildB.greatGrandchildC");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: "a",
+          grandchildB: {}
+        }
+      });
+    });
+
+    it("doesn't skip levels", () => {
+      const obj: any = {
+        child: {
+          grandchildA: "a",
+          grandchildB: "b"
+        }
+      };
+      generalHelpers.deleteProp(obj, "grandchildB");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: "a",
+          grandchildB: "b"
+        }
+      });
+    });
+
+    it("handles level-one array", () => {
+      const obj: any = {
+        child: ["a", "b"]
+      };
+      generalHelpers.deleteProp(obj, "child");
+      expect(obj).toEqual({});
+    });
+
+    it("handles second-level array", () => {
+      const obj: any = {
+        child: {
+          grandchildA: ["a", "b"],
+          grandchildB: ["a", "b"]
+        }
+      };
+      generalHelpers.deleteProp(obj, "child.grandchildA");
+      expect(obj).toEqual({
+        child: {
+          grandchildB: ["a", "b"]
+        }
+      });
+    });
+
+    it("handles third-level array", () => {
+      const obj: any = {
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: ["a", "b"],
+              greatGrandchildD: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: ["a", "b"]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      };
+      generalHelpers.deleteProp(obj, "child.grandchildA.greatGrandchildD");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: ["a", "b"]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      });
+    });
+
+    it("handles third-level array property", () => {
+      const obj: any = {
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: [
+                {
+                  greatGreatGrandchildG: 10
+                }
+              ],
+              greatGrandchildD: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: [
+                {
+                  greatGreatGrandchildG: 10,
+                  greatGreatGrandchildH: 15,
+                  greatGreatGrandchildI: 20
+                }
+              ]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      };
+      generalHelpers.deleteProp(
+        obj,
+        "child.grandchildA.greatGrandchildF.greatGreatGrandchildH"
+      );
+      expect(obj).toEqual({
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: [
+                {
+                  greatGreatGrandchildG: 10
+                }
+              ],
+              greatGrandchildD: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: [
+                {
+                  greatGreatGrandchildG: 10,
+                  greatGreatGrandchildI: 20
+                }
+              ]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      });
+    });
+
+    it("handles third-level array solo property", () => {
+      const obj: any = {
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: [
+                {
+                  greatGreatGrandchildG: 10
+                }
+              ],
+              greatGrandchildD: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: [
+                {
+                  greatGreatGrandchildG: 10,
+                  greatGreatGrandchildH: 15,
+                  greatGreatGrandchildI: 20
+                }
+              ]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      };
+      generalHelpers.deleteProp(
+        obj,
+        "child.grandchildA.greatGrandchildC.greatGreatGrandchildG"
+      );
+      expect(obj).toEqual({
+        child: {
+          grandchildA: [
+            {
+              greatGrandchildC: [{}],
+              greatGrandchildD: ["a", "b"]
+            },
+            {
+              greatGrandchildE: ["a", "b"],
+              greatGrandchildF: [
+                {
+                  greatGreatGrandchildG: 10,
+                  greatGreatGrandchildH: 15,
+                  greatGreatGrandchildI: 20
+                }
+              ]
+            }
+          ],
+          grandchildB: ["a", "b"]
+        }
+      });
+    });
+
+    it("doesn't skip array levels", () => {
+      const obj: any = {
+        child: {
+          grandchildA: ["a", "b"],
+          grandchildB: ["a", "b"]
+        }
+      };
+      generalHelpers.deleteProp(obj, "grandchildA");
+      expect(obj).toEqual({
+        child: {
+          grandchildA: ["a", "b"],
+          grandchildB: ["a", "b"]
+        }
+      });
+    });
+
+    it("handles same property in multiple array items", () => {
+      const obj: any = {
+        total: 29,
+        start: 1,
+        num: 2,
+        nextStart: 3,
+        items: [
+          {
+            documentation: null,
+            screenshots: [],
+            listed: false,
+            numComments: 0,
+            numRatings: 0,
+            groupDesignations: null
+          },
+          {
+            documentation: null,
+            screenshots: [],
+            listed: false,
+            numComments: 0,
+            numRatings: 0,
+            groupDesignations: null
+          }
+        ]
+      };
+      generalHelpers.deleteProp(obj, "items.numComments");
+      expect(obj).toEqual({
+        total: 29,
+        start: 1,
+        num: 2,
+        nextStart: 3,
+        items: [
+          {
+            documentation: null,
+            screenshots: [],
+            listed: false,
+            numRatings: 0,
+            groupDesignations: null
+          },
+          {
+            documentation: null,
+            screenshots: [],
+            listed: false,
+            numRatings: 0,
+            groupDesignations: null
+          }
+        ]
+      });
     });
   });
 
@@ -667,6 +997,26 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           "{{934a9ef8efa7448fa8ddf7b13cef0240.layer12.layerId}}"
         )
       ).toEqual(12);
+    });
+  });
+
+  describe("getTemplateById", () => {
+    it("return template that matches id", () => {
+      const item0 = mockItems.getAGOLItemWithId("Feature Service", 0);
+      item0.itemId = "ABC123";
+      const item1 = mockItems.getAGOLItemWithId("Feature Service", 1);
+      item1.itemId = "ABC124";
+      const item2 = mockItems.getAGOLItemWithId("Feature Service", 2);
+      item2.itemId = "ABC125";
+
+      const templates: interfaces.IItemTemplate[] = [item0, item1, item2];
+
+      const id: string = "ABC124";
+      const expected: any = item1;
+
+      const actual: any = generalHelpers.getTemplateById(templates, id);
+
+      expect(actual).toEqual(expected);
     });
   });
 

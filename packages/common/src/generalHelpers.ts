@@ -20,7 +20,7 @@
  * @module generalHelpers
  */
 
-import { IDatasourceInfo } from "./interfaces";
+import * as interfaces from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -108,15 +108,64 @@ export function cloneObject(obj: { [index: string]: any }): any {
   return clone;
 }
 
+export function deleteItemProps(itemTemplate: any): any {
+  const propsToRetain: string[] = [
+    "access",
+    "accessInformation",
+    "appCategories",
+    "banner",
+    "categories",
+    "culture",
+    "description",
+    "documentation",
+    "extent",
+    "groupDesignations",
+    "industries",
+    "languages",
+    "largeThumbnail",
+    "licenseInfo",
+    "listed",
+    "name",
+    "properties",
+    "proxyFilter",
+    "screenshots",
+    "snippet",
+    "spatialReference",
+    "tags",
+    "thumbnail",
+    "title",
+    "type",
+    "typeKeywords",
+    "url"
+  ];
+  const propsToDelete: string[] = Object.keys(itemTemplate).filter(
+    k => propsToRetain.indexOf(k) < 0
+  );
+  deleteProps(itemTemplate, propsToDelete);
+  return itemTemplate;
+}
+
 /**
  * Deletes a property from an object.
  *
  * @param obj Object with property to delete
- * @param prop Property on object that should be deleted
+ * @param path Path into an object to property, e.g., "data.values.webmap", where "data" is a top-level property
+ *             in obj
  */
-export function deleteProp(obj: any, prop: string): void {
-  if (obj && obj.hasOwnProperty(prop)) {
-    delete obj[prop];
+export function deleteProp(obj: any, path: string): void {
+  const pathParts: string[] = path.split(".");
+
+  if (Array.isArray(obj)) {
+    obj.forEach((child: any) => deleteProp(child, path));
+  } else {
+    const subpath = pathParts.slice(1).join(".");
+    if (typeof obj[pathParts[0]] !== "undefined") {
+      if (pathParts.length === 1) {
+        delete obj[path];
+      } else {
+        deleteProp(obj[pathParts[0]], subpath);
+      }
+    }
   }
 }
 
@@ -314,7 +363,7 @@ export function getUniqueTitle(
  * @return Boolean indicating result
  */
 export function hasDatasource(
-  datasourceInfos: IDatasourceInfo[],
+  datasourceInfos: interfaces.IDatasourceInfo[],
   itemId: string,
   layerId: number
 ): boolean {
@@ -361,6 +410,28 @@ export function cleanLayerId(id: any) {
         10
       )
     : id;
+}
+
+/**
+ * Get template from list of templates by ID
+ *
+ * @param templates Array of item templates to search
+ * @param id of template we are searching for
+ *
+ * @return Template associated with the user provided id argument
+ */
+export function getTemplateById(
+  templates: interfaces.IItemTemplate[],
+  id: string
+): any {
+  let template;
+  (templates || []).some(_template => {
+    if (_template.itemId === id) {
+      template = _template;
+      return true;
+    }
+  });
+  return template;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //

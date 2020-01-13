@@ -372,6 +372,7 @@ function createItemTemplateList(itemIds: string[]): interfaces.IItemTemplate[] {
       data: "",
       resources: [] as any[],
       dependencies: [] as string[],
+      circularDependencies: [] as string[],
       properties: "",
       estimatedDeploymentCostFactor: 0
     };

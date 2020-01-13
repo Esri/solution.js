@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common createSolutionFromItem TypeScript example
+// @esri/solution-creator createSolutionFromItem TypeScript example
 
 import * as common from "@esri/solution-common";
 import * as creator from "@esri/solution-creator";
