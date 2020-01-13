@@ -205,11 +205,17 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const itemId = "itm1234567890";
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+        const serverInfoUrl: string =
+          "https://myserver/images/thumbnail.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
 
         const expected = { success: true, id: itemId };
         const expectedImage = mockItems.getAnImageResponse();
 
-        fetchMock.post(updateUrl, expected).post(thumbnailUrl, expectedImage);
+        fetchMock
+          .post(updateUrl, expected)
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(thumbnailUrl, expectedImage, { sendAsJson: false });
         resourceHelpers
           .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
@@ -344,8 +350,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
         const expectedImage = mockItems.getAnImageResponse();
         const imageUrl: string = "https://myserver/images/thumbnail.png";
+        const serverInfoUrl: string =
+          "https://myserver/images/thumbnail.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
 
-        fetchMock.post(updateUrl, expectedUpdate).post(imageUrl, expectedImage);
+        fetchMock
+          .post(updateUrl, expectedUpdate)
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(imageUrl, expectedImage, { sendAsJson: false });
         resourceHelpers
           .copyFilesFromStorageItem(
             storageAuthentication,
