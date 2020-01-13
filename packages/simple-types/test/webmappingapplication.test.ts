@@ -1617,8 +1617,12 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const expected = {
         success: false
       };
+      const updateUrl: string =
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wab1234567890/update";
+
       fetchMock
         .post(createUrl, expected)
+        .post(updateUrl, { success: true })
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
           '{"token":"fake-token"}'

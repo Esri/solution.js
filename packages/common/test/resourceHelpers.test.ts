@@ -198,35 +198,32 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
-  }
 
-  describe("addThumbnailFromUrl", () => {
-    it("has thumbnail", done => {
-      const thumbnailUrl = "https://myserver/images/thumbnail.png";
-      const itemId = "itm1234567890";
-      const updateUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
-      const expectedUpdate = { success: true, id: itemId };
+    describe("addThumbnailFromUrl", () => {
+      it("has thumbnail", done => {
+        const thumbnailUrl = "https://myserver/images/thumbnail.png";
+        const itemId = "itm1234567890";
+        const updateUrl =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
 
-      fetchMock.post(updateUrl, expectedUpdate);
-      resourceHelpers
-        .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
-        .then((response: any) => {
-          expect(response).toEqual(expectedUpdate);
-          const options: fetchMock.MockOptions = fetchMock.lastOptions(
-            updateUrl
-          );
-          const fetchBody = (options as fetchMock.MockResponseObject).body;
-          expect(fetchBody).toContain("f=json");
-          expect(fetchBody).toContain("id=itm1234567890");
-          expect(fetchBody).toContain(
-            "thumbnailurl=" + encodeURIComponent(thumbnailUrl)
-          );
-          expect(fetchBody).toContain("token=fake-token");
-          done();
-        }, done.fail);
+        const expected = { success: true, id: itemId };
+        const expectedImage = mockItems.getAnImageResponse();
+
+        fetchMock.post(updateUrl, expected).post(thumbnailUrl, expectedImage);
+        resourceHelpers
+          .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
+          .then((response: any) => {
+            expect(response).toEqual(expected);
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
+            done();
+          }, done.fail);
+      });
     });
-  });
+  }
 
   describe("copyFilesFromStorageItem", () => {
     it("empty files list", done => {
@@ -345,8 +342,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const updateUrl =
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
+        const expectedImage = mockItems.getAnImageResponse();
+        const imageUrl: string = "https://myserver/images/thumbnail.png";
 
-        fetchMock.post(updateUrl, expectedUpdate);
+        fetchMock.post(updateUrl, expectedUpdate).post(imageUrl, expectedImage);
         resourceHelpers
           .copyFilesFromStorageItem(
             storageAuthentication,
