@@ -1445,6 +1445,38 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             done();
           }, done.fail);
       });
+
+      it("should handle error on get data", done => {
+        const template: any = {
+          dependencies: ["ABC123", "A"],
+          type: "Workforce Project",
+          itemId: "123ABC"
+        };
+
+        const templateDictionary: any = {
+          ABC123: {
+            itemId: "NEWABC123"
+          }
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
+            mockItems.get400Failure()
+          );
+
+        simpleTypes
+          .postProcessCircularDependencies(
+            template,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(done.fail, done);
+      });
     }
   });
 });

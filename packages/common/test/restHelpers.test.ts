@@ -1537,6 +1537,22 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("removeItem", () => {
+    it("removeItem", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getSuccessResponse()
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+  });
+
   describe("searchGroups", () => {
     it("can handle no results", done => {
       const query: string = "My Group";
@@ -1962,13 +1978,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               capabilities: [],
               spatialReference: {
                 wkid: 102100
-              }
-            },
-            folderId: "aabb123456",
-            params: {
+              },
               preserveLayerIds: true
             },
-            preserveLayerIds: true,
+            folderId: "aabb123456",
+            params: {},
             authentication: userSession
           });
           done();
@@ -2008,13 +2022,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               capabilities: "",
               spatialReference: {
                 wkid: 102100
-              }
-            },
-            folderId: "aabb123456",
-            params: {
+              },
               preserveLayerIds: true
             },
-            preserveLayerIds: true,
+            folderId: "aabb123456",
+            params: {},
             authentication: userSession
           });
           done();
@@ -2082,13 +2094,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               spatialReference: {
                 wkid: 102100
               },
-              hasViews: true
-            },
-            folderId: "aabb123456",
-            params: {
+              hasViews: true,
               preserveLayerIds: true
             },
-            preserveLayerIds: true,
+            folderId: "aabb123456",
+            params: {},
             authentication: userSession
           });
           done();
@@ -2154,14 +2164,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               isView: true,
               spatialReference: {
                 wkid: 102100
-              }
+              },
+              preserveLayerIds: true
             },
             folderId: "aabb123456",
             params: {
-              preserveLayerIds: true,
               isView: true
             },
-            preserveLayerIds: true,
             authentication: userSession
           });
           done();
@@ -2230,13 +2239,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               spatialReference: {
                 wkid: 102100
               },
-              hasViews: true
-            },
-            folderId: "aabb123456",
-            params: {
+              hasViews: true,
               preserveLayerIds: true
             },
-            preserveLayerIds: true,
+            folderId: "aabb123456",
+            params: {},
             authentication: userSession
           });
           done();

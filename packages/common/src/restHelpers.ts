@@ -888,9 +888,7 @@ export function _getCreateServiceOptions(
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
-    const params: request.IParams = {
-      preserveLayerIds: true
-    };
+    const params: request.IParams = {};
 
     // Retain the existing title but swap with name if it's missing
     itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
@@ -906,14 +904,14 @@ export function _getCreateServiceOptions(
       : baseName + "_" + solutionItemId;
 
     const _item: serviceAdmin.ICreateServiceParams = {
-      ...itemInfo
+      ...itemInfo,
+      preserveLayerIds: true
     };
 
     const createOptions = {
       item: _item,
       folderId,
       params,
-      preserveLayerIds: true,
       authentication: authentication
     };
 
