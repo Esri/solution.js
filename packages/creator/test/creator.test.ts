@@ -95,6 +95,7 @@ describe("Module `creator`", () => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
 
         fetchMock
           .post(
@@ -116,6 +117,10 @@ describe("Module `creator`", () => {
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
             mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             // for missing item's placeholder
@@ -159,6 +164,10 @@ describe("Module `creator`", () => {
             mockItems.get400Failure()
           )
           .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
             // for missing item's placeholder
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
             { success: false, id: expectedSolutionId }
@@ -178,6 +187,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
 
         const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
 
         fetchMock
           .get(
@@ -231,6 +241,10 @@ describe("Module `creator`", () => {
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
@@ -268,6 +282,8 @@ describe("Module `creator`", () => {
 
         const expectedSolutionId = "sln1234567890";
 
+        const expectedImage = mockItems.getAnImageResponse();
+
         fetchMock
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
@@ -320,6 +336,10 @@ describe("Module `creator`", () => {
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
@@ -373,6 +393,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
 
         const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
 
         fetchMock
           .get(
@@ -390,6 +411,10 @@ describe("Module `creator`", () => {
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
@@ -427,6 +452,8 @@ describe("Module `creator`", () => {
 
         const expectedSolutionId = "sln1234567890";
 
+        const expectedImage = mockItems.getAnImageResponse();
+
         fetchMock
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
@@ -443,6 +470,10 @@ describe("Module `creator`", () => {
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
@@ -485,6 +516,8 @@ describe("Module `creator`", () => {
 
         const expectedSolutionId = "sln1234567890";
 
+        const expectedImage = mockItems.getAnImageResponse();
+
         fetchMock
           .get(
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
@@ -501,6 +534,10 @@ describe("Module `creator`", () => {
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
@@ -538,61 +575,63 @@ describe("Module `creator`", () => {
           );
       });
     });
-  }
 
-  describe("createSolutionFromItemIds", () => {
-    it("createSolutionFromItemIds fails to create solution item", done => {
-      const itemIds: string[] = [];
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+    describe("createSolutionFromItemIds", () => {
+      it("createSolutionFromItemIds fails to create solution item", done => {
+        const itemIds: string[] = [];
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const url =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
 
-      fetchMock.post(url, { success: false });
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionFromItemIds(itemIds, authentication).then(
-        () => done.fail(),
-        error => {
-          expect(error.success).toBeFalsy();
-          done();
-        }
-      );
-    });
-
-    it("createSolutionFromItemIds fails to get item", done => {
-      const itemIds: string[] = ["itm1234567890"];
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const expectedSolutionId = "sln1234567890";
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: expectedSolutionId }
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/itm1234567890?f=json&token=fake-token",
-          mockItems.get400Failure()
-        )
-        .post(
-          // for missing item's placeholder
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-          { success: true, id: expectedSolutionId }
+        fetchMock.post(url, { success: false });
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionFromItemIds(itemIds, authentication).then(
+          () => done.fail(),
+          error => {
+            expect(error.success).toBeFalsy();
+            done();
+          }
         );
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionFromItemIds(itemIds, authentication).then(
-        response => {
-          expect(response).toEqual(expectedSolutionId);
-          done();
-        },
-        () => done.fail()
-      );
-    });
+      });
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
+      it("createSolutionFromItemIds fails to get item", done => {
+        const itemIds: string[] = ["itm1234567890"];
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: expectedSolutionId }
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/itm1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
+          )
+          .post(
+            // for missing item's placeholder
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            { success: true, id: expectedSolutionId }
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolutionFromItemIds(itemIds, authentication).then(
+          response => {
+            expect(response).toEqual(expectedSolutionId);
+            done();
+          },
+          () => done.fail()
+        );
+      });
+
       it("createSolutionFromItemIds fails to add items to solution item", done => {
         const itemIds: string[] = ["itm1234567890"];
         const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -641,8 +680,8 @@ describe("Module `creator`", () => {
           }
         );
       });
-    }
-  });
+    });
+  }
 
   describe("createSolutionItem", () => {
     it("createSolutionItem with defaults", done => {

@@ -575,6 +575,11 @@ describe("Module `deploySolution`", () => {
         };
 
         const folderId: string = "bd610311e0e84e41b96f54df2da54f82";
+        const imageUrl: string =
+          "https://www.arcgis.com/sharing/rest/content/items/c38e59126368495694ca23b7ccacefba/resources/cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png";
+        const imageUrl2: string =
+          "https://www.arcgis.com/sharing/rest/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
+        const expectedImage = mockItems.getAnImageResponse();
 
         fetchMock
           .post(
@@ -604,6 +609,8 @@ describe("Module `deploySolution`", () => {
             portalSubset.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse(folderId)
           )
+          .post(imageUrl, expectedImage)
+          .post(imageUrl2, expectedImage)
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
             utils.getTransformationsResponse()
