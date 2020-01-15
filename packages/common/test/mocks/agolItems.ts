@@ -91,6 +91,7 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "Code Attachment":
       item = getAGOLItemFundamentals(type);
+      item.name += ".zip";
       break;
 
     case "Code Sample":
@@ -126,6 +127,7 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "GeoJson":
       item = getAGOLItemFundamentals(type, url || undefined);
+      item.name += ".json";
       break;
 
     case "Geoprocessing Package":
