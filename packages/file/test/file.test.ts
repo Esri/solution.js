@@ -160,46 +160,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
               expect(response.itemId).toEqual("cod1234567890");
               expect(response.type).toEqual("Code Attachment");
               expect(response.resources).toEqual([
-                "cod1234567890_info_file/Name of an AGOL item.zip"
-              ]);
-              done();
-            },
-            () => done.fail()
-          );
-      });
-
-      it("Code Attachment with zip data using default zip name", done => {
-        const solutionItemId: string = "sln1234567890";
-        const agolItem = mockItems.getAGOLItem("Code Attachment");
-        agolItem.name = null;
-        agolItem.thumbnail = null;
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
-            utils.getSampleZipFile("")
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
-            mockItems.get500Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
-            { success: true, id: solutionItemId }
-          );
-
-        file
-          .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
-          .then(
-            response => {
-              expect(response.itemId).toEqual("cod1234567890");
-              expect(response.type).toEqual("Code Attachment");
-              expect(response.resources).toEqual([
-                "cod1234567890_info_file/file.zip.zip"
+                "cod1234567890_info_data/Name of an AGOL item.zip"
               ]);
               done();
             },

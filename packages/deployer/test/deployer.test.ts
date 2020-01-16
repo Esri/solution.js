@@ -378,10 +378,15 @@ describe("Module `deploySolution`", () => {
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
           .then(
             function(actual) {
-              // not concerened with the def here
+              // not concerned with the def here
               templateDictionary["svc1234567890"].def = {};
-              expect(templateDictionary).toEqual(expectedTemplate);
-              expect(actual).toEqual(expected);
+
+              expect(templateDictionary)
+                .withContext("test templateDictionary === expectedTemplate")
+                .toEqual(expectedTemplate);
+              expect(actual)
+                .withContext("test actual === expected")
+                .toEqual(expected);
 
               // Repeat with progress callback
               options.progressCallback = utils.PROGRESS_CALLBACK;

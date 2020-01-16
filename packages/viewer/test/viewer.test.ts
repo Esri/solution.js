@@ -143,41 +143,4 @@ describe("Module `viewer`", () => {
         );
     });
   });
-
-  describe("_compareJSON", () => {
-    it("empty objects", () => {
-      expect(viewer._compareJSON({}, {})).toBeTruthy();
-    });
-
-    it("one empty object", () => {
-      expect(viewer._compareJSON({ a: 1 }, {})).toBeFalsy();
-      expect(viewer._compareJSON({}, { a: 1 })).toBeFalsy();
-    });
-
-    it("two single-level objects", () => {
-      expect(
-        viewer._compareJSON({ a: 1, b: 2, c: "3" }, { a: 1, b: 2, c: "3" })
-      ).toBeTruthy();
-      expect(viewer._compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })).toBeFalsy();
-    });
-
-    it("multiple-level objects", () => {
-      expect(
-        viewer._compareJSON(sampleItemTemplate, sampleItemTemplate)
-      ).toBeTruthy();
-      let clone = common.cloneObject(sampleItemTemplate);
-      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeTruthy();
-
-      common.deleteItemProps(clone);
-      expect(viewer._compareJSON({}, clone)).toBeTruthy();
-      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeFalsy();
-
-      clone = common.cloneObject(sampleItemTemplate.item);
-      delete clone.id;
-      const sampleItemBase = common.deleteItemProps(
-        common.cloneObject(sampleItemTemplate.item)
-      );
-      expect(viewer._compareJSON(sampleItemBase, clone)).toBeTruthy();
-    });
-  });
 });
