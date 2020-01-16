@@ -231,10 +231,6 @@ export function deploySolutionItems(
     cloneOrderChecklist.forEach(id => {
       // Get the item's template out of the list of templates
       const template = common.findTemplateInList(templates, id);
-      if (!template) {
-        reject(common.fail());
-      }
-
       awaitAllItems.push(
         _createItemFromTemplateWhenReady(
           template!,
