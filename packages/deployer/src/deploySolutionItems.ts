@@ -267,7 +267,7 @@ export function deploySolutionItems(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
  * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
- * @return A promise that will resolve with the item's template (which is simply returned if it's
+ * @return A promise that will resolve with the id of the deployed item (which is simply returned if it's
  *         already in the templates list
  * @protected
  */

@@ -347,9 +347,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         itemTemplate.item.thumbnail = null;
         const resourceFilePaths: common.IDeployFileCopyPath[] = [];
         const templateDictionary: any = {};
-        const progressTickCallback: any = function(opts: any) {
-          return opts;
-        };
         const newItemID: string = "map1234567891";
 
         fetchMock.post(
@@ -364,7 +361,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            progressTickCallback
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -389,9 +386,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           }
         ];
         const templateDictionary: any = {};
-        const progressTickCallback: any = function(opts: any) {
-          return opts;
-        };
         const newItemID: string = "map1234567891";
 
         fetchMock
@@ -422,7 +416,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            progressTickCallback
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -440,9 +434,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         itemTemplate.item.thumbnail = null;
         const resourceFilePaths: common.IDeployFileCopyPath[] = [];
         const templateDictionary: any = {};
-        const progressTickCallback: any = function(opts: any) {
-          return opts;
-        };
         const newItemID: string = "map1234567891";
 
         fetchMock.post(
@@ -457,7 +448,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            progressTickCallback
+            utils.PROGRESS_CALLBACK
           )
           .then(response => {
             done.fail();
@@ -479,9 +470,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           }
         ];
         const templateDictionary: any = {};
-        const progressTickCallback: any = function(opts: any) {
-          return opts;
-        };
         const newItemID: string = "map1234567891";
 
         fetchMock
@@ -518,7 +506,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            progressTickCallback
+            utils.PROGRESS_CALLBACK
           )
           .then(
             () => done.fail(),
