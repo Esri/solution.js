@@ -149,6 +149,8 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Project Package":
+      item = getAGOLItemFundamentals(type);
+      item.name += ".ppkx";
       break;
 
     case "Project Template":

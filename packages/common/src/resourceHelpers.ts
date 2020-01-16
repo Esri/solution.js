@@ -178,7 +178,7 @@ export function copyData(
         };
 
         restHelpers.updateItem(update, destination.authentication).then(
-          resolve,
+          response => resolve,
           e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },

@@ -202,10 +202,10 @@ export function createItemFromTemplate(
               progressTickCallback();
               resolve(createResponse.id);
             },
-            e => reject(common.fail(e))
+            e => reject(common.fail(e)) // fails to deploy all resources to the item
           );
         },
-        e => reject(common.fail(e))
+        e => reject(common.fail(e)) // fails to create item
       );
   });
 }

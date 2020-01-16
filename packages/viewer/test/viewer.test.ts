@@ -92,19 +92,49 @@ afterEach(() => {
 
 describe("Module `viewer`", () => {
   describe("compareItems", () => {
-    it("handles identity with supplied items", done => {
+    it("handles identity with supplied Solution items", done => {
       viewer
-        .compareItems(
-          sampleItemTemplate.item,
-          sampleItemTemplate.item,
-          MOCK_USER_SESSION
-        )
+        .compareItems(sampleItemTemplate.item, sampleItemTemplate.item)
         .then(
           match => {
             match ? done() : done.fail();
           },
           () => done.fail()
         );
+    });
+
+    it("handles non-Solution items", done => {
+      const item1 = {
+        ...sampleItemTemplate.item,
+        type: "Web Map"
+      };
+      const item2 = {
+        ...item1,
+        id: "map1234567890"
+      };
+      viewer.compareItems(item1, item2).then(
+        match => {
+          match ? done() : done.fail();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("handles different items", done => {
+      const item1 = {
+        ...sampleItemTemplate.item,
+        type: "Web Map"
+      };
+      const item2 = {
+        ...item1,
+        type: "Web Mapping Application"
+      };
+      viewer.compareItems(item1, item2).then(
+        match => {
+          match ? done.fail() : done();
+        },
+        () => done.fail()
+      );
     });
 
     it("handles identity with supplied item ids", done => {
