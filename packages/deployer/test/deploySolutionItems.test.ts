@@ -78,6 +78,42 @@ describe("Module `deploySolutionItems`", () => {
         }, done.fail);
     });
 
+    it("handles Web Mapping Applications that are not Storymaps", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        "Web Mapping Application",
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+      const newItemID: string = "wma1234567891";
+
+      fetchMock
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/wma1234567891/update",
+          { success: true, id: newItemID }
+        );
+
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.PROGRESS_CALLBACK
+        )
+        .then((response: string) => {
+          expect(response).toEqual(newItemID);
+          done();
+        }, done.fail);
+    });
+
     it("flags Storymaps implemented as Web Mapping Applications", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
         "Web Mapping Application",
@@ -127,6 +163,11 @@ describe("Module `deploySolutionItems`", () => {
           {
             type: "Workforce Project",
             itemId: "123ABC",
+            circularDependencies: ["ABC123"]
+          },
+          {
+            type: "Unknown",
+            itemId: "123UNK",
             circularDependencies: ["ABC123"]
           }
         ];
