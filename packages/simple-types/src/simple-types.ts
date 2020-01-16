@@ -26,6 +26,7 @@ import * as form from "./form";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
 import * as workforce from "./workforce";
+import * as quickcapture from "./quickcapture";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -96,6 +97,12 @@ export function convertItemToTemplate(
           itemTemplate.itemId,
           "Survey2Service",
           "forward",
+          authentication
+        );
+        break;
+      case "QuickCapture Project":
+        dataPromise = common.getItemResourcesFiles(
+          itemTemplate.itemId,
           authentication
         );
         break;
@@ -171,6 +178,9 @@ export function convertItemToTemplate(
             break;
           case "Workforce Project":
             workforce.convertItemToTemplate(itemTemplate);
+            break;
+          case "QuickCapture Project":
+            webappPromise = quickcapture.convertItemToTemplate(itemTemplate);
             break;
         }
 
@@ -295,12 +305,23 @@ export function createItemFromTemplate(
 
           Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
             () => {
-              progressTickCallback();
-
-              // Update the template dictionary with the new id
-              templateDictionary[template.itemId].itemId = createResponse.id;
-
-              resolve(createResponse.id);
+              let updateResourceDef: Promise<void> = Promise.resolve();
+              if (template.type === "QuickCapture Project") {
+                updateResourceDef = quickcapture.fineTuneCreatedItem(
+                  newItemTemplate,
+                  destinationAuthentication
+                );
+              }
+              updateResourceDef.then(
+                () => {
+                  progressTickCallback();
+                  // Update the template dictionary with the new id
+                  templateDictionary[template.itemId].itemId =
+                    createResponse.id;
+                  resolve(createResponse.id);
+                },
+                e => reject(common.fail(e))
+              );
             },
             e => reject(common.fail(e))
           );

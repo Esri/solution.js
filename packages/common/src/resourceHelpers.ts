@@ -629,3 +629,26 @@ export function generateThumbnailStorageFilename(
       : thumbnailUrlParts[1];
   return { folder, filename };
 }
+
+/**
+ * Updates the items resource that matches the filename with new content
+ *
+ * @param itemId Id of the item to update
+ * @param filename Name of the resource file to update
+ * @param content The new content to update the resource with
+ * @param authentication Credentials for the request to the storage
+ * @return A promise which resolves with a success true/false response
+ */
+export function updateItemResourceText(
+  itemId: string,
+  filename: string,
+  content: string,
+  authentication: UserSession
+): Promise<any> {
+  return portal.updateItemResource({
+    id: itemId,
+    name: filename,
+    content: content,
+    authentication: authentication
+  });
+}
