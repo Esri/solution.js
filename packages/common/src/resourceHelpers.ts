@@ -218,7 +218,10 @@ export function isSupportedFileType(filename: string): boolean {
   const filenameExtension = filename.match(/\.([a-z]+)$/i);
   const supportedExtensions =
     "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
-  return supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0;
+  return (
+    !!filenameExtension &&
+    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
+  );
 }
 
 /**
