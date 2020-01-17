@@ -167,7 +167,7 @@ export function copyData(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     restHelpersGet.getBlob(source.url, source.authentication).then(
-      async blob => {
+      blob => {
         const update: interfaces.IItemUpdate = {
           id: destination.itemId,
           data: convertResourceToFile({
@@ -178,7 +178,7 @@ export function copyData(
         };
 
         restHelpers.updateItem(update, destination.authentication).then(
-          response => resolve,
+          resolve,
           e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
