@@ -142,7 +142,7 @@ export function deploySolution(
                       "Deploying solution " +
                         itemBase.title +
                         " (" +
-                        itemBase.id +
+                        templateSolutionId +
                         ") into folder " +
                         folderResponse.folder.title +
                         " (" +
