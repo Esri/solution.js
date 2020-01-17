@@ -108,9 +108,32 @@ export function cloneObject(obj: { [index: string]: any }): any {
   return clone;
 }
 
+/**
+ * Compares two JSON objects using JSON.stringify.
+ *
+ * @param json1 First object
+ * @param json2 Second object
+ * @return True if objects are the same
+ */
+export function compareJSON(json1: any, json2: any): boolean {
+  return JSON.stringify(json1) === JSON.stringify(json2);
+}
+
+/**
+ * Compares two JSON objects using JSON.stringify, converting empty strings to nulls.
+ *
+ * @param json1 First object
+ * @param json2 Second object
+ * @return True if objects are the same
+ */
+export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
+  const jsonStr1 = JSON.stringify(json1).replace(/\"\:\"\"/g, '":null');
+  const jsonStr2 = JSON.stringify(json2).replace(/\"\:\"\"/g, '":null');
+  return jsonStr1 === jsonStr2;
+}
+
 export function deleteItemProps(itemTemplate: any): any {
   const propsToRetain: string[] = [
-    "access",
     "accessInformation",
     "appCategories",
     "banner",
@@ -122,17 +145,16 @@ export function deleteItemProps(itemTemplate: any): any {
     "groupDesignations",
     "industries",
     "languages",
-    "largeThumbnail",
     "licenseInfo",
     "listed",
     "name",
     "properties",
     "proxyFilter",
     "screenshots",
+    "size",
     "snippet",
     "spatialReference",
     "tags",
-    "thumbnail",
     "title",
     "type",
     "typeKeywords",

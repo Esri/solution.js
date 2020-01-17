@@ -1204,4 +1204,27 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
   });
+
+  describe("isSupportedFileType", () => {
+    it("recognizes supported file types for resource", () => {
+      const fileTypes =
+        ".json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase";
+      fileTypes.split("|").forEach(fileType =>
+        expect(resourceHelpers.isSupportedFileType(fileType))
+          .withContext(fileType + "is not supported")
+          .toBeTruthy()
+      );
+    });
+
+    it("recognizes unsupported file types for resource", () => {
+      const fileTypes =
+        ".bin|.cpg|.css|.csv|.dbf|.doc|.docx|.htm|.html|.ico|.jar|.js|.mxd|.mxs|.pdf|.ppt|.pptx" +
+        "|.prj|.rtf|.shp|.tar|.tif|.tiff|.ts|.ttf|.vsd|.wav|.xls|.xlsx";
+      fileTypes.split("|").forEach(fileType =>
+        expect(resourceHelpers.isSupportedFileType(fileType))
+          .withContext(fileType + "is supported")
+          .toBeFalsy()
+      );
+    });
+  });
 });

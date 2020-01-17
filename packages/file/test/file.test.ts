@@ -39,6 +39,15 @@ const MOCK_USER_SESSION = new common.UserSession({
   portal: "https://myorg.maps.arcgis.com/sharing/rest"
 });
 
+const SERVER_INFO = {
+  currentVersion: 10.1,
+  fullVersion: "10.1",
+  soapUrl: "http://server/arcgis/services",
+  secureSoapUrl: "https://server/arcgis/services",
+  owningSystemUrl: "https://www.arcgis.com",
+  authInfo: {}
+};
+
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 const noResourcesResponse: any = {
@@ -55,12 +64,11 @@ afterEach(() => {
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-/* tslint:disable:no-empty */
 describe("Module `file`: manages the creation and deployment of item types that contain files", () => {
   describe("convertItemToTemplate", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      it("GeoJson with no data", done => {
+      it("handles GeoJson with no data", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("GeoJson");
         agolItem.thumbnail = null;
@@ -91,7 +99,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("GeoJson with data & resources", done => {
+      it("handles GeoJson with data & resources", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("GeoJson");
         agolItem.thumbnail = null;
@@ -130,7 +138,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("Code Attachment with zip data using item name", done => {
+      it("handles Code Attachment with zip data using item name", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("Code Attachment");
         agolItem.thumbnail = null;
@@ -160,7 +168,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
               expect(response.itemId).toEqual("cod1234567890");
               expect(response.type).toEqual("Code Attachment");
               expect(response.resources).toEqual([
-                "cod1234567890_info_file/Name of an AGOL item.zip"
+                "cod1234567890_info_data/Name of an AGOL item.zip"
               ]);
               done();
             },
@@ -168,23 +176,23 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("Code Attachment with zip data using default zip name", done => {
+      it("handles file type not supported as an AGO resource", done => {
         const solutionItemId: string = "sln1234567890";
-        const agolItem = mockItems.getAGOLItem("Code Attachment");
-        agolItem.name = null;
+        const agolItem = mockItems.getAGOLItem("Project Package");
         agolItem.thumbnail = null;
+        agolItem.name = "myProjectPackage.ppkx";
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
-            utils.getSampleZipFile("")
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/data",
+            utils.getSampleZipFile("myProjectPackage.ppkx")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
@@ -196,10 +204,10 @@ describe("Module `file`: manages the creation and deployment of item types that 
           .convertItemToTemplate(solutionItemId, agolItem, MOCK_USER_SESSION)
           .then(
             response => {
-              expect(response.itemId).toEqual("cod1234567890");
-              expect(response.type).toEqual("Code Attachment");
+              expect(response.itemId).toEqual("ppk1234567890");
+              expect(response.type).toEqual("Project Package");
               expect(response.resources).toEqual([
-                "cod1234567890_info_file/file.zip.zip"
+                "ppk1234567890_info_dataz/myProjectPackage.ppkx.zip"
               ]);
               done();
             },
@@ -207,7 +215,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("Code Attachment save fails", done => {
+      it("handles Code Attachment where save fails", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("Code Attachment");
         agolItem.thumbnail = null;
@@ -247,7 +255,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("GeoJson with inaccessible bad JSON data", done => {
+      it("handles GeoJson with inaccessible bad JSON data", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("GeoJson");
         agolItem.thumbnail = null;
@@ -285,7 +293,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           );
       });
 
-      it("GeoJson with bad JSON data", done => {
+      it("handles GeoJson with bad JSON data", done => {
         const solutionItemId: string = "sln1234567890";
         const agolItem = mockItems.getAGOLItem("GeoJson");
         agolItem.thumbnail = null;
@@ -330,25 +338,181 @@ describe("Module `file`: manages the creation and deployment of item types that 
   });
 
   describe("createItemFromTemplate", () => {
-    it("placeholder", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
-      itemTemplate.itemId = "map1234567890";
-      itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
-      itemTemplate.item.thumbnail = null;
-      const templateDictionary: any = {};
+    // Blobs are only available in the browser
+    if (typeof window !== "undefined") {
+      it("deploys an item", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
 
-      file
-        .createItemFromTemplate(
-          itemTemplate,
-          [],
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(
+            response => {
+              expect(response).toEqual("map1234567891");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("deploys an item with resources", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+          {
+            type: common.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
           }
-        )
-        .then(done, done);
-    });
+        ];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: newItemID }
+          )
+          .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO)
+          .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
+          .post(
+            "https://myserver/doc/metadata.xml",
+            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+              type: "text/xml"
+            }),
+            { sendAsJson: false }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: true }
+          );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(
+            response => {
+              expect(response).toEqual("map1234567891");
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("fails to create item", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: false }
+        );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(response => {
+            done.fail();
+          }, done);
+      });
+
+      it("fails to deploy file data to the item", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+          {
+            type: common.EFileType.Data,
+            folder: "cod1234567890_info_data",
+            filename: "Name of an AGOL item.zip",
+            url:
+              "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
+          }
+        ];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: newItemID }
+          )
+          .post(
+            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
+            SERVER_INFO
+          )
+          .post(
+            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
+            utils.getSampleZipFile("Name of an AGOL item.zip")
+          )
+          .post(
+            "https://myserver/doc/metadata.xml",
+            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+              type: "text/xml"
+            }),
+            { sendAsJson: false }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: false }
+          );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(
+            () => done.fail(),
+            () => done()
+          );
+      });
+    }
   });
 });

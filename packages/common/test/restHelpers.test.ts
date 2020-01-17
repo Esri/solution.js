@@ -1598,8 +1598,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
   describe("updateItem", () => {
     it("can handle failure", done => {
+      itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         mockItems.get400Failure()
       );
       const progressTickCallback: any = function(opts: any) {
@@ -1626,8 +1627,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("without share", done => {
+      itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       const progressTickCallback: any = function(opts: any) {
@@ -1651,8 +1653,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("with public share", done => {
+      itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
@@ -1680,8 +1683,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("with org share", done => {
+      itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
@@ -1709,8 +1713,9 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
 
     it("can handle share failure", done => {
+      itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/update",
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(

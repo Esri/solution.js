@@ -112,18 +112,22 @@ export function convertItemToTemplate(
         );
 
         if (itemDataResponse) {
-          // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
-          // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
-          const filename = (itemTemplate.item.name || "file.zip") + ".zip";
-          itemTemplate.item.name = filename;
+          const resource: common.IFileMimeType = common.convertBlobToSupportableResource(
+            itemDataResponse,
+            itemTemplate.item.name
+          );
+          itemTemplate.properties[resource.filename] = resource.mimeType;
+
           const storageName = common.generateResourceStorageFilename(
             itemTemplate.itemId,
-            filename,
-            "info_file"
+            (resource.blob as File).name,
+            (resource.blob as File).name === resource.filename
+              ? "info_data"
+              : "info_dataz"
           );
           common
             .addResourceFromBlob(
-              itemDataResponse,
+              resource.blob,
               solutionItemId,
               storageName.folder,
               storageName.filename,
@@ -159,6 +163,49 @@ export function createItemFromTemplate(
   progressTickCallback: () => void
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    resolve();
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
+
+    // Create the item, then update its URL with its new id
+    common
+      .createItemWithData(
+        newItemTemplate.item,
+        newItemTemplate.data,
+        destinationAuthentication,
+        templateDictionary.folderId
+      )
+      .then(
+        createResponse => {
+          progressTickCallback();
+          // Add the new item to the settings
+          newItemTemplate.itemId = createResponse.id;
+          templateDictionary[template.itemId] = {
+            itemId: createResponse.id
+          };
+
+          // Copy resources, metadata, thumbnail, data
+          const resourcesDef = common.copyFilesFromStorageItem(
+            storageAuthentication,
+            resourceFilePaths,
+            createResponse.id,
+            destinationAuthentication,
+            false,
+            template.properties
+          );
+
+          Promise.all([resourcesDef]).then(
+            () => {
+              progressTickCallback();
+              resolve(createResponse.id);
+            },
+            e => reject(common.fail(e)) // fails to deploy all resources to the item
+          );
+        },
+        e => reject(common.fail(e)) // fails to create item
+      );
   });
 }

@@ -18,6 +18,7 @@
  * Provides tests for functions involving deployment of items via the REST API.
  */
 
+import * as common from "@esri/solution-common";
 import * as deploySolution from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -54,9 +55,99 @@ describe("Module `deploySolutionItems`", () => {
   });
 
   describe("_createItemFromTemplateWhenReady", () => {
-    xit("_createItemFromTemplateWhenReady", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("flags unimplemented item types", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        "Unsupported"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.PROGRESS_CALLBACK
+        )
+        .then((response: string) => {
+          expect(response).toEqual("");
+          done();
+        }, done.fail);
+    });
+
+    it("handles Web Mapping Applications that are not Storymaps", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        "Web Mapping Application",
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+      const newItemID: string = "wma1234567891";
+
+      fetchMock
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/wma1234567891/update",
+          { success: true, id: newItemID }
+        );
+
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.PROGRESS_CALLBACK
+        )
+        .then((response: string) => {
+          expect(response).toEqual(newItemID);
+          done();
+        }, done.fail);
+    });
+
+    it("flags Storymaps implemented as Web Mapping Applications", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        "Web Mapping Application",
+        [],
+        "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+      const newItemID: string = "sto1234567891";
+
+      fetchMock
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/sto1234567891/update",
+          { success: true, id: newItemID }
+        );
+
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.PROGRESS_CALLBACK
+        )
+        .then((response: string) => {
+          expect(response).toEqual(newItemID);
+          done();
+        }, done.fail);
     });
   });
 
@@ -72,6 +163,11 @@ describe("Module `deploySolutionItems`", () => {
           {
             type: "Workforce Project",
             itemId: "123ABC",
+            circularDependencies: ["ABC123"]
+          },
+          {
+            type: "Unknown",
+            itemId: "123UNK",
             circularDependencies: ["ABC123"]
           }
         ];
