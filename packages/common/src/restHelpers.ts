@@ -641,6 +641,24 @@ export function getFeatureServiceProperties(
 }
 
 /**
+ * Removes a folder from AGO.
+ *
+ * @param folderId Id of a folder to delete
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the result of the request
+ */
+export function removeFolder(
+  folderId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IFolderStatusResponse> {
+  const requestOptions: portal.IFolderIdOptions = {
+    folderId: folderId,
+    authentication: authentication
+  };
+  return portal.removeFolder(requestOptions);
+}
+
+/**
  * Removes an item from AGO.
  *
  * @param itemId Id of an item to delete

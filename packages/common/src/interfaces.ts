@@ -52,7 +52,7 @@ export {
  * Flag for storing an item's binary resources.
  */
 export enum EFileType {
-  Form,
+  Data,
   Metadata,
   Resource,
   Thumbnail
@@ -123,6 +123,21 @@ export interface IFeatureServiceProperties {
   service: any;
   layers: any[];
   tables: any[];
+}
+
+export interface IFileMimeType {
+  blob: Blob;
+  filename: string;
+  mimeType: string;
+}
+
+export interface IFolderStatusResponse {
+  success: boolean;
+  folder: {
+    username: string;
+    id: string;
+    title: string;
+  };
 }
 
 export interface IGetRelatedItemsResponse
@@ -234,7 +249,15 @@ export interface IItemTypeModuleMap {
 
 export interface IItemUpdate {
   id: string;
+  /**
+   * Key-value pair for update parameter.
+   * N.B.: Use `data` key for binary data; all other keys are serialized, which zeroes out binary data!
+   */
   [key: string]: any;
+}
+
+export interface IMimeTypes {
+  [key: string]: string;
 }
 
 /**
