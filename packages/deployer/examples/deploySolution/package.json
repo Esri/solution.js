@@ -2,6 +2,7 @@
   "name": "deploySolution",
   "version": "1.0.0",
   "description": "Example use of @esri/solution-deployer to deploy an AGO solution item.",
+  "author": "Esri",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
