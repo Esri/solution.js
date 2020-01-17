@@ -167,7 +167,7 @@ export function copyData(
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     restHelpersGet.getBlob(source.url, source.authentication).then(
-      async blob => {
+      blob => {
         const update: interfaces.IItemUpdate = {
           id: destination.itemId,
           data: convertResourceToFile({
@@ -178,7 +178,7 @@ export function copyData(
         };
 
         restHelpers.updateItem(update, destination.authentication).then(
-          response => resolve,
+          resolve,
           e => reject(generalHelpers.fail(e)) // unable to add resource
         );
       },
@@ -189,16 +189,16 @@ export function copyData(
 
 export function convertBlobToSupportableResource(
   blob: Blob,
-  filename: string
+  filename: string = ""
 ): interfaces.IFileMimeType {
-  const originalFilename = (blob as File).name || filename || "";
+  const originalFilename = (blob as File).name || filename;
   let filenameToUse = originalFilename;
   if (filenameToUse && !isSupportedFileType(filenameToUse)) {
     filenameToUse = filenameToUse + ".zip";
   }
 
   return {
-    blob: new File([blob], filenameToUse),
+    blob: new File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
     mimeType: blob.type
   };
@@ -215,14 +215,13 @@ export function convertResourceToFile(
 export function isSupportedFileType(filename: string): boolean {
   // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
   // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
-  const matches = filename.match(/\.([a-z]+)$/i);
-  if (Array.isArray(matches) && matches.length > 0) {
-    const supported =
-      "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
-    return supported.indexOf("|" + matches[0] + "|") >= 0;
-  } else {
-    return false;
-  }
+  const filenameExtension = filename.match(/\.([a-z]+)$/i);
+  const supportedExtensions =
+    "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
+  return (
+    !!filenameExtension &&
+    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
+  );
 }
 
 /**

@@ -146,6 +146,15 @@ export function getSampleTextAsBlob(mimeType = "text/plain"): Blob {
   return new Blob(["this is some text"], { type: mimeType });
 }
 
+export function getSampleTextAsFile(
+  filename: string,
+  mimeType = "text/plain"
+): File {
+  return new File([getSampleTextAsBlob(mimeType)], filename, {
+    type: mimeType
+  });
+}
+
 export function getSampleZip(mimeType = "application/zip"): Blob {
   const zipContents =
     "504B0304 0A000000 0000C045 D9424437\
