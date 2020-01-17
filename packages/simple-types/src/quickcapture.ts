@@ -74,12 +74,8 @@ export function _templatizeApplication(
   // Quick Project item id
   _templatizeId(data, "itemId");
 
-  // basemap item id
-  const baseMapId: any = common.getProp(data, "basemap.itemId");
-  if (baseMapId) {
-    _updateDependencies(baseMapId, itemTemplate);
-    _templatizeId(data, "basemap.itemId");
-  }
+  // Set the admin email
+  _templatizeAdminEmail(data);
 
   // datasource item id and url
   const dataSources: common.IQuickCaptureDatasource[] = data.dataSources;
@@ -94,6 +90,17 @@ export function _templatizeApplication(
     });
   }
   return data;
+}
+
+/**
+ * Templatize the email property
+ *
+ * @param data the quick capture application
+ */
+export function _templatizeAdminEmail(data: any): void {
+  if (common.getProp(data, "preferences.adminEmail")) {
+    common.setProp(data, "preferences.adminEmail", "{{user.email}}");
+  }
 }
 
 /**
@@ -113,7 +120,7 @@ export function _updateDependencies(
 }
 
 /**
- * Templatizes a url property
+ * Templatize a url property
  *
  * @param obj the datasource object
  * @param idPath the path to the id property
@@ -137,7 +144,7 @@ export function _templatizeUrl(
 }
 
 /**
- * Templatizes a item id property
+ * Templatize the item id property
  *
  * @param obj the datasource or object that contains the item id property
  * @param path the path to the id property
@@ -153,7 +160,6 @@ export function _templatizeId(obj: any, path: string): void {
 
 //#region Deploy Process ---------------------------------------------------------------------------------------//
 
-// Add the items data as json as resource
 /**
  * Updates the items resource with the changes after deployment
  *

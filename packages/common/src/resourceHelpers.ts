@@ -726,7 +726,7 @@ export function updateItemResourceText(
   itemId: string,
   filename: string,
   content: string,
-  authentication: UserSession
+  authentication: interfaces.UserSession
 ): Promise<any> {
   return portal.updateItemResource({
     id: itemId,
