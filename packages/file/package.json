@@ -7,6 +7,7 @@
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "author": "Esri",
   "license": "Apache-2.0",
   "files": [
     "dist/**"

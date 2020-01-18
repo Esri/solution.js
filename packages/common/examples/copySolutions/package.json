@@ -2,6 +2,7 @@
   "name": "copySolutions",
   "version": "1.0.0",
   "description": "Example use of @esri/solution-common.",
+  "author": "Esri",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
