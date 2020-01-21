@@ -36,19 +36,19 @@ import * as common from "@esri/solution-common";
 export function compareItems(
   item1: string | any,
   item2: string | any,
-  authentication: common.UserSession
+  authentication: common.UserSession = null
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     // If an input is a string, fetch the item; otherwise, clone the input because we will modify the
     // item base to remove incomparable properties
-    let itemBaseDef1: Promise<boolean>;
+    let itemBaseDef1: Promise<any>;
     if (typeof item1 === "string") {
       itemBaseDef1 = common.getItemBase(item1, authentication);
     } else {
       itemBaseDef1 = Promise.resolve(common.cloneObject(item1));
     }
 
-    let itemBaseDef2: Promise<boolean>;
+    let itemBaseDef2: Promise<any>;
     if (typeof item2 === "string") {
       itemBaseDef2 = common.getItemBase(item2, authentication);
     } else {
@@ -58,27 +58,25 @@ export function compareItems(
     Promise.all([itemBaseDef1, itemBaseDef2]).then(
       responses => {
         const [itemBase1, itemBase2] = responses;
-        resolve(
-          _compareJSON(
-            common.deleteItemProps(itemBase1),
-            common.deleteItemProps(itemBase2)
-          )
-        );
+
+        common.deleteItemProps(itemBase1);
+        common.deleteItemProps(itemBase2);
+
+        if (itemBase1.type === "Solution") {
+          delete itemBase1.typeKeywords;
+          delete itemBase1.size;
+          delete itemBase2.typeKeywords;
+          delete itemBase2.size;
+        }
+
+        /*console.log("----------------------------------------------------------------");
+        console.log("item 1 " + item1 + ": ", JSON.stringify(itemBase1, null, 2));
+        console.log("item 2 " + item2 + ": ", JSON.stringify(itemBase2, null, 2));
+        console.log("----------------------------------------------------------------");*/
+
+        resolve(common.compareJSONNoEmptyStrings(itemBase1, itemBase2));
       },
       e => reject(e)
     );
   });
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-/**
- * Compares two JSON objects using JSON.stringify.
- *
- * @param json1 First object
- * @param json2 Second object
- * @return True if objects are the same
- */
-export function _compareJSON(json1: any, json2: any): boolean {
-  return JSON.stringify(json1) === JSON.stringify(json2);
 }

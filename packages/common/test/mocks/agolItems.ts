@@ -91,6 +91,7 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "Code Attachment":
       item = getAGOLItemFundamentals(type);
+      item.name += ".zip";
       break;
 
     case "Code Sample":
@@ -126,6 +127,7 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "GeoJson":
       item = getAGOLItemFundamentals(type, url || undefined);
+      item.name += ".json";
       break;
 
     case "Geoprocessing Package":
@@ -147,6 +149,8 @@ export function getAGOLItem(type?: string, url = ""): any {
       break;
 
     case "Project Package":
+      item = getAGOLItemFundamentals(type);
+      item.name += ".ppkx";
       break;
 
     case "Project Template":
@@ -174,6 +178,11 @@ export function getAGOLItem(type?: string, url = ""): any {
 
     case "Group":
       item = getAGOLGroup();
+      break;
+
+    case "QuickCapture Project":
+      item = getAGOLItemFundamentals(type);
+      break;
   }
 
   return item;
@@ -498,6 +507,59 @@ export function getAGOLItemData(type?: string): any {
 
     case "Unsupported":
       data = null;
+      break;
+
+    case "QuickCapture Project":
+      data = [
+        {
+          name: "images/Camera.png",
+          lastModified: 1579284023790,
+          lastModifiedDate:
+            "Fri Jan 17 2020 11:00:23 GMT-0700 (Mountain Standard Time)",
+          webkitRelativePath: "",
+          size: 487,
+          type: "image/png"
+        },
+        {
+          name: "qc.project.json",
+          lastModified: 1579284023790,
+          lastModifiedDate:
+            "Fri Jan 17 2020 11:00:23 GMT-0700 (Mountain Standard Time)",
+          webkitRelativePath: "",
+          size: 29882,
+          type: "application/json",
+          text: () => {
+            return new Promise<any>(resolve => {
+              resolve(
+                JSON.stringify({
+                  basemap: {},
+                  dataSources: [
+                    {
+                      featureServiceItemId: "4efe5f693de34620934787ead6693f10",
+                      dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+                      url:
+                        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/0"
+                    },
+                    {
+                      featureServiceItemId: "4efe5f693de34620934787ead6693f10",
+                      dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+                      url:
+                        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
+                    }
+                  ],
+                  itemId: "9da79c91fc7642ebb4c0bbacfbacd510",
+                  preferences: {
+                    adminEmail: "jhauck@esri.com"
+                  },
+                  templateGroups: [],
+                  userInputs: [],
+                  version: 0.1
+                })
+              );
+            });
+          }
+        }
+      ];
       break;
   }
 

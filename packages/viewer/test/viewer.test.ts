@@ -92,19 +92,49 @@ afterEach(() => {
 
 describe("Module `viewer`", () => {
   describe("compareItems", () => {
-    it("handles identity with supplied items", done => {
+    it("handles identity with supplied Solution items", done => {
       viewer
-        .compareItems(
-          sampleItemTemplate.item,
-          sampleItemTemplate.item,
-          MOCK_USER_SESSION
-        )
+        .compareItems(sampleItemTemplate.item, sampleItemTemplate.item)
         .then(
           match => {
             match ? done() : done.fail();
           },
           () => done.fail()
         );
+    });
+
+    it("handles non-Solution items", done => {
+      const item1 = {
+        ...sampleItemTemplate.item,
+        type: "Web Map"
+      };
+      const item2 = {
+        ...item1,
+        id: "map1234567890"
+      };
+      viewer.compareItems(item1, item2).then(
+        match => {
+          match ? done() : done.fail();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("handles different items", done => {
+      const item1 = {
+        ...sampleItemTemplate.item,
+        type: "Web Map"
+      };
+      const item2 = {
+        ...item1,
+        type: "Web Mapping Application"
+      };
+      viewer.compareItems(item1, item2).then(
+        match => {
+          match ? done.fail() : done();
+        },
+        () => done.fail()
+      );
     });
 
     it("handles identity with supplied item ids", done => {
@@ -141,43 +171,6 @@ describe("Module `viewer`", () => {
           () => done.fail(),
           () => done()
         );
-    });
-  });
-
-  describe("_compareJSON", () => {
-    it("empty objects", () => {
-      expect(viewer._compareJSON({}, {})).toBeTruthy();
-    });
-
-    it("one empty object", () => {
-      expect(viewer._compareJSON({ a: 1 }, {})).toBeFalsy();
-      expect(viewer._compareJSON({}, { a: 1 })).toBeFalsy();
-    });
-
-    it("two single-level objects", () => {
-      expect(
-        viewer._compareJSON({ a: 1, b: 2, c: "3" }, { a: 1, b: 2, c: "3" })
-      ).toBeTruthy();
-      expect(viewer._compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })).toBeFalsy();
-    });
-
-    it("multiple-level objects", () => {
-      expect(
-        viewer._compareJSON(sampleItemTemplate, sampleItemTemplate)
-      ).toBeTruthy();
-      let clone = common.cloneObject(sampleItemTemplate);
-      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeTruthy();
-
-      common.deleteItemProps(clone);
-      expect(viewer._compareJSON({}, clone)).toBeTruthy();
-      expect(viewer._compareJSON(sampleItemTemplate, clone)).toBeFalsy();
-
-      clone = common.cloneObject(sampleItemTemplate.item);
-      delete clone.id;
-      const sampleItemBase = common.deleteItemProps(
-        common.cloneObject(sampleItemTemplate.item)
-      );
-      expect(viewer._compareJSON(sampleItemBase, clone)).toBeTruthy();
     });
   });
 });

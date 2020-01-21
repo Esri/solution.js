@@ -82,20 +82,19 @@ export function createItemFromTemplate(
 
 export function isAStoryMap(template: common.IItemTemplate): boolean {
   const url = common.getProp(template, "item.url");
-  if (!url) {
-    return false;
-  } else if (template.type === "StoryMap") {
+  if (template.type === "StoryMap") {
     return true;
+  } else if (url) {
+    return [
+      /\/apps\/Cascade\//i,
+      /\/apps\/MapJournal\//i,
+      /\/apps\/MapSeries\//i,
+      /\/apps\/MapTour\//i,
+      /\/apps\/Shortlist\//i,
+      /\/apps\/StoryMap\//i,
+      /\/apps\/StoryMapBasic\//i,
+      /\/apps\/StorytellingSwipe\//i
+    ].some(pattern => pattern.test(url));
   }
-
-  return [
-    /\/apps\/Cascade\//i,
-    /\/apps\/MapJournal\//i,
-    /\/apps\/MapSeries\//i,
-    /\/apps\/MapTour\//i,
-    /\/apps\/Shortlist\//i,
-    /\/apps\/StoryMap\//i,
-    /\/apps\/StoryMapBasic\//i,
-    /\/apps\/StorytellingSwipe\//i
-  ].some(pattern => pattern.test(url));
+  return false;
 }

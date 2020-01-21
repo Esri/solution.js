@@ -229,6 +229,79 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
     });
+
+    describe("convertBlobToSupportableResource", () => {
+      it("uses blob (file) name if it has one", () => {
+        const blob = utils.getSampleTextAsFile("namedBlob.txt");
+        expect(blob.name).toEqual("namedBlob.txt");
+        expect(blob.type).toEqual("text/plain");
+
+        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+          blob,
+          "alternateName.txt"
+        );
+        expect((convertedBlob.blob as File).name).toEqual("namedBlob.txt");
+        expect(convertedBlob.filename).toEqual("namedBlob.txt");
+        expect(convertedBlob.mimeType).toEqual("text/plain");
+      });
+
+      it("uses supplied file name if blob (file) doesn't have one", () => {
+        const blob = utils.getSampleTextAsFile("");
+        expect(blob.name).toEqual("");
+        expect(blob.type).toEqual("text/plain");
+
+        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+          blob,
+          "alternateName.txt"
+        );
+        expect((convertedBlob.blob as File).name).toEqual("alternateName.txt");
+        expect(convertedBlob.filename).toEqual("alternateName.txt");
+        expect(convertedBlob.mimeType).toEqual("text/plain");
+      });
+
+      it("uses an empty file name if the blob (file) doesn't have a name and a name is not supplied", () => {
+        const blob = utils.getSampleTextAsFile("");
+        expect(blob.name).toEqual("");
+        expect(blob.type).toEqual("text/plain");
+
+        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+          blob
+        );
+        expect((convertedBlob.blob as File).name).toEqual("");
+        expect(convertedBlob.filename).toEqual("");
+        expect(convertedBlob.mimeType).toEqual("text/plain");
+      });
+
+      it("uses alters blob name if its extension indicates a MIME type not supported by AGO", () => {
+        const blob = utils.getSampleTextAsFile("namedBlob.pkg");
+        expect(blob.name).toEqual("namedBlob.pkg");
+        expect(blob.type).toEqual("text/plain");
+
+        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+          blob,
+          "alternateName.pkg"
+        );
+        expect((convertedBlob.blob as File).name).toEqual("namedBlob.pkg.zip");
+        expect(convertedBlob.filename).toEqual("namedBlob.pkg");
+        expect(convertedBlob.mimeType).toEqual("text/plain");
+      });
+
+      it("uses alters blob name if the supplied filename indicates a MIME type not supported by AGO", () => {
+        const blob = utils.getSampleTextAsFile("");
+        expect(blob.name).toEqual("");
+        expect(blob.type).toEqual("text/plain");
+
+        const convertedBlob: interfaces.IFileMimeType = resourceHelpers.convertBlobToSupportableResource(
+          blob,
+          "alternateName.pkg"
+        );
+        expect((convertedBlob.blob as File).name).toEqual(
+          "alternateName.pkg.zip"
+        );
+        expect(convertedBlob.filename).toEqual("alternateName.pkg");
+        expect(convertedBlob.mimeType).toEqual("text/plain");
+      });
+    });
   }
 
   describe("copyFilesFromStorageItem", () => {
@@ -721,7 +794,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   describe("generateResourceFilenameFromStorage", () => {
-    it("top-level image file", () => {
+    it("handles top-level image file", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f/gtnp2.jpg";
       const expected: interfaces.IDeployFilename = {
@@ -736,7 +809,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("image file in folder", () => {
+    it("handles image file in folder", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_aFolder/git_merge.png";
       const expected: interfaces.IDeployFilename = {
@@ -751,7 +824,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("metadata file", () => {
+    it("handles metadata file", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml";
       const expected: interfaces.IDeployFilename = {
@@ -766,13 +839,43 @@ describe("Module `resourceHelpers`: common functions involving the management of
       expect(actual).toEqual(expected);
     });
 
-    it("thumbnail", () => {
+    it("handles thumbnail", () => {
       const storageResourceFilename =
         "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png";
       const expected: interfaces.IDeployFilename = {
         type: interfaces.EFileType.Thumbnail,
         folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
         filename: "thumbnail.png"
+      };
+
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles data file supported by AGO for resources", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info_data/data.zip";
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Data,
+        folder: "8f7ec78195d0479784036387d522e29f_info_data",
+        filename: "data.zip"
+      };
+
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles data file unsupported by AGO for resources and thus masquerading as a ZIP file", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info_dataz/data.pkg.zip";
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Data,
+        folder: "8f7ec78195d0479784036387d522e29f_info_dataz",
+        filename: "data.pkg"
       };
 
       const actual = resourceHelpers.generateResourceFilenameFromStorage(
@@ -1202,6 +1305,29 @@ describe("Module `resourceHelpers`: common functions involving the management of
         sourceResourceFilename
       );
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("isSupportedFileType", () => {
+    it("recognizes supported file types for resource", () => {
+      const fileTypes =
+        ".json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase";
+      fileTypes.split("|").forEach(fileType =>
+        expect(resourceHelpers.isSupportedFileType(fileType))
+          .withContext(fileType + "is not supported")
+          .toBeTruthy()
+      );
+    });
+
+    it("recognizes unsupported file types for resource", () => {
+      const fileTypes =
+        ".bin|.cpg|.css|.csv|.dbf|.doc|.docx|.htm|.html|.ico|.jar|.js|.mxd|.mxs|.pdf|.ppt|.pptx" +
+        "|.prj|.rtf|.shp|.tar|.tif|.tiff|.ts|.ttf|.vsd|.wav|.xls|.xlsx";
+      fileTypes.split("|").forEach(fileType =>
+        expect(resourceHelpers.isSupportedFileType(fileType))
+          .withContext(fileType + "is supported")
+          .toBeFalsy()
+      );
     });
   });
 });

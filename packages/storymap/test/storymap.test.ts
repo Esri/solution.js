@@ -80,7 +80,7 @@ describe("Module `storymap`", () => {
         "StoryMap"
       );
       templateSTO.item.url = null;
-      expect(storymap.isAStoryMap(templateSTO)).toBeFalsy();
+      expect(storymap.isAStoryMap(templateSTO)).toBeTruthy(); // nascent Story Maps don't have a URL
     });
 
     it("is the StoryMap item type", () => {

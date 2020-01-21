@@ -522,6 +522,104 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("compareJSON", () => {
+    let sampleItemTemplate: any;
+    beforeEach(() => {
+      sampleItemTemplate = {
+        item: {
+          name: null,
+          title: "z2g9f4nv",
+          type: "Solution",
+          typeKeywords: ["Solution", "Deployed"],
+          description: null,
+          tags: [],
+          snippet: null,
+          thumbnail: null,
+          documentation: null,
+          extent: [],
+          categories: [],
+          spatialReference: null,
+          accessInformation: null,
+          licenseInfo: null,
+          culture: "english (united states)",
+          properties: null,
+          url: null,
+          proxyFilter: null,
+          access: "private",
+          appCategories: [],
+          industries: [],
+          languages: [],
+          largeThumbnail: null,
+          banner: null,
+          screenshots: [],
+          listed: false,
+          groupDesignations: null,
+          id: "itm1234567890"
+        },
+        data: {
+          metadata: {},
+          templates: [
+            {
+              itemId: "geo1234567890",
+              type: "GeoJson",
+              dependencies: []
+            }
+          ]
+        }
+      };
+    });
+
+    it("empty objects", () => {
+      expect(generalHelpers.compareJSON({}, {})).toBeTruthy();
+    });
+
+    it("one empty object", () => {
+      expect(generalHelpers.compareJSON({ a: 1 }, {})).toBeFalsy();
+      expect(generalHelpers.compareJSON({}, { a: 1 })).toBeFalsy();
+    });
+
+    it("two single-level objects", () => {
+      expect(
+        generalHelpers.compareJSON(
+          { a: 1, b: 2, c: "3" },
+          { a: 1, b: 2, c: "3" }
+        )
+      ).toBeTruthy();
+      expect(
+        generalHelpers.compareJSON({ a: 1, b: 2, c: "3" }, { a: 1 })
+      ).toBeFalsy();
+    });
+
+    it("multiple-level objects", () => {
+      expect(generalHelpers.compareJSON(sampleItemTemplate, sampleItemTemplate))
+        .withContext("compare sampleItemTemplate, sampleItemTemplate")
+        .toBeTruthy();
+
+      let clone = generalHelpers.cloneObject(sampleItemTemplate);
+      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
+        .withContext("compare sampleItemTemplate, clone")
+        .toBeTruthy();
+
+      generalHelpers.deleteItemProps(clone);
+      expect(generalHelpers.compareJSON({}, clone))
+        .withContext("compare {}, clone")
+        .toBeTruthy();
+      expect(generalHelpers.compareJSON(sampleItemTemplate, clone))
+        .withContext("compare sampleItemTemplate, clone")
+        .toBeFalsy();
+
+      clone = generalHelpers.deleteItemProps(
+        generalHelpers.cloneObject(sampleItemTemplate.item)
+      );
+      const sampleItemBase = generalHelpers.deleteItemProps(
+        generalHelpers.cloneObject(sampleItemTemplate.item)
+      );
+      expect(generalHelpers.compareJSON(sampleItemBase, clone))
+        .withContext("compare sampleItemBase, clone")
+        .toBeTruthy();
+    });
+  });
+
   describe("deleteProps", () => {
     it("should handle missing props", () => {
       const testObject: any = {};

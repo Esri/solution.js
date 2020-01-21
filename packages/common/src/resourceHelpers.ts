@@ -48,16 +48,11 @@
  */
 
 import * as generalHelpers from "./generalHelpers";
+import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
+import * as restHelpers from "./restHelpers";
 import * as restHelpersGet from "./restHelpersGet";
-import {
-  EFileType,
-  IDeployFileCopyPath,
-  IDeployFilename,
-  ISourceFileCopyPath,
-  UserSession
-} from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -72,7 +67,7 @@ import {
 export function addMetadataFromBlob(
   blob: Blob,
   itemId: string,
-  authentication: UserSession
+  authentication: interfaces.UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -92,7 +87,7 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  authentication: UserSession
+  authentication: interfaces.UserSession
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
@@ -123,7 +118,7 @@ export function addResourceFromBlob(
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   isGroup: boolean = false
 ): Promise<any> {
   const updateOptions: any = {
@@ -145,7 +140,7 @@ export function addThumbnailFromBlob(
 export function addThumbnailFromUrl(
   url: string,
   itemId: string,
-  authentication: UserSession,
+  authentication: interfaces.UserSession,
   isGroup: boolean = false
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -156,6 +151,77 @@ export function addThumbnailFromUrl(
       );
     }, reject);
   });
+}
+
+export function copyData(
+  source: {
+    url: string;
+    authentication: interfaces.UserSession;
+  },
+  destination: {
+    itemId: string;
+    filename: string;
+    mimeType: string;
+    authentication: interfaces.UserSession;
+  }
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    restHelpersGet.getBlob(source.url, source.authentication).then(
+      blob => {
+        const update: interfaces.IItemUpdate = {
+          id: destination.itemId,
+          data: convertResourceToFile({
+            blob: blob,
+            filename: destination.filename,
+            mimeType: destination.mimeType
+          })
+        };
+
+        restHelpers.updateItem(update, destination.authentication).then(
+          resolve,
+          e => reject(generalHelpers.fail(e)) // unable to add resource
+        );
+      },
+      e => reject(generalHelpers.fail(e)) // unable to get resource
+    );
+  });
+}
+
+export function convertBlobToSupportableResource(
+  blob: Blob,
+  filename: string = ""
+): interfaces.IFileMimeType {
+  const originalFilename = (blob as File).name || filename;
+  let filenameToUse = originalFilename;
+  if (filenameToUse && !isSupportedFileType(filenameToUse)) {
+    filenameToUse = filenameToUse + ".zip";
+  }
+
+  return {
+    blob: new File([blob], filenameToUse, { type: blob.type }),
+    filename: originalFilename,
+    mimeType: blob.type
+  };
+}
+
+export function convertResourceToFile(
+  resource: interfaces.IFileMimeType
+): File {
+  return new File([resource.blob], resource.filename, {
+    type: resource.mimeType
+  });
+}
+
+export function isSupportedFileType(filename: string): boolean {
+  // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
+  // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
+  const filenameExtension = filename.match(/\.([a-z]+)$/i);
+  const supportedExtensions =
+    "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
+  return (
+    !!filenameExtension &&
+    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
+  );
 }
 
 /**
@@ -170,19 +236,30 @@ export function addThumbnailFromUrl(
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
-  storageAuthentication: UserSession,
-  filePaths: IDeployFileCopyPath[],
+  storageAuthentication: interfaces.UserSession,
+  filePaths: interfaces.IDeployFileCopyPath[],
   destinationItemId: string,
-  destinationAuthentication: UserSession,
-  isGroup: boolean = false
+  destinationAuthentication: interfaces.UserSession,
+  isGroup: boolean = false,
+  mimeTypes?: interfaces.IMimeTypes
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        // case EFileType.Form:
-        //   return Promise.resolve();
-
-        case EFileType.Metadata:
+        case interfaces.EFileType.Data:
+          return copyData(
+            {
+              url: filePath.url,
+              authentication: storageAuthentication
+            },
+            {
+              itemId: destinationItemId,
+              filename: filePath.filename,
+              mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
+              authentication: destinationAuthentication
+            }
+          );
+        case interfaces.EFileType.Metadata:
           return copyMetadata(
             {
               url: filePath.url,
@@ -193,7 +270,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case EFileType.Resource:
+        case interfaces.EFileType.Resource:
           return copyResource(
             {
               url: filePath.url,
@@ -206,7 +283,7 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
-        case EFileType.Thumbnail:
+        case interfaces.EFileType.Thumbnail:
           return addThumbnailFromUrl(
             filePath.url,
             destinationItemId,
@@ -232,10 +309,10 @@ export function copyFilesFromStorageItem(
  * @return A promise which resolves to a list of the filenames under which the resource/metadata/thumbnails are stored
  */
 export function copyFilesToStorageItem(
-  sourceUserSession: UserSession,
-  filePaths: ISourceFileCopyPath[],
+  sourceUserSession: interfaces.UserSession,
+  filePaths: interfaces.ISourceFileCopyPath[],
   storageItemId: string,
-  storageAuthentication: UserSession
+  storageAuthentication: interfaces.UserSession
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
@@ -267,11 +344,11 @@ export function copyFilesToStorageItem(
 export function copyMetadata(
   source: {
     url: string;
-    authentication: UserSession;
+    authentication: interfaces.UserSession;
   },
   destination: {
     itemId: string;
-    authentication: UserSession;
+    authentication: interfaces.UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -309,13 +386,13 @@ export function copyMetadata(
 export function copyResource(
   source: {
     url: string;
-    authentication: UserSession;
+    authentication: interfaces.UserSession;
   },
   destination: {
     itemId: string;
     folder: string;
     filename: string;
-    authentication: UserSession;
+    authentication: interfaces.UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -366,7 +443,7 @@ export function generateGroupFilePaths(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string
-): ISourceFileCopyPath[] {
+): interfaces.ISourceFileCopyPath[] {
   if (!thumbnailUrlPart) {
     return [];
   }
@@ -413,14 +490,19 @@ export function generateMetadataStorageFilename(
  */
 export function generateResourceFilenameFromStorage(
   storageResourceFilename: string
-): IDeployFilename {
-  let type = EFileType.Resource;
+): interfaces.IDeployFilename {
+  let type = interfaces.EFileType.Resource;
   let [folder, filename] = storageResourceFilename.split("/");
   if (folder.endsWith("_info_thumbnail")) {
-    type = EFileType.Thumbnail;
+    type = interfaces.EFileType.Thumbnail;
   } else if (folder.endsWith("_info_metadata")) {
-    type = EFileType.Metadata;
+    type = interfaces.EFileType.Metadata;
     filename = "metadata.xml";
+  } else if (folder.endsWith("_info_data")) {
+    type = interfaces.EFileType.Data;
+  } else if (folder.endsWith("_info_dataz")) {
+    filename = filename.replace(/\.zip$/, "");
+    type = interfaces.EFileType.Data;
   } else {
     const folderStart = folder.indexOf("_");
     if (folderStart > 0) {
@@ -478,7 +560,7 @@ export function generateSourceFilePaths(
   thumbnailUrlPart: string,
   resourceFilenames: string[],
   isGroup: boolean = false
-): ISourceFileCopyPath[] {
+): interfaces.ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
       url: generateSourceResourceUrl(
@@ -590,7 +672,7 @@ export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
   resourceFilenames: string[]
-): IDeployFileCopyPath[] {
+): interfaces.IDeployFileCopyPath[] {
   return resourceFilenames && resourceFilenames.map
     ? resourceFilenames.map(resourceFilename => {
         return {
@@ -628,4 +710,27 @@ export function generateThumbnailStorageFilename(
       ? thumbnailUrlParts[0]
       : thumbnailUrlParts[1];
   return { folder, filename };
+}
+
+/**
+ * Updates the items resource that matches the filename with new content
+ *
+ * @param itemId Id of the item to update
+ * @param filename Name of the resource file to update
+ * @param content The new content to update the resource with
+ * @param authentication Credentials for the request to the storage
+ * @return A promise which resolves with a success true/false response
+ */
+export function updateItemResourceText(
+  itemId: string,
+  filename: string,
+  content: string,
+  authentication: interfaces.UserSession
+): Promise<any> {
+  return portal.updateItemResource({
+    id: itemId,
+    name: filename,
+    content: content,
+    authentication: authentication
+  });
 }

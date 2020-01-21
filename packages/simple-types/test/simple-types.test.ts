@@ -25,6 +25,7 @@ import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
+import * as quickcapture from "../src/quickcapture";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new common.UserSession({
@@ -225,6 +226,85 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .then(newItemTemplate => {
             expect(newItemTemplate.data).toEqual(expectedTemplateData);
+            done();
+          }, done.fail);
+      });
+
+      it("should handle quick capture project", done => {
+        const resources: any = {
+          total: 1,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          resources: [
+            {
+              resource: "qc.project.json",
+              created: 1579127879000,
+              size: 29882,
+              access: "inherit",
+              type: "application/json"
+            }
+          ]
+        };
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources",
+            resources
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/images/Camera.png",
+            {}
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/qc.project.json",
+            {}
+          );
+
+        const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
+          "QuickCapture Project",
+          null
+        );
+
+        const expected: common.IItemTemplate = {
+          itemId: "xxx1234567890",
+          key: "vx3ubyx3",
+          data: Object({ application: Object({}), name: "qc.project.json" }),
+          resources: [],
+          dependencies: [],
+          circularDependencies: [],
+          type: "QuickCapture Project",
+          item: {
+            id: "{{xxx1234567890.itemId}}",
+            type: "QuickCapture Project",
+            accessInformation: "Esri, Inc.",
+            categories: [],
+            contentStatus: null,
+            culture: "en-us",
+            description: "Description of an AGOL item",
+            extent: [],
+            licenseInfo: null,
+            name: "Name of an AGOL item",
+            snippet: "Snippet of an AGOL item",
+            tags: ["test"],
+            thumbnail: "thumbnail/ago_downloaded.png",
+            title: "An AGOL item",
+            typeKeywords: ["JavaScript"],
+            url: ""
+          },
+          properties: {},
+          estimatedDeploymentCostFactor: 2
+        };
+
+        simpleTypes
+          .convertItemToTemplate(
+            "ee67658b2a98450cba051fd001463df0",
+            itemInfo,
+            MOCK_USER_SESSION
+          )
+          .then(actual => {
+            actual.key = expected.key;
+            expect(actual).toEqual(expected);
             done();
           }, done.fail);
       });
@@ -1136,6 +1216,209 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done.fail);
     });
 
+    it("should create quick capture project", done => {
+      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
+
+      const templateDictionary: any = {
+        user: {
+          email: "casey@esri.com"
+        },
+        "4efe5f693de34620934787ead6693f10": {
+          itemId: "xxxe5f693de34620934787ead6693f10",
+          layer0: {
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          layer1: {
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        },
+        "9da79c91fc7642ebb4c0bbacfbacd510": {}
+      };
+
+      const expectedTemplateDictionary: any = {
+        user: {
+          email: "casey@esri.com"
+        },
+        "4efe5f693de34620934787ead6693f10": {
+          itemId: "xxxe5f693de34620934787ead6693f10",
+          layer0: {
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          layer1: {
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        },
+        "9da79c91fc7642ebb4c0bbacfbacd510": {
+          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
+        }
+      };
+
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "QuickCapture Project",
+        null
+      );
+
+      itemTemplate.itemId = "9da79c91fc7642ebb4c0bbacfbacd510";
+
+      itemTemplate.dependencies = ["4efe5f693de34620934787ead6693f10"];
+
+      itemTemplate.data = {
+        application: {
+          basemap: {},
+          dataSources: [
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
+            },
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
+            }
+          ],
+          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
+          preferences: {
+            adminEmail: "{{user.email}}"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
+
+      const expectedData: any = {
+        application: {
+          basemap: {},
+          dataSources: [
+            {
+              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+              url: "https://abc123/name/FeatureServer/0"
+            },
+            {
+              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+              url: "https://abc123/name/FeatureServer/1"
+            }
+          ],
+          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
+          preferences: {
+            adminEmail: "casey@esri.com"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemId }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemId +
+            "/update",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
+          { success: true }
+        );
+
+      spyOn(quickcapture, "fineTuneCreatedItem").and.returnValue(
+        Promise.resolve()
+      );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          () => {
+            return 0;
+          }
+        )
+        .then(actual => {
+          itemTemplate.itemId = newItemId;
+          itemTemplate.data = expectedData;
+          expect(quickcapture.fineTuneCreatedItem).toHaveBeenCalledWith(
+            itemTemplate,
+            MOCK_USER_SESSION
+          );
+          expect(actual).toEqual(newItemId);
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          done();
+        }, done.fail);
+    });
+
+    it("should handle error on update resources", done => {
+      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
+
+      const templateDictionary: any = {};
+
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "QuickCapture Project",
+        null
+      );
+
+      itemTemplate.data = {
+        application: {
+          basemap: {},
+          dataSources: [],
+          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
+          preferences: {
+            adminEmail: "{{user.email}}"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
+
+      fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemId }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemId +
+            "/update",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemId +
+            "/updateResources",
+          mockItems.get400Failure()
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          () => {
+            return 0;
+          }
+        )
+        .then(done.fail, done);
+    });
+
     it("should handle web mapping application 2", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
@@ -1444,6 +1727,49 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             expect(fetchBody).toEqual(expectedBody);
             done();
           }, done.fail);
+      });
+
+      it("handle error on updateItemExtended", done => {
+        const template: any = {
+          dependencies: ["ABC123", "A"],
+          type: "Workforce Project",
+          itemId: "123ABC"
+        };
+
+        const templateDictionary: any = {
+          ABC123: {
+            itemId: "NEWABC123"
+          }
+        };
+
+        const itemData: any = {
+          groupId: "{{ABC123.itemId}}"
+        };
+
+        const expectedBody: string =
+          "f=json&text=%7B%22groupId%22%3A%22NEWABC123%22%7D&id=123ABC&token=fake-token";
+
+        const updateUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
+            itemData
+          )
+          .post(updateUrl, mockItems.get400Failure());
+
+        simpleTypes
+          .postProcessCircularDependencies(
+            template,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(done.fail, done);
       });
 
       it("should handle error on get data", done => {

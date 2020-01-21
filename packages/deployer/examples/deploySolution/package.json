@@ -2,6 +2,7 @@
   "name": "deploySolution",
   "version": "1.0.0",
   "description": "Example use of @esri/solution-deployer to deploy an AGO solution item.",
+  "author": "Esri",
   "license": "Apache-2.0",
   "files": [],
   "devDependencies": {
@@ -11,6 +12,7 @@
   },
   "dependencies": {
     "@esri/arcgis-rest-auth": "^2.7.0",
+    "@esri/arcgis-rest-feature-layer": "^2.7.0",
     "@esri/arcgis-rest-portal": "^2.7.0",
     "@esri/arcgis-rest-request": "^2.7.0",
     "@esri/arcgis-rest-service-admin": "^2.7.0",

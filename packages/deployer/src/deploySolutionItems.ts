@@ -89,7 +89,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Native Application": undefined,
   Notebook: undefined,
   "Ortho Mapping Project": undefined,
-  "QuickCapture Project": undefined,
+  "QuickCapture Project": simpleTypes,
   "Site Application": undefined,
   "Site Initiative": undefined,
   "Site Page": undefined,
@@ -231,17 +231,13 @@ export function deploySolutionItems(
     cloneOrderChecklist.forEach(id => {
       // Get the item's template out of the list of templates
       const template = common.findTemplateInList(templates, id);
-      if (!template) {
-        reject(common.fail());
-      }
-
       awaitAllItems.push(
         _createItemFromTemplateWhenReady(
           template!,
           common.generateStorageFilePaths(
             portalSharingUrl,
             storageItemId,
-            template!.resources || []
+            template!.resources
           ),
           storageAuthentication,
           templateDictionary,
@@ -271,7 +267,7 @@ export function deploySolutionItems(
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
  * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
- * @return A promise that will resolve with the item's template (which is simply returned if it's
+ * @return A promise that will resolve with the id of the deployed item (which is simply returned if it's
  *         already in the templates list
  * @protected
  */
