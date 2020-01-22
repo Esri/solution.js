@@ -201,6 +201,11 @@ export function _updateDispatchers(
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     if (dispatchers && dispatchers.url) {
+      try{
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ workforce._updateDispatchers.rest_queryFeatures... ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");//???
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                           url: \"" + dispatchers.url + "\"");//???
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                         where: \"" + "userId = '" + name + "'\"");//???
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                          auth: " + JSON.stringify(destinationAuthentication,null,2));//???
       common
         .rest_queryFeatures({
           url: dispatchers.url,
@@ -255,6 +260,10 @@ export function _updateDispatchers(
           },
           e => reject(common.fail(e))
         );
+      } catch (e){
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ workforce._updateDispatchers.rest_queryFeatures exception ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~", JSON.stringify(common.fail(e), null, 2));//???
+        reject(common.fail(e));
+      }
     } else {
       resolve(false);
     }

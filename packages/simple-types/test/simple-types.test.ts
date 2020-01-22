@@ -1086,8 +1086,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
-      itemTemplate.itemId = itemId;
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart("Workforce Project");
       itemTemplate.data = {
         workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
         dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
@@ -1132,6 +1131,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expected[itemId] = { itemId: newItemID };
 
       fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          {
+            username: "MrClaypool",
+            fullName: "Mr Claypool"
+          }
+        )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
           { success: true, id: newItemID }
@@ -1162,10 +1168,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     });
 
     it("should create and fine tune workforce project", done => {
-      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
-        "Workforce Project",
-        null
-      );
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart("Workforce Project");
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
