@@ -253,12 +253,26 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             resources
           )
           .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/thumbnail/ago_downloaded.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/images/Camera.png",
-            {}
+            utils.getSampleImage(),
+            { sendAsJson: false }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/qc.project.json",
             {}
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
+            { success: true, id: "ee67658b2a98450cba051fd001463df0" }
           );
 
         const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
@@ -270,7 +284,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "xxx1234567890",
           key: "vx3ubyx3",
           data: Object({ application: Object({}), name: "qc.project.json" }),
-          resources: [],
+          resources: [
+            "xxx1234567890/qc.project.json",
+            "xxx1234567890_info_thumbnail/ago_downloaded.png"
+          ],
           dependencies: [],
           circularDependencies: [],
           type: "QuickCapture Project",
