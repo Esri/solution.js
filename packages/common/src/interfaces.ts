@@ -453,3 +453,21 @@ export interface IDatasourceInfo {
    */
   adminLayerInfo: any;
 }
+
+/**
+ * The relevant elements of a data source that are used for templatization
+ */
+export interface IQuickCaptureDatasource {
+  /**
+   * The portal item id for the datasource eg. "4efe5f693de34620934787ead6693f19"
+   */
+  featureServiceItemId: string;
+  /**
+   * The application item id for the datasource eg. "1d4de1e4-ef58-4e02-9159-7a6e6701cada"
+   */
+  dataSourceId: string;
+  /**
+   * The url used for the datasource
+   */
+  url: number;
+}
