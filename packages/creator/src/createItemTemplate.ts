@@ -241,15 +241,22 @@ export function createItemTemplate(
             );
             let itemType = placeholder!.type;
             if (!itemType) {
-              // Groups have this defined when fetched above
+              // Groups have this defined when their placeholder is created
               itemType = itemInfo.type;
               placeholder!.type = itemType;
             }
-            itemInfo.type = itemType; // Groups don't have this property
+            if (!itemInfo.type) {
+              itemInfo.type = itemType; // Groups don't have this property, so we'll patch it in
+            }
+            placeholder!.item = {
+              ...itemInfo
+            };
 
             const itemHandler = moduleMap[itemType];
             if (!itemHandler || itemHandler === UNSUPPORTED) {
               if (itemHandler === UNSUPPORTED) {
+                placeholder!.properties["unsupported"] = true;
+                _replaceTemplate(existingTemplates, itemId, placeholder!);
                 console.log(
                   "!----- " +
                     itemId +
@@ -257,6 +264,7 @@ export function createItemTemplate(
                     itemType +
                     " ----- UNSUPPORTED; skipping -----"
                 ); // ???
+                resolve(true);
               } else {
                 placeholder!.properties["partial"] = true;
                 _replaceTemplate(existingTemplates, itemId, placeholder!);
@@ -267,8 +275,8 @@ export function createItemTemplate(
                     itemType +
                     " ----- UNHANDLED; using placeholder -----"
                 ); // ???
+                resolve(true);
               }
-              resolve(true);
             } else {
               itemHandler
                 .convertItemToTemplate(solutionItemId, itemInfo, authentication)
