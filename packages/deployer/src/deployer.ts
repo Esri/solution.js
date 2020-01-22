@@ -72,10 +72,12 @@ export function deploySolution(
         ] = responses;
 
         // swap user defined params before we start...no need to wait
-        templateDictionary.params = itemData.params ?? {};
-        itemData.templates = itemData.templates.map((template: any) => {
-          return common.replaceInTemplate(template, templateDictionary);
-        });
+        if (itemData.params) {
+          templateDictionary.params = itemData.params;
+          itemData.templates = itemData.templates.map((template: any) => {
+            return common.replaceInTemplate(template, templateDictionary);
+          });
+        }
 
         const deployOptions: common.IDeploySolutionOptions = options ?? {};
         deployOptions.title = deployOptions.title ?? itemBase.title;
