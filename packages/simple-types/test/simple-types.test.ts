@@ -1081,102 +1081,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }, done);
     });
 
-    it("should create workforce project", done => {
-      const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
-      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-      const templateDictionary: any = {};
-
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart("Workforce Project");
-      itemTemplate.data = {
-        workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
-        dispatcherWebMapId: "{{abc26a244163430590151395821fb845.itemId}}",
-        dispatchers: {
-          serviceItemId: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.itemId}}",
-          url: "{{abc302ec12b74d2f9f2b3cc549420086.layer0.url}}"
-        },
-        assignments: {
-          serviceItemId: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}",
-          url: "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}"
-        },
-        workers: {
-          serviceItemId: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.itemId}}",
-          url: "{{abc5dd4bdd18437f8d5ff1aa2d25fd7c.layer0.url}}"
-        },
-        tracks: {
-          serviceItemId: "{{abc64329e69144c59f69f3f3e0d45269.layer0.itemId}}",
-          url: "{{abc64329e69144c59f69f3f3e0d45269.layer0.url}}",
-          enabled: true,
-          updateInterval: 300
-        },
-        version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
-        folderId: "{{folderId}}",
-        assignmentIntegrations: [
-          {
-            id: "default-navigator",
-            prompt: "Navigate to Assignment",
-            urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
-            assignmentTypes: [
-              {
-                urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
-              }
-            ]
-          }
-        ]
-      };
-
-      const expected: any = {};
-      expected[itemId] = { itemId: newItemID };
-
-      fetchMock
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {
-            username: "MrClaypool",
-            fullName: "Mr Claypool"
-          }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemID }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
-            newItemID +
-            "/update",
-          { success: true }
-        );
-
-      simpleTypes
-        .createItemFromTemplate(
-          itemTemplate,
-          [],
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
-        )
-        .then(response => {
-          expect(response).toEqual(newItemID);
-          expect(templateDictionary).toEqual(expected);
-          done();
-        }, done.fail);
-    });
-
     it("should create and fine tune workforce project", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart("Workforce Project");
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        "Workforce Project"
+      );
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+      const expected: any = {};
+      expected[itemTemplate.itemId] = { itemId: newItemID };
+      const templateDictionary: any = {};
 
       const userUrl: string =
         "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27casey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
@@ -1192,8 +1111,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { success: true }
         )
         .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
+          username: "casey",
+          fullName: "casey"
         })
         .get(queryUrl, {
           features: []
@@ -1207,13 +1126,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           [],
           MOCK_USER_SESSION,
-          {},
+          templateDictionary,
           MOCK_USER_SESSION,
           function() {
             const a: any = "A";
           }
         )
         .then(r => {
+          expect(templateDictionary).toEqual(expected);
           expect(r).toEqual(newItemID);
           done();
         }, done.fail);
