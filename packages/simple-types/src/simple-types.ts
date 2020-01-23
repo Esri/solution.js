@@ -25,6 +25,7 @@ import * as dashboard from "./dashboard";
 import * as form from "./form";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
+import * as webscene from "./webscene";
 import * as workforce from "./workforce";
 import * as quickcapture from "./quickcapture";
 
@@ -82,6 +83,7 @@ export function convertItemToTemplate(
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
+      case "Web Scene":
         dataPromise = common.getItemDataAsJson(
           itemTemplate.itemId,
           authentication
@@ -171,6 +173,14 @@ export function convertItemToTemplate(
           case "Web Mapping Application":
             if (itemDataResponse) {
               webappPromise = webmappingapplication.convertItemToTemplate(
+                itemTemplate,
+                authentication
+              );
+            }
+            break;
+          case "Web Scene":
+            if (itemDataResponse) {
+              webappPromise = webscene.convertItemToTemplate(
                 itemTemplate,
                 authentication
               );
@@ -357,6 +367,9 @@ export function postProcessFieldReferences(
       break;
     case "Web Map":
       webmap.postProcessFieldReferences(solutionTemplate, datasourceInfos);
+      break;
+    case "Web Scene":
+      webscene.postProcessFieldReferences(solutionTemplate, datasourceInfos);
       break;
   }
   return solutionTemplate;

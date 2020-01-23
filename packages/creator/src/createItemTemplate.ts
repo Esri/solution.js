@@ -66,7 +66,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   // Map types
   "3D Web Scene": undefined,
   "Web Map": simpleTypes,
-  "Web Scene": undefined,
+  "Web Scene": simpleTypes,
 
   ////////////////////////////////////////////////////////
   // App types
@@ -75,7 +75,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: undefined,
+  Form: simpleTypes,
   "Hub Initiative": undefined,
   "Hub Page": undefined,
   "Hub Site Application": undefined,
