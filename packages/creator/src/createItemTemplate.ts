@@ -253,7 +253,10 @@ export function createItemTemplate(
             };
 
             // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
-            if (itemInfo.tags.find(tag => tag === "deploy.thumbnail")) {
+            if (
+              itemInfo.tags &&
+              itemInfo.tags.find(tag => tag === "deploy.thumbnail")
+            ) {
               // Set the thumbnail
               common.getItemDataBlob(itemId, authentication).then(
                 blob =>
