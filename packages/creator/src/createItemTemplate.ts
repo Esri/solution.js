@@ -241,82 +241,96 @@ export function createItemTemplate(
             );
             let itemType = placeholder!.type;
             if (!itemType) {
-              // Groups have this defined when fetched above
+              // Groups have this defined when their placeholder is created
               itemType = itemInfo.type;
               placeholder!.type = itemType;
             }
-            itemInfo.type = itemType; // Groups don't have this property
+            if (!itemInfo.type) {
+              itemInfo.type = itemType; // Groups don't have this property, so we'll patch it in
+            }
+            placeholder!.item = {
+              ...itemInfo
+            };
 
-            const itemHandler = moduleMap[itemType];
-            if (!itemHandler || itemHandler === UNSUPPORTED) {
-              if (itemHandler === UNSUPPORTED) {
-                console.log(
-                  "!----- " +
-                    itemId +
-                    " " +
-                    itemType +
-                    " ----- UNSUPPORTED; skipping -----"
-                ); // ???
-              } else {
-                placeholder!.properties["partial"] = true;
-                _replaceTemplate(existingTemplates, itemId, placeholder!);
-                console.log(
-                  "!----- " +
-                    itemId +
-                    " " +
-                    itemType +
-                    " ----- UNHANDLED; using placeholder -----"
-                ); // ???
-              }
-              resolve(true);
+            // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
+            if (
+              itemInfo.tags &&
+              itemInfo.tags.find(tag => tag === "deploy.thumbnail")
+            ) {
+              // Set the thumbnail
+              common.getItemDataBlob(itemId, authentication).then(
+                blob =>
+                  common
+                    .addThumbnailFromBlob(blob, solutionItemId, authentication)
+                    .then(
+                      () => resolve(true), // solution thumbnail set
+                      () => resolve(true) // unable to add thumbnail to solution
+                    ),
+                () => resolve(true) // unable to fetch thumbnail
+              );
             } else {
-              itemHandler
-                .convertItemToTemplate(solutionItemId, itemInfo, authentication)
-                .then(
-                  itemTemplate => {
-                    // Set the value keyed by the id to the created template, replacing the placeholder template
-                    _replaceTemplate(
-                      existingTemplates,
-                      itemTemplate.itemId,
-                      itemTemplate
-                    );
+              const itemHandler = moduleMap[itemType];
+              if (!itemHandler || itemHandler === UNSUPPORTED) {
+                if (itemHandler === UNSUPPORTED) {
+                  placeholder!.properties["unsupported"] = true;
+                } else {
+                  placeholder!.properties["partial"] = true;
+                }
+                _replaceTemplate(existingTemplates, itemId, placeholder!);
+                resolve(true);
+              } else {
+                itemHandler
+                  .convertItemToTemplate(
+                    solutionItemId,
+                    itemInfo,
+                    authentication
+                  )
+                  .then(
+                    itemTemplate => {
+                      // Set the value keyed by the id to the created template, replacing the placeholder template
+                      _replaceTemplate(
+                        existingTemplates,
+                        itemTemplate.itemId,
+                        itemTemplate
+                      );
 
-                    // Trace item dependencies
-                    if (itemTemplate.dependencies.length === 0) {
-                      resolve(true);
-                    } else {
-                      // Get its dependencies, asking each to get its dependents via
-                      // recursive calls to this function
-                      const dependentDfds: Array<Promise<boolean>> = [];
-                      itemTemplate.dependencies.forEach(dependentId => {
-                        if (
-                          !common.findTemplateInList(
-                            existingTemplates,
-                            dependentId
-                          )
-                        ) {
-                          dependentDfds.push(
-                            createItemTemplate(
-                              solutionItemId,
-                              dependentId,
-                              templateDictionary,
-                              authentication,
-                              existingTemplates
+                      // Trace item dependencies
+                      if (itemTemplate.dependencies.length === 0) {
+                        resolve(true);
+                      } else {
+                        // Get its dependencies, asking each to get its dependents via
+                        // recursive calls to this function
+                        const dependentDfds: Array<Promise<boolean>> = [];
+                        itemTemplate.dependencies.forEach(dependentId => {
+                          if (
+                            !common.findTemplateInList(
+                              existingTemplates,
+                              dependentId
                             )
-                          );
-                        }
-                      });
-                      // tslint:disable-next-line: no-floating-promises
-                      Promise.all(dependentDfds).then(() => resolve(true));
+                          ) {
+                            dependentDfds.push(
+                              createItemTemplate(
+                                solutionItemId,
+                                dependentId,
+                                templateDictionary,
+                                authentication,
+                                existingTemplates
+                              )
+                            );
+                          }
+                        });
+                        // tslint:disable-next-line: no-floating-promises
+                        Promise.all(dependentDfds).then(() => resolve(true));
+                      }
+                    },
+                    error => {
+                      placeholder!.properties["partial"] = true;
+                      placeholder!.properties["error"] = JSON.stringify(error);
+                      _replaceTemplate(existingTemplates, itemId, placeholder!);
+                      resolve(true);
                     }
-                  },
-                  error => {
-                    placeholder!.properties["partial"] = true;
-                    placeholder!.properties["error"] = JSON.stringify(error);
-                    _replaceTemplate(existingTemplates, itemId, placeholder!);
-                    resolve(true);
-                  }
-                );
+                  );
+              }
             }
           },
           // Id not found or item is not accessible
