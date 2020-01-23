@@ -136,6 +136,10 @@ export function getAGOLItem(type?: string, url = ""): any {
     case "Geoprocessing Sample":
       break;
 
+    case "Image":
+      item = getAGOLItemFundamentals(type, url || undefined);
+      break;
+
     case "Layer Package":
       break;
 
@@ -735,6 +739,21 @@ export function getAGOLGroupContentsList(
   return group;
 }
 
+export function getAGOLGroupContentsListByType(typesList: string[]): any {
+  const group = {
+    total: 0,
+    start: 1,
+    num: 0,
+    nextStart: -1,
+    items: [] as string[]
+  };
+  typesList.forEach(itemType => {
+    group.items.push(getAGOLItemWithId(itemType, group.total++));
+    group.num++;
+  });
+  return group;
+}
+
 export function getAGOLService(
   layers = [] as any,
   tables = [] as any,
@@ -1155,7 +1174,7 @@ export function getItemTypeAbbrev(type: string): string {
       "Geoprocessing Sample": "geo",
       "Globe Document": "xxx",
       "Image Collection": "xxx",
-      Image: "xxx",
+      Image: "img",
       "iWork Keynote": "xxx",
       "iWork Numbers": "xxx",
       "iWork Pages": "xxx",

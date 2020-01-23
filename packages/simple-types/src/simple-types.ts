@@ -279,7 +279,7 @@ export function createItemFromTemplate(
           );
 
           // The item's URL includes its id, so it needs to be updated
-          const updateUrlDef = template.data
+          const updateUrlDef: Promise<string> = template.data
             ? common.updateItemURL(
                 createResponse.id,
                 common.replaceInTemplate(
@@ -288,7 +288,7 @@ export function createItemFromTemplate(
                 ),
                 destinationAuthentication
               )
-            : Promise.resolve(undefined);
+            : Promise.resolve("");
 
           // Check for extra processing for web mapping application
           let customProcDef: Promise<void>;

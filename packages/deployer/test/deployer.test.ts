@@ -43,6 +43,8 @@ describe("Module `deploySolution`", () => {
         const featureServiceTemplate: any = templates.getItemTemplatePart(
           "Feature Service"
         );
+        featureServiceTemplate.properties.layers[0].someProperty =
+          "{{ params.testProperty.value }}";
         const webmapTemplate: any = templates.getItemTemplatePart(
           "Web Map",
           [featureServiceTemplate.itemId],
@@ -52,6 +54,13 @@ describe("Module `deploySolution`", () => {
           webmapTemplate,
           featureServiceTemplate
         ]);
+
+        itemInfo.data.params = {
+          testProperty: {
+            value: "ABC",
+            type: "Text"
+          }
+        };
 
         const templateDictionary: any = {};
         const featureServerAdminUrl: string =
@@ -243,7 +252,13 @@ describe("Module `deploySolution`", () => {
                 dependencies: [],
                 circularDependencies: []
               }
-            ]
+            ],
+            params: {
+              testProperty: {
+                value: "ABC",
+                type: "Text"
+              }
+            }
           }
         };
 
@@ -368,6 +383,12 @@ describe("Module `deploySolution`", () => {
           },
           map1234567890: {
             itemId: "map1234567890"
+          },
+          params: {
+            testProperty: {
+              value: "ABC",
+              type: "Text"
+            }
           }
         };
 
@@ -387,6 +408,12 @@ describe("Module `deploySolution`", () => {
               expect(actual)
                 .withContext("test actual === expected")
                 .toEqual(expected);
+
+              const addToDefCalls: any[] = fetchMock.calls(/addToDefinition/);
+              const customParams = /someProperty%22%3A%22ABC/.test(
+                JSON.stringify(addToDefCalls[0][1].body)
+              );
+              expect(customParams).toBeTrue();
 
               // Repeat with progress callback
               options.progressCallback = utils.PROGRESS_CALLBACK;
