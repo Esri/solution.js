@@ -27,47 +27,33 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
-  // Key properties that contain item IDs for the workforce project type
-  const keyProperties: string[] = [];
-
   // The templates data to process
   const data: any = itemTemplate.data;
+  let dataString: string = JSON.stringify(data);
 
-  if (data) {
-    // Extract dependencies
-    itemTemplate.dependencies = _extractDependencies(data, keyProperties);
+  const idTest: RegExp = /[0-9A-F]{32}/gim;
 
-    // templatize key properties
-    itemTemplate.data = _templatize(data, keyProperties);
+  if (data && idTest.test(dataString)) {
+    const ids: any = dataString.match(idTest);
+    if (Array.isArray(ids) && ids.length > 0) {
+      const verifiedIds: string[] = [];
+      ids.forEach(id => {
+        if (verifiedIds.indexOf(id) === -1) {
+          verifiedIds.push(id);
+          // update the dependencies
+          if (itemTemplate.dependencies.indexOf(id) === -1) {
+            itemTemplate.dependencies.push(id);
+          }
+          // templatize the itemId
+          const regEx = new RegExp(id, "gm");
+          dataString = dataString.replace(regEx, "{{" + id + ".itemId}}");
+        }
+      });
+    }
+    itemTemplate.data = JSON.parse(dataString);
   }
 
   return itemTemplate;
-}
-
-/**
- * Gets the ids of the dependencies of the notebook.
- *
- * @param data itemTemplate data
- * @param keyProperties notebook properties that contain references to dependencies
- * @return List of dependencies ids
- */
-export function _extractDependencies(
-  data: any,
-  keyProperties: string[]
-): string[] {
-  const deps: string[] = [];
-  return deps;
-}
-
-/**
- * Templatizes key item properties.
- *
- * @param data itemTemplate data
- * @param keyProperties notebook properties that should be templatized
- * @return an updated data object to be stored in the template
- */
-export function _templatize(data: any, keyProperties: string[]): any {
-  return data;
 }
 
 //#endregion
