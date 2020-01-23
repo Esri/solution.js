@@ -287,6 +287,138 @@ describe("Module `createItemTemplate`", () => {
           );
       });
 
+      it("creates a template for an empty group, but solution thumbnail can't be fetched", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "grp1234567890";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+        const solutionThumbnail = mockItems.getAGOLItem("Image");
+        solutionThumbnail.tags.push("deploy.thumbnail");
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Image")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900?f=json&token=fake-token",
+            solutionThumbnail
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900/data",
+            mockItems.get400Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates
+          )
+          .then(
+            response => {
+              expect(response).toBeTruthy();
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("creates a template for an empty group, but solution's thumbnail can't be set", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "grp1234567890";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+        const solutionThumbnail = mockItems.getAGOLItem("Image");
+        solutionThumbnail.tags.push("deploy.thumbnail");
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            noResourcesResponse
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Image")
+          )
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900?f=json&token=fake-token",
+            solutionThumbnail
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900/data",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            mockItems.get400Failure()
+          );
+
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates
+          )
+          .then(
+            response => {
+              expect(response).toBeTruthy();
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
       it("creates a template for a group", done => {
         const solutionItemId: string = "sln1234567890";
         const itemId: string = "grp1234567890";

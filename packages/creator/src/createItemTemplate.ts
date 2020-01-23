@@ -263,10 +263,10 @@ export function createItemTemplate(
                   common
                     .addThumbnailFromBlob(blob, solutionItemId, authentication)
                     .then(
-                      () => resolve(true),
-                      () => resolve(true)
+                      () => resolve(true), // solution thumbnail set
+                      () => resolve(true) // unable to add thumbnail to solution
                     ),
-                () => resolve(true)
+                () => resolve(true) // unable to fetch thumbnail
               );
             } else {
               const itemHandler = moduleMap[itemType];
