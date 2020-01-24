@@ -309,6 +309,11 @@ export interface IPostProcessArgs {
   progressTickCallback: any;
 }
 
+export interface IRelatedItems {
+  relationshipType: string;
+  relatedItemIds: string[];
+}
+
 export interface IResource {
   resource: string;
   created: number;

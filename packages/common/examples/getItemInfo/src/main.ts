@@ -17,11 +17,6 @@
 
 import * as common from "@esri/solution-common";
 
-interface IRelatedItems {
-  relationshipType: string;
-  relatedItemIds: string[];
-}
-
 export function getItemInfo(
   itemId: string,
   authentication: common.UserSession
@@ -33,12 +28,12 @@ export function getItemInfo(
     }
 
     // Get the item information
-    const itemFwdRelatedItemsDef = getItemRelatedItems(
+    const itemFwdRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
       itemId,
       "forward",
       authentication
     );
-    const itemRevRelatedItemsDef = getItemRelatedItems(
+    const itemRevRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
       itemId,
       "reverse",
       authentication
@@ -99,8 +94,8 @@ export function getItemInfo(
         // (itemThumbnail: Blob)  image/*
         // (itemMetadata: Blob)  application/xml
         // (itemResources: File[])  list of */*
-        // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
-        // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
+        // (itemFwdRelatedItems: common.IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+        // (itemRevRelatedItems: common.IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
         console.log("itemThumbnail", itemThumbnail);
@@ -236,69 +231,6 @@ export function getItemInfo(
         }
       },
       (error: any) => reject(JSON.stringify(error))
-    );
-  });
-}
-
-function getItemRelatedItems(
-  itemId: string,
-  direction: "forward" | "reverse",
-  authentication: common.UserSession
-): Promise<IRelatedItems[]> {
-  return new Promise<IRelatedItems[]>(resolve => {
-    const relationshipTypes = [
-      // from common.ItemRelationshipType
-      "Map2Service",
-      "WMA2Code",
-      "Map2FeatureCollection",
-      "MobileApp2Code",
-      "Service2Data",
-      "Service2Service",
-      "Map2AppConfig",
-      "Item2Attachment",
-      "Item2Report",
-      "Listed2Provisioned",
-      "Style2Style",
-      "Service2Style",
-      "Survey2Service",
-      "Survey2Data",
-      "Service2Route",
-      "Area2Package",
-      "Map2Area",
-      "Service2Layer",
-      "Area2CustomPackage",
-      "TrackView2Map",
-      "SurveyAddIn2Data"
-    ];
-
-    const relatedItemDefs: Array<Promise<
-      common.IGetRelatedItemsResponse
-    >> = relationshipTypes.map(relationshipType =>
-      common.getItemRelatedItems(
-        itemId,
-        relationshipType as common.ItemRelationshipType,
-        direction,
-        authentication
-      )
-    );
-    // tslint:disable-next-line: no-floating-promises
-    Promise.all(relatedItemDefs).then(
-      (relationshipResponses: common.IGetRelatedItemsResponse[]) => {
-        const relatedItems: IRelatedItems[] = [];
-
-        for (let i: number = 0; i < relationshipTypes.length; ++i) {
-          if (relationshipResponses[i].total > 0) {
-            relatedItems.push({
-              relationshipType: relationshipTypes[i],
-              relatedItemIds: relationshipResponses[i].relatedItems.map(
-                item => item.id
-              )
-            });
-          }
-        }
-
-        resolve(relatedItems);
-      }
     );
   });
 }
