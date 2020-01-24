@@ -87,7 +87,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   Mission: undefined,
   "Mobile Application": undefined,
   "Native Application": undefined,
-  Notebook: undefined,
+  Notebook: simpleTypes,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": simpleTypes,
   "Site Application": undefined,

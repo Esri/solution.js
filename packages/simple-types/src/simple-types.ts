@@ -304,6 +304,13 @@ export function createItemFromTemplate(
               newItemTemplate,
               destinationAuthentication
             );
+          } else if (template.type === "Notebook") {
+            customProcDef = notebook.fineTuneCreatedItem(
+              template,
+              newItemTemplate,
+              templateDictionary,
+              destinationAuthentication
+            );
           } else {
             customProcDef = Promise.resolve();
           }

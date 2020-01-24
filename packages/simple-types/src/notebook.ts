@@ -60,4 +60,28 @@ export function convertItemToTemplate(
 
 //#region Deploy Process ---------------------------------------------------------------------------------------//
 
+export function fineTuneCreatedItem(
+  originalTemplate: common.IItemTemplate,
+  newlyCreatedItem: common.IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession
+): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const data: any = common.replaceInTemplate(
+      originalTemplate.data,
+      templateDictionary
+    );
+    const updateOptions: common.IItemUpdate = {
+      id: newlyCreatedItem.itemId,
+      data: common.jsonToBlob(data)
+    };
+    common.updateItem(updateOptions, destinationAuthentication).then(
+      () => {
+        resolve();
+      },
+      e => reject(common.fail(e))
+    );
+  });
+}
+
 //#endregion
