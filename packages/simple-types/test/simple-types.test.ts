@@ -539,7 +539,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url: ""
           },
           data: null, // forms don't store info here
-          resources: ["frm1234567890_info_form/formData.zip"],
+          resources: ["frm1234567890_info_data/formData.zip"],
           dependencies: ["srv1234567890"],
           circularDependencies: [],
           properties: {},
