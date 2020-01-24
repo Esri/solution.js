@@ -150,7 +150,7 @@ export function convertItemToTemplate(
               const storageName = common.generateResourceStorageFilename(
                 itemTemplate.itemId,
                 filename,
-                "info_form"
+                "info_data"
               );
               itemTemplate.resources.push(
                 storageName.folder + "/" + storageName.filename
