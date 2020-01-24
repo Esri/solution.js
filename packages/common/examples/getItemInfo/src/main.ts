@@ -17,6 +17,11 @@
 
 import * as common from "@esri/solution-common";
 
+interface IRelatedItems {
+  relationshipType: string;
+  relatedItemIds: string[];
+}
+
 export function getItemInfo(
   itemId: string,
   authentication: common.UserSession
@@ -28,6 +33,17 @@ export function getItemInfo(
     }
 
     // Get the item information
+    const itemFwdRelatedItemsDef = getItemRelatedItems(
+      itemId,
+      "forward",
+      authentication
+    );
+    const itemRevRelatedItemsDef = getItemRelatedItems(
+      itemId,
+      "reverse",
+      authentication
+    );
+
     const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
@@ -62,7 +78,9 @@ export function getItemInfo(
       itemDataDef,
       itemThumbnailDef,
       itemMetadataDef,
-      itemResourcesDef
+      itemResourcesDef,
+      itemFwdRelatedItemsDef,
+      itemRevRelatedItemsDef
     ]).then(
       async responses => {
         const [
@@ -70,20 +88,26 @@ export function getItemInfo(
           itemDataFile,
           itemThumbnail,
           itemMetadataBlob,
-          itemResourceFiles
+          itemResourceFiles,
+          itemFwdRelatedItems,
+          itemRevRelatedItems
         ] = responses;
         // Summarize what we have
         // ----------------------
         // (itemBase: any)  text/plain JSON
-        // (itemDataDef: File)  */*
+        // (itemData: File)  */*
         // (itemThumbnail: Blob)  image/*
-        // (itemMetadataDef: Blob)  application/xml
-        // (itemResourcesDef: File[])  list of */*
+        // (itemMetadata: Blob)  application/xml
+        // (itemResources: File[])  list of */*
+        // (itemFwdRelatedItems: IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+        // (itemRevRelatedItems: IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
         console.log("itemThumbnail", itemThumbnail);
         console.log("itemMetadata", itemMetadataBlob);
-        console.log("itemResources", itemResourceFiles);
+        console.log("itemResources", JSON.stringify(itemResourceFiles));
+        console.log("itemFwdRelatedItems", JSON.stringify(itemFwdRelatedItems));
+        console.log("itemRevRelatedItems", JSON.stringify(itemRevRelatedItems));
 
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
@@ -139,6 +163,36 @@ export function getItemInfo(
         }
         html += "</p>";
 
+        // Show related items section
+        html += "<p>Related Items<br/>";
+        if (
+          itemFwdRelatedItems.length === 0 &&
+          itemRevRelatedItems.length === 0
+        ) {
+          html += "<p><i>none</i>";
+        } else {
+          html +=
+            "<ul style='margin-left:-36px;list-style-type:none;font-size:smaller;'>";
+          for (const relatedItem of itemFwdRelatedItems) {
+            html +=
+              "<li>&rarr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          for (const relatedItem of itemRevRelatedItems) {
+            html +=
+              "<li>&larr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          html += "</ul>";
+        }
+        html += "</p>";
+
         // Show sections custom to item types
         if (itemBase.type === "Feature Service") {
           if (authentication.token) {
@@ -182,6 +236,69 @@ export function getItemInfo(
         }
       },
       (error: any) => reject(JSON.stringify(error))
+    );
+  });
+}
+
+function getItemRelatedItems(
+  itemId: string,
+  direction: "forward" | "reverse",
+  authentication: common.UserSession
+): Promise<IRelatedItems[]> {
+  return new Promise<IRelatedItems[]>(resolve => {
+    const relationshipTypes = [
+      // from common.ItemRelationshipType
+      "Map2Service",
+      "WMA2Code",
+      "Map2FeatureCollection",
+      "MobileApp2Code",
+      "Service2Data",
+      "Service2Service",
+      "Map2AppConfig",
+      "Item2Attachment",
+      "Item2Report",
+      "Listed2Provisioned",
+      "Style2Style",
+      "Service2Style",
+      "Survey2Service",
+      "Survey2Data",
+      "Service2Route",
+      "Area2Package",
+      "Map2Area",
+      "Service2Layer",
+      "Area2CustomPackage",
+      "TrackView2Map",
+      "SurveyAddIn2Data"
+    ];
+
+    const relatedItemDefs: Array<Promise<
+      common.IGetRelatedItemsResponse
+    >> = relationshipTypes.map(relationshipType =>
+      common.getItemRelatedItems(
+        itemId,
+        relationshipType as common.ItemRelationshipType,
+        direction,
+        authentication
+      )
+    );
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(relatedItemDefs).then(
+      (relationshipResponses: common.IGetRelatedItemsResponse[]) => {
+        const relatedItems: IRelatedItems[] = [];
+
+        for (let i: number = 0; i < relationshipTypes.length; ++i) {
+          if (relationshipResponses[i].total > 0) {
+            relatedItems.push({
+              relationshipType: relationshipTypes[i],
+              relatedItemIds: relationshipResponses[i].relatedItems.map(
+                item => item.id
+              )
+            });
+          }
+        }
+
+        resolve(relatedItems);
+      }
     );
   });
 }
