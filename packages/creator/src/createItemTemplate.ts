@@ -486,11 +486,6 @@ export function _updateWebMapHashInfo(
       let itemId: any;
       if (layer.itemId) {
         itemId = layer.itemId;
-      } else if (layer.url && layer.url.indexOf("{{") > -1) {
-        // some layers like heatmap layer don't have a itemId
-        itemId = layer.url
-          .replace("{{", "")
-          .replace(/([.]layer([0-9]|[1-9][0-9])[.]url)[}]{2}/, "");
       }
       if (itemId) {
         obj[common.cleanLayerBasedItemId(itemId)] = {
