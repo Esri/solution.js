@@ -149,6 +149,10 @@ export function getAGOLItem(type?: string, url = ""): any {
     case "Operation View":
       break;
 
+    case "Notebook":
+      item = getAGOLItemFundamentals(type);
+      break;
+
     case "Pro Map":
       break;
 
@@ -358,6 +362,47 @@ export function getAGOLItemData(type?: string): any {
       break;
 
     case "Map Template":
+      break;
+
+    case "Notebook":
+      data = {
+        metadata: {
+          kernelspec: {
+            name: "python3",
+            display_name: "Python 3",
+            language: "python"
+          },
+          esriNotebookRuntime: {
+            notebookRuntimeName: "ArcGIS Notebook Python 3 Advanced",
+            notebookRuntimeVersion: "3.0"
+          },
+          language_info: {
+            name: "python",
+            version: "3.6.9",
+            mimetype: "text/x-python",
+            codemirror_mode: {
+              name: "ipython",
+              version: 3
+            },
+            pygments_lexer: "ipython3",
+            nbconvert_exporter: "python",
+            file_extension: ".py"
+          }
+        },
+        cells: [
+          {
+            metadata: {
+              trusted: true
+            },
+            cell_type: "code",
+            source: "3b927de78a784a5aa3981469d85cf45d",
+            execution_count: null,
+            outputs: []
+          }
+        ],
+        nbformat: 4,
+        nbformat_minor: 2
+      };
       break;
 
     case "Operation View":

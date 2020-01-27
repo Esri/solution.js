@@ -135,10 +135,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             done.fail();
           }, done);
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
       it("should handle workforce project", done => {
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Workforce Project",
@@ -325,10 +322,47 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             done();
           }, done.fail);
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
+      it("should handle python notebook", done => {
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Notebook"
+        );
+        itemTemplate.item = {
+          id: "abc0cab401af4828a25cc6eaeb59fb69",
+          type: itemTemplate.type,
+          title: "Simple Notebook"
+        };
+
+        const dataResponse: any = mockItems.getAGOLItemData("Notebook");
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            dataResponse
+          );
+
+        simpleTypes
+          .convertItemToTemplate(
+            itemTemplate.item.id,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
+          .then(newItemTemplate => {
+            expect(newItemTemplate.data).toEqual(
+              templates.getItemTemplateData("Notebook")
+            );
+            done();
+          }, done.fail);
+      });
+
       it("should handle item resource", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
@@ -668,7 +702,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           }, done.fail);
       });
 
-      // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
         // Related to issue: #56
         // To add support for simple apps such as those that we create for "Getting to Know"
@@ -743,10 +776,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             done();
           }, done.fail);
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
       it("should catch fetch errors", done => {
         // TODO resolve Karma internal error triggered by this test
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
@@ -845,10 +875,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           );
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
       it("should handle web mapping application 1", done => {
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -948,10 +975,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             e => done.fail(e)
           );
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
       it("should handle error on web mapping application", done => {
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -1097,6 +1121,104 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           done.fail();
         }, done);
     });
+
+    if (typeof window !== "undefined") {
+      it("should create and fine tune python notebook", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Notebook"
+        );
+        itemTemplate.data = mockItems.getAGOLItemData("Notebook");
+
+        const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+        const expected: any = {};
+        expected[itemTemplate.itemId] = { itemId: newItemID };
+        const templateDictionary: any = {};
+
+        const userUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: newItemID }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: true }
+          )
+          .get(userUrl, {
+            username: "casey",
+            fullName: "casey"
+          });
+
+        simpleTypes
+          .createItemFromTemplate(
+            itemTemplate,
+            [],
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            function() {
+              const a: any = "A";
+            }
+          )
+          .then(r => {
+            expect(templateDictionary).toEqual(expected);
+            expect(r).toEqual(newItemID);
+            done();
+          }, done.fail);
+      });
+
+      it("should handle error on python notebook update item", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+          "Notebook"
+        );
+        itemTemplate.data = mockItems.getAGOLItemData("Notebook");
+
+        const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
+        const expected: any = {};
+        expected[itemTemplate.itemId] = { itemId: newItemID };
+        const templateDictionary: any = {};
+
+        const userUrl: string =
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+
+        fetchMock
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: newItemID }
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            mockItems.get400Failure()
+          )
+          .get(userUrl, {
+            username: "casey",
+            fullName: "casey"
+          });
+
+        // spyOn(notebook, "fineTuneCreatedItem").and.returnValue(
+        //   Promise.resolve()
+        // );
+
+        simpleTypes
+          .createItemFromTemplate(
+            itemTemplate,
+            [],
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            function() {
+              const a: any = "A";
+            }
+          )
+          .then(() => done.fail, done);
+      });
+    }
 
     it("should create and fine tune workforce project", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
