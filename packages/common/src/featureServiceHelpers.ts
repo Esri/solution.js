@@ -52,7 +52,7 @@ export function templatize(
   templatizeFieldReferences: boolean
 ): interfaces.IItemTemplate {
   // Common templatizations
-  const id: string = generalHelpers.cloneObject(itemTemplate.item.id);
+  const id: string = itemTemplate.item.id;
 
   itemTemplate.item.url = _templatize(id, "url");
   itemTemplate.item.id = templatization.templatizeTerm(id, id, ".itemId");

@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for functions involving the creation and deployment of Webmap item types.
  */
 
 import * as common from "@esri/solution-common";

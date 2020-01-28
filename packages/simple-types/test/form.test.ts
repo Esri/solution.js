@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for functions involving the creation of a Solution item.
+ * Provides tests for functions involving the creation and deployment of Form item types.
  */
 
 // ------------------------------------------------------------------------------------------------------------------ //

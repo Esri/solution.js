@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for functions involving the creation and deployment of simple item types.
  */
 
 import * as simpleTypes from "../src/simple-types";
@@ -246,25 +246,25 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/thumbnail/ago_downloaded.png",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/images/Camera.png",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/images/Camera.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/qc.project.json",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
           .post(
@@ -278,18 +278,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
 
         const expected: common.IItemTemplate = {
-          itemId: "xxx1234567890",
+          itemId: "qck1234567890",
           key: "vx3ubyx3",
           data: Object({ application: Object({}), name: "qc.project.json" }),
           resources: [
-            "xxx1234567890/qc.project.json",
-            "xxx1234567890_info_thumbnail/ago_downloaded.png"
+            "qck1234567890/qc.project.json",
+            "qck1234567890_info_thumbnail/ago_downloaded.png"
           ],
           dependencies: [],
           circularDependencies: [],
           type: "QuickCapture Project",
           item: {
-            id: "{{xxx1234567890.itemId}}",
+            id: "{{qck1234567890.itemId}}",
             type: "QuickCapture Project",
             accessInformation: "Esri, Inc.",
             categories: [],
