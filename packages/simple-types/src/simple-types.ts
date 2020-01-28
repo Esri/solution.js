@@ -23,6 +23,7 @@
 import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
 import * as form from "./form";
+import * as notebook from "./notebook";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
 import * as workforce from "./workforce";
@@ -82,6 +83,7 @@ export function convertItemToTemplate(
       case "Workforce Project":
       case "Web Map":
       case "Web Mapping Application":
+      case "Notebook":
         dataPromise = common.getItemDataAsJson(
           itemTemplate.itemId,
           authentication
@@ -161,6 +163,9 @@ export function convertItemToTemplate(
                 authentication
               );
             }
+            break;
+          case "Notebook":
+            notebook.convertItemToTemplate(itemTemplate);
             break;
           case "Web Map":
             webappPromise = webmap.convertItemToTemplate(
@@ -297,6 +302,13 @@ export function createItemFromTemplate(
           } else if (template.type === "Workforce Project") {
             customProcDef = workforce.fineTuneCreatedItem(
               newItemTemplate,
+              destinationAuthentication
+            );
+          } else if (template.type === "Notebook") {
+            customProcDef = notebook.fineTuneCreatedItem(
+              template,
+              newItemTemplate,
+              templateDictionary,
               destinationAuthentication
             );
           } else {

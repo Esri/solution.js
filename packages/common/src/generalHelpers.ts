@@ -76,6 +76,25 @@ export function blobToText(blob: Blob): Promise<string> {
 }
 
 /**
+ * Converts JSON to a Blob.
+ *
+ * @param json JSON to use as source
+ * @return A blob from the source JSON
+ */
+export function jsonToBlob(json: any): Blob {
+  const _json = JSON.stringify(json);
+
+  const charArray = [];
+  for (let i = 0; i < _json.length; i++) {
+    charArray[i] = _json.charCodeAt(i);
+  }
+
+  return new Blob([new Uint8Array(charArray)], {
+    type: "application/octet-stream"
+  });
+}
+
+/**
  * Makes a deep clone, including arrays but not functions.
  *
  * @param obj Object to be cloned
