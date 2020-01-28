@@ -475,7 +475,7 @@ describe("Module `deploySolution`", () => {
                 culture: "en-us",
                 description:
                   "A Workforce for ArcGIS Project used by elections staff to manage election day requests for assistance and track the resolution of each request.",
-                extent: [],
+                extent: "{{solutionItemExtent}}",
                 licenseInfo: null,
                 name: null,
                 snippet:

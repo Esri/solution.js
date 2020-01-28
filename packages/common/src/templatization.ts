@@ -110,7 +110,7 @@ export function createInitializedItemTemplate(
     contentStatus: itemInfo.contentStatus,
     culture: itemInfo.culture,
     description: itemInfo.description,
-    extent: itemInfo.extent,
+    extent: "{{solutionItemExtent}}",
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
     snippet: itemInfo.snippet,
