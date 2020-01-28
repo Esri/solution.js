@@ -172,7 +172,6 @@ export function getItemTemplatePart(
       templatePart.resources = [];
       templatePart.estimatedDeploymentCostFactor = 4;
       break;
-      break;
 
     case "Operation View":
       break;

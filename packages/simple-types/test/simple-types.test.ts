@@ -1201,10 +1201,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             fullName: "casey"
           });
 
-        // spyOn(notebook, "fineTuneCreatedItem").and.returnValue(
-        //   Promise.resolve()
-        // );
-
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
