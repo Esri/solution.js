@@ -114,6 +114,7 @@ export function createInitializedItemTemplate(
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
     snippet: itemInfo.snippet,
+    spatialReference: undefined,
     tags: itemInfo.tags,
     thumbnail: itemInfo.thumbnail,
     title: itemInfo.title,

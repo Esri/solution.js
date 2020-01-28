@@ -445,6 +445,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -501,6 +502,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
@@ -584,6 +586,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -658,6 +661,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"

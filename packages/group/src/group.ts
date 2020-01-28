@@ -51,7 +51,10 @@ export function convertItemToTemplate(
         common.getGroup(itemInfo.id, authentication).then(
           groupResponse => {
             groupResponse.id = itemTemplate.item.id;
-            itemTemplate.item = groupResponse;
+            itemTemplate.item = {
+              ...groupResponse,
+              type: "Group"
+            };
 
             // Request resources
             common.getItemResources(itemTemplate.itemId, authentication).then(
@@ -110,7 +113,7 @@ export function createItemFromTemplate(
 
     // handle group
     const title: string = common.getUniqueTitle(
-      newItemTemplate.item.title,
+      newItemTemplate.item.title || "",
       templateDictionary,
       "user.groups"
     );

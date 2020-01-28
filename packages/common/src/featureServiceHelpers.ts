@@ -428,7 +428,7 @@ export function addFeatureServiceLayersAndTables(
     const layersAndTables: any[] = getLayersAndTables(itemTemplate);
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(
-        itemTemplate.item.url,
+        itemTemplate.item.url || "",
         layersAndTables,
         templateDictionary,
         requestOptions,
@@ -635,7 +635,7 @@ export function postProcessFields(
     const id = itemTemplate.itemId;
     const settingsKeys = Object.keys(templateDictionary);
     // concat any layers and tables to process
-    const url: string = itemTemplate.item.url;
+    const url: string = itemTemplate.item.url || "";
 
     const serviceData: any = itemTemplate.properties;
     Promise.all([

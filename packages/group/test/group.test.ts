@@ -322,6 +322,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemId: "grp1234567890",
           type: "Group",
           item: {
+            type: "Group",
             total: 7,
             start: 1,
             num: 7,
@@ -446,6 +447,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         itemTemplate.item = mockItems.getAGOLItem("Group", null);
 
         const groupResource: any = {
+          type: "Group",
           total: 7,
           start: 1,
           num: 7,
@@ -523,6 +525,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemId: "grp1234567890",
           type: "Group",
           item: {
+            type: "Group",
             total: 7,
             start: 1,
             num: 7,
