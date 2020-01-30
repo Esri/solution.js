@@ -296,7 +296,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -383,7 +383,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -495,7 +495,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -565,7 +565,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "formData.zip",
@@ -706,6 +706,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           }, done.fail);
       });
 
+      // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
         // Related to issue: #56
         // To add support for simple apps such as those that we create for "Getting to Know"
@@ -729,7 +730,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: "{{solutionItemExtent}}",
+            extent: [],
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -739,7 +740,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             title: "An AGOL item",
             typeKeywords: ["JavaScript"],
             url:
-              "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
+              "http://statelocaltryit.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=wma1234567890"
           },
           data: null,
           resources: [],
@@ -1496,7 +1497,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         categories: undefined,
         culture: undefined,
         description: undefined,
-        extent: "{{solutionItemExtent}}",
+        extent: undefined,
         tags: undefined,
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
@@ -1573,7 +1574,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         categories: undefined,
         culture: undefined,
         description: undefined,
-        extent: "{{solutionItemExtent}}",
+        extent: undefined,
         tags: undefined,
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],
