@@ -47,7 +47,7 @@ describe("Module `storymap`", () => {
 
   describe("createItemFromTemplate", () => {
     it("createItemFromTemplate", done => {
-      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
       );
       storymap
@@ -70,13 +70,13 @@ describe("Module `storymap`", () => {
 
   describe("isAStoryMap", () => {
     it("has to have a URL", () => {
-      const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+      const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplate(
         "Web Mapping Application"
       );
       templateWMA.item.url = null;
       expect(storymap.isAStoryMap(templateWMA)).toBeFalsy();
 
-      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
       );
       templateSTO.item.url = null;
@@ -84,14 +84,14 @@ describe("Module `storymap`", () => {
     });
 
     it("is the StoryMap item type", () => {
-      const template: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+      const template: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
       );
       expect(storymap.isAStoryMap(template)).toBeTruthy();
     });
 
     it("has a StoryMap type in its URL", () => {
-      const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplatePart(
+      const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplate(
         "Web Mapping Application"
       );
       expect(storymap.isAStoryMap(templateWMA)).toBeFalsy();

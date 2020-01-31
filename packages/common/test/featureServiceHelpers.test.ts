@@ -2437,7 +2437,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2508,7 +2508,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2564,7 +2564,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2638,7 +2638,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2715,7 +2715,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart("Feature Service");
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
       const settings = createMockSettings();
@@ -2829,7 +2829,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart("Feature Service");
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
       const settings = createMockSettings();

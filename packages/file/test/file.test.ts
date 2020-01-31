@@ -341,7 +341,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("deploys an item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
@@ -373,7 +373,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       });
 
       it("deploys an item with resources", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
@@ -428,7 +428,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       });
 
       it("fails to create item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
@@ -456,7 +456,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
       });
 
       it("fails to deploy file data to the item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;

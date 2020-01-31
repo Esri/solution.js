@@ -1302,7 +1302,7 @@ function getAGOLItemFundamentals(type: string, url = ""): any {
     categories: [],
     contentStatus: null,
     lastModified: -1,
-    spatialReference: null,
+    spatialReference: undefined,
     accessInformation: "Esri, Inc.",
     licenseInfo: null,
     culture: "en-us",
