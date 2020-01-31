@@ -719,7 +719,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           }, done.fail);
       });
 
-      // Blobs are only available in the browser
       it("should handle web mapping application with missing data", done => {
         const solutionItemId = "sln1234567890";
         // Related to issue: #56
@@ -898,7 +897,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           );
       });
 
-      it("should handle web mapping application 1", done => {
+      it("should handle web mapping application", done => {
         const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
@@ -1502,7 +1501,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .then(done.fail, done);
     });
 
-    it("should handle web mapping application 2", done => {
+    it("should handle web mapping application", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
@@ -1550,6 +1549,62 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
           layer0
         )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
+          }
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+
+    it("should handle web mapping application with missing data", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        licenseInfo: undefined,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = null;
+      itemTemplate.dependencies = [];
+
+      fetchMock
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
           { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
