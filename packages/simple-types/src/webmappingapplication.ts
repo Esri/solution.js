@@ -123,13 +123,14 @@ export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
   portalUrl: string
-) {
+): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const dataSources: any = common.getProp(
       itemTemplate,
       "data.dataSource.dataSources"
     );
     if (dataSources && Object.keys(dataSources).length > 0) {
+      const pendingRequests = new Array<Promise<void>>();
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
@@ -152,24 +153,31 @@ export function templatizeDatasources(
             [],
             authentication
           );
-          handleServiceRequests(
-            urlResults.serviceRequests,
-            urlResults.requestUrls,
-            urlResults.testString
-          ).then(
-            response => {
-              ds.url = response;
-              resolve(itemTemplate);
-            },
-            e => reject(common.fail(e))
+          pendingRequests.push(
+            new Promise<void>((resolveReq, rejectReq) => {
+              handleServiceRequests(
+                urlResults.serviceRequests,
+                urlResults.requestUrls,
+                urlResults.testString
+              ).then(
+                response => {
+                  ds.url = response;
+                  resolveReq();
+                },
+                e => rejectReq(common.fail(e))
+              );
+            })
           );
         } else {
           if (itemId) {
             ds.itemId = common.templatizeTerm(itemId, itemId, ".itemId");
           }
-          resolve(itemTemplate);
         }
       });
+      Promise.all(pendingRequests).then(
+        () => resolve(itemTemplate),
+        e => reject(common.fail(e))
+      );
     } else {
       resolve(itemTemplate);
     }
@@ -274,7 +282,7 @@ export function handleServiceRequests(
   serviceRequests: any[],
   requestUrls: string[],
   objString: string
-) {
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (serviceRequests && serviceRequests.length > 0) {
       let i: number = 0;
