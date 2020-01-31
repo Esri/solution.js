@@ -771,9 +771,174 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("_getAnalysisLayerIds", () => {
-    xit("_getAnalysisLayerIds", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles no analysis layers", done => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+        }
+      ];
+      const dependencies = ["layer1", "layer2", "layer4"];
+
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+        { serviceItemId: "layer3", id: 3 }
+      );
+
+      webmap
+        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
+        .then(
+          updatedDependencies => {
+            const expectedUpdate = {
+              dependencies: ["layer1", "layer2", "layer4"],
+              urlHash: {}
+            };
+            expect(updatedDependencies).toEqual(expectedUpdate);
+            done();
+          },
+          e => {
+            done.fail();
+          }
+        );
+    });
+
+    it("handles an analysis layer amidst other layers", done => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+        }
+      ];
+      const dependencies = ["layer1", "layer2", "layer4"];
+
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+        { serviceItemId: "layer3", id: 3 }
+      );
+
+      webmap
+        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
+        .then(
+          updatedDependencies => {
+            const expectedUpdate = {
+              dependencies: ["layer1", "layer2", "layer4", "layer3"],
+              urlHash: {
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3":
+                  "layer3"
+              }
+            };
+            expect(updatedDependencies).toEqual(expectedUpdate);
+            done();
+          },
+          e => {
+            done.fail();
+          }
+        );
+    });
+
+    it("handles an analysis layer without a serviceItemId", done => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
+      const dependencies = ["layer1"];
+
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+        { id: 3 }
+      );
+
+      webmap
+        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
+        .then(
+          updatedDependencies => {
+            const expectedUpdate = {
+              dependencies: ["layer1"],
+              urlHash: {}
+            };
+            expect(updatedDependencies).toEqual(expectedUpdate);
+            done();
+          },
+          e => {
+            done.fail();
+          }
+        );
+    });
+
+    it("handles case where analysis layer is already in dependencies", done => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
+      const dependencies = ["layer1"];
+
+      fetchMock.post(
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+        { serviceItemId: "layer3", id: 3 }
+      );
+
+      webmap
+        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
+        .then(
+          updatedDependencies => {
+            const expectedUpdate = {
+              dependencies: ["layer1", "layer3"],
+              urlHash: {
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3":
+                  "layer3"
+              }
+            };
+            expect(updatedDependencies).toEqual(expectedUpdate);
+            done();
+          },
+          e => {
+            done.fail();
+          }
+        );
     });
   });
 
