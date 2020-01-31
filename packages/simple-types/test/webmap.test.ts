@@ -943,9 +943,126 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
   });
 
   describe("_templatizeWebmapLayerIdsAndUrls", () => {
-    xit("_templatizeWebmapLayerIdsAndUrls", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles no analysis layers", () => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+        }
+      ];
+      const urlHash = {};
+
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+
+      const expectedLayerListTemplate = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer2.layer2.url}}"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer4.layer4.url}}"
+        }
+      ];
+    });
+
+    it("handles an analysis layer amidst other layers", () => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+        }
+      ];
+      const urlHash = {
+        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3":
+          "layer3"
+      };
+
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+
+      const expectedLayerListTemplate = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}"
+        },
+        {
+          itemId: "layer2",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer2.layer2.url}}"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer3.layer2.url}}"
+        },
+        {
+          itemId: "layer4",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer4.layer4.url}}"
+        }
+      ];
+    });
+
+    it("handles an analysis layer without a serviceItemId", () => {
+      const layerList = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
+      const urlHash = {};
+
+      webmap._templatizeWebmapLayerIdsAndUrls(layerList, urlHash);
+
+      const expectedLayerListTemplate = [
+        {
+          itemId: "layer1",
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/{{layer1.layer1.url}}"
+        },
+        {
+          url:
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        }
+      ];
     });
   });
 
@@ -1037,6 +1154,60 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
       const actual: any[] = webmap._templatize(objs, datasourceInfos);
       expect(actual).toEqual(expected);
+    });
+
+    it("can handle missing drawingInfo", () => {
+      const drawingInfo: any = {
+        renderer: {
+          visualVariables: [
+            {
+              field: "A"
+            }
+          ],
+          authoringInfo: {},
+          type: "uniqueValue",
+          field1: "A",
+          defaultSymbol: {},
+          uniqueValueInfos: []
+        }
+      };
+
+      const objs: any[] = [
+        {
+          id: "TestLayerForDashBoardMap_632",
+          layerDefinition: {
+            drawingInfo: drawingInfo
+          },
+          field: {
+            name: "A"
+          }
+        }
+      ];
+
+      const datasourceInfos: common.IDatasourceInfo[] = [
+        {
+          fields: [
+            {
+              name: "A"
+            }
+          ],
+          ids: ["TestLayerForDashBoardMap_123"],
+          adminLayerInfo: {},
+          relationships: [],
+          layerId: 0,
+          itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+          basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer0.fields",
+          url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}"
+        }
+      ];
+
+      const expectedObjs: any = common.cloneObject(objs);
+
+      const actualTemplatizedObs: any[] = webmap._templatize(
+        objs,
+        datasourceInfos
+      );
+      expect(actualTemplatizedObs).toEqual(expectedObjs);
     });
   });
 
