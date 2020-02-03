@@ -1647,9 +1647,34 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("findUrls ", () => {
-    xit("findUrls ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles unsupported services and services already in list of result URLs ", () => {
+      const testString: string =
+        '{"someProperty":{"url1":"https://fake.com/arcgis/rest/services/test/OtherServer/1",' +
+        '"url2":"https://fake.com/arcgis/rest/services/test/FeatureServer/1"}}';
+      const portalUrl: string = "";
+      const requestUrls: string[] = [
+        "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+      ];
+      const serviceRequests: any[] = [];
+
+      const result = webmappingapplication.findUrls(
+        testString,
+        portalUrl,
+        requestUrls,
+        serviceRequests,
+        MOCK_USER_SESSION
+      );
+      const expectedResult = {
+        testString:
+          '{"someProperty":{"url1":"https://fake.com/arcgis/rest/services/test/OtherServer/1",' +
+          '"url2":"https://fake.com/arcgis/rest/services/test/FeatureServer/1"}}',
+        requestUrls: [
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+        ],
+        serviceRequests: [] as any[]
+      };
+
+      expect(result).toEqual(expectedResult);
     });
   });
 
