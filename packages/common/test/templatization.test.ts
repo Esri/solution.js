@@ -368,7 +368,10 @@ function createItemTemplateList(itemIds: string[]): interfaces.IItemTemplate[] {
       itemId: itemId,
       type: "",
       key: "",
-      item: "",
+      item: {
+        id: "",
+        type: ""
+      },
       data: "",
       resources: [] as any[],
       dependencies: [] as string[],

@@ -19,6 +19,7 @@
  */
 
 import * as portal from "@esri/arcgis-rest-portal";
+import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -158,6 +159,26 @@ export interface IGetResourcesResponse {
 }
 
 /**
+ * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
+ */
+export interface IItemGeneralized {
+  categories?: string[];
+  culture?: string;
+  description?: string;
+  documentation?: string;
+  extent?: number[][] | string;
+  id: string;
+  snippet?: string;
+  spatialReference?: serviceAdmin.ISpatialReference;
+  tags?: string[];
+  title?: string;
+  type: string;
+  typeKeywords?: string[];
+  url?: string;
+  [key: string]: any;
+}
+
+/**
  * The templatized form of an item or group.
  */
 export interface IItemTemplate {
@@ -179,7 +200,7 @@ export interface IItemTemplate {
   /**
    * Item base section JSON
    */
-  item: any;
+  item: IItemGeneralized;
 
   /**
    * Item data section JSON
@@ -307,6 +328,11 @@ export interface IPostProcessArgs {
    * Callback for IProgressUpdate
    */
   progressTickCallback: any;
+}
+
+export interface IRelatedItems {
+  relationshipType: string;
+  relatedItemIds: string[];
 }
 
 export interface IResource {

@@ -25,7 +25,7 @@ import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 
-let itemTemplate: common.IItemTemplate = mockSolutions.getItemTemplatePart(
+let itemTemplate: common.IItemTemplate = mockSolutions.getItemTemplate(
   "Feature Service",
   [],
   "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
@@ -33,7 +33,7 @@ let itemTemplate: common.IItemTemplate = mockSolutions.getItemTemplatePart(
 
 beforeEach(() => {
   // refresh the template if any temp changes were made
-  itemTemplate = mockSolutions.getItemTemplatePart(
+  itemTemplate = mockSolutions.getItemTemplate(
     "Feature Service",
     [],
     "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
@@ -91,7 +91,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const expectedTableDefQuery: string =
           "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
 
-        itemTemplate = mockSolutions.getItemTemplatePart(
+        itemTemplate = mockSolutions.getItemTemplate(
           "Feature Service",
           [],
           url
@@ -211,7 +211,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const keyField: string = "globalid";
         const defQuery: string = "status = 'BoardReview'";
 
-        itemTemplate = mockSolutions.getItemTemplatePart(
+        itemTemplate = mockSolutions.getItemTemplate(
           "Feature Service",
           [],
           url
@@ -255,7 +255,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const itemDataUrl: string =
           "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
 
-        itemTemplate = mockSolutions.getItemTemplatePart(
+        itemTemplate = mockSolutions.getItemTemplate(
           "Feature Service",
           [],
           url
@@ -286,7 +286,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const keyField: string = "globalid";
         const defQuery: string = "status = 'BoardReview'";
 
-        itemTemplate = mockSolutions.getItemTemplatePart(
+        itemTemplate = mockSolutions.getItemTemplate(
           "Feature Service",
           [],
           url
@@ -346,7 +346,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -481,7 +481,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -626,7 +626,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -731,7 +731,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -820,7 +820,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -894,7 +894,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -971,7 +971,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -1076,7 +1076,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -1166,7 +1166,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl

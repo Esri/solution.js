@@ -51,7 +51,7 @@ beforeEach(() => {
       snippet: null,
       thumbnail: null,
       documentation: null,
-      extent: [],
+      extent: "{{solutionItemExtent}}",
       categories: [],
       spatialReference: null,
       accessInformation: null,

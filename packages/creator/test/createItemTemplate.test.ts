@@ -123,7 +123,7 @@ describe("Module `createItemTemplate`", () => {
         const templateDictionary: any = {};
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const existingTemplates: common.IItemTemplate[] = [
-          templates.getItemTemplatePart("Web Map")
+          templates.getItemTemplate("Web Map")
         ];
 
         createItemTemplate

@@ -430,6 +430,77 @@ export function getItemRelatedItems(
   });
 }
 
+/**
+ * Gets all of the related items of an AGO item in the specified direction.
+ *
+ * @param itemId Id of an item whose related items are sought
+ * @param direction
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with a list of IRelatedItems
+ */
+export function getItemRelatedItemsInSameDirection(
+  itemId: string,
+  direction: "forward" | "reverse",
+  authentication: interfaces.UserSession
+): Promise<interfaces.IRelatedItems[]> {
+  return new Promise<interfaces.IRelatedItems[]>(resolve => {
+    const relationshipTypes = [
+      // from interfaces.ItemRelationshipType
+      "Map2Service",
+      "WMA2Code",
+      "Map2FeatureCollection",
+      "MobileApp2Code",
+      "Service2Data",
+      "Service2Service",
+      "Map2AppConfig",
+      "Item2Attachment",
+      "Item2Report",
+      "Listed2Provisioned",
+      "Style2Style",
+      "Service2Style",
+      "Survey2Service",
+      "Survey2Data",
+      "Service2Route",
+      "Area2Package",
+      "Map2Area",
+      "Service2Layer",
+      "Area2CustomPackage",
+      "TrackView2Map",
+      "SurveyAddIn2Data"
+    ];
+
+    const relatedItemDefs: Array<Promise<
+      interfaces.IGetRelatedItemsResponse
+    >> = relationshipTypes.map(relationshipType =>
+      getItemRelatedItems(
+        itemId,
+        relationshipType as interfaces.ItemRelationshipType,
+        direction,
+        authentication
+      )
+    );
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(relatedItemDefs).then(
+      (relationshipResponses: interfaces.IGetRelatedItemsResponse[]) => {
+        const relatedItems: interfaces.IRelatedItems[] = [];
+
+        for (let i: number = 0; i < relationshipTypes.length; ++i) {
+          if (relationshipResponses[i].total > 0) {
+            relatedItems.push({
+              relationshipType: relationshipTypes[i],
+              relatedItemIds: relationshipResponses[i].relatedItems.map(
+                item => item.id
+              )
+            });
+          }
+        }
+
+        resolve(relatedItems);
+      }
+    );
+  });
+}
+
 export function getItemResources(
   id: string,
   authentication: interfaces.UserSession

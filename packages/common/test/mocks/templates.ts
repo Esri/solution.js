@@ -47,12 +47,15 @@ export function getSolutionTemplateItem(
   };
 }
 
-export function getItemTemplate(): any {
+export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
   return {
     itemId: "",
     type: "",
     key: "",
-    item: {},
+    item: {
+      id: "",
+      type: ""
+    },
     data: {},
     resources: [],
     properties: {},
@@ -62,7 +65,7 @@ export function getItemTemplate(): any {
   };
 }
 
-export function getItemTemplatePart(
+export function getItemTemplate(
   type: string,
   dependencies = [] as string[],
   url = ""
@@ -83,7 +86,7 @@ export function getItemTemplatePart(
     case "Dashboard":
       templatePart = getItemTemplateFundamentals(
         type,
-        "dsh",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -107,7 +110,7 @@ export function getItemTemplatePart(
     case "Feature Service":
       templatePart = getItemTemplateFundamentals(
         type,
-        "svc",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url || "{{svc1234567890.itemId}}"
       );
@@ -159,7 +162,7 @@ export function getItemTemplatePart(
     case "Map Template": // // ??? temporary definition
       templatePart = getItemTemplateFundamentals(
         type,
-        "mtp",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -167,7 +170,12 @@ export function getItemTemplatePart(
       break;
 
     case "Notebook":
-      templatePart = getItemTemplateFundamentals(type, "nb", dependencies, url);
+      templatePart = getItemTemplateFundamentals(
+        type,
+        mockItems.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
       templatePart.estimatedDeploymentCostFactor = 4;
@@ -188,7 +196,7 @@ export function getItemTemplatePart(
     case "StoryMap":
       templatePart = getItemTemplateFundamentals(
         type,
-        "sto",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url || "https://storymaps.arcgis.com/stories/{{sto1234567890.itemId}}"
       );
@@ -199,7 +207,7 @@ export function getItemTemplatePart(
     case "Web Map":
       templatePart = getItemTemplateFundamentals(
         type,
-        "map",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url ||
           "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
@@ -212,7 +220,7 @@ export function getItemTemplatePart(
     case "Web Mapping Application":
       templatePart = getItemTemplateFundamentals(
         type,
-        "wma",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url ||
           "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
@@ -225,7 +233,7 @@ export function getItemTemplatePart(
     case "Workforce Project":
       templatePart = getItemTemplateFundamentals(
         type,
-        "wfp",
+        mockItems.getItemTypeAbbrev(type),
         dependencies,
         url
       );
@@ -253,32 +261,32 @@ export function getItemTemplatePart(
 }
 
 export function getDashboardTemplatePartNoWidgets(): any {
-  const templatePart: any = getItemTemplatePart("Dashboard");
+  const templatePart: any = getItemTemplate("Dashboard");
   templatePart.data.widgets = [];
   return templatePart;
 }
 
 export function getTemplatePartNoData(type: string): any {
-  const templatePart: any = getItemTemplatePart(type);
+  const templatePart: any = getItemTemplate(type);
   templatePart.data = null;
   return templatePart;
 }
 
 export function getTemplatePartNoExtent(type: string): any {
-  const templatePart: any = getItemTemplatePart(type);
+  const templatePart: any = getItemTemplate(type);
   templatePart.item.extent = null;
   return templatePart;
 }
 
 export function getFeatureServiceTemplatePartNoRelationships(): any {
-  const templatePart: any = getItemTemplatePart("Feature Service");
+  const templatePart: any = getItemTemplate("Feature Service");
   templatePart.properties.layers[0].relationships = [];
   templatePart.properties.tables[0].relationships = [];
   return templatePart;
 }
 
 /* export function getFourItemFeatureServiceTemplatePart(): any {
-  const templatePart: any = getItemTemplatePart("Feature Service");
+  const templatePart: any = getItemTemplate("Feature Service");
 
   // Update data section
   templatePart.data.layers.push({
@@ -367,17 +375,17 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
 
 export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
   const template: interfaces.IItemTemplate[] = [
-    getItemTemplatePart(
+    getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
       "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
-    getItemTemplatePart(
+    getItemTemplate(
       "Web Map",
       ["svc1234567890"],
       "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
-    getItemTemplatePart("Feature Service")
+    getItemTemplate("Feature Service")
   ];
 
   return template;
@@ -385,17 +393,17 @@ export function getWebMappingApplicationTemplate(): interfaces.IItemTemplate[] {
 
 export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplate[] {
   const template: interfaces.IItemTemplate[] = [
-    getItemTemplatePart(
+    getItemTemplate(
       "Web Mapping Application",
       ["map1234567890"],
       "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
     ),
-    getItemTemplatePart(
+    getItemTemplate(
       "Web Map",
       ["svc1234567890"],
       "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
     ),
-    getItemTemplatePart("Feature Service", [])
+    getItemTemplate("Feature Service", [])
   ];
 
   // Switch from webmap to group
@@ -412,7 +420,7 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
 
 export function getWebMappingApplicationTemplateNoWebmapOrGroup(): interfaces.IItemTemplate[] {
   const template: interfaces.IItemTemplate[] = [
-    getItemTemplatePart(
+    getItemTemplate(
       "Web Mapping Application",
       undefined,
       "{{portalBaseUrl}}/apps/CrowdsourcePolling/index.html?appid={{wma1234567890.itemId}}"
@@ -780,18 +788,18 @@ export function getItemTemplateData(type?: string): any {
           updateInterval: 300
         },
         version: "1.2.0",
-        groupId: "{{abc715c2df2b466da05577776e82d044.groupId}}",
-        folderId: "{{abc8483e025c47338d43df308c117308.folderId}}",
+        groupId: "{{abc715c2df2b466da05577776e82d044.itemId}}",
+        folderId: "{{folderId}}",
         assignmentIntegrations: [
           {
             id: "default-navigator",
             prompt: "Navigate to Assignment",
             urlTemplate:
-              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}://Workforce",
+              "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce",
             assignmentTypes: [
               {
                 urlTemplate:
-                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}://Workforce"
+                  "arcgis-navigator://?stop=${assignment.latitude},{itemID={{cad3483e025c47338d43df308c117308.itemId}}},${assignment.longitude}&stopname=${assignment.location}&callback=arcgis-workforce://&callbackprompt={itemID={{bad3483e025c47338d43df308c117308.itemId}}}://Workforce"
               }
             ]
           }
@@ -1065,7 +1073,6 @@ function getItemTemplateFundamentals(
     key: "i1a2b3c4",
     item: {
       id: "{{" + typePrefix + "1234567890.itemId}}",
-      item: "{{" + typePrefix + "1234567890.itemId}}",
       name: "Name of an AGOL item",
       title: "An AGOL item",
       type: type,
@@ -1077,33 +1084,20 @@ function getItemTemplateFundamentals(
         "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
         typePrefix +
         "1234567890/info/thumbnail/ago_downloaded.png",
-      documentation: null,
       extent: "{{solutionItemExtent}}",
       categories: [],
       contentStatus: null,
-      spatialReference: null,
+      spatialReference: undefined,
       accessInformation: "Esri, Inc.",
       licenseInfo: null,
       culture: "en-us",
-      properties: null,
-      url: url,
-      proxyFilter: null,
-      access: "public",
-      appCategories: [],
-      industries: [],
-      languages: [],
-      largeThumbnail: null,
-      banner: null,
-      screenshots: [],
-      listed: false,
-      commentsEnabled: false,
-      groupDesignations: null
+      url: url
     },
     data: undefined,
     resources: [],
     dependencies: dependencies,
     circularDependencies: circularDependencies,
-    properties: null,
+    properties: {},
     estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
   };
 }

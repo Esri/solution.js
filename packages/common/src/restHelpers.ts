@@ -430,7 +430,7 @@ export function extractDependencies(
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView) {
-      const url: string = itemTemplate.item.url;
+      const url: string = itemTemplate.item.url || "";
       request
         .request(url + "/sources?f=json", {
           authentication: authentication
@@ -583,7 +583,7 @@ export function getServiceLayersAndTables(
     // full tables
 
     // Get the service description
-    const serviceUrl = itemTemplate.item.url;
+    const serviceUrl = itemTemplate.item.url || "";
     getFeatureServiceProperties(serviceUrl, authentication).then(
       properties => {
         itemTemplate.properties = properties;

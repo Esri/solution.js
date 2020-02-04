@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for functions involving the creation and deployment of Workforce item types.
  */
 
 import * as common from "@esri/solution-common";
@@ -83,7 +83,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       itemTemplate.item = {
-        id: "abc0cab401af4828a25cc6eaeb59fb69"
+        id: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Workforce Project"
       };
 
       const expectedTemplateData: any = {

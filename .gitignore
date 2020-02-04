@@ -92,3 +92,5 @@ __*
 packages/**/*.js
 packages/**/*.map
 packages/**/*.d.ts
+!packages/**/tslib.js
+

@@ -28,6 +28,17 @@ export function getItemInfo(
     }
 
     // Get the item information
+    const itemFwdRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
+      itemId,
+      "forward",
+      authentication
+    );
+    const itemRevRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
+      itemId,
+      "reverse",
+      authentication
+    );
+
     const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
@@ -62,7 +73,9 @@ export function getItemInfo(
       itemDataDef,
       itemThumbnailDef,
       itemMetadataDef,
-      itemResourcesDef
+      itemResourcesDef,
+      itemFwdRelatedItemsDef,
+      itemRevRelatedItemsDef
     ]).then(
       async responses => {
         const [
@@ -70,20 +83,26 @@ export function getItemInfo(
           itemDataFile,
           itemThumbnail,
           itemMetadataBlob,
-          itemResourceFiles
+          itemResourceFiles,
+          itemFwdRelatedItems,
+          itemRevRelatedItems
         ] = responses;
         // Summarize what we have
         // ----------------------
         // (itemBase: any)  text/plain JSON
-        // (itemDataDef: File)  */*
+        // (itemData: File)  */*
         // (itemThumbnail: Blob)  image/*
-        // (itemMetadataDef: Blob)  application/xml
-        // (itemResourcesDef: File[])  list of */*
+        // (itemMetadata: Blob)  application/xml
+        // (itemResources: File[])  list of */*
+        // (itemFwdRelatedItems: common.IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+        // (itemRevRelatedItems: common.IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
         console.log("itemThumbnail", itemThumbnail);
         console.log("itemMetadata", itemMetadataBlob);
-        console.log("itemResources", itemResourceFiles);
+        console.log("itemResources", JSON.stringify(itemResourceFiles));
+        console.log("itemFwdRelatedItems", JSON.stringify(itemFwdRelatedItems));
+        console.log("itemRevRelatedItems", JSON.stringify(itemRevRelatedItems));
 
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
@@ -136,6 +155,36 @@ export function getItemInfo(
             html += "</div></li>";
           }
           html += "</ol>";
+        }
+        html += "</p>";
+
+        // Show related items section
+        html += "<p>Related Items<br/>";
+        if (
+          itemFwdRelatedItems.length === 0 &&
+          itemRevRelatedItems.length === 0
+        ) {
+          html += "<p><i>none</i>";
+        } else {
+          html +=
+            "<ul style='margin-left:-36px;list-style-type:none;font-size:smaller;'>";
+          for (const relatedItem of itemFwdRelatedItems) {
+            html +=
+              "<li>&rarr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          for (const relatedItem of itemRevRelatedItems) {
+            html +=
+              "<li>&larr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          html += "</ul>";
         }
         html += "</p>";
 

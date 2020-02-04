@@ -15,7 +15,7 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for functions involving the creation and deployment of Web Mapping Application item types.
  */
 
 import * as common from "@esri/solution-common";
@@ -445,6 +445,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -501,6 +502,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
@@ -584,6 +586,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "https://somepath/apps/webappviewer/index.html?id=f3223bda3c304dd0bf46dee75ac31aae"
@@ -658,6 +661,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         key: "abcdefgh",
         item: {
           id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
           title: "Voting Centers",
           url:
             "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
@@ -1131,16 +1135,343 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("templatizeDatasources ", () => {
-    xit("templatizeDatasources ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles different flavors of data source", done => {
+      const itemTemplate: common.IItemTemplate = {
+        itemId: "abc0cab401af4828a25cc6eaeb59fb69",
+        type: "Web Mapping Application",
+        key: "r0rtxyja",
+        item: {
+          id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          type: "Web Mapping Application",
+          extent: "{{solutionItemExtent}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}"
+        },
+        data: {
+          appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+          values: {
+            webmap: "{{myMapId.itemId}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.itemId}}"
+            },
+            itemId: "{{mapItemId.itemId}}"
+          },
+          folderId: "{{folderId}}",
+          dataSource: {
+            dataSources: {
+              external_123456789: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "2ea59a64b34646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer",
+                url:
+                  "https://fake.com/arcgis/rest/services/test/FeatureServer/0"
+              },
+              external_987654321: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                itemId: "56465ad54b4646f8972a71c7d536e4a3",
+                isDynamic: false,
+                label: "Point layer"
+              },
+              external_123498765: {
+                type: "source type",
+                portalUrl: "https://fake.maps.arcgis.com/",
+                isDynamic: false,
+                label: "Point layer"
+              }
+            },
+            settings: {}
+          }
+        },
+        resources: [],
+        dependencies: ["myMapId"],
+        circularDependencies: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+      const expectedItemTemplate: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedItemTemplate.data.dataSource.dataSources = {
+        external_123456789: {
+          type: "source type",
+          portalUrl: "{{portalBaseUrl}}",
+          itemId: "{{2ea59a64b34646f8972a71c7d536e4a3.layer0.itemId}}",
+          isDynamic: false,
+          label: "Point layer",
+          url: "{{2ea59a64b34646f8972a71c7d536e4a3.layer0.url}}"
+        },
+        external_987654321: {
+          type: "source type",
+          portalUrl: "{{portalBaseUrl}}",
+          itemId: "{{56465ad54b4646f8972a71c7d536e4a3.itemId}}",
+          isDynamic: false,
+          label: "Point layer"
+        },
+        external_123498765: {
+          type: "source type",
+          portalUrl: "{{portalBaseUrl}}",
+          isDynamic: false,
+          label: "Point layer"
+        }
+      };
+      const portalUrl: string = "https://fake.maps.arcgis.com";
+
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post("https://fake.com/arcgis/rest/services/test/FeatureServer/0", {
+          serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+          id: 0
+        });
+
+      webmappingapplication
+        .templatizeDatasources(itemTemplate, MOCK_USER_SESSION, portalUrl)
+        .then(
+          (updatedItemTemplate: common.IItemTemplate) => {
+            expect(updatedItemTemplate).toEqual(expectedItemTemplate);
+            done();
+          },
+          e => done.fail()
+        );
     });
   });
 
   describe("templatizeWidgets ", () => {
-    xit("templatizeWidgets ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles widgets", done => {
+      const itemTemplate: common.IItemTemplate = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
+          extent: "{{solutionItemExtent}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
+        },
+        data: {
+          appItemId: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          values: {
+            webmap: "{{myMapId.itemId}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.itemId}}"
+            },
+            itemId: "{{mapItemId.itemId}}"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl:
+                      "http://fake.com/arcgis/rest/services/test/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl:
+                      "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+                  },
+                  somePortalPath: {
+                    s: "https://fake.maps.arcgis.com/"
+                  },
+                  geocodeProps: {
+                    service: "http://fake.maps.arcgis.com/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://fake.maps.arcgis.com/NAServer"
+                  }
+                }
+              },
+              {
+                icon: "https://somepath/anothername.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl:
+                      "http://fake.com/arcgis/rest/services/test/FeatureServer/2"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [],
+        dependencies: ["myMapId"],
+        circularDependencies: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+      const expectedItemTemplate: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedItemTemplate.data.widgetPool.widgets = [
+        {
+          icon: "{{portalBaseUrl}}/somename.png",
+          config: {
+            someProperty: {
+              someHttpUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
+            },
+            someOtherProperty: {
+              someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
+            },
+            somePortalPath: {
+              s: "{{portalBaseUrl}}"
+            },
+            geocodeProps: {
+              service:
+                "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
+            },
+            routeProps: {
+              service: "{{organization.helperServices.route.url}}"
+            }
+          }
+        },
+        {
+          icon: "{{portalBaseUrl}}/anothername.png",
+          config: {
+            someProperty: {
+              someHttpUrl: "{{f74d7d7630da4fa7b961921489c7d3ef.layer2.url}}"
+            }
+          }
+        }
+      ];
+      const portalUrl: string = "https://fake.maps.arcgis.com";
+      const widgetPath: string = "data.widgetPool.widgets";
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+      const layer2: any = {
+        serviceItemId: "f74d7d7630da4fa7b961921489c7d3ef",
+        id: 2
+      };
+
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        )
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/2",
+          layer2
+        )
+        .post("http://fake.com/arcgis/rest/info", {})
+        .post(
+          "http://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        )
+        .post(
+          "http://fake.com/arcgis/rest/services/test/FeatureServer/2",
+          layer2
+        );
+
+      webmappingapplication
+        .templatizeWidgets(
+          itemTemplate,
+          MOCK_USER_SESSION,
+          portalUrl,
+          widgetPath
+        )
+        .then(
+          (updatedItemTemplate: common.IItemTemplate) => {
+            expect(updatedItemTemplate).toEqual(expectedItemTemplate);
+            done();
+          },
+          e => done.fail()
+        );
+    });
+
+    it("handles widgets that are missing properties", done => {
+      const itemTemplate: common.IItemTemplate = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
+          extent: "{{solutionItemExtent}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
+        },
+        data: {
+          appItemId: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          values: {
+            webmap: "{{myMapId.itemId}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.itemId}}"
+            },
+            itemId: "{{mapItemId.itemId}}"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: null,
+                config: null
+              }
+            ]
+          }
+        },
+        resources: [],
+        dependencies: ["myMapId"],
+        circularDependencies: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+      const expectedItemTemplate: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      const portalUrl: string = "https://fake.maps.arcgis.com";
+      const widgetPath: string = "data.widgetPool.widgets";
+      const layer1: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 1
+      };
+
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post("http://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        )
+        .post(
+          "http://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        );
+
+      webmappingapplication
+        .templatizeWidgets(
+          itemTemplate,
+          MOCK_USER_SESSION,
+          portalUrl,
+          widgetPath
+        )
+        .then(
+          (updatedItemTemplate: common.IItemTemplate) => {
+            expect(updatedItemTemplate).toEqual(expectedItemTemplate);
+            done();
+          },
+          e => done.fail()
+        );
     });
   });
 
@@ -1162,11 +1493,188 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         e => done.fail
       );
     });
+
+    it("handles missing data in service requests", done => {
+      const itemTemplate: common.IItemTemplate = {
+        itemId: "f3223bda3c304dd0bf46dee75ac31aae",
+        type: "Web Mapping Application",
+        key: "abcdefgh",
+        item: {
+          id: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          type: "Web Mapping Application",
+          extent: "{{solutionItemExtent}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/apps/webappviewer/index.html?id={{f3223bda3c304dd0bf46dee75ac31aae.itemId}}"
+        },
+        data: {
+          appItemId: "{{f3223bda3c304dd0bf46dee75ac31aae.itemId}}",
+          values: {
+            webmap: "{{myMapId.itemId}}"
+          },
+          map: {
+            appProxy: {
+              mapItemId: "{{mapItemId.itemId}}"
+            },
+            itemId: "{{mapItemId.itemId}}"
+          },
+          dataSource: {
+            dataSources: {},
+            settings: {}
+          },
+          widgetPool: {
+            widgets: [
+              {
+                icon: "https://somepath/somename.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl:
+                      "http://fake.com/arcgis/rest/services/test/FeatureServer/1"
+                  },
+                  someOtherProperty: {
+                    someHttpsUrl:
+                      "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+                  },
+                  somePortalPath: {
+                    s: "https://fake.maps.arcgis.com/"
+                  },
+                  geocodeProps: {
+                    service: "http://fake.maps.arcgis.com/GeocodeServer"
+                  },
+                  routeProps: {
+                    service: "http://fake.maps.arcgis.com/NAServer"
+                  }
+                }
+              },
+              {
+                icon: "https://somepath/anothername.png",
+                config: {
+                  someProperty: {
+                    someHttpUrl:
+                      "http://fake.com/arcgis/rest/services/test/FeatureServer/2"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        resources: [],
+        dependencies: ["myMapId"],
+        circularDependencies: [],
+        properties: {},
+        estimatedDeploymentCostFactor: 2
+      };
+      const expectedItemTemplate: common.IItemTemplate = common.cloneObject(
+        itemTemplate
+      );
+      expectedItemTemplate.data.widgetPool.widgets = [
+        {
+          icon: "{{portalBaseUrl}}/somename.png",
+          config: {
+            someProperty: {
+              someHttpUrl:
+                "http://fake.com/arcgis/rest/services/test/FeatureServer/1"
+            },
+            someOtherProperty: {
+              someHttpsUrl:
+                "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+            },
+            somePortalPath: {
+              s: "{{portalBaseUrl}}"
+            },
+            geocodeProps: {
+              service:
+                "{{organization.helperServices.geocode:getDefaultLocatorURL}}"
+            },
+            routeProps: {
+              service: "{{organization.helperServices.route.url}}"
+            }
+          }
+        },
+        {
+          icon: "{{portalBaseUrl}}/anothername.png",
+          config: {
+            someProperty: {
+              someHttpUrl: "{{f74d7d7630da4fa7b961921489c7d3ef.url}}"
+            }
+          }
+        }
+      ];
+      const portalUrl: string = "https://fake.maps.arcgis.com";
+      const widgetPath: string = "data.widgetPool.widgets";
+      const layer1: any = {
+        id: 1
+      };
+      const layer2: any = {
+        serviceItemId: "f74d7d7630da4fa7b961921489c7d3ef"
+      };
+
+      fetchMock
+        .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        )
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/2",
+          layer2
+        )
+        .post("http://fake.com/arcgis/rest/info", {})
+        .post(
+          "http://fake.com/arcgis/rest/services/test/FeatureServer/1",
+          layer1
+        )
+        .post(
+          "http://fake.com/arcgis/rest/services/test/FeatureServer/2",
+          layer2
+        );
+
+      webmappingapplication
+        .templatizeWidgets(
+          itemTemplate,
+          MOCK_USER_SESSION,
+          portalUrl,
+          widgetPath
+        )
+        .then(
+          (updatedItemTemplate: common.IItemTemplate) => {
+            expect(updatedItemTemplate).toEqual(expectedItemTemplate);
+            done();
+          },
+          e => done.fail()
+        );
+    });
   });
+
   describe("findUrls ", () => {
-    xit("findUrls ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles unsupported services and services already in list of result URLs ", () => {
+      const testString: string =
+        '{"someProperty":{"url1":"https://fake.com/arcgis/rest/services/test/OtherServer/1",' +
+        '"url2":"https://fake.com/arcgis/rest/services/test/FeatureServer/1"}}';
+      const portalUrl: string = "";
+      const requestUrls: string[] = [
+        "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+      ];
+      const serviceRequests: any[] = [];
+
+      const result = webmappingapplication.findUrls(
+        testString,
+        portalUrl,
+        requestUrls,
+        serviceRequests,
+        MOCK_USER_SESSION
+      );
+      const expectedResult = {
+        testString:
+          '{"someProperty":{"url1":"https://fake.com/arcgis/rest/services/test/OtherServer/1",' +
+          '"url2":"https://fake.com/arcgis/rest/services/test/FeatureServer/1"}}',
+        requestUrls: [
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
+        ],
+        serviceRequests: [] as any[]
+      };
+
+      expect(result).toEqual(expectedResult);
     });
   });
 
@@ -1363,6 +1871,27 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("handles model with matching path", () => {
       const model = { data: { map: { itemId: "abc" } } };
       const expected = ["abc"];
+      const actual = webmappingapplication._getWABDependencies(model);
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles model without matching dataSource", () => {
+      const model = {
+        data: {
+          map: {
+            other: "abc"
+          },
+          dataSource: {
+            dataSources: {
+              src123456: {
+                id: "2ea59a64b34646f8972a71c7d536e4a3",
+                type: "source type"
+              }
+            }
+          }
+        }
+      };
+      const expected = [] as string[];
       const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
@@ -1679,23 +2208,202 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("_getSortOrder ", () => {
-    xit("_getSortOrder ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("sorts url and layer id first", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: [],
+        url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 1;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts datasource ids first", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "456" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 1;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts base service url second", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: undefined,
+        ids: [],
+        url: "{{934a9ef8efa7448fa8ddf7b13cef0240}}",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 2;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts AGOL item id reference third", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: [],
+        url: "",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 3;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("defaults sort to fourth", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "",
+        layerId: 1,
+        ids: [],
+        url: "",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 4;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
   describe("_prioritizedTests", () => {
-    xit("_prioritizedTests", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles missing url", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+
+      const expected: any = null;
+
+      const actual = webmappingapplication._prioritizedTests(
+        null,
+        [datasourceInfo],
+        false
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
   describe("_templatizeParentByURL", () => {
-    xit("_templatizeParentByURL", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles missing url", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+
+      const expected: any = {} as { [index: string]: any };
+
+      const actual = webmappingapplication._templatizeParentByURL(
+        null,
+        datasourceInfo,
+        false
+      );
+      expect(actual).toEqual(expected);
     });
   });
 

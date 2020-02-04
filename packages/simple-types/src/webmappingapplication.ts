@@ -123,13 +123,14 @@ export function templatizeDatasources(
   itemTemplate: common.IItemTemplate,
   authentication: common.UserSession,
   portalUrl: string
-) {
+): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     const dataSources: any = common.getProp(
       itemTemplate,
       "data.dataSource.dataSources"
     );
     if (dataSources && Object.keys(dataSources).length > 0) {
+      const pendingRequests = new Array<Promise<void>>();
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
         common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
@@ -152,24 +153,31 @@ export function templatizeDatasources(
             [],
             authentication
           );
-          handleServiceRequests(
-            urlResults.serviceRequests,
-            urlResults.requestUrls,
-            urlResults.testString
-          ).then(
-            response => {
-              ds.url = response;
-              resolve(itemTemplate);
-            },
-            e => reject(common.fail(e))
+          pendingRequests.push(
+            new Promise<void>((resolveReq, rejectReq) => {
+              handleServiceRequests(
+                urlResults.serviceRequests,
+                urlResults.requestUrls,
+                urlResults.testString
+              ).then(
+                response => {
+                  ds.url = response;
+                  resolveReq();
+                },
+                e => rejectReq(common.fail(e))
+              );
+            })
           );
         } else {
           if (itemId) {
             ds.itemId = common.templatizeTerm(itemId, itemId, ".itemId");
           }
-          resolve(itemTemplate);
         }
       });
+      Promise.all(pendingRequests).then(
+        () => resolve(itemTemplate),
+        e => reject(common.fail(e))
+      );
     } else {
       resolve(itemTemplate);
     }
@@ -274,7 +282,7 @@ export function handleServiceRequests(
   serviceRequests: any[],
   requestUrls: string[],
   objString: string
-) {
+): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (serviceRequests && serviceRequests.length > 0) {
       let i: number = 0;
@@ -473,7 +481,7 @@ export function _getGenericWebAppDependencies(model: any): any {
   return common.getProps(model, props);
 }
 
-export function _getWABDependencies(model: any): any {
+export function _getWABDependencies(model: any): string[] {
   const deps = [] as string[];
   const v = common.getProp(model, "data.map.itemId");
   if (v) {
@@ -661,7 +669,7 @@ export function _getReplaceOrder(
 
 /**
  * Determine an order for checking field names against a dataSource or widget.
- * Sort order prefernce is set in this order: layer url, web map layer id, service url, agol itemId
+ * Sort order preference is set in this order: layer url, web map layer id, service url, agol itemId
  *
  * @param datasourceInfo The datasource object with key properties about the service.
  * @param testString A stringified version of a widget or dataSource
@@ -670,7 +678,7 @@ export function _getReplaceOrder(
 export function _getSortOrder(
   datasourceInfo: common.IDatasourceInfo,
   testString: string
-) {
+): number {
   const url = datasourceInfo.url;
   const itemId = datasourceInfo.itemId;
   const layerId = datasourceInfo.layerId;
@@ -679,6 +687,7 @@ export function _getSortOrder(
   // else if we find the maps layer id prioritze it first
   let layerUrlTest: any;
   if (url && !isNaN(layerId)) {
+    // E //???
     layerUrlTest = new RegExp(
       url.replace(/[.]/, ".layer" + layerId + "."),
       "gm"
@@ -700,15 +709,18 @@ export function _getSortOrder(
   // if neither full layer url or map layer id are found...check to see if we can
   // find the base service url
   if (url) {
+    // E //???
     const serviceUrlTest: any = new RegExp(url, "gm");
     if (serviceUrlTest.test(testString)) {
       return 2;
     }
   }
   // if none of the above see if we can find an AGOL item id reference
-  const itemIdTest: any = new RegExp(itemId, "gm");
-  if (itemIdTest.test(testString)) {
-    return 3;
+  if (itemId) {
+    const itemIdTest: any = new RegExp(itemId, "gm");
+    if (itemIdTest.test(testString)) {
+      return 3;
+    }
   }
   return 4;
 }

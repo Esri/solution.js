@@ -52,7 +52,7 @@ export function templatize(
   templatizeFieldReferences: boolean
 ): interfaces.IItemTemplate {
   // Common templatizations
-  const id: string = generalHelpers.cloneObject(itemTemplate.item.id);
+  const id: string = itemTemplate.item.id;
 
   itemTemplate.item.url = _templatize(id, "url");
   itemTemplate.item.id = templatization.templatizeTerm(id, id, ".itemId");
@@ -428,7 +428,7 @@ export function addFeatureServiceLayersAndTables(
     const layersAndTables: any[] = getLayersAndTables(itemTemplate);
     if (layersAndTables.length > 0) {
       updateFeatureServiceDefinition(
-        itemTemplate.item.url,
+        itemTemplate.item.url || "",
         layersAndTables,
         templateDictionary,
         requestOptions,
@@ -635,7 +635,7 @@ export function postProcessFields(
     const id = itemTemplate.itemId;
     const settingsKeys = Object.keys(templateDictionary);
     // concat any layers and tables to process
-    const url: string = itemTemplate.item.url;
+    const url: string = itemTemplate.item.url || "";
 
     const serviceData: any = itemTemplate.properties;
     Promise.all([
