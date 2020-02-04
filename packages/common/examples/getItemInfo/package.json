@@ -1,6 +1,6 @@
 {
   "name": "getItemInfo",
-  "version": "1.0.0",
+  "version": "0.6.1",
   "description": "Example use of @esri/solution-common.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -11,12 +11,12 @@
     "typescript": "^3.7.4"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^2.7.2",
-    "@esri/arcgis-rest-feature-layer": "^2.7.2",
-    "@esri/arcgis-rest-portal": "^2.7.2",
-    "@esri/arcgis-rest-request": "^2.7.2",
-    "@esri/arcgis-rest-service-admin": "^2.7.2",
-    "@esri/solution-common": "^0.6.0",
+    "@esri/arcgis-rest-auth": "^2.8.0",
+    "@esri/arcgis-rest-feature-layer": "^2.8.0",
+    "@esri/arcgis-rest-portal": "^2.8.0",
+    "@esri/arcgis-rest-request": "^2.8.0",
+    "@esri/arcgis-rest-service-admin": "^2.8.0",
+    "@esri/solution-common": "^0.6.1",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "tslib": "^1.10.0"
