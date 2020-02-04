@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.7.5"
   },
   "dependencies": {
     "@esri/arcgis-rest-auth": "^2.7.2",
