@@ -1874,6 +1874,27 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
     });
+
+    it("handles model without matching dataSource", () => {
+      const model = {
+        data: {
+          map: {
+            other: "abc"
+          },
+          dataSource: {
+            dataSources: {
+              src123456: {
+                id: "2ea59a64b34646f8972a71c7d536e4a3",
+                type: "source type"
+              }
+            }
+          }
+        }
+      };
+      const expected = [] as string[];
+      const actual = webmappingapplication._getWABDependencies(model);
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_templatizeIdPaths ", () => {
@@ -2187,9 +2208,148 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("_getSortOrder ", () => {
-    xit("_getSortOrder ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("sorts url and layer id first", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: [],
+        url: "{{934a9ef8efa7448fa8ddf7b13cef0240.url}}",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240.layer1.url}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 1;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts datasource ids first", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "456" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 1;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts base service url second", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: undefined,
+        ids: [],
+        url: "{{934a9ef8efa7448fa8ddf7b13cef0240}}",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 2;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("sorts AGOL item id reference third", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: [],
+        url: "",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 3;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("defaults sort to fourth", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "",
+        layerId: 1,
+        ids: [],
+        url: "",
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+      const testString =
+        "nam tincidunt sagittis arcu vestibulum" +
+        "{{934a9ef8efa7448fa8ddf7b13cef0240}}" +
+        "in at tincidunt lectus. Curabitur vitae lorem mollis";
+
+      const expected = 4;
+
+      const actual = webmappingapplication._getSortOrder(
+        datasourceInfo,
+        testString
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
