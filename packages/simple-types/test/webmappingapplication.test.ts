@@ -2354,16 +2354,56 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
   });
 
   describe("_prioritizedTests", () => {
-    xit("_prioritizedTests", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles missing url", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+
+      const expected: any = null;
+
+      const actual = webmappingapplication._prioritizedTests(
+        null,
+        [datasourceInfo],
+        false
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
   describe("_templatizeParentByURL", () => {
-    xit("_templatizeParentByURL", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles missing url", () => {
+      const datasourceInfo: common.IDatasourceInfo = {
+        basePath: "934a9ef8efa7448fa8ddf7b13cef0240.layer1.fields",
+        itemId: "934a9ef8efa7448fa8ddf7b13cef0240",
+        layerId: 1,
+        ids: ["123", "456", "789"],
+        fields: [],
+        relationships: [],
+        adminLayerInfo: {
+          geometryField: {
+            name: "Shape"
+          }
+        }
+      };
+
+      const expected: any = {} as { [index: string]: any };
+
+      const actual = webmappingapplication._templatizeParentByURL(
+        null,
+        datasourceInfo,
+        false
+      );
+      expect(actual).toEqual(expected);
     });
   });
 
