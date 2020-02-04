@@ -75,7 +75,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: undefined,
+  Form: simpleTypes,
   "Hub Initiative": undefined,
   "Hub Page": undefined,
   "Hub Site Application": undefined,

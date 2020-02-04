@@ -20,8 +20,6 @@
  * @module deployItems
  */
 
-/* tslint:disable:no-unnecessary-type-assertion */
-
 import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as file from "@esri/solution-file";
@@ -29,6 +27,7 @@ import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
+const UNSUPPORTED: common.moduleHandler = null;
 /**
  * Mapping from item type to module with type-specific template-handling code.
  * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
@@ -76,7 +75,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: undefined,
+  Form: simpleTypes,
   "Hub Initiative": undefined,
   "Hub Page": undefined,
   "Hub Site Application": undefined,
@@ -113,7 +112,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Basemap Package": file,
   "CAD Drawing": file,
   "CityEngine Web Scene": file,
-  "Code Attachment": file,
+  "Code Attachment": UNSUPPORTED,
   "Code Sample": file,
   "Color Set": file,
   "Compact Tile Package": file,
