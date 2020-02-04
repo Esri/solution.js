@@ -23,6 +23,7 @@ import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as notebook from "../src/notebook";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 import * as quickcapture from "../src/quickcapture";
@@ -1239,6 +1240,51 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .then(() => done.fail, done);
       });
     }
+
+    it("should handle missing python notebook content: no data", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data = null;
+      const expected = common.cloneObject(itemTemplate);
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it("should handle missing python notebook content: duplicate ids, but not in dependencies", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
+      const expected = common.cloneObject(itemTemplate);
+      expected.dependencies = ["3b927de78a784a5aa3981469d85cf45d"];
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it("should handle missing python notebook content: duplicate ids in dependencies", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook",
+        ["3b927de78a784a5aa3981469d85cf45d"]
+      );
+      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
+      const expected = common.cloneObject(itemTemplate);
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
 
     it("should create and fine tune workforce project", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
