@@ -21,6 +21,7 @@
 import * as simpleTypes from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
+import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as notebook from "../src/notebook";
@@ -96,6 +97,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
@@ -132,6 +137,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -225,6 +234,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             {}
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -285,6 +298,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/addResources",
             { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
           "QuickCapture Project",
@@ -360,6 +377,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -476,6 +497,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
@@ -546,6 +571,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("dsh1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
@@ -592,6 +621,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           },
           data: null, // forms don't store info here
           resources: ["frm1234567890_info_data/formData.zip"],
+          relatedItems: [
+            {
+              relationshipType: "Survey2Service",
+              relatedItemIds: ["srv1234567890"]
+            }
+          ],
           dependencies: ["srv1234567890"],
           circularDependencies: [],
           properties: {},
@@ -604,82 +639,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/data",
             ["abc", "def", "ghi"]
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            {
-              total: 1,
-              relatedItems: [
-                {
-                  id: "srv1234567890",
-                  owner: MOCK_USER_SESSION.username,
-                  created: 1496669828000,
-                  modified: 1529597563000,
-                  guid: null,
-                  name: "OpioidIncidents",
-                  title: "OpioidIncidents",
-                  type: "Feature Service",
-                  typeKeywords: [
-                    "ArcGIS Server",
-                    "Data",
-                    "Feature Access",
-                    "Feature Service",
-                    "Multilayer",
-                    "Service",
-                    "source-1e900c4d6b8846c6b4871592933a0863",
-                    "Hosted Service"
-                  ],
-                  description:
-                    "Overdoses, fatalities, and other drug related incidents.",
-                  tags: [
-                    "Opioids",
-                    "Public Health",
-                    "Public Safety",
-                    "Health",
-                    "Deaths",
-                    "Overdoses",
-                    "Drug Seizures",
-                    "Police",
-                    "Fire Service",
-                    "Law Enforcement"
-                  ],
-                  snippet:
-                    "Overdoses, fatalities, and other drug related incidents.",
-                  thumbnail: "thumbnail/OpioidIncidents.png",
-                  documentation: null,
-                  extent: [
-                    [-131.0, 16.0],
-                    [-57.0, 58.0]
-                  ],
-                  categories: [],
-                  spatialReference: undefined,
-                  accessInformation: "Esri",
-                  licenseInfo: null,
-                  culture: "en-us",
-                  properties: null,
-                  url:
-                    "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/OpioidIncidents/FeatureServer",
-                  proxyFilter: null,
-                  access: "public",
-                  size: 49152,
-                  appCategories: [],
-                  industries: [],
-                  languages: [],
-                  largeThumbnail: null,
-                  banner: null,
-                  screenshots: [],
-                  listed: false,
-                  numComments: 0,
-                  numRatings: 0,
-                  avgRating: 0,
-                  numViews: 740,
-                  scoreCompleteness: 68,
-                  groupDesignations: null
-                }
-              ]
-            }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -706,6 +665,81 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               folder: null
             }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItemsSurvey2Service(
+          itemTemplate.itemId,
+          { total: 0, relatedItems: [] },
+          {
+            total: 1,
+            relatedItems: [
+              {
+                id: "srv1234567890",
+                owner: MOCK_USER_SESSION.username,
+                created: 1496669828000,
+                modified: 1529597563000,
+                guid: null,
+                name: "OpioidIncidents",
+                title: "OpioidIncidents",
+                type: "Feature Service",
+                typeKeywords: [
+                  "ArcGIS Server",
+                  "Data",
+                  "Feature Access",
+                  "Feature Service",
+                  "Multilayer",
+                  "Service",
+                  "source-1e900c4d6b8846c6b4871592933a0863",
+                  "Hosted Service"
+                ],
+                description:
+                  "Overdoses, fatalities, and other drug related incidents.",
+                tags: [
+                  "Opioids",
+                  "Public Health",
+                  "Public Safety",
+                  "Health",
+                  "Deaths",
+                  "Overdoses",
+                  "Drug Seizures",
+                  "Police",
+                  "Fire Service",
+                  "Law Enforcement"
+                ],
+                snippet:
+                  "Overdoses, fatalities, and other drug related incidents.",
+                thumbnail: "thumbnail/OpioidIncidents.png",
+                documentation: null,
+                extent: [
+                  [-131.0, 16.0],
+                  [-57.0, 58.0]
+                ],
+                categories: [],
+                spatialReference: undefined,
+                accessInformation: "Esri",
+                licenseInfo: null,
+                culture: "en-us",
+                properties: null,
+                url:
+                  "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/OpioidIncidents/FeatureServer",
+                proxyFilter: null,
+                access: "public",
+                size: 49152,
+                appCategories: [],
+                industries: [],
+                languages: [],
+                largeThumbnail: null,
+                banner: null,
+                screenshots: [],
+                listed: false,
+                numComments: 0,
+                numRatings: 0,
+                avgRating: 0,
+                numViews: 740,
+                scoreCompleteness: 68,
+                groupDesignations: null
+              }
+            ]
+          }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -783,6 +817,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
@@ -817,11 +855,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
             mockItems.get500Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "frm1234567890",
+          mockItems.get500Failure()
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -872,13 +910,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               solutionItemId +
               "/addResources",
             mockItems.get400Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "frm1234567890",
+          mockItems.get500Failure()
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -983,6 +1019,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }),
             { sendAsJson: false }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -1057,6 +1097,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
             mockItems.get400FailureResponse()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
@@ -1603,6 +1647,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "abc0cab401af4828a25cc6eaeb59fb69",
+        { total: 0, relatedItems: [] }
+      );
 
       simpleTypes
         .createItemFromTemplate(

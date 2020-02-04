@@ -213,6 +213,11 @@ export interface IItemTemplate {
   resources: any[];
 
   /**
+   * References to related item
+   */
+  relatedItems?: IRelatedItems[];
+
+  /**
    * List of ids of AGO items needed by this item
    */
   dependencies: string[];

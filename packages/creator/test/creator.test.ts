@@ -20,6 +20,7 @@
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as utils from "../../common/test/mocks/utils";
 
 import * as common from "@esri/solution-common";
@@ -254,6 +255,14 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
+          total: 0,
+          relatedItems: []
+        });
+        staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
+          total: 0,
+          relatedItems: []
+        });
 
         creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
           solutionId => {
@@ -349,6 +358,14 @@ describe("Module `creator`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
+          total: 0,
+          relatedItems: []
+        });
+        staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
+          total: 0,
+          relatedItems: []
+        });
 
         const options: common.ICreateSolutionOptions = {
           title: solutionName,
@@ -671,6 +688,11 @@ describe("Module `creator`", () => {
             { success: true, id: expectedSolutionId }
           )
           .post(url, { success: false });
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
+
         spyOn(common, "createId").and.callFake(() => "xfakeidx");
         creator.createSolutionFromItemIds(itemIds, authentication).then(
           () => done.fail(),
