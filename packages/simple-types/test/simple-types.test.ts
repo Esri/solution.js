@@ -625,9 +625,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             {
               relationshipType: "Survey2Service",
               relatedItemIds: ["srv1234567890"]
+            },
+            {
+              relationshipType: "Survey2Data",
+              relatedItemIds: ["srv1234567890", "abc1234567890"]
             }
           ],
-          dependencies: ["srv1234567890"],
+          dependencies: ["srv1234567890", "abc1234567890"],
           circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -665,77 +669,36 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               folder: null
             }
           );
-        staticRelatedItemsMocks.fetchMockRelatedItemsSurvey2Service(
+        staticRelatedItemsMocks.fetchMockRelatedItems(
           itemTemplate.itemId,
           { total: 0, relatedItems: [] },
+          ["Survey2Data", "Survey2Service"]
+        );
+        fetchMock.get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+          {
+            total: 2,
+            relatedItems: [
+              {
+                id: "srv1234567890"
+              },
+              {
+                id: "abc1234567890"
+              }
+            ]
+          }
+        );
+        fetchMock.get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
           {
             total: 1,
             relatedItems: [
               {
-                id: "srv1234567890",
-                owner: MOCK_USER_SESSION.username,
-                created: 1496669828000,
-                modified: 1529597563000,
-                guid: null,
-                name: "OpioidIncidents",
-                title: "OpioidIncidents",
-                type: "Feature Service",
-                typeKeywords: [
-                  "ArcGIS Server",
-                  "Data",
-                  "Feature Access",
-                  "Feature Service",
-                  "Multilayer",
-                  "Service",
-                  "source-1e900c4d6b8846c6b4871592933a0863",
-                  "Hosted Service"
-                ],
-                description:
-                  "Overdoses, fatalities, and other drug related incidents.",
-                tags: [
-                  "Opioids",
-                  "Public Health",
-                  "Public Safety",
-                  "Health",
-                  "Deaths",
-                  "Overdoses",
-                  "Drug Seizures",
-                  "Police",
-                  "Fire Service",
-                  "Law Enforcement"
-                ],
-                snippet:
-                  "Overdoses, fatalities, and other drug related incidents.",
-                thumbnail: "thumbnail/OpioidIncidents.png",
-                documentation: null,
-                extent: [
-                  [-131.0, 16.0],
-                  [-57.0, 58.0]
-                ],
-                categories: [],
-                spatialReference: undefined,
-                accessInformation: "Esri",
-                licenseInfo: null,
-                culture: "en-us",
-                properties: null,
-                url:
-                  "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/OpioidIncidents/FeatureServer",
-                proxyFilter: null,
-                access: "public",
-                size: 49152,
-                appCategories: [],
-                industries: [],
-                languages: [],
-                largeThumbnail: null,
-                banner: null,
-                screenshots: [],
-                listed: false,
-                numComments: 0,
-                numRatings: 0,
-                avgRating: 0,
-                numViews: 740,
-                scoreCompleteness: 68,
-                groupDesignations: null
+                id: "srv1234567890"
               }
             ]
           }

@@ -24,267 +24,53 @@ import * as fetchMock from "fetch-mock";
 
 export function fetchMockRelatedItems(
   itemId: string,
-  desiredResponse: any
+  desiredResponse: any,
+  excludedTypes?: string[]
 ): void {
-  fetchMock
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Area2CustomPackage&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Area2Package&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Item2Attachment&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Item2Report&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Listed2Provisioned&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2AppConfig&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2Area&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2FeatureCollection&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2Service&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=MobileApp2Code&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Data&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Layer&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Route&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Service&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Style&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Style2Style&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=SurveyAddIn2Data&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=TrackView2Map&token=fake-token",
-      desiredResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=WMA2Code&token=fake-token",
-      desiredResponse
-    );
-}
+  const relationshipTypes = [
+    // from interfaces.ItemRelationshipType
+    "Map2Service",
+    "WMA2Code",
+    "Map2FeatureCollection",
+    "MobileApp2Code",
+    "Service2Data",
+    "Service2Service",
+    "Map2AppConfig",
+    "Item2Attachment",
+    "Item2Report",
+    "Listed2Provisioned",
+    "Style2Style",
+    "Service2Style",
+    "Survey2Service",
+    "Survey2Data",
+    "Service2Route",
+    "Area2Package",
+    "Map2Area",
+    "Service2Layer",
+    "Area2CustomPackage",
+    "TrackView2Map",
+    "SurveyAddIn2Data"
+  ];
 
-export function fetchMockRelatedItemsSurvey2Service(
-  itemId: string,
-  defaultResponse: any,
-  survey2ServiceResponse: any
-): void {
-  fetchMock
-    .get(
+  // Remove excluded types
+  if (excludedTypes) {
+    excludedTypes.forEach(typeToRemove => {
+      const iTypeToRemove = relationshipTypes.indexOf(typeToRemove);
+      if (iTypeToRemove >= 0) {
+        relationshipTypes.splice(iTypeToRemove, 1);
+      }
+    });
+  }
+
+  // Set up fetches
+  relationshipTypes.forEach(relationshipType => {
+    fetchMock.get(
       "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
         itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Area2CustomPackage&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Area2Package&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Item2Attachment&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Item2Report&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Listed2Provisioned&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2AppConfig&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2Area&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2FeatureCollection&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Map2Service&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=MobileApp2Code&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Data&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Layer&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Route&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Service&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Service2Style&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Style2Style&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-      survey2ServiceResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=SurveyAddIn2Data&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=TrackView2Map&token=fake-token",
-      defaultResponse
-    )
-    .get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-        itemId +
-        "/relatedItems?f=json&direction=forward&relationshipType=WMA2Code&token=fake-token",
-      defaultResponse
+        "/relatedItems?f=json&direction=forward&relationshipType=" +
+        relationshipType +
+        "&token=fake-token",
+      desiredResponse
     );
+  });
 }
