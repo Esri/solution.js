@@ -1618,7 +1618,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("removeItem", () => {
-    it("removeItem", done => {
+    it("removes an item", done => {
       const itemId: string = "ABC123";
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
@@ -1627,6 +1627,22 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         utils.getSuccessResponse()
       );
       restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+  });
+
+  describe("removeFolder", () => {
+    it("removes a folder", done => {
+      const folderId: string = "ABC123";
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          folderId +
+          "/delete",
+        utils.getSuccessResponse()
+      );
+      restHelpers.removeFolder(folderId, MOCK_USER_SESSION).then(actual => {
         expect(actual.success).toEqual(true);
         done();
       }, done.fail);
