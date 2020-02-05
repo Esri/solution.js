@@ -284,6 +284,46 @@ export function createItemFromTemplate(
             destinationAuthentication
           );
 
+          // Update relationships
+          const relationshipsDef = new Promise<void>(
+            (resolveRelationships, rejectRelationships) => {
+              if (newItemTemplate.relatedItems) {
+                // Templatize relationship ids and update them using the template dictionary
+                newItemTemplate.relatedItems = common.replaceInTemplate(
+                  common.templatizeIds(newItemTemplate.relatedItems),
+                  templateDictionary
+                );
+
+                // Set up relationships using updated relationship information
+                const relationshipPromises = new Array<
+                  Promise<common.IStatusResponse>
+                >();
+                newItemTemplate.relatedItems!.forEach(relationship => {
+                  relationship.relatedItemIds.forEach(relatedItemId => {
+                    relationshipPromises.push(
+                      common.addForwardItemRelationship(
+                        newItemTemplate.itemId,
+                        relatedItemId,
+                        relationship.relationshipType as common.ItemRelationshipType,
+                        destinationAuthentication
+                      )
+                    );
+                  });
+                });
+                Promise.all(relationshipPromises).then(
+                  (responses: common.IStatusResponse[]) => {
+                    responses.every(response => response.success)
+                      ? resolveRelationships()
+                      : rejectRelationships();
+                  },
+                  () => rejectRelationships()
+                );
+              } else {
+                resolveRelationships();
+              }
+            }
+          );
+
           // The item's URL includes its id, so it needs to be updated
           const updateUrlDef: Promise<string> = template.data
             ? common.updateItemURL(
@@ -321,7 +361,12 @@ export function createItemFromTemplate(
             customProcDef = Promise.resolve();
           }
 
-          Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
+          Promise.all([
+            resourcesDef,
+            relationshipsDef,
+            updateUrlDef,
+            customProcDef
+          ]).then(
             () => {
               let updateResourceDef: Promise<void> = Promise.resolve();
               if (template.type === "QuickCapture Project") {
