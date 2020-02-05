@@ -1127,36 +1127,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("templatizeIds", () => {
-    it("handle empty object", () => {
-      const obj = {};
-      const expectedTemplatizedObj = {};
-
-      const templatizedObj: any = generalHelpers.templatizeIds(obj);
-
-      expect(templatizedObj).toEqual(expectedTemplatizedObj);
-    });
-
-    it("handle related items record", () => {
-      const obj = [
-        {
-          relationshipType: "Survey2Service",
-          relatedItemIds: ["bef773a670c0419f89194a4012320db3"]
-        }
-      ];
-      const expectedTemplatizedObj = [
-        {
-          relationshipType: "Survey2Service",
-          relatedItemIds: ["{{bef773a670c0419f89194a4012320db3.itemId}}"]
-        }
-      ];
-
-      const templatizedObj: any = generalHelpers.templatizeIds(obj);
-
-      expect(templatizedObj).toEqual(expectedTemplatizedObj);
-    });
-  });
-
   describe("_padPositiveNum", () => {
     it("handles numbers wider than minimum width", () => {
       expect(generalHelpers._padPositiveNum(0, 0)).toEqual("0");
