@@ -61,19 +61,27 @@ export function addForwardItemRelationship(
   relationshipType: interfaces.ItemRelationshipType,
   authentication: interfaces.UserSession
 ): Promise<interfaces.IStatusResponse> {
-  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
+  return new Promise<interfaces.IStatusResponse>(resolve => {
     const requestOptions: portal.IManageItemRelationshipOptions = {
       originItemId,
       destinationItemId,
       relationshipType,
       authentication
     };
-    portal.addItemRelationship(requestOptions).then(response => {
-      resolve({
-        success: response.success,
-        itemId: originItemId
-      } as interfaces.IStatusResponse);
-    }, reject);
+    portal.addItemRelationship(requestOptions).then(
+      response => {
+        resolve({
+          success: response.success,
+          itemId: originItemId
+        } as interfaces.IStatusResponse);
+      },
+      () => {
+        resolve({
+          success: false,
+          itemId: originItemId
+        } as interfaces.IStatusResponse);
+      }
+    );
   });
 }
 

@@ -146,6 +146,83 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("addForwardItemRelationship", () => {
+    it("can add a relationship", done => {
+      const originItemId: string = "itm1234567890";
+      const destinationItemId: string = "itm1234567891";
+      const relationshipType: interfaces.ItemRelationshipType =
+        "Survey2Service";
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        { success: true }
+      );
+
+      restHelpers
+        .addForwardItemRelationship(
+          originItemId,
+          destinationItemId,
+          relationshipType,
+          MOCK_USER_SESSION
+        )
+        .then((result: interfaces.IStatusResponse) => {
+          expect(result.success).toBeTruthy();
+          expect(result.itemId).toEqual(originItemId);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle a failure to add a relationship via success property", done => {
+      const originItemId: string = "itm1234567890";
+      const destinationItemId: string = "itm1234567891";
+      const relationshipType: interfaces.ItemRelationshipType =
+        "Survey2Service";
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        { success: false }
+      );
+
+      restHelpers
+        .addForwardItemRelationship(
+          originItemId,
+          destinationItemId,
+          relationshipType,
+          MOCK_USER_SESSION
+        )
+        .then((result: interfaces.IStatusResponse) => {
+          expect(result.success).toBeFalsy();
+          expect(result.itemId).toEqual(originItemId);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle a failure to add a relationship via 500", done => {
+      const originItemId: string = "itm1234567890";
+      const destinationItemId: string = "itm1234567891";
+      const relationshipType: interfaces.ItemRelationshipType =
+        "Survey2Service";
+
+      fetchMock.post(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        500
+      );
+
+      restHelpers
+        .addForwardItemRelationship(
+          originItemId,
+          destinationItemId,
+          relationshipType,
+          MOCK_USER_SESSION
+        )
+        .then((result: interfaces.IStatusResponse) => {
+          expect(result.success).toBeFalsy();
+          expect(result.itemId).toEqual(originItemId);
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("addToServiceDefinition", () => {
     it("can handle failure", done => {
       const url =
