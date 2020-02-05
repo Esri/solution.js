@@ -119,7 +119,10 @@ beforeEach(() => {
       tables: []
     },
     type: "",
-    item: {},
+    item: {
+      id: "",
+      type: ""
+    },
     data: {},
     resources: [],
     dependencies: [],
@@ -179,6 +182,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         type: "",
         item: {
           id: "{{ABC123.itemId}}",
+          type: "",
           url: "{{ABC123.url}}"
         },
         data: {},
@@ -245,8 +249,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
-          extent: {},
-          id: "ab766cba0dd44ec080420acc10990282"
+          extent: "",
+          id: "ab766cba0dd44ec080420acc10990282",
+          type: ""
         },
         data: {
           layers: [
@@ -325,8 +330,9 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
-          extent: {}, // only set through createItemTemplate
+          extent: "", // only set through createItemTemplate
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+          type: "",
           url: "{{ab766cba0dd44ec080420acc10990282.url}}"
         },
         data: {
@@ -508,7 +514,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           tables: []
         },
         type: "",
-        item: {},
+        item: {
+          id: "",
+          type: ""
+        },
         data: {
           layers: [
             {
@@ -598,6 +607,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.itemId = "AAABBBCCC123";
       itemTemplate.item = {
         id: "{{AAABBBCCC123.itemId}}",
+        type: "",
         url: "{{AAABBBCCC123.url}}"
       };
 
@@ -625,6 +635,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         type: "",
         item: {
           id: "DDDEEEFFF456",
+          type: "",
           url: "http://test/FeatureServer"
         },
         data: {},
@@ -1126,7 +1137,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemId: "ebe7e53cc218423c9225ceb783d412b5",
         type: "Feature Service",
         key: "ixxi7v97b",
-        item: {},
+        item: {
+          id: "ebe7e53cc218423c9225ceb783d412b5",
+          type: "Feature Service"
+        },
         dependencies: ["166657ce19f34c32846cd12022e2c33a"],
         circularDependencies: [],
         estimatedDeploymentCostFactor: 5,
@@ -1266,7 +1280,10 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         itemId: "ebe7e53cc218423c9225ceb783d412b5",
         type: "Feature Service",
         key: "ixxi7v97b",
-        item: {},
+        item: {
+          id: "ebe7e53cc218423c9225ceb783d412b5",
+          type: "Feature Service"
+        },
         dependencies: [],
         circularDependencies: [],
         estimatedDeploymentCostFactor: 5,
@@ -2420,7 +2437,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2491,7 +2508,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2547,7 +2564,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2621,7 +2638,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplatePart(
+      itemTemplate = mockSolutions.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2698,7 +2715,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart("Feature Service");
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
       const settings = createMockSettings();
@@ -2812,7 +2829,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplatePart("Feature Service");
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
       const settings = createMockSettings();
@@ -2971,6 +2988,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         type: "",
         item: {
+          id: "",
+          type: "",
           text: {}
         },
         data: dataWithProp,

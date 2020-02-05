@@ -73,9 +73,15 @@ export function convertItemToTemplate(
       })
       .catch(() => Promise.resolve([]));
 
+    // Request related items
+    const relatedPromise = common.getItemRelatedItemsInSameDirection(
+      itemTemplate.itemId,
+      "forward",
+      authentication
+    );
+
     // Perform type-specific handling
     let dataPromise = Promise.resolve({});
-    let relatedPromise = Promise.resolve({} as common.IGetRelatedItemsResponse);
     switch (itemInfo.type) {
       case "Dashboard":
       case "Feature Service":
@@ -93,12 +99,6 @@ export function convertItemToTemplate(
         dataPromise = common.getItemDataAsFile(
           itemTemplate.itemId,
           itemTemplate.item.name,
-          authentication
-        );
-        relatedPromise = common.getItemRelatedItems(
-          itemTemplate.itemId,
-          "Survey2Service",
-          "forward",
           authentication
         );
         break;
@@ -124,6 +124,18 @@ export function convertItemToTemplate(
           item => !!item
         );
 
+        // Save the mappings to related items & add those items to the dependencies
+        if ((relatedItemsResponse as common.IRelatedItems[]).length > 0) {
+          itemTemplate.relatedItems = relatedItemsResponse as common.IRelatedItems[];
+          const relationships = itemTemplate.relatedItems.map(relationship => {
+            relationship.relatedItemIds.forEach(relatedItemId => {
+              if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
+                itemTemplate.dependencies.push(relatedItemId);
+              }
+            });
+          });
+        }
+
         let wrapupPromise = Promise.resolve();
         let webappPromise = Promise.resolve(itemTemplate);
         switch (itemInfo.type) {
@@ -131,12 +143,6 @@ export function convertItemToTemplate(
             dashboard.convertItemToTemplate(itemTemplate, authentication);
             break;
           case "Form":
-            itemTemplate.dependencies = itemTemplate.dependencies.concat(
-              (relatedItemsResponse as any).relatedItems.map(
-                (relatedItem: { id: any }) => relatedItem.id
-              )
-            );
-
             // Store the form's data in the solution resources, not in template
             itemTemplate.data = null;
             form.convertItemToTemplate(itemTemplate);
@@ -150,7 +156,7 @@ export function convertItemToTemplate(
               const storageName = common.generateResourceStorageFilename(
                 itemTemplate.itemId,
                 filename,
-                "info_form"
+                "info_data"
               );
               itemTemplate.resources.push(
                 storageName.folder + "/" + storageName.filename

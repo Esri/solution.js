@@ -20,6 +20,7 @@
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -99,6 +100,10 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         createItemTemplate
           .createItemTemplate(
@@ -123,7 +128,7 @@ describe("Module `createItemTemplate`", () => {
         const templateDictionary: any = {};
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const existingTemplates: common.IItemTemplate[] = [
-          templates.getItemTemplatePart("Web Map")
+          templates.getItemTemplate("Web Map")
         ];
 
         createItemTemplate
@@ -205,6 +210,10 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/FeatureServer",
             mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         createItemTemplate
           .createItemTemplate(
@@ -489,6 +498,10 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
             { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
+          total: 0,
+          relatedItems: []
+        });
 
         createItemTemplate
           .createItemTemplate(
@@ -566,6 +579,10 @@ describe("Module `createItemTemplate`", () => {
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         createItemTemplate
           .createItemTemplate(

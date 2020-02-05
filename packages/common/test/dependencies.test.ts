@@ -32,9 +32,9 @@ describe("Module `dependencies`: functions for determining deployment order", ()
 
     it("handles simple template list", () => {
       const templatesList: interfaces.IItemTemplate[] = [
-        templates.getItemTemplatePart("Web Mapping Application"), // wma1234567890
-        templates.getItemTemplatePart("Web Map"), // map1234567890
-        templates.getItemTemplatePart("Dashboard") // dsh1234567890
+        templates.getItemTemplate("Web Mapping Application"), // wma1234567890
+        templates.getItemTemplate("Web Map"), // map1234567890
+        templates.getItemTemplate("Dashboard") // dsh1234567890
       ];
       templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890
@@ -49,9 +49,9 @@ describe("Module `dependencies`: functions for determining deployment order", ()
 
     it("handles simple template list with undefined dependency", () => {
       const templatesList: interfaces.IItemTemplate[] = [
-        templates.getItemTemplatePart("Web Mapping Application"), // wma1234567890
-        templates.getItemTemplatePart("Web Map"), // map1234567890
-        templates.getItemTemplatePart("Dashboard") // dsh1234567890
+        templates.getItemTemplate("Web Mapping Application"), // wma1234567890
+        templates.getItemTemplate("Web Map"), // map1234567890
+        templates.getItemTemplate("Dashboard") // dsh1234567890
       ];
       templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890
@@ -67,8 +67,8 @@ describe("Module `dependencies`: functions for determining deployment order", ()
 
     it("handles simple template list with missing dependency", () => {
       const templatesList: interfaces.IItemTemplate[] = [
-        templates.getItemTemplatePart("Dashboard"), // dsh1234567890
-        templates.getItemTemplatePart("Web Mapping Application") // wma1234567890
+        templates.getItemTemplate("Dashboard"), // dsh1234567890
+        templates.getItemTemplate("Web Mapping Application") // wma1234567890
       ];
       templatesList[0].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[1].dependencies = ["map1234567890"]; // wma1234567890
@@ -79,9 +79,9 @@ describe("Module `dependencies`: functions for determining deployment order", ()
 
     it("reports a cycle", () => {
       const templatesList: interfaces.IItemTemplate[] = [
-        templates.getItemTemplatePart("Web Mapping Application"), // wma1234567890
-        templates.getItemTemplatePart("Web Map"), // map1234567890
-        templates.getItemTemplatePart("Dashboard") // dsh1234567890
+        templates.getItemTemplate("Web Mapping Application"), // wma1234567890
+        templates.getItemTemplate("Web Map"), // map1234567890
+        templates.getItemTemplate("Dashboard") // dsh1234567890
       ];
       templatesList[2].dependencies = ["wma1234567890"]; // dsh1234567890
       templatesList[0].dependencies = ["map1234567890"]; // wma1234567890

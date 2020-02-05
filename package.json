@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "JavaScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.0.0",
@@ -68,7 +68,7 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.7.4",
+    "typescript": "^3.7.5",
     "uuid": "^3.3.3"
   },
   "dependencies": {

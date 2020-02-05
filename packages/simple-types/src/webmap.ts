@@ -110,16 +110,13 @@ export function _extractDependencies(
  * @protected
  */
 export function _getWebmapLayerIds(layerList: any[]): string[] {
-  return layerList.reduce(
-    (ids: string[], layer: any) => {
-      const itemId = layer.itemId as string;
-      if (itemId && ids.indexOf(itemId) < 0) {
-        ids.push(itemId);
-      }
-      return ids;
-    },
-    [] as string[]
-  );
+  return layerList.reduce((ids: string[], layer: any) => {
+    const itemId = layer.itemId as string;
+    if (itemId && ids.indexOf(itemId) < 0) {
+      ids.push(itemId);
+    }
+    return ids;
+  }, [] as string[]);
 }
 
 /**
@@ -128,7 +125,7 @@ export function _getWebmapLayerIds(layerList: any[]): string[] {
  * @param layerList List of map layers or tables
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
- * @return An object with a ist containing the ids of each layer or table that has an itemId
+ * @return An object with a list containing the ids of each layer or table that has an itemId
  *         and a lookup object for analysis layers that have a url but no itemId stored in the operationalLayer
  * @protected
  */
@@ -144,7 +141,7 @@ export function _getAnalysisLayerIds(
       if (!layer.itemId && layer.url) {
         // in some cases the layer without an itemId is an analysis layer and the source layer is also
         // present in the map...in this case we don't need to query for the itemId
-        // we can just get it from the soure layer in the map
+        // we can just get it from the source layer in the map
         const hasLayer: boolean = layerList.some(l => {
           if (l.itemId && l.url === layer.url) {
             urlHash[l.url] = l.itemId;

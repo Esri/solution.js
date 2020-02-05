@@ -44,7 +44,10 @@ beforeEach(() => {
       tables: []
     },
     type: "",
-    item: {},
+    item: {
+      id: "",
+      type: ""
+    },
     data: {},
     estimatedDeploymentCostFactor: 0,
     resources: [],
@@ -2065,6 +2068,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         type: "",
         item: {
+          id: "",
+          type: "",
           name: "A"
         },
         data: {},
@@ -2136,7 +2141,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           tables: []
         },
         type: "",
-        item: {},
+        item: {
+          id: "",
+          type: ""
+        },
         data: {},
         resources: [],
         estimatedDeploymentCostFactor: 0,
@@ -2209,6 +2217,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         type: "",
         item: {
+          id: "",
+          type: "",
           name: "A_0a25612a2fc54f6e8828c679e2300a49",
           title: "A"
         },
@@ -2282,6 +2292,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         },
         type: "",
         item: {
+          id: "",
+          type: "",
           name: "A"
         },
         data: {},

@@ -75,7 +75,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: undefined,
+  Form: simpleTypes,
   "Hub Initiative": undefined,
   "Hub Page": undefined,
   "Hub Site Application": undefined,
@@ -250,7 +250,7 @@ export function createItemTemplate(
             }
             placeholder!.item = {
               ...itemInfo
-            };
+            } as common.IItemGeneralized;
 
             // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
             if (

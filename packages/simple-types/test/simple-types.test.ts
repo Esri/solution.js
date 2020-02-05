@@ -15,14 +15,16 @@
  */
 
 /**
- * Provides tests for common functions involving the management of item and group resources.
+ * Provides tests for functions involving the creation and deployment of simple item types.
  */
 
 import * as simpleTypes from "../src/simple-types";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
+import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as notebook from "../src/notebook";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 import * as quickcapture from "../src/quickcapture";
@@ -62,45 +64,56 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("should handle error on getResources", done => {
-        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        const solutionItemId = "sln1234567890";
+        const item: any = mockItems.getAGOLItem("Workforce Project");
+        item.title = "Dam Inspection Assignments";
+        item.thumbnail = null;
+        const expectedTemplate = templates.getItemTemplate(
           "Workforce Project",
-          null
+          [
+            "abc715c2df2b466da05577776e82d044",
+            "abc116555b16437f8435e079033128d0",
+            "abc26a244163430590151395821fb845",
+            "abc302ec12b74d2f9f2b3cc549420086",
+            "abc4494043c3459faabcfd0e1ab557fc",
+            "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+            "abc64329e69144c59f69f3f3e0d45269"
+          ]
         );
-
-        itemTemplate.item = {
-          id: "abc0cab401af4828a25cc6eaeb59fb69",
-          type: "Workforce Project",
-          title: "Dam Inspection Assignments"
-        };
-        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+        expectedTemplate.item.thumbnail = item.thumbnail;
+        expectedTemplate.item.title = item.title;
+        expectedTemplate.estimatedDeploymentCostFactor = 2;
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/resources",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
-            mockItems.get500Failure()
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/data",
+            mockItems.getAGOLItemData("Workforce Project")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
-          .convertItemToTemplate(
-            itemTemplate.item.id,
-            itemTemplate.item,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
           .then(newItemTemplate => {
+            newItemTemplate.key = expectedTemplate.key;
+            expect(newItemTemplate).toEqual(expectedTemplate);
             expect(newItemTemplate.resources).toEqual([]);
             done();
           }, done.fail);
       });
 
       it("should handle error on dataPromise", done => {
+        const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -124,10 +137,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -137,6 +154,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle workforce project", done => {
+        const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Workforce Project",
           null
@@ -203,8 +221,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/addResources",
-            { success: true, id: itemTemplate.itemId }
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
+            { success: true, id: solutionItemId }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
@@ -214,10 +234,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
             {}
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -228,6 +252,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle quick capture project", done => {
+        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
         const resources: any = {
           total: 1,
           start: 1,
@@ -246,31 +271,37 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/info/thumbnail/ago_downloaded.png",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/images/Camera.png",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/images/Camera.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890/resources/qc.project.json",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
-            { success: true, id: "ee67658b2a98450cba051fd001463df0" }
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
+            { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("qck1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         const itemInfo: common.IItemTemplate = mockItems.getAGOLItem(
           "QuickCapture Project",
@@ -278,25 +309,26 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
 
         const expected: common.IItemTemplate = {
-          itemId: "xxx1234567890",
+          itemId: "qck1234567890",
           key: "vx3ubyx3",
           data: Object({ application: Object({}), name: "qc.project.json" }),
           resources: [
-            "xxx1234567890/qc.project.json",
-            "xxx1234567890_info_thumbnail/ago_downloaded.png"
+            "qck1234567890/qc.project.json",
+            "qck1234567890_info_thumbnail/ago_downloaded.png"
           ],
           dependencies: [],
           circularDependencies: [],
           type: "QuickCapture Project",
           item: {
-            id: "{{xxx1234567890.itemId}}",
+            id: "{{qck1234567890.itemId}}",
             type: "QuickCapture Project",
             accessInformation: "Esri, Inc.",
             categories: [],
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: [],
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
             snippet: "Snippet of an AGOL item",
@@ -311,11 +343,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         };
 
         simpleTypes
-          .convertItemToTemplate(
-            "ee67658b2a98450cba051fd001463df0",
-            itemInfo,
-            MOCK_USER_SESSION
-          )
+          .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION)
           .then(actual => {
             actual.key = expected.key;
             expect(actual).toEqual(expected);
@@ -324,6 +352,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle python notebook", done => {
+        const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Notebook"
         );
@@ -348,10 +377,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -364,7 +397,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle item resource", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -382,7 +416,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: [],
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
             snippet: "Snippet of an AGOL item",
@@ -434,11 +469,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
-              itemTemplate.itemId +
+              solutionItemId +
               "/addResources",
             {
               success: true,
-              itemId: itemTemplate.itemId,
+              itemId: solutionItemId,
               owner: MOCK_USER_SESSION.username,
               folder: null
             }
@@ -462,10 +497,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -477,7 +516,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle dashboard et al. item types", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.itemId = "dsh1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Dashboard", null);
         itemTemplate.item.thumbnail = null;
@@ -493,7 +533,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: [],
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
             snippet: "Snippet of an AGOL item",
@@ -530,10 +571,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("dsh1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -545,7 +590,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle form item type with default filename", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.itemId = "frm1234567890";
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.item.thumbnail = null;
@@ -562,7 +608,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: [],
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             licenseInfo: null,
             name: "formData.zip",
             snippet: "Snippet of an AGOL item",
@@ -573,8 +620,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url: ""
           },
           data: null, // forms don't store info here
-          resources: ["frm1234567890_info_form/formData.zip"],
-          dependencies: ["srv1234567890"],
+          resources: ["frm1234567890_info_data/formData.zip"],
+          relatedItems: [
+            {
+              relationshipType: "Survey2Service",
+              relatedItemIds: ["srv1234567890"]
+            },
+            {
+              relationshipType: "Survey2Data",
+              relatedItemIds: ["srv1234567890", "abc1234567890"]
+            }
+          ],
+          dependencies: ["srv1234567890", "abc1234567890"],
           circularDependencies: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -586,82 +643,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/data",
             ["abc", "def", "ghi"]
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            {
-              total: 1,
-              relatedItems: [
-                {
-                  id: "srv1234567890",
-                  owner: MOCK_USER_SESSION.username,
-                  created: 1496669828000,
-                  modified: 1529597563000,
-                  guid: null,
-                  name: "OpioidIncidents",
-                  title: "OpioidIncidents",
-                  type: "Feature Service",
-                  typeKeywords: [
-                    "ArcGIS Server",
-                    "Data",
-                    "Feature Access",
-                    "Feature Service",
-                    "Multilayer",
-                    "Service",
-                    "source-1e900c4d6b8846c6b4871592933a0863",
-                    "Hosted Service"
-                  ],
-                  description:
-                    "Overdoses, fatalities, and other drug related incidents.",
-                  tags: [
-                    "Opioids",
-                    "Public Health",
-                    "Public Safety",
-                    "Health",
-                    "Deaths",
-                    "Overdoses",
-                    "Drug Seizures",
-                    "Police",
-                    "Fire Service",
-                    "Law Enforcement"
-                  ],
-                  snippet:
-                    "Overdoses, fatalities, and other drug related incidents.",
-                  thumbnail: "thumbnail/OpioidIncidents.png",
-                  documentation: null,
-                  extent: [
-                    [-131.0, 16.0],
-                    [-57.0, 58.0]
-                  ],
-                  categories: [],
-                  spatialReference: null,
-                  accessInformation: "Esri",
-                  licenseInfo: null,
-                  culture: "en-us",
-                  properties: null,
-                  url:
-                    "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/OpioidIncidents/FeatureServer",
-                  proxyFilter: null,
-                  access: "public",
-                  size: 49152,
-                  appCategories: [],
-                  industries: [],
-                  languages: [],
-                  largeThumbnail: null,
-                  banner: null,
-                  screenshots: [],
-                  listed: false,
-                  numComments: 0,
-                  numRatings: 0,
-                  avgRating: 0,
-                  numViews: 740,
-                  scoreCompleteness: 68,
-                  groupDesignations: null
-                }
-              ]
-            }
           )
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
@@ -679,7 +660,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
-              itemTemplate.itemId +
+              solutionItemId +
               "/addResources",
             {
               success: true,
@@ -688,10 +669,44 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               folder: null
             }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          itemTemplate.itemId,
+          { total: 0, relatedItems: [] },
+          ["Survey2Data", "Survey2Service"]
+        );
+        fetchMock.get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+          {
+            total: 2,
+            relatedItems: [
+              {
+                id: "srv1234567890"
+              },
+              {
+                id: "abc1234567890"
+              }
+            ]
+          }
+        );
+        fetchMock.get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            itemTemplate.itemId +
+            "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+          {
+            total: 1,
+            relatedItems: [
+              {
+                id: "srv1234567890"
+              }
+            ]
+          }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -703,10 +718,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle web mapping application with missing data", done => {
+        const solutionItemId = "sln1234567890";
         // Related to issue: #56
         // To add support for simple apps such as those that we create for "Getting to Know"
         // A new app should be created in the users org but we will retain the source URL
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -725,7 +741,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: "en-us",
             description: "Description of an AGOL item",
-            extent: [],
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
             snippet: "Snippet of an AGOL item",
@@ -763,10 +780,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
+          total: 0,
+          relatedItems: []
+        });
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -779,7 +800,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       it("should catch fetch errors", done => {
         // TODO resolve Karma internal error triggered by this test
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -796,15 +818,15 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
             mockItems.get500Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "frm1234567890",
+          mockItems.get500Failure()
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -817,7 +839,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should catch wrapup errors", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+        const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("Form", null);
         itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = null;
@@ -847,20 +870,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
-              itemTemplate.itemId +
+              solutionItemId +
               "/addResources",
             mockItems.get400Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
-            mockItems.get500Failure()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "frm1234567890",
+          mockItems.get500Failure()
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -876,7 +897,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           );
       });
 
-      it("should handle web mapping application 1", done => {
+      it("should handle web mapping application", done => {
+        const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -917,7 +939,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             contentStatus: null,
             culture: undefined,
             description: undefined,
-            extent: undefined,
+            extent: "{{solutionItemExtent}}",
+            spatialReference: undefined,
             tags: undefined,
             thumbnail: undefined,
             typeKeywords: undefined,
@@ -959,10 +982,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }),
             { sendAsJson: false }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -977,6 +1004,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle error on web mapping application", done => {
+        const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
           "Web Mapping Application",
           null
@@ -1032,10 +1060,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
             mockItems.get400FailureResponse()
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems(
+          "abc0cab401af4828a25cc6eaeb59fb69",
+          { total: 0, relatedItems: [] }
+        );
 
         simpleTypes
           .convertItemToTemplate(
-            itemTemplate.item.id,
+            solutionItemId,
             itemTemplate.item,
             MOCK_USER_SESSION
           )
@@ -1053,7 +1085,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1090,7 +1122,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
       const templateDictionary: any = {};
 
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate();
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Web Map";
       itemTemplate.item = {
@@ -1124,7 +1156,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
     if (typeof window !== "undefined") {
       it("should create and fine tune python notebook", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Notebook"
         );
         itemTemplate.data = mockItems.getAGOLItemData("Notebook");
@@ -1172,7 +1204,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
 
       it("should handle error on python notebook update item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Notebook"
         );
         itemTemplate.data = mockItems.getAGOLItemData("Notebook");
@@ -1216,8 +1248,53 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
     }
 
+    it("should handle missing python notebook content: no data", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data = null;
+      const expected = common.cloneObject(itemTemplate);
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it("should handle missing python notebook content: duplicate ids, but not in dependencies", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook"
+      );
+      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
+      const expected = common.cloneObject(itemTemplate);
+      expected.dependencies = ["3b927de78a784a5aa3981469d85cf45d"];
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
+
+    it("should handle missing python notebook content: duplicate ids in dependencies", () => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Notebook",
+        ["3b927de78a784a5aa3981469d85cf45d"]
+      );
+      itemTemplate.data.cells.push(itemTemplate.data.cells[0]);
+      const expected = common.cloneObject(itemTemplate);
+      itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
+      itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
+
+      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+        itemTemplate
+      );
+      expect(result).toEqual(expected);
+    });
+
     it("should create and fine tune workforce project", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Workforce Project"
       );
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
@@ -1477,7 +1554,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .then(done.fail, done);
     });
 
-    it("should handle web mapping application 2", done => {
+    it("should handle web mapping application", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
@@ -1525,6 +1602,66 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
           layer0
         )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "abc0cab401af4828a25cc6eaeb59fb69",
+        { total: 0, relatedItems: [] }
+      );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
+          }
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+
+    it("should handle web mapping application with missing data", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        licenseInfo: undefined,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = null;
+      itemTemplate.dependencies = [];
+
+      fetchMock
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
           { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }

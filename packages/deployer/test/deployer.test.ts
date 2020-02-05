@@ -40,12 +40,12 @@ describe("Module `deploySolution`", () => {
     if (typeof window !== "undefined") {
       it("can deploy webmap with dependencies", done => {
         // get templates
-        const featureServiceTemplate: any = templates.getItemTemplatePart(
+        const featureServiceTemplate: any = templates.getItemTemplate(
           "Feature Service"
         );
         featureServiceTemplate.properties.layers[0].someProperty =
           "{{ params.testProperty.value }}";
-        const webmapTemplate: any = templates.getItemTemplatePart(
+        const webmapTemplate: any = templates.getItemTemplate(
           "Web Map",
           [featureServiceTemplate.itemId],
           ""
@@ -475,7 +475,7 @@ describe("Module `deploySolution`", () => {
                 culture: "en-us",
                 description:
                   "A Workforce for ArcGIS Project used by elections staff to manage election day requests for assistance and track the resolution of each request.",
-                extent: [],
+                extent: "{{solutionItemExtent}}",
                 licenseInfo: null,
                 name: null,
                 snippet:
@@ -715,7 +715,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on createItemWithData", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const portalResponse: any = utils.getPortalResponse();
@@ -793,7 +793,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on get solution item", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const portalResponse: any = utils.getPortalResponse();
@@ -855,7 +855,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on project", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const portalResponse: any = utils.getPortalResponse();
@@ -933,7 +933,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on updateItem", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const featureServerAdminUrl: string =
@@ -1109,7 +1109,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on deploySolutionItems update", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const featureServerAdminUrl: string =
@@ -1272,7 +1272,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on create Folder", done => {
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
-          templates.getItemTemplatePart("Feature Service")
+          templates.getItemTemplate("Feature Service")
         ]);
 
         const portalResponse: any = utils.getPortalResponse();

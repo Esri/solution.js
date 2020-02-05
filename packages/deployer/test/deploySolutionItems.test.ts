@@ -37,7 +37,7 @@ describe("Module `deploySolutionItems`", () => {
         .deploySolutionItems(
           "",
           "",
-          [templates.getItemTemplate()],
+          [templates.getItemTemplateSkeleton()],
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
@@ -56,7 +56,7 @@ describe("Module `deploySolutionItems`", () => {
 
   describe("_createItemFromTemplateWhenReady", () => {
     it("flags unimplemented item types", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Unsupported"
       );
       itemTemplate.item.thumbnail = null;
@@ -79,7 +79,7 @@ describe("Module `deploySolutionItems`", () => {
     });
 
     it("handles Web Mapping Applications that are not Storymaps", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
         null,
         "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
@@ -115,7 +115,7 @@ describe("Module `deploySolutionItems`", () => {
     });
 
     it("flags Storymaps implemented as Web Mapping Applications", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplatePart(
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Mapping Application",
         [],
         "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
