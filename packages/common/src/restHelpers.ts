@@ -85,6 +85,43 @@ export function addForwardItemRelationship(
   });
 }
 
+/**
+ * Adds forward relationships for an item.
+ *
+ * @param originItemId Origin of relationship
+ * @param destinationRelationships Destinations
+ * @param authentication Credentials for the request
+ * @return A Promise to add item resources.
+ */
+export function addForwardItemRelationships(
+  originItemId: string,
+  destinationRelationships: interfaces.IRelatedItems[],
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse[]> {
+  return new Promise<interfaces.IStatusResponse[]>(resolve => {
+    // Set up relationships using updated relationship information
+    const relationshipPromises = new Array<
+      Promise<interfaces.IStatusResponse>
+    >();
+    destinationRelationships.forEach(relationship => {
+      relationship.relatedItemIds.forEach(relatedItemId => {
+        relationshipPromises.push(
+          addForwardItemRelationship(
+            originItemId,
+            relatedItemId,
+            relationship.relationshipType as interfaces.ItemRelationshipType,
+            authentication
+          )
+        );
+      });
+    });
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(
+      relationshipPromises
+    ).then((responses: interfaces.IStatusResponse[]) => resolve(responses));
+  });
+}
+
 export function addToServiceDefinition(
   url: string,
   options: any

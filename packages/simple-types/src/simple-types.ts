@@ -285,44 +285,23 @@ export function createItemFromTemplate(
           );
 
           // Update relationships
-          const relationshipsDef = new Promise<void>(
-            (resolveRelationships, rejectRelationships) => {
-              if (newItemTemplate.relatedItems) {
-                // Templatize relationship ids and update them using the template dictionary
-                newItemTemplate.relatedItems = common.replaceInTemplate(
-                  common.templatizeIds(newItemTemplate.relatedItems),
-                  templateDictionary
-                );
-
-                // Set up relationships using updated relationship information
-                const relationshipPromises = new Array<
-                  Promise<common.IStatusResponse>
-                >();
-                newItemTemplate.relatedItems!.forEach(relationship => {
-                  relationship.relatedItemIds.forEach(relatedItemId => {
-                    relationshipPromises.push(
-                      common.addForwardItemRelationship(
-                        newItemTemplate.itemId,
-                        relatedItemId,
-                        relationship.relationshipType as common.ItemRelationshipType,
-                        destinationAuthentication
-                      )
-                    );
-                  });
-                });
-                Promise.all(relationshipPromises).then(
-                  (responses: common.IStatusResponse[]) => {
-                    responses.every(response => response.success)
-                      ? resolveRelationships()
-                      : rejectRelationships();
-                  },
-                  () => rejectRelationships()
-                );
-              } else {
-                resolveRelationships();
-              }
-            }
+          let relationshipsDef = Promise.resolve(
+            [] as common.IStatusResponse[]
           );
+          if (newItemTemplate.relatedItems) {
+            // Templatize references in relationships obj
+            const updatedRelatedItems = common.replaceInTemplate(
+              common.templatizeIds(newItemTemplate.relatedItems),
+              templateDictionary
+            ) as common.IRelatedItems[];
+
+            // Add the relationships
+            relationshipsDef = common.addForwardItemRelationships(
+              newItemTemplate.itemId,
+              updatedRelatedItems,
+              destinationAuthentication
+            );
+          }
 
           // The item's URL includes its id, so it needs to be updated
           const updateUrlDef: Promise<string> = template.data
@@ -367,7 +346,14 @@ export function createItemFromTemplate(
             updateUrlDef,
             customProcDef
           ]).then(
-            () => {
+            results => {
+              const [
+                resources,
+                relationships,
+                updatedUrls,
+                customProcs
+              ] = results;
+
               let updateResourceDef: Promise<void> = Promise.resolve();
               if (template.type === "QuickCapture Project") {
                 updateResourceDef = quickcapture.fineTuneCreatedItem(
