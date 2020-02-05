@@ -22,6 +22,7 @@
 
 import * as adlib from "adlib";
 import * as interfaces from "./interfaces";
+import * as generalHelpers from "./generalHelpers";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -145,7 +146,7 @@ export function createPlaceholderTemplate(
     data: {},
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 0
   };
@@ -182,6 +183,24 @@ export function findTemplateInList(
 ): interfaces.IItemTemplate | null {
   const iTemplate = findTemplateIndexInList(templates, id);
   return iTemplate >= 0 ? templates[iTemplate] : null;
+}
+
+export function hasUnresolvedVariables(
+  data: any,
+  templateDictionary: any
+): boolean {
+  const getUnresolved = (v: any) => {
+    return v ? JSON.stringify(v).match(/{{.+?}}/gim) || [] : [];
+  };
+  if (data) {
+    let _data: any = generalHelpers.cloneObject(data);
+    const unresolved: any = getUnresolved(_data);
+    if (unresolved.length > 0) {
+      _data = replaceInTemplate(_data, templateDictionary);
+      return unresolved.length > getUnresolved(_data).length;
+    }
+  }
+  return false;
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {

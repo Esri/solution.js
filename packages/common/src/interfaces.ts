@@ -197,10 +197,9 @@ export interface IItemTemplate {
   dependencies: string[];
 
   /**
-   * List of ids of AGO items needed by this item that are circular in nature
-   * For example group that references Workforce Project when the Workforce Project also references the group
+   * List of ids of AGO groups the item needs to be shared with
    */
-  circularDependencies: string[];
+  groups: string[];
 
   /**
    * Miscellaneous item-specific properties
@@ -212,6 +211,21 @@ export interface IItemTemplate {
    * function calls made during while deploying it
    */
   estimatedDeploymentCostFactor: number;
+}
+
+export interface ICreateItemFromTemplateResponse {
+  /**
+   * Item's AGO id
+   */
+  id: string;
+  /**
+   * AGO item type name
+   */
+  type: string;
+  /**
+   * Item data section JSON
+   */
+  data: any;
 }
 
 /**
@@ -231,8 +245,8 @@ export interface IItemTemplateConversions {
     templateDictionary: any,
     destinationAuthentication: UserSession,
     progressTickCallback: () => void
-  ): Promise<string>;
-  postProcessCircularDependencies?(
+  ): Promise<ICreateItemFromTemplateResponse>;
+  postProcessDependencies?(
     newItemTemplate: IItemTemplate,
     authentication: UserSession,
     templateDictionary: any

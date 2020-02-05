@@ -223,19 +223,13 @@ export function deploySolution(
                               }
                             )
                             .then(
-                              clonedSolutionItemIds => {
+                              clonedSolutionsResponse => {
                                 if (deployOptions.progressCallback) {
                                   deployOptions.progressCallback(
                                     (percentDone += progressPercentStep)
                                   ); // for solution item creation
                                 }
 
-                                // Update solution item's data JSON using template dictionary, and then update the
-                                // itemId & dependencies in each item template
-                                itemBase.data = common.replaceInTemplate(
-                                  itemData,
-                                  templateDictionary
-                                );
                                 itemData.templates = itemData.templates.map(
                                   (itemTemplate: common.IItemTemplate) => {
                                     // Update ids present in template dictionary
@@ -255,15 +249,14 @@ export function deploySolution(
                                         return dependId ? dependId : id;
                                       }
                                     );
-                                    return _purgeTemplateProperties(
-                                      itemTemplate
-                                    );
+                                    return itemTemplate;
                                   }
                                 );
 
                                 deployItems
-                                  .postProcessCircularDependencies(
+                                  .postProcessDependencies(
                                     itemData.templates,
+                                    clonedSolutionsResponse,
                                     authentication,
                                     templateDictionary
                                   )
@@ -274,6 +267,19 @@ export function deploySolution(
                                         "Solution",
                                         "Deployed"
                                       ];
+
+                                      // Update solution items data using template dictionary, and then update the
+                                      // itemId & dependencies in each item template
+                                      itemBase.data = common.replaceInTemplate(
+                                        itemData,
+                                        templateDictionary
+                                      );
+
+                                      itemData.templates = itemData.templates.map(
+                                        (itemTemplate: common.IItemTemplate) =>
+                                          _purgeTemplateProperties(itemTemplate)
+                                      );
+
                                       common
                                         .updateItem(
                                           itemBase,
@@ -335,12 +341,7 @@ export function deploySolution(
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function _purgeTemplateProperties(itemTemplate: any): any {
-  const retainProps: string[] = [
-    "itemId",
-    "type",
-    "dependencies",
-    "circularDependencies"
-  ];
+  const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
   const deleteProps: string[] = Object.keys(itemTemplate).filter(
     k => retainProps.indexOf(k) < 0
   );

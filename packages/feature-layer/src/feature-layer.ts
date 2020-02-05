@@ -119,75 +119,82 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const requestOptions: common.IUserRequestOptions = {
-      authentication: destinationAuthentication
-    };
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      const requestOptions: common.IUserRequestOptions = {
+        authentication: destinationAuthentication
+      };
 
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
-    // cache the popup info to be added later
-    const popupInfos: common.IPopupInfos = common.cachePopupInfos(
-      newItemTemplate.data
-    );
+      // cache the popup info to be added later
+      const popupInfos: common.IPopupInfos = common.cachePopupInfos(
+        newItemTemplate.data
+      );
 
-    // Create the item, then update its URL with its new id
-    common
-      .createFeatureService(
-        newItemTemplate,
-        requestOptions.authentication,
-        templateDictionary
-      )
-      .then(
-        createResponse => {
-          progressTickCallback();
+      // Create the item, then update its URL with its new id
+      common
+        .createFeatureService(
+          newItemTemplate,
+          requestOptions.authentication,
+          templateDictionary
+        )
+        .then(
+          createResponse => {
+            progressTickCallback();
 
-          if (createResponse.success) {
-            // Detemplatize what we can now that the service has been created
-            newItemTemplate = common.updateTemplate(
-              newItemTemplate,
-              templateDictionary,
-              createResponse
-            );
-            // Add the layers and tables to the feature service
-            common
-              .addFeatureServiceLayersAndTables(
+            if (createResponse.success) {
+              // Detemplatize what we can now that the service has been created
+              newItemTemplate = common.updateTemplate(
                 newItemTemplate,
                 templateDictionary,
-                popupInfos,
-                requestOptions,
-                progressTickCallback
-              )
-              .then(
-                () => {
-                  newItemTemplate = common.updateTemplate(
-                    newItemTemplate,
-                    templateDictionary,
-                    createResponse
-                  );
-                  // Update the item with snippet, description, popupInfo, ect.
-                  common
-                    .updateItemExtended(
-                      createResponse.serviceItemId,
-                      newItemTemplate.item,
-                      newItemTemplate.data,
-                      requestOptions.authentication
-                    )
-                    .then(
-                      () => resolve(createResponse.serviceItemId),
-                      (e: any) => reject(common.fail(e))
-                    );
-                },
-                e => reject(common.fail(e))
+                createResponse
               );
-          } else {
-            reject(common.fail());
-          }
-        },
-        e => reject(common.fail(e))
-      );
-  });
+              // Add the layers and tables to the feature service
+              common
+                .addFeatureServiceLayersAndTables(
+                  newItemTemplate,
+                  templateDictionary,
+                  popupInfos,
+                  requestOptions,
+                  progressTickCallback
+                )
+                .then(
+                  () => {
+                    newItemTemplate = common.updateTemplate(
+                      newItemTemplate,
+                      templateDictionary,
+                      createResponse
+                    );
+                    // Update the item with snippet, description, popupInfo, ect.
+                    common
+                      .updateItemExtended(
+                        createResponse.serviceItemId,
+                        newItemTemplate.item,
+                        newItemTemplate.data,
+                        requestOptions.authentication
+                      )
+                      .then(
+                        () =>
+                          resolve({
+                            id: createResponse.serviceItemId,
+                            type: newItemTemplate.type,
+                            data: newItemTemplate.data
+                          }),
+                        (e: any) => reject(common.fail(e))
+                      );
+                  },
+                  e => reject(common.fail(e))
+                );
+            } else {
+              reject(common.fail());
+            }
+          },
+          e => reject(common.fail(e))
+        );
+    }
+  );
 }
 
 //#endregion

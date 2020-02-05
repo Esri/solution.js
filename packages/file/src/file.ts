@@ -161,51 +161,57 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: () => void
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    // Replace the templatized symbols in a copy of the template
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
-    );
-
-    // Create the item, then update its URL with its new id
-    common
-      .createItemWithData(
-        newItemTemplate.item,
-        newItemTemplate.data,
-        destinationAuthentication,
-        templateDictionary.folderId
-      )
-      .then(
-        createResponse => {
-          progressTickCallback();
-          // Add the new item to the settings
-          newItemTemplate.itemId = createResponse.id;
-          templateDictionary[template.itemId] = {
-            itemId: createResponse.id
-          };
-
-          // Copy resources, metadata, thumbnail, data
-          const resourcesDef = common.copyFilesFromStorageItem(
-            storageAuthentication,
-            resourceFilePaths,
-            createResponse.id,
-            destinationAuthentication,
-            false,
-            template.properties
-          );
-
-          Promise.all([resourcesDef]).then(
-            () => {
-              progressTickCallback();
-              resolve(createResponse.id);
-            },
-            e => reject(common.fail(e)) // fails to deploy all resources to the item
-          );
-        },
-        e => reject(common.fail(e)) // fails to create item
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      // Replace the templatized symbols in a copy of the template
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      newItemTemplate = common.replaceInTemplate(
+        newItemTemplate,
+        templateDictionary
       );
-  });
+
+      // Create the item, then update its URL with its new id
+      common
+        .createItemWithData(
+          newItemTemplate.item,
+          newItemTemplate.data,
+          destinationAuthentication,
+          templateDictionary.folderId
+        )
+        .then(
+          createResponse => {
+            progressTickCallback();
+            // Add the new item to the settings
+            newItemTemplate.itemId = createResponse.id;
+            templateDictionary[template.itemId] = {
+              itemId: createResponse.id
+            };
+
+            // Copy resources, metadata, thumbnail, data
+            const resourcesDef = common.copyFilesFromStorageItem(
+              storageAuthentication,
+              resourceFilePaths,
+              createResponse.id,
+              destinationAuthentication,
+              false,
+              template.properties
+            );
+
+            Promise.all([resourcesDef]).then(
+              () => {
+                progressTickCallback();
+                resolve({
+                  id: createResponse.id,
+                  type: newItemTemplate.type,
+                  data: undefined
+                });
+              },
+              e => reject(common.fail(e)) // fails to deploy all resources to the item
+            );
+          },
+          e => reject(common.fail(e)) // fails to create item
+        );
+    }
+  );
 }

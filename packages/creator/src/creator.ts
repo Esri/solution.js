@@ -239,8 +239,8 @@ export function addContentToSolution(
       );
 
       if (solutionTemplates.length > 0) {
-        // test for and update circular dependencies
-        _postProcessCircularDependencies(solutionTemplates);
+        // test for and update group dependencies
+        solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
 
         // Update solution item with its data JSON
         const solutionData: common.ISolutionItemData = {
@@ -270,43 +270,54 @@ export function addContentToSolution(
 }
 
 /**
- * Remove the circular dependency id from the dependencies array
- * and add it to the circularDependencies array
- *
- * @param template The item template to process
- * @param id The id to update the arrays based on
- */
-export function _updateDependencyArrays(template: any, id: string) {
-  template.dependencies.splice(template.dependencies.indexOf(id), 1);
-  if (Array.isArray(template.circularDependencies)) {
-    template.circularDependencies.push(id);
-  } else {
-    template.circularDependencies = [id];
-  }
-}
-
-/**
- * Find any one to one circular dependencies and update the
- * items dependencies and circularDependencies arrays
+ * Update the items dependencies and groups arrays
  *
  * @param templates The array of templates to evaluate
  */
-export function _postProcessCircularDependencies(templates: any[]) {
-  templates.forEach((template: any) => {
-    const id: string = template.itemId;
-    (template.dependencies || []).forEach((dependencyId: string) => {
-      const dependencyTemplate: any = common.getTemplateById(
-        templates,
-        dependencyId
-      );
-      if (dependencyTemplate) {
-        if (dependencyTemplate.dependencies.indexOf(id) > -1) {
-          // update the current template
-          _updateDependencyArrays(template, dependencyId);
-          // update the current dependant template
-          _updateDependencyArrays(dependencyTemplate, id);
+export function _postProcessGroupDependencies(
+  templates: common.IItemTemplate[]
+) {
+  const groupTemplateIds: any[] = templates.reduce(
+    (ids: string[], template: common.IItemTemplate) => {
+      if (template.type === "Group") {
+        const id: string = template.itemId;
+        ids.push(id);
+        // remove group dependencies if we find a circular dependency with one of its items
+        let removeDependencies: boolean = false;
+        // before we remove update each dependants groups array
+        template.dependencies.forEach(dependencyId => {
+          const dependantTemplate: common.IItemTemplate = common.getTemplateById(
+            templates,
+            dependencyId
+          );
+          const gIndex = dependantTemplate.dependencies.indexOf(id);
+          if (gIndex > -1) {
+            removeDependencies = true;
+          }
+          if (dependantTemplate.groups.indexOf(id) < 0) {
+            dependantTemplate.groups.push(id);
+          }
+        });
+        if (removeDependencies) {
+          template.dependencies = [];
         }
       }
-    });
-  });
+      return ids;
+    },
+    []
+  );
+
+  // update any templates that have the group as a dependency
+  return groupTemplateIds.length > 0
+    ? templates.map(template => {
+        groupTemplateIds.forEach(groupId => {
+          const gIndex = template.dependencies.indexOf(groupId);
+          const _gIndex = template.groups.indexOf(groupId);
+          if (gIndex > -1 && _gIndex < 0) {
+            template.groups.push(groupId);
+          }
+        });
+        return template;
+      })
+    : templates;
 }
