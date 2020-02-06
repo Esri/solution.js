@@ -92,7 +92,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Site Application": undefined,
   "Site Initiative": undefined,
   "Site Page": undefined,
-  Solution: undefined,
+  Solution: UNSUPPORTED,
   StoryMap: undefined,
   "Urban Model": undefined,
   "Web Experience Template": undefined,

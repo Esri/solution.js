@@ -284,6 +284,25 @@ export function createItemFromTemplate(
             destinationAuthentication
           );
 
+          // Update relationships
+          let relationshipsDef = Promise.resolve(
+            [] as common.IStatusResponse[]
+          );
+          if (newItemTemplate.relatedItems) {
+            // Templatize references in relationships obj
+            const updatedRelatedItems = common.replaceInTemplate(
+              common.templatizeIds(newItemTemplate.relatedItems),
+              templateDictionary
+            ) as common.IRelatedItems[];
+
+            // Add the relationships
+            relationshipsDef = common.addForwardItemRelationships(
+              newItemTemplate.itemId,
+              updatedRelatedItems,
+              destinationAuthentication
+            );
+          }
+
           // The item's URL includes its id, so it needs to be updated
           const updateUrlDef: Promise<string> = template.data
             ? common.updateItemURL(
@@ -321,8 +340,20 @@ export function createItemFromTemplate(
             customProcDef = Promise.resolve();
           }
 
-          Promise.all([resourcesDef, updateUrlDef, customProcDef]).then(
-            () => {
+          Promise.all([
+            resourcesDef,
+            relationshipsDef,
+            updateUrlDef,
+            customProcDef
+          ]).then(
+            results => {
+              const [
+                resources,
+                relationships,
+                updatedUrls,
+                customProcs
+              ] = results;
+
               let updateResourceDef: Promise<void> = Promise.resolve();
               if (template.type === "QuickCapture Project") {
                 updateResourceDef = quickcapture.fineTuneCreatedItem(

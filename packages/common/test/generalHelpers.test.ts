@@ -1116,6 +1116,15 @@ describe("Module `generalHelpers`: common utility functions shared across packag
 
       expect(actual).toEqual(expected);
     });
+
+    it("returns supplied template if omitted", () => {
+      const id: string = "ABC124";
+      const expected: any = undefined;
+
+      const actual: any = generalHelpers.getTemplateById(null, id);
+
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("_padPositiveNum", () => {

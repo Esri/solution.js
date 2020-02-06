@@ -345,6 +345,36 @@ describe("Module `templatization`: common functions involving the adlib library"
     });
   });
 
+  describe("templatizeIds", () => {
+    it("handle empty object", () => {
+      const obj = {};
+      const expectedTemplatizedObj = {};
+
+      const templatizedObj: any = templatization.templatizeIds(obj);
+
+      expect(templatizedObj).toEqual(expectedTemplatizedObj);
+    });
+
+    it("handle related items record", () => {
+      const obj = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["bef773a670c0419f89194a4012320db3"]
+        }
+      ];
+      const expectedTemplatizedObj = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["{{bef773a670c0419f89194a4012320db3.itemId}}"]
+        }
+      ];
+
+      const templatizedObj: any = templatization.templatizeIds(obj);
+
+      expect(templatizedObj).toEqual(expectedTemplatizedObj);
+    });
+  });
+
   describe("createId", () => {
     xit("createId", done => {
       console.warn("========== TODO ==========");
