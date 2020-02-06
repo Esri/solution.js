@@ -33,7 +33,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
  * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
  */
-const moduleMap: common.IItemTypeModuleMap = {
+export const moduleMap: common.IItemTypeModuleMap = {
   Group: group,
 
   ////////////////////////////////////////////////////////
