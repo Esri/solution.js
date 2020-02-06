@@ -113,6 +113,7 @@ export function createInitializedItemTemplate(
     extent: "{{solutionItemExtent}}",
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
+    properties: itemInfo.properties,
     snippet: itemInfo.snippet,
     spatialReference: undefined,
     tags: itemInfo.tags,
