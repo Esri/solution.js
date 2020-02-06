@@ -204,7 +204,7 @@ export function createItemFromTemplate(
                 resolve({
                   id: createResponse.id,
                   type: newItemTemplate.type,
-                  data: undefined
+                  data: newItemTemplate.data
                 });
               },
               e => reject(common.fail(e)) // fails to deploy all resources to the item

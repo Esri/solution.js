@@ -81,7 +81,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         data: {},
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         properties: {},
         estimatedDeploymentCostFactor: 2
       };
@@ -206,7 +206,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         data: {},
         resources: [],
         dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
-        circularDependencies: [],
+        groups: [],
         properties: {},
         estimatedDeploymentCostFactor: 2
       };
@@ -397,7 +397,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           data: {},
           resources: [],
           dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -600,7 +600,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           data: {},
           resources: [],
           dependencies: ["156bf2715e9e4098961c4a2a6848fa20"],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -667,7 +667,11 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           }
         )
         .then(response => {
-          expect(response).toEqual(newItemID);
+          expect(response).toEqual({
+            id: newItemID,
+            type: itemTemplate.type,
+            data: undefined
+          });
           expect(templateDictionary).toEqual(expected);
           done();
         }, done.fail);
@@ -723,97 +727,6 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
         mockItems.get400Failure()
       );
-
-      group
-        .createItemFromTemplate(
-          itemTemplate,
-          [],
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
-        )
-        .then(() => {
-          done.fail();
-        }, done);
-    });
-
-    it("should create group and handle error on update", done => {
-      const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
-      const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-      const user: any = {
-        groups: []
-      };
-      const templateDictionary: any = { user };
-
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.itemId = itemId;
-      itemTemplate.type = "Group";
-      itemTemplate.item.title = "Dam Inspection Assignments";
-
-      itemTemplate.dependencies = ["abc2cab401af4828a25cc6eaeb59fb69"];
-
-      const groupResponse: any = {
-        id: "4c9e145c5d6c431c9d50b9f15ed34042",
-        title:
-          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-        isInvitationOnly: true,
-        owner: "LocalGovDeployJohnH",
-        description:
-          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-        snippet: null,
-        tags: ["workforce"],
-        phone: null,
-        sortField: "title",
-        sortOrder: "asc",
-        isViewOnly: true,
-        thumbnail: null,
-        created: 1561667160000,
-        modified: 1561667160000,
-        access: "public",
-        capabilities: [],
-        isFav: false,
-        isReadOnly: false,
-        protected: false,
-        autoJoin: false,
-        notificationsEnabled: false,
-        provider: null,
-        providerGroupName: null,
-        leavingDisallowed: false,
-        hiddenMembers: false,
-        displaySettings: {
-          itemTypes: ""
-        },
-        userMembership: {
-          username: "LocalGovDeployJohnH",
-          memberType: "owner",
-          applications: 0
-        },
-        collaborationInfo: {}
-      };
-
-      fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
-          { success: true, group: { id: newItemID } }
-        )
-        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
-          results: []
-        })
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {}
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
-          groupResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
-          mockItems.get400Failure()
-        );
 
       group
         .createItemFromTemplate(
@@ -888,161 +801,5 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           }, done);
       });
     }
-  });
-
-  describe("updateGroup", () => {
-    it("should handle error", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
-
-      const groupResponse: any = {
-        id: "4c9e145c5d6c431c9d50b9f15ed34042",
-        title:
-          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-        isInvitationOnly: true,
-        owner: "LocalGovDeployJohnH",
-        description:
-          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-        snippet: null,
-        tags: ["workforce"],
-        phone: null,
-        sortField: "title",
-        sortOrder: "asc",
-        isViewOnly: true,
-        thumbnail: null,
-        created: 1561667160000,
-        modified: 1561667160000,
-        access: "public",
-        capabilities: [],
-        isFav: false,
-        isReadOnly: false,
-        protected: false,
-        autoJoin: false,
-        notificationsEnabled: false,
-        provider: null,
-        providerGroupName: null,
-        leavingDisallowed: false,
-        hiddenMembers: false,
-        displaySettings: {
-          itemTypes: ""
-        },
-        userMembership: {
-          username: "LocalGovDeployJohnH",
-          memberType: "owner",
-          applications: 0
-        },
-        collaborationInfo: {}
-      };
-
-      fetchMock
-        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
-          results: []
-        })
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {}
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
-          groupResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
-          mockItems.get400Failure()
-        );
-
-      group
-        ._updateGroup(
-          itemTemplate,
-          MOCK_USER_SESSION,
-          {
-            abc0cab401af4828a25cc6eaeb59fb69: {
-              itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-            }
-          },
-          itemTemplate.dependencies
-        )
-        .then(() => {
-          done.fail();
-        }, done);
-    });
-
-    it("should share dependencies with group", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      itemTemplate.itemId = "abc1cab401af4828a25cc6eaeb59fb69";
-      itemTemplate.dependencies = ["abc0cab401af4828a25cc6eaeb59fb69"];
-
-      const groupResponse: any = {
-        id: "4c9e145c5d6c431c9d50b9f15ed34042",
-        title:
-          "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-        isInvitationOnly: true,
-        owner: "LocalGovDeployJohnH",
-        description:
-          "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-        snippet: null,
-        tags: ["workforce"],
-        phone: null,
-        sortField: "title",
-        sortOrder: "asc",
-        isViewOnly: true,
-        thumbnail: null,
-        created: 1561667160000,
-        modified: 1561667160000,
-        access: "public",
-        capabilities: [],
-        isFav: false,
-        isReadOnly: false,
-        protected: false,
-        autoJoin: false,
-        notificationsEnabled: false,
-        provider: null,
-        providerGroupName: null,
-        leavingDisallowed: false,
-        hiddenMembers: false,
-        displaySettings: {
-          itemTypes: ""
-        },
-        userMembership: {
-          username: "LocalGovDeployJohnH",
-          memberType: "owner",
-          applications: 0
-        },
-        collaborationInfo: {}
-      };
-
-      fetchMock
-        .post("https://myorg.maps.arcgis.com/sharing/rest/search", {
-          results: []
-        })
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          {}
-        )
-        .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/abc1cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
-          groupResponse
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/share",
-          { notSharedWith: [], itemId: "6cf74cfc328c4ae49083666aaa2ed525" }
-        );
-
-      group
-        ._updateGroup(
-          itemTemplate,
-          MOCK_USER_SESSION,
-          {
-            abc0cab401af4828a25cc6eaeb59fb69: {
-              itemId: "abc2cab401af4828a25cc6eaeb59fb69"
-            }
-          },
-          itemTemplate.dependencies
-        )
-        .then(() => {
-          done();
-        }, done.fail);
-    });
   });
 });

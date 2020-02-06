@@ -126,7 +126,7 @@ beforeEach(() => {
     data: {},
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     estimatedDeploymentCostFactor: 0
   };
 });
@@ -188,7 +188,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         data: {},
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
       templatize(itemTemplate, dependencies, true);
@@ -278,7 +278,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
       const expected: any = {
@@ -360,7 +360,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
       templatize(itemTemplate, dependencies, true);
@@ -544,7 +544,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
 
@@ -641,7 +641,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         data: {},
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
 
@@ -1142,7 +1142,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           type: "Feature Service"
         },
         dependencies: ["166657ce19f34c32846cd12022e2c33a"],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
         resources: [],
@@ -1285,7 +1285,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           type: "Feature Service"
         },
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
         resources: [],
@@ -2995,7 +2995,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         data: dataWithProp,
         resources: [],
         dependencies: [],
-        circularDependencies: [],
+        groups: [],
         estimatedDeploymentCostFactor: 0
       };
 

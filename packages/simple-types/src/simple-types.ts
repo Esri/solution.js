@@ -387,23 +387,26 @@ export function postProcessFieldReferences(
 }
 
 /**
- * Get the data for simple types that access data in a less common way
- * These types use specific functions other than getItemDataAsJson
+ * Items that require unique updates
  *
  * @param itemId The AGO item id
  * @param type The AGO item type
- * @param destinationAuthentication Credentials for the requests to the destination
+ * @param data The notebooks data as JSON
+ * @param authentication Credentials for the requests to the destination
  *
- * @return A promise that will resolve once we have the data
+ * @return A promise that will resolve once any updates have been made
  */
-export function getData(
+export function postProcessDependencies(
   itemId: string,
   type: string,
-  destinationAuthentication: common.UserSession
-): Promise<any> {
-  if (type === "QuickCapture Project") {
-    return quickcapture.getData(itemId, destinationAuthentication);
-  } else {
-    return Promise.resolve();
+  data: any,
+  authentication: common.UserSession
+): Promise<void> {
+  let p: Promise<void> = Promise.resolve();
+  switch (type) {
+    case "Notebook":
+      p = notebook.postProcessDependencies(itemId, data, authentication);
+      break;
   }
+  return p;
 }

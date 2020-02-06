@@ -362,35 +362,16 @@ export function postProcessDependencies(
     // In most cases this is a generic item update
     // However, if an item needs special handeling it should be listed here and...
     // uniqueUpdateTypes must implement postProcessDependencies that should return a promise for the update
-    const uniqueUpdateTypes: string[] = ["Notebook", "QuickCapture Project"];
-    // uniqueGetDataTypes must implement getData that should return a promise for the data request
-    const uniqueGetDataTypes: string[] = ["QuickCapture Project"];
+    const uniqueUpdateTypes: string[] = ["Notebook"];
 
     const dataRequests: Array<Promise<any>> = [];
     const requestedItemInfos: any = clonedSolutionsResponse.filter(
       solutionInfo => {
         if (solutionInfo.data) {
-          if (uniqueGetDataTypes.indexOf(solutionInfo.type) < 0) {
-            dataRequests.push(
-              common.getItemDataAsJson(
-                solutionInfo.id,
-                destinationAuthentication
-              )
-            );
-            return true;
-          } else {
-            const itemHandler: any = moduleMap[solutionInfo.type];
-            if (itemHandler?.getData) {
-              dataRequests.push(
-                itemHandler.getData(
-                  solutionInfo.id,
-                  solutionInfo.type,
-                  destinationAuthentication
-                )
-              );
-              return true;
-            }
-          }
+          dataRequests.push(
+            common.getItemDataAsJson(solutionInfo.id, destinationAuthentication)
+          );
+          return true;
         }
       }
     );
@@ -424,6 +405,7 @@ export function postProcessDependencies(
                 updates.push(
                   itemHandler.postProcessDependencies(
                     itemInfo.id,
+                    template.type,
                     update,
                     destinationAuthentication
                   )

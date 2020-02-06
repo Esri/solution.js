@@ -276,48 +276,30 @@ export function addContentToSolution(
  */
 export function _postProcessGroupDependencies(
   templates: common.IItemTemplate[]
-) {
-  const groupTemplateIds: any[] = templates.reduce(
-    (ids: string[], template: common.IItemTemplate) => {
-      if (template.type === "Group") {
-        const id: string = template.itemId;
-        ids.push(id);
-        // remove group dependencies if we find a circular dependency with one of its items
-        let removeDependencies: boolean = false;
-        // before we remove update each dependants groups array
-        template.dependencies.forEach(dependencyId => {
-          const dependantTemplate: common.IItemTemplate = common.getTemplateById(
-            templates,
-            dependencyId
-          );
-          const gIndex = dependantTemplate.dependencies.indexOf(id);
-          if (gIndex > -1) {
-            removeDependencies = true;
-          }
-          if (dependantTemplate.groups.indexOf(id) < 0) {
-            dependantTemplate.groups.push(id);
-          }
-        });
-        if (removeDependencies) {
-          template.dependencies = [];
+): common.IItemTemplate[] {
+  return templates.map((template: common.IItemTemplate) => {
+    if (template.type === "Group") {
+      const id: string = template.itemId;
+      // remove group dependencies if we find a circular dependency with one of its items
+      let removeDependencies: boolean = false;
+      // before we remove update each dependants groups array
+      template.dependencies.forEach(dependencyId => {
+        const dependantTemplate: common.IItemTemplate = common.getTemplateById(
+          templates,
+          dependencyId
+        );
+        const gIndex = dependantTemplate.dependencies.indexOf(id);
+        if (gIndex > -1) {
+          removeDependencies = true;
         }
+        if (dependantTemplate.groups.indexOf(id) < 0) {
+          dependantTemplate.groups.push(id);
+        }
+      });
+      if (removeDependencies) {
+        template.dependencies = [];
       }
-      return ids;
-    },
-    []
-  );
-
-  // update any templates that have the group as a dependency
-  return groupTemplateIds.length > 0
-    ? templates.map(template => {
-        groupTemplateIds.forEach(groupId => {
-          const gIndex = template.dependencies.indexOf(groupId);
-          const _gIndex = template.groups.indexOf(groupId);
-          if (gIndex > -1 && _gIndex < 0) {
-            template.groups.push(groupId);
-          }
-        });
-        return template;
-      })
-    : templates;
+    }
+    return template;
+  });
 }

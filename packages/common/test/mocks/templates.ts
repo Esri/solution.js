@@ -60,7 +60,7 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     resources: [],
     properties: {},
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     estimatedDeploymentCostFactor: 0
   };
 }
@@ -1065,7 +1065,7 @@ function getItemTemplateFundamentals(
   typePrefix: string,
   dependencies = [] as string[],
   url = "",
-  circularDependencies = [] as string[]
+  groups = [] as string[]
 ): interfaces.IItemTemplate {
   return {
     itemId: typePrefix + "1234567890",
@@ -1096,7 +1096,7 @@ function getItemTemplateFundamentals(
     data: undefined,
     resources: [],
     dependencies: dependencies,
-    circularDependencies: circularDependencies,
+    groups: groups,
     properties: {},
     estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
   };

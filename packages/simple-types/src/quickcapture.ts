@@ -179,41 +179,4 @@ export function fineTuneCreatedItem(
   );
 }
 
-/**
- * Update the quick capture projects data
- *
- * @param itemId The AGO item id
- * @param data The items data as JSON
- * @param destinationAuthentication Credentials for the requests to the destination
- *
- * @return A promise that will resolve once any updates have been made
- */
-export function postProcessDependencies(
-  itemId: string,
-  data: any,
-  destinationAuthentication: common.UserSession
-): Promise<any> {
-  return common.updateItemResourceText(
-    itemId,
-    data.name,
-    JSON.stringify(data.application),
-    destinationAuthentication
-  );
-}
-
-/**
- * Get the quick capture projects data
- *
- * @param itemId The AGO item id
- * @param destinationAuthentication Credentials for the requests to the destination
- *
- * @return A promise that will resolve once we have the data
- */
-export function getData(
-  itemId: string,
-  destinationAuthentication: common.UserSession
-): Promise<any> {
-  return common.getItemResourcesFiles(itemId, destinationAuthentication);
-}
-
 //#endregion

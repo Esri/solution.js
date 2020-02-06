@@ -80,7 +80,7 @@ export function createItemFromTemplate(
             destinationAuthentication,
             progressTickCallback
           )
-          .then(() => resolve, reject);
+          .then(result => resolve(result), reject);
       }
     }
   );
