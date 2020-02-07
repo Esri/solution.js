@@ -459,7 +459,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r).toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: false
           });
           done();
         }, done.fail);
@@ -608,7 +608,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r).toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: false
           });
           done();
         }, done.fail);
@@ -957,7 +957,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r).toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: false
           });
           done.fail();
         }, done);

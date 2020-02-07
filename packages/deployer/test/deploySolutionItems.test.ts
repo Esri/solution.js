@@ -77,7 +77,7 @@ describe("Module `deploySolutionItems`", () => {
           expect(response).toEqual({
             id: "",
             type: itemTemplate.type,
-            data: undefined
+            postProcess: false
           });
           done();
         }, done.fail);
@@ -117,7 +117,7 @@ describe("Module `deploySolutionItems`", () => {
           expect(response).toEqual({
             id: newItemID,
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: true
           });
           done();
         }, done.fail);
@@ -157,7 +157,7 @@ describe("Module `deploySolutionItems`", () => {
             expect(response).toEqual({
               id: newItemID,
               type: itemTemplate.type,
-              data: itemTemplate.data
+              postProcess: true
             });
             done();
           }, done.fail);
@@ -195,12 +195,12 @@ describe("Module `deploySolutionItems`", () => {
           {
             id: "NEWABC123",
             type: "Group",
-            data: undefined
+            postProcess: false
           },
           {
             id: "NEW123ABC",
             type: "Workforce Project",
-            data: workforceData
+            postProcess: true
           }
         ];
 
@@ -260,7 +260,7 @@ describe("Module `deploySolutionItems`", () => {
           {
             id: "NEW123ABC",
             type: "Notebook",
-            data: notebookData
+            postProcess: true
           }
         ];
 
@@ -324,12 +324,12 @@ describe("Module `deploySolutionItems`", () => {
           {
             id: "NEWABC123",
             type: "Group",
-            data: undefined
+            postProcess: false
           },
           {
             id: "NEW123ABC",
             type: "Workforce Project",
-            data: undefined
+            postProcess: false
           }
         ];
 
@@ -433,12 +433,12 @@ describe("Module `deploySolutionItems`", () => {
           {
             id: "NEWABC123",
             type: "Group",
-            data: undefined
+            postProcess: false
           },
           {
             id: "NEW123ABC",
             type: "Workforce Project",
-            data: workforceData
+            postProcess: true
           }
         ];
 
@@ -490,12 +490,12 @@ describe("Module `deploySolutionItems`", () => {
           {
             id: "NEWABC123",
             type: "Group",
-            data: undefined
+            postProcess: false
           },
           {
             id: "NEW123ABC",
             type: "Workforce Project",
-            data: workforceData
+            postProcess: true
           }
         ];
 

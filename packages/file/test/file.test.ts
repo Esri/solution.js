@@ -368,7 +368,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
               expect(response).toEqual({
                 id: "map1234567891",
                 type: itemTemplate.type,
-                data: itemTemplate.data
+                postProcess: false
               });
               done();
             },
@@ -427,7 +427,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
               expect(response).toEqual({
                 id: "map1234567891",
                 type: itemTemplate.type,
-                data: itemTemplate.data
+                postProcess: false
               });
               done();
             },

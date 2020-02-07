@@ -670,7 +670,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           expect(response).toEqual({
             id: newItemID,
             type: itemTemplate.type,
-            data: undefined
+            postProcess: false
           });
           expect(templateDictionary).toEqual(expected);
           done();

@@ -65,7 +65,7 @@ describe("Module `storymap`", () => {
           expect(response).toEqual({
             id: "",
             type: templateSTO.type,
-            data: undefined
+            postProcess: false
           });
           done();
         }, done.fail);

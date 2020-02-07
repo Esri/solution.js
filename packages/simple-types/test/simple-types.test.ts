@@ -1207,7 +1207,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             expect(r).toEqual({
               id: newItemID,
               type: itemTemplate.type,
-              data: itemTemplate.data
+              postProcess: false
             });
             done();
           }, done.fail);
@@ -1359,7 +1359,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           expect(r).toEqual({
             id: newItemID,
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: false
           });
           done();
         }, done.fail);
@@ -1508,7 +1508,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           expect(actual).toEqual({
             id: newItemId,
             type: itemTemplate.type,
-            data: itemTemplate.data
+            postProcess: true
           });
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
@@ -1669,7 +1669,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             expect(actual).toEqual({
               id: "abc0cab401af4828a25cc6eaeb59fb69",
               type: itemTemplate.type,
-              data: expectedData
+              postProcess: false
             });
             done();
           },
@@ -1730,7 +1730,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             expect(actual).toEqual({
               id: "abc0cab401af4828a25cc6eaeb59fb69",
               type: itemTemplate.type,
-              data: itemTemplate.data
+              postProcess: false
             });
             done();
           },
