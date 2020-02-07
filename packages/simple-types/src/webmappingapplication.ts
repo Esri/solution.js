@@ -687,7 +687,6 @@ export function _getSortOrder(
   // else if we find the maps layer id prioritze it first
   let layerUrlTest: any;
   if (url && !isNaN(layerId)) {
-    // E //???
     layerUrlTest = new RegExp(
       url.replace(/[.]/, ".layer" + layerId + "."),
       "gm"
@@ -709,7 +708,6 @@ export function _getSortOrder(
   // if neither full layer url or map layer id are found...check to see if we can
   // find the base service url
   if (url) {
-    // E //???
     const serviceUrlTest: any = new RegExp(url, "gm");
     if (serviceUrlTest.test(testString)) {
       return 2;

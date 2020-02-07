@@ -46,6 +46,82 @@ export function searchItems(
   return portal.searchItems(search);
 }
 
+/**
+ * Adds a forward relationship between two items.
+ *
+ * @param originItemId Origin of relationship
+ * @param destinationItemId Destination of relationship
+ * @param relationshipType Type of relationship
+ * @param authentication Credentials for the request
+ * @return A Promise to add item resources.
+ */
+export function addForwardItemRelationship(
+  originItemId: string,
+  destinationItemId: string,
+  relationshipType: interfaces.ItemRelationshipType,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse> {
+  return new Promise<interfaces.IStatusResponse>(resolve => {
+    const requestOptions: portal.IManageItemRelationshipOptions = {
+      originItemId,
+      destinationItemId,
+      relationshipType,
+      authentication
+    };
+    portal.addItemRelationship(requestOptions).then(
+      response => {
+        resolve({
+          success: response.success,
+          itemId: originItemId
+        } as interfaces.IStatusResponse);
+      },
+      () => {
+        resolve({
+          success: false,
+          itemId: originItemId
+        } as interfaces.IStatusResponse);
+      }
+    );
+  });
+}
+
+/**
+ * Adds forward relationships for an item.
+ *
+ * @param originItemId Origin of relationship
+ * @param destinationRelationships Destinations
+ * @param authentication Credentials for the request
+ * @return A Promise to add item resources.
+ */
+export function addForwardItemRelationships(
+  originItemId: string,
+  destinationRelationships: interfaces.IRelatedItems[],
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse[]> {
+  return new Promise<interfaces.IStatusResponse[]>(resolve => {
+    // Set up relationships using updated relationship information
+    const relationshipPromises = new Array<
+      Promise<interfaces.IStatusResponse>
+    >();
+    destinationRelationships.forEach(relationship => {
+      relationship.relatedItemIds.forEach(relatedItemId => {
+        relationshipPromises.push(
+          addForwardItemRelationship(
+            originItemId,
+            relatedItemId,
+            relationship.relationshipType as interfaces.ItemRelationshipType,
+            authentication
+          )
+        );
+      });
+    });
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(
+      relationshipPromises
+    ).then((responses: interfaces.IStatusResponse[]) => resolve(responses));
+  });
+}
+
 export function addToServiceDefinition(
   url: string,
   options: any
@@ -66,7 +142,7 @@ export function addToServiceDefinition(
  * @param extent Extent object to check and (possibly) to project
  * @param outSR Desired spatial reference
  * @param geometryServiceUrl Path to geometry service providing `findTransformations` and `project` services
- * @param userSession Credentials for the request
+ * @param authentication Credentials for the request
  * @return Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(

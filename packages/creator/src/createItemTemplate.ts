@@ -33,7 +33,7 @@ const UNSUPPORTED: common.moduleHandler = null;
  * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
  * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
  */
-const moduleMap: common.IItemTypeModuleMap = {
+export const moduleMap: common.IItemTypeModuleMap = {
   Group: group,
 
   ////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ const moduleMap: common.IItemTypeModuleMap = {
   "Site Application": undefined,
   "Site Initiative": undefined,
   "Site Page": undefined,
-  Solution: undefined,
+  Solution: UNSUPPORTED,
   StoryMap: undefined,
   "Urban Model": undefined,
   "Web Experience Template": undefined,

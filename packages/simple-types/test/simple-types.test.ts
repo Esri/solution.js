@@ -331,6 +331,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
+            properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
             thumbnail: "thumbnail/ago_downloaded.png",
@@ -417,6 +418,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: "{{solutionItemExtent}}",
+            properties: null,
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -537,6 +539,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
+            properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
             thumbnail: null,
@@ -612,6 +615,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             spatialReference: undefined,
             licenseInfo: null,
             name: "formData.zip",
+            properties: null,
             snippet: "Snippet of an AGOL item",
             tags: ["test"],
             thumbnail: null,
@@ -742,6 +746,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             culture: "en-us",
             description: "Description of an AGOL item",
             extent: "{{solutionItemExtent}}",
+            properties: null,
             spatialReference: undefined,
             licenseInfo: null,
             name: "Name of an AGOL item",
@@ -947,6 +952,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url:
               "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
             licenseInfo: undefined,
+            properties: undefined,
             name: undefined,
             snippet: undefined
           } as any,
@@ -1586,6 +1592,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         url:
           "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
         licenseInfo: undefined,
+        properties: null,
         name: undefined,
         snippet: undefined
       };
@@ -1684,6 +1691,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         culture: undefined,
         description: undefined,
         extent: undefined,
+        properties: null,
         tags: undefined,
         thumbnail: undefined,
         typeKeywords: ["WAB2D"],

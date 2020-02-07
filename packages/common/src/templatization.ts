@@ -114,6 +114,7 @@ export function createInitializedItemTemplate(
     extent: "{{solutionItemExtent}}",
     licenseInfo: itemInfo.licenseInfo,
     name: itemInfo.name,
+    properties: itemInfo.properties,
     snippet: itemInfo.snippet,
     spatialReference: undefined,
     tags: itemInfo.tags,
@@ -271,6 +272,24 @@ export function templatizeFieldReferences(
     );
   });
   return JSON.parse(objString);
+}
+
+export function templatizeIds(obj: any): any {
+  // Convert object to string
+  let objString = JSON.stringify(obj);
+
+  // Find ids
+  const idTest: RegExp = /[0-9A-F]{32}/gim;
+  if (obj && idTest.test(objString)) {
+    // Templatize ids
+    const ids: string[] = objString.match(idTest) as string[];
+    ids.forEach(id => {
+      const regEx = new RegExp(id, "gm");
+      objString = objString.replace(regEx, "{{" + id + ".itemId}}");
+    });
+    obj = JSON.parse(objString);
+  }
+  return obj;
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
