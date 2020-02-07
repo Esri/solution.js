@@ -304,7 +304,7 @@ export function _createItemFromTemplateWhenReady(
           resolve({
             id: "",
             type: templateType,
-            data: undefined
+            postProcess: false
           });
         } else {
           // Handle original Story Maps with next-gen Story Maps
@@ -367,7 +367,7 @@ export function postProcessDependencies(
     const dataRequests: Array<Promise<any>> = [];
     const requestedItemInfos: any = clonedSolutionsResponse.filter(
       solutionInfo => {
-        if (solutionInfo.data) {
+        if (solutionInfo.postProcess) {
           dataRequests.push(
             common.getItemDataAsJson(solutionInfo.id, destinationAuthentication)
           );
@@ -381,7 +381,7 @@ export function postProcessDependencies(
         let updates: Array<Promise<any>> = [Promise.resolve()];
         for (let i = 0; i < requestedItemInfos.length; i++) {
           const itemInfo = requestedItemInfos[i];
-          if (common.hasUnresolvedVariables(data[i], templateDictionary)) {
+          if (common.hasUnresolvedVariables(data[i])) {
             const template: common.IItemTemplate = common.getTemplateById(
               templates,
               itemInfo.id
@@ -401,9 +401,9 @@ export function postProcessDependencies(
               );
             } else {
               const itemHandler: any = moduleMap[template.type];
-              if (itemHandler?.postProcessDependencies) {
+              if (itemHandler?.postProcessItemDependencies) {
                 updates.push(
-                  itemHandler.postProcessDependencies(
+                  itemHandler.postProcessItemDependencies(
                     itemInfo.id,
                     template.type,
                     update,

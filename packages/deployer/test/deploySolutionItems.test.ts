@@ -274,7 +274,7 @@ describe("Module `deploySolutionItems`", () => {
             utils.getSuccessResponse()
           );
 
-        spyOn(notebook, "postProcessDependencies").and.callThrough();
+        spyOn(notebook, "postProcessItemDependencies").and.callThrough();
 
         deploySolution
           .postProcessDependencies(
@@ -284,7 +284,7 @@ describe("Module `deploySolutionItems`", () => {
             templateDictionary
           )
           .then(() => {
-            expect(notebook.postProcessDependencies).toHaveBeenCalledWith(
+            expect(notebook.postProcessItemDependencies).toHaveBeenCalledWith(
               clonedSolutionsResponse[0].id,
               expected,
               MOCK_USER_SESSION

@@ -61,7 +61,7 @@ export function createItemFromTemplate(
         resolve({
           id: "",
           type: template.type,
-          data: undefined
+          postProcess: false
         });
       } else {
         /* console.log(

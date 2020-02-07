@@ -118,7 +118,7 @@ export function createItemFromTemplate(
         templateDictionary,
         "user.groups"
       );
-      
+
       // Set the item title with a valid name for the ORG
       newItemTemplate.item.title = title;
       newItemTemplate.item.access = "private";
@@ -154,7 +154,7 @@ export function createItemFromTemplate(
                   resolve({
                     id: createResponse.group.id,
                     type: newItemTemplate.type,
-                    data: undefined
+                    postProcess: false
                   });
                 },
                 e => reject(common.fail(e))

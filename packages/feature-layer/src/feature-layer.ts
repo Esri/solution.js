@@ -180,7 +180,9 @@ export function createItemFromTemplate(
                           resolve({
                             id: createResponse.serviceItemId,
                             type: newItemTemplate.type,
-                            data: newItemTemplate.data
+                            postProcess: common.hasUnresolvedVariables(
+                              newItemTemplate.data
+                            )
                           }),
                         (e: any) => reject(common.fail(e))
                       );

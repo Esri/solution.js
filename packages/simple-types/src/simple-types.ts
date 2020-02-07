@@ -253,10 +253,10 @@ export function createItemFromTemplate(
           createResponse => {
             progressTickCallback();
             // Add the new item to the settings
-            newItemTemplate.itemId = createResponse.id;
             templateDictionary[template.itemId] = {
               itemId: createResponse.id
             };
+            newItemTemplate.itemId = createResponse.id;
 
             // Set the appItemId manually to get around cases where the path was incorrectly set
             // in legacy deployments
@@ -270,6 +270,9 @@ export function createItemFromTemplate(
                 createResponse.id
               );
             }
+            const postProcess: boolean = common.hasUnresolvedVariables(
+              newItemTemplate.data
+            );
 
             // Update the template again now that we have the new item id
             newItemTemplate = common.replaceInTemplate(
@@ -307,13 +310,13 @@ export function createItemFromTemplate(
             // The item's URL includes its id, so it needs to be updated
             const updateUrlDef: Promise<string> = template.data
               ? common.updateItemURL(
-                createResponse.id,
-                common.replaceInTemplate(
-                  newItemTemplate.item.url,
-                  templateDictionary
-                ),
-                destinationAuthentication
-              )
+                  createResponse.id,
+                  common.replaceInTemplate(
+                    newItemTemplate.item.url,
+                    templateDictionary
+                  ),
+                  destinationAuthentication
+                )
               : Promise.resolve("");
 
             // Check for extra processing for web mapping application
@@ -365,13 +368,10 @@ export function createItemFromTemplate(
                 updateResourceDef.then(
                   () => {
                     progressTickCallback();
-                    // Update the template dictionary with the new id
-                    templateDictionary[template.itemId].itemId =
-                      createResponse.id;
                     resolve({
                       id: createResponse.id,
                       type: newItemTemplate.type,
-                      data: common.cloneObject(newItemTemplate.data)
+                      postProcess: postProcess
                     });
                   },
                   e => reject(common.fail(e))
@@ -427,16 +427,16 @@ export function postProcessFieldReferences(
  *
  * @return A promise that will resolve once any updates have been made
  */
-export function postProcessDependencies(
+export function postProcessItemDependencies(
   itemId: string,
   type: string,
   data: any,
   authentication: common.UserSession
-): Promise<void> {
-  let p: Promise<void> = Promise.resolve();
+): Promise<any> {
+  let p: Promise<any> = Promise.resolve();
   switch (type) {
     case "Notebook":
-      p = notebook.postProcessDependencies(itemId, data, authentication);
+      p = notebook.postProcessItemDependencies(itemId, data, authentication);
       break;
   }
   return p;

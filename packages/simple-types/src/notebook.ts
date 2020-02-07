@@ -93,11 +93,11 @@ export function fineTuneCreatedItem(
  *
  * @return A promise that will resolve once any updates have been made
  */
-export function postProcessDependencies(
+export function postProcessItemDependencies(
   itemId: string,
   data: any,
   authentication: common.UserSession
-): Promise<void> {
+): Promise<any> {
   return _updateItemData(itemId, data, authentication);
 }
 
@@ -105,7 +105,7 @@ export function _updateItemData(
   itemId: string,
   data: any,
   authentication: common.UserSession
-): Promise<void> {
+): Promise<any> {
   return new Promise((resolve, reject) => {
     const updateOptions: common.IItemUpdate = {
       id: itemId,

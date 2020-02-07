@@ -250,9 +250,9 @@ export interface ICreateItemFromTemplateResponse {
    */
   type: string;
   /**
-   * Item data section JSON
+   * Does the item need post processing to handle unresolved variables
    */
-  data: any;
+  postProcess: boolean;
 }
 
 /**
@@ -274,7 +274,8 @@ export interface IItemTemplateConversions {
     progressTickCallback: () => void
   ): Promise<ICreateItemFromTemplateResponse>;
   postProcessDependencies?(
-    newItemTemplate: IItemTemplate,
+    newItemTemplate: IItemTemplate[],
+    clonedSolutionsResponse: ICreateItemFromTemplateResponse[],
     authentication: UserSession,
     templateDictionary: any
   ): Promise<any>;

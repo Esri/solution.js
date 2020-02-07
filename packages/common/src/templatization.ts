@@ -187,22 +187,11 @@ export function findTemplateInList(
   return iTemplate >= 0 ? templates[iTemplate] : null;
 }
 
-export function hasUnresolvedVariables(
-  data: any,
-  templateDictionary: any
-): boolean {
+export function hasUnresolvedVariables(data: any): boolean {
   const getUnresolved = (v: any) => {
     return v ? JSON.stringify(v).match(/{{.+?}}/gim) || [] : [];
   };
-  if (data) {
-    let _data: any = generalHelpers.cloneObject(data);
-    const unresolved: any = getUnresolved(_data);
-    if (unresolved.length > 0) {
-      _data = replaceInTemplate(_data, templateDictionary);
-      return unresolved.length > getUnresolved(_data).length;
-    }
-  }
-  return false;
+  return getUnresolved(data).length > 0;
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {
