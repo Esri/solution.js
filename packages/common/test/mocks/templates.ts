@@ -1090,6 +1090,7 @@ function getItemTemplateFundamentals(
       spatialReference: undefined,
       accessInformation: "Esri, Inc.",
       licenseInfo: null,
+      properties: null,
       culture: "en-us",
       url: url
     },

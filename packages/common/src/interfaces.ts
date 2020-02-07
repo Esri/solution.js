@@ -181,6 +181,7 @@ export interface IItemGeneralized {
   documentation?: string;
   extent?: number[][] | string;
   id: string;
+  properties?: any;
   snippet?: string;
   spatialReference?: serviceAdmin.ISpatialReference;
   tags?: string[];
