@@ -21,7 +21,8 @@ import * as getItemInfo from "../lib/getItemInfo";
 
 export function createSolutionFromItem(
   itemId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -31,7 +32,8 @@ export function createSolutionFromItem(
 
     // Create a solution from the supplied id
     const options: common.ICreateSolutionOptions = {
-      title: "item_" + itemId + "_solution"
+      title: "item_" + itemId + "_solution",
+      progressCallback: progressCallback
     };
     creator.createSolutionFromItemIds([itemId], authentication, options).then(
       createdSolutionId => {

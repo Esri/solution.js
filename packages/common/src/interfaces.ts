@@ -72,6 +72,7 @@ export interface ICreateSolutionOptions {
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
+  percentDone?: number;
 }
 
 /**
@@ -89,6 +90,7 @@ export interface IDeploySolutionOptions {
 }
 
 export type ISolutionProgressCallback = (percentDone: number) => void;
+export type ISolutionProgressTickCallback = () => void;
 
 export enum EItemProgressStatus {
   Started,

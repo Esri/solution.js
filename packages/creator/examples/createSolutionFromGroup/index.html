@@ -40,7 +40,7 @@
     <br /><br />
     <button onclick="goFcn()">Go</button>
   </div>
-  <div id="output" style="display:none">Fetching...</div>
+  <div id="output" style="display:none">Creating...</div>
 
   <script src="lib/require.js"></script>
   <script>
@@ -78,7 +78,10 @@
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value
-            })
+            }),
+            percentDone => {
+              document.getElementById("output").innerHTML = "Creating..." + percentDone.toFixed().toString() + "%";
+            }
           ).then(
             html => {
               document.getElementById("output").innerHTML = html;
