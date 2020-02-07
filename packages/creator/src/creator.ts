@@ -139,6 +139,10 @@ export function createSolutionItem(
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
       thumbnailUrl: options?.thumbnailUrl ?? "",
+      properties: {
+        prop1: 11,
+        prop2: "22"
+      },
       tags: options?.tags ?? [],
       typeKeywords: ["Solution", "Template"]
     };
@@ -200,7 +204,7 @@ export function addContentToSolution(
   return new Promise((resolve, reject) => {
     const templateDictionary = options.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
-    let progressTickCallback: () => void = () => void 0;
+    let progressTickCallback: common.IItemProgressCallback = () => void 0;
     if (options.progressCallback) {
       const progressCallback = options.progressCallback;
       progressCallback(4);
@@ -224,7 +228,6 @@ export function addContentToSolution(
         solutionTemplates
       );
       getItemsPromise.push(createDef);
-      createDef.then(progressTickCallback, progressTickCallback);
     });
 
     // tslint:disable-next-line: no-floating-promises

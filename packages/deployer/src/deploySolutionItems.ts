@@ -213,7 +213,7 @@ export function deploySolutionItems(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Create an ordered graph of the templates so that dependencies are created
@@ -276,7 +276,7 @@ export function _createItemFromTemplateWhenReady(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<string> {
   templateDictionary[template.itemId] = {};
   const itemDef = new Promise<string>((resolve, reject) => {
@@ -286,6 +286,13 @@ export function _createItemFromTemplateWhenReady(
       awaitDependencies.push(templateDictionary[dependencyId].def);
     });
     Promise.all(awaitDependencies).then(() => {
+      console.log(
+        "++++++++++++++++++ starting " +
+          template.itemId +
+          " (" +
+          template.type +
+          ")"
+      );
       // Find the conversion handler for this item type
       const templateType = template.type;
       let itemHandler = moduleMap[templateType];
@@ -316,7 +323,18 @@ export function _createItemFromTemplateWhenReady(
             progressTickCallback
           )
           .then(
-            newItemId => resolve(newItemId),
+            //newItemId => resolve(newItemId),
+            newItemId => {
+              console.log(
+                "++++++++++++++++++ finished " +
+                  template.itemId +
+                  " (" +
+                  template.type +
+                  ") => " +
+                  newItemId
+              );
+              resolve(newItemId);
+            },
             e => {
               reject(common.fail(e));
             }
@@ -326,6 +344,13 @@ export function _createItemFromTemplateWhenReady(
   });
 
   // Save the deferred for the use of items that depend on this item being created first
+  console.log(
+    "++++++++++++++++++ set def for " +
+      template.itemId +
+      " (" +
+      template.type +
+      ")"
+  );
   templateDictionary[template.itemId].def = itemDef;
   return itemDef;
 }

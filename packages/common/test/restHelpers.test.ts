@@ -1453,10 +1453,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: objects,
         itemTemplate: itemTemplate,
-        authentication: MOCK_USER_SESSION,
-        progressTickCallback: function(opts: any) {
-          return opts;
-        }
+        authentication: MOCK_USER_SESSION
       };
 
       const updates: any[] = restHelpers.getLayerUpdates(args);
@@ -1539,10 +1536,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
-        authentication: MOCK_USER_SESSION,
-        progressTickCallback: function(opts: any) {
-          return opts;
-        }
+        authentication: MOCK_USER_SESSION
       };
 
       const baseAdminSvcURL =
@@ -1572,10 +1566,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         message: "refresh",
         objects: [],
         itemTemplate: itemTemplate,
-        authentication: MOCK_USER_SESSION,
-        progressTickCallback: function(opts: any) {
-          return opts;
-        }
+        authentication: MOCK_USER_SESSION
       };
 
       const baseAdminSvcURL =
@@ -1850,17 +1841,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         mockItems.get400Failure()
       );
-      const progressTickCallback: any = function(opts: any) {
-        return opts;
-      };
       restHelpers
         .updateItemExtended(
           "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          undefined,
-          progressTickCallback
+          undefined
         )
         .then(
           () => done.fail(),
@@ -1879,17 +1866,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
-      const progressTickCallback: any = function(opts: any) {
-        return opts;
-      };
       restHelpers
         .updateItemExtended(
           "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          undefined,
-          progressTickCallback
+          undefined
         )
         .then(
           () => {
@@ -1909,17 +1892,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
         '{"success":true}'
       );
-      const progressTickCallback: any = function(opts: any) {
-        return opts;
-      };
       restHelpers
         .updateItemExtended(
           "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          "public",
-          progressTickCallback
+          "public"
         )
         .then(
           () => {
@@ -1939,17 +1918,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
         '{"success":true}'
       );
-      const progressTickCallback: any = function(opts: any) {
-        return opts;
-      };
       restHelpers
         .updateItemExtended(
           "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          "org",
-          progressTickCallback
+          "org"
         )
         .then(
           () => {
@@ -1969,17 +1944,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
         mockItems.get400Failure()
       );
-      const progressTickCallback: any = function(opts: any) {
-        return opts;
-      };
       restHelpers
         .updateItemExtended(
           "svc1234567890",
           itemTemplate.item,
           itemTemplate.data,
           MOCK_USER_SESSION,
-          "org",
-          progressTickCallback
+          "org"
         )
         .then(
           () => done.fail(),

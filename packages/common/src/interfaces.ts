@@ -71,7 +71,7 @@ export interface ICreateSolutionOptions {
   templateDictionary?: any;
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
-  progressCallback?: (percentDone: number) => void;
+  progressCallback?: ISolutionProgressCallback;
 }
 
 /**
@@ -85,8 +85,21 @@ export interface IDeploySolutionOptions {
   thumbnailUrl?: string; // default: copied from solution item
   templateDictionary?: any;
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
-  progressCallback?: (percentDone: number) => void;
+  progressCallback?: ISolutionProgressCallback;
 }
+
+export type ISolutionProgressCallback = (percentDone: number) => void;
+
+export enum EItemProgressStatus {
+  Started,
+  Created,
+  Finished
+}
+export type IItemProgressCallback = (
+  itemId: string,
+  status: EItemProgressStatus,
+  costUsed: number
+) => void;
 
 /**
  * Storage of dependencies.
@@ -256,7 +269,7 @@ export interface IItemTemplateConversions {
     storageAuthentication: UserSession,
     templateDictionary: any,
     destinationAuthentication: UserSession,
-    progressTickCallback: () => void
+    progressTickCallback: IItemProgressCallback
   ): Promise<string>;
   postProcessCircularDependencies?(
     newItemTemplate: IItemTemplate,
@@ -328,11 +341,6 @@ export interface IPostProcessArgs {
    * Credentials for the request
    */
   authentication: UserSession;
-
-  /**
-   * Callback for IProgressUpdate
-   */
-  progressTickCallback: any;
 }
 
 export interface IRelatedItems {

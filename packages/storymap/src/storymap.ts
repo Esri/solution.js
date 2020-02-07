@@ -46,7 +46,7 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (template.type === "StoryMap") {
