@@ -271,16 +271,16 @@ export function deploySolution(
                                         "Deployed"
                                       ];
 
+                                      itemData.templates = itemData.templates.map(
+                                        (itemTemplate: common.IItemTemplate) =>
+                                          _purgeTemplateProperties(itemTemplate)
+                                      );
+
                                       // Update solution items data using template dictionary, and then update the
                                       // itemId & dependencies in each item template
                                       itemBase.data = common.replaceInTemplate(
                                         itemData,
                                         templateDictionary
-                                      );
-
-                                      itemData.templates = itemData.templates.map(
-                                        (itemTemplate: common.IItemTemplate) =>
-                                          _purgeTemplateProperties(itemTemplate)
                                       );
 
                                       common
