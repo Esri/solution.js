@@ -1837,9 +1837,21 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("shareItem", () => {
-    xit("shareItem", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("can handle error on shareItem", done => {
+      const groupId: string = "grp1234567890";
+      const id: string = "itm1234567890";
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          MOCK_USER_SESSION.token
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+          mockItems.get400Failure()
+        );
+      restHelpers
+        .shareItem(groupId, id, MOCK_USER_SESSION)
+        .then(() => done.fail, done);
     });
   });
 
