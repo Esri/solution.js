@@ -1843,7 +1843,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock
         .get(
           "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
-          MOCK_USER_SESSION.token
+          mockItems.getAGOLUser(MOCK_USER_SESSION.username)
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",

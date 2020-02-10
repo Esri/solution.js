@@ -347,7 +347,7 @@ export function _createItemFromTemplateWhenReady(
  *
  * @param templates Array of item templates to evaluate
  * @param clonedSolutionsResponse Has the item id, type, and data
- * @param destinationAuthentication Credentials for the requests to the destination
+ * @param authentication Credentials for the requests to the destination
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
  * @return A promise that will resolve once any updates have been made
@@ -355,7 +355,7 @@ export function _createItemFromTemplateWhenReady(
 export function postProcessDependencies(
   templates: common.IItemTemplate[],
   clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
-  destinationAuthentication: common.UserSession,
+  authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
@@ -369,7 +369,7 @@ export function postProcessDependencies(
       solutionInfo => {
         if (solutionInfo.postProcess) {
           dataRequests.push(
-            common.getItemDataAsJson(solutionInfo.id, destinationAuthentication)
+            common.getItemDataAsJson(solutionInfo.id, authentication)
           );
           return true;
         }
@@ -396,7 +396,7 @@ export function postProcessDependencies(
                   itemInfo.id,
                   { id: itemInfo.id },
                   update,
-                  destinationAuthentication
+                  authentication
                 )
               );
             } else {
@@ -407,7 +407,7 @@ export function postProcessDependencies(
                     itemInfo.id,
                     template.type,
                     update,
-                    destinationAuthentication
+                    authentication
                   )
                 );
               }
@@ -418,11 +418,7 @@ export function postProcessDependencies(
         // share the template with any groups it references
         templates.forEach(template => {
           updates = updates.concat(
-            _getGroupUpdates(
-              template,
-              destinationAuthentication,
-              templateDictionary
-            )
+            _getGroupUpdates(template, authentication, templateDictionary)
           );
         });
 
