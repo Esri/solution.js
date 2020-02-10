@@ -17,6 +17,11 @@
 /**
  * Provides static mock responses for related items across multiple packages.
  *
+ * @param itemId Source item for relationship
+ * @param desiredResponse Response for each query
+ * @param excludedTypes Relationship types to not include in this bulk fetchMock setup; this permits
+ * custom responses for those types
+ *
  * Long term...would like to work these into the standard mocks.
  */
 
