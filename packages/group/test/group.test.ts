@@ -688,7 +688,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
-      itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.title = null;
 
       fetchMock.post(
         "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",

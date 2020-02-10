@@ -108,4 +108,76 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       }, done.fail);
     });
   });
+
+  it("will not fail with missing JSON", done => {
+    const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+      "QuickCapture Project",
+      null
+    );
+    itemTemplate.dependencies = [];
+    itemTemplate.data = mockItems.getAGOLItemData("QuickCapture Project");
+    itemTemplate.data[1].text = () => {
+      return new Promise<any>(resolve => resolve(null));
+    };
+
+    const expectedDependencies: string[] = [];
+    const expectedData: any = {};
+
+    quickcapture.convertItemToTemplate(itemTemplate).then(actual => {
+      expect(actual.data).toEqual(expectedData);
+      expect(actual.dependencies).toEqual(expectedDependencies);
+      done();
+    }, done.fail);
+  });
+
+  describe("_templatizeApplication", () => {
+    it("will not fail with missing datasource id", () => {
+      const data = {
+        dataSources: [
+          {
+            dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+            url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
+          }
+        ]
+      };
+      const expectedUpdatedData = common.cloneObject(data);
+
+      const updatedData = quickcapture._templatizeApplication(data, null);
+
+      expect(updatedData).toEqual(expectedUpdatedData);
+    });
+  });
+
+  describe("_templatizeUrl", () => {
+    it("will templatize a datasource URL", () => {
+      const obj = {
+        featureServiceItemId: "4efe5f693de34620934787ead6693f10",
+        dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+        url:
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayerForDashBoardMap/FeatureServer/1"
+      };
+      const idPath = "featureServiceItemId";
+      const urlPath = "url";
+      const expectedUpdatedUrl =
+        "{{4efe5f693de34620934787ead6693f10.layer1.url}}";
+
+      quickcapture._templatizeUrl(obj, idPath, urlPath);
+
+      expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
+    });
+
+    it("will not fail with missing datasource URL", () => {
+      const obj = {
+        featureServiceItemId: "4efe5f693de34620934787ead6693f10",
+        dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74"
+      };
+      const idPath = "featureServiceItemId";
+      const urlPath = "url";
+      const expectedUpdatedUrl: string = undefined;
+
+      quickcapture._templatizeUrl(obj, idPath, urlPath);
+
+      expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
+    });
+  });
 });
