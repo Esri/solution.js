@@ -317,7 +317,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "qck1234567890_info_thumbnail/ago_downloaded.png"
           ],
           dependencies: [],
-          circularDependencies: [],
+          groups: [],
           type: "QuickCapture Project",
           item: {
             id: "{{qck1234567890.itemId}}",
@@ -436,7 +436,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "map1234567890_info_thumbnail/banner.png"
           ],
           dependencies: [],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -550,7 +550,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: ["abc", "def", "ghi"],
           resources: [],
           dependencies: [],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -636,7 +636,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           ],
           dependencies: ["srv1234567890", "abc1234567890"],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -761,7 +761,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: null,
           resources: [],
           dependencies: [],
-          circularDependencies: [],
+          groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
@@ -971,7 +971,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           },
           resources: [] as any[],
           dependencies: ["myMapId"],
-          circularDependencies: [] as string[],
+          groups: [] as string[],
           properties: {} as any,
           estimatedDeploymentCostFactor: 2
         };
@@ -1204,7 +1204,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .then(r => {
             expect(templateDictionary).toEqual(expected);
-            expect(r).toEqual(newItemID);
+            expect(r).toEqual({
+              id: newItemID,
+              type: itemTemplate.type,
+              postProcess: false
+            });
             done();
           }, done.fail);
       });
@@ -1352,7 +1356,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .then(r => {
           expect(templateDictionary).toEqual(expected);
-          expect(r).toEqual(newItemID);
+          expect(r).toEqual({
+            id: newItemID,
+            type: itemTemplate.type,
+            postProcess: false
+          });
           done();
         }, done.fail);
     });
@@ -1497,7 +1505,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             itemTemplate,
             MOCK_USER_SESSION
           );
-          expect(actual).toEqual(newItemId);
+          expect(actual).toEqual({
+            id: newItemId,
+            type: itemTemplate.type,
+            postProcess: true
+          });
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
         }, done.fail);
@@ -1557,7 +1569,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             return 0;
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("should handle web mapping application", done => {
@@ -1591,9 +1603,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         },
         map: {
           appProxy: {
-            mapItemId: "{{mapItemId.itemId}}"
+            mapItemId: "{{myMapId.itemId}}"
           },
-          itemId: "{{mapItemId.itemId}}"
+          itemId: "{{myMapId.itemId}}"
         },
         folderId: "{{folderId}}"
       };
@@ -1604,13 +1616,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         id: 0
       };
 
+      const expectedData: any = {
+        appItemId: "abc0cab401af4828a25cc6eaeb59fb69",
+        values: {
+          webmap: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "map0cab401af4828a25cc6eaeb59fb69"
+          },
+          itemId: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        folderId: "folderb401af4828a25cc6eaeb59fb69"
+      };
+
       fetchMock
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
           layer0
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
         )
         .post(
@@ -1627,7 +1653,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           [],
           MOCK_USER_SESSION,
-          {},
+          {
+            folderId: "folderb401af4828a25cc6eaeb59fb69",
+            myMapId: {
+              itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            }
+          },
           MOCK_USER_SESSION,
           function() {
             const tick = 0;
@@ -1635,7 +1666,146 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .then(
           actual => {
-            expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+            expect(actual).toEqual({
+              id: "abc0cab401af4828a25cc6eaeb59fb69",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+
+    it("should handle web mapping application with related items", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        licenseInfo: undefined,
+        properties: null,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = {
+        appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        values: {
+          webmap: "{{myMapId.itemId}}"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "{{myMapId.itemId}}"
+          },
+          itemId: "{{myMapId.itemId}}"
+        },
+        folderId: "{{folderId}}"
+      };
+      itemTemplate.relatedItems = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["srv1234567890"]
+        },
+        {
+          relationshipType: "Survey2Data",
+          relatedItemIds: ["srv1234567890", "abc1234567890"]
+        }
+      ];
+      itemTemplate.dependencies = ["myMapId", "srv1234567890", "abc1234567890"];
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      fetchMock
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        itemTemplate.itemId,
+        { total: 0, relatedItems: [] },
+        ["Survey2Data", "Survey2Service"]
+      );
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+        {
+          total: 2,
+          relatedItems: [
+            {
+              id: "srv1234567890"
+            },
+            {
+              id: "abc1234567890"
+            }
+          ]
+        }
+      );
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+        {
+          total: 1,
+          relatedItems: [
+            {
+              id: "srv1234567890"
+            }
+          ]
+        }
+      );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            folderId: "folderb401af4828a25cc6eaeb59fb69",
+            myMapId: {
+              itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
+          }
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual({
+              id: "abc0cab401af4828a25cc6eaeb59fb69",
+              type: itemTemplate.type,
+              postProcess: false
+            });
             done();
           },
           e => done.fail(e)
@@ -1666,7 +1836,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         name: undefined,
         snippet: undefined
       };
-      itemTemplate.data = null;
+      itemTemplate.data = undefined;
       itemTemplate.dependencies = [];
 
       fetchMock
@@ -1692,7 +1862,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         )
         .then(
           actual => {
-            expect(actual).toEqual("abc0cab401af4828a25cc6eaeb59fb69");
+            expect(actual).toEqual({
+              id: "abc0cab401af4828a25cc6eaeb59fb69",
+              type: itemTemplate.type,
+              postProcess: false
+            });
             done();
           },
           e => done.fail(e)
@@ -1878,134 +2052,5 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       );
       expect(actual).toEqual(expected);
     });
-  });
-
-  describe("postProcessCircularDependencies", () => {
-    if (typeof window !== "undefined") {
-      it("update item", done => {
-        const template: any = {
-          dependencies: ["ABC123", "A"],
-          type: "Workforce Project",
-          itemId: "123ABC"
-        };
-
-        const templateDictionary: any = {
-          ABC123: {
-            itemId: "NEWABC123"
-          }
-        };
-
-        const itemData: any = {
-          groupId: "{{ABC123.itemId}}"
-        };
-
-        const expectedBody: string =
-          "f=json&text=%7B%22groupId%22%3A%22NEWABC123%22%7D&id=123ABC&token=fake-token";
-
-        const updateUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update";
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
-            itemData
-          )
-          .post(updateUrl, '{"success":true}');
-
-        simpleTypes
-          .postProcessCircularDependencies(
-            template,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(() => {
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(fetchBody).toEqual(expectedBody);
-            done();
-          }, done.fail);
-      });
-
-      it("handle error on updateItemExtended", done => {
-        const template: any = {
-          dependencies: ["ABC123", "A"],
-          type: "Workforce Project",
-          itemId: "123ABC"
-        };
-
-        const templateDictionary: any = {
-          ABC123: {
-            itemId: "NEWABC123"
-          }
-        };
-
-        const itemData: any = {
-          groupId: "{{ABC123.itemId}}"
-        };
-
-        const expectedBody: string =
-          "f=json&text=%7B%22groupId%22%3A%22NEWABC123%22%7D&id=123ABC&token=fake-token";
-
-        const updateUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update";
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
-            itemData
-          )
-          .post(updateUrl, mockItems.get400Failure());
-
-        simpleTypes
-          .postProcessCircularDependencies(
-            template,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(done.fail, done);
-      });
-
-      it("should handle error on get data", done => {
-        const template: any = {
-          dependencies: ["ABC123", "A"],
-          type: "Workforce Project",
-          itemId: "123ABC"
-        };
-
-        const templateDictionary: any = {
-          ABC123: {
-            itemId: "NEWABC123"
-          }
-        };
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/123ABC/data",
-            mockItems.get400Failure()
-          );
-
-        simpleTypes
-          .postProcessCircularDependencies(
-            template,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(done.fail, done);
-      });
-    }
   });
 });

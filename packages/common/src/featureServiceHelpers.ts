@@ -409,7 +409,6 @@ export function getLayersAndTables(
  *            service)
  * @param popupInfos the cached popup info from the layers
  * @param requestOptions Options for the request
- * @param progressTickCallback
  * @return A promise that will resolve when all layers and tables have been added
  * @protected
  */
@@ -417,8 +416,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  requestOptions: interfaces.IUserRequestOptions,
-  progressTickCallback?: () => void
+  requestOptions: interfaces.IUserRequestOptions
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     // Create a hash of various properties that contain field references
@@ -435,8 +433,7 @@ export function addFeatureServiceLayersAndTables(
         itemTemplate.key,
         adminLayerInfos,
         fieldInfos,
-        itemTemplate,
-        progressTickCallback
+        itemTemplate
       ).then(
         () => {
           // Detemplatize field references and update the layer properties
@@ -446,8 +443,7 @@ export function addFeatureServiceLayersAndTables(
             popupInfos,
             adminLayerInfos,
             templateDictionary,
-            requestOptions,
-            progressTickCallback
+            requestOptions
           ).then(
             r => {
               // Update relationships and layer definitions
@@ -456,8 +452,7 @@ export function addFeatureServiceLayersAndTables(
                   message: "updated layer definition",
                   objects: r.layerInfos.fieldInfos,
                   itemTemplate: r.itemTemplate,
-                  authentication: requestOptions.authentication,
-                  progressTickCallback
+                  authentication: requestOptions.authentication
                 } as interfaces.IPostProcessArgs
               );
               // Process the updates sequentially
@@ -495,7 +490,6 @@ export function addFeatureServiceLayersAndTables(
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param fieldInfos Hash map of properties that contain field references
  * @param itemTemplate
- * @param progressTickCallback
  * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
@@ -507,8 +501,7 @@ export function updateFeatureServiceDefinition(
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
-  itemTemplate: interfaces.IItemTemplate,
-  progressTickCallback?: () => void
+  itemTemplate: interfaces.IItemTemplate
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const options: any = {
@@ -555,10 +548,7 @@ export function updateFeatureServiceDefinition(
       }
     });
     restHelpers.addToServiceDefinition(serviceUrl, options).then(
-      () => {
-        progressTickCallback && progressTickCallback();
-        resolve();
-      },
+      () => resolve(),
       e => reject(generalHelpers.fail(e))
     );
   });
@@ -573,7 +563,6 @@ export function updateFeatureServiceDefinition(
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
  * @param requestOptions Options for requesting information from AGOL
- * @param progressTickCallback
  * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
@@ -583,8 +572,7 @@ export function updateLayerFieldReferences(
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions,
-  progressTickCallback?: () => void
+  requestOptions: interfaces.IUserRequestOptions
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields

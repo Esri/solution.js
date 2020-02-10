@@ -21,7 +21,8 @@ import * as getItemInfo from "../lib/getItemInfo";
 
 export function createSolutionFromGroup(
   groupId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!groupId) {
@@ -31,7 +32,8 @@ export function createSolutionFromGroup(
 
     // Create a solution from the supplied id
     const options: common.ICreateSolutionOptions = {
-      title: "group_" + groupId + "_solution"
+      title: "group_" + groupId + "_solution",
+      progressCallback: progressCallback
     };
     creator.createSolutionFromGroupId(groupId, authentication, options).then(
       createdSolutionId => {

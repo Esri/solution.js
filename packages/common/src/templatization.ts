@@ -147,9 +147,9 @@ export function createPlaceholderTemplate(
     data: {},
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {},
-    estimatedDeploymentCostFactor: 0
+    estimatedDeploymentCostFactor: 2
   };
 }
 
@@ -184,6 +184,13 @@ export function findTemplateInList(
 ): interfaces.IItemTemplate | null {
   const iTemplate = findTemplateIndexInList(templates, id);
   return iTemplate >= 0 ? templates[iTemplate] : null;
+}
+
+export function hasUnresolvedVariables(data: any): boolean {
+  const getUnresolved = (v: any) => {
+    return v ? JSON.stringify(v).match(/{{.+?}}/gim) || [] : [];
+  };
+  return getUnresolved(data).length > 0;
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {

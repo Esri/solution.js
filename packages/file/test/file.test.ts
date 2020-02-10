@@ -365,7 +365,11 @@ describe("Module `file`: manages the creation and deployment of item types that 
           )
           .then(
             response => {
-              expect(response).toEqual("map1234567891");
+              expect(response).toEqual({
+                id: "map1234567891",
+                type: itemTemplate.type,
+                postProcess: false
+              });
               done();
             },
             () => done.fail()
@@ -420,7 +424,11 @@ describe("Module `file`: manages the creation and deployment of item types that 
           )
           .then(
             response => {
-              expect(response).toEqual("map1234567891");
+              expect(response).toEqual({
+                id: "map1234567891",
+                type: itemTemplate.type,
+                postProcess: false
+              });
               done();
             },
             () => done.fail()

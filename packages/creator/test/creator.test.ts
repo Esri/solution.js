@@ -18,13 +18,13 @@
  * Provides tests for functions involving the creation of a Solution item.
  */
 
+import * as common from "@esri/solution-common";
+import * as creator from "../src/creator";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
+import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
-
-import * as common from "@esri/solution-common";
-import * as creator from "../src/creator";
 
 // Set up a UserSession to use in all these tests
 const MOCK_USER_SESSION = new common.UserSession({
@@ -814,62 +814,91 @@ describe("Module `creator`", () => {
     });
   });
 
-  describe("_updateDependencyArrays", () => {
-    it("remove from dependencies and add to circularDependencies ", () => {
-      let template: any = {
-        dependencies: ["ABC123"]
-      };
-      let id: string = "ABC123";
+  describe("_postProcessGroupDependencies", () => {
+    it("remove group dependencies if we find a circular dependency with one of its items", done => {
+      const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      groupTemplate.item = mockItems.getAGOLItem("Group", null);
+      groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
+      groupTemplate.type = "Group";
 
-      const expected: any = {
-        dependencies: [],
-        circularDependencies: ["ABC123"]
-      };
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.item = mockItems.getAGOLItem("Workforce Project", null);
+      itemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
+      itemTemplate.type = "Workforce Project";
 
-      creator._updateDependencyArrays(template, id);
-      expect(template).toEqual(expected);
+      groupTemplate.dependencies = [itemTemplate.itemId];
 
-      template = {
-        dependencies: ["ABC1234"],
-        circularDependencies: ["ABC123"]
-      };
-      id = "ABC1234";
+      itemTemplate.dependencies = [groupTemplate.itemId];
 
-      expected.circularDependencies = ["ABC123", "ABC1234"];
+      const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
 
-      creator._updateDependencyArrays(template, id);
-      expect(template).toEqual(expected);
+      const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedGroupTemplate.item = mockItems.getAGOLItem("Group", null);
+      expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
+      expectedGroupTemplate.type = "Group";
+      expectedGroupTemplate.dependencies = [];
+
+      const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedItemTemplate.item = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      expectedItemTemplate.itemId = "wrkccab401af4828a25cc6eaeb59fb69";
+      expectedItemTemplate.type = "Workforce Project";
+      expectedItemTemplate.groups = [expectedGroupTemplate.itemId];
+      expectedItemTemplate.dependencies = [expectedGroupTemplate.itemId];
+
+      const expected: common.IItemTemplate[] = [
+        expectedGroupTemplate,
+        expectedItemTemplate
+      ];
+
+      const actual = creator._postProcessGroupDependencies(_templates);
+      expect(actual).toEqual(expected);
+      done();
     });
-  });
 
-  describe("_postProcessCircularDependencies", () => {
-    it("remove from dependencies and add to circularDependencies ", () => {
-      const templates: any[] = [
-        {
-          dependencies: ["ABC123", "A"],
-          itemId: "123ABC"
-        },
-        {
-          dependencies: ["123ABC", "B"],
-          itemId: "ABC123"
-        }
+    it("add group dependencies to groups array", done => {
+      const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      groupTemplate.item = mockItems.getAGOLItem("Group", null);
+      groupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
+      groupTemplate.type = "Group";
+      groupTemplate.dependencies = [];
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      itemTemplate.item = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
+      itemTemplate.type = "Web Mapping Application";
+      itemTemplate.dependencies = [groupTemplate.itemId];
+
+      const _templates: common.IItemTemplate[] = [groupTemplate, itemTemplate];
+
+      const expectedGroupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedGroupTemplate.item = mockItems.getAGOLItem("Group", null);
+      expectedGroupTemplate.itemId = "grpb15c2df2b466da05577776e82d044";
+      expectedGroupTemplate.type = "Group";
+      expectedGroupTemplate.dependencies = [];
+
+      const expectedItemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      expectedItemTemplate.item = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      expectedItemTemplate.itemId = "wmaccab401af4828a25cc6eaeb59fb69";
+      expectedItemTemplate.type = "Web Mapping Application";
+      expectedItemTemplate.dependencies = [expectedGroupTemplate.itemId];
+
+      const expected: common.IItemTemplate[] = [
+        expectedGroupTemplate,
+        expectedItemTemplate
       ];
 
-      const expected: any[] = [
-        {
-          dependencies: ["A"],
-          circularDependencies: ["ABC123"],
-          itemId: "123ABC"
-        },
-        {
-          dependencies: ["B"],
-          circularDependencies: ["123ABC"],
-          itemId: "ABC123"
-        }
-      ];
-
-      creator._postProcessCircularDependencies(templates);
-      expect(templates).toEqual(expected);
+      const actual = creator._postProcessGroupDependencies(_templates);
+      expect(actual).toEqual(expected);
+      done();
     });
   });
 });

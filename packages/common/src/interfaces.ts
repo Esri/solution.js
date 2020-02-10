@@ -71,7 +71,8 @@ export interface ICreateSolutionOptions {
   templateDictionary?: any;
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
-  progressCallback?: (percentDone: number) => void;
+  progressCallback?: ISolutionProgressCallback;
+  percentDone?: number;
 }
 
 /**
@@ -85,8 +86,22 @@ export interface IDeploySolutionOptions {
   thumbnailUrl?: string; // default: copied from solution item
   templateDictionary?: any;
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
-  progressCallback?: (percentDone: number) => void;
+  progressCallback?: ISolutionProgressCallback;
 }
+
+export type ISolutionProgressCallback = (percentDone: number) => void;
+export type ISolutionProgressTickCallback = () => void;
+
+export enum EItemProgressStatus {
+  Started,
+  Created,
+  Finished
+}
+export type IItemProgressCallback = (
+  itemId: string,
+  status: EItemProgressStatus,
+  costUsed: number
+) => void;
 
 /**
  * Storage of dependencies.
@@ -224,10 +239,9 @@ export interface IItemTemplate {
   dependencies: string[];
 
   /**
-   * List of ids of AGO items needed by this item that are circular in nature
-   * For example group that references Workforce Project when the Workforce Project also references the group
+   * List of ids of AGO groups the item needs to be shared with
    */
-  circularDependencies: string[];
+  groups: string[];
 
   /**
    * Miscellaneous item-specific properties
@@ -239,6 +253,21 @@ export interface IItemTemplate {
    * function calls made during while deploying it
    */
   estimatedDeploymentCostFactor: number;
+}
+
+export interface ICreateItemFromTemplateResponse {
+  /**
+   * Item's AGO id
+   */
+  id: string;
+  /**
+   * AGO item type name
+   */
+  type: string;
+  /**
+   * Does the item need post processing to handle unresolved variables
+   */
+  postProcess: boolean;
 }
 
 /**
@@ -257,10 +286,11 @@ export interface IItemTemplateConversions {
     storageAuthentication: UserSession,
     templateDictionary: any,
     destinationAuthentication: UserSession,
-    progressTickCallback: () => void
-  ): Promise<string>;
-  postProcessCircularDependencies?(
-    newItemTemplate: IItemTemplate,
+    progressTickCallback: IItemProgressCallback
+  ): Promise<ICreateItemFromTemplateResponse>;
+  postProcessDependencies?(
+    templates: IItemTemplate[],
+    clonedSolutionsResponse: ICreateItemFromTemplateResponse[],
     authentication: UserSession,
     templateDictionary: any
   ): Promise<any>;
@@ -329,11 +359,6 @@ export interface IPostProcessArgs {
    * Credentials for the request
    */
   authentication: UserSession;
-
-  /**
-   * Callback for IProgressUpdate
-   */
-  progressTickCallback: any;
 }
 
 export interface IRelatedItems {

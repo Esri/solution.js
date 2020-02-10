@@ -603,8 +603,7 @@ export function getLayerUpdates(
       message: "updated layer relationships",
       objects: args.objects,
       itemTemplate: args.itemTemplate,
-      authentication: args.authentication,
-      progressTickCallback: args.progressTickCallback
+      authentication: args.authentication
     });
     if (relUpdates.layers.length > 0) {
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
@@ -628,14 +627,7 @@ export function getRequest(update: interfaces.IUpdate): Promise<void> {
       authentication: update.args.authentication
     };
     request.request(update.url, options).then(
-      () => {
-        update.args.progressTickCallback &&
-          update.args.progressTickCallback({
-            processId: update.args.itemTemplate.key,
-            status: update.args.message
-          });
-        resolveFn();
-      },
+      () => resolveFn(),
       (e: any) => rejectFn(e)
     );
   });
@@ -663,13 +655,6 @@ export function getServiceLayersAndTables(
     getFeatureServiceProperties(serviceUrl, authentication).then(
       properties => {
         itemTemplate.properties = properties;
-
-        itemTemplate.estimatedDeploymentCostFactor +=
-          properties.layers.length + // layers
-          _countRelationships(properties.layers) + // layer relationships
-          properties.tables.length + // tables & estimated single relationship for each
-          _countRelationships(properties.tables); // table relationships
-
         resolve(itemTemplate);
       },
       e => reject(generalHelpers.fail(e))
@@ -807,8 +792,7 @@ export function updateItemExtended(
   itemInfo: interfaces.IItemUpdate,
   data: any,
   authentication: interfaces.UserSession,
-  access?: string | undefined,
-  progressTickCallback?: () => void
+  access?: string | undefined
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     const updateOptions: portal.IUpdateItemOptions = {
@@ -829,14 +813,10 @@ export function updateItemExtended(
             authentication: authentication
           };
           portal.setItemAccess(accessOptions).then(
-            () => {
-              progressTickCallback && progressTickCallback();
-              resolve();
-            },
+            () => resolve(),
             e => reject(generalHelpers.fail(e))
           );
         } else {
-          progressTickCallback && progressTickCallback();
           resolve();
         }
       },

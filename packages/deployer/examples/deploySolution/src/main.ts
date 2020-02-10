@@ -21,7 +21,8 @@ import * as getItemInfo from "../lib/getItemInfo";
 
 export function deploySolution(
   templateSolutionId: string,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  progressCallback: common.ISolutionProgressCallback
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!templateSolutionId) {
@@ -31,7 +32,8 @@ export function deploySolution(
 
     // Deploy a solution described by the supplied id
     const options: common.IDeploySolutionOptions = {
-      title: "Deployment of Solution item " + templateSolutionId
+      title: "Deployment of Solution item " + templateSolutionId,
+      progressCallback: progressCallback
     };
     deployer.deploySolution(templateSolutionId, authentication, options).then(
       deployedSolution => {

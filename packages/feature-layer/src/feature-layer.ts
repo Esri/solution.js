@@ -53,7 +53,7 @@ export function convertItemToTemplate(
     );
 
     // Update the estimated cost factor to deploy this item
-    template.estimatedDeploymentCostFactor = 3;
+    template.estimatedDeploymentCostFactor = 10;
 
     common
       .getItemDataAsJson(template.item.id, requestOptions.authentication)
@@ -118,76 +118,100 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    const requestOptions: common.IUserRequestOptions = {
-      authentication: destinationAuthentication
-    };
+  progressTickCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      );
 
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      const requestOptions: common.IUserRequestOptions = {
+        authentication: destinationAuthentication
+      };
 
-    // cache the popup info to be added later
-    const popupInfos: common.IPopupInfos = common.cachePopupInfos(
-      newItemTemplate.data
-    );
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
-    // Create the item, then update its URL with its new id
-    common
-      .createFeatureService(
-        newItemTemplate,
-        requestOptions.authentication,
-        templateDictionary
-      )
-      .then(
-        createResponse => {
-          progressTickCallback();
+      // cache the popup info to be added later
+      const popupInfos: common.IPopupInfos = common.cachePopupInfos(
+        newItemTemplate.data
+      );
 
-          if (createResponse.success) {
-            // Detemplatize what we can now that the service has been created
-            newItemTemplate = common.updateTemplate(
-              newItemTemplate,
-              templateDictionary,
-              createResponse
+      // Create the item, then update its URL with its new id
+      common
+        .createFeatureService(
+          newItemTemplate,
+          requestOptions.authentication,
+          templateDictionary
+        )
+        .then(
+          createResponse => {
+            progressTickCallback(
+              template.itemId,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2
             );
-            // Add the layers and tables to the feature service
-            common
-              .addFeatureServiceLayersAndTables(
+
+            if (createResponse.success) {
+              // Detemplatize what we can now that the service has been created
+              newItemTemplate = common.updateTemplate(
                 newItemTemplate,
                 templateDictionary,
-                popupInfos,
-                requestOptions,
-                progressTickCallback
-              )
-              .then(
-                () => {
-                  newItemTemplate = common.updateTemplate(
-                    newItemTemplate,
-                    templateDictionary,
-                    createResponse
-                  );
-                  // Update the item with snippet, description, popupInfo, ect.
-                  common
-                    .updateItemExtended(
-                      createResponse.serviceItemId,
-                      newItemTemplate.item,
-                      newItemTemplate.data,
-                      requestOptions.authentication
-                    )
-                    .then(
-                      () => resolve(createResponse.serviceItemId),
-                      (e: any) => reject(common.fail(e))
-                    );
-                },
-                e => reject(common.fail(e))
+                createResponse
               );
-          } else {
-            reject(common.fail());
-          }
-        },
-        e => reject(common.fail(e))
-      );
-  });
+              // Add the layers and tables to the feature service
+              common
+                .addFeatureServiceLayersAndTables(
+                  newItemTemplate,
+                  templateDictionary,
+                  popupInfos,
+                  requestOptions
+                )
+                .then(
+                  () => {
+                    newItemTemplate = common.updateTemplate(
+                      newItemTemplate,
+                      templateDictionary,
+                      createResponse
+                    );
+                    // Update the item with snippet, description, popupInfo, ect.
+                    common
+                      .updateItemExtended(
+                        createResponse.serviceItemId,
+                        newItemTemplate.item,
+                        newItemTemplate.data,
+                        requestOptions.authentication
+                      )
+                      .then(
+                        () => {
+                          progressTickCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Finished,
+                            template.estimatedDeploymentCostFactor / 2
+                          );
+                          resolve({
+                            id: createResponse.serviceItemId,
+                            type: newItemTemplate.type,
+                            postProcess: common.hasUnresolvedVariables(
+                              newItemTemplate.data
+                            )
+                          });
+                        },
+                        (e: any) => reject(common.fail(e))
+                      );
+                  },
+                  e => reject(common.fail(e))
+                );
+            } else {
+              reject(common.fail());
+            }
+          },
+          e => reject(common.fail(e))
+        );
+    }
+  );
 }
 
 //#endregion

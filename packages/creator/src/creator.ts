@@ -39,8 +39,9 @@ export function createSolutionFromGroupId(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    let percentDone = 1;
     if (options?.progressCallback) {
-      options.progressCallback(1); // Let the caller know that we've started
+      options.progressCallback(percentDone); // let the caller know that we've started
     }
 
     // Get group information
@@ -50,6 +51,9 @@ export function createSolutionFromGroupId(
     ]).then(
       responses => {
         const [groupInfo, groupItems] = responses;
+        if (options?.progressCallback) {
+          options.progressCallback(++percentDone); // for solution item creation
+        }
 
         // Create a solution from the group's contents, using the group's information as defaults for the solution item
         const createOptions: common.ICreateSolutionOptions = options ?? {};
@@ -58,6 +62,7 @@ export function createSolutionFromGroupId(
         createOptions.description =
           createOptions.description ?? groupInfo.description;
         createOptions.tags = createOptions.tags ?? groupInfo.tags; // createOptions.thumbnail needs to be a full URL
+        createOptions.percentDone = percentDone;
 
         /* istanbul ignore else*/ if (
           !createOptions.thumbnailUrl &&
@@ -102,19 +107,32 @@ export function createSolutionFromItemIds(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const createOptions: common.ICreateSolutionOptions = options ?? {};
-    if (createOptions.progressCallback) {
-      createOptions.progressCallback(2); // Let the caller know that we've started
+    createOptions.percentDone = createOptions.percentDone || 0;
+    if (options?.progressCallback) {
+      options.progressCallback(++createOptions.percentDone); // let the caller know that we've started
     }
 
     // Create a solution from the list of items
     createSolutionItem(authentication, createOptions).then(
       createdSolutionId => {
+        if (options?.progressCallback) {
+          options.progressCallback(++createOptions.percentDone!); // for solution item creation
+        }
+
         addContentToSolution(
           createdSolutionId,
           itemIds,
           authentication,
           createOptions
-        ).then(resolve, error => reject(error));
+        ).then(
+          results => {
+            if (options?.progressCallback) {
+              options.progressCallback(100); // we're done
+            }
+            resolve(results);
+          },
+          error => reject(error)
+        );
       },
       error => reject(error)
     );
@@ -198,17 +216,23 @@ export function addContentToSolution(
   options: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    options.percentDone = options.percentDone || 0;
     const templateDictionary = options.templateDictionary ?? {};
     let solutionTemplates: common.IItemTemplate[] = [];
-    let progressTickCallback: () => void = () => void 0;
+    let progressTickCallback: common.ISolutionProgressTickCallback;
     if (options.progressCallback) {
       const progressCallback = options.progressCallback;
-      progressCallback(4);
-      let percentDone = 4;
-      const progressPercentStep = (100 - 8) / (itemIds.length + 1); // '8' for surrounding progress reports
+      const totalEstimatedCost = Math.max(1, itemIds.length); // avoid / 0
+      const progressPercentStep =
+        (99 - options.percentDone) / totalEstimatedCost;
       progressTickCallback = () => {
-        progressCallback((percentDone += progressPercentStep)); // progress tick callback
+        progressCallback((options.percentDone! += progressPercentStep)); // progress tick callback
       };
+      console.log(
+        "totalEstimatedCost, progressPercentStep",
+        totalEstimatedCost.toString(),
+        progressPercentStep.toFixed(2).toString()
+      );
     }
 
     // Handle a list of one or more AGO ids by stepping through the list
@@ -221,26 +245,22 @@ export function addContentToSolution(
         itemId,
         templateDictionary,
         authentication,
-        solutionTemplates
+        solutionTemplates,
+        progressTickCallback
       );
       getItemsPromise.push(createDef);
-      createDef.then(progressTickCallback, progressTickCallback);
     });
 
     // tslint:disable-next-line: no-floating-promises
     Promise.all(getItemsPromise).then(() => {
-      if (options.progressCallback) {
-        options.progressCallback(96);
-      }
-
       // Remove remnant placeholder items from the templates list
       solutionTemplates = solutionTemplates.filter(
         template => template.type // `type` needs to be defined
       );
 
       if (solutionTemplates.length > 0) {
-        // test for and update circular dependencies
-        _postProcessCircularDependencies(solutionTemplates);
+        // test for and update group dependencies
+        solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
 
         // Update solution item with its data JSON
         const solutionData: common.ISolutionItemData = {
@@ -255,13 +275,13 @@ export function addContentToSolution(
         };
         common.updateItem(itemInfo, authentication).then(() => {
           if (options.progressCallback) {
-            options.progressCallback(0);
+            options.progressCallback(++options.percentDone!);
           }
           resolve(solutionItemId);
         }, reject);
       } else {
         if (options.progressCallback) {
-          options.progressCallback(0);
+          options.progressCallback(++options.percentDone!);
         }
         resolve(solutionItemId);
       }
@@ -270,43 +290,36 @@ export function addContentToSolution(
 }
 
 /**
- * Remove the circular dependency id from the dependencies array
- * and add it to the circularDependencies array
- *
- * @param template The item template to process
- * @param id The id to update the arrays based on
- */
-export function _updateDependencyArrays(template: any, id: string) {
-  template.dependencies.splice(template.dependencies.indexOf(id), 1);
-  if (Array.isArray(template.circularDependencies)) {
-    template.circularDependencies.push(id);
-  } else {
-    template.circularDependencies = [id];
-  }
-}
-
-/**
- * Find any one to one circular dependencies and update the
- * items dependencies and circularDependencies arrays
+ * Update the items dependencies and groups arrays
  *
  * @param templates The array of templates to evaluate
  */
-export function _postProcessCircularDependencies(templates: any[]) {
-  templates.forEach((template: any) => {
-    const id: string = template.itemId;
-    (template.dependencies || []).forEach((dependencyId: string) => {
-      const dependencyTemplate: any = common.getTemplateById(
-        templates,
-        dependencyId
-      );
-      if (dependencyTemplate) {
-        if (dependencyTemplate.dependencies.indexOf(id) > -1) {
-          // update the current template
-          _updateDependencyArrays(template, dependencyId);
-          // update the current dependant template
-          _updateDependencyArrays(dependencyTemplate, id);
+export function _postProcessGroupDependencies(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  return templates.map((template: common.IItemTemplate) => {
+    if (template.type === "Group") {
+      const id: string = template.itemId;
+      // remove group dependencies if we find a circular dependency with one of its items
+      let removeDependencies: boolean = false;
+      // before we remove update each dependants groups array
+      template.dependencies.forEach(dependencyId => {
+        const dependantTemplate: common.IItemTemplate = common.getTemplateById(
+          templates,
+          dependencyId
+        );
+        const gIndex = dependantTemplate.dependencies.indexOf(id);
+        if (gIndex > -1) {
+          removeDependencies = true;
         }
+        if (dependantTemplate.groups.indexOf(id) < 0) {
+          dependantTemplate.groups.push(id);
+        }
+      });
+      if (removeDependencies) {
+        template.dependencies = [];
       }
-    });
+    }
+    return template;
   });
 }

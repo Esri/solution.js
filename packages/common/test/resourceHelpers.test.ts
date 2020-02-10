@@ -230,6 +230,31 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
     });
 
+    describe("copyData", () => {
+      it("should handle error", done => {
+        const source: any = {
+          url: undefined,
+          authentication: MOCK_USER_SESSION
+        };
+
+        const destination: any = {
+          itemId: "itm1234567890",
+          filename: "filename.txt",
+          mimeType: "text/plain",
+          authentication: MOCK_USER_SESSION
+        };
+
+        fetchMock.post(
+          "https://myserver/files/filename.txt/rest/info",
+          mockItems.get400Failure()
+        );
+
+        resourceHelpers
+          .copyData(source, destination)
+          .then(() => done.fail, done);
+      });
+    });
+
     describe("convertBlobToSupportableResource", () => {
       it("uses blob (file) name if it has one", () => {
         const blob = utils.getSampleTextAsFile("namedBlob.txt");

@@ -41,7 +41,6 @@ export function convertItemToTemplate(
     const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
       itemInfo
     );
-    itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
     itemTemplate.item.id = common.templatizeTerm(
@@ -217,167 +216,188 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    // Replace the templatized symbols in a copy of the template
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
-    );
-
-    // Create the item, then update its URL with its new id
-
-    // some fieldnames are used as keys for objects
-    // when we templatize field references for web applications we first stringify the components of the
-    // web application that could contain field references and then serach for them with a regular expression.
-    // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
-    if (template.type === "Web Mapping Application" && template.data) {
-      newItemTemplate = JSON.parse(
-        common.replaceInTemplate(
-          JSON.stringify(newItemTemplate),
-          templateDictionary
-        )
+  progressTickCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
       );
-    }
-    common
-      .createItemWithData(
-        newItemTemplate.item,
-        newItemTemplate.data,
-        destinationAuthentication,
-        templateDictionary.folderId
-      )
-      .then(
-        createResponse => {
-          progressTickCallback();
-          // Add the new item to the settings
-          newItemTemplate.itemId = createResponse.id;
-          templateDictionary[template.itemId] = {
-            itemId: createResponse.id
-          };
 
-          // Set the appItemId manually to get around cases where the path was incorrectly set
-          // in legacy deployments
-          if (
-            newItemTemplate.type === "Web Mapping Application" &&
-            template.data
-          ) {
-            common.setProp(
-              newItemTemplate,
-              "data.appItemId",
-              createResponse.id
-            );
-          }
+      // Replace the templatized symbols in a copy of the template
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      newItemTemplate = common.replaceInTemplate(
+        newItemTemplate,
+        templateDictionary
+      );
 
-          // Update the template again now that we have the new item id
-          newItemTemplate = common.replaceInTemplate(
-            newItemTemplate,
+      // Create the item, then update its URL with its new id
+
+      // some fieldnames are used as keys for objects
+      // when we templatize field references for web applications we first stringify the components of the
+      // web application that could contain field references and then serach for them with a regular expression.
+      // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
+      if (template.type === "Web Mapping Application" && template.data) {
+        newItemTemplate = JSON.parse(
+          common.replaceInTemplate(
+            JSON.stringify(newItemTemplate),
             templateDictionary
-          );
-
-          // Copy resources, metadata, thumbnail, form
-          const resourcesDef = common.copyFilesFromStorageItem(
-            storageAuthentication,
-            resourceFilePaths,
-            createResponse.id,
-            destinationAuthentication
-          );
-
-          // Update relationships
-          let relationshipsDef = Promise.resolve(
-            [] as common.IStatusResponse[]
-          );
-          if (newItemTemplate.relatedItems) {
-            // Templatize references in relationships obj
-            const updatedRelatedItems = common.replaceInTemplate(
-              common.templatizeIds(newItemTemplate.relatedItems),
-              templateDictionary
-            ) as common.IRelatedItems[];
-
-            // Add the relationships
-            relationshipsDef = common.addForwardItemRelationships(
-              newItemTemplate.itemId,
-              updatedRelatedItems,
-              destinationAuthentication
+          )
+        );
+      }
+      common
+        .createItemWithData(
+          newItemTemplate.item,
+          newItemTemplate.data,
+          destinationAuthentication,
+          templateDictionary.folderId
+        )
+        .then(
+          createResponse => {
+            progressTickCallback(
+              template.itemId,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2
             );
-          }
 
-          // The item's URL includes its id, so it needs to be updated
-          const updateUrlDef: Promise<string> = template.data
-            ? common.updateItemURL(
-                createResponse.id,
-                common.replaceInTemplate(
-                  newItemTemplate.item.url,
-                  templateDictionary
-                ),
-                destinationAuthentication
-              )
-            : Promise.resolve("");
+            // Add the new item to the settings
+            templateDictionary[template.itemId] = {
+              itemId: createResponse.id
+            };
+            newItemTemplate.itemId = createResponse.id;
 
-          // Check for extra processing for web mapping application
-          let customProcDef: Promise<void>;
-          if (template.type === "Web Mapping Application" && template.data) {
-            customProcDef = webmappingapplication.fineTuneCreatedItem(
-              template,
-              newItemTemplate,
-              templateDictionary,
-              destinationAuthentication
-            );
-          } else if (template.type === "Workforce Project") {
-            customProcDef = workforce.fineTuneCreatedItem(
-              newItemTemplate,
-              destinationAuthentication
-            );
-          } else if (template.type === "Notebook") {
-            customProcDef = notebook.fineTuneCreatedItem(
-              template,
-              newItemTemplate,
-              templateDictionary,
-              destinationAuthentication
-            );
-          } else {
-            customProcDef = Promise.resolve();
-          }
-
-          Promise.all([
-            resourcesDef,
-            relationshipsDef,
-            updateUrlDef,
-            customProcDef
-          ]).then(
-            results => {
-              const [
-                resources,
-                relationships,
-                updatedUrls,
-                customProcs
-              ] = results;
-
-              let updateResourceDef: Promise<void> = Promise.resolve();
-              if (template.type === "QuickCapture Project") {
-                updateResourceDef = quickcapture.fineTuneCreatedItem(
-                  newItemTemplate,
-                  destinationAuthentication
-                );
-              }
-              updateResourceDef.then(
-                () => {
-                  progressTickCallback();
-                  // Update the template dictionary with the new id
-                  templateDictionary[template.itemId].itemId =
-                    createResponse.id;
-                  resolve(createResponse.id);
-                },
-                e => reject(common.fail(e))
+            // Set the appItemId manually to get around cases where the path was incorrectly set
+            // in legacy deployments
+            if (
+              newItemTemplate.type === "Web Mapping Application" &&
+              template.data
+            ) {
+              common.setProp(
+                newItemTemplate,
+                "data.appItemId",
+                createResponse.id
               );
-            },
-            e => reject(common.fail(e))
-          );
-        },
-        e => reject(common.fail(e))
-      );
-  });
+            }
+            const postProcess: boolean = common.hasUnresolvedVariables(
+              newItemTemplate.data
+            );
+
+            // Update the template again now that we have the new item id
+            newItemTemplate = common.replaceInTemplate(
+              newItemTemplate,
+              templateDictionary
+            );
+
+            // Copy resources, metadata, thumbnail, form
+            const resourcesDef = common.copyFilesFromStorageItem(
+              storageAuthentication,
+              resourceFilePaths,
+              createResponse.id,
+              destinationAuthentication
+            );
+
+            // Update relationships
+            let relationshipsDef = Promise.resolve(
+              [] as common.IStatusResponse[]
+            );
+            if (newItemTemplate.relatedItems) {
+              // Templatize references in relationships obj
+              const updatedRelatedItems = common.replaceInTemplate(
+                common.templatizeIds(newItemTemplate.relatedItems),
+                templateDictionary
+              ) as common.IRelatedItems[];
+
+              // Add the relationships
+              relationshipsDef = common.addForwardItemRelationships(
+                newItemTemplate.itemId,
+                updatedRelatedItems,
+                destinationAuthentication
+              );
+            }
+
+            // The item's URL includes its id, so it needs to be updated
+            const updateUrlDef: Promise<string> = template.data
+              ? common.updateItemURL(
+                  createResponse.id,
+                  common.replaceInTemplate(
+                    newItemTemplate.item.url,
+                    templateDictionary
+                  ),
+                  destinationAuthentication
+                )
+              : Promise.resolve("");
+
+            // Check for extra processing for web mapping application
+            let customProcDef: Promise<void>;
+            if (template.type === "Web Mapping Application" && template.data) {
+              customProcDef = webmappingapplication.fineTuneCreatedItem(
+                template,
+                newItemTemplate,
+                templateDictionary,
+                destinationAuthentication
+              );
+            } else if (template.type === "Workforce Project") {
+              customProcDef = workforce.fineTuneCreatedItem(
+                newItemTemplate,
+                destinationAuthentication
+              );
+            } else if (template.type === "Notebook") {
+              customProcDef = notebook.fineTuneCreatedItem(
+                template,
+                newItemTemplate,
+                templateDictionary,
+                destinationAuthentication
+              );
+            } else {
+              customProcDef = Promise.resolve();
+            }
+
+            Promise.all([
+              resourcesDef,
+              relationshipsDef,
+              updateUrlDef,
+              customProcDef
+            ]).then(
+              results => {
+                const [
+                  resources,
+                  relationships,
+                  updatedUrls,
+                  customProcs
+                ] = results;
+
+                let updateResourceDef: Promise<void> = Promise.resolve();
+                if (template.type === "QuickCapture Project") {
+                  updateResourceDef = quickcapture.fineTuneCreatedItem(
+                    newItemTemplate,
+                    destinationAuthentication
+                  );
+                }
+                updateResourceDef.then(
+                  () => {
+                    progressTickCallback(
+                      template.itemId,
+                      common.EItemProgressStatus.Finished,
+                      template.estimatedDeploymentCostFactor / 2
+                    );
+                    resolve({
+                      id: createResponse.id,
+                      type: newItemTemplate.type,
+                      postProcess: postProcess
+                    });
+                  },
+                  e => reject(common.fail(e))
+                );
+              },
+              e => reject(common.fail(e))
+            );
+          },
+          e => reject(common.fail(e))
+        );
+    }
+  );
 }
 
 /**
@@ -412,36 +432,26 @@ export function postProcessFieldReferences(
 }
 
 /**
- * Calls module specific functions to post process the circular dependencies based on item type
+ * Items that require unique updates
  *
- * @param newItemTemplate the items template with key properties
- * @param authentication The session used to update the new item(s)
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param itemId The AGO item id
+ * @param type The AGO item type
+ * @param data The notebooks data as JSON
+ * @param authentication Credentials for the requests to the destination
  *
- * @return A promise that will resolve when circular dependencies have been handled
+ * @return A promise that will resolve once any updates have been made
  */
-export function postProcessCircularDependencies(
-  newItemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
-  templateDictionary: any
+export function postProcessItemDependencies(
+  itemId: string,
+  type: string,
+  data: any,
+  authentication: common.UserSession
 ): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    common.getItemDataAsJson(newItemTemplate.itemId, authentication).then(
-      data => {
-        const update: any = common.replaceInTemplate(data, templateDictionary);
-        common
-          .updateItemExtended(
-            newItemTemplate.itemId,
-            { id: newItemTemplate.itemId },
-            update,
-            authentication
-          )
-          .then(
-            () => resolve(),
-            e => reject(common.fail(e))
-          );
-      },
-      e => reject(common.fail(e))
-    );
-  });
+  let p: Promise<any> = Promise.resolve();
+  switch (type) {
+    case "Notebook":
+      p = notebook.postProcessItemDependencies(itemId, data, authentication);
+      break;
+  }
+  return p;
 }
