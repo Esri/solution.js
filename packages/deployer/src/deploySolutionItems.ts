@@ -326,9 +326,7 @@ export function _createItemFromTemplateWhenReady(
             )
             .then(
               createResponse => resolve(createResponse),
-              e => {
-                reject(common.fail(e));
-              }
+              e => reject(common.fail(e))
             );
         }
       }, common.fail);
