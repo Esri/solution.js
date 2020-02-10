@@ -274,7 +274,7 @@ export interface IItemTemplateConversions {
     progressTickCallback: () => void
   ): Promise<ICreateItemFromTemplateResponse>;
   postProcessDependencies?(
-    newItemTemplate: IItemTemplate[],
+    templates: IItemTemplate[],
     clonedSolutionsResponse: ICreateItemFromTemplateResponse[],
     authentication: UserSession,
     templateDictionary: any
