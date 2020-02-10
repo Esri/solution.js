@@ -43,6 +43,20 @@ describe("Module `storymap`", () => {
           done();
         }, done.fail);
     });
+
+    it("can handle gracefully while unimplemented and type !== 'StoryMap'", done => {
+      storymap
+        .convertItemToTemplate(
+          {
+            type: "FirstGENStoryMap"
+          },
+          MOCK_USER_SESSION
+        )
+        .then(response => {
+          expect(response).toBeUndefined();
+          done();
+        }, done.fail);
+    });
   });
 
   describe("createItemFromTemplate", () => {
