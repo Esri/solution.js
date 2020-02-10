@@ -828,7 +828,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,
@@ -5847,7 +5847,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png"
     ],
     dependencies: ["4efe5f693de34620934787ead6693f19"],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -15771,7 +15771,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       "eb6dc49be6f44f76aa195d6de8ce5c48",
       "934a9ef8efa7448fa8ddf7b13cef0240"
     ],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -19040,7 +19040,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       "4efe5f693de34620934787ead6693f19",
       "b19aec399444407da84fffe2a55d4151"
     ],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -19076,7 +19076,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,
@@ -23821,7 +23821,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,
@@ -28851,7 +28851,7 @@ const expected: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,
@@ -33870,7 +33870,7 @@ const expected: common.IItemTemplate[] = [
       "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png"
     ],
     dependencies: ["4efe5f693de34620934787ead6693f19"],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -44555,7 +44555,7 @@ const expected: common.IItemTemplate[] = [
       "eb6dc49be6f44f76aa195d6de8ce5c48",
       "934a9ef8efa7448fa8ddf7b13cef0240"
     ],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -48153,7 +48153,7 @@ const expected: common.IItemTemplate[] = [
       "4efe5f693de34620934787ead6693f19",
       "b19aec399444407da84fffe2a55d4151"
     ],
-    circularDependencies: [],
+    groups: [],
     properties: {},
     estimatedDeploymentCostFactor: 2
   },
@@ -48189,7 +48189,7 @@ const expected: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,
@@ -52934,7 +52934,7 @@ const expected: common.IItemTemplate[] = [
     data: null,
     resources: [],
     dependencies: [],
-    circularDependencies: [],
+    groups: [],
     properties: {
       service: {
         currentVersion: 10.7,

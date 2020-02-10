@@ -101,142 +101,85 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: common.IItemProgressCallback
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    progressTickCallback(
-      template.itemId,
-      common.EItemProgressStatus.Started,
-      0
-    );
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      );
 
-    // Replace the templatized symbols in a copy of the template
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-    newItemTemplate = common.replaceInTemplate(
-      newItemTemplate,
-      templateDictionary
-    );
+      // Replace the templatized symbols in a copy of the template
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      newItemTemplate = common.replaceInTemplate(
+        newItemTemplate,
+        templateDictionary
+      );
 
-    // handle group
-    const title: string = common.getUniqueTitle(
-      newItemTemplate.item.title || "",
-      templateDictionary,
-      "user.groups"
-    );
-    // Set the item title with a valid name for the ORG
-    newItemTemplate.item.title = title;
-    newItemTemplate.item.access = "private";
-    common.createGroup(newItemTemplate.item, destinationAuthentication).then(
-      createResponse => {
-        progressTickCallback(
-          template.itemId,
-          common.EItemProgressStatus.Created,
-          template.estimatedDeploymentCostFactor / 2
-        );
+      // handle group
+      const title: string = common.getUniqueTitle(
+        newItemTemplate.item.title || "",
+        templateDictionary,
+        "user.groups"
+      );
 
-        if (createResponse.success) {
-          newItemTemplate.itemId = createResponse.group.id;
-          templateDictionary[template.itemId] = {
-            itemId: createResponse.group.id
-          };
-
-          // Update the template again now that we have the new item id
-          newItemTemplate = common.replaceInTemplate(
-            newItemTemplate,
-            templateDictionary
+      // Set the item title with a valid name for the ORG
+      newItemTemplate.item.title = title;
+      newItemTemplate.item.access = "private";
+      common.createGroup(newItemTemplate.item, destinationAuthentication).then(
+        createResponse => {
+          progressTickCallback(
+            template.itemId,
+            common.EItemProgressStatus.Created,
+            template.estimatedDeploymentCostFactor / 2
           );
 
-          // Copy resources
-          common
-            .copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.group.id,
-              destinationAuthentication,
-              true
-            )
-            .then(
-              () => {
-                // Update the template dictionary with the new id
-                templateDictionary[template.itemId].itemId =
-                  createResponse.group.id;
+          if (createResponse.success) {
+            newItemTemplate.itemId = createResponse.group.id;
+            templateDictionary[template.itemId] = {
+              itemId: createResponse.group.id
+            };
 
-                _updateGroup(
-                  newItemTemplate,
-                  destinationAuthentication,
-                  templateDictionary,
-                  newItemTemplate.dependencies
-                ).then(
-                  () => {
-                    progressTickCallback(
-                      template.itemId,
-                      common.EItemProgressStatus.Finished,
-                      template.estimatedDeploymentCostFactor / 2
-                    );
-                    resolve(createResponse.group.id);
-                  },
-                  e => reject(common.fail(e))
-                );
-              },
-              e => reject(common.fail(e))
+            // Update the template again now that we have the new item id
+            newItemTemplate = common.replaceInTemplate(
+              newItemTemplate,
+              templateDictionary
             );
-        } else {
-          reject(common.fail());
-        }
-      },
-      e => reject(common.fail(e))
-    );
-  });
-}
 
-/**
- * Shares dependencies with the group
- *
- * @param newItemTemplate the items template with key properties
- * @param authentication The session used to create the new item(s)
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- * @param dependencies Array of dependencies to share with the group
- *
- * @return A promise that will resolve when the items have been shared
- */
-export function _updateGroup(
-  newItemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
-  templateDictionary: any,
-  dependencies: string[]
-): Promise<any> {
-  return new Promise<string>((resolve, reject) => {
-    const defArray: any[] = [];
-    const groupId: string = newItemTemplate.itemId;
-    dependencies.forEach(d => {
-      defArray.push(
-        common.shareItem(groupId, templateDictionary[d].itemId, authentication)
+            // Copy resources
+            common
+              .copyFilesFromStorageItem(
+                storageAuthentication,
+                resourceFilePaths,
+                createResponse.group.id,
+                destinationAuthentication,
+                true
+              )
+              .then(
+                () => {
+                  // Update the template dictionary with the new id
+                  templateDictionary[template.itemId].itemId =
+                    createResponse.group.id;
+                  progressTickCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Finished,
+                    template.estimatedDeploymentCostFactor / 2
+                  );
+                  resolve({
+                    id: createResponse.group.id,
+                    type: newItemTemplate.type,
+                    postProcess: false
+                  });
+                },
+                e => reject(common.fail(e))
+              );
+          } else {
+            reject(common.fail());
+          }
+        },
+        e => reject(common.fail(e))
       );
-    });
-    Promise.all(defArray).then(
-      () => resolve(),
-      e => reject(common.fail(e))
-    );
-  });
-}
-
-/**
- * Shares any circular dependencies with the group
- *
- * @param newItemTemplate the items template with key properties
- * @param authentication The session used to create the new item(s)
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- *
- * @return A promise that will resolve when circular dependencies have been handled
- */
-export function postProcessCircularDependencies(
-  newItemTemplate: common.IItemTemplate,
-  authentication: common.UserSession,
-  templateDictionary: any
-): Promise<any> {
-  return _updateGroup(
-    newItemTemplate,
-    authentication,
-    templateDictionary,
-    newItemTemplate.circularDependencies
+    }
   );
 }

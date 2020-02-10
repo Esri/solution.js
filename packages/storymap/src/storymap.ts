@@ -47,37 +47,43 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: common.IItemProgressCallback
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    if (template.type === "StoryMap") {
-      /* console.log(
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      if (template.type === "StoryMap") {
+        /* console.log(
         "createItemFromTemplate for a " +
           template.type +
           " (" +
           template.itemId +
           ")"
       ); */
-      resolve("");
-    } else {
-      /* console.log(
+        resolve({
+          id: "",
+          type: template.type,
+          postProcess: false
+        });
+      } else {
+        /* console.log(
         "createItemFromTemplate for a " +
           template.type +
           " (StoryMap " +
           template.itemId +
           ")"
       ); */
-      simpleTypes
-        .createItemFromTemplate(
-          template,
-          resourceFilePaths,
-          storageAuthentication,
-          templateDictionary,
-          destinationAuthentication,
-          progressTickCallback
-        )
-        .then(resolve, reject);
+        simpleTypes
+          .createItemFromTemplate(
+            template,
+            resourceFilePaths,
+            storageAuthentication,
+            templateDictionary,
+            destinationAuthentication,
+            progressTickCallback
+          )
+          .then(result => resolve(result), reject);
+      }
     }
-  });
+  );
 }
 
 export function isAStoryMap(template: common.IItemTemplate): boolean {

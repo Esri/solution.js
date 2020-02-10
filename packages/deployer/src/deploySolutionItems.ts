@@ -226,7 +226,9 @@ export function deploySolutionItems(
     //   * replace template symbols using template dictionary
     //   * create item in destination group
     //   * add created item's id into the template dictionary
-    const awaitAllItems = [] as Array<Promise<string>>;
+    const awaitAllItems = [] as Array<
+      Promise<common.ICreateItemFromTemplateResponse>
+    >;
     cloneOrderChecklist.forEach(id => {
       // Get the item's template out of the list of templates
       const template = common.findTemplateInList(templates, id);
@@ -277,53 +279,61 @@ export function _createItemFromTemplateWhenReady(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: common.IItemProgressCallback
-): Promise<string> {
+): Promise<common.ICreateItemFromTemplateResponse> {
   templateDictionary[template.itemId] = {};
-  const itemDef = new Promise<string>((resolve, reject) => {
-    // Wait until all of the item's dependencies are deployed
-    const awaitDependencies = [] as Array<Promise<string>>;
-    (template.dependencies || []).forEach(dependencyId => {
-      awaitDependencies.push(templateDictionary[dependencyId].def);
-    });
-    Promise.all(awaitDependencies).then(() => {
-      // Find the conversion handler for this item type
-      const templateType = template.type;
-      let itemHandler = moduleMap[templateType];
-      if (!itemHandler) {
-        console.warn(
-          "Unimplemented item type (package level) " +
-            template.type +
-            " for " +
-            template.itemId
-        );
-        resolve("");
-      } else {
-        // Handle original Story Maps with next-gen Story Maps
-        if (templateType === "Web Mapping Application") {
-          if (storyMap.isAStoryMap(template) && template.data) {
-            itemHandler = storyMap;
-          }
-        }
-
-        // Delegate the creation of the template to the handler
-        itemHandler
-          .createItemFromTemplate(
-            template,
-            resourceFilePaths,
-            storageAuthentication,
-            templateDictionary,
-            destinationAuthentication,
-            progressTickCallback
-          )
-          .then(
-            newItemId => resolve(newItemId),
-            e => {
-              reject(common.fail(e));
-            }
+  const itemDef = new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      // Wait until all of the item's dependencies are deployed
+      const awaitDependencies = [] as Array<
+        Promise<common.ICreateItemFromTemplateResponse>
+      >;
+      (template.dependencies || []).forEach(dependencyId => {
+        awaitDependencies.push(templateDictionary[dependencyId].def);
+      });
+      Promise.all(awaitDependencies).then(() => {
+        // Find the conversion handler for this item type
+        const templateType = template.type;
+        let itemHandler = moduleMap[templateType];
+        if (!itemHandler) {
+          console.warn(
+            "Unimplemented item type (package level) " +
+              templateType +
+              " for " +
+              template.itemId
           );
-      }
-    }, common.fail);
-  });
+          resolve({
+            id: "",
+            type: templateType,
+            postProcess: false
+          });
+        } else {
+          // Handle original Story Maps with next-gen Story Maps
+          if (templateType === "Web Mapping Application") {
+            if (storyMap.isAStoryMap(template) && template.data) {
+              itemHandler = storyMap;
+            }
+          }
+
+          // Delegate the creation of the template to the handler
+          itemHandler
+            .createItemFromTemplate(
+              template,
+              resourceFilePaths,
+              storageAuthentication,
+              templateDictionary,
+              destinationAuthentication,
+              progressTickCallback
+            )
+            .then(
+              createResponse => resolve(createResponse),
+              e => {
+                reject(common.fail(e));
+              }
+            );
+        }
+      }, common.fail);
+    }
+  );
 
   // Save the deferred for the use of items that depend on this item being created first
   templateDictionary[template.itemId].def = itemDef;
@@ -331,48 +341,114 @@ export function _createItemFromTemplateWhenReady(
 }
 
 /**
- * Calls the function to handle the circular dependencies for a given item type on deployment
- * As these are circular in nature we can't just have them wait on their dependency to finish as usual.
- * We need both the item and the dependency to be finished before this can run.
+ * Checks all item types with data and group references after all other processing has completed.
+ * Evaluates if the items data has any remaining variables that have not been swapped.
+ * Also shares any items that have group references with the appropriate group.
  *
  * @param templates Array of item templates to evaluate
- * @param destinationAuthentication Credentials for the requests to the destination
+ * @param clonedSolutionsResponse Has the item id, type, and data
+ * @param authentication Credentials for the requests to the destination
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  *
  * @return A promise that will resolve once any updates have been made
  */
-export function postProcessCircularDependencies(
+export function postProcessDependencies(
   templates: common.IItemTemplate[],
-  destinationAuthentication: common.UserSession,
+  clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
+  authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    const circularDependencyUpdates = [] as Array<Promise<any>>;
-    templates.forEach(template => {
-      if (
-        template.circularDependencies &&
-        template.circularDependencies.length > 0
-      ) {
-        const itemHandler = moduleMap[template.type];
-        if (itemHandler && itemHandler.postProcessCircularDependencies) {
-          circularDependencyUpdates.push(
-            itemHandler.postProcessCircularDependencies(
-              template,
-              destinationAuthentication,
-              templateDictionary
-            )
+    // In most cases this is a generic item update
+    // However, if an item needs special handeling it should be listed here and...
+    // uniqueUpdateTypes must implement postProcessDependencies that should return a promise for the update
+    const uniqueUpdateTypes: string[] = ["Notebook"];
+
+    const dataRequests: Array<Promise<any>> = [];
+    const requestedItemInfos: any = clonedSolutionsResponse.filter(
+      solutionInfo => {
+        if (solutionInfo.postProcess) {
+          dataRequests.push(
+            common.getItemDataAsJson(solutionInfo.id, authentication)
           );
+          return true;
         }
       }
-    });
+    );
 
-    Promise.all(circularDependencyUpdates).then(
-      () => {
-        resolve();
+    Promise.all(dataRequests).then(
+      data => {
+        let updates: Array<Promise<any>> = [Promise.resolve()];
+        for (let i = 0; i < requestedItemInfos.length; i++) {
+          const itemInfo = requestedItemInfos[i];
+          if (common.hasUnresolvedVariables(data[i])) {
+            const template: common.IItemTemplate = common.getTemplateById(
+              templates,
+              itemInfo.id
+            );
+            const update: any = common.replaceInTemplate(
+              data[i],
+              templateDictionary
+            );
+            if (uniqueUpdateTypes.indexOf(template.type) < 0) {
+              updates.push(
+                common.updateItemExtended(
+                  itemInfo.id,
+                  { id: itemInfo.id },
+                  update,
+                  authentication
+                )
+              );
+            } else {
+              const itemHandler: any = moduleMap[template.type];
+              if (itemHandler?.postProcessItemDependencies) {
+                updates.push(
+                  itemHandler.postProcessItemDependencies(
+                    itemInfo.id,
+                    template.type,
+                    update,
+                    authentication
+                  )
+                );
+              }
+            }
+          }
+        }
+
+        // share the template with any groups it references
+        templates.forEach(template => {
+          updates = updates.concat(
+            _getGroupUpdates(template, authentication, templateDictionary)
+          );
+        });
+
+        Promise.all(updates).then(
+          () => resolve(),
+          e => reject(common.fail(e))
+        );
       },
-      e => {
-        reject(common.fail(e));
-      }
+      e => reject(common.fail(e))
     );
   });
+}
+
+export function _getGroupUpdates(
+  template: common.IItemTemplate,
+  authentication: common.UserSession,
+  templateDictionary: any
+): Array<Promise<any>> {
+  const updates = [] as Array<Promise<any>>;
+  // share the template with any groups it references
+  if (template.groups?.length > 0) {
+    template.groups.forEach(sourceGroupId => {
+      updates.push(
+        common.shareItem(
+          templateDictionary[sourceGroupId].itemId,
+          template.itemId,
+          authentication
+        )
+      );
+    });
+  }
+  return updates;
 }

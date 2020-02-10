@@ -119,91 +119,99 @@ export function createItemFromTemplate(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   progressTickCallback: common.IItemProgressCallback
-): Promise<string> {
-  return new Promise<string>((resolve, reject) => {
-    progressTickCallback(
-      template.itemId,
-      common.EItemProgressStatus.Started,
-      0
-    );
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(
+    (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      );
 
-    const requestOptions: common.IUserRequestOptions = {
-      authentication: destinationAuthentication
-    };
+      const requestOptions: common.IUserRequestOptions = {
+        authentication: destinationAuthentication
+      };
 
-    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
-    // cache the popup info to be added later
-    const popupInfos: common.IPopupInfos = common.cachePopupInfos(
-      newItemTemplate.data
-    );
+      // cache the popup info to be added later
+      const popupInfos: common.IPopupInfos = common.cachePopupInfos(
+        newItemTemplate.data
+      );
 
-    // Create the item, then update its URL with its new id
-    common
-      .createFeatureService(
-        newItemTemplate,
-        requestOptions.authentication,
-        templateDictionary
-      )
-      .then(
-        createResponse => {
-          progressTickCallback(
-            template.itemId,
-            common.EItemProgressStatus.Created,
-            template.estimatedDeploymentCostFactor / 2
-          );
-
-          if (createResponse.success) {
-            // Detemplatize what we can now that the service has been created
-            newItemTemplate = common.updateTemplate(
-              newItemTemplate,
-              templateDictionary,
-              createResponse
+      // Create the item, then update its URL with its new id
+      common
+        .createFeatureService(
+          newItemTemplate,
+          requestOptions.authentication,
+          templateDictionary
+        )
+        .then(
+          createResponse => {
+            progressTickCallback(
+              template.itemId,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2
             );
-            // Add the layers and tables to the feature service
-            common
-              .addFeatureServiceLayersAndTables(
+
+            if (createResponse.success) {
+              // Detemplatize what we can now that the service has been created
+              newItemTemplate = common.updateTemplate(
                 newItemTemplate,
                 templateDictionary,
-                popupInfos,
-                requestOptions
-              )
-              .then(
-                () => {
-                  newItemTemplate = common.updateTemplate(
-                    newItemTemplate,
-                    templateDictionary,
-                    createResponse
-                  );
-                  // Update the item with snippet, description, popupInfo, ect.
-                  common
-                    .updateItemExtended(
-                      createResponse.serviceItemId,
-                      newItemTemplate.item,
-                      newItemTemplate.data,
-                      requestOptions.authentication
-                    )
-                    .then(
-                      () => {
-                        progressTickCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Finished,
-                          template.estimatedDeploymentCostFactor / 2
-                        );
-                        resolve(createResponse.serviceItemId);
-                      },
-                      (e: any) => reject(common.fail(e))
-                    );
-                },
-                e => reject(common.fail(e))
+                createResponse
               );
-          } else {
-            reject(common.fail());
-          }
-        },
-        e => reject(common.fail(e))
-      );
-  });
+              // Add the layers and tables to the feature service
+              common
+                .addFeatureServiceLayersAndTables(
+                  newItemTemplate,
+                  templateDictionary,
+                  popupInfos,
+                  requestOptions
+                )
+                .then(
+                  () => {
+                    newItemTemplate = common.updateTemplate(
+                      newItemTemplate,
+                      templateDictionary,
+                      createResponse
+                    );
+                    // Update the item with snippet, description, popupInfo, ect.
+                    common
+                      .updateItemExtended(
+                        createResponse.serviceItemId,
+                        newItemTemplate.item,
+                        newItemTemplate.data,
+                        requestOptions.authentication
+                      )
+                      .then(
+                        () => {
+                          progressTickCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Finished,
+                            template.estimatedDeploymentCostFactor / 2
+                          );
+                          resolve({
+                            id: createResponse.serviceItemId,
+                            type: newItemTemplate.type,
+                            postProcess: common.hasUnresolvedVariables(
+                              newItemTemplate.data
+                            )
+                          });
+                        },
+                        (e: any) => reject(common.fail(e))
+                      );
+                  },
+                  e => reject(common.fail(e))
+                );
+            } else {
+              reject(common.fail());
+            }
+          },
+          e => reject(common.fail(e))
+        );
+    }
+  );
 }
 
 //#endregion

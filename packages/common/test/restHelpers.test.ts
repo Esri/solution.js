@@ -52,7 +52,7 @@ beforeEach(() => {
     estimatedDeploymentCostFactor: 0,
     resources: [],
     dependencies: [],
-    circularDependencies: []
+    groups: []
   };
 });
 
@@ -1655,7 +1655,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expected.properties.service.layers[0].name = "A";
       expected.properties.layers[0] = expected.properties.service.layers[0];
       expected.item.url = url;
-      expected.estimatedDeploymentCostFactor = 1;
 
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", expected.properties.service);
@@ -1691,7 +1690,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       expected.properties.layers[0] = expected.properties.service.layers[0];
       expected.properties.tables[0] = expected.properties.service.tables[0];
       expected.item.url = url;
-      expected.estimatedDeploymentCostFactor = 2;
 
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", expected.properties.service);
@@ -1741,7 +1739,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         [{}]
       );
       expected.item.url = url;
-      expected.estimatedDeploymentCostFactor = 4;
 
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", expected.properties.service);
@@ -1828,9 +1825,21 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("shareItem", () => {
-    xit("shareItem", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("can handle error on shareItem", done => {
+      const groupId: string = "grp1234567890";
+      const id: string = "itm1234567890";
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          mockItems.getAGOLUser(MOCK_USER_SESSION.username)
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+          mockItems.get400Failure()
+        );
+      restHelpers
+        .shareItem(groupId, id, MOCK_USER_SESSION)
+        .then(() => done.fail, done);
     });
   });
 
@@ -2291,7 +2300,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         resources: [],
         estimatedDeploymentCostFactor: 0,
         dependencies: [],
-        circularDependencies: []
+        groups: []
       };
 
       const templateDictionary: any = {
@@ -2364,7 +2373,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         resources: [],
         estimatedDeploymentCostFactor: 0,
         dependencies: [],
-        circularDependencies: []
+        groups: []
       };
 
       const templateDictionary: any = {
@@ -2441,7 +2450,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         resources: [],
         estimatedDeploymentCostFactor: 0,
         dependencies: [],
-        circularDependencies: []
+        groups: []
       };
 
       const templateDictionary: any = {
@@ -2515,7 +2524,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         resources: [],
         estimatedDeploymentCostFactor: 0,
         dependencies: [],
-        circularDependencies: []
+        groups: []
       };
 
       const templateDictionary: any = {

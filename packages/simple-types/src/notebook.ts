@@ -15,6 +15,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import { _updateDependencies } from "./quickcapture";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
 
@@ -60,25 +61,58 @@ export function convertItemToTemplate(
 
 //#region Deploy Process ---------------------------------------------------------------------------------------//
 
+/**
+ * Update the notebooks data
+ *
+ * @param originalTemplate The original template item
+ * @param newlyCreatedItem The current item that may have unswapped variables
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param authentication Credentials for the requests to the destination
+ *
+ * @return A promise that will resolve once any updates have been made
+ */
 export function fineTuneCreatedItem(
   originalTemplate: common.IItemTemplate,
   newlyCreatedItem: common.IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession
+  authentication: common.UserSession
 ): Promise<void> {
+  const data: any = common.replaceInTemplate(
+    originalTemplate.data,
+    templateDictionary
+  );
+  return _updateItemData(newlyCreatedItem.itemId, data, authentication);
+}
+
+/**
+ * Update the notebooks data
+ *
+ * @param itemId The AGO item id
+ * @param data The notebooks data as JSON
+ * @param authentication Credentials for the requests to the destination
+ *
+ * @return A promise that will resolve once any updates have been made
+ */
+export function postProcessItemDependencies(
+  itemId: string,
+  data: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return _updateItemData(itemId, data, authentication);
+}
+
+export function _updateItemData(
+  itemId: string,
+  data: any,
+  authentication: common.UserSession
+): Promise<any> {
   return new Promise((resolve, reject) => {
-    const data: any = common.replaceInTemplate(
-      originalTemplate.data,
-      templateDictionary
-    );
     const updateOptions: common.IItemUpdate = {
-      id: newlyCreatedItem.itemId,
+      id: itemId,
       data: common.jsonToBlob(data)
     };
-    common.updateItem(updateOptions, destinationAuthentication).then(
-      () => {
-        resolve();
-      },
+    common.updateItem(updateOptions, authentication).then(
+      () => resolve(),
       e => reject(common.fail(e))
     );
   });

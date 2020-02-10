@@ -22,6 +22,7 @@ import * as common from "@esri/solution-common";
 import * as deploySolution from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as notebook from "../../simple-types/src/notebook";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -72,8 +73,12 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           utils.PROGRESS_CALLBACK
         )
-        .then((response: string) => {
-          expect(response).toEqual("");
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          expect(response).toEqual({
+            id: "",
+            type: itemTemplate.type,
+            postProcess: false
+          });
           done();
         }, done.fail);
     });
@@ -108,67 +113,198 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           utils.PROGRESS_CALLBACK
         )
-        .then((response: string) => {
-          expect(response).toEqual(newItemID);
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          expect(response).toEqual({
+            id: newItemID,
+            type: itemTemplate.type,
+            postProcess: true
+          });
           done();
         }, done.fail);
     });
-
-    it("flags Storymaps implemented as Web Mapping Applications", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Mapping Application",
-        [],
-        "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
-      );
-      itemTemplate.item.thumbnail = null;
-      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
-      const templateDictionary: any = {};
-      const newItemID: string = "sto1234567891";
-
-      fetchMock
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemID }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/sto1234567891/update",
-          { success: true, id: newItemID }
+    if (typeof window !== "undefined") {
+      it("flags Storymaps implemented as Web Mapping Applications", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+          "Web Mapping Application",
+          [],
+          "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
         );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+        const templateDictionary: any = {};
+        const newItemID: string = "sto1234567891";
 
-      deploySolution
-        ._createItemFromTemplateWhenReady(
-          itemTemplate,
-          resourceFilePaths,
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
-        )
-        .then((response: string) => {
-          expect(response).toEqual(newItemID);
-          done();
-        }, done.fail);
-    });
+        fetchMock
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
+            { success: true, id: newItemID }
+          )
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/items/sto1234567891/update",
+            { success: true, id: newItemID }
+          );
+
+        deploySolution
+          ._createItemFromTemplateWhenReady(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.PROGRESS_CALLBACK
+          )
+          .then((response: common.ICreateItemFromTemplateResponse) => {
+            expect(response).toEqual({
+              id: newItemID,
+              type: itemTemplate.type,
+              postProcess: true
+            });
+            done();
+          }, done.fail);
+      });
+    }
   });
 
-  describe("postProcessCircularDependencies", () => {
+  describe("postProcessDependencies", () => {
     if (typeof window !== "undefined") {
-      it("should handle circular dependencies based on item type", done => {
+      it("should update unresolved variables in an items data", done => {
         const _templates: any[] = [
           {
             type: "Group",
-            itemId: "ABC123",
-            circularDependencies: ["123ABC"]
+            itemId: "NEWABC123",
+            dependencies: []
           },
           {
             type: "Workforce Project",
-            itemId: "123ABC",
-            circularDependencies: ["ABC123"]
+            itemId: "NEW123ABC",
+            dependencies: []
+          }
+        ];
+
+        const templateDictionary: any = {
+          unresolved: {
+            itemId: "resolved"
+          }
+        };
+
+        const workforceData: any = {
+          unresolvedVariable: "{{unresolved.itemId}}"
+        };
+
+        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+          {
+            id: "NEWABC123",
+            type: "Group",
+            postProcess: false
           },
           {
-            type: "Unknown",
-            itemId: "123UNK",
-            circularDependencies: ["ABC123"]
+            id: "NEW123ABC",
+            type: "Workforce Project",
+            postProcess: true
+          }
+        ];
+
+        const updateUrl: string =
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update";
+        const expectedBody: string =
+          "f=json&text=%7B%22unresolvedVariable%22%3A%22resolved%22%7D&id=NEW123ABC";
+
+        fetchMock
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            workforceData
+          )
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
+            utils.getSuccessResponse()
+          );
+
+        deploySolution
+          .postProcessDependencies(
+            _templates,
+            clonedSolutionsResponse,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(() => {
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(fetchBody).toEqual(expectedBody);
+            done();
+          }, done.fail);
+      });
+
+      it("should update unresolved variables in Notebook item data", done => {
+        const _templates: any[] = [
+          {
+            type: "Notebook",
+            itemId: "NEW123ABC"
+          }
+        ];
+
+        const templateDictionary: any = {
+          unresolved: {
+            itemId: "resolved"
+          }
+        };
+
+        const notebookData: any = {
+          unresolvedVariable: "{{unresolved.itemId}}"
+        };
+
+        const expected: any = { unresolvedVariable: "resolved" };
+
+        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+          {
+            id: "NEW123ABC",
+            type: "Notebook",
+            postProcess: true
+          }
+        ];
+
+        fetchMock
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            notebookData
+          )
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
+            utils.getSuccessResponse()
+          );
+
+        spyOn(notebook, "postProcessItemDependencies").and.callThrough();
+
+        deploySolution
+          .postProcessDependencies(
+            _templates,
+            clonedSolutionsResponse,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(() => {
+            expect(notebook.postProcessItemDependencies).toHaveBeenCalledWith(
+              clonedSolutionsResponse[0].id,
+              expected,
+              MOCK_USER_SESSION
+            );
+            done();
+          }, done.fail);
+      });
+
+      it("should share items with groups", done => {
+        const _templates: any[] = [
+          {
+            type: "Group",
+            itemId: "NEWABC123",
+            dependencies: []
+          },
+          {
+            type: "Workforce Project",
+            itemId: "NEW123ABC",
+            dependencies: [],
+            groups: ["ABC123"]
           }
         ];
 
@@ -178,12 +314,24 @@ describe("Module `deploySolutionItems`", () => {
           },
           "123ABC": {
             itemId: "NEW123ABC"
+          },
+          unresolved: {
+            itemId: "resolved"
           }
         };
 
-        const itemData: any = {
-          groupId: "{{ABC123.itemId}}"
-        };
+        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+          {
+            id: "NEWABC123",
+            type: "Group",
+            postProcess: false
+          },
+          {
+            id: "NEW123ABC",
+            type: "Workforce Project",
+            postProcess: false
+          }
+        ];
 
         const groupResponse: any = {
           id: "ABC123",
@@ -224,108 +372,146 @@ describe("Module `deploySolutionItems`", () => {
           collaborationInfo: {}
         };
 
-        const expectedBody: string =
-          "f=json&text=%7B%22groupId%22%3A%22NEWABC123%22%7D&id=123ABC";
-
-        const updateUrl: string =
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/123ABC/update";
-
         fetchMock
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/share",
-            { notSharedWith: [], itemId: "ABC123" }
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/items/123ABC/data",
-            itemData
-          )
-          .post(updateUrl, '{"success":true}')
           .get(
             "https://www.arcgis.com/sharing/rest/community/users/casey?f=json",
             {}
           )
           .get(
-            "https://www.arcgis.com/sharing/rest/community/groups/ABC123?f=json",
+            "https://www.arcgis.com/sharing/rest/community/groups/NEWABC123?f=json",
             groupResponse
+          )
+          .post(
+            "https://www.arcgis.com/sharing/rest/generateToken",
+            MOCK_USER_SESSION.token
           )
           .post("https://www.arcgis.com/sharing/rest/search", {
             results: []
-          });
+          })
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/share",
+            { notSharedWith: [], itemId: "NEW123ABC" }
+          );
 
         deploySolution
-          .postProcessCircularDependencies(
+          .postProcessDependencies(
             _templates,
+            clonedSolutionsResponse,
             MOCK_USER_SESSION,
             templateDictionary
           )
           .then(() => {
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(fetchBody).toEqual(expectedBody);
             done();
           }, done.fail);
       });
 
-      it("should handle error with circular dependencies based on item type", done => {
+      it("should handle error on update", done => {
         const _templates: any[] = [
           {
             type: "Group",
-            itemId: "ABC123",
-            circularDependencies: ["123ABC"]
+            itemId: "NEWABC123",
+            dependencies: []
           },
           {
             type: "Workforce Project",
-            itemId: "123ABC",
-            circularDependencies: ["ABC123"]
+            itemId: "NEW123ABC",
+            dependencies: []
           }
         ];
 
-        const itemData: any = {
-          groupId: "{{ABC123.itemId}}"
-        };
-
         const templateDictionary: any = {
-          ABC123: {
-            itemId: "NEWABC123"
-          },
-          "123ABC": {
-            itemId: "NEW123ABC"
+          unresolved: {
+            itemId: "resolved"
           }
         };
 
+        const workforceData: any = {
+          unresolvedVariable: "{{unresolved.itemId}}"
+        };
+
+        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+          {
+            id: "NEWABC123",
+            type: "Group",
+            postProcess: false
+          },
+          {
+            id: "NEW123ABC",
+            type: "Workforce Project",
+            postProcess: true
+          }
+        ];
+
         fetchMock
           .post(
-            "https://www.arcgis.com/sharing/rest/search",
+            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            workforceData
+          )
+          .post(
+            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
             mockItems.get400Failure()
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/items/123ABC/data",
-            itemData
-          )
-          .get(
-            "https://www.arcgis.com/sharing/rest/community/users/casey?f=json",
-            {}
           );
 
         deploySolution
-          .postProcessCircularDependencies(
+          .postProcessDependencies(
             _templates,
+            clonedSolutionsResponse,
             MOCK_USER_SESSION,
             templateDictionary
           )
-          .then(() => {
-            done.fail();
-          }, done);
+          .then(() => done.fail(), done);
+      });
+
+      it("should handle error on get data", done => {
+        const _templates: any[] = [
+          {
+            type: "Group",
+            itemId: "NEWABC123",
+            dependencies: []
+          },
+          {
+            type: "Workforce Project",
+            itemId: "NEW123ABC",
+            dependencies: []
+          }
+        ];
+
+        const templateDictionary: any = {
+          unresolved: {
+            itemId: "resolved"
+          }
+        };
+
+        const workforceData: any = {
+          unresolvedVariable: "{{unresolved.itemId}}"
+        };
+
+        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+          {
+            id: "NEWABC123",
+            type: "Group",
+            postProcess: false
+          },
+          {
+            id: "NEW123ABC",
+            type: "Workforce Project",
+            postProcess: true
+          }
+        ];
+
+        fetchMock.post(
+          "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+          mockItems.get400Failure()
+        );
+
+        deploySolution
+          .postProcessDependencies(
+            _templates,
+            clonedSolutionsResponse,
+            MOCK_USER_SESSION,
+            templateDictionary
+          )
+          .then(done.fail, done);
       });
     }
   });
