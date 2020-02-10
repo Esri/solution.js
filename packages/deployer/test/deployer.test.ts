@@ -400,6 +400,16 @@ describe("Module `deploySolution`", () => {
           }
         };
 
+        const expectedUpdateBody: string =
+          "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
+          "url=https%3A%2F%2Fwww.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          "id=map1234567890&" +
+          "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22" +
+          "templates%22%3A%5B%7B%22itemId%22%3A%22map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
+          "groups%22%3A%5B%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22" +
+          "groups%22%3A%5B%5D%7D%5D%2C%22params%22%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22type%22%3A%22Text%22%7D%7D%7D&" +
+          "token=fake-token";
+
         const options: common.IDeploySolutionOptions = {
           templateDictionary: templateDictionary
         };
@@ -422,6 +432,12 @@ describe("Module `deploySolution`", () => {
                 JSON.stringify(addToDefCalls[0][1].body)
               );
               expect(customParams).toBeTrue();
+
+              const updateCalls: any[] = fetchMock.calls(
+                utils.PORTAL_SUBSET.restUrl +
+                  "/content/users/casey/items/map1234567890/update"
+              );
+              expect(updateCalls[1][1].body).toEqual(expectedUpdateBody);
 
               // Repeat with progress callback
               options.progressCallback = utils.PROGRESS_CALLBACK;
