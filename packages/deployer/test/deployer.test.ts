@@ -221,6 +221,14 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/update",
             utils.getSuccessResponse({ id: "map1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
+            {}
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
+            {}
           );
 
         const expected: any = {
@@ -244,13 +252,13 @@ describe("Module `deploySolution`", () => {
                 itemId: "map1234567890",
                 type: "Web Map",
                 dependencies: ["svc1234567890"],
-                circularDependencies: []
+                groups: []
               },
               {
                 itemId: "svc1234567890",
                 type: "Feature Service",
                 dependencies: [],
-                circularDependencies: []
+                groups: []
               }
             ],
             params: {
@@ -429,7 +437,7 @@ describe("Module `deploySolution`", () => {
           );
       });
 
-      it("can handle error on postProcessCircularDependencies", done => {
+      it("can handle error on postProcessDependencies", done => {
         const itemInfoCard: any = {
           id: "c38e59126368495694ca23b7ccacefba",
           title: "Election Management_JH",
@@ -538,10 +546,10 @@ describe("Module `deploySolution`", () => {
               resources: [
                 "cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png"
               ],
-              dependencies: [],
+              dependencies: ["47bb15c2df2b466da05577776e82d044"],
               properties: {},
               estimatedDeploymentCostFactor: 2,
-              circularDependencies: ["47bb15c2df2b466da05577776e82d044"]
+              groups: ["47bb15c2df2b466da05577776e82d044"]
             },
             {
               itemId: "47bb15c2df2b466da05577776e82d044",
@@ -601,7 +609,7 @@ describe("Module `deploySolution`", () => {
               dependencies: [],
               properties: {},
               estimatedDeploymentCostFactor: 2,
-              circularDependencies: ["cc2ccab401af4828a25cc6eaeb59fb69"]
+              groups: []
             }
           ]
         };
@@ -697,7 +705,7 @@ describe("Module `deploySolution`", () => {
             utils.getSuccessResponse({ id: "82601685fd3c444397d252116d7a3dc0" })
           );
 
-        spyOn(deployItems, "postProcessCircularDependencies").and.callFake(() =>
+        spyOn(deployItems, "postProcessDependencies").and.callFake(() =>
           Promise.reject()
         );
 
@@ -1077,6 +1085,10 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
             utils.getSuccessResponse({ id: "svc1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
+            {}
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +

@@ -456,7 +456,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           }
         )
         .then(r => {
-          expect(r).toEqual("svc1234567890");
+          expect(r).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: false
+          });
           done();
         }, done.fail);
     });
@@ -601,7 +605,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           }
         )
         .then(r => {
-          expect(r).toEqual("svc1234567890");
+          expect(r).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: false
+          });
           done();
         }, done.fail);
     });
@@ -708,7 +716,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             const a = "progressTick";
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("should handle error on addFeatureServiceLayersAndTables", done => {
@@ -880,7 +888,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             const a = "progressTick";
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("should handle createService success === false", done => {
@@ -946,7 +954,11 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           }
         )
         .then(r => {
-          expect(r).toEqual("svc1234567890");
+          expect(r).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: false
+          });
           done.fail();
         }, done);
     });
@@ -1053,7 +1065,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             const a = "progressTick";
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("should handle error on updateDefinition", done => {
@@ -1152,7 +1164,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             const a = "progressTick";
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
 
     it("should handle empty layers and tables", done => {
@@ -1237,7 +1249,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             const a = "progressTick";
           }
         )
-        .then(done.fail, done);
+        .then(() => done.fail(), done);
     });
   });
 });
