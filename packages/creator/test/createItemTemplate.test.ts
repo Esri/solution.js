@@ -697,7 +697,7 @@ describe("Module `createItemTemplate`", () => {
           );
       });
 
-      it("flags unsupported item types", done => {
+      it("removes unsupported item types", done => {
         const solutionItemId: string = "sln1234567890";
         const itemId: string = "code12345678900";
         const itemType: string = "Code Attachment";
@@ -726,9 +726,7 @@ describe("Module `createItemTemplate`", () => {
           .then(response => {
             expect(response).toBeTruthy();
             const item = common.findTemplateInList(existingTemplates, itemId);
-            const unsupported = common.getProp(item, "properties.unsupported");
-            expect(unsupported).toBeDefined();
-            expect(unsupported).toBeTruthy();
+            expect(item).toBeNull();
             done();
           }, done.fail);
       });
