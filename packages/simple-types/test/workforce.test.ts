@@ -130,12 +130,207 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
       expect(newItemTemplate.data).toEqual(expectedTemplateData);
     });
+
+    it("should extract dependencies", () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const expectedDependencies: string[] = [
+        "abc116555b16437f8435e079033128d0",
+        "abc26a244163430590151395821fb845",
+        "abc302ec12b74d2f9f2b3cc549420086",
+        "abc4494043c3459faabcfd0e1ab557fc",
+        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+        "abc64329e69144c59f69f3f3e0d45269",
+        "abc715c2df2b466da05577776e82d044"
+      ];
+
+      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
+      const newDependencies: string[] = newItemTemplate.dependencies;
+      expect(newDependencies.length).toEqual(expectedDependencies.length);
+
+      expectedDependencies.forEach(d => {
+        expect(newDependencies.indexOf(d)).toBeGreaterThan(-1);
+      });
+    });
+
+    it("should handle workforce projects without data", () => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project"
+      );
+
+      const newItemTemplate = workforce.convertItemToTemplate(itemTemplate);
+      expect(newItemTemplate.data).not.toBeDefined();
+    });
   });
 
   describe("_extractDependencies", () => {
-    xit("_extractDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("handles serviceItemId variants", () => {
+      const data: any = {
+        dispatchers: {
+          serviceItemId: "1234567890abcdef1234567890abcdef"
+        }
+      };
+      const keyProperties: string[] = [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ];
+
+      const dependencies: string[] = workforce._extractDependencies(
+        data,
+        keyProperties
+      );
+      expect(dependencies).toEqual(["1234567890abcdef1234567890abcdef"]);
+    });
+
+    it("handles direct ids", () => {
+      const data: any = {
+        workerWebMapId: "1234567890abcdef1234567890abcdef"
+      };
+      const keyProperties: string[] = [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ];
+
+      const dependencies: string[] = workforce._extractDependencies(
+        data,
+        keyProperties
+      );
+      expect(dependencies).toEqual(["1234567890abcdef1234567890abcdef"]);
+    });
+
+    it("skips uninteresting id", () => {
+      const data: any = {
+        folderId: "1234567890abcdef1234567890abcdef"
+      };
+      const keyProperties: string[] = [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ];
+
+      const dependencies: string[] = workforce._extractDependencies(
+        data,
+        keyProperties
+      );
+      expect(dependencies).toEqual([]);
+    });
+
+    it("handles multiple types of id", () => {
+      const data: any = {
+        workerWebMapId: "abc116555b16437f8435e079033128d0",
+        dispatcherWebMapId: "abc26a244163430590151395821fb845",
+        dispatchers: {
+          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
+          url: "abc302ec12b74d2f9f2b3cc549420086"
+        },
+        assignments: {
+          serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
+          url: "abc4494043c3459faabcfd0e1ab557fc"
+        },
+        workers: {
+          serviceItemId: "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
+        },
+        tracks: {
+          serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
+          url: "abc64329e69144c59f69f3f3e0d45269",
+          enabled: true,
+          updateInterval: 300
+        },
+        version: "1.2.0",
+        groupId: "abc715c2df2b466da05577776e82d044",
+        folderId: "d61c63538d8c45c68de809e4fe01e243"
+      };
+      const keyProperties: string[] = [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ];
+
+      const dependencies: string[] = workforce._extractDependencies(
+        data,
+        keyProperties
+      );
+      expect(dependencies).toEqual([
+        "abc715c2df2b466da05577776e82d044",
+        "abc116555b16437f8435e079033128d0",
+        "abc26a244163430590151395821fb845",
+        "abc302ec12b74d2f9f2b3cc549420086",
+        "abc4494043c3459faabcfd0e1ab557fc",
+        "abc5dd4bdd18437f8d5ff1aa2d25fd7c",
+        "abc64329e69144c59f69f3f3e0d45269"
+      ]);
+    });
+
+    it("handles id repeats", () => {
+      const data: any = {
+        workerWebMapId: "abc116555b16437f8435e079033128d0",
+        dispatcherWebMapId: "abc116555b16437f8435e079033128d0",
+        dispatchers: {
+          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
+          url: "abc302ec12b74d2f9f2b3cc549420086"
+        },
+        assignments: {
+          serviceItemId: "abc4494043c3459faabcfd0e1ab557fc",
+          url: "abc4494043c3459faabcfd0e1ab557fc"
+        },
+        workers: {
+          serviceItemId: "abc302ec12b74d2f9f2b3cc549420086",
+          url: "abc5dd4bdd18437f8d5ff1aa2d25fd7c"
+        },
+        tracks: {
+          serviceItemId: "abc64329e69144c59f69f3f3e0d45269",
+          url: "abc64329e69144c59f69f3f3e0d45269",
+          enabled: true,
+          updateInterval: 300
+        },
+        version: "1.2.0",
+        groupId: "abc715c2df2b466da05577776e82d044",
+        folderId: "d61c63538d8c45c68de809e4fe01e243"
+      };
+      const keyProperties: string[] = [
+        "groupId",
+        "workerWebMapId",
+        "dispatcherWebMapId",
+        "dispatchers",
+        "assignments",
+        "workers",
+        "tracks"
+      ];
+
+      const dependencies: string[] = workforce._extractDependencies(
+        data,
+        keyProperties
+      );
+      expect(dependencies).toEqual([
+        "abc715c2df2b466da05577776e82d044",
+        "abc116555b16437f8435e079033128d0",
+        "abc302ec12b74d2f9f2b3cc549420086",
+        "abc4494043c3459faabcfd0e1ab557fc",
+        "abc64329e69144c59f69f3f3e0d45269"
+      ]);
     });
   });
 

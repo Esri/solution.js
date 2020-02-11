@@ -273,11 +273,12 @@ export function createItemTemplate(
               const itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
-                  placeholder!.properties["unsupported"] = true;
+                  _removeTemplate(existingTemplates, itemId!);
                 } else {
                   placeholder!.properties["partial"] = true;
+                  placeholder!.properties["unimplemented"] = true;
+                  _replaceTemplate(existingTemplates, itemId, placeholder!);
                 }
-                _replaceTemplate(existingTemplates, itemId, placeholder!);
                 resolve(true);
               } else {
                 itemHandler
@@ -570,7 +571,24 @@ export function _getWebMapFSDependencies(
 }
 
 /**
- * Replaces a template entry in a list of templates
+ * Removes a template entry in a list of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @param id Id of item in templates list to find; if not found, no replacement is () => done()
+ * @protected
+ */
+export function _removeTemplate(
+  templates: common.IItemTemplate[],
+  id: string
+): void {
+  const i = common.findTemplateIndexInList(templates, id);
+  if (i >= 0) {
+    templates.splice(i, 1);
+  }
+}
+
+/**
+ * Replaces a template entry in a list of templates.
  *
  * @param templates A collection of AGO item templates
  * @param id Id of item in templates list to find; if not found, no replacement is () => done()

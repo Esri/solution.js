@@ -71,7 +71,7 @@ export function _extractDependencies(
       if (deps.indexOf(data[p].serviceItemId) === -1) {
         deps.push(data[p].serviceItemId);
       }
-    } else if (/[0-9A-F]{32}/gim.test(data[p])) {
+    } else if (/^[0-9A-F]{32}$/i.test(data[p])) {
       if (deps.indexOf(data[p]) === -1) {
         deps.push(data[p]);
       }
