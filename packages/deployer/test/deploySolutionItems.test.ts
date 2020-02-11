@@ -96,6 +96,10 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock
         .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          '{"token":"abc123"}'
+        )
+        .post(
           "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
           { success: true, id: newItemID }
         )
@@ -122,6 +126,7 @@ describe("Module `deploySolutionItems`", () => {
           done();
         }, done.fail);
     });
+
     if (typeof window !== "undefined") {
       it("flags Storymaps implemented as Web Mapping Applications", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate(

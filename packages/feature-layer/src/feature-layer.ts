@@ -53,7 +53,7 @@ export function convertItemToTemplate(
     );
 
     // Update the estimated cost factor to deploy this item
-    template.estimatedDeploymentCostFactor = 3;
+    template.estimatedDeploymentCostFactor = 10;
 
     common
       .getItemDataAsJson(template.item.id, requestOptions.authentication)
@@ -118,10 +118,16 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(
     (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      );
+
       const requestOptions: common.IUserRequestOptions = {
         authentication: destinationAuthentication
       };
@@ -142,7 +148,11 @@ export function createItemFromTemplate(
         )
         .then(
           createResponse => {
-            progressTickCallback();
+            progressTickCallback(
+              template.itemId,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2
+            );
 
             if (createResponse.success) {
               // Detemplatize what we can now that the service has been created
@@ -157,8 +167,7 @@ export function createItemFromTemplate(
                   newItemTemplate,
                   templateDictionary,
                   popupInfos,
-                  requestOptions,
-                  progressTickCallback
+                  requestOptions
                 )
                 .then(
                   () => {
@@ -176,14 +185,20 @@ export function createItemFromTemplate(
                         requestOptions.authentication
                       )
                       .then(
-                        () =>
+                        () => {
+                          progressTickCallback(
+                            template.itemId,
+                            common.EItemProgressStatus.Finished,
+                            template.estimatedDeploymentCostFactor / 2
+                          );
                           resolve({
                             id: createResponse.serviceItemId,
                             type: newItemTemplate.type,
                             postProcess: common.hasUnresolvedVariables(
                               newItemTemplate.data
                             )
-                          }),
+                          });
+                        },
                         (e: any) => reject(common.fail(e))
                       );
                   },

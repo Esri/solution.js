@@ -213,7 +213,7 @@ export function deploySolutionItems(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Create an ordered graph of the templates so that dependencies are created
@@ -278,7 +278,7 @@ export function _createItemFromTemplateWhenReady(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   templateDictionary[template.itemId] = {};
   const itemDef = new Promise<common.ICreateItemFromTemplateResponse>(
@@ -326,9 +326,7 @@ export function _createItemFromTemplateWhenReady(
             )
             .then(
               createResponse => resolve(createResponse),
-              e => {
-                reject(common.fail(e));
-              }
+              e => reject(common.fail(e))
             );
         }
       }, common.fail);

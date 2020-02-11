@@ -149,7 +149,7 @@ export function createPlaceholderTemplate(
     dependencies: [],
     groups: [],
     properties: {},
-    estimatedDeploymentCostFactor: 0
+    estimatedDeploymentCostFactor: 2
   };
 }
 

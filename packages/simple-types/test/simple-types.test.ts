@@ -1677,6 +1677,141 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
     });
 
+    it("should handle web mapping application with related items", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: ["WAB2D"],
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        licenseInfo: undefined,
+        properties: null,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = {
+        appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        values: {
+          webmap: "{{myMapId.itemId}}"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "{{myMapId.itemId}}"
+          },
+          itemId: "{{myMapId.itemId}}"
+        },
+        folderId: "{{folderId}}"
+      };
+      itemTemplate.relatedItems = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["srv1234567890"]
+        },
+        {
+          relationshipType: "Survey2Data",
+          relatedItemIds: ["srv1234567890", "abc1234567890"]
+        }
+      ];
+      itemTemplate.dependencies = ["myMapId", "srv1234567890", "abc1234567890"];
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      fetchMock
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+          { success: true }
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        itemTemplate.itemId,
+        { total: 0, relatedItems: [] },
+        ["Survey2Data", "Survey2Service"]
+      );
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
+        {
+          total: 2,
+          relatedItems: [
+            {
+              id: "srv1234567890"
+            },
+            {
+              id: "abc1234567890"
+            }
+          ]
+        }
+      );
+      fetchMock.get(
+        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          itemTemplate.itemId +
+          "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
+        {
+          total: 1,
+          relatedItems: [
+            {
+              id: "srv1234567890"
+            }
+          ]
+        }
+      );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          {
+            folderId: "folderb401af4828a25cc6eaeb59fb69",
+            myMapId: {
+              itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          MOCK_USER_SESSION,
+          function() {
+            const tick = 0;
+          }
+        )
+        .then(
+          actual => {
+            expect(actual).toEqual({
+              id: "abc0cab401af4828a25cc6eaeb59fb69",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+            done();
+          },
+          e => done.fail(e)
+        );
+    });
+
     it("should handle web mapping application with missing data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",

@@ -167,7 +167,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             expect(r.item.id).toEqual(expectedId);
             expect(r.item.url).toEqual(expectedUrl);
             expect(r.dependencies.length).toEqual(1);
-            expect(r.estimatedDeploymentCostFactor).toEqual(7);
+            expect(r.estimatedDeploymentCostFactor).toEqual(10);
             expect(r.data).toBeUndefined();
             expect(r.properties.service.serviceItemId).toEqual(expectedId);
 

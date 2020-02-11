@@ -78,7 +78,10 @@
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value
-            })
+            }),
+            percentDone => {
+              document.getElementById("output").innerHTML = "Fetching..." + percentDone.toFixed().toString() + "%";
+            }
           ).then(
             html => {
               document.getElementById("output").innerHTML = html;

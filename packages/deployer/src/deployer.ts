@@ -31,9 +31,9 @@ export function deploySolution(
   options?: common.IDeploySolutionOptions
 ): Promise<common.ISolutionItem> {
   return new Promise<common.ISolutionItem>((resolve, reject) => {
-    let percentDone = 1; // Let the caller know that we've started
+    let percentDone = 1;
     if (options?.progressCallback) {
-      options.progressCallback(percentDone); // Let the caller know that we've started
+      options.progressCallback(percentDone); // let the caller know that we've started
     }
     const templateDictionary = options?.templateDictionary ?? {};
 
@@ -143,9 +143,11 @@ export function deploySolution(
                       "," +
                       wgs84Extent.ymax;
 
-                    const totalEstimatedCost =
-                      _estimateDeploymentCost(itemData.templates) + 3; // overhead for data fetch and folder & solution item creation
-                    const progressPercentStep = 100 / totalEstimatedCost;
+                    const totalEstimatedCost = Math.max(
+                      1,
+                      _estimateDeploymentCost(itemData.templates)
+                    ); // avoid / 0
+                    const progressPercentStep = 95 / totalEstimatedCost; // less than 100% because of solution expenditures in this function
                     console.log(
                       "Deploying solution " +
                         itemBase.title +
@@ -162,14 +164,12 @@ export function deploySolution(
                       totalEstimatedCost.toString(),
                       progressPercentStep.toFixed(2).toString()
                     );
-                    if (deployOptions.progressCallback) {
-                      deployOptions.progressCallback(
-                        (percentDone += 2 * progressPercentStep)
-                      ); // for data fetch and folder creation
+                    if (options?.progressCallback) {
+                      options.progressCallback((percentDone += 2)); // for data fetch and folder creation
                     }
 
                     // Create a deployed Solution item
-                    const updateItemInfo = {
+                    const createSolutionItemBase = {
                       ...itemBase,
                       type: "Solution",
                       typeKeywords: ["Solution"]
@@ -177,15 +177,19 @@ export function deploySolution(
 
                     common
                       .createItemWithData(
-                        updateItemInfo,
+                        createSolutionItemBase,
                         {},
                         authentication,
                         templateDictionary.folderId
                       )
                       .then(
-                        updateResponse => {
+                        createSolutionResponse => {
+                          if (options?.progressCallback) {
+                            options.progressCallback(++percentDone); // for solution item creation
+                          }
+
                           const oldID: string = templateSolutionId;
-                          const newID: string = updateResponse.id;
+                          const newID: string = createSolutionResponse.id;
                           console.log("Solution " + newID + " created");
                           templateDictionary.solutionItemId = newID;
                           itemBase.id = newID;
@@ -214,22 +218,21 @@ export function deploySolution(
                               authentication,
                               templateDictionary,
                               authentication,
-                              () => {
-                                if (deployOptions.progressCallback) {
-                                  deployOptions.progressCallback(
-                                    (percentDone += progressPercentStep)
-                                  ); // progress tick callback from deployItems
+                              (
+                                itemId: string,
+                                status: common.EItemProgressStatus,
+                                costUsed: number
+                              ) => {
+                                if (options?.progressCallback) {
+                                  options.progressCallback(
+                                    (percentDone +=
+                                      progressPercentStep * costUsed)
+                                  ); // callback from deploying item
                                 }
                               }
                             )
                             .then(
                               clonedSolutionsResponse => {
-                                if (deployOptions.progressCallback) {
-                                  deployOptions.progressCallback(
-                                    (percentDone += progressPercentStep)
-                                  ); // for solution item creation
-                                }
-
                                 itemData.templates = itemData.templates.map(
                                   (itemTemplate: common.IItemTemplate) => {
                                     // Update ids present in template dictionary
@@ -288,13 +291,10 @@ export function deploySolution(
                                         )
                                         .then(
                                           () => {
-                                            if (
-                                              deployOptions.progressCallback
-                                            ) {
-                                              deployOptions.progressCallback(
-                                                100
-                                              );
+                                            if (options?.progressCallback) {
+                                              options.progressCallback(100); // we're done
                                             }
+
                                             delete itemBase.data;
                                             resolve({
                                               item: itemBase,

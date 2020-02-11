@@ -34,7 +34,6 @@ export function convertItemToTemplate(
     const itemTemplate: common.IItemTemplate = common.createInitializedGroupTemplate(
       itemInfo
     );
-    itemTemplate.estimatedDeploymentCostFactor = 2; // minimal set is starting, creating, done|failed
 
     // Templatize item info property values
     itemTemplate.item.id = common.templatizeTerm(
@@ -101,10 +100,16 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: () => void
+  progressTickCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(
     (resolve, reject) => {
+      progressTickCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      );
+
       // Replace the templatized symbols in a copy of the template
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
       newItemTemplate = common.replaceInTemplate(
@@ -124,7 +129,12 @@ export function createItemFromTemplate(
       newItemTemplate.item.access = "private";
       common.createGroup(newItemTemplate.item, destinationAuthentication).then(
         createResponse => {
-          progressTickCallback();
+          progressTickCallback(
+            template.itemId,
+            common.EItemProgressStatus.Created,
+            template.estimatedDeploymentCostFactor / 2
+          );
+
           if (createResponse.success) {
             newItemTemplate.itemId = createResponse.group.id;
             templateDictionary[template.itemId] = {
@@ -151,6 +161,11 @@ export function createItemFromTemplate(
                   // Update the template dictionary with the new id
                   templateDictionary[template.itemId].itemId =
                     createResponse.group.id;
+                  progressTickCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Finished,
+                    template.estimatedDeploymentCostFactor / 2
+                  );
                   resolve({
                     id: createResponse.group.id,
                     type: newItemTemplate.type,

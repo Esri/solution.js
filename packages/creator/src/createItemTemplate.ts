@@ -209,7 +209,8 @@ export function createItemTemplate(
   itemId: string,
   templateDictionary: any,
   authentication: common.UserSession,
-  existingTemplates: common.IItemTemplate[]
+  existingTemplates: common.IItemTemplate[],
+  progressTickCallback?: common.ISolutionProgressTickCallback
 ): Promise<boolean> {
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
@@ -320,7 +321,12 @@ export function createItemTemplate(
                           }
                         });
                         // tslint:disable-next-line: no-floating-promises
-                        Promise.all(dependentDfds).then(() => resolve(true));
+                        Promise.all(dependentDfds).then(() => {
+                          if (progressTickCallback) {
+                            progressTickCallback();
+                          }
+                          resolve(true);
+                        });
                       }
                     },
                     error => {
