@@ -741,6 +741,111 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         e => done.fail(e)
       );
     });
+
+    it("will not add layer as dependency if missing serviceItemId", done => {
+      const model = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: "layer1",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+            },
+            {
+              itemId: "layer2",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+            },
+            {
+              itemId: "layer3",
+              url: "http://myserver/arcgis/services/myService/FeatureServer/3"
+            },
+            {
+              itemId: "layer4",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+            }
+          ],
+          tables: []
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
+            },
+            {
+              itemId: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
+            },
+            {
+              itemId: "layer3",
+              url: "http://myserver/arcgis/services/myService/FeatureServer/3"
+            },
+            {
+              itemId: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.itemId}}",
+              url: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.url}}"
+            }
+          ],
+          tables: []
+        } as any,
+        resources: [] as any[],
+        dependencies: [
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+          "abc49ef8efa7448fa8ddf7b13cef0240"
+        ],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post("http://myserver/arcgis/services/myService/FeatureServer/3", {})
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
+        );
+
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
+        actual => {
+          expect(actual).toEqual(expected);
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
   });
 
   describe("_extractDependencies", () => {
