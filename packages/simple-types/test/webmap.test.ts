@@ -88,6 +88,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         e => done.fail(e)
       );
     });
+
     it("converts with empty data", done => {
       const model = {
         itemId: "itm1234567890",
@@ -129,309 +130,25 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         e => done.fail(e)
       );
     });
+
     it("converts with layer data", done => {
       const model = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
           operationalLayers: [
             {
-              itemId: "layer1",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: "layer2",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "layer4",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            }
-          ],
-          tables: []
-        } as any,
-        resources: [] as any[],
-        dependencies: [] as string[],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      const expected = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
-        } as any,
-        data: {
-          operationalLayers: [
-            {
-              itemId: "{{layer1.layer4.itemId}}",
-              url: "{{layer1.layer4.url}}"
-            },
-            {
-              itemId: "{{layer2.layer4.itemId}}",
-              url: "{{layer2.layer4.url}}"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{layer4.layer4.itemId}}",
-              url: "{{layer4.layer4.url}}"
-            }
-          ],
-          tables: []
-        } as any,
-        resources: [] as any[],
-        dependencies: ["layer1", "layer2", "layer4"],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
-        actual => {
-          expect(actual).toEqual(expected);
-          done();
-        },
-        e => done.fail(e)
-      );
-    });
-    it("converts with table data", done => {
-      const model = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers"
-        } as any,
-        data: {
-          operationalLayers: [],
-          tables: [
-            {
-              itemId: "table1",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "table3",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            }
-          ]
-        } as any,
-        resources: [] as any[],
-        dependencies: [] as string[],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      const expected = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
-        } as any,
-        data: {
-          operationalLayers: [],
-          tables: [
-            {
-              itemId: "{{table1.layer4.itemId}}",
-              url: "{{table1.layer4.url}}"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{table3.layer4.itemId}}",
-              url: "{{table3.layer4.url}}"
-            },
-            {
-              itemId: null
-            }
-          ]
-        } as any,
-        resources: [] as any[],
-        dependencies: ["table1", "table3"],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
-        actual => {
-          expect(actual).toEqual(expected);
-          done();
-        },
-        e => done.fail(e)
-      );
-    });
-    it("converts with layer and table data", done => {
-      const model = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers"
-        } as any,
-        data: {
-          operationalLayers: [
-            {
-              itemId: null
-            },
-            {
-              itemId: "layer2",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "layer4",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            }
-          ],
-          tables: [
-            {
-              itemId: "table1",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "table3",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
-            },
-            {
-              itemId: null
-            }
-          ]
-        } as any,
-        resources: [] as any[],
-        dependencies: [] as string[],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      const expected = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers",
-          url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
-        } as any,
-        data: {
-          operationalLayers: [
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{layer2.layer4.itemId}}",
-              url: "{{layer2.layer4.url}}"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{layer4.layer4.itemId}}",
-              url: "{{layer4.layer4.url}}"
-            }
-          ],
-          tables: [
-            {
-              itemId: "{{table1.layer4.itemId}}",
-              url: "{{table1.layer4.url}}"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{table3.layer4.itemId}}",
-              url: "{{table3.layer4.url}}"
-            },
-            {
-              itemId: null
-            }
-          ]
-        } as any,
-        resources: [] as any[],
-        dependencies: ["layer2", "layer4", "table1", "table3"],
-        groups: [] as string[],
-        properties: {} as any,
-        estimatedDeploymentCostFactor: 0
-      };
-      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
-        actual => {
-          expect(actual).toEqual(expected);
-          done();
-        },
-        e => done.fail(e)
-      );
-    });
-    it("converts with layer and table data from same service", done => {
-      const model = {
-        itemId: "itm1234567890",
-        type: "Web Map",
-        key: "abcdefgh",
-        item: {
-          id: "{{itm1234567890.itemId}}",
-          title: "Voting Centers"
-        } as any,
-        data: {
-          operationalLayers: [
-            {
-              itemId: null
-            },
-            {
-              itemId: "theItemID",
-              url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/0"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "theItemID",
+              itemId: "bada9ef8efa7448fa8ddf7b13cef0240",
               url:
                 "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
-            }
-          ],
-          tables: [
+            },
             {
-              itemId: "theItemID",
+              itemId: "badb9ef8efa7448fa8ddf7b13cef0240",
               url:
                 "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
             },
@@ -439,7 +156,105 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
               itemId: null
             },
             {
-              itemId: "theItemID",
+              itemId: "badc9ef8efa7448fa8ddf7b13cef0240",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+            }
+          ],
+          tables: []
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: "{{abca9ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abca9ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
+            },
+            {
+              itemId: "{{abcb9ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abcb9ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{abcc9ef8efa7448fa8ddf7b13cef0240.layer4.itemId}}",
+              url: "{{abcc9ef8efa7448fa8ddf7b13cef0240.layer4.url}}"
+            }
+          ],
+          tables: []
+        } as any,
+        resources: [] as any[],
+        dependencies: [
+          "abca9ef8efa7448fa8ddf7b13cef0240",
+          "abcb9ef8efa7448fa8ddf7b13cef0240",
+          "abcc9ef8efa7448fa8ddf7b13cef0240"
+        ],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abca9ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abcb9ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abcc9ef8efa7448fa8ddf7b13cef0240" }
+        );
+
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
+        actual => {
+          expect(actual).toEqual(expected);
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
+
+    it("converts with table data", done => {
+      const model = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers"
+        } as any,
+        data: {
+          operationalLayers: [],
+          tables: [
+            {
+              itemId: "table1",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+            },
+            {
+              itemId: "abc29ef8efa7448fa8ddf7b13cef0240"
+            },
+            {
+              itemId: "table3",
               url:
                 "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
             },
@@ -455,43 +270,28 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         estimatedDeploymentCostFactor: 0
       };
       const expected = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
           url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
         } as any,
         data: {
-          operationalLayers: [
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{theItemID.layer0.itemId}}",
-              url: "{{theItemID.layer0.url}}"
-            },
-            {
-              itemId: null
-            },
-            {
-              itemId: "{{theItemID.layer1.itemId}}",
-              url: "{{theItemID.layer1.url}}"
-            }
-          ],
+          operationalLayers: [],
           tables: [
             {
-              itemId: "{{theItemID.layer2.itemId}}",
-              url: "{{theItemID.layer2.url}}"
+              itemId: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
             },
             {
-              itemId: null
+              itemId: "abc29ef8efa7448fa8ddf7b13cef0240"
             },
             {
-              itemId: "{{theItemID.layer3.itemId}}",
-              url: "{{theItemID.layer3.url}}"
+              itemId: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.itemId}}",
+              url: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.url}}"
             },
             {
               itemId: null
@@ -499,11 +299,25 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           ]
         } as any,
         resources: [] as any[],
-        dependencies: ["theItemID"],
+        dependencies: [
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc39ef8efa7448fa8ddf7b13cef0240"
+        ],
         groups: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
+
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
+        );
+
       webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
         actual => {
           expect(actual).toEqual(expected);
@@ -512,13 +326,150 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         e => done.fail(e)
       );
     });
-    it("handles error with fetching layer", done => {
+
+    it("converts with layer and table data", done => {
       const model = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: null
+            },
+            {
+              itemId: "layer2",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "layer4",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+            }
+          ],
+          tables: [
+            {
+              itemId: "table1",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "table3",
+              url:
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+            },
+            {
+              itemId: null
+            }
+          ]
+        } as any,
+        resources: [] as any[],
+        dependencies: [] as string[],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
+          title: "Voting Centers",
+          url:
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
+        } as any,
+        data: {
+          operationalLayers: [
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.itemId}}",
+              url: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.url}}"
+            }
+          ],
+          tables: [
+            {
+              itemId: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
+            },
+            {
+              itemId: null
+            },
+            {
+              itemId: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.itemId}}",
+              url: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.url}}"
+            },
+            {
+              itemId: null
+            }
+          ]
+        } as any,
+        resources: [] as any[],
+        dependencies: [
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+          "abc49ef8efa7448fa8ddf7b13cef0240",
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc39ef8efa7448fa8ddf7b13cef0240"
+        ],
+        groups: [] as string[],
+        properties: {} as any,
+        estimatedDeploymentCostFactor: 0
+      };
+
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
+        );
+
+      webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
+        actual => {
+          expect(actual).toEqual(expected);
+          done();
+        },
+        e => done.fail(e)
+      );
+    });
+
+    it("handles error with fetching layer", done => {
+      const model = {
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
+        type: "Web Map",
+        key: "abcdefgh",
+        item: {
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
@@ -526,12 +477,12 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
             },
             {
               itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
             },
             {
               url:
@@ -553,8 +504,20 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       };
       fetchMock
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
           mockItems.get400Failure()
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
           "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
@@ -569,33 +532,30 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       );
     });
 
-    it("can fetch layer without itemId", done => {
+    it("will update layers itemId if missing", done => {
       const model = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
           operationalLayers: [
             {
-              itemId: "layer1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
             },
             {
-              itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
             },
             {
               url:
                 "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
             },
             {
-              itemId: "layer4",
               url:
                 "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
             }
@@ -609,56 +569,64 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         estimatedDeploymentCostFactor: 0
       };
       const expected = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
           url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
         } as any,
         data: {
           operationalLayers: [
             {
-              itemId: "{{layer1.layer4.itemId}}",
-              url: "{{layer1.layer4.url}}"
+              itemId: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
             },
             {
-              itemId: "{{layer2.layer4.itemId}}",
-              url: "{{layer2.layer4.url}}"
+              itemId: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
             },
             {
-              url: "{{layer3.layer3.url}}"
+              itemId: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.itemId}}",
+              url: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.url}}"
             },
             {
-              itemId: "{{layer4.layer4.itemId}}",
-              url: "{{layer4.layer4.url}}"
+              itemId: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.itemId}}",
+              url: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.url}}"
             }
           ],
           tables: []
         } as any,
         resources: [] as any[],
-        dependencies: ["layer1", "layer2", "layer4", "layer3"],
+        dependencies: [
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+          "abc39ef8efa7448fa8ddf7b13cef0240",
+          "abc49ef8efa7448fa8ddf7b13cef0240"
+        ],
         groups: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
 
-      const layer3: any = {
-        serviceItemId: "layer3",
-        id: 3
-      };
-
       fetchMock
-        .post("https://fake.com/arcgis/rest/info", {})
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-          layer3
+          { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
       webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
@@ -672,11 +640,11 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
     it("will avoid fetching layer without itemId if it exists elsewhere in the map", done => {
       const model = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers"
         } as any,
         data: {
@@ -684,16 +652,16 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
             },
             {
               itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
             },
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
             },
             {
               itemId: "layer3",
@@ -710,41 +678,60 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         estimatedDeploymentCostFactor: 0
       };
       const expected = {
-        itemId: "itm1234567890",
+        itemId: "A14a9ef8efa7448fa8ddf7b13cef0240",
         type: "Web Map",
         key: "abcdefgh",
         item: {
-          id: "{{itm1234567890.itemId}}",
+          id: "{{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}",
           title: "Voting Centers",
           url:
-            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{itm1234567890.itemId}}"
+            "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{A14a9ef8efa7448fa8ddf7b13cef0240.itemId}}"
         } as any,
         data: {
           operationalLayers: [
             {
-              itemId: "{{layer1.layer4.itemId}}",
-              url: "{{layer1.layer4.url}}"
+              itemId: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.itemId}}",
+              url: "{{abc19ef8efa7448fa8ddf7b13cef0240.layer1.url}}"
             },
             {
-              itemId: "{{layer2.layer4.itemId}}",
-              url: "{{layer2.layer4.url}}"
+              itemId: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
             },
             {
-              url: "{{layer3.layer3.url}}"
+              itemId: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.itemId}}",
+              url: "{{abc29ef8efa7448fa8ddf7b13cef0240.layer2.url}}"
             },
             {
-              itemId: "{{layer3.layer3.itemId}}",
-              url: "{{layer3.layer3.url}}"
+              itemId: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.itemId}}",
+              url: "{{abc39ef8efa7448fa8ddf7b13cef0240.layer3.url}}"
             }
           ],
           tables: []
         } as any,
         resources: [] as any[],
-        dependencies: ["layer1", "layer2", "layer3"],
+        dependencies: [
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+          "abc39ef8efa7448fa8ddf7b13cef0240"
+        ],
         groups: [] as string[],
         properties: {} as any,
         estimatedDeploymentCostFactor: 0
       };
+
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
+        );
 
       webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
         actual => {
@@ -763,15 +750,8 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     });
   });
 
-  describe("_getWebmapLayerIds", () => {
-    xit("_getWebmapLayerIds", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getAnalysisLayerIds", () => {
-    it("handles no analysis layers", done => {
+  describe("_getLayerIds", () => {
+    it("will get layer ids with url and construct url/id hash", done => {
       const layerList = [
         {
           itemId: "layer1",
@@ -789,156 +769,47 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
         }
       ];
-      const dependencies = ["layer1", "layer2", "layer4"];
+      const dependencies: string[] = [];
 
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-        { serviceItemId: "layer3", id: 3 }
-      );
-
-      webmap
-        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
-        .then(
-          updatedDependencies => {
-            const expectedUpdate = {
-              dependencies: ["layer1", "layer2", "layer4"],
-              urlHash: {}
-            };
-            expect(updatedDependencies).toEqual(expectedUpdate);
-            done();
-          },
-          e => {
-            done.fail();
-          }
+      fetchMock
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240", id: 1 }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240", id: 2 }
+        )
+        .post(
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240", id: 4 }
         );
-    });
 
-    it("handles an analysis layer amidst other layers", done => {
-      const layerList = [
-        {
-          itemId: "layer1",
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
-        },
-        {
-          itemId: "layer2",
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
-        },
-        {
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
-        },
-        {
-          itemId: "layer4",
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+      const expected = {
+        dependencies: [
+          "abc19ef8efa7448fa8ddf7b13cef0240",
+          "abc29ef8efa7448fa8ddf7b13cef0240",
+          "abc49ef8efa7448fa8ddf7b13cef0240"
+        ],
+        urlHash: {
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1":
+            "abc19ef8efa7448fa8ddf7b13cef0240",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2":
+            "abc29ef8efa7448fa8ddf7b13cef0240",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4":
+            "abc49ef8efa7448fa8ddf7b13cef0240"
         }
-      ];
-      const dependencies = ["layer1", "layer2", "layer4"];
+      };
 
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-        { serviceItemId: "layer3", id: 3 }
-      );
-
-      webmap
-        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
-        .then(
-          updatedDependencies => {
-            const expectedUpdate = {
-              dependencies: ["layer1", "layer2", "layer4", "layer3"],
-              urlHash: {
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3":
-                  "layer3"
-              }
-            };
-            expect(updatedDependencies).toEqual(expectedUpdate);
-            done();
-          },
-          e => {
-            done.fail();
-          }
-        );
-    });
-
-    it("handles an analysis layer without a serviceItemId", done => {
-      const layerList = [
-        {
-          itemId: "layer1",
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+      webmap._getLayerIds(layerList, dependencies, MOCK_USER_SESSION).then(
+        actual => {
+          expect(actual).toEqual(expected);
+          done();
         },
-        {
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+        e => {
+          done.fail();
         }
-      ];
-      const dependencies = ["layer1"];
-
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-        { id: 3 }
       );
-
-      webmap
-        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
-        .then(
-          updatedDependencies => {
-            const expectedUpdate = {
-              dependencies: ["layer1"],
-              urlHash: {}
-            };
-            expect(updatedDependencies).toEqual(expectedUpdate);
-            done();
-          },
-          e => {
-            done.fail();
-          }
-        );
-    });
-
-    it("handles case where analysis layer is already in dependencies", done => {
-      const layerList = [
-        {
-          itemId: "layer1",
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
-        },
-        {
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
-        },
-        {
-          url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
-        }
-      ];
-      const dependencies = ["layer1"];
-
-      fetchMock.post(
-        "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
-        { serviceItemId: "layer3", id: 3 }
-      );
-
-      webmap
-        ._getAnalysisLayerIds(layerList, dependencies, MOCK_USER_SESSION)
-        .then(
-          updatedDependencies => {
-            const expectedUpdate = {
-              dependencies: ["layer1", "layer3"],
-              urlHash: {
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3":
-                  "layer3"
-              }
-            };
-            expect(updatedDependencies).toEqual(expectedUpdate);
-            done();
-          },
-          e => {
-            done.fail();
-          }
-        );
     });
   });
 
