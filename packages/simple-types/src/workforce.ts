@@ -138,8 +138,8 @@ export function _templatize(data: any, keyProperties: string[]): any {
   const integrations: any[] = data.assignmentIntegrations || [];
   integrations.forEach(i => {
     templatizeUrlTemplate(i);
-    if (common.getProp(i, "assignmentTypes")) {
-      const assignmentTypes: string[] = i.assignmentTypes || [];
+    if (i.assignmentTypes && Array.isArray(i.assignmentTypes)) {
+      const assignmentTypes: string[] = i.assignmentTypes;
       assignmentTypes.forEach((assignType: any) => {
         templatizeUrlTemplate(assignType);
       });
