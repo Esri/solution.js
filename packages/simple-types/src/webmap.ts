@@ -71,7 +71,7 @@ export function convertItemToTemplate(
  *
  * @param itemTemplate A webmap item whose dependencies are sought
  * @param authentication Credentials for any requests
- * @return List of dependencies ids
+ * @return List of dependencies ids and url/itemId hash
  * @protected
  */
 export function _extractDependencies(
@@ -79,15 +79,12 @@ export function _extractDependencies(
   authentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    let dependencies: string[] = [];
-
+    const dependencies: string[] = [];
     if (itemTemplate.data) {
       const layers: any[] = itemTemplate.data.operationalLayers || [];
       const tables: any[] = itemTemplate.data.tables || [];
       const layersAndTables: any[] = layers.concat(tables);
-      dependencies = _getWebmapLayerIds(layersAndTables);
-
-      _getAnalysisLayerIds(layersAndTables, dependencies, authentication).then(
+      _getLayerIds(layersAndTables, dependencies, authentication).then(
         results => {
           resolve(results);
         },
@@ -103,71 +100,41 @@ export function _extractDependencies(
 }
 
 /**
- * Extracts the AGOL id for each layer or table object in a list.
- *
- * @param layerList List of map layers or tables
- * @return List containing the ids of each layer or table that has an itemId
- * @protected
- */
-export function _getWebmapLayerIds(layerList: any[]): string[] {
-  return layerList.reduce((ids: string[], layer: any) => {
-    const itemId = layer.itemId as string;
-    if (itemId && ids.indexOf(itemId) < 0) {
-      ids.push(itemId);
-    }
-    return ids;
-  }, [] as string[]);
-}
-
-/**
- * Extracts the AGOL id for each layer or table object in a list.
+ * Extracts the AGOL itemId for each layer or table object in a list using the url.
  *
  * @param layerList List of map layers or tables
  * @param dependencies Current list of dependencies
  * @param authentication Credentials for any requests
- * @return An object with a list containing the ids of each layer or table that has an itemId
- *         and a lookup object for analysis layers that have a url but no itemId stored in the operationalLayer
+ * @return List of dependencies ids and url/itemId hash
  * @protected
  */
-export function _getAnalysisLayerIds(
+export function _getLayerIds(
   layerList: any[],
   dependencies: string[],
   authentication: common.UserSession
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const urlHash: any = {};
-    // find layers that have a url but don't have an itemId
+
+    const options: any = {
+      f: "json",
+      authentication: authentication
+    };
+    const layerPromises: Array<Promise<any>> = [];
     const layers: any[] = layerList.filter(layer => {
-      if (!layer.itemId && layer.url) {
-        // in some cases the layer without an itemId is an analysis layer and the source layer is also
-        // present in the map...in this case we don't need to query for the itemId
-        // we can just get it from the source layer in the map
-        const hasLayer: boolean = layerList.some(l => {
-          if (l.itemId && l.url === layer.url) {
-            urlHash[l.url] = l.itemId;
-            return true;
-          } else {
-            return false;
-          }
-        });
-        return !hasLayer;
+      if (layer.url) {
+        // use url to find serviceItemId
+        layerPromises.push(common.rest_request(layer.url, options));
+        return true;
       } else {
         return false;
       }
     });
 
-    if (layers.length > 0) {
-      const options: any = {
-        f: "json",
-        authentication: authentication
-      };
-      // find itemId
-      let i: number = 0;
-      const serviceRequests: any[] = layers.map(layer =>
-        common.rest_request(layer.url, options)
-      );
-      Promise.all(serviceRequests).then(
+    if (layerPromises.length > 0) {
+      Promise.all(layerPromises).then(
         serviceResponses => {
+          let i: number = 0;
           serviceResponses.forEach(serviceResponse => {
             if (common.getProp(serviceResponse, "serviceItemId")) {
               if (dependencies.indexOf(serviceResponse.serviceItemId) < 0) {
@@ -210,24 +177,17 @@ export function _templatizeWebmapLayerIdsAndUrls(
       const layerId = layer.url.substr(
         (layer.url as string).lastIndexOf("/") + 1
       );
-      const hashId: any =
+      const id: any =
         Object.keys(urlHash).indexOf(layer.url) > -1
           ? urlHash[layer.url]
           : undefined;
-      const itemId: string = layer.itemId ? layer.itemId : hashId;
-      if (itemId) {
-        layer.url = common.templatizeTerm(
-          itemId,
-          itemId,
-          ".layer" + layerId + ".url"
+      if (id) {
+        layer.url = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
+        layer.itemId = common.templatizeTerm(
+          id,
+          id,
+          ".layer" + layerId + ".itemId"
         );
-        if (layer.itemId) {
-          layer.itemId = common.templatizeTerm(
-            itemId,
-            itemId,
-            ".layer" + layerId + ".itemId"
-          );
-        }
       }
     }
   });

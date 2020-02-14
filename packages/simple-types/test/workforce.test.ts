@@ -335,9 +335,31 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
   });
 
   describe("_templatize", () => {
-    xit("_templatize", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("should handle missing assignment integrations", () => {
+      const data = mockItems.getAGOLItemData("Workforce Project");
+      delete data.assignmentIntegrations;
+
+      const expected: any = mockItems.getAGOLItemData("Workforce Project");
+      delete expected.assignmentIntegrations;
+      expected["folderId"] = "{{folderId}}";
+
+      const actual = workforce._templatize(data, []);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should handle urlTemplate without itemId", () => {
+      const data = mockItems.getAGOLItemData("Workforce Project");
+      data.assignmentIntegrations[0].urlTemplate = "ABC123";
+      data.assignmentIntegrations[0].assignmentTypes[0].urlTemplate = "ABC123";
+
+      const expected: any = mockItems.getAGOLItemData("Workforce Project");
+      expected.assignmentIntegrations[0].urlTemplate = "ABC123";
+      expected.assignmentIntegrations[0].assignmentTypes[0].urlTemplate =
+        "ABC123";
+      expected["folderId"] = "{{folderId}}";
+
+      const actual = workforce._templatize(data, []);
+      expect(actual).toEqual(expected);
     });
   });
 
