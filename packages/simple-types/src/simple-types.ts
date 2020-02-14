@@ -290,14 +290,6 @@ export function createItemFromTemplate(
               templateDictionary
             );
 
-            // Copy resources, metadata, thumbnail, form
-            const resourcesDef = common.copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.id,
-              destinationAuthentication
-            );
-
             // Update relationships
             let relationshipsDef = Promise.resolve(
               [] as common.IStatusResponse[]
@@ -354,19 +346,9 @@ export function createItemFromTemplate(
               customProcDef = Promise.resolve();
             }
 
-            Promise.all([
-              resourcesDef,
-              relationshipsDef,
-              updateUrlDef,
-              customProcDef
-            ]).then(
+            Promise.all([relationshipsDef, updateUrlDef, customProcDef]).then(
               results => {
-                const [
-                  resources,
-                  relationships,
-                  updatedUrls,
-                  customProcs
-                ] = results;
+                const [relationships, updatedUrls, customProcs] = results;
 
                 let updateResourceDef: Promise<void> = Promise.resolve();
                 if (template.type === "QuickCapture Project") {
@@ -377,11 +359,6 @@ export function createItemFromTemplate(
                 }
                 updateResourceDef.then(
                   () => {
-                    progressTickCallback(
-                      template.itemId,
-                      common.EItemProgressStatus.Finished,
-                      template.estimatedDeploymentCostFactor / 2
-                    );
                     resolve({
                       id: createResponse.id,
                       type: newItemTemplate.type,

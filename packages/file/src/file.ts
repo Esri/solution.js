@@ -198,31 +198,11 @@ export function createItemFromTemplate(
               itemId: createResponse.id
             };
 
-            // Copy resources, metadata, thumbnail, data
-            const resourcesDef = common.copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.id,
-              destinationAuthentication,
-              false,
-              template.properties
-            );
-
-            Promise.all([resourcesDef]).then(
-              () => {
-                progressTickCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Finished,
-                  template.estimatedDeploymentCostFactor / 2
-                );
-                resolve({
-                  id: createResponse.id,
-                  type: newItemTemplate.type,
-                  postProcess: false
-                });
-              },
-              e => reject(common.fail(e)) // fails to deploy all resources to the item
-            );
+            resolve({
+              id: createResponse.id,
+              type: newItemTemplate.type,
+              postProcess: false
+            });
           },
           e => reject(common.fail(e)) // fails to create item
         );

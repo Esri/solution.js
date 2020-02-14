@@ -325,7 +325,29 @@ export function _createItemFromTemplateWhenReady(
               progressTickCallback
             )
             .then(
-              createResponse => resolve(createResponse),
+              createResponse => {
+                // Copy resources, metadata, thumbnail, form
+                common
+                  .copyFilesFromStorageItem(
+                    storageAuthentication,
+                    resourceFilePaths,
+                    createResponse.id,
+                    destinationAuthentication,
+                    templateType === "Group",
+                    template.properties
+                  )
+                  .then(
+                    () => {
+                      progressTickCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Finished,
+                        template.estimatedDeploymentCostFactor / 2
+                      );
+                      resolve(createResponse);
+                    },
+                    e => reject(common.fail(e))
+                  );
+              },
               e => reject(common.fail(e))
             );
         }

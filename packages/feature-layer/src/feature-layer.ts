@@ -77,13 +77,26 @@ export function convertItemToTemplate(
                         (dep: any) => dep.id
                       );
 
-                      // resolve the template with templatized values
-                      resolve(
-                        common.templatize(
-                          itemTemplate,
-                          dependencies,
-                          templatizeFieldReferences
-                        )
+                      _getThumbnailResource(
+                        itemTemplate,
+                        authentication,
+                        solutionItemId
+                      ).then(
+                        resources => {
+                          itemTemplate.resources = itemTemplate.resources.concat(
+                            resources
+                          );
+
+                          // resolve the template with templatized values
+                          resolve(
+                            common.templatize(
+                              itemTemplate,
+                              dependencies,
+                              templatizeFieldReferences
+                            )
+                          );
+                        },
+                        e => reject(common.fail(e))
                       );
                     },
                     (e: any) => reject(common.fail(e))
@@ -91,6 +104,35 @@ export function convertItemToTemplate(
               },
               e => reject(common.fail(e))
             );
+        },
+        e => reject(common.fail(e))
+      );
+  });
+}
+
+export function _getThumbnailResource(
+  itemTemplate: common.IItemTemplate,
+  authentication: common.UserSession,
+  solutionItemId: string
+): Promise<any> {
+  return new Promise<any[]>((resolve, reject) => {
+    const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
+      authentication.portal,
+      itemTemplate.itemId,
+      itemTemplate.item.thumbnail,
+      itemTemplate.resources
+    );
+    common
+      .copyFilesToStorageItem(
+        authentication,
+        resourceItemFilePaths,
+        solutionItemId,
+        authentication
+      )
+      .then(
+        response => {
+          const resources = (response as any[]).filter(item => !!item);
+          resolve(resources);
         },
         e => reject(common.fail(e))
       );
@@ -186,11 +228,6 @@ export function createItemFromTemplate(
                       )
                       .then(
                         () => {
-                          progressTickCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Finished,
-                            template.estimatedDeploymentCostFactor / 2
-                          );
                           resolve({
                             id: createResponse.serviceItemId,
                             type: newItemTemplate.type,

@@ -147,33 +147,15 @@ export function createItemFromTemplate(
               templateDictionary
             );
 
-            // Copy resources
-            common
-              .copyFilesFromStorageItem(
-                storageAuthentication,
-                resourceFilePaths,
-                createResponse.group.id,
-                destinationAuthentication,
-                true
-              )
-              .then(
-                () => {
-                  // Update the template dictionary with the new id
-                  templateDictionary[template.itemId].itemId =
-                    createResponse.group.id;
-                  progressTickCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Finished,
-                    template.estimatedDeploymentCostFactor / 2
-                  );
-                  resolve({
-                    id: createResponse.group.id,
-                    type: newItemTemplate.type,
-                    postProcess: false
-                  });
-                },
-                e => reject(common.fail(e))
-              );
+            // Update the template dictionary with the new id
+            templateDictionary[template.itemId].itemId =
+              createResponse.group.id;
+
+            resolve({
+              id: createResponse.group.id,
+              type: newItemTemplate.type,
+              postProcess: false
+            });
           } else {
             reject(common.fail());
           }
