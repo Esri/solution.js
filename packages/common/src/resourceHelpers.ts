@@ -224,6 +224,46 @@ export function isSupportedFileType(filename: string): boolean {
   );
 }
 
+export function updateItemResources(
+  itemTemplate: interfaces.IItemTemplate,
+  solutionItemId: string,
+  authentication: interfaces.UserSession
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    // Request item resources
+    restHelpersGet.getItemResources(itemTemplate.itemId, authentication).then(
+      resourcesResponse => {
+        // Save resources to solution item
+        const itemResources = (resourcesResponse.resources as any[]).map(
+          (resourceDetail: any) => resourceDetail.resource
+        );
+        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+          authentication.portal,
+          itemTemplate.itemId,
+          itemTemplate.item.thumbnail,
+          itemResources,
+          itemTemplate.type === "Group"
+        );
+        copyFilesToStorageItem(
+          authentication,
+          resourceItemFilePaths,
+          solutionItemId,
+          authentication
+        ).then(
+          savedResourceFilenames => {
+            const resources = (savedResourceFilenames as any[]).filter(
+              item => !!item
+            );
+            resolve(resources);
+          },
+          e => reject(generalHelpers.fail(e))
+        );
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
+}
+
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
  * the resources, metadata, and thumbnail of an item or group to an item.

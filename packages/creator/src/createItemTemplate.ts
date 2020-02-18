@@ -296,39 +296,49 @@ export function createItemTemplate(
                         itemTemplate
                       );
 
-                      // Trace item dependencies
-                      if (itemTemplate.dependencies.length === 0) {
-                        resolve(true);
-                      } else {
-                        // Get its dependencies, asking each to get its dependents via
-                        // recursive calls to this function
-                        const dependentDfds: Array<Promise<boolean>> = [];
-                        itemTemplate.dependencies.forEach(dependentId => {
-                          if (
-                            !common.findTemplateInList(
-                              existingTemplates,
-                              dependentId
-                            )
-                          ) {
-                            dependentDfds.push(
-                              createItemTemplate(
-                                solutionItemId,
-                                dependentId,
-                                templateDictionary,
-                                authentication,
-                                existingTemplates
-                              )
-                            );
+                      common
+                        .updateItemResources(
+                          itemTemplate,
+                          solutionItemId,
+                          authentication
+                        )
+                        .then(resources => {
+                          // update the templates resources
+                          itemTemplate.resources = resources;
+                          // Trace item dependencies
+                          if (itemTemplate.dependencies.length === 0) {
+                            resolve(true);
+                          } else {
+                            // Get its dependencies, asking each to get its dependents via
+                            // recursive calls to this function
+                            const dependentDfds: Array<Promise<boolean>> = [];
+                            itemTemplate.dependencies.forEach(dependentId => {
+                              if (
+                                !common.findTemplateInList(
+                                  existingTemplates,
+                                  dependentId
+                                )
+                              ) {
+                                dependentDfds.push(
+                                  createItemTemplate(
+                                    solutionItemId,
+                                    dependentId,
+                                    templateDictionary,
+                                    authentication,
+                                    existingTemplates
+                                  )
+                                );
+                              }
+                            });
+                            // tslint:disable-next-line: no-floating-promises
+                            Promise.all(dependentDfds).then(() => {
+                              if (progressTickCallback) {
+                                progressTickCallback();
+                              }
+                              resolve(true);
+                            });
                           }
                         });
-                        // tslint:disable-next-line: no-floating-promises
-                        Promise.all(dependentDfds).then(() => {
-                          if (progressTickCallback) {
-                            progressTickCallback();
-                          }
-                          resolve(true);
-                        });
-                      }
                     },
                     error => {
                       placeholder!.properties["partial"] = true;

@@ -54,37 +54,7 @@ export function convertItemToTemplate(
               ...groupResponse,
               type: "Group"
             };
-
-            // Request resources
-            common.getItemResources(itemTemplate.itemId, authentication).then(
-              resourcesResponse => {
-                // Save resources to solution item
-                itemTemplate.resources = (resourcesResponse.resources as any[]).map(
-                  (resourceDetail: any) => resourceDetail.resource
-                );
-                const resourceFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
-                  authentication.portal,
-                  itemTemplate.itemId,
-                  itemTemplate.item.thumbnail,
-                  itemTemplate.resources,
-                  true
-                );
-                common
-                  .copyFilesToStorageItem(
-                    authentication,
-                    resourceFilePaths,
-                    solutionItemId,
-                    authentication
-                  )
-                  .then(savedResourceFilenames => {
-                    itemTemplate.resources = (savedResourceFilenames as any[]).filter(
-                      item => !!item
-                    );
-                    resolve(itemTemplate);
-                  }, reject);
-              },
-              () => resolve(itemTemplate)
-            );
+            resolve(itemTemplate);
           },
           () => resolve(itemTemplate)
         );
