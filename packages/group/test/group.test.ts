@@ -662,9 +662,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.PROGRESS_CALLBACK
         )
         .then(response => {
           expect(response).toEqual({
@@ -702,9 +700,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.PROGRESS_CALLBACK
         )
         .then(response => {
           done.fail();
@@ -743,63 +739,5 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           done.fail();
         }, done);
     });
-
-    if (typeof window !== "undefined") {
-      it("should handle error on copy group resources", done => {
-        const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
-        const templateDictionary: any = {};
-        const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
-
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-        itemTemplate.itemId = itemId;
-        itemTemplate.type = "Group";
-        itemTemplate.item.title = "Dam Inspection Assignments";
-
-        const searchResult: any = {
-          query: "Dam Inspection Assignments",
-          total: 12,
-          start: 1,
-          num: 10,
-          nextStart: 11,
-          results: []
-        };
-
-        const filePaths: any[] = [
-          {
-            type: common.EFileType.Resource,
-            folder: "aFolder",
-            filename: "git_merge.png",
-            url: "http://someurl"
-          }
-        ];
-
-        fetchMock
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
-            searchResult
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
-            { success: true, group: { id: newItemID } }
-          )
-          .post("http://someurl//rest/info", {})
-          .post("http://someurl/", mockItems.get400Failure());
-
-        group
-          .createItemFromTemplate(
-            itemTemplate,
-            filePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            function() {
-              const a: any = "A";
-            }
-          )
-          .then(() => {
-            done.fail();
-          }, done);
-      });
-    }
   });
 });

@@ -275,20 +275,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
-            mockItems.get500Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/images/Camera.png",
-            utils.getSampleImage(),
-            { sendAsJson: false }
-          )
-          .post(
             "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
@@ -312,10 +298,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemId: "qck1234567890",
           key: "vx3ubyx3",
           data: Object({ application: Object({}), name: "qc.project.json" }),
-          resources: [
-            "qck1234567890/qc.project.json",
-            "qck1234567890_info_thumbnail/ago_downloaded.png"
-          ],
+          resources: [],
           dependencies: [],
           groups: [],
           type: "QuickCapture Project",
@@ -404,8 +387,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
 
-        const expectedFetch = mockItems.getAnImageResponse();
-
         const expectedTemplate: any = {
           itemId: "map1234567890",
           type: "Web Map",
@@ -431,74 +412,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
           data: undefined,
-          resources: [
-            "map1234567890_image/banner.png",
-            "map1234567890_info_thumbnail/banner.png"
-          ],
+          resources: [],
           dependencies: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
         };
 
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/resources",
-            {
-              total: 1,
-              start: 1,
-              num: 1,
-              nextStart: -1,
-              resources: [
-                {
-                  resource: "image/banner.png",
-                  created: 1522711362000,
-                  size: 56945
-                }
-              ]
-            }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/resources/image/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
-              MOCK_USER_SESSION.username +
-              "/items/" +
-              solutionItemId +
-              "/addResources",
-            {
-              success: true,
-              itemId: solutionItemId,
-              owner: MOCK_USER_SESSION.username,
-              folder: null
-            }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/info/thumbnail/banner.png",
-            expectedFetch,
-            { sendAsJson: false }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/data",
-            mockItems.get500Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-              itemTemplate.itemId +
-              "/info/metadata/metadata.xml",
-            mockItems.get400Failure()
-          );
+        fetchMock.post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            itemTemplate.itemId +
+            "/data",
+          mockItems.get500Failure()
+        );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
           total: 0,
           relatedItems: []

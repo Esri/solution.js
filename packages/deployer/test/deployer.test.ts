@@ -456,7 +456,7 @@ describe("Module `deploySolution`", () => {
       it("can handle error on postProcessDependencies", done => {
         const itemInfoCard: any = {
           id: "c38e59126368495694ca23b7ccacefba",
-          title: "Election Management_JH",
+          title: "Election Management",
           snippet: "",
           description: "",
           url:

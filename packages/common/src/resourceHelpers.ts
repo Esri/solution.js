@@ -224,46 +224,6 @@ export function isSupportedFileType(filename: string): boolean {
   );
 }
 
-export function updateItemResources(
-  itemTemplate: interfaces.IItemTemplate,
-  solutionItemId: string,
-  authentication: interfaces.UserSession
-): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
-    // Request item resources
-    restHelpersGet.getItemResources(itemTemplate.itemId, authentication).then(
-      resourcesResponse => {
-        // Save resources to solution item
-        const itemResources = (resourcesResponse.resources as any[]).map(
-          (resourceDetail: any) => resourceDetail.resource
-        );
-        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
-          authentication.portal,
-          itemTemplate.itemId,
-          itemTemplate.item.thumbnail,
-          itemResources,
-          itemTemplate.type === "Group"
-        );
-        copyFilesToStorageItem(
-          authentication,
-          resourceItemFilePaths,
-          solutionItemId,
-          authentication
-        ).then(
-          savedResourceFilenames => {
-            const resources = (savedResourceFilenames as any[]).filter(
-              item => !!item
-            );
-            resolve(resources);
-          },
-          e => reject(generalHelpers.fail(e))
-        );
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
  * the resources, metadata, and thumbnail of an item or group to an item.
@@ -750,6 +710,52 @@ export function generateThumbnailStorageFilename(
       ? thumbnailUrlParts[0]
       : thumbnailUrlParts[1];
   return { folder, filename };
+}
+
+/**
+ * Updates the solution item with resources from the itemTemplate
+ *
+ * @param itemTemplate Template for AGOL item
+ * @param solutionItemId item id for the solution
+ * @param authentication Credentials for the request to the storage
+ * @return A promise which resolves with an array of resources that have been added to the item
+ */
+export function updateItemResources(
+  itemTemplate: interfaces.IItemTemplate,
+  solutionItemId: string,
+  authentication: interfaces.UserSession
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    // Request item resources
+    // tslint:disable-next-line: no-floating-promises
+    restHelpersGet
+      .getItemResources(itemTemplate.itemId, authentication)
+      .then(resourcesResponse => {
+        // Save resources to solution item
+        const itemResources = (resourcesResponse.resources as any[]).map(
+          (resourceDetail: any) => resourceDetail.resource
+        );
+        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+          authentication.portal,
+          itemTemplate.itemId,
+          itemTemplate.item.thumbnail,
+          itemResources,
+          itemTemplate.type === "Group"
+        );
+        // tslint:disable-next-line: no-floating-promises
+        copyFilesToStorageItem(
+          authentication,
+          resourceItemFilePaths,
+          solutionItemId,
+          authentication
+        ).then(savedResourceFilenames => {
+          const resources = (savedResourceFilenames as any[]).filter(
+            item => !!item
+          );
+          resolve(resources);
+        });
+      });
+  });
 }
 
 /**
