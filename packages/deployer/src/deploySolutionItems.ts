@@ -401,6 +401,7 @@ export function postProcessDependencies(
         let updates: Array<Promise<any>> = [Promise.resolve()];
         for (let i = 0; i < requestedItemInfos.length; i++) {
           const itemInfo = requestedItemInfos[i];
+          /* istanbul ignore else */
           if (common.hasUnresolvedVariables(data[i])) {
             const template: common.IItemTemplate = common.getTemplateById(
               templates,
@@ -421,7 +422,8 @@ export function postProcessDependencies(
               );
             } else {
               const itemHandler: any = moduleMap[template.type];
-              if (itemHandler?.postProcessItemDependencies) {
+              /* istanbul ignore else */
+              if (itemHandler.postProcessItemDependencies) {
                 updates.push(
                   itemHandler.postProcessItemDependencies(
                     itemInfo.id,
