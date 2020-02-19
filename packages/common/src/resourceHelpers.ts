@@ -576,7 +576,7 @@ export function generateSourceFilePaths(
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
-
+  /* istanbul ignore else */
   if (thumbnailUrlPart) {
     filePaths.push({
       url: generateSourceThumbnailUrl(
