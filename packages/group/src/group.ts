@@ -54,37 +54,7 @@ export function convertItemToTemplate(
               ...groupResponse,
               type: "Group"
             };
-
-            // Request resources
-            common.getItemResources(itemTemplate.itemId, authentication).then(
-              resourcesResponse => {
-                // Save resources to solution item
-                itemTemplate.resources = (resourcesResponse.resources as any[]).map(
-                  (resourceDetail: any) => resourceDetail.resource
-                );
-                const resourceFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
-                  authentication.portal,
-                  itemTemplate.itemId,
-                  itemTemplate.item.thumbnail,
-                  itemTemplate.resources,
-                  true
-                );
-                common
-                  .copyFilesToStorageItem(
-                    authentication,
-                    resourceFilePaths,
-                    solutionItemId,
-                    authentication
-                  )
-                  .then(savedResourceFilenames => {
-                    itemTemplate.resources = (savedResourceFilenames as any[]).filter(
-                      item => !!item
-                    );
-                    resolve(itemTemplate);
-                  }, reject);
-              },
-              () => resolve(itemTemplate)
-            );
+            resolve(itemTemplate);
           },
           () => resolve(itemTemplate)
         );
@@ -147,33 +117,15 @@ export function createItemFromTemplate(
               templateDictionary
             );
 
-            // Copy resources
-            common
-              .copyFilesFromStorageItem(
-                storageAuthentication,
-                resourceFilePaths,
-                createResponse.group.id,
-                destinationAuthentication,
-                true
-              )
-              .then(
-                () => {
-                  // Update the template dictionary with the new id
-                  templateDictionary[template.itemId].itemId =
-                    createResponse.group.id;
-                  progressTickCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Finished,
-                    template.estimatedDeploymentCostFactor / 2
-                  );
-                  resolve({
-                    id: createResponse.group.id,
-                    type: newItemTemplate.type,
-                    postProcess: false
-                  });
-                },
-                e => reject(common.fail(e))
-              );
+            // Update the template dictionary with the new id
+            templateDictionary[template.itemId].itemId =
+              createResponse.group.id;
+
+            resolve({
+              id: createResponse.group.id,
+              type: newItemTemplate.type,
+              postProcess: false
+            });
           } else {
             reject(common.fail());
           }

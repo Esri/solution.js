@@ -820,6 +820,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -914,6 +918,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("web application template values", done => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        )
         .post(
           "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           {
@@ -1077,6 +1085,10 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("error with web application template templatizeValues", done => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        )
         .post(
           "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           mockItems.get400Failure()

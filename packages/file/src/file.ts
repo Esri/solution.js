@@ -64,28 +64,6 @@ export function convertItemToTemplate(
         );
     });
 
-    // Request item resources
-    const resourcePromise = common
-      .getItemResources(itemTemplate.itemId, authentication)
-      .then(resourcesResponse => {
-        // Save resources to solution item
-        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
-          (resourceDetail: any) => resourceDetail.resource
-        );
-        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
-          authentication.portal,
-          itemTemplate.itemId,
-          itemTemplate.item.thumbnail,
-          itemTemplate.resources
-        );
-        return common.copyFilesToStorageItem(
-          authentication,
-          resourceItemFilePaths,
-          solutionItemId,
-          authentication
-        );
-      });
-
     // Request related items
     const relatedPromise = Promise.resolve(
       {} as common.IGetRelatedItemsResponse
@@ -99,57 +77,48 @@ export function convertItemToTemplate(
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // tslint:disable-next-line:no-floating-promises
-    Promise.all([dataPromise, resourcePromise, relatedPromise]).then(
-      responses => {
-        const [
+    Promise.all([dataPromise, relatedPromise]).then(responses => {
+      const [itemDataResponse, relatedItemsResponse] = responses;
+
+      if (itemDataResponse) {
+        const resource: common.IFileMimeType = common.convertBlobToSupportableResource(
           itemDataResponse,
-          savedResourceFilenames,
-          relatedItemsResponse
-        ] = responses;
-        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
-          item => !!item
+          itemTemplate.item.name
         );
+        itemTemplate.properties[resource.filename] = resource.mimeType;
 
-        if (itemDataResponse) {
-          const resource: common.IFileMimeType = common.convertBlobToSupportableResource(
-            itemDataResponse,
-            itemTemplate.item.name
+        const storageName = common.generateResourceStorageFilename(
+          itemTemplate.itemId,
+          (resource.blob as File).name,
+          (resource.blob as File).name === resource.filename
+            ? "info_data"
+            : "info_dataz"
+        );
+        common
+          .addResourceFromBlob(
+            resource.blob,
+            solutionItemId,
+            storageName.folder,
+            storageName.filename,
+            authentication
+          )
+          .then(
+            response => {
+              itemTemplate.resources.push(
+                storageName.folder + "/" + storageName.filename
+              );
+              resolve(itemTemplate);
+            },
+            error => {
+              itemTemplate.properties["partial"] = true;
+              itemTemplate.properties["error"] = JSON.stringify(error);
+              resolve(itemTemplate);
+            }
           );
-          itemTemplate.properties[resource.filename] = resource.mimeType;
-
-          const storageName = common.generateResourceStorageFilename(
-            itemTemplate.itemId,
-            (resource.blob as File).name,
-            (resource.blob as File).name === resource.filename
-              ? "info_data"
-              : "info_dataz"
-          );
-          common
-            .addResourceFromBlob(
-              resource.blob,
-              solutionItemId,
-              storageName.folder,
-              storageName.filename,
-              authentication
-            )
-            .then(
-              response => {
-                itemTemplate.resources.push(
-                  storageName.folder + "/" + storageName.filename
-                );
-                resolve(itemTemplate);
-              },
-              error => {
-                itemTemplate.properties["partial"] = true;
-                itemTemplate.properties["error"] = JSON.stringify(error);
-                resolve(itemTemplate);
-              }
-            );
-        } else {
-          resolve(itemTemplate);
-        }
+      } else {
+        resolve(itemTemplate);
       }
-    );
+    });
   });
 }
 
@@ -198,31 +167,11 @@ export function createItemFromTemplate(
               itemId: createResponse.id
             };
 
-            // Copy resources, metadata, thumbnail, data
-            const resourcesDef = common.copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.id,
-              destinationAuthentication,
-              false,
-              template.properties
-            );
-
-            Promise.all([resourcesDef]).then(
-              () => {
-                progressTickCallback(
-                  template.itemId,
-                  common.EItemProgressStatus.Finished,
-                  template.estimatedDeploymentCostFactor / 2
-                );
-                resolve({
-                  id: createResponse.id,
-                  type: newItemTemplate.type,
-                  postProcess: false
-                });
-              },
-              e => reject(common.fail(e)) // fails to deploy all resources to the item
-            );
+            resolve({
+              id: createResponse.id,
+              type: newItemTemplate.type,
+              postProcess: false
+            });
           },
           e => reject(common.fail(e)) // fails to create item
         );

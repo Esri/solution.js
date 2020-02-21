@@ -462,65 +462,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
             done.fail();
           }, done);
       });
-
-      it("fails to deploy file data to the item", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Map"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Data,
-            folder: "cod1234567890_info_data",
-            filename: "Name of an AGOL item.zip",
-            url:
-              "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip"
-          }
-        ];
-        const templateDictionary: any = {};
-        const newItemID: string = "map1234567891";
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
-            SERVER_INFO
-          )
-          .post(
-            "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip",
-            utils.getSampleZipFile("Name of an AGOL item.zip")
-          )
-          .post(
-            "https://myserver/doc/metadata.xml",
-            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
-              type: "text/xml"
-            }),
-            { sendAsJson: false }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
-              newItemID +
-              "/update",
-            { success: false }
-          );
-
-        file
-          .createItemFromTemplate(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
-          .then(
-            () => done.fail(),
-            () => done()
-          );
-      });
     }
   });
 });

@@ -79,12 +79,12 @@ export function deploySolution(
           });
         }
 
-        const deployOptions: common.IDeploySolutionOptions = options ?? {};
-        deployOptions.title = deployOptions.title ?? itemBase.title;
-        deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
-        deployOptions.description =
-          deployOptions.description ?? itemBase.description;
-        deployOptions.tags = deployOptions.tags ?? itemBase.tags; // deployOptions.thumbnail needs to be a full URL
+        const thumbnailUrl = common.getItemThumbnailUrl(
+          templateSolutionId,
+          itemBase.thumbnail,
+          false,
+          authentication
+        );
 
         common.deleteItemProps(itemBase);
 
@@ -172,7 +172,8 @@ export function deploySolution(
                     const createSolutionItemBase = {
                       ...itemBase,
                       type: "Solution",
-                      typeKeywords: ["Solution"]
+                      typeKeywords: ["Solution"],
+                      thumbnailUrl: thumbnailUrl
                     };
 
                     common

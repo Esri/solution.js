@@ -325,7 +325,29 @@ export function _createItemFromTemplateWhenReady(
               progressTickCallback
             )
             .then(
-              createResponse => resolve(createResponse),
+              createResponse => {
+                // Copy resources, metadata, thumbnail, form
+                common
+                  .copyFilesFromStorageItem(
+                    storageAuthentication,
+                    resourceFilePaths,
+                    createResponse.id,
+                    destinationAuthentication,
+                    templateType === "Group",
+                    template.properties
+                  )
+                  .then(
+                    () => {
+                      progressTickCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Finished,
+                        template.estimatedDeploymentCostFactor / 2
+                      );
+                      resolve(createResponse);
+                    },
+                    e => reject(common.fail(e))
+                  );
+              },
               e => reject(common.fail(e))
             );
         }
@@ -379,6 +401,7 @@ export function postProcessDependencies(
         let updates: Array<Promise<any>> = [Promise.resolve()];
         for (let i = 0; i < requestedItemInfos.length; i++) {
           const itemInfo = requestedItemInfos[i];
+          /* istanbul ignore else */
           if (common.hasUnresolvedVariables(data[i])) {
             const template: common.IItemTemplate = common.getTemplateById(
               templates,
@@ -399,7 +422,8 @@ export function postProcessDependencies(
               );
             } else {
               const itemHandler: any = moduleMap[template.type];
-              if (itemHandler?.postProcessItemDependencies) {
+              /* istanbul ignore else */
+              if (itemHandler.postProcessItemDependencies) {
                 updates.push(
                   itemHandler.postProcessItemDependencies(
                     itemInfo.id,

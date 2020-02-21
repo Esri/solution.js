@@ -111,7 +111,8 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -137,7 +138,8 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -221,7 +223,8 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -285,7 +288,8 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -349,7 +353,8 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
           )
           .then(
             response => {

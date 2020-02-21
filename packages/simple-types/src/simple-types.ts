@@ -49,29 +49,6 @@ export function convertItemToTemplate(
       ".itemId"
     );
 
-    // Request item resources
-    const resourcePromise = common
-      .getItemResources(itemTemplate.itemId, authentication)
-      .then(resourcesResponse => {
-        // Save resources to solution item
-        itemTemplate.resources = (resourcesResponse.resources as any[]).map(
-          (resourceDetail: any) => resourceDetail.resource
-        );
-        const resourceItemFilePaths: common.ISourceFileCopyPath[] = common.generateSourceFilePaths(
-          authentication.portal,
-          itemTemplate.itemId,
-          itemTemplate.item.thumbnail,
-          itemTemplate.resources
-        );
-        return common.copyFilesToStorageItem(
-          authentication,
-          resourceItemFilePaths,
-          solutionItemId,
-          authentication
-        );
-      })
-      .catch(() => Promise.resolve([]));
-
     // Request related items
     const relatedPromise = common.getItemRelatedItemsInSameDirection(
       itemTemplate.itemId,
@@ -111,17 +88,10 @@ export function convertItemToTemplate(
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // tslint:disable-next-line:no-floating-promises
-    Promise.all([dataPromise, resourcePromise, relatedPromise]).then(
+    Promise.all([dataPromise, relatedPromise]).then(
       responses => {
-        const [
-          itemDataResponse,
-          savedResourceFilenames,
-          relatedItemsResponse
-        ] = responses;
+        const [itemDataResponse, relatedItemsResponse] = responses;
         itemTemplate.data = itemDataResponse;
-        itemTemplate.resources = (savedResourceFilenames as any[]).filter(
-          item => !!item
-        );
 
         // Save the mappings to related items & add those items to the dependencies
         if ((relatedItemsResponse as common.IRelatedItems[]).length > 0) {
@@ -290,14 +260,6 @@ export function createItemFromTemplate(
               templateDictionary
             );
 
-            // Copy resources, metadata, thumbnail, form
-            const resourcesDef = common.copyFilesFromStorageItem(
-              storageAuthentication,
-              resourceFilePaths,
-              createResponse.id,
-              destinationAuthentication
-            );
-
             // Update relationships
             let relationshipsDef = Promise.resolve(
               [] as common.IStatusResponse[]
@@ -354,19 +316,9 @@ export function createItemFromTemplate(
               customProcDef = Promise.resolve();
             }
 
-            Promise.all([
-              resourcesDef,
-              relationshipsDef,
-              updateUrlDef,
-              customProcDef
-            ]).then(
+            Promise.all([relationshipsDef, updateUrlDef, customProcDef]).then(
               results => {
-                const [
-                  resources,
-                  relationships,
-                  updatedUrls,
-                  customProcs
-                ] = results;
+                const [relationships, updatedUrls, customProcs] = results;
 
                 let updateResourceDef: Promise<void> = Promise.resolve();
                 if (template.type === "QuickCapture Project") {
@@ -377,11 +329,6 @@ export function createItemFromTemplate(
                 }
                 updateResourceDef.then(
                   () => {
-                    progressTickCallback(
-                      template.itemId,
-                      common.EItemProgressStatus.Finished,
-                      template.estimatedDeploymentCostFactor / 2
-                    );
                     resolve({
                       id: createResponse.id,
                       type: newItemTemplate.type,

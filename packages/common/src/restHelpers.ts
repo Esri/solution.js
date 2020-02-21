@@ -513,6 +513,7 @@ export function extractDependencies(
         })
         .then(
           response => {
+            /* istanbul ignore else */
             if (response && response.services) {
               response.services.forEach((layer: any) => {
                 dependencies.push({
@@ -520,8 +521,8 @@ export function extractDependencies(
                   name: layer.name
                 });
               });
-              resolve(dependencies);
             }
+            resolve(dependencies);
           },
           e => reject(generalHelpers.fail(e))
         );
@@ -605,6 +606,7 @@ export function getLayerUpdates(
       itemTemplate: args.itemTemplate,
       authentication: args.authentication
     });
+    /* istanbul ignore else */
     if (relUpdates.layers.length > 0) {
       updates.push(_getUpdate(adminUrl, null, relUpdates, args, "add"));
       updates.push(refresh);
@@ -1035,6 +1037,7 @@ export function _getRelationshipUpdates(
   };
   Object.keys(args.objects).forEach((k: any) => {
     const obj: any = args.objects[k];
+    /* istanbul ignore else */
     if (obj.relationships && obj.relationships.length > 0) {
       rels.layers.push({
         id: obj.id,

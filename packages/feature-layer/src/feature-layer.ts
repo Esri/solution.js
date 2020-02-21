@@ -186,11 +186,6 @@ export function createItemFromTemplate(
                       )
                       .then(
                         () => {
-                          progressTickCallback(
-                            template.itemId,
-                            common.EItemProgressStatus.Finished,
-                            template.estimatedDeploymentCostFactor / 2
-                          );
                           resolve({
                             id: createResponse.serviceItemId,
                             type: newItemTemplate.type,
