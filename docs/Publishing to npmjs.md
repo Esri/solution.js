@@ -59,7 +59,7 @@ npm run release:publish
 ? publish release to github? (y/N)
 ```
 
-10. Update the package.json files in the TypeScript examples in the common package with the new version number and run `npm install` for each.
+10. Update the package.json files in the package examples with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub
