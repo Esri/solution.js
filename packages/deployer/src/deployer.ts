@@ -79,6 +79,16 @@ export function deploySolution(
           });
         }
 
+        // update template items with source-itemId type keyword
+        itemData.templates = itemData.templates.map((template: any) => {
+          const sourceId: string = "source-" + template.itemId;
+          template.item?.typeKeywords?.push(sourceId);
+          if (common.getProp(template, "item.type") === "Group") {
+            template.item?.tags?.push(sourceId);
+          }
+          return template;
+        });
+
         const thumbnailUrl = common.getItemThumbnailUrl(
           templateSolutionId,
           itemBase.thumbnail,
@@ -219,6 +229,7 @@ export function deploySolution(
                               authentication,
                               templateDictionary,
                               authentication,
+                              options?.enableItemReuse || false,
                               (
                                 itemId: string,
                                 status: common.EItemProgressStatus,

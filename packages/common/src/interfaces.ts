@@ -86,6 +86,7 @@ export interface IDeploySolutionOptions {
   thumbnailUrl?: string; // default: copied from solution item
   templateDictionary?: any;
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
+  enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
   progressCallback?: ISolutionProgressCallback;
 }
 

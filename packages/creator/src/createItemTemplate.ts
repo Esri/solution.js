@@ -236,6 +236,20 @@ export function createItemTemplate(
         })
         .then(
           itemInfo => {
+            const idTest: RegExp = /^source-[0-9A-F]{32}/i;
+            // Remove any source-itemId type keywords
+            if (Array.isArray(itemInfo.typeKeywords)) {
+              itemInfo.typeKeywords = itemInfo.typeKeywords.filter(v =>
+                idTest.test(v) ? false : true
+              );
+            }
+            // Remove any source-itemId tags
+            if (Array.isArray(itemInfo.tags)) {
+              itemInfo.tags = itemInfo.tags.filter(v =>
+                idTest.test(v) ? false : true
+              );
+            }
+
             const placeholder = common.findTemplateInList(
               existingTemplates,
               itemId

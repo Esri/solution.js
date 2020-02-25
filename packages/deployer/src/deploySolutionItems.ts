@@ -213,6 +213,7 @@ export function deploySolutionItems(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
+  reuseItems: boolean,
   progressTickCallback: common.IItemProgressCallback
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -229,29 +230,42 @@ export function deploySolutionItems(
     const awaitAllItems = [] as Array<
       Promise<common.ICreateItemFromTemplateResponse>
     >;
-    cloneOrderChecklist.forEach(id => {
-      // Get the item's template out of the list of templates
-      const template = common.findTemplateInList(templates, id);
-      awaitAllItems.push(
-        _createItemFromTemplateWhenReady(
-          template!,
-          common.generateStorageFilePaths(
-            portalSharingUrl,
-            storageItemId,
-            template!.resources
-          ),
-          storageAuthentication,
-          templateDictionary,
-          destinationAuthentication,
-          progressTickCallback
-        )
-      );
-    });
 
-    // Wait until all items have been created
-    Promise.all(awaitAllItems).then(
-      clonedSolutionItemIds => {
-        resolve(clonedSolutionItemIds);
+    const existingItemsDef: Promise<any> = _evaluateExistingItems(
+      templates,
+      reuseItems,
+      templateDictionary,
+      destinationAuthentication
+    );
+
+    existingItemsDef.then(
+      () => {
+        cloneOrderChecklist.forEach(id => {
+          // Get the item's template out of the list of templates
+          const template = common.findTemplateInList(templates, id);
+          awaitAllItems.push(
+            _createItemFromTemplateWhenReady(
+              template!,
+              common.generateStorageFilePaths(
+                portalSharingUrl,
+                storageItemId,
+                template!.resources
+              ),
+              storageAuthentication,
+              templateDictionary,
+              destinationAuthentication,
+              progressTickCallback
+            )
+          );
+        });
+
+        // Wait until all items have been created
+        Promise.all(awaitAllItems).then(
+          clonedSolutionItemIds => {
+            resolve(clonedSolutionItemIds);
+          },
+          e => reject(common.fail(e))
+        );
       },
       e => reject(common.fail(e))
     );
@@ -259,6 +273,148 @@ export function deploySolutionItems(
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
+
+// TODO make sure an item that was shared with group but deleted before reuseItems is shared back properly
+// TODO make sure that recreated map has vars set when ruse
+export function _evaluateExistingItems(
+  templates: common.IItemTemplate[],
+  reuseItems: boolean,
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    if (reuseItems) {
+      const existingItemsByKeyword: Array<Promise<
+        any
+      >> = _findExistingItemByKeyword(
+        templates,
+        templateDictionary,
+        authentication
+      );
+
+      Promise.all(existingItemsByKeyword).then(
+        (existingItemsByKeywordResponse: any) => {
+          const existingItemsByTag = _handleExistingItems(
+            existingItemsByKeywordResponse,
+            templateDictionary,
+            authentication,
+            true
+          );
+
+          Promise.all(existingItemsByTag).then(
+            existingItemsByTagResponse => {
+              _handleExistingItems(
+                existingItemsByTagResponse,
+                templateDictionary,
+                authentication,
+                false
+              );
+              resolve();
+            },
+            e => reject(common.fail(e))
+          );
+        },
+        e => reject(common.fail(e))
+      );
+    } else {
+      resolve();
+    }
+  });
+}
+
+export function _handleExistingItems(
+  existingItemsResponse: any[],
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+  addTagQuery: boolean
+): Array<Promise<any>> {
+  // if items are not found by type keyword search by tag
+  const existingItemsByTag: Array<Promise<any>> = [Promise.resolve()];
+  if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
+    existingItemsResponse.forEach(existingItem => {
+      if (Array.isArray(existingItem?.results)) {
+        let result: any;
+        const results: any[] = existingItem.results;
+        if (results.length === 1) {
+          result = results[0];
+        } else if (results.length > 1) {
+          result = results.reduce((a: any, b: any) =>
+            a.created > b.created ? a : b
+          );
+        } else {
+          if (addTagQuery && existingItem.query) {
+            const tagQuery: string = existingItem.query.replace(
+              "typekeywords",
+              "tags"
+            );
+            existingItemsByTag.push(
+              _findExistingItem(tagQuery, destinationAuthentication)
+            );
+          }
+        }
+        if (result) {
+          const sourceId: any = existingItem.query
+            ? existingItem.query.match(/[0-9A-F]{32}/i)[0]
+            : existingItem.sourceId;
+          if (sourceId) {
+            templateDictionary[sourceId] = {
+              def: Promise.resolve({
+                id: result.id,
+                type: result.type,
+                postProcess: false
+              }),
+              itemId: result.id
+            };
+          }
+        }
+      }
+    });
+  }
+  return existingItemsByTag;
+}
+
+export function _findExistingItemByKeyword(
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+  authentication: common.UserSession
+): Array<Promise<any>> {
+  const existingItemsDefs: Array<Promise<any>> = [];
+  templates.forEach(template => {
+    if (template.item.type === "Group") {
+      const userGroups: any = templateDictionary.user?.groups;
+      if (Array.isArray(userGroups)) {
+        existingItemsDefs.push(
+          Promise.resolve({
+            results: userGroups.filter(
+              g => g.tags.indexOf(`source-${template.itemId}`) > -1
+            ),
+            sourceId: template.itemId
+          })
+        );
+      }
+    } else {
+      existingItemsDefs.push(
+        _findExistingItem(
+          `typekeywords:source-${template.itemId} type:${template.item.type} owner:${templateDictionary.user.username}`,
+          authentication
+        )
+      );
+    }
+  });
+  return existingItemsDefs;
+}
+
+export function _findExistingItem(
+  query: string,
+  authentication: common.UserSession
+): Promise<any> {
+  const searchOptions = {
+    q: query,
+    authentication: authentication,
+    pagingParam: { start: 1, num: 100 }
+  };
+  return common.searchItems(searchOptions);
+}
 
 /**
  * Creates an item from a template once the item's dependencies have been created.
@@ -280,83 +436,93 @@ export function _createItemFromTemplateWhenReady(
   destinationAuthentication: common.UserSession,
   progressTickCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  templateDictionary[template.itemId] = {};
-  const itemDef = new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      // Wait until all of the item's dependencies are deployed
-      const awaitDependencies = [] as Array<
-        Promise<common.ICreateItemFromTemplateResponse>
-      >;
-      (template.dependencies || []).forEach(dependencyId => {
-        awaitDependencies.push(templateDictionary[dependencyId].def);
-      });
-      Promise.all(awaitDependencies).then(() => {
-        // Find the conversion handler for this item type
-        const templateType = template.type;
-        let itemHandler = moduleMap[templateType];
-        if (!itemHandler) {
-          console.warn(
-            "Unimplemented item type (package level) " +
-              templateType +
-              " for " +
-              template.itemId
-          );
-          resolve({
-            id: "",
-            type: templateType,
-            postProcess: false
-          });
-        } else {
-          // Handle original Story Maps with next-gen Story Maps
-          if (templateType === "Web Mapping Application") {
-            if (storyMap.isAStoryMap(template) && template.data) {
-              itemHandler = storyMap;
-            }
-          }
-
-          // Delegate the creation of the template to the handler
-          itemHandler
-            .createItemFromTemplate(
-              template,
-              resourceFilePaths,
-              storageAuthentication,
-              templateDictionary,
-              destinationAuthentication,
-              progressTickCallback
-            )
-            .then(
-              createResponse => {
-                // Copy resources, metadata, thumbnail, form
-                common
-                  .copyFilesFromStorageItem(
-                    storageAuthentication,
-                    resourceFilePaths,
-                    createResponse.id,
-                    destinationAuthentication,
-                    templateType === "Group",
-                    template.properties
-                  )
-                  .then(
-                    () => {
-                      progressTickCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Finished,
-                        template.estimatedDeploymentCostFactor / 2
-                      );
-                      resolve(createResponse);
-                    },
-                    e => reject(common.fail(e))
-                  );
-              },
-              e => reject(common.fail(e))
+  let itemDef;
+  if (!templateDictionary.hasOwnProperty(template.itemId)) {
+    templateDictionary[template.itemId] = {};
+    itemDef = new Promise<common.ICreateItemFromTemplateResponse>(
+      (resolve, reject) => {
+        // Wait until all of the item's dependencies are deployed
+        const awaitDependencies = [] as Array<
+          Promise<common.ICreateItemFromTemplateResponse>
+        >;
+        (template.dependencies || []).forEach(dependencyId => {
+          awaitDependencies.push(templateDictionary[dependencyId].def);
+        });
+        Promise.all(awaitDependencies).then(() => {
+          // Find the conversion handler for this item type
+          const templateType = template.type;
+          let itemHandler = moduleMap[templateType];
+          if (!itemHandler) {
+            console.warn(
+              "Unimplemented item type (package level) " +
+                templateType +
+                " for " +
+                template.itemId
             );
-        }
-      }, common.fail);
-    }
-  );
+            resolve({
+              id: "",
+              type: templateType,
+              postProcess: false
+            });
+          } else {
+            // Handle original Story Maps with next-gen Story Maps
+            if (templateType === "Web Mapping Application") {
+              if (storyMap.isAStoryMap(template) && template.data) {
+                itemHandler = storyMap;
+              }
+            }
 
-  // Save the deferred for the use of items that depend on this item being created first
-  templateDictionary[template.itemId].def = itemDef;
+            // Delegate the creation of the template to the handler
+            itemHandler
+              .createItemFromTemplate(
+                template,
+                resourceFilePaths,
+                storageAuthentication,
+                templateDictionary,
+                destinationAuthentication,
+                progressTickCallback
+              )
+              .then(
+                createResponse => {
+                  // Copy resources, metadata, thumbnail, form
+                  common
+                    .copyFilesFromStorageItem(
+                      storageAuthentication,
+                      resourceFilePaths,
+                      createResponse.id,
+                      destinationAuthentication,
+                      templateType === "Group",
+                      template.properties
+                    )
+                    .then(
+                      () => {
+                        progressTickCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Finished,
+                          template.estimatedDeploymentCostFactor / 2
+                        );
+                        resolve(createResponse);
+                      },
+                      e => reject(common.fail(e))
+                    );
+                },
+                e => reject(common.fail(e))
+              );
+          }
+        }, common.fail);
+      }
+    );
+
+    // Save the deferred for the use of items that depend on this item being created first
+    templateDictionary[template.itemId].def = itemDef;
+  } else {
+    itemDef = templateDictionary[template.itemId].def;
+    progressTickCallback(
+      template.itemId,
+      common.EItemProgressStatus.Finished,
+      template.estimatedDeploymentCostFactor / 2
+    );
+  }
   return itemDef;
 }
 
