@@ -309,6 +309,7 @@ export function _evaluateExistingItems(
                 authentication,
                 false
               );
+              _updateTemplateDictionary(templates, templateDictionary);
               resolve();
             },
             e => reject(common.fail(e))
@@ -318,6 +319,27 @@ export function _evaluateExistingItems(
       );
     } else {
       resolve();
+    }
+  });
+}
+
+export function _updateTemplateDictionary(
+  templates: common.IItemTemplate[],
+  templateDictionary: any
+): void {
+  templates.forEach(t => {
+    if (t.item.type === "Feature Service") {
+      const templateInfo: any = templateDictionary[t.itemId];
+      if (templateInfo && templateInfo.url && templateInfo.itemId) {
+        Object.assign(
+          templateDictionary[t.itemId],
+          common.getLayerSettings(
+            common.getLayersAndTables(t),
+            templateInfo.url,
+            templateInfo.itemId
+          )
+        );
+      }
     }
   });
 }
@@ -363,7 +385,10 @@ export function _handleExistingItems(
                 type: result.type,
                 postProcess: false
               }),
-              itemId: result.id
+              itemId: result.id,
+              name: result.name,
+              title: result.title,
+              url: result.url
             };
           }
         }

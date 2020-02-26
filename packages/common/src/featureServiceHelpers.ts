@@ -1938,8 +1938,10 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
   const fInfo: any = fieldInfos[id];
   const nameMapping: interfaces.IStringValuePair = {};
   const newFields = fInfo.newFields;
-  const newFieldNames: string[] = newFields.map((f: any) => f.name);
-  const sourceFields: any[] = fInfo.sourceFields;
+  const newFieldNames: string[] = newFields
+    ? newFields.map((f: any) => f.name)
+    : [];
+  const sourceFields: any[] = fInfo.sourceFields || [];
   sourceFields.forEach((field: any) => {
     const lName = String(field.name).toLowerCase();
     newFields.forEach((f: any) => {
