@@ -219,9 +219,53 @@ export function getCreateFolderResponse(
   });
 }
 
+export function getCreateGroupResponse(
+  id: string = "ebb41907d02742f2aef72adb6d393019"
+) {
+  return getSuccessResponse({
+    group: {
+      id: id,
+      title: "Group Name",
+      isInvitationOnly: true,
+      owner: "casey",
+      description: "description",
+      snippet: "snippet",
+      tags: ["tag"],
+      phone: null,
+      sortField: "title",
+      sortOrder: "asc",
+      isViewOnly: true,
+      thumbnail: null,
+      created: 1582844507759,
+      modified: 1582844507761,
+      access: "private",
+      capabilities: [],
+      isFav: false,
+      isReadOnly: false,
+      protected: false,
+      autoJoin: false,
+      notificationsEnabled: false,
+      provider: null,
+      providerGroupName: null,
+      leavingDisallowed: false,
+      hiddenMembers: false,
+      displaySettings: {
+        itemTypes: ""
+      }
+    }
+  });
+}
+
 export function getSuccessResponse(args?: any) {
   const response = { success: true };
   return Object.assign(response, args || {});
+}
+
+export function getShareResponse(id: string) {
+  return {
+    notSharedWith: [] as string[],
+    itemId: id
+  };
 }
 
 export function checkForArcgisRestSuccessRequestError(error: any): boolean {

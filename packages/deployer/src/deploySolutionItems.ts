@@ -330,6 +330,7 @@ export function _updateTemplateDictionary(
   templates.forEach(t => {
     if (t.item.type === "Feature Service") {
       const templateInfo: any = templateDictionary[t.itemId];
+      /* istanbul ignore else */
       if (templateInfo && templateInfo.url && templateInfo.itemId) {
         Object.assign(
           templateDictionary[t.itemId],
@@ -352,8 +353,10 @@ export function _handleExistingItems(
 ): Array<Promise<any>> {
   // if items are not found by type keyword search by tag
   const existingItemsByTag: Array<Promise<any>> = [Promise.resolve()];
+  /* istanbul ignore else */
   if (existingItemsResponse && Array.isArray(existingItemsResponse)) {
     existingItemsResponse.forEach(existingItem => {
+      /* istanbul ignore else */
       if (Array.isArray(existingItem?.results)) {
         let result: any;
         const results: any[] = existingItem.results;
@@ -378,6 +381,7 @@ export function _handleExistingItems(
           const sourceId: any = existingItem.query
             ? existingItem.query.match(/[0-9A-F]{32}/i)[0]
             : existingItem.sourceId;
+          /* istanbul ignore else */
           if (sourceId) {
             templateDictionary[sourceId] = {
               def: Promise.resolve({
@@ -407,12 +411,16 @@ export function _findExistingItemByKeyword(
   templates.forEach(template => {
     if (template.item.type === "Group") {
       const userGroups: any = templateDictionary.user?.groups;
+      /* istanbul ignore else */
       if (Array.isArray(userGroups)) {
         existingItemsDefs.push(
           Promise.resolve({
-            results: userGroups.filter(
-              g => g.tags.indexOf(`source-${template.itemId}`) > -1
-            ),
+            results: userGroups
+              .filter(g => g.tags.indexOf(`source-${template.itemId}`) > -1)
+              .map(g => {
+                g.type = "Group";
+                return g;
+              }),
             sourceId: template.itemId
           })
         );

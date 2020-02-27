@@ -346,7 +346,7 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       isInvitationOnly: true,
       description: "Description of an AGOL group",
       snippet: "Snippet of an AGOL group",
-      typeKeywords: ["JavaScript"],
+      tags: ["JavaScript"],
       phone: null,
       sortField: "title",
       sortOrder: "asc",
@@ -363,10 +363,11 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       provider: null,
       providerGroupName: null,
       userMembership: {
-        username: "ArcGISTeamLocalGovOrg",
+        username: "casey",
         memberType: "none"
       },
-      collaborationInfo: {}
+      collaborationInfo: {},
+      type: "Group"
     },
     dependencies: dependencies,
     estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)

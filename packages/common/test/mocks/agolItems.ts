@@ -708,7 +708,7 @@ export function getAGOLGroup(): any {
     owner: "LocalGovTryItLive",
     description: "Description of an AGOL group",
     snippet: "Snippet of an AGOL group",
-    typeKeywords: ["JavaScript"],
+    tags: ["JavaScript"],
     phone: null,
     sortField: "title",
     sortOrder: "asc",
