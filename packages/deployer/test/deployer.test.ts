@@ -441,6 +441,7 @@ describe("Module `deploySolution`", () => {
 
               // Repeat with progress callback
               options.progressCallback = utils.PROGRESS_CALLBACK;
+              options.templateDictionary = {};
               deployer
                 .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
                 .then(done, e => {

@@ -51,6 +51,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
+          false,
           utils.PROGRESS_CALLBACK
         )
         .then(
