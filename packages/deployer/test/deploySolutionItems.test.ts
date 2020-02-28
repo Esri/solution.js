@@ -51,6 +51,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
+          false,
           utils.PROGRESS_CALLBACK
         )
         .then(
@@ -61,6 +62,655 @@ describe("Module `deploySolutionItems`", () => {
             done.fail();
           }
         );
+    });
+
+    it("reuse items but no items exist", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const url: string =
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        url
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
+          { success: true, id: newItemID }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          { success: true, id: newItemID }
+        );
+
+      const expected: any[] = [
+        {
+          id: newItemID,
+          type: type,
+          postProcess: true
+        }
+      ];
+
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: newItemID
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("reuse items by typeKeyword", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      const url: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID;
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name",
+                title: "title",
+                url: url,
+                created: 1582751986000,
+                modified: 1582751989000
+              }
+            ]
+          }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID,
+        name: "name",
+        title: "title",
+        url: url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("reuse items by tag if no typekeyword is found", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      const url: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID;
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27",
+          {
+            query: "tags='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name",
+                title: "title",
+                url: url,
+                created: 1582751986000,
+                modified: 1582751989000
+              }
+            ]
+          }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID,
+        name: "name",
+        title: "title",
+        url: url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("reuse items will use newest when mutiple items are found", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      const url1: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID;
+      const url2: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID2;
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              },
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              }
+            ]
+          }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID2,
+          type: type,
+          postProcess: false
+        }
+      ];
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID2,
+        name: "name2",
+        title: "title2",
+        url: url2
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("reuse items will add feature service details to templateDictionary", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const foundItemID2: string = "ca4a6047326243b290f625e80ebe6531";
+      const type: string = "Feature Service";
+      const url1: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers1/FeatureServer";
+      const url2: string =
+        "https://services.arcgis.com/orgidFmrV9d1DIvN/arcgis/rest/services/dispatchers2/FeatureServer";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        []
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AFeature%20Service%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: [
+              {
+                id: foundItemID2,
+                type: type,
+                name: "name2",
+                title: "title2",
+                url: url2,
+                created: 1582751989000
+              },
+              {
+                id: foundItemID,
+                type: type,
+                name: "name1",
+                title: "title1",
+                url: url1,
+                created: 1582751986000
+              }
+            ]
+          }
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID2,
+          type: type,
+          postProcess: false
+        }
+      ];
+
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID2,
+        name: "name2",
+        title: "title2",
+        url: url2,
+        layer0: {
+          fields: {},
+          url: url2 + "/0",
+          layerId: "0",
+          itemId: foundItemID2
+        },
+        layer1: {
+          fields: {},
+          url: url2 + "/1",
+          layerId: "1",
+          itemId: foundItemID2
+        }
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("reuse items can handle groups", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Group";
+
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+      itemTemplate.item.id = "{{" + id + ".itemId}}";
+
+      const group: any = mockItems.getAGOLGroup();
+      group.id = foundItemID;
+      group.tags.push("source-" + id);
+      const user: any = mockItems.getAGOLUser("casey");
+      user.groups = [group];
+      const templateDictionary: any = {
+        user: user
+      };
+
+      const expected: any[] = [
+        {
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+      const expectedTemplateDictionary: any = {
+        user: user
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: group.id,
+        name: group.name,
+        title: group.title,
+        url: group.url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          delete templateDictionary[id].def;
+          expect(templateDictionary).toEqual(expectedTemplateDictionary);
+          expect(actual).toEqual(expected);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle error on find items by typeKeyword", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      const url: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID;
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID,
+        name: "name",
+        title: "title",
+        url: url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(done.fail, done);
+    });
+
+    it("can handle error on find items by tag", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const foundItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      const url: string =
+        "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
+        foundItemID;
+
+      fetchMock
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .get(
+          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27",
+          mockItems.get400Failure()
+        )
+        .post(
+          "https://www.arcgis.com/sharing/rest/generateToken",
+          MOCK_USER_SESSION.token
+        );
+
+      const expected: any[] = [
+        {
+          id: foundItemID,
+          type: type,
+          postProcess: false
+        }
+      ];
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: foundItemID,
+        name: "name",
+        title: "title",
+        url: url
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          true,
+          utils.PROGRESS_CALLBACK
+        )
+        .then(done.fail, done);
     });
   });
 

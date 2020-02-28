@@ -735,6 +735,93 @@ describe("Module `createItemTemplate`", () => {
             done();
           }, done.fail);
       });
+
+      it("removes soure-itemIds from typeKeywords and tags", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "map12345678900";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+        const preExpectedTags: string[] = [
+          "test",
+          "source-aa4a6047326243b290f625e80ebe6531"
+        ];
+        const preExpectedTypeKeywords: string[] = [
+          "JavaScript",
+          "source-aa4a6047326243b290f625e80ebe6531"
+        ];
+        const webmap: any = mockItems.getAGOLItem("Web Map");
+        webmap.typeKeywords.push("source-aa4a6047326243b290f625e80ebe6531");
+        webmap.tags.push("source-aa4a6047326243b290f625e80ebe6531");
+
+        expect(webmap.tags).toEqual(preExpectedTags);
+        expect(webmap.typeKeywords).toEqual(preExpectedTypeKeywords);
+
+        fetchMock
+          .get(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            webmap
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            noDataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
+          );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
+
+        const getItem = spyOn(common, "getItem");
+        getItem.and.callThrough();
+
+        const updateItemResources = spyOn(common, "updateItemResources");
+        updateItemResources.and.callThrough();
+        const expectedTags: string[] = ["test"];
+        const expectedTypeKeywords: string[] = ["JavaScript"];
+
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates,
+            utils.PROGRESS_CALLBACK
+          )
+          .then(
+            response => {
+              // getItem.calls.mostRecent().returnValue.then(v => {
+              //   expect(v.tags).toEqual(preExpectedTags);
+              //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
+              // }, done.fail);
+              const actualTemplate: any = updateItemResources.calls.mostRecent()
+                .args[0];
+              expect(actualTemplate.item.tags).toEqual(expectedTags);
+              expect(actualTemplate.item.typeKeywords).toEqual(
+                expectedTypeKeywords
+              );
+              expect(response).toBeTruthy();
+              done();
+            },
+            () => done.fail()
+          );
+      });
     });
   }
 
@@ -750,9 +837,14 @@ describe("Module `createItemTemplate`", () => {
   });
 
   describe("_getDatasourceInfos", () => {
-    xit("_getDatasourceInfos", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
+    it("can handle undefined layers or tables", () => {
+      const template: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.type = "Feature Service";
+      template.properties = {};
+      const actual: common.IDatasourceInfo[] = createItemTemplate._getDatasourceInfos(
+        [template]
+      );
+      expect(actual).toEqual([]);
     });
   });
 
@@ -1338,11 +1430,6 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           capabilities: "Create,Delete,Query,Update,Editing"
         },
         {
-          adminLayerInfo: {
-            geometryField: {
-              name: "Shape"
-            }
-          },
           id: 1,
           name: "School",
           type: "Feature Layer",
@@ -1354,7 +1441,6 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
           editingInfo: {
             lastEditDate: 1568385209428
           },
-          relationships: [],
           isDataVersioned: false,
           supportsAppend: true,
           supportsCalculate: true,
@@ -29361,11 +29447,6 @@ const expected: common.IItemTemplate[] = [
           capabilities: "Create,Delete,Query,Update,Editing"
         },
         {
-          adminLayerInfo: {
-            geometryField: {
-              name: "Shape"
-            }
-          },
           id: 1,
           name: "School",
           type: "Feature Layer",
@@ -29377,7 +29458,6 @@ const expected: common.IItemTemplate[] = [
           editingInfo: {
             lastEditDate: 1568385209428
           },
-          relationships: [],
           isDataVersioned: false,
           supportsAppend: true,
           supportsCalculate: true,

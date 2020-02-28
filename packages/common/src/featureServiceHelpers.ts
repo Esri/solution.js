@@ -73,6 +73,7 @@ export function templatize(
     ".itemId"
   );
 
+  /* istanbul ignore else */
   if (generalHelpers.getProp(itemTemplate, "properties.service.fullExtent")) {
     itemTemplate.properties.service.fullExtent = templatization.templatizeTerm(
       id,
@@ -80,6 +81,7 @@ export function templatize(
       ".solutionExtent"
     );
   }
+  /* istanbul ignore else */
   if (
     generalHelpers.getProp(itemTemplate, "properties.service.initialExtent")
   ) {
@@ -514,10 +516,12 @@ export function updateFeatureServiceDefinition(
       const item = toAdd.item;
       const originalId = item.id;
       fieldInfos = cacheFieldInfos(item, fieldInfos);
+      /* istanbul ignore else */
       if (item.isView) {
         deleteViewProps(item);
       }
       // when the item is a view we need to grab the supporting fieldInfos
+      /* istanbul ignore else */
       if (itemTemplate.properties.service.isView) {
         adminLayerInfos[originalId] = item.adminLayerInfo;
         // need to update adminLayerInfo before adding to the service def
@@ -531,6 +535,7 @@ export function updateFeatureServiceDefinition(
       }
       if (templateDictionary.isPortal) {
         // When deploying to portal we need to adjust the uniquie ID field up front
+        /* istanbul ignore else */
         if (item.uniqueIdField && item.uniqueIdField.name) {
           item.uniqueIdField.name = String(
             item.uniqueIdField.name
@@ -646,10 +651,12 @@ export function postProcessFields(
         // as they are after being added to the definition.
         // This allows us to handle any potential field name changes after deploy to portal
         layersAndTables.forEach((item: any) => {
+          /* istanbul ignore else */
           if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
             layerInfos[item.id]["newFields"] = item.fields;
             layerInfos[item.id]["sourceSchemaChangesAllowed"] =
               item.sourceSchemaChangesAllowed;
+            /* istanbul ignore else */
             if (item.editFieldsInfo) {
               // more than case change when deployed to protal so keep track of the new names
               layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
@@ -660,6 +667,7 @@ export function postProcessFields(
             // fields that are marked as visible false on a view are all set to
             // visible true when added with the layer definition
             // update the field visibility to match that of the source
+            /* istanbul ignore else */
             if (item.isView) {
               let fieldUpdates: any[] = _getFieldVisibilityUpdates(
                 layerInfos[item.id]
@@ -798,6 +806,7 @@ export function updatePopupInfo(
 ): void {
   ["layers", "tables"].forEach(type => {
     const _items: any[] = generalHelpers.getProp(itemTemplate, "data." + type);
+    /* istanbul ignore else */
     if (_items && Array.isArray(_items)) {
       _items.forEach((item: any) => {
         item.popupInfo =
@@ -871,6 +880,7 @@ export function _templatizeLayer(
   templatizeFieldReferences: boolean
 ): void {
   // Templatize all properties that contain field references
+  /* istanbul ignore else */
   if (templatizeFieldReferences) {
     _templatizeLayerFieldReferences(
       dataItem,
@@ -978,19 +988,22 @@ export function _templatizeAdminLayerInfo(
   generalHelpers.deleteProp(adminLayerInfo, "tableName");
 
   // Remove unnecessary properties and templatize key properties from viewLayerDefinition
+  /* istanbul ignore else */
   if (adminLayerInfo.viewLayerDefinition) {
     const viewDef = Object.assign({}, adminLayerInfo.viewLayerDefinition);
 
     _processAdminObject(viewDef, dependencies);
 
     // Remove unnecessary properties and templatize key properties from viewLayerDefinition.table
+    /* istanbul ignore else */
     if (viewDef.table) {
       _processAdminObject(viewDef.table, dependencies);
-
+      /* istanbul ignore else */
       if (
         viewDef.table.hasOwnProperty("sourceServiceName") &&
         layer.isMultiServicesView
       ) {
+        /* istanbul ignore else */
         if (adminLayerInfo.geometryField && adminLayerInfo.geometryField.name) {
           adminLayerInfo.geometryField.name =
             viewDef.table.sourceServiceName +
@@ -998,6 +1011,7 @@ export function _templatizeAdminLayerInfo(
             adminLayerInfo.geometryField.name;
         }
       }
+      /* istanbul ignore else */
       if (viewDef.table.relatedTables) {
         viewDef.table.relatedTables.forEach((table: any) => {
           _processAdminObject(table, dependencies);
@@ -1134,9 +1148,11 @@ export function _templatizeAdminSourceLayerFields(
  * @param basePath path used to de-templatize while deploying
  */
 export function _templatizeTopFilter(topFilter: any, basePath: string): void {
+  /* istanbul ignore else */
   if (topFilter) {
     // templatize the orderByFields prop
     const orderByFields: string = topFilter["orderByFields"] || "";
+    /* istanbul ignore else */
     if (orderByFields !== "") {
       const orderByField = orderByFields.split(" ")[0];
       topFilter.orderByFields = topFilter.orderByFields.replace(
@@ -1146,8 +1162,10 @@ export function _templatizeTopFilter(topFilter: any, basePath: string): void {
     }
 
     const groupByFields = topFilter["groupByFields"] || "";
+    /* istanbul ignore else */
     if (groupByFields !== "") {
       const _groupByFields = groupByFields.split(",");
+      /* istanbul ignore else */
       if (_groupByFields.length > 0) {
         const mappedFields = _groupByFields.map((f: any) => {
           return _templatize(basePath, f, "name");
@@ -1171,6 +1189,7 @@ export function _templatizeRelationshipFields(
   if (layer && layer.relationships) {
     const relationships: any[] = layer.relationships;
     relationships.forEach(r => {
+      /* istanbul ignore else */
       if (r.keyField) {
         const basePath: string = itemID + ".layer" + layer.id + ".fields";
         _templatizeProperty(r, "keyField", basePath, "name");
@@ -1297,6 +1316,7 @@ export function _templatizeFieldName(
     );
 
     const relatedTables: any[] = layer.relationships || adminRelatedTables;
+    /* istanbul ignore else */
 
     if (relatedTables && relatedTables.length > parseInt(relationshipId, 10)) {
       const relatedTable: any = relatedTables[relationshipId];
@@ -1391,6 +1411,7 @@ export function _templatizeMediaInfos(
   props.forEach(p => _templatizeName(mediaInfos, p, fieldNames, basePath));
 
   mediaInfos.forEach((mi: any) => {
+    /* istanbul ignore else */
     if (mi.hasOwnProperty("value")) {
       const v: any = mi.value;
 
@@ -1403,6 +1424,7 @@ export function _templatizeMediaInfos(
         _templatizeProperty(v, "normalizeField", basePath, "name");
       }
 
+      /* istanbul ignore else */
       if (v.hasOwnProperty("tooltipField")) {
         v.tooltipField = _templatizeFieldName(
           v.tooltipField,
@@ -1429,10 +1451,12 @@ export function _templatizeDefinitionEditor(
 ): void {
   if (layer) {
     const defEditor: any = layer.definitionEditor || {};
+    /* istanbul ignore else */
     if (defEditor) {
       const inputs: any[] = defEditor.inputs;
       if (inputs) {
         inputs.forEach(i => {
+          /* istanbul ignore else */
           if (i.parameters) {
             i.parameters.forEach((p: any) => {
               _templatizeProperty(p, "fieldName", basePath, "name");
@@ -1568,6 +1592,7 @@ export function _templatizeGenRenderer(
   basePath: string,
   fieldNames: string[]
 ): void {
+  /* istanbul ignore else */
   if (renderer) {
     // update authoringInfo
     const authoringInfo: any = renderer.authoringInfo;
@@ -1662,6 +1687,7 @@ export function _templatizeAuthoringInfo(
   basePath: string,
   fieldNames: string[]
 ): void {
+  /* istanbul ignore else */
   if (authoringInfo) {
     const props: string[] = ["field", "normalizationField"];
 
@@ -1761,6 +1787,7 @@ export function _templatizeLabelingInfo(
   fieldNames: string[]
 ): void {
   labelingInfo.forEach((li: any) => {
+    /* istanbul ignore else */
     if (li.hasOwnProperty("fieldInfos")) {
       const fieldInfos: any[] = li.fieldInfos || [];
       fieldInfos.forEach(fi =>
@@ -1782,7 +1809,7 @@ export function _templatizeLabelingInfo(
           result[1] + t + result[3]
         );
       }
-
+      /* istanbul ignore else */
       if (labelExpInfo.value) {
         let v = labelExpInfo.value;
         // check for {fieldName}
@@ -1795,7 +1822,7 @@ export function _templatizeLabelingInfo(
 
         li.labelExpressionInfo.value = v;
       }
-
+      /* istanbul ignore else */
       if (labelExpInfo.expression) {
         li.labelExpressionInfo.expression = _templatizeArcadeExpressions(
           labelExpInfo.expression,
@@ -1818,6 +1845,7 @@ export function _templatizeTemplates(layer: any, basePath: string): void {
   templates.forEach(t => {
     const attributes: any = generalHelpers.getProp(t, "prototype.attributes");
     const _attributes: any = _templatizeKeys(attributes, basePath, "name");
+    /* istanbul ignore else */
     if (_attributes) {
       t.prototype.attributes = _attributes;
     }
@@ -1829,11 +1857,13 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
   if (types && Array.isArray(types) && types.length > 0) {
     types.forEach((type: any) => {
       const domains: any = _templatizeKeys(type.domains, basePath, "name");
+      /* istanbul ignore else */
       if (domains) {
         type.domains = domains;
       }
 
       const templates: any[] = type.templates;
+      /* istanbul ignore else */
       if (templates && templates.length > 0) {
         templates.forEach((t: any) => {
           const attributes = generalHelpers.getProp(t, "prototype.attributes");
@@ -1842,6 +1872,7 @@ export function _templatizeTypeTemplates(layer: any, basePath: string): void {
             basePath,
             "name"
           );
+          /* istanbul ignore else */
           if (_attributes) {
             t.prototype.attributes = _attributes;
           }
@@ -1857,10 +1888,11 @@ export function _templatizeKeys(
   suffix: string
 ): any {
   let _obj: any;
-
+  /* istanbul ignore else */
   if (obj) {
     _obj = {};
     const objKeys: string[] = Object.keys(obj);
+    /* istanbul ignore else */
     if (objKeys && objKeys.length > 0) {
       objKeys.forEach(k => {
         _obj[_templatize(basePath, k, suffix)] = obj[k];
@@ -1938,8 +1970,10 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
   const fInfo: any = fieldInfos[id];
   const nameMapping: interfaces.IStringValuePair = {};
   const newFields = fInfo.newFields;
-  const newFieldNames: string[] = newFields.map((f: any) => f.name);
-  const sourceFields: any[] = fInfo.sourceFields;
+  const newFieldNames: string[] = newFields
+    ? newFields.map((f: any) => f.name)
+    : [];
+  const sourceFields: any[] = fInfo.sourceFields || [];
   sourceFields.forEach((field: any) => {
     const lName = String(field.name).toLowerCase();
     newFields.forEach((f: any) => {
@@ -1980,6 +2014,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         newFieldNames.indexOf(lowerEfi) > -1
       ) {
         // Only add delete fields if source schema changes allowed
+        /* istanbul ignore else */
         if (fInfo.sourceSchemaChangesAllowed) {
           if (!fInfo.hasOwnProperty("deleteFields")) {
             fInfo.deleteFields = [];
