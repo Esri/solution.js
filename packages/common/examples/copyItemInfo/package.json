@@ -1,6 +1,6 @@
 {
   "name": "copyItemInfo",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Example use of @esri/solution-common.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     "@esri/arcgis-rest-portal": "^2.8.0",
     "@esri/arcgis-rest-request": "^2.8.0",
     "@esri/arcgis-rest-service-admin": "^2.8.0",
-    "@esri/solution-common": "^0.6.2",
+    "@esri/solution-common": "^0.6.3",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "tslib": "^1.10.0"
