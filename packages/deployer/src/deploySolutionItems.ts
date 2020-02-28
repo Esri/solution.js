@@ -200,8 +200,10 @@ export const moduleMap: common.IItemTypeModuleMap = {
  * @param portalSharingUrl Server/sharing
  * @param storageItemId Id of storage item
  * @param templates A collection of AGO item templates
+ * @param storageAuthentication Credentials for the organization with the source items
  * @param templateDictionary Hash of facts: org URL, adlib replacements
- * @param userSession Options for the request
+ * @param destinationAuthentication Credentials for the destination organization
+ * @param reuseItems Option to search for existing items
  * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
@@ -274,8 +276,18 @@ export function deploySolutionItems(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-// TODO make sure an item that was shared with group but deleted before reuseItems is shared back properly
-// TODO make sure that recreated map has vars set when ruse
+/**
+ * Update the templateDictionary with key details by item type
+ *
+ * @param templates A collection of AGO item templates
+ * @param reuseItems Option to search for existing items
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param authentication Credentials for the requests
+ *
+ * @returns A Promise that will resolve once existing items have been evaluated
+ *
+ * @protected
+ */
 export function _evaluateExistingItems(
   templates: common.IItemTemplate[],
   reuseItems: boolean,
@@ -323,6 +335,14 @@ export function _evaluateExistingItems(
   });
 }
 
+/**
+ * Update the templateDictionary with key details by item type
+ *
+ * @param templates A collection of AGO item templates
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ *
+ * @protected
+ */
 export function _updateTemplateDictionary(
   templates: common.IItemTemplate[],
   templateDictionary: any
@@ -345,10 +365,20 @@ export function _updateTemplateDictionary(
   });
 }
 
+/**
+ * Optionally search by tags and then update the templateDictionary based on the search results
+ *
+ * @param existingItemsResponse response object from search by typeKeyword and type
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
+ * @param authentication Credentials for the request
+ * @param addTagQuery Boolean to indicate if a search by tag should happen
+ * @return A promise that will resolve with an array of results
+ * @protected
+ */
 export function _handleExistingItems(
   existingItemsResponse: any[],
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
+  authentication: common.UserSession,
   addTagQuery: boolean
 ): Array<Promise<any>> {
   // if items are not found by type keyword search by tag
@@ -373,7 +403,7 @@ export function _handleExistingItems(
               "tags"
             );
             existingItemsByTag.push(
-              _findExistingItem(tagQuery, destinationAuthentication)
+              _findExistingItem(tagQuery, authentication)
             );
           }
         }
@@ -402,6 +432,14 @@ export function _handleExistingItems(
   return existingItemsByTag;
 }
 
+/**
+ * Search items based on user query
+ *
+ * @param query Query string to use
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve with an array of results
+ * @protected
+ */
 export function _findExistingItemByKeyword(
   templates: common.IItemTemplate[],
   templateDictionary: any,
@@ -437,6 +475,14 @@ export function _findExistingItemByKeyword(
   return existingItemsDefs;
 }
 
+/**
+ * Search items based on user query
+ *
+ * @param query Query string to use
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve with an array of results
+ * @protected
+ */
 export function _findExistingItem(
   query: string,
   authentication: common.UserSession
