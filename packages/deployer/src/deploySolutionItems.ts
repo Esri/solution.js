@@ -277,7 +277,7 @@ export function deploySolutionItems(
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Update the templateDictionary with key details by item type
+ * Search for existing items and update the templateDictionary with key details
  *
  * @param templates A collection of AGO item templates
  * @param reuseItems Option to search for existing items
