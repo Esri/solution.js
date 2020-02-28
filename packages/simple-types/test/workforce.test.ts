@@ -410,8 +410,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
       fetchMock
         .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
+          username: "MrClaypool"
         })
         .get(queryUrl, mockItems.get400Failure());
 
@@ -517,7 +516,6 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
       fetchMock
         .get(userUrl, {
-          username: "MrClaypool",
           fullName: "Mr Claypool"
         })
         .get(queryUrl, {
