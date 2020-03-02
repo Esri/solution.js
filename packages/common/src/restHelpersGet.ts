@@ -76,23 +76,37 @@ export function getUsername(
   });
 }
 
-export function getUserFolders(
+export function getFoldersAndGroups(
   authentication: interfaces.UserSession
-): Promise<any[]> {
-  return new Promise<any[]>((resolve, reject) => {
-    const url: string = `${
-      authentication.portal
-    }/content/users/${encodeURIComponent(authentication.username)}`;
-    const userContentRequestOptions = {
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    const requestOptions = {
       httpMethod: "GET",
       authentication: authentication,
       rawResponse: false
     } as request.IRequestOptions;
-    request.request(url, userContentRequestOptions).then(
-      response => {
-        resolve(response.folders || []);
+
+    // Folders
+    const foldersUrl: string = `${
+      authentication.portal
+    }/content/users/${encodeURIComponent(authentication.username)}`;
+
+    // Groups
+    const groupsUrl: string = `${
+      authentication.portal
+    }/community/users/${encodeURIComponent(authentication.username)}`;
+
+    Promise.all([
+      request.request(foldersUrl, requestOptions),
+      request.request(groupsUrl, requestOptions)
+    ]).then(
+      responses => {
+        resolve({
+          folders: responses[0].folders || [],
+          groups: responses[1].groups || []
+        });
       },
-      err => reject(err)
+      e => reject(e)
     );
   });
 }

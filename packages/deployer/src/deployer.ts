@@ -51,7 +51,7 @@ export function deploySolution(
     const portalDef = common.getPortal("", authentication);
 
     const userDef = common.getUser(authentication);
-    const foldersDef = common.getUserFolders(authentication);
+    const foldersAndGroupsDef = common.getFoldersAndGroups(authentication);
 
     // Await completion of async actions
     Promise.all([
@@ -60,7 +60,7 @@ export function deploySolution(
       solutionItemDataDef,
       portalDef,
       userDef,
-      foldersDef
+      foldersAndGroupsDef
     ]).then(
       responses => {
         const [
@@ -68,7 +68,7 @@ export function deploySolution(
           itemData,
           portalResponse,
           userResponse,
-          foldersResponse
+          foldersAndGroupsResponse
         ] = responses;
 
         // swap user defined params before we start...no need to wait
@@ -118,7 +118,8 @@ export function deploySolution(
             : authentication.portal;
 
         templateDictionary.user = userResponse;
-        templateDictionary.user.folders = foldersResponse;
+        templateDictionary.user.folders = foldersAndGroupsResponse.folders;
+        templateDictionary.user.groups = foldersAndGroupsResponse.groups;
 
         // Create a folder to hold the deployed solution. We use the solution name, appending a sequential
         // suffix if the folder exists, e.g.,
