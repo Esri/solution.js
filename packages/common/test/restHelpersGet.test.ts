@@ -93,16 +93,36 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     });
   });
 
-  describe("getUserFolders", () => {
+  describe("getFoldersAndGroups", () => {
     it("can handle an exception on get user content", done => {
       fetchMock.get(
         "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey?f=json&token=fake-token",
         mockItems.get500Failure()
       );
-      restHelpersGet.getUserFolders(MOCK_USER_SESSION).then(
+      restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(
         () => done.fail(),
         () => done()
       );
+    });
+
+    it("can handle undefined folders or groups", done => {
+      const response: any = utils.getSuccessResponse();
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey?f=json&token=fake-token",
+          response
+        )
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          response
+        );
+      const expectedFolders: any = [];
+      const expectedGroups: any = [];
+      restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(actual => {
+        expect(actual.folders).toEqual(expectedFolders);
+        expect(actual.groups).toEqual(expectedGroups);
+        done();
+      }, done.fail);
     });
   });
 
