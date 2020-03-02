@@ -22,7 +22,7 @@ import * as portal from "@esri/arcgis-rest-portal";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
-// ------------------------------------------------------------------------------------------------------------------ //
+//#region Re-exports -------------------------------------------------------------------------------------------------//
 
 export {
   IUserRequestOptions,
@@ -47,7 +47,9 @@ export {
   ISpatialReference
 } from "@esri/arcgis-rest-service-admin";
 
-// ------------------------------------------------------------------------------------------------------------------ //
+//#endregion ---------------------------------------------------------------------------------------------------------//
+
+//#region Enums ------------------------------------------------------------------------------------------------------//
 
 /**
  * Flag for storing an item's binary resources.
@@ -60,6 +62,61 @@ export enum EFileType {
 }
 
 /**
+ * Flags for reporting the status of creating or deploying an item.
+ */
+export enum EItemProgressStatus {
+  Started,
+  Created,
+  Cancelled,
+  Finished,
+  Ignored,
+  Failed
+}
+
+export const SItemProgressStatus = [
+  "1 Started",
+  "2 Created",
+  "3 Cancelled",
+  "3 Finished",
+  "3 Ignored",
+  "3 Failed"
+];
+
+//#endregion ---------------------------------------------------------------------------------------------------------//
+
+//#region Types ------------------------------------------------------------------------------------------------------//
+
+export type IItemProgressCallback = (
+  itemId: string,
+  status: EItemProgressStatus,
+  costUsed: number
+) => void; // FUTURE replace with ) => boolean;
+
+export type ISolutionProgressCallback = (percentDone: number) => void;
+
+// FUTURE delete
+export type ISolutionProgressTickCallback = () => void;
+
+//#endregion ---------------------------------------------------------------------------------------------------------//
+
+//#region Interfaces -------------------------------------------------------------------------------------------------//
+
+export interface ICreateItemFromTemplateResponse {
+  /**
+   * Item's AGO id
+   */
+  id: string;
+  /**
+   * AGO item type name
+   */
+  type: string;
+  /**
+   * Does the item need post processing to handle unresolved variables
+   */
+  postProcess: boolean;
+}
+
+/**
  * Options for creating a solution item.
  */
 export interface ICreateSolutionOptions {
@@ -68,41 +125,69 @@ export interface ICreateSolutionOptions {
   description?: string; // default: ""
   tags?: string[]; // default: []
   thumbnailUrl?: string; // default: ""
-  templateDictionary?: any;
+  templateDictionary?: any; // default: {}
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
-  percentDone?: number;
+  percentDone?: number; // FUTURE delete
 }
 
 /**
- * Options for deploying a solution item and for creating the solution index item representing the deployment
+ * Result of creating a solution item.
  */
-export interface IDeploySolutionOptions {
-  title?: string; // default: copied from solution item
-  snippet?: string; // default: copied from solution item
-  description?: string; // default: copied from solution item
-  tags?: string[]; // default: copied from solution item
-  thumbnailUrl?: string; // default: copied from solution item
-  templateDictionary?: any;
-  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
+export interface ICreateSolutionResult {
+  success: boolean;
+  solutionTemplateItemId: string;
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
-  progressCallback?: ISolutionProgressCallback;
 }
 
-export type ISolutionProgressCallback = (percentDone: number) => void;
-export type ISolutionProgressTickCallback = () => void;
-
-export enum EItemProgressStatus {
-  Started,
-  Created,
-  Finished
+/**
+ * The relevant elements of a data source that are used for templatization
+ */
+export interface IDatasourceInfo {
+  /**
+   * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
+   */
+  basePath: string;
+  /**
+   * The portal item id eg. "4efe5f693de34620934787ead6693f19"
+   */
+  itemId: string;
+  /**
+   * The id for the layer from the service eg. 0
+   */
+  layerId: number;
+  /**
+   * The webmap layer id eg. "TestLayerForDashBoardMap_632"
+   */
+  id?: string;
+  /**
+   * The id for the layer from a map could be referenced by more than one map for a solution
+   */
+  ids: string[];
+  /**
+   * The url used for fields lookup
+   */
+  url?: string;
+  /**
+   * The fields this datasource contains
+   */
+  fields: any[];
+  /**
+   * The ralative ids for references to a datasource
+   * Application types like dashboard can reference datasources via realtive widget reference ids
+   */
+  references?: any[];
+  /**
+   * The details on any relationships that the datasource is involved in
+   */
+  relationships: any[];
+  /**
+   * The layers adminLayerInfo
+   * Used to fetch relationship info in some cases
+   */
+  adminLayerInfo: any;
 }
-export type IItemProgressCallback = (
-  itemId: string,
-  status: EItemProgressStatus,
-  costUsed: number
-) => void;
 
 /**
  * Storage of dependencies.
@@ -134,6 +219,29 @@ export interface IDeployFilename {
   type: EFileType;
   folder: string;
   filename: string;
+}
+
+/**
+ * Options for deploying a solution item and for creating the solution index item representing the deployment
+ */
+export interface IDeploySolutionOptions {
+  title?: string; // default: copied from solution item
+  snippet?: string; // default: copied from solution item
+  description?: string; // default: copied from solution item
+  tags?: string[]; // default: copied from solution item
+  thumbnailUrl?: string; // default: copied from solution item
+  templateDictionary?: any; // default: {}
+  additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
+  enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
+  progressCallback?: ISolutionProgressCallback;
+}
+
+/**
+ * Result of deploying a solution item.
+ */
+export interface IDeploySolutionResult {
+  success: boolean;
+  deployedSolutionItemId: string;
 }
 
 export interface IFeatureServiceProperties {
@@ -287,7 +395,7 @@ export interface IItemTemplateConversions {
     storageAuthentication: UserSession,
     templateDictionary: any,
     destinationAuthentication: UserSession,
-    progressTickCallback: IItemProgressCallback
+    progressTickCallback: IItemProgressCallback // FUTURE replace with itemProgressCallback: IItemProgressCallback
   ): Promise<ICreateItemFromTemplateResponse>;
   postProcessDependencies?(
     templates: IItemTemplate[],
@@ -360,6 +468,24 @@ export interface IPostProcessArgs {
    * Credentials for the request
    */
   authentication: UserSession;
+}
+
+/**
+ * The relevant elements of a data source that are used for templatization
+ */
+export interface IQuickCaptureDatasource {
+  /**
+   * The portal item id for the datasource eg. "4efe5f693de34620934787ead6693f19"
+   */
+  featureServiceItemId: string;
+  /**
+   * The application item id for the datasource eg. "1d4de1e4-ef58-4e02-9159-7a6e6701cada"
+   */
+  dataSourceId: string;
+  /**
+   * The url used for the datasource
+   */
+  url: number;
 }
 
 export interface IRelatedItems {
@@ -464,68 +590,4 @@ export interface IUpdate {
   args: IPostProcessArgs;
 }
 
-/**
- * The relevant elements of a data source that are used for templatization
- */
-export interface IDatasourceInfo {
-  /**
-   * Calculated pattern used for templatization eg. "{{itemId.fields.layerId.fieldname}}"
-   */
-  basePath: string;
-  /**
-   * The portal item id eg. "4efe5f693de34620934787ead6693f19"
-   */
-  itemId: string;
-  /**
-   * The id for the layer from the service eg. 0
-   */
-  layerId: number;
-  /**
-   * The webmap layer id eg. "TestLayerForDashBoardMap_632"
-   */
-  id?: string;
-  /**
-   * The id for the layer from a map could be referenced by more than one map for a solution
-   */
-  ids: string[];
-  /**
-   * The url used for fields lookup
-   */
-  url?: string;
-  /**
-   * The fields this datasource contains
-   */
-  fields: any[];
-  /**
-   * The ralative ids for references to a datasource
-   * Application types like dashboard can reference datasources via realtive widget reference ids
-   */
-  references?: any[];
-  /**
-   * The details on any relationships that the datasource is involved in
-   */
-  relationships: any[];
-  /**
-   * The layers adminLayerInfo
-   * Used to fetch relationship info in some cases
-   */
-  adminLayerInfo: any;
-}
-
-/**
- * The relevant elements of a data source that are used for templatization
- */
-export interface IQuickCaptureDatasource {
-  /**
-   * The portal item id for the datasource eg. "4efe5f693de34620934787ead6693f19"
-   */
-  featureServiceItemId: string;
-  /**
-   * The application item id for the datasource eg. "1d4de1e4-ef58-4e02-9159-7a6e6701cada"
-   */
-  dataSourceId: string;
-  /**
-   * The url used for the datasource
-   */
-  url: number;
-}
+//#endregion ---------------------------------------------------------------------------------------------------------//
