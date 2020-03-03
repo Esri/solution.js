@@ -109,11 +109,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -136,11 +135,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -157,7 +155,7 @@ describe("Module `createItemTemplate`", () => {
         common.setCreateProp(
           wmaData,
           "dataSource.dataSources.fred.url",
-          "https://myorg.maps.arcgis.com/FeatureServer"
+          utils.PORTAL_SUBSET.portalUrl + "/FeatureServer"
         );
 
         fetchMock
@@ -215,7 +213,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           )
           .post(
-            "https://myorg.maps.arcgis.com/FeatureServer",
+            utils.PORTAL_SUBSET.portalUrl + "/FeatureServer",
             mockItems.get500Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
@@ -230,17 +228,14 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               const createdTemplate = common.findTemplateInList(
                 existingTemplates,
                 itemId
               );
-              expect(createdTemplate.properties.partial).not.toBeUndefined();
-              expect(createdTemplate.properties.partial).toBeTruthy();
               expect(createdTemplate.properties.error).not.toBeUndefined();
               expect(createdTemplate.properties.error).toEqual(
                 '{"success":false}'
@@ -302,11 +297,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -375,11 +369,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -452,11 +445,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -544,7 +537,7 @@ describe("Module `createItemTemplate`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/sln1234567890/update",
-            { success: true, id: solutionItemId }
+            utils.getSuccessResponse({ id: solutionItemId })
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
           total: 0,
@@ -557,11 +550,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -649,11 +642,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -720,11 +713,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -756,53 +749,18 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
           );
       });
 
-      it("removes unsupported item types", done => {
-        const solutionItemId: string = "sln1234567890";
-        const itemId: string = "code12345678900";
-        const itemType: string = "Code Attachment";
-        const templateDictionary: any = {};
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const existingTemplates: common.IItemTemplate[] = [];
-
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/code12345678900?f=json&token=fake-token",
-            mockItems.getAGOLItem(itemType)
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
-            noDataResponse
-          );
-
-        createItemTemplate
-          .createItemTemplate(
-            solutionItemId,
-            itemId,
-            templateDictionary,
-            authentication,
-            existingTemplates
-          )
-          .then(response => {
-            expect(response).toBeTruthy();
-            const item = common.findTemplateInList(existingTemplates, itemId);
-            expect(item).toBeNull();
-            done();
-          }, done.fail);
-      });
-
-      it("removes soure-itemIds from typeKeywords and tags", done => {
+      it("removes source-itemIds from typeKeywords and tags", done => {
         const solutionItemId: string = "sln1234567890";
         const itemId: string = "map12345678900";
         const templateDictionary: any = {};
@@ -820,8 +778,12 @@ describe("Module `createItemTemplate`", () => {
         webmap.typeKeywords.push("source-aa4a6047326243b290f625e80ebe6531");
         webmap.tags.push("source-aa4a6047326243b290f625e80ebe6531");
 
-        expect(webmap.tags).toEqual(preExpectedTags);
-        expect(webmap.typeKeywords).toEqual(preExpectedTypeKeywords);
+        expect(webmap.tags)
+          .withContext("test initial tags")
+          .toEqual(preExpectedTags);
+        expect(webmap.typeKeywords)
+          .withContext("test initial typeKeywords")
+          .toEqual(preExpectedTypeKeywords);
 
         fetchMock
           .get(
@@ -873,7 +835,7 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -887,7 +849,6 @@ describe("Module `createItemTemplate`", () => {
               expect(actualTemplate.item.typeKeywords).toEqual(
                 expectedTypeKeywords
               );
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
