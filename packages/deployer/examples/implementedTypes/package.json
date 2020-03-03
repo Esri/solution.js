@@ -1,6 +1,6 @@
 {
   "name": "implementedTypes",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Example use of @esri/solution-creator and @esri/solution-deployer to report implemented item types.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -8,22 +8,22 @@
   "devDependencies": {
     "@types/requirejs": "^2.1.31",
     "lerna": "^3.19.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^2.8.0",
-    "@esri/arcgis-rest-feature-layer": "^2.8.0",
-    "@esri/arcgis-rest-portal": "^2.8.0",
-    "@esri/arcgis-rest-request": "^2.8.0",
-    "@esri/arcgis-rest-service-admin": "^2.8.0",
-    "@esri/solution-common": "^0.6.2",
-    "@esri/solution-creator": "^0.6.2",
-    "@esri/solution-deployer": "^0.6.2",
-    "@esri/solution-feature-layer": "^0.6.2",
-    "@esri/solution-file": "^0.6.2",
-    "@esri/solution-group": "^0.6.2",
-    "@esri/solution-simple-types": "^0.6.2",
-    "@esri/solution-storymap": "^0.6.2",
+    "@esri/arcgis-rest-auth": "^2.9.0",
+    "@esri/arcgis-rest-feature-layer": "^2.9.0",
+    "@esri/arcgis-rest-portal": "^2.9.0",
+    "@esri/arcgis-rest-request": "^2.9.0",
+    "@esri/arcgis-rest-service-admin": "^2.9.0",
+    "@esri/solution-common": "^0.7.0",
+    "@esri/solution-creator": "^0.7.0",
+    "@esri/solution-deployer": "^0.7.0",
+    "@esri/solution-feature-layer": "^0.7.0",
+    "@esri/solution-file": "^0.7.0",
+    "@esri/solution-group": "^0.7.0",
+    "@esri/solution-simple-types": "^0.7.0",
+    "@esri/solution-storymap": "^0.7.0",
     "tslib": "^1.10.0"
   },
   "scripts": {

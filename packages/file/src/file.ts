@@ -27,7 +27,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  isGroup?: boolean
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
@@ -177,4 +178,13 @@ export function createItemFromTemplate(
         );
     }
   );
+}
+
+export function postProcessDependencies(
+  templates: common.IItemTemplate[],
+  clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
+  authentication: common.UserSession,
+  templateDictionary: any
+): Promise<any> {
+  return Promise.resolve();
 }

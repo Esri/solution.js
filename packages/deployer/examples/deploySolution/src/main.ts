@@ -37,12 +37,12 @@ export function deploySolution(
     };
     deployer.deploySolution(templateSolutionId, authentication, options).then(
       deployedSolution => {
-        getItemInfo.getItemInfo(deployedSolution.item.id, authentication).then(
+        getItemInfo.getItemInfo(deployedSolution, authentication).then(
           itemInfoHtml => resolve(itemInfoHtml),
-          error => reject(JSON.stringify(error))
+          error => reject(error.error)
         );
       },
-      error => reject(JSON.stringify(error))
+      error => reject(error)
     );
   });
 }
