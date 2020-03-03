@@ -22,23 +22,14 @@ import * as common from "@esri/solution-common";
 import * as workforce from "../src/workforce";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-
-import { TOMORROW } from "../../common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
 afterEach(() => {
@@ -372,7 +363,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
       const addUrl: string =
@@ -404,7 +396,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 
@@ -427,7 +420,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
 
       fetchMock.get(userUrl, mockItems.get400Failure());
 
@@ -444,7 +438,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 
@@ -473,7 +468,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
       const addUrl: string =
@@ -508,9 +504,10 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
@@ -541,7 +538,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 
@@ -568,7 +566,8 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 

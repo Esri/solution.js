@@ -23,8 +23,11 @@ import * as storymap from "../src/storymap";
 import * as mockTemplates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
-const now = new Date();
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession(now.getDate());
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

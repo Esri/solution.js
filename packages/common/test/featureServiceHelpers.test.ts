@@ -73,9 +73,8 @@ import {
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
-import { TOMORROW, createMockSettings } from "../../common/test/mocks/utils";
-
-import { IItemTemplate, IDependency } from "../../common/src/interfaces";
+import * as interfaces from "../src/interfaces";
+import * as utils from "../../common/test/mocks/utils";
 
 import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 
@@ -83,7 +82,7 @@ import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
 
-let itemTemplate: IItemTemplate;
+let itemTemplate: interfaces.IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
 const basePath: string = itemId + ".layer0.fields";
 
@@ -102,7 +101,15 @@ const _organization: any = {
   }
 };
 
+let MOCK_USER_SESSION: interfaces.UserSession;
+let MOCK_USER_REQOPTS: IUserRequestOptions;
+
 beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+  MOCK_USER_REQOPTS = {
+    authentication: MOCK_USER_SESSION
+  };
+
   itemTemplate = {
     itemId: "",
     key: "",
@@ -133,24 +140,6 @@ beforeEach(() => {
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
-
-const MOCK_USER_REQOPTS: IUserRequestOptions = {
-  authentication: MOCK_USER_SESSION
-};
-
 afterEach(() => {
   fetchMock.restore();
 });
@@ -158,12 +147,12 @@ afterEach(() => {
 describe("Module `featureServiceHelpers`: utility functions for feature-service items", () => {
   describe("templatize", () => {
     it("should handle empty dependency array", () => {
-      const dependencies: IDependency[] = [];
+      const dependencies: interfaces.IDependency[] = [];
 
       itemTemplate.item.id = "ABC123";
       itemTemplate.properties.service.serviceItemId = "DEF456";
 
-      const expected: IItemTemplate = {
+      const expected: interfaces.IItemTemplate = {
         itemId: "",
         key: "",
         properties: {
@@ -197,7 +186,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle common itemTemplate properties", () => {
-      const dependencies: IDependency[] = [];
+      const dependencies: interfaces.IDependency[] = [];
       itemTemplate = {
         itemId: "ab766cba0dd44ec080420acc10990282",
         key: "ABC123",
@@ -597,7 +586,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("updateTemplate", () => {
-    it("should handle error", () => {
+    it("should handle error when updating a template", () => {
       const settings: any = {};
       const createResponse: any = {
         serviceItemId: "DDDEEEFFF456",
@@ -2417,7 +2406,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("addFeatureServiceLayersAndTables", () => {
-    it("should handle error", done => {
+    it("should handle error when adding layers and/or tables", done => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";
 
@@ -2461,7 +2450,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -2478,11 +2467,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -2525,7 +2510,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.tables = [];
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -2588,7 +2573,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -2662,7 +2647,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
       delete itemTemplate.item.item;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[expectedId] = {
         id: expectedId,
@@ -2718,7 +2703,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[itemTemplate.itemId] = {
         itemId: itemTemplate.itemId,
@@ -2770,22 +2755,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         ".name}}";
 
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate.data);
-
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
       const adminLayerInfos: any = {};
 
       fetchMock
         .post(adminUrl + "/0?f=json", layer0)
-        .post(adminUrl + "/1?f=json", layer1)
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        );
+        .post(adminUrl + "/1?f=json", layer1);
 
       postProcessFields(
         itemTemplate,
@@ -2793,7 +2767,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         popupInfos,
         adminLayerInfos,
         settings,
-        requestOptions
+        MOCK_USER_REQOPTS
       ).then(
         (layerInfos: any) => {
           // verify that fieldInfos are set
@@ -2823,7 +2797,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       );
     });
 
-    it("should handle error", done => {
+    it("should handle error when post-processing fields", done => {
       const url: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
       const adminUrl: string =
@@ -2832,28 +2806,17 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate = mockSolutions.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
-      const settings = createMockSettings();
+      const settings = utils.createMockSettings();
       settings.folderId = "fld1234567890";
       settings[itemTemplate.itemId] = {
         id: itemTemplate.itemId,
         url: url
       };
-
-      const requestOptions: IUserRequestOptions = {
-        authentication: new UserSession({
-          username: "jsmith",
-          password: "123456"
-        })
-      };
       const adminLayerInfos: any = {};
 
       fetchMock
         .post(adminUrl + "/0?f=json", mockItems.get400Failure())
-        .post(adminUrl + "/1?f=json", mockItems.get400Failure())
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        );
+        .post(adminUrl + "/1?f=json", mockItems.get400Failure());
 
       postProcessFields(
         itemTemplate,
@@ -2861,7 +2824,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         {},
         adminLayerInfos,
         settings,
-        requestOptions
+        MOCK_USER_REQOPTS
       ).then(done.fail, done);
     });
   });
@@ -3090,7 +3053,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_templatizeAdminLayerInfo", () => {
     it("should not fail without adminLayerInfo", () => {
       const layer: any = {};
-      const dependencies: IDependency[] = [];
+      const dependencies: interfaces.IDependency[] = [];
 
       const adminLayerInfo = _templatizeAdminLayerInfo(layer, dependencies);
       expect(adminLayerInfo).toEqual({});
@@ -3120,7 +3083,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const dependencies: IDependency[] = [
+      const dependencies: interfaces.IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
           name: "SomeName"
@@ -3176,7 +3139,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           }
         }
       };
-      const dependencies: IDependency[] = [
+      const dependencies: interfaces.IDependency[] = [
         {
           id: "ab766cba0dd44ec080420acc10990282",
           name: "SomeName"
@@ -3211,7 +3174,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   describe("_processAdminObject", () => {
     it("should not fail when empty", () => {
       const object: any = {};
-      const dependencies: IDependency[] = [];
+      const dependencies: interfaces.IDependency[] = [];
       _processAdminObject(object, dependencies);
       expect(object).toEqual({});
       expect(dependencies).toEqual([]);

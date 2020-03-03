@@ -21,30 +21,21 @@
 import * as common from "@esri/solution-common";
 import * as webmappingapplication from "../src/webmappingapplication";
 
-import * as utils from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as mockUtils from "../../common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `webmappingapplication`: manages the creation and deployment of web mapping application item types", () => {
-  // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new common.UserSession({
-    clientId: "clientId",
-    redirectUri: "https://example-app.com/redirect-uri",
-    token: "fake-token",
-    tokenExpires: utils.TOMORROW,
-    refreshToken: "refreshToken",
-    refreshTokenExpires: utils.TOMORROW,
-    refreshTokenTTL: 1440,
-    username: "casey",
-    password: "123456",
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
-  });
+let MOCK_USER_SESSION: common.UserSession;
 
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+describe("Module `webmappingapplication`: manages the creation and deployment of web mapping application item types", () => {
   let infoLookupTemplate: any;
 
   beforeEach(() => {
@@ -820,10 +811,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        )
         .post("https://path/FeatureServer/1/rest/info", {})
         .post("http://path/FeatureServer/1/rest/info", {})
         .post("https://path/FeatureServer/1", layer1)
@@ -918,10 +905,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("web application template values", done => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        )
         .post(
           "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           {
@@ -1085,10 +1068,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     it("error with web application template templatizeValues", done => {
       fetchMock
         .post("https://fake.com/arcgis/rest/info", {})
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        )
         .post(
           "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/TestLayer2FromWebApp/FeatureServer/3",
           mockItems.get400Failure()
@@ -1967,18 +1946,13 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expected = {
         success: true,
         id: "cda1234567890",
         folder: "fld1234567890"
       };
-      fetchMock
-        .post(createUrl, expected)
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        );
+      fetchMock.post(createUrl, expected);
 
       // Function doesn't reject, so,
       // tslint:disable-next-line:no-floating-promises
@@ -2058,21 +2032,19 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expected = {
         success: true,
         id: "cda1234567890",
         folder: "fld1234567890"
       };
       const updateUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wab1234567890/update";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/wab1234567890/update";
       fetchMock
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        )
         .post(createUrl, expected)
-        .post(updateUrl, mockUtils.getSuccessResponse());
+        .post(updateUrl, utils.getSuccessResponse());
 
       // Function doesn't reject, so,
       // tslint:disable-next-line:no-floating-promises
@@ -2154,20 +2126,16 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expected = {
         success: false
       };
       const updateUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wab1234567890/update";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/wab1234567890/update";
 
-      fetchMock
-        .post(createUrl, expected)
-        .post(updateUrl, { success: true })
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
-        );
+      fetchMock.post(createUrl, expected).post(updateUrl, { success: true });
 
       webmappingapplication
         .fineTuneCreatedItem(

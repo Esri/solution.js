@@ -24,22 +24,12 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
 import * as viewer from "../src/viewer";
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
+let MOCK_USER_SESSION: common.UserSession;
 
 let sampleItemTemplate: any;
 beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   sampleItemTemplate = {
     item: {
       name: null,
@@ -139,7 +129,8 @@ describe("Module `viewer`", () => {
 
     it("handles identity with supplied item ids", done => {
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token",
         sampleItemTemplate.item
       );
       viewer
@@ -158,7 +149,8 @@ describe("Module `viewer`", () => {
 
     it("handles identity with supplied item ids, but failed GET", done => {
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token",
         mockItems.get500Failure()
       );
       viewer

@@ -20,26 +20,26 @@
 
 import * as common from "@esri/solution-common";
 import * as webmap from "../src/webmap";
-
-import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
+import * as utils from "../../common/test/mocks/utils";
+
+const SERVER_INFO = {
+  currentVersion: 10.1,
+  fullVersion: "10.1",
+  soapUrl: "http://server/arcgis/services",
+  secureSoapUrl: "https://server/arcgis/services",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
+  authInfo: {}
+};
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `webmap`: manages the creation and deployment of web map item types", () => {
-  // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new common.UserSession({
-    clientId: "clientId",
-    redirectUri: "https://example-app.com/redirect-uri",
-    token: "fake-token",
-    tokenExpires: TOMORROW,
-    refreshToken: "refreshToken",
-    refreshTokenExpires: TOMORROW,
-    refreshTokenTTL: 1440,
-    username: "casey",
-    password: "123456",
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
+  let MOCK_USER_SESSION: common.UserSession;
+
+  beforeEach(() => {
+    MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
   });
 
   afterEach(() => {
@@ -518,10 +518,6 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/generateToken",
-          '{"token":"fake-token"}'
         );
 
       webmap.convertItemToTemplate(model, MOCK_USER_SESSION).then(
@@ -824,6 +820,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       };
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
@@ -831,6 +828,10 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         .post(
           "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
+        )
+        .post(
+          "http://myserver/arcgis/services/myService/FeatureServer/3/rest/info",
+          SERVER_INFO
         )
         .post("http://myserver/arcgis/services/myService/FeatureServer/3", {})
         .post(

@@ -20,7 +20,7 @@
 
 import * as interfaces from "../src/interfaces";
 import * as templatization from "../src/templatization";
-import * as utils from "../test/mocks/utils";
+import * as utils from "./mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

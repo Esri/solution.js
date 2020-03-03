@@ -31,18 +31,10 @@ import * as mockItems from "../test/mocks/agolItems";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a interfaces.UserSession to use in all these tests
-const MOCK_USER_SESSION = new interfaces.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+let MOCK_USER_SESSION: interfaces.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
 const SERVER_INFO = {
@@ -80,7 +72,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   describe("getUsername", () => {
     it("can get the username from the authentication", done => {
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/users/casey?f=json&token=fake-token",
         mockItems.getAGOLUser(MOCK_USER_SESSION.username)
       );
       restHelpersGet.getUsername(MOCK_USER_SESSION).then(
@@ -95,10 +88,17 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
   describe("getFoldersAndGroups", () => {
     it("can handle an exception on get user content", done => {
-      fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey?f=json&token=fake-token",
-        mockItems.get500Failure()
-      );
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey?f=json&token=fake-token",
+          mockItems.get500Failure()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
+          mockItems.get500Failure()
+        );
       restHelpersGet.getFoldersAndGroups(MOCK_USER_SESSION).then(
         () => done.fail(),
         () => done()
@@ -109,11 +109,13 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const response: any = utils.getSuccessResponse();
       fetchMock
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey?f=json&token=fake-token",
           response
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
           response
         );
       const expectedFolders: any = [];
@@ -168,7 +170,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     if (typeof window !== "undefined") {
       it("should ignore ignorable error", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet
           .getBlobAsFile(url, "myFile.png", MOCK_USER_SESSION, [400])
@@ -180,7 +183,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should use supplied filename", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.getAnImageResponse(), {
           sendAsJson: false
         });
@@ -201,7 +205,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     if (typeof window !== "undefined") {
       it("should pass through an image file", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.getAnImageResponse(), {
           sendAsJson: false
         });
@@ -216,7 +221,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should pass through non-error JSON", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         const testBlobContents = JSON.stringify({
           a: "a",
           b: 1,
@@ -239,7 +245,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should handle bad JSON by passing it through", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         const testBlob = new Blob(["badJson:{"], { type: "application/json" });
         fetchMock.post(url, testBlob, { sendAsJson: false });
         restHelpersGet
@@ -253,7 +260,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should ignore ignorable error", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet
           .getBlobCheckForError(url, MOCK_USER_SESSION, [400])
@@ -265,7 +273,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should return significant error", done => {
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token";
         fetchMock.post(url, mockItems.get400Failure());
         restHelpersGet.getBlobCheckForError(url, MOCK_USER_SESSION, [500]).then(
           () => done.fail(),
@@ -299,7 +308,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }
         },
         url:
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token",
         options: {
           httpMethod: "GET",
           params: {
@@ -313,7 +323,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             password: "123456",
             token: "fake-token",
             tokenExpires: "2019-06-13T19:35:21.995Z",
-            portal: "https://myorg.maps.arcgis.com/sharing/rest",
+            portal: utils.PORTAL_SUBSET.restUrl + "",
             tokenDuration: 20160,
             redirectUri: "https://example-app.com/redirect-uri",
             refreshTokenTTL: 1440
@@ -323,7 +333,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token",
         JSON.stringify(expected)
       );
       restHelpersGet
@@ -339,7 +350,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const expected = { values: { a: 1, b: "c" } };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890?f=json&token=fake-token",
         JSON.stringify(expected)
       );
       restHelpersGet
@@ -467,7 +479,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           },
           url:
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
           options: {
             httpMethod: "GET",
             params: {
@@ -481,7 +493,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
               password: "123456",
               token: "fake-token",
               tokenExpires: "2019-06-13T19:35:21.995Z",
-              portal: "https://myorg.maps.arcgis.com/sharing/rest",
+              portal: utils.PORTAL_SUBSET.restUrl + "",
               tokenDuration: 20160,
               redirectUri: "https://example-app.com/redirect-uri",
               refreshTokenTTL: 1440
@@ -491,7 +503,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         };
 
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data",
           expected
         );
         restHelpersGet
@@ -509,7 +521,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const itemId = "itm1234567890";
       const url = restHelpersGet.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
       expect(url).toEqual(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/data"
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/data"
       );
     });
   });
@@ -560,7 +572,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         MOCK_USER_SESSION
       );
       expect(url).toEqual(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/metadata/metadata.xml"
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890/info/metadata/metadata.xml"
       );
     });
   });
@@ -573,7 +586,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const expected = { total: 0, relatedItems: [] as any[] };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemId +
           "/relatedItems" +
           "?f=json&direction=" +
@@ -606,7 +620,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const expected = { total: 0, relatedItems: [] as any[] };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemId +
           "/relatedItems" +
           "?f=json&direction=" +
@@ -702,7 +717,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemId +
           "/relatedItems" +
           "?f=json&direction=" +
@@ -731,7 +747,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const direction = "forward";
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemId +
           "/relatedItems" +
           "?f=json&direction=" +
@@ -763,9 +780,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       const itemId = "itm1234567890";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
-          itemId +
-          "/resources",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/" + itemId + "/resources",
         mockItems.get500Failure()
       );
       restHelpersGet.getItemResources(itemId, MOCK_USER_SESSION).then(
@@ -787,7 +802,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
         mockItems.get400Failure()
       );
       restHelpersGet.getItemResourcesFiles(itemId, MOCK_USER_SESSION).then(
@@ -811,7 +826,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         };
 
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/resources",
           {
             total: 0,
             start: 1,
@@ -832,7 +848,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         const itemId = "itm1234567890";
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources",
             {
               total: 1,
               start: 1,
@@ -848,7 +865,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jackson%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           );
@@ -876,7 +894,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     if (typeof window !== "undefined") {
       it("get thumbnail for an item", done => {
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png",
           utils.getSampleImage(),
           { sendAsJson: false }
         );
@@ -906,7 +925,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           MOCK_USER_SESSION
         )
       ).toEqual(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/info/thumbnail/ago_downloaded.png"
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/itm1234567890/info/thumbnail/ago_downloaded.png"
       );
     });
 
@@ -919,7 +939,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           MOCK_USER_SESSION
         )
       ).toEqual(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/thumbnail/ago_downloaded.png"
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/grp1234567890/info/thumbnail/ago_downloaded.png"
       );
     });
   });
@@ -945,7 +966,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     it("gets portal sharing url from authentication", () => {
       expect(
         restHelpersGet.getPortalSharingUrlFromAuth(MOCK_USER_SESSION)
-      ).toEqual("https://myorg.maps.arcgis.com/sharing/rest");
+      ).toEqual(utils.PORTAL_SUBSET.restUrl);
     });
   });
 
@@ -1118,7 +1139,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           error: {
             code: 400,
@@ -1149,7 +1171,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           total: 0,
           start: 1,
@@ -1174,7 +1197,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/groups/grp1234567890?f=json&start=1&num=10&token=fake-token",
         {
           total: 2,
           start: 1,
@@ -1208,7 +1232,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       fetchMock
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
           {
             total: 4,
             start: 1,
@@ -1225,7 +1250,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
           {
             total: 4,
             start: 3,
@@ -1264,7 +1290,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       fetchMock
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=1&num=2&token=fake-token",
           {
             total: 5,
             start: 1,
@@ -1281,7 +1308,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=3&num=2&token=fake-token",
           {
             total: 5,
             start: 3,
@@ -1298,7 +1326,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           }
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=5&num=2&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=5&num=2&token=fake-token",
           {
             total: 5,
             start: 5,
@@ -1336,7 +1365,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
         mockItems.get400Failure()
       );
       restHelpersGet
@@ -1360,7 +1389,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+        utils.PORTAL_SUBSET.restUrl + "/content/items/itm1234567890/resources",
         {
           total: 0,
           start: 1,
@@ -1388,7 +1417,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources",
             {
               total: 1,
               start: 1,
@@ -1404,7 +1434,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jackson%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           );
@@ -1427,7 +1458,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources",
             {
               total: 4,
               start: 1,
@@ -1458,22 +1490,26 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jackson%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jenny%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Leigh%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           );
@@ -1501,7 +1537,8 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         let imageNum = 0;
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources",
             () => {
               const i = imageNum++;
               return {
@@ -1520,22 +1557,26 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Bradley%20&%20Taggart%20Lakes.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jackson%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jackson%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Jenny%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Jenny%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890/resources/Leigh%20Lake.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/resources/Leigh%20Lake.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           );
