@@ -371,11 +371,6 @@ export function createItemTemplate(
               itemId,
               common.createPlaceholderTemplate(itemId, "unknown")
             );
-            console.log(
-              "!----- " +
-                itemId +
-                " ----- FAILED Id not found or item is not accessible -----"
-            ); // ???
             resolve(true);
           }
         );

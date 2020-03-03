@@ -532,12 +532,6 @@ export function _createItemFromTemplateWhenReady(
           const templateType = template.type;
           let itemHandler = moduleMap[templateType];
           if (!itemHandler) {
-            console.warn(
-              "Unimplemented item type (package level) " +
-                templateType +
-                " for " +
-                template.itemId
-            );
             resolve({
               id: "",
               type: templateType,

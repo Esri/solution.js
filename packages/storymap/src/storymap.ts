@@ -30,12 +30,9 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>(resolve => {
-    if (itemInfo.type === "StoryMap") {
-      console.log("convertItemToTemplate for a next-gen storymap");
+    /* if (itemInfo.type === "StoryMap") {
     } else {
-      console.log("convertItemToTemplate for a first-gen storymap");
-    }
-    console.warn("========== TODO ==========");
+    } */
     resolve(undefined);
   });
 }
