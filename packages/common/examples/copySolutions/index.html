@@ -59,11 +59,11 @@
   <script>
     var dojoConfig = {
       "paths": {
-        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.8.0/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.8.0/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.8.0/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.8.0/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.8.0/dist/umd/service-admin.umd.min",
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.9.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.9.0/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.9.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.9.0/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.9.0/dist/umd/service-admin.umd.min",
         "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.7.0/dist/umd/common.umd.min",
         "src": window.location + "src"
       }
@@ -81,15 +81,15 @@
       <div class="section-title">Credentials in source organization</div>
 
       <div class="labeledItem">
-        <label for="srcUsername">Username:</label>
+        <label for="srcUsername">Username:&nbsp;</label>
         <input type="text" id="srcUsername">
       </div>
       <div class="labeledItem">
-        <label for="srcPassword">Password:</label>
+        <label for="srcPassword">Password:&nbsp;</label>
         <input type="password" id="srcPassword">
       </div>
       <div class="labeledItem">
-        <label for="srcPortal">Portal:</label>
+        <label for="srcPortal">Portal:&nbsp;</label>
         <input type="text" id="srcPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
       </div>
       <button id="connectToSourceBtn fader" onclick="connectToSourceFcn()">Connect</button>
@@ -98,15 +98,15 @@
 
       <div class="section-title">Credentials in destination organization</div>
       <div class="labeledItem">
-        <label for="destUsername">Username:</label>
+        <label for="destUsername">Username:&nbsp;</label>
         <input type="text" id="destUsername">
       </div>
       <div class="labeledItem">
-        <label for="destPassword">Password:</label>
+        <label for="destPassword">Password:&nbsp;</label>
         <input type="password" id="destPassword">
       </div>
       <div class="labeledItem">
-        <label for="destPortal">Portal:</label>
+        <label for="destPortal">Portal:&nbsp;</label>
         <input type="text" id="destPortal" style="width:256px" placeholder="https://myorg.maps.arcgis.com">
       </div>
       <button id="connectToDestinationBtn fader" onclick="connectToDestinationFcn()">Connect</button>

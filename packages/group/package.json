@@ -14,7 +14,7 @@
   ],
   "devDependencies": {
     "rollup": "^1.22.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@esri/solution-common": "^0.7.0",

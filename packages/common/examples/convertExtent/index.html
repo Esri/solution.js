@@ -26,7 +26,7 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    <label for="id">ID of the portal whose default extents are to be converted:</label>
+    <label for="id">ID of the portal whose default extents are to be converted:&nbsp;</label>
     <input type="text" id="id" style="width:256px">
     <button onclick="goFcn()">Go</button>
     <br/><i>Leave empty for default extents</i>
@@ -39,11 +39,11 @@
 
     require.config({
       paths: {
-        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.8.0/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.8.0/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.8.0/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.8.0/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.8.0/dist/umd/service-admin.umd.min",
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.9.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.9.0/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.9.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.9.0/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.9.0/dist/umd/service-admin.umd.min",
         "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.7.0/dist/umd/common.umd.min"
       }
     });

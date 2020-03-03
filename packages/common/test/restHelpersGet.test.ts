@@ -382,7 +382,6 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         Promise.all(filePromises).then(
           () => done.fail(),
           files => {
-            console.log(JSON.stringify(files, null, 2));
             expect(files).toEqual(mockItems.get500Failure());
             done();
           }

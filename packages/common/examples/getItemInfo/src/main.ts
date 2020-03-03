@@ -128,18 +128,18 @@ export function getItemInfo(
           JSON.stringify(itemBase, null, 2) +
           "</textarea></div>" +
           '<div style="width:2%;display:inline-block;"></div>' +
-          '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;">';
-        html += await showBlob(itemDataFile, "dataSection");
+          '<div style="width:48%;display:inline-block;vertical-align: top;">';
+        html += await showBlob(itemDataFile);
         html += "</div>";
 
         // Show thumbnail section
-        html += '<p>Thumbnail<br/><div id="thumbnailOutput">';
-        html += await showBlob(itemThumbnail, "thumbnailOutput");
+        html += "<p>Thumbnail<br/><div>";
+        html += await showBlob(itemThumbnail);
         html += "</div></p>";
 
         // Show metadata section
-        html += '<p>Metadata<br/><div id="metadataOutput">';
-        html += await showBlob(itemMetadataBlob, "metadataOutput");
+        html += "<p>Metadata<br/><div>";
+        html += await showBlob(itemMetadataBlob);
         html += "</div></p>";
 
         // Show resources section
@@ -149,9 +149,8 @@ export function getItemInfo(
         } else {
           html += "<ol>";
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
-            const containerId = "resourceOutput" + i;
-            html += '<li><div id="' + containerId + '">';
-            html += await showBlob(itemResourceFiles[i], containerId);
+            html += "<li><div>";
+            html += await showBlob(itemResourceFiles[i]);
             html += "</div></li>";
           }
           html += "</ol>";
@@ -226,6 +225,38 @@ export function getItemInfo(
           } else {
             resolve(html);
           }
+        } else if (itemBase.type === "Form") {
+          const formInfoFilenames = [
+            "form.json",
+            "forminfo.json",
+            "form.webform"
+          ];
+          // tslint:disable-next-line: no-floating-promises
+          Promise.all(
+            common.getInfoFiles(itemId, formInfoFilenames, authentication)
+          )
+            .then(results => results.filter(result => !!result))
+            .then(
+              // (itemFormInfoFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
+              async formFiles => {
+                formFiles = formFiles.filter(result => !!result);
+                console.log("formFiles", formFiles);
+                html += "<p>Form Files<br/>";
+                if (formFiles.length === 0) {
+                  html += "<p><i>none</i>";
+                } else {
+                  html += "<ol>";
+                  for (let i: number = 0; i < formFiles.length; ++i) {
+                    html += "<li><div>";
+                    html += await showBlob(formFiles[i]);
+                    html += "</div></li>";
+                  }
+                  html += "</ol>";
+                }
+                html += "</p>";
+                resolve(html);
+              }
+            );
         } else {
           resolve(html);
         }
@@ -250,22 +281,37 @@ function textAreaHtml(text: any): string {
 }
 
 /**
- * Creates the HTML for a blob and adds it to the innerHTML of the supplied DOM container.
+ * Creates the HTML for a blob.
  *
  * @param blob Blob or File to display
- * @param domContainerId Id of DOM container to receive created HTML
+ * @return Promise resolving to a string of HTML
  */
-function showBlob(blob: Blob, domContainerId: string): Promise<string> {
+function showBlob(blob: Blob): Promise<string> {
+  // tslint:disable-next-line: no-floating-promises
   return new Promise<string>(resolve => {
     if (!blob || blob.size === 0) {
       resolve("<i>none</i>");
       return;
     }
     const file = blob as File;
+    const filename = file.name || "";
+
+    // Undo camouflage around a JSON file with an unsupported extension
+    if (filename.endsWith(".json.zip")) {
+      const nameToUse = filename.replace(/\.json\.zip$/, "");
+      blob = common.convertResourceToFile({
+        blob: file,
+        filename: nameToUse,
+        mimeType: "application/json"
+      });
+    }
 
     if (blob.type === "application/json") {
       common.blobToJson(blob).then(
-        text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
+        text =>
+          resolve(
+            textAreaHtml(JSON.stringify(text, null, 2)) + addFilename(filename)
+          ),
         error => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
     } else if (
@@ -274,7 +320,7 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
       blob.type === "application/xml"
     ) {
       common.blobToText(blob).then(
-        text => resolve(textAreaHtml(text)),
+        text => resolve(textAreaHtml(text) + addFilename(filename)),
         error => resolve("<i>problem extracting text: " + error + "</i>")
       );
     } else if (blob.type.startsWith("image/")) {
@@ -282,27 +328,27 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
         '<img src="' +
         window.URL.createObjectURL(blob) +
         '" style="max-width:256px;border:1px solid lightgray;"/>';
-      if (file.name) {
+      if (filename) {
         html +=
           '&nbsp;&nbsp;&nbsp;&nbsp;<a href="' +
           window.URL.createObjectURL(file) +
           '" download="' +
-          file.name +
+          filename +
           '">' +
-          file.name +
+          filename +
           "</a>";
       }
       html += "</p>";
       resolve(html);
     } else {
-      if (file.name) {
+      if (filename) {
         resolve(
           '<a href="' +
             window.URL.createObjectURL(file) +
             '" download="' +
-            file.name +
+            filename +
             '">' +
-            file.name +
+            filename +
             "</a>"
         );
       } else {
@@ -316,4 +362,8 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
       }
     }
   });
+}
+
+function addFilename(filename: string): string {
+  return filename ? "&nbsp;" + filename : "";
 }

@@ -15,11 +15,11 @@
  */
 // @esri/solution-common getItemInfo TypeScript example
 
-import * as solutionCommon from "@esri/solution-common";
+import * as common from "@esri/solution-common";
 
 export function getItemInfo(
   itemId: string,
-  authentication: solutionCommon.UserSession
+  authentication: common.UserSession
 ): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     if (!itemId) {
@@ -28,15 +28,26 @@ export function getItemInfo(
     }
 
     // Get the item information
-    const itemBaseDef = solutionCommon.getItemBase(itemId, authentication);
+    const itemFwdRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
+      itemId,
+      "forward",
+      authentication
+    );
+    const itemRevRelatedItemsDef = common.getItemRelatedItemsInSameDirection(
+      itemId,
+      "reverse",
+      authentication
+    );
+
+    const itemBaseDef = common.getItemBase(itemId, authentication);
     const itemDataDef = new Promise<Blob>((resolve2, reject2) => {
       // tslint:disable-next-line: no-floating-promises
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          solutionCommon
+          common
             .getItemDataAsFile(itemId, itemBase.name, authentication)
-            .then(resolve2, (error: any) => reject2(error));
+            .then(resolve2, (error: any) => reject2(JSON.stringify(error)));
         }
       );
     });
@@ -45,17 +56,14 @@ export function getItemInfo(
       itemBaseDef.then(
         // any error fetching item base will be handled via Promise.all later
         (itemBase: any) => {
-          solutionCommon
+          common
             .getItemThumbnail(itemId, itemBase.thumbnail, false, authentication)
-            .then(resolve3, (error: any) => reject3(error));
+            .then(resolve3, (error: any) => reject3(JSON.stringify(error)));
         }
       );
     });
-    const itemMetadataDef = solutionCommon.getItemMetadataBlob(
-      itemId,
-      authentication
-    );
-    const itemResourcesDef = solutionCommon.getItemResourcesFiles(
+    const itemMetadataDef = common.getItemMetadataBlob(itemId, authentication);
+    const itemResourcesDef = common.getItemResourcesFiles(
       itemId,
       authentication
     );
@@ -65,7 +73,9 @@ export function getItemInfo(
       itemDataDef,
       itemThumbnailDef,
       itemMetadataDef,
-      itemResourcesDef
+      itemResourcesDef,
+      itemFwdRelatedItemsDef,
+      itemRevRelatedItemsDef
     ]).then(
       async responses => {
         const [
@@ -73,22 +83,28 @@ export function getItemInfo(
           itemDataFile,
           itemThumbnail,
           itemMetadataBlob,
-          itemResourceFiles
+          itemResourceFiles,
+          itemFwdRelatedItems,
+          itemRevRelatedItems
         ] = responses;
         // Summarize what we have
         // ----------------------
         // (itemBase: any)  text/plain JSON
-        // (itemDataDef: File)  */*
+        // (itemData: File)  */*
         // (itemThumbnail: Blob)  image/*
-        // (itemMetadataDef: Blob)  application/xml
-        // (itemResourcesDef: File[])  list of */*
+        // (itemMetadata: Blob)  application/xml
+        // (itemResources: File[])  list of */*
+        // (itemFwdRelatedItems: common.IRelatedItems[])  list of forward relationshipType/relatedItems[] pairs
+        // (itemRevRelatedItems: common.IRelatedItems[])  list of reverse relationshipType/relatedItems[] pairs
         console.log("itemBase", itemBase);
         console.log("itemData", itemDataFile);
         console.log("itemThumbnail", itemThumbnail);
         console.log("itemMetadata", itemMetadataBlob);
-        console.log("itemResources", itemResourceFiles);
+        console.log("itemResources", JSON.stringify(itemResourceFiles));
+        console.log("itemFwdRelatedItems", JSON.stringify(itemFwdRelatedItems));
+        console.log("itemRevRelatedItems", JSON.stringify(itemRevRelatedItems));
 
-        const portalUrl = solutionCommon.getPortalUrlFromAuth(authentication);
+        const portalUrl = common.getPortalUrlFromAuth(authentication);
 
         // Show item and data sections
         let html =
@@ -108,22 +124,22 @@ export function getItemInfo(
           '<div style="width:48%;display:inline-block;">Item</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Data</div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="55" style="width:99%;font-size:x-small">' +
+          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
           JSON.stringify(itemBase, null, 2) +
           "</textarea></div>" +
           '<div style="width:2%;display:inline-block;"></div>' +
-          '<div id="dataSection" style="width:48%;display:inline-block;vertical-align: top;">';
-        html += await showBlob(itemDataFile, "dataSection");
+          '<div style="width:48%;display:inline-block;vertical-align: top;">';
+        html += await showBlob(itemDataFile);
         html += "</div>";
 
         // Show thumbnail section
-        html += '<p>Thumbnail<br/><div id="thumbnailOutput">';
-        html += await showBlob(itemThumbnail, "thumbnailOutput");
+        html += "<p>Thumbnail<br/><div>";
+        html += await showBlob(itemThumbnail);
         html += "</div></p>";
 
         // Show metadata section
-        html += '<p>Metadata<br/><div id="metadataOutput">';
-        html += await showBlob(itemMetadataBlob, "metadataOutput");
+        html += "<p>Metadata<br/><div>";
+        html += await showBlob(itemMetadataBlob);
         html += "</div></p>";
 
         // Show resources section
@@ -133,12 +149,41 @@ export function getItemInfo(
         } else {
           html += "<ol>";
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
-            const containerId = "resourceOutput" + i;
-            html += '<li><div id="' + containerId + '">';
-            html += await showBlob(itemResourceFiles[i], containerId);
+            html += "<li><div>";
+            html += await showBlob(itemResourceFiles[i]);
             html += "</div></li>";
           }
           html += "</ol>";
+        }
+        html += "</p>";
+
+        // Show related items section
+        html += "<p>Related Items<br/>";
+        if (
+          itemFwdRelatedItems.length === 0 &&
+          itemRevRelatedItems.length === 0
+        ) {
+          html += "<p><i>none</i>";
+        } else {
+          html +=
+            "<ul style='margin-left:-36px;list-style-type:none;font-size:smaller;'>";
+          for (const relatedItem of itemFwdRelatedItems) {
+            html +=
+              "<li>&rarr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          for (const relatedItem of itemRevRelatedItems) {
+            html +=
+              "<li>&larr; " +
+              relatedItem.relationshipType +
+              " " +
+              JSON.stringify(relatedItem.relatedItemIds) +
+              "</li>";
+          }
+          html += "</ul>";
         }
         html += "</p>";
 
@@ -147,10 +192,10 @@ export function getItemInfo(
           if (authentication.token) {
             // These queries require authentication
             // Show resources section
-            solutionCommon
+            common
               .getFeatureServiceProperties(itemBase.url, authentication)
               .then(
-                (properties: solutionCommon.IFeatureServiceProperties) => {
+                (properties: common.IFeatureServiceProperties) => {
                   html += "<p>Feature Service Properties<br/>";
 
                   html +=
@@ -180,6 +225,38 @@ export function getItemInfo(
           } else {
             resolve(html);
           }
+        } else if (itemBase.type === "Form") {
+          const formInfoFilenames = [
+            "form.json",
+            "forminfo.json",
+            "form.webform"
+          ];
+          // tslint:disable-next-line: no-floating-promises
+          Promise.all(
+            common.getInfoFiles(itemId, formInfoFilenames, authentication)
+          )
+            .then(results => results.filter(result => !!result))
+            .then(
+              // (itemFormInfoFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
+              async formFiles => {
+                formFiles = formFiles.filter(result => !!result);
+                console.log("formFiles", formFiles);
+                html += "<p>Form Files<br/>";
+                if (formFiles.length === 0) {
+                  html += "<p><i>none</i>";
+                } else {
+                  html += "<ol>";
+                  for (let i: number = 0; i < formFiles.length; ++i) {
+                    html += "<li><div>";
+                    html += await showBlob(formFiles[i]);
+                    html += "</div></li>";
+                  }
+                  html += "</ol>";
+                }
+                html += "</p>";
+                resolve(html);
+              }
+            );
         } else {
           resolve(html);
         }
@@ -197,29 +274,44 @@ export function getItemInfo(
  */
 function textAreaHtml(text: any): string {
   return (
-    '<textarea rows="55" style="width:99%;font-size:x-small">' +
+    '<textarea rows="10" style="width:99%;font-size:x-small">' +
     text +
     "</textarea>"
   );
 }
 
 /**
- * Creates the HTML for a blob and adds it to the innerHTML of the supplied DOM container.
+ * Creates the HTML for a blob.
  *
  * @param blob Blob or File to display
- * @param domContainerId Id of DOM container to receive created HTML
+ * @return Promise resolving to a string of HTML
  */
-function showBlob(blob: Blob, domContainerId: string): Promise<string> {
+function showBlob(blob: Blob): Promise<string> {
+  // tslint:disable-next-line: no-floating-promises
   return new Promise<string>(resolve => {
     if (!blob || blob.size === 0) {
       resolve("<i>none</i>");
       return;
     }
     const file = blob as File;
+    const filename = file.name || "";
+
+    // Undo camouflage around a JSON file with an unsupported extension
+    if (filename.endsWith(".json.zip")) {
+      const nameToUse = filename.replace(/\.json\.zip$/, "");
+      blob = common.convertResourceToFile({
+        blob: file,
+        filename: nameToUse,
+        mimeType: "application/json"
+      });
+    }
 
     if (blob.type === "application/json") {
-      solutionCommon.blobToJson(blob).then(
-        text => resolve(textAreaHtml(JSON.stringify(text, null, 2))),
+      common.blobToJson(blob).then(
+        text =>
+          resolve(
+            textAreaHtml(JSON.stringify(text, null, 2)) + addFilename(filename)
+          ),
         error => resolve("<i>problem extracting JSON: " + error + "</i>")
       );
     } else if (
@@ -227,8 +319,8 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
       blob.type === "text/xml" ||
       blob.type === "application/xml"
     ) {
-      solutionCommon.blobToText(blob).then(
-        text => resolve(textAreaHtml(text)),
+      common.blobToText(blob).then(
+        text => resolve(textAreaHtml(text) + addFilename(filename)),
         error => resolve("<i>problem extracting text: " + error + "</i>")
       );
     } else if (blob.type.startsWith("image/")) {
@@ -236,27 +328,27 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
         '<img src="' +
         window.URL.createObjectURL(blob) +
         '" style="max-width:256px;border:1px solid lightgray;"/>';
-      if (file.name) {
+      if (filename) {
         html +=
           '&nbsp;&nbsp;&nbsp;&nbsp;<a href="' +
           window.URL.createObjectURL(file) +
           '" download="' +
-          file.name +
+          filename +
           '">' +
-          file.name +
+          filename +
           "</a>";
       }
       html += "</p>";
       resolve(html);
     } else {
-      if (file.name) {
+      if (filename) {
         resolve(
           '<a href="' +
             window.URL.createObjectURL(file) +
             '" download="' +
-            file.name +
+            filename +
             '">' +
-            file.name +
+            filename +
             "</a>"
         );
       } else {
@@ -270,4 +362,8 @@ function showBlob(blob: Blob, domContainerId: string): Promise<string> {
       }
     }
   });
+}
+
+function addFilename(filename: string): string {
+  return filename ? "&nbsp;" + filename : "";
 }
