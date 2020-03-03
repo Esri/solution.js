@@ -31,7 +31,11 @@ let itemTemplate: common.IItemTemplate = mockSolutions.getItemTemplate(
   "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer"
 );
 
+let MOCK_USER_SESSION: common.UserSession;
+
 beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   // refresh the template if any temp changes were made
   itemTemplate = mockSolutions.getItemTemplate(
     "Feature Service",
@@ -41,20 +45,6 @@ beforeEach(() => {
 });
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
-
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
 
 const _organization: any = utils.getPortalResponse();
 
@@ -147,12 +137,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
           .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
             mockItems.get500Failure()
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            '{"token":"abc123"}'
           );
 
         featureLayer
@@ -206,7 +192,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const adminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const itemDataUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
+          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
         const keyField: string = "globalid";
         const defQuery: string = "status = 'BoardReview'";
@@ -235,11 +221,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(url + "?f=json", itemTemplate.properties.service)
           .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
           .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-          .post(url + "/sources?f=json", mockItems.get400Failure())
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            '{"token":"abc123"}'
-          );
+          .post(url + "/sources?f=json", mockItems.get400Failure());
 
         featureLayer
           .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
@@ -253,7 +235,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
         const itemDataUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
+          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
         itemTemplate = mockSolutions.getItemTemplate(
           "Feature Service",
@@ -281,7 +263,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const adminUrl: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
         const itemDataUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/svc1234567890/data";
+          utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data";
 
         const keyField: string = "globalid";
         const defQuery: string = "status = 'BoardReview'";
@@ -310,11 +292,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           .post(url + "?f=json", mockItems.get400Failure())
           .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
           .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
-          .post(url + "/sources?f=json", mockItems.get400Failure())
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            '{"token":"abc123"}'
-          );
+          .post(url + "/sources?f=json", mockItems.get400Failure());
 
         featureLayer
           .convertItemToTemplate("A", itemTemplate.item, MOCK_USER_SESSION)
@@ -412,11 +390,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -436,7 +410,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         );
 
@@ -562,11 +537,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -586,11 +557,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           '{"success":true}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/undefined/move",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/undefined/move",
           '{"success": true, "folderId": 1245}'
         );
       featureLayer
@@ -673,11 +646,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -697,7 +666,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
@@ -776,11 +746,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -865,11 +831,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           mockItems.get400Failure()
         );
 
@@ -930,11 +892,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         );
 
@@ -1022,11 +980,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -1046,7 +1000,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
@@ -1125,11 +1080,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -1149,7 +1100,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 
@@ -1210,11 +1162,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .post(adminUrl + "/1?f=json", mockItems.get400Failure())
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           createResponse
         )
         .post(
@@ -1234,7 +1182,8 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
           mockItems.get400Failure()
         );
 

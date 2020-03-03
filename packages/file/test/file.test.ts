@@ -25,20 +25,6 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
-
 const SERVER_INFO = {
   currentVersion: 10.1,
   fullVersion: "10.1",
@@ -58,6 +44,12 @@ const noResourcesResponse: any = {
   resources: []
 };
 
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
 afterEach(() => {
   fetchMock.restore();
 });
@@ -75,15 +67,17 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/jsn1234567890/data",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           );
 
@@ -106,23 +100,27 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/jsn1234567890/data",
             {}
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/resources",
             mockItems.getAGOLItemResources("one png")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources/anImage.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/resources/anImage.png",
             utils.getSampleImage()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -145,19 +143,22 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/cod1234567890/data",
             utils.getSampleZipFile("myZipFile.zip")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/cod1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/cod1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -184,19 +185,22 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/ppk1234567890/data",
             utils.getSampleZipFile("myProjectPackage.ppkx")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/ppk1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/ppk1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/ppk1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -222,19 +226,22 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/cod1234567890/data",
             utils.getSampleZipFile("myZipFile.zip")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/cod1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/cod1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/cod1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             mockItems.get400Failure()
           );
 
@@ -265,19 +272,22 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/jsn1234567890/data",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -303,23 +313,27 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/jsn1234567890/data",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/jsn1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/jsn1234567890/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567890/resources/anImage.png",
             utils.getSampleImage()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -350,7 +364,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         const newItemID: string = "map1234567891";
 
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           { success: true, id: newItemID }
         );
 
@@ -393,10 +407,10 @@ describe("Module `file`: manages the creation and deployment of item types that 
         const newItemID: string = "map1234567891";
 
         fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+            success: true,
+            id: newItemID
+          })
           .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO)
           .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
           .post(
@@ -407,7 +421,8 @@ describe("Module `file`: manages the creation and deployment of item types that 
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               newItemID +
               "/update",
             { success: true }
@@ -445,7 +460,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
         const newItemID: string = "map1234567891";
 
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           { success: false }
         );
 

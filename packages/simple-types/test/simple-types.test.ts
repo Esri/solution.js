@@ -29,20 +29,6 @@ import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 import * as quickcapture from "../src/quickcapture";
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
-
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 const noResourcesResponse: any = {
@@ -52,6 +38,12 @@ const noResourcesResponse: any = {
   nextStart: -1,
   resources: []
 };
+
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
 
 afterEach(() => {
   fetchMock.restore();
@@ -86,15 +78,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wrk1234567890/resources",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/wrk1234567890/data",
             mockItems.getAGOLItemData("Workforce Project")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wrk1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wrk1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
@@ -130,11 +124,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post(url, mockItems.get400Failure())
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -213,25 +209,30 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               solutionItemId +
               "/addResources",
             { success: true, id: solutionItemId }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             {}
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -271,15 +272,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               solutionItemId +
               "/addResources",
             { success: true, id: solutionItemId }
@@ -350,15 +354,18 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -420,7 +427,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         };
 
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
             itemTemplate.itemId +
             "/data",
           mockItems.get500Failure()
@@ -483,19 +491,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             ["abc", "def", "ghi"]
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
@@ -569,25 +580,29 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             ["abc", "def", "ghi"]
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
               solutionItemId +
@@ -605,7 +620,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           ["Survey2Data", "Survey2Service"]
         );
         fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
             itemTemplate.itemId +
             "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
           {
@@ -621,7 +637,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           }
         );
         fetchMock.get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
             itemTemplate.itemId +
             "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
           {
@@ -694,19 +711,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             200
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
@@ -739,15 +759,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/frm1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/frm1234567890/resources",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/frm1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
             mockItems.get500Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -779,26 +801,30 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             utils.getSampleZip(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
               solutionItemId +
@@ -904,11 +930,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             []
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             new Blob([JSON.stringify(itemTemplate.data)], {
               type: "application/json"
             }),
@@ -981,11 +1009,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         fetchMock
           .post("https://fake.com/arcgis/rest/info", {})
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/resources",
             []
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             data
           )
           .post(
@@ -1029,7 +1059,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expected[itemId] = newItemID;
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
         mockItems.get400Failure()
       );
 
@@ -1066,7 +1096,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expected[itemId] = newItemID;
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
         { success: false }
       );
 
@@ -1099,15 +1129,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         const templateDictionary: any = {};
 
         const userUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/community/users/casey?f=json&token=fake-token";
 
         fetchMock
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+            success: true,
+            id: newItemID
+          })
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               newItemID +
               "/update",
             { success: true }
@@ -1151,15 +1183,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         const templateDictionary: any = {};
 
         const userUrl: string =
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+          utils.PORTAL_SUBSET.restUrl +
+          "/community/users/casey?f=json&token=fake-token";
 
         fetchMock
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+            success: true,
+            id: newItemID
+          })
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               newItemID +
               "/update",
             mockItems.get400Failure()
@@ -1241,19 +1275,21 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const templateDictionary: any = {};
 
       const userUrl: string =
-        "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27casey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: newItemID
+        })
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemID }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemID +
             "/update",
           { success: true }
@@ -1392,18 +1428,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: newItemId
+        })
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemId }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemId +
             "/update",
           { success: true }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemId +
             "/updateResources",
           { success: true }
@@ -1467,18 +1505,20 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: newItemId
+        })
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemId }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemId +
             "/update",
           { success: true }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemId +
             "/updateResources",
           mockItems.get400Failure()
@@ -1562,11 +1602,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           layer0
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         );
       staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -1663,15 +1705,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           layer0
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
           { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship",
           { success: true }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         );
       staticRelatedItemsMocks.fetchMockRelatedItems(
@@ -1680,7 +1724,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         ["Survey2Data", "Survey2Service"]
       );
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemTemplate.itemId +
           "/relatedItems?f=json&direction=forward&relationshipType=Survey2Data&token=fake-token",
         {
@@ -1696,7 +1741,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }
       );
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/items/" +
           itemTemplate.itemId +
           "/relatedItems?f=json&direction=forward&relationshipType=Survey2Service&token=fake-token",
         {
@@ -1766,12 +1812,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.dependencies = [];
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: "abc0cab401af4828a25cc6eaeb59fb69"
+        })
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         );
 
@@ -1847,20 +1894,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
           layer0
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: "abc0cab401af4828a25cc6eaeb59fb69"
+        })
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
-        )
-        .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/folderId/addItem",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/folderId/addItem",
           { success: true, id: "abc2cab401af4828a25cc6eaeb59fb69" }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc2cab401af4828a25cc6eaeb59fb69/update",
           mockItems.get400FailureResponse()
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           mockItems.get400FailureResponse()
         );
 

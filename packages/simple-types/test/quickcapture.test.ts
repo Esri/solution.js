@@ -21,28 +21,14 @@
 import * as common from "@esri/solution-common";
 import * as quickcapture from "../src/quickcapture";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as fetchMock from "fetch-mock";
-
-import { TOMORROW } from "../../common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
+let MOCK_USER_SESSION: common.UserSession;
 
-afterEach(() => {
-  fetchMock.restore();
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //

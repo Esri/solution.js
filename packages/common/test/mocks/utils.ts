@@ -22,7 +22,7 @@ import * as generalHelpers from "../../src/generalHelpers";
 // -------------------------------------------------------------------------------------------------------------------//
 
 export const ORG_URL = "https://myorg.maps.arcgis.com";
-export const PORTAL_URL = "https://www.arcgis.com";
+export const PORTAL_URL = "https://myorg.maps.arcgis.com";
 
 export const TOMORROW = (function() {
   const now = new Date();
@@ -52,7 +52,7 @@ export const SERVER_INFO = {
   fullVersion: "10.7.1",
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://www.arcgis.com",
+  owningSystemUrl: PORTAL_URL,
   authInfo: {}
 };
 
@@ -76,9 +76,39 @@ export const PORTAL_SUBSET = {
   urlKey: "deploymentTest"
 };
 
-export const PROGRESS_CALLBACK = function(): void {
+export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
+  itemId: string,
+  status: interfaces.EItemProgressStatus,
+  costUsed: number
+): boolean {
+  return true;
+};
+
+export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
+  percentDone: number
+): void {
   const tick = "tok";
 };
+
+export const PROGRESS_CALLBACK = function(): void {
+  // FUTURE delete
+  const tick = "tok";
+};
+
+/**
+ * Provides a successful progress callback until the nth call.
+ *
+ * @param callToFailOn 1-based call to fail on; before this call, function returns true
+ * @return Callback function that tracks calls and fails when specified
+ */
+export function createFailingItemProgressCallback(
+  callToFailOn: number
+): interfaces.IItemProgressCallback {
+  let numCalls = 0;
+  return function(itemId, status, costUsed) {
+    return callToFailOn !== ++numCalls;
+  };
+}
 
 export function getSampleMetadata(mimeType = "text/xml"): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
@@ -140,6 +170,15 @@ export function getSampleJson(): any {
 
 export function getSampleJsonAsBlob(mimeType = "application/json"): Blob {
   return jsonToBlob(getSampleJson());
+}
+
+export function getSampleJsonAsFile(
+  filename: string,
+  mimeType = "application/json"
+): File {
+  return new File([getSampleJsonAsBlob(mimeType)], filename, {
+    type: mimeType
+  });
 }
 
 export function getSampleTextAsBlob(mimeType = "text/plain"): Blob {
@@ -256,6 +295,11 @@ export function getCreateGroupResponse(
   });
 }
 
+export function getFailureResponse(args?: any) {
+  const response = { success: false };
+  return Object.assign(response, args || {});
+}
+
 export function getSuccessResponse(args?: any) {
   const response = { success: true };
   return Object.assign(response, args || {});
@@ -295,7 +339,10 @@ export function createMockSettings(
   return settings;
 }
 
-export function createRuntimeMockUserSession(now: number): UserSession {
+export function createRuntimeMockUserSession(now?: number): UserSession {
+  if (now === undefined) {
+    now = Date.now();
+  }
   const tomorrow = new Date(now + 86400000);
   return new UserSession({
     clientId: "clientId",

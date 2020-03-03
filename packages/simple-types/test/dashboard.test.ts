@@ -19,27 +19,24 @@
  */
 
 import * as dashboard from "../src/dashboard";
-import * as fetchMock from "fetch-mock";
-import {
-  createRuntimeMockUserSession,
-  setMockDateTime
-} from "../../common/test/mocks/utils";
-import * as common from "../../common/src/generalHelpers";
-import * as interfaces from "../../common/src/interfaces";
+import * as common from "@esri/solution-common";
 import * as staticMocks from "../../common/test/mocks/staticDashboardMocks";
+import * as utils from "../../common/test/mocks/utils";
 
 const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
 const now = date.getTime();
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-const MOCK_USER_SESSION = createRuntimeMockUserSession(setMockDateTime(now));
-
 let initialDashboardTemplate: any;
 let expectedTemplate: any;
-let datasourceInfos: interfaces.IDatasourceInfo[];
+let datasourceInfos: common.IDatasourceInfo[];
+
+let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   initialDashboardTemplate = common.cloneObject(
     staticMocks._initialDashboardTemplate
   );
@@ -47,9 +44,6 @@ beforeEach(() => {
   datasourceInfos = common.cloneObject(staticMocks.datasourceInfos);
 });
 
-afterEach(() => {
-  fetchMock.restore();
-});
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `dashboard`: manages the creation and deployment of dashboard item type", () => {
@@ -131,13 +125,6 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     }
   });
 
-  describe("_getDatasourceDependencies", () => {
-    xit("_getDatasourceDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("postProcessFieldReferences", () => {
     it("should templatize field references", () => {
       // need to the dependencies
@@ -145,7 +132,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
         initialDashboardTemplate,
         MOCK_USER_SESSION
       );
-      const actualTemplate: interfaces.IItemTemplate = dashboard.postProcessFieldReferences(
+      const actualTemplate: common.IItemTemplate = dashboard.postProcessFieldReferences(
         actual,
         datasourceInfos
       );
@@ -177,7 +164,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
         }
       ];
 
-      const dsInfos: interfaces.IDatasourceInfo[] = [
+      const dsInfos: common.IDatasourceInfo[] = [
         {
           basePath: "",
           itemId: "AAABBBCCC123",
@@ -205,34 +192,6 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
 
       expect(dsInfos[1].references.length).toEqual(1);
       expect(dsInfos[1].references[0]).toEqual("map0");
-    });
-  });
-
-  describe("_templatize", () => {
-    xit("_templatize", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeByDatasource", () => {
-    it("should handle undefined objects", () => {
-      const actual: any = dashboard._templatizeByDatasource(undefined, []);
-      expect(actual).toBeUndefined();
-    });
-  });
-
-  describe("_getDatasourceInfo", () => {
-    xit("_getDatasourceInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_updateReferences", () => {
-    xit("_updateReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 });

@@ -25,20 +25,6 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
-
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 const resourcesResponse: any = {
@@ -48,6 +34,12 @@ const resourcesResponse: any = {
   nextStart: -1,
   resources: []
 };
+
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
 
 afterEach(() => {
   fetchMock.restore();
@@ -88,15 +80,18 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       fetchMock
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
           groupResource
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890?f=json&token=fake-token",
           groupResource
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/grp1234567890/resources",
           resourcesResponse
         );
 
@@ -213,15 +208,18 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
       fetchMock
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
           groupResource
         )
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890?f=json&token=fake-token",
           mockItems.get400Failure()
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/grp1234567890/resources",
           resourcesResponse
         );
 
@@ -406,24 +404,29 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             groupResource
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             groupResource
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             resourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources/name.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources/name.png",
             blob,
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             blob,
             { sendAsJson: false }
           );
@@ -607,11 +610,13 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             groupResource
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             groupResource
           );
 
@@ -651,10 +656,10 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         itemId: newItemID
       };
 
-      fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
-        { success: true, group: { id: newItemID } }
-      );
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+        success: true,
+        group: { id: newItemID }
+      });
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -688,10 +693,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.type = "Group";
       itemTemplate.item.title = null;
 
-      fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
-        { success: false }
-      );
+      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+        success: false
+      });
 
       group
         .createItemFromTemplate(
@@ -720,7 +724,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.item.title = "Dam Inspection Assignments";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/createGroup",
+        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
         mockItems.get400Failure()
       );
 
