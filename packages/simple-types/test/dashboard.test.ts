@@ -125,13 +125,6 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     }
   });
 
-  describe("_getDatasourceDependencies", () => {
-    xit("_getDatasourceDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("postProcessFieldReferences", () => {
     it("should templatize field references", () => {
       // need to the dependencies
@@ -199,34 +192,6 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
 
       expect(dsInfos[1].references.length).toEqual(1);
       expect(dsInfos[1].references[0]).toEqual("map0");
-    });
-  });
-
-  describe("_templatize", () => {
-    xit("_templatize", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeByDatasource", () => {
-    it("should handle undefined objects", () => {
-      const actual: any = dashboard._templatizeByDatasource(undefined, []);
-      expect(actual).toBeUndefined();
-    });
-  });
-
-  describe("_getDatasourceInfo", () => {
-    xit("_getDatasourceInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_updateReferences", () => {
-    xit("_updateReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 });

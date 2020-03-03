@@ -472,13 +472,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_cacheFieldInfo", () => {
-    xit("_cacheFieldInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("cachePopupInfos", () => {
     it("should not fail when empty", () => {
       const popupInfos: IPopupInfos = cachePopupInfos(itemTemplate);
@@ -575,13 +568,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(popupInfos).toEqual(expectedPopupInfos);
       // popupInfop should be set to {}
       expect(itemTemplate.data).toEqual(expectedData);
-    });
-  });
-
-  describe("_cachePopupInfo", () => {
-    xit("_cachePopupInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 
@@ -2679,20 +2665,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("updateFeatureServiceDefinition", () => {
-    xit("updateFeatureServiceDefinition", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("updateLayerFieldReferences", () => {
-    xit("updateLayerFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("postProcessFields", () => {
     it("should update fieldInfos, settings, and layerInfos", done => {
       const url: string =
@@ -3036,20 +3008,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_templatizeLayer", () => {
-    xit("_templatizeLayer", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeLayerFieldReferences", () => {
-    xit("_templatizeLayerFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_templatizeAdminLayerInfo", () => {
     it("should not fail without adminLayerInfo", () => {
       const layer: any = {};
@@ -3220,13 +3178,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_templatizeSourceServiceName", () => {
-    xit("_templatizeSourceServiceName", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_templatizeAdminLayerInfoFields", () => {
     it("should not fail with empty layer", () => {
       const layer: any = {};
@@ -3384,27 +3335,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       _templatizeAdminLayerInfoFields(layer, dependencies);
       expect(layer).toEqual(expected);
-    });
-  });
-
-  describe("_getDependantItemId", () => {
-    xit("_getDependantItemId", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeAdminSourceLayerFields", () => {
-    xit("_templatizeAdminSourceLayerFields", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeTopFilter", () => {
-    xit("_templatizeTopFilter", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 
@@ -3998,41 +3928,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeName(obj, prop, fieldNames, basePath);
       expect(obj).toEqual(expected);
-    });
-  });
-
-  describe("_templatizePopupInfoFieldInfos", () => {
-    xit("_templatizePopupInfoFieldInfos", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeFieldName", () => {
-    xit("_templatizeFieldName", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeExpressionInfos", () => {
-    xit("_templatizeExpressionInfos", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizePopupElements", () => {
-    xit("_templatizePopupElements", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeMediaInfos", () => {
-    xit("_templatizeMediaInfos", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 
@@ -4692,34 +4587,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_templatizeRenderer", () => {
-    xit("_templatizeRenderer", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeGenRenderer", () => {
-    xit("_templatizeGenRenderer", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeTemporalRenderer", () => {
-    xit("_templatizeTemporalRenderer", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeAuthoringInfo", () => {
-    xit("_templatizeAuthoringInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_templatizeArcadeExpressions", () => {
     it("should not fail with undefined text", () => {
       let text: string;
@@ -5020,13 +4887,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
-  describe("_templatizeKeys", () => {
-    xit("_templatizeKeys", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_templatizeTimeInfo", () => {
     it("should not fail without timeInfo", () => {
       const path: string = "fields.layer";
@@ -5118,13 +4978,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
-    });
-  });
-
-  describe("_getNameMapping", () => {
-    xit("_getNameMapping", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 

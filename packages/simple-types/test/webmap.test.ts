@@ -849,13 +849,6 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     });
   });
 
-  describe("_extractDependencies", () => {
-    xit("_extractDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_getLayerIds", () => {
     it("will get layer ids with url and construct url/id hash", done => {
       const layerList = [
@@ -1043,20 +1036,6 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
     });
   });
 
-  describe("postProcessFieldReferences", () => {
-    xit("postProcessFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeProperty", () => {
-    xit("_templatizeProperty", done => {
-      console.warn("========== TODO _templatizeProperty ==========");
-      done.fail();
-    });
-  });
-
   describe("_templatize", () => {
     it("can templatize drawingInfo", () => {
       const drawingInfo: any = {
@@ -1185,13 +1164,6 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         datasourceInfos
       );
       expect(actualTemplatizedObs).toEqual(expectedObjs);
-    });
-  });
-
-  describe("_getDatasourceInfo", () => {
-    xit("_getDatasourceInfo", done => {
-      console.warn("========== TODO _getDatasourceInfo ==========");
-      done.fail();
     });
   });
 });

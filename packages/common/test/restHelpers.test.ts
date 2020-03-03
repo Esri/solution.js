@@ -2599,20 +2599,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("_getRelationshipUpdates", () => {
-    xit("_getRelationshipUpdates", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getUpdate", () => {
-    xit("_getUpdate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_setItemProperties", () => {
     it("can get options for HOSTED empty service", () => {
       const item: any = {

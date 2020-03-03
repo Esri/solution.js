@@ -1453,11 +1453,4 @@ describe("Module `deploySolution`", () => {
       expect(actualResult).toEqual(expectedResult);
     });
   });
-
-  describe("_estimateDeploymentCost", () => {
-    xit("_estimateDeploymentCost", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
 });

@@ -918,45 +918,6 @@ describe("Module `createItemTemplate`", () => {
       expect(actual).toEqual([]);
     });
   });
-
-  describe("_getTemplateTypeHash", () => {
-    xit("_getTemplateTypeHash", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_updateWebMapHashInfo", () => {
-    xit("_updateWebMapHashInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_addMapLayerIds", () => {
-    xit("_addMapLayerIds", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getWebMapFSDependencies", () => {
-    xit("_getWebMapFSDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_replaceTemplate", () => {
-    it("returns false when no template is found", () => {
-      const actual: boolean = createItemTemplate._replaceTemplate(
-        [],
-        "",
-        initialSolutionTemplates[0]
-      );
-      expect(actual).toBeFalsy();
-    });
-  });
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //

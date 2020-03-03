@@ -588,11 +588,4 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       }, done.fail);
     });
   });
-
-  describe("_updateDispatchers", () => {
-    xit("_updateDispatchers", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
 });

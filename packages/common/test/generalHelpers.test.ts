@@ -1066,13 +1066,6 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
-  describe("cleanLayerBasedItemId", () => {
-    xit("cleanLayerBasedItemId", done => {
-      console.warn("========== TODO cleanLayerBasedItemId ========== ");
-      done.fail();
-    });
-  });
-
   describe("cleanLayerId", () => {
     it("handles a null or empty string", () => {
       expect(generalHelpers.cleanLayerId(null)).toEqual(null);

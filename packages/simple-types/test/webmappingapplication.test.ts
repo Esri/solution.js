@@ -1466,13 +1466,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     });
   });
 
-  describe("templatizeValues ", () => {
-    xit("templatizeValues ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("handleServiceRequests ", () => {
     it("should handle no service requests ", done => {
       const expected: string = "{test: 123}";
@@ -1666,27 +1659,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       };
 
       expect(result).toEqual(expectedResult);
-    });
-  });
-
-  describe("replaceUrl ", () => {
-    xit("replaceUrl ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("setValues ", () => {
-    xit("setValues ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("fineTuneCreatedItem", () => {
-    xit("fineTuneCreatedItem", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 
@@ -1885,13 +1857,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
       const expected = [] as string[];
       const actual = webmappingapplication._getWABDependencies(model);
       expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_templatizeIdPaths ", () => {
-    xit("_templatizeIdPaths ", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 
@@ -2159,34 +2124,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
     });
   });
 
-  describe("postProcessFieldReferences", () => {
-    xit("postProcessFieldReferences", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeObject", () => {
-    xit("_templatizeObject", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_templatizeObjectArray", () => {
-    xit("_templatizeObjectArray", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getReplaceOrder", () => {
-    xit("_getReplaceOrder", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("_getSortOrder ", () => {
     it("sorts url and layer id first", () => {
       const datasourceInfo: common.IDatasourceInfo = {
@@ -2384,13 +2321,6 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         false
       );
       expect(actual).toEqual(expected);
-    });
-  });
-
-  describe("_templatizeParentByWebMapLayerId", () => {
-    xit("_templatizeParentByWebMapLayerId", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 });
