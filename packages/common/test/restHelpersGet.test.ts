@@ -42,7 +42,7 @@ const SERVER_INFO = {
   fullVersion: "10.1",
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://www.arcgis.com",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
   authInfo: {}
 };
 
@@ -288,6 +288,109 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     }
   });
 
+  describe("getInfoFiles", () => {
+    if (typeof window !== "undefined") {
+      it("gets info files", done => {
+        const itemId = "itm1234567890";
+        const infoFilenames = ["file1", "file2"];
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file1",
+            mockItems.getAnImageResponse(),
+            {
+              sendAsJson: false
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file2",
+            mockItems.getAnImageResponse(),
+            {
+              sendAsJson: false
+            }
+          );
+
+        const filePromises = restHelpersGet.getInfoFiles(
+          itemId,
+          infoFilenames,
+          MOCK_USER_SESSION
+        );
+        Promise.all(filePromises).then(files => {
+          expect(files.length).toEqual(2);
+          done();
+        }, done.fail);
+      });
+
+      it("fails to get one or more info files via 400 error", done => {
+        const itemId = "itm1234567890";
+        const infoFilenames = ["file1", "file2"];
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file1",
+            mockItems.getAnImageResponse(),
+            {
+              sendAsJson: false
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file2",
+            mockItems.get400Failure()
+          );
+
+        const filePromises = restHelpersGet.getInfoFiles(
+          itemId,
+          infoFilenames,
+          MOCK_USER_SESSION
+        );
+        Promise.all(filePromises).then(files => {
+          expect(files.length).toEqual(2);
+          expect(typeof files[0]).toEqual("object");
+          expect(files[1]).toBeUndefined();
+          done();
+        }, done.fail);
+      });
+
+      it("fails to get one or more info files via 500 error", done => {
+        const itemId = "itm1234567890";
+        const infoFilenames = ["file1", "file2"];
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file1",
+            mockItems.getAnImageResponse(),
+            {
+              sendAsJson: false
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/file2",
+            mockItems.get500Failure()
+          );
+
+        const filePromises = restHelpersGet.getInfoFiles(
+          itemId,
+          infoFilenames,
+          MOCK_USER_SESSION
+        );
+        Promise.all(filePromises).then(
+          () => done.fail(),
+          files => {
+            console.log(JSON.stringify(files, null, 2));
+            expect(files).toEqual(mockItems.get500Failure());
+            done();
+          }
+        );
+      });
+    }
+  });
+
   describe("getItemBase", () => {
     it("item doesn't allow access to item", done => {
       const itemId = "itm1234567890";
@@ -323,7 +426,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
             password: "123456",
             token: "fake-token",
             tokenExpires: "2019-06-13T19:35:21.995Z",
-            portal: utils.PORTAL_SUBSET.restUrl + "",
+            portal: utils.PORTAL_SUBSET.restUrl,
             tokenDuration: 20160,
             redirectUri: "https://example-app.com/redirect-uri",
             refreshTokenTTL: 1440
@@ -493,7 +596,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
               password: "123456",
               token: "fake-token",
               tokenExpires: "2019-06-13T19:35:21.995Z",
-              portal: utils.PORTAL_SUBSET.restUrl + "",
+              portal: utils.PORTAL_SUBSET.restUrl,
               tokenDuration: 20160,
               redirectUri: "https://example-app.com/redirect-uri",
               refreshTokenTTL: 1440
@@ -776,7 +879,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   describe("getItemResources", () => {
-    it("can handle an exception from the REST endpoint portal.getItemResources", done => {
+    it("can handle a 500 error from the REST endpoint portal.getItemResources", done => {
       const itemId = "itm1234567890";
 
       fetchMock.post(

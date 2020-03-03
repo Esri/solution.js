@@ -18,7 +18,9 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
+import * as generalHelpers from "../src/generalHelpers";
 import * as restHelpers from "../src/restHelpers";
+import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
 import * as interfaces from "../src/interfaces";
 import * as auth from "@esri/arcgis-rest-auth";
@@ -1766,6 +1768,19 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           () => done.fail()
         );
     });
+
+    it("handles the absence of a url in the item", done => {
+      const template = templates.getItemTemplateSkeleton();
+      restHelpers
+        .getServiceLayersAndTables(
+          generalHelpers.cloneObject(template),
+          MOCK_USER_SESSION
+        )
+        .then(updatedTemplate => {
+          expect(updatedTemplate).toEqual(template);
+          done();
+        }, done.fail);
+    });
   });
 
   describe("removeItem", () => {
@@ -1776,12 +1791,30 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "/content/users/casey/items/" +
           itemId +
           "/delete",
-        utils.getSuccessResponse()
+        utils.getSuccessResponse({ itemId })
       );
       restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
         expect(actual.success).toEqual(true);
         done();
       }, done.fail);
+    });
+
+    it("fails to remove an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getFailureResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
     });
   });
 
@@ -1793,12 +1826,135 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           "/content/users/casey/" +
           folderId +
           "/delete",
-        utils.getSuccessResponse()
+        utils.getSuccessResponse({
+          folder: { username: "casey", id: folderId }
+        })
       );
       restHelpers.removeFolder(folderId, MOCK_USER_SESSION).then(actual => {
         expect(actual.success).toEqual(true);
         done();
       }, done.fail);
+    });
+
+    it("fails to remove a folder", done => {
+      const folderId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
+          folderId +
+          "/delete",
+        utils.getFailureResponse({
+          folder: { username: "casey", id: folderId }
+        })
+      );
+      restHelpers.removeFolder(folderId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
+  describe("removeGroup", () => {
+    it("removes a group", done => {
+      const groupId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/" +
+          groupId +
+          "/delete",
+        utils.getSuccessResponse({ groupId })
+      );
+      restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove a group", done => {
+      const groupId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/" +
+          groupId +
+          "/delete",
+        utils.getFailureResponse({ groupId })
+      );
+      restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
+  describe("removeItemOrGroup", () => {
+    it("removes an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getSuccessResponse({ itemId })
+      );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("removes a group", done => {
+      const itemId: string = "ABC123";
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemId +
+            "/delete",
+          utils.getSuccessResponse({ itemId })
+        );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove an id", done => {
+      const itemId: string = "ABC123";
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
     });
   });
 
@@ -2201,6 +2357,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("_countRelationships", () => {
     it("can handle empty layer array", () => {
       const layers: any[] = [];
+      expect(restHelpers._countRelationships(layers)).toEqual(0);
+    });
+
+    it("can handle layer with missing relationships", () => {
+      const layers: any[] = [
+        {
+          relationships: null
+        }
+      ];
       expect(restHelpers._countRelationships(layers)).toEqual(0);
     });
 
