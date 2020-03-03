@@ -478,7 +478,7 @@ describe("Module `deploySolution`", () => {
                 .toEqual(expectedUpdateBody);
 
               // Repeat with progress callback
-              options.progressCallback = utils.PROGRESS_CALLBACK;
+              options.progressCallback = utils.SOLUTION_PROGRESS_CALLBACK;
               options.templateDictionary = {};
               deployer
                 .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -977,7 +977,7 @@ describe("Module `deploySolution`", () => {
           .post(geometryServer + "/project", mockItems.get400Failure());
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1153,7 +1153,7 @@ describe("Module `deploySolution`", () => {
           thumbnailUrl: "a thumbnailUrl",
           templateDictionary: null,
           additionalTypeKeywords: null,
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1312,7 +1312,7 @@ describe("Module `deploySolution`", () => {
           );
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1379,7 +1379,7 @@ describe("Module `deploySolution`", () => {
           );
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)

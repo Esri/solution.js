@@ -667,7 +667,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
           expect(response).toEqual({
@@ -704,7 +704,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
           done.fail();

@@ -186,11 +186,11 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(
     (resolve, reject) => {
-      progressTickCallback(
+      itemProgressCallback(
         template.itemId,
         common.EItemProgressStatus.Started,
         0
@@ -226,7 +226,7 @@ export function createItemFromTemplate(
         )
         .then(
           createResponse => {
-            progressTickCallback(
+            itemProgressCallback(
               template.itemId,
               common.EItemProgressStatus.Created,
               template.estimatedDeploymentCostFactor / 2
