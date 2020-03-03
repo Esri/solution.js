@@ -24,6 +24,7 @@ import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
+import * as restHelpersGet from "./restHelpersGet";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as templatization from "./templatization";
 
@@ -701,6 +702,20 @@ export function getFeatureServiceProperties(
         );
     }
   );
+}
+
+export function isUserItemAdmin(
+  itemId: string,
+  authentication: interfaces.UserSession
+): Promise<boolean> {
+  return new Promise<boolean>((resolve, reject) => {
+    restHelpersGet.getItem(itemId, authentication).then(
+      item => {
+        resolve(item && item?.itemControl === "admin");
+      },
+      (e: any) => reject(generalHelpers.fail(e))
+    );
+  });
 }
 
 /**

@@ -131,23 +131,49 @@ export function _getLayerIds(
       }
     });
 
+    // TODO need to avoid redundant queries when we have sublayers
+    // TODO need to figure out how to list as dependency but not templatize??
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
         serviceResponses => {
-          let i: number = 0;
-          serviceResponses.forEach(serviceResponse => {
-            if (common.getProp(serviceResponse, "serviceItemId")) {
-              if (dependencies.indexOf(serviceResponse.serviceItemId) < 0) {
-                dependencies.push(serviceResponse.serviceItemId);
-              }
-              urlHash[layers[i].url] = serviceResponse.serviceItemId;
+          const itemOwnerPromises: Array<Promise<any>> = serviceResponses.map(
+            serviceResponse => {
+              return common.getProp(serviceResponse, "serviceItemId")
+                ? common.isUserItemAdmin(
+                    serviceResponse.serviceItemId,
+                    authentication
+                  )
+                : Promise.resolve(false);
             }
-            i++;
-          });
-          resolve({
-            dependencies: dependencies,
-            urlHash: urlHash
-          });
+          );
+
+          if (itemOwnerPromises.length > 0) {
+            Promise.all(itemOwnerPromises).then(
+              itemOwnerResponses => {
+                itemOwnerResponses.forEach((canTemplatize, i) => {
+                  if (canTemplatize) {
+                    if (
+                      dependencies.indexOf(serviceResponses[i].serviceItemId) <
+                      0
+                    ) {
+                      dependencies.push(serviceResponses[i].serviceItemId);
+                    }
+                    urlHash[layers[i].url] = serviceResponses[i].serviceItemId;
+                  }
+                });
+                resolve({
+                  dependencies: dependencies,
+                  urlHash: urlHash
+                });
+              },
+              e => reject(common.fail(e))
+            );
+          } else {
+            resolve({
+              dependencies: dependencies,
+              urlHash: urlHash
+            });
+          }
         },
         e => reject(common.fail(e))
       );
