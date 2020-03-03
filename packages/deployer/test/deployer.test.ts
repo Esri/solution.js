@@ -42,19 +42,15 @@ describe("Module `deploySolution`", () => {
   describe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      xit("can deploy webmap with dependencies", done => {
+      it("can deploy webmap with dependencies", done => {
         const groupId: string = "aa4a6047326243b290f625e80ebe6531";
-        const foundGroupId: string = "ba4a6047326243b290f625e80ebe6531";
         const groupTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
         groupTemplate.item.thumbnail = null;
         groupTemplate.itemId = groupId;
         groupTemplate.item.id = "{{" + groupId + ".itemId}}";
 
-        const group: any = mockItems.getAGOLGroup();
-        group.id = foundGroupId;
-        group.tags.push("source-" + groupId);
         const user: any = utils.getContentUser();
-        user.groups = [group];
+        user.groups = [];
 
         // get templates
         const featureServiceTemplate: any = templates.getItemTemplate(
@@ -176,6 +172,13 @@ describe("Module `deploySolution`", () => {
               "/content/users/casey?f=json&token=fake-token",
             user
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/" +
+              groupId +
+              "?f=json&token=fake-token",
+            utils.getSuccessResponse({ results: [] })
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -264,7 +267,7 @@ describe("Module `deploySolution`", () => {
             name: null,
             title: "title",
             typeKeywords: ["Solution", "Deployed"],
-            url: "https://www.arcgis.com/home/item.html?id=map1234567890",
+            url: utils.ORG_URL + "/home/item.html?id=map1234567890",
             thumbnailUrl: undefined,
             tryitUrl: undefined
           },

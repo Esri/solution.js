@@ -35,7 +35,7 @@ export function getSolutionTemplateItem(
       title: "title",
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
-      url: "https://www.arcgis.com/home/item.html?id=sln1234567890"
+      url: "https://myorg.maps.arcgis.com/home/item.html?id=sln1234567890"
     },
     data: {
       metadata: {
