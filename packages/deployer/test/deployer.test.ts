@@ -53,19 +53,15 @@ describe("Module `deploySolution`", () => {
   describe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      xit("can deploy webmap with dependencies", done => {
+      it("can deploy webmap with dependencies", done => {
         const groupId: string = "aa4a6047326243b290f625e80ebe6531";
-        const foundGroupId: string = "ba4a6047326243b290f625e80ebe6531";
+        const newGroupId: string = "ba4a6047326243b290f625e80ebe6531";
         const groupTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
-        groupTemplate.item.thumbnail = null;
         groupTemplate.itemId = groupId;
         groupTemplate.item.id = "{{" + groupId + ".itemId}}";
 
-        const group: any = mockItems.getAGOLGroup();
-        group.id = foundGroupId;
-        group.tags.push("source-" + groupId);
         const user: any = utils.getContentUser();
-        user.groups = [group];
+        user.groups = [];
 
         // get templates
         const featureServiceTemplate: any = templates.getItemTemplate(
@@ -187,6 +183,13 @@ describe("Module `deploySolution`", () => {
               "/content/users/casey?f=json&token=fake-token",
             user
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/" +
+              newGroupId +
+              "?f=json&token=fake-token",
+            mockItems.getAGOLGroup(newGroupId)
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
@@ -210,7 +213,7 @@ describe("Module `deploySolution`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
-            utils.getCreateGroupResponse(groupId)
+            utils.getCreateGroupResponse(newGroupId)
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/search", { results: [] })
           .post(
@@ -268,49 +271,7 @@ describe("Module `deploySolution`", () => {
             {}
           );
 
-        const expected: any = {
-          item: {
-            id: "map1234567890",
-            type: "Solution",
-            name: null,
-            title: "title",
-            typeKeywords: ["Solution", "Deployed"],
-            url: "https://www.arcgis.com/home/item.html?id=map1234567890",
-            thumbnailUrl: undefined,
-            tryitUrl: undefined
-          },
-          data: {
-            metadata: {
-              version: "x",
-              resourceStorageItemId: "sln1234567890"
-            },
-            templates: [
-              {
-                itemId: "map1234567890",
-                type: "Web Map",
-                dependencies: ["svc1234567890"],
-                groups: [groupId]
-              },
-              {
-                itemId: "svc1234567890",
-                type: "Feature Service",
-                dependencies: [],
-                groups: []
-              },
-              {
-                itemId: groupId,
-                type: "Group",
-                dependencies: []
-              }
-            ],
-            params: {
-              testProperty: {
-                value: "ABC",
-                type: "Text"
-              }
-            }
-          }
-        };
+        const expected: string = "map1234567890";
 
         delete portalResponse.portalThumbnail;
         delete portalResponse.defaultBasemap.baseMapLayers[0].resourceInfo
@@ -442,18 +403,21 @@ describe("Module `deploySolution`", () => {
           }
         };
         expectedTemplate[groupId] = {
-          itemId: groupId
+          itemId: newGroupId
         };
 
         const expectedUpdateBody: string =
           "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&id=map1234567890&" +
-          "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22" +
-          "templates%22%3A%5B%7B%22itemId%22%3A%22map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22" +
-          "svc1234567890%22%5D%2C%22groups%22%3A%5B%22aa4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22" +
-          "%2C%22type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%7D%2C%7B%22itemId%22" +
-          "%3A%22aa4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22dependencies%22%3A%5B%5D%7D%5D%2C%22params%22" +
-          "%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
+          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          "id=map1234567890&thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
+          "items%2Fsln1234567890%2Finfo%2Fundefined&text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
+          "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
+          "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
+          "groups%22%3A%5B%22ba4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22" +
+          "type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%7D%2C%7B%22" +
+          "itemId%22%3A%22ba4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22groups%22%3A%5B%5D%2C%22" +
+          "dependencies%22%3A%5B%5D%7D%5D%2C%22params%22%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22" +
+          "type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
 
         const options: common.IDeploySolutionOptions = {
           templateDictionary: templateDictionary
@@ -484,6 +448,7 @@ describe("Module `deploySolution`", () => {
                 utils.PORTAL_SUBSET.restUrl +
                   "/content/users/casey/items/map1234567890/update"
               );
+
               expect(updateCalls[1][1].body)
                 .withContext("test the expected update body")
                 .toEqual(expectedUpdateBody);

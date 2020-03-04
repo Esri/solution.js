@@ -701,9 +701,9 @@ export function getAGOLItemResources(testCase?: string): any {
   return resources;
 }
 
-export function getAGOLGroup(): any {
+export function getAGOLGroup(id?: string): any {
   return {
-    id: "grp1234567890",
+    id: id || "grp1234567890",
     title: "An AGOL group",
     isInvitationOnly: true,
     owner: "LocalGovTryItLive",
@@ -728,7 +728,8 @@ export function getAGOLGroup(): any {
     providerGroupName: null,
     userMembership: {
       username: "ArcGISTeamLocalGovOrg",
-      memberType: "none"
+      memberType: "owner",
+      applications: 0
     },
     collaborationInfo: {}
   };
