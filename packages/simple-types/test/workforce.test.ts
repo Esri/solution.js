@@ -388,6 +388,36 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       }, done.fail);
     });
 
+    it("should update dispatchers service even with default names", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Workforce Project",
+        null
+      );
+      itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
+
+      const userUrl: string =
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/users/casey?f=json&token=fake-token";
+      const queryUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
+      const addUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
+
+      fetchMock
+        .get(userUrl, {})
+        .get(queryUrl, {
+          features: []
+        })
+        .post(addUrl, {
+          addResults: [{}]
+        });
+
+      workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
+        expect(r).toEqual({ success: true });
+        done();
+      }, done.fail);
+    });
+
     it("should handle error on update dispatchers", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",

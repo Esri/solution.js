@@ -22,6 +22,7 @@ import * as dashboard from "../src/dashboard";
 import * as common from "@esri/solution-common";
 import * as staticMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as utils from "../../common/test/mocks/utils";
+import * as templates from "../../common/test/mocks/templates";
 
 const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
 const now = date.getTime();
@@ -125,6 +126,36 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
     }
   });
 
+  describe("_getDatasourceDependencies", () => {
+    it("handles defaulting to .itemId", () => {
+      const obj: any = {
+        dataSource: {
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}"
+        },
+        datasets: [
+          {
+            dataSource: {
+              itemId: "AAABBBCCC123"
+            },
+            type: "serviceDataset"
+          },
+          {
+            dataSource: {
+              itemId: "AAABBBCCC123"
+            },
+            type: "serviceDataset"
+          }
+        ]
+      };
+
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Dashboard"
+      );
+
+      dashboard._getDatasourceDependencies(obj, itemTemplate);
+    });
+  });
+
   describe("postProcessFieldReferences", () => {
     it("should templatize field references", () => {
       // need to the dependencies
@@ -192,6 +223,78 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
 
       expect(dsInfos[1].references.length).toEqual(1);
       expect(dsInfos[1].references[0]).toEqual("map0");
+    });
+  });
+
+  describe("_templatizeByDatasource", () => {
+    it("ignores supplied objs if it is not defined", () => {
+      const updatedList = dashboard._templatizeByDatasource(null, null);
+      expect(updatedList).toBeNull();
+    });
+  });
+
+  describe("_getDatasourceInfo", () => {
+    it("handles dataSource.id", () => {
+      const obj: any = {
+        dataSource: {
+          id: "widget#id"
+        }
+      };
+
+      const dsInfos: common.IDatasourceInfo[] = [
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 0,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        },
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 1,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        }
+      ];
+
+      const info = dashboard._getDatasourceInfo(obj, dsInfos);
+    });
+
+    it("handles dataSource.itemId", () => {
+      const obj: any = {
+        dataSource: {
+          itemId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.itemId}}",
+          layerId: "{{934a9ef8efa7448fa8ddf7b13cef0240.layer0.layerId}}"
+        }
+      };
+
+      const dsInfos: common.IDatasourceInfo[] = [
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 0,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        },
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 1,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        }
+      ];
+
+      const info = dashboard._getDatasourceInfo(obj, dsInfos);
     });
   });
 });
