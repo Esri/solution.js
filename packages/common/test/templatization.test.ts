@@ -19,6 +19,7 @@
  */
 
 import * as interfaces from "../src/interfaces";
+import * as templates from "../test/mocks/templates";
 import * as templatization from "../src/templatization";
 import * as utils from "./mocks/utils";
 
@@ -27,61 +28,128 @@ import * as utils from "./mocks/utils";
 describe("Module `templatization`: common functions involving the adlib library", () => {
   describe("findTemplateIndexInList", () => {
     it("should handle an empty list", () => {
-      const templates: interfaces.IItemTemplate[] = [];
+      const solnTemplates: interfaces.IItemTemplate[] = [];
       const id: string = "";
       const expected: number = -1;
 
-      const actual = templatization.findTemplateIndexInList(templates, id);
+      const actual = templatization.findTemplateIndexInList(solnTemplates, id);
       expect(actual).toEqual(expected);
     });
 
     it("should handle list without the sought item", () => {
-      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const solnTemplates = createItemTemplateList([
+        "abc",
+        "def",
+        "ghi",
+        "jkl"
+      ]);
       const id: string = "xyz";
       const expected: number = -1;
 
-      const actual = templatization.findTemplateIndexInList(templates, id);
+      const actual = templatization.findTemplateIndexInList(solnTemplates, id);
       expect(actual).toEqual(expected);
     });
 
     it("should handle list with the sought item", () => {
-      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const solnTemplates = createItemTemplateList([
+        "abc",
+        "def",
+        "ghi",
+        "jkl"
+      ]);
       const id: string = "def";
       const expected: number = 1;
 
-      const actual = templatization.findTemplateIndexInList(templates, id);
+      const actual = templatization.findTemplateIndexInList(solnTemplates, id);
       expect(actual).toEqual(expected);
     });
   });
 
   describe("findTemplateInList", () => {
     it("should handle an empty list", () => {
-      const templates: interfaces.IItemTemplate[] = [];
+      const solnTemplates: interfaces.IItemTemplate[] = [];
       const id: string = "";
       const expected: interfaces.IItemTemplate = null;
 
-      const actual = templatization.findTemplateInList(templates, id);
+      const actual = templatization.findTemplateInList(solnTemplates, id);
       expect(actual).toEqual(expected);
     });
 
     it("should handle list without the sought item", () => {
-      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const solnTemplates = createItemTemplateList([
+        "abc",
+        "def",
+        "ghi",
+        "jkl"
+      ]);
       const id: string = "xyz";
       const expected: interfaces.IItemTemplate = null;
 
-      const actual = templatization.findTemplateInList(templates, id);
+      const actual = templatization.findTemplateInList(solnTemplates, id);
       expect(actual).toEqual(expected);
     });
 
     it("should handle list with the sought item", () => {
-      const templates = createItemTemplateList(["abc", "def", "ghi", "jkl"]);
+      const solnTemplates = createItemTemplateList([
+        "abc",
+        "def",
+        "ghi",
+        "jkl"
+      ]);
       const id: string = "def";
       const expected: interfaces.IItemTemplate = createItemTemplateList([
         "def"
       ])[0];
 
-      const actual = templatization.findTemplateInList(templates, id);
+      const actual = templatization.findTemplateInList(solnTemplates, id);
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("getIdsInTemplatesList", () => {
+    it("gets the ids out of a list of templates", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Map"),
+        templates.getItemTemplate("Web Mapping Application"),
+        templates.getItemTemplate("Workforce Project")
+      ];
+      const actual = templatization.getIdsInTemplatesList(solnTemplates);
+      expect(actual).toEqual([
+        "map1234567890",
+        "wma1234567890",
+        "wrk1234567890"
+      ]);
+    });
+  });
+
+  describe("removeTemplate", () => {
+    it("removes the specified id out of a list of templates", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Map"),
+        templates.getItemTemplate("Web Mapping Application"),
+        templates.getItemTemplate("Workforce Project")
+      ];
+      templatization.removeTemplate(solnTemplates, "wma1234567890");
+      expect(solnTemplates.length).toEqual(2);
+      expect(templatization.getIdsInTemplatesList(solnTemplates)).toEqual([
+        "map1234567890",
+        "wrk1234567890"
+      ]);
+    });
+
+    it("doesn't change a list of templates if the specified id is not found", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Map"),
+        templates.getItemTemplate("Web Mapping Application"),
+        templates.getItemTemplate("Workforce Project")
+      ];
+      templatization.removeTemplate(solnTemplates, "frm1234567890");
+      expect(solnTemplates.length).toEqual(3);
+      expect(templatization.getIdsInTemplatesList(solnTemplates)).toEqual([
+        "map1234567890",
+        "wma1234567890",
+        "wrk1234567890"
+      ]);
     });
   });
 
@@ -116,6 +184,59 @@ describe("Module `templatization`: common functions involving the adlib library"
         templateDictionary
       );
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("replaceTemplate", () => {
+    it("returns false when there are no templates", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [];
+      const newTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
+        "Form"
+      );
+      const actual: boolean = templatization.replaceTemplate(
+        solnTemplates,
+        "map1234567890",
+        newTemplate
+      );
+      expect(actual).toBeFalsy();
+    });
+
+    it("returns false when no template is found", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Mapping Application"),
+        templates.getItemTemplate("Workforce Project")
+      ];
+      const newTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
+        "Form"
+      );
+      const actual: boolean = templatization.replaceTemplate(
+        solnTemplates,
+        "map1234567890",
+        newTemplate
+      );
+      expect(actual).toBeFalsy();
+      expect(solnTemplates[0].itemId).toEqual("wma1234567890");
+      expect(solnTemplates[1].itemId).toEqual("wrk1234567890");
+    });
+
+    it("returns true when a template is replaced", () => {
+      const solnTemplates: interfaces.IItemTemplate[] = [
+        templates.getItemTemplate("Web Map"),
+        templates.getItemTemplate("Web Mapping Application"),
+        templates.getItemTemplate("Workforce Project")
+      ];
+      const newTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
+        "Form"
+      );
+      const actual: boolean = templatization.replaceTemplate(
+        solnTemplates,
+        "map1234567890",
+        newTemplate
+      );
+      expect(actual).toBeTruthy();
+      expect(solnTemplates[0].itemId).toEqual("frm1234567890");
+      expect(solnTemplates[1].itemId).toEqual("wma1234567890");
+      expect(solnTemplates[2].itemId).toEqual("wrk1234567890");
     });
   });
 
