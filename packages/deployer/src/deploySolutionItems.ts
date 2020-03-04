@@ -204,7 +204,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param destinationAuthentication Credentials for the destination organization
  * @param reuseItems Option to search for existing items
- * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
  */
@@ -216,7 +216,7 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   reuseItems: boolean,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Create an ordered graph of the templates so that dependencies are created
@@ -256,7 +256,7 @@ export function deploySolutionItems(
               storageAuthentication,
               templateDictionary,
               destinationAuthentication,
-              progressTickCallback
+              itemProgressCallback
             )
           );
         });
@@ -502,7 +502,7 @@ export function _findExistingItem(
  * @param resourceFilePaths URL, folder, and filename for each item resource/metadata/thumbnail
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
- * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the id of the deployed item (which is simply returned if it's
  *         already in the templates list
  * @protected
@@ -513,7 +513,7 @@ export function _createItemFromTemplateWhenReady(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   let itemDef;
   if (!templateDictionary.hasOwnProperty(template.itemId)) {
@@ -553,7 +553,7 @@ export function _createItemFromTemplateWhenReady(
                 storageAuthentication,
                 templateDictionary,
                 destinationAuthentication,
-                progressTickCallback
+                itemProgressCallback
               )
               .then(
                 createResponse => {
@@ -569,7 +569,7 @@ export function _createItemFromTemplateWhenReady(
                     )
                     .then(
                       () => {
-                        progressTickCallback(
+                        itemProgressCallback(
                           template.itemId,
                           common.EItemProgressStatus.Finished,
                           template.estimatedDeploymentCostFactor / 2
@@ -590,7 +590,7 @@ export function _createItemFromTemplateWhenReady(
     templateDictionary[template.itemId].def = itemDef;
   } else {
     itemDef = templateDictionary[template.itemId].def;
-    progressTickCallback(
+    itemProgressCallback(
       template.itemId,
       common.EItemProgressStatus.Finished,
       template.estimatedDeploymentCostFactor / 2

@@ -90,11 +90,6 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
   const tick = "tok";
 };
 
-export const PROGRESS_CALLBACK = function(): void {
-  // FUTURE delete
-  const tick = "tok";
-};
-
 /**
  * Provides a successful progress callback until the nth call.
  *

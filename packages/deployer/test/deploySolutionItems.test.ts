@@ -59,7 +59,7 @@ describe("Module `deploySolutionItems`", () => {
           {},
           MOCK_USER_SESSION,
           false,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(
           () => {
@@ -147,7 +147,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -226,7 +226,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -315,7 +315,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -404,7 +404,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -502,7 +502,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -557,7 +557,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -623,7 +623,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -694,7 +694,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -716,7 +716,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
@@ -757,7 +757,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
@@ -799,7 +799,7 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then((response: common.ICreateItemFromTemplateResponse) => {
             expect(response).toEqual({
@@ -864,7 +864,7 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             () => done.fail(),
@@ -920,7 +920,7 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(() => {
             done.fail();
@@ -966,7 +966,7 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then((response: common.ICreateItemFromTemplateResponse) => {
             done.fail();

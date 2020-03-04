@@ -94,9 +94,6 @@ export type IItemProgressCallback = (
 
 export type ISolutionProgressCallback = (percentDone: number) => void;
 
-// FUTURE delete
-export type ISolutionProgressTickCallback = () => void;
-
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
@@ -129,7 +126,6 @@ export interface ICreateSolutionOptions {
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
-  percentDone?: number; // FUTURE delete
 }
 
 /**
@@ -395,7 +391,7 @@ export interface IItemTemplateConversions {
     storageAuthentication: UserSession,
     templateDictionary: any,
     destinationAuthentication: UserSession,
-    progressTickCallback: IItemProgressCallback // FUTURE replace with itemProgressCallback: IItemProgressCallback
+    itemProgressCallback: IItemProgressCallback
   ): Promise<ICreateItemFromTemplateResponse>;
   postProcessDependencies?(
     templates: IItemTemplate[],

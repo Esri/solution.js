@@ -193,8 +193,53 @@ export function hasUnresolvedVariables(data: any): boolean {
   return getUnresolved(data).length > 0;
 }
 
+export function getIdsInTemplatesList(
+  templates: interfaces.IItemTemplate[]
+): string[] {
+  return templates.map(template => template.itemId);
+}
+
+/**
+ * Removes a template entry in a list of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @param id Id of item in templates list to find; if not found, no replacement is done
+ * @protected
+ */
+export function removeTemplate(
+  templates: interfaces.IItemTemplate[],
+  id: string
+): void {
+  const i = findTemplateIndexInList(templates, id);
+  if (i >= 0) {
+    templates.splice(i, 1);
+  }
+}
+
 export function replaceInTemplate(template: any, replacements: any): any {
   return adlib.adlib(template, replacements, TRANSFORMS);
+}
+
+/**
+ * Replaces a template entry in a list of templates.
+ *
+ * @param templates A collection of AGO item templates
+ * @param id Id of item in templates list to find; if not found, no replacement is done
+ * @param template Replacement template
+ * @return True if replacement was made
+ * @protected
+ */
+export function replaceTemplate(
+  templates: interfaces.IItemTemplate[],
+  id: string,
+  template: interfaces.IItemTemplate
+): boolean {
+  const i = findTemplateIndexInList(templates, id);
+  if (i >= 0) {
+    templates[i] = template;
+    return true;
+  }
+  return false;
 }
 
 export function templatizeTerm(

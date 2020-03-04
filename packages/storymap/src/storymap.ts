@@ -43,7 +43,7 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(
     (resolve, reject) => {
@@ -75,7 +75,7 @@ export function createItemFromTemplate(
             storageAuthentication,
             templateDictionary,
             destinationAuthentication,
-            progressTickCallback
+            itemProgressCallback
           )
           .then(resolve, reject);
       }
