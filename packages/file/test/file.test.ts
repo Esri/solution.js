@@ -252,7 +252,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
               expect(response.itemId).toEqual("cod1234567890");
               expect(response.type).toEqual("Code Attachment");
               expect(response.resources).toEqual([]);
-              expect(response.properties.partial).toBeTruthy();
               expect(
                 JSON.parse(response.properties.error).originalMessage
               ).toEqual("Item does not exist or is inaccessible.");
@@ -368,6 +367,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           { success: true, id: newItemID }
         );
 
+        // tslint:disable-next-line: no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -377,17 +377,14 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              expect(response).toEqual({
-                id: "map1234567891",
-                type: itemTemplate.type,
-                postProcess: false
-              });
-              done();
-            },
-            () => done.fail()
-          );
+          .then(response => {
+            expect(response).toEqual({
+              id: "map1234567891",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+            done();
+          });
       });
 
       it("deploys an item with resources", done => {
@@ -428,6 +425,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             { success: true }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -437,17 +435,14 @@ describe("Module `file`: manages the creation and deployment of item types that 
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              expect(response).toEqual({
-                id: "map1234567891",
-                type: itemTemplate.type,
-                postProcess: false
-              });
-              done();
-            },
-            () => done.fail()
-          );
+          .then(response => {
+            expect(response).toEqual({
+              id: "map1234567891",
+              type: itemTemplate.type,
+              postProcess: false
+            });
+            done();
+          });
       });
 
       it("fails to create item", done => {
@@ -464,6 +459,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           { success: false }
         );
 
+        // tslint:disable-next-line: no-floating-promises
         file
           .createItemFromTemplate(
             itemTemplate,
@@ -474,8 +470,8 @@ describe("Module `file`: manages the creation and deployment of item types that 
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
-            done.fail();
-          }, done);
+            done();
+          });
       });
     }
   });

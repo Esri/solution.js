@@ -767,48 +767,6 @@ describe("Module `deploySolutionItems`", () => {
     });
 
     if (typeof window !== "undefined") {
-      it("flags Storymaps implemented as Web Mapping Applications", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Mapping Application",
-          [],
-          "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
-        const templateDictionary: any = {};
-        const newItemID: string = "sto1234567891";
-
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-            success: true,
-            id: newItemID
-          })
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/sto1234567891/update",
-            { success: true, id: newItemID }
-          );
-
-        // tslint:disable-next-line: no-floating-promises
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.ITEM_PROGRESS_CALLBACK
-          )
-          .then((response: common.ICreateItemFromTemplateResponse) => {
-            expect(response).toEqual({
-              id: newItemID,
-              type: itemTemplate.type,
-              postProcess: true
-            });
-            done();
-          });
-      });
-
       it("fails to deploy file data to the item", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"

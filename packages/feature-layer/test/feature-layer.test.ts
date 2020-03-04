@@ -364,6 +364,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           '{"success":true}'
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -384,7 +385,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             postProcess: false
           });
           done();
-        }, done.fail);
+        });
     });
 
     it("should create a solution from a template in portal", done => {
@@ -498,6 +499,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             "/content/users/casey/items/undefined/move",
           '{"success": true, "folderId": 1245}'
         );
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -514,7 +516,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             postProcess: false
           });
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on updateItem", done => {
@@ -594,6 +596,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -612,7 +615,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on addFeatureServiceLayersAndTables with successful cancellation", done => {
@@ -672,6 +675,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -690,7 +694,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on addFeatureServiceLayersAndTables with failed cancellation", done => {
@@ -750,6 +754,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -768,7 +773,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on createService", done => {
@@ -819,6 +824,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -837,7 +843,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle createService success === false", done => {
@@ -871,6 +877,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           createResponse
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -889,7 +896,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on updateItem", done => {
@@ -969,6 +976,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -987,7 +995,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on updateDefinition", done => {
@@ -1060,6 +1068,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1074,7 +1083,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle empty layers and tables", done => {
@@ -1134,6 +1143,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           mockItems.get400Failure()
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1148,12 +1158,13 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation before deployment of item starts", done => {
       const templateDictionary: any = {};
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1234,6 +1245,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1252,7 +1264,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation failure after deployed item is created", done => {
@@ -1318,6 +1330,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1336,7 +1349,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation after deployed item is finished", done => {
@@ -1402,6 +1415,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getSuccessResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1420,7 +1434,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation failure after deployed item is finished", done => {
@@ -1486,6 +1500,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           utils.getFailureResponse({ itemId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
@@ -1504,7 +1519,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             mockSolutions.getFailedItem(itemTemplate.type)
           );
           done();
-        }, done.fail);
+        });
     });
   });
 });

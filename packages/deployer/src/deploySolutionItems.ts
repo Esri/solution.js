@@ -622,39 +622,29 @@ export function _createItemFromTemplateWhenReady(
                 destinationAuthentication,
                 itemProgressCallback
               )
-              .then(
-                createResponse => {
-                  // Copy resources, metadata, thumbnail, form
-                  common
-                    .copyFilesFromStorageItem(
-                      storageAuthentication,
-                      resourceFilePaths,
-                      createResponse.id,
-                      destinationAuthentication,
-                      templateType === "Group",
-                      template.properties
-                    )
-                    .then(
-                      () => resolve(createResponse),
-                      () => {
-                        itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Failed,
-                          0
-                        );
-                        resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
-                      }
-                    );
-                },
-                () => {
-                  itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Failed,
-                    0
+              .then(createResponse => {
+                // Copy resources, metadata, thumbnail, form
+                common
+                  .copyFilesFromStorageItem(
+                    storageAuthentication,
+                    resourceFilePaths,
+                    createResponse.id,
+                    destinationAuthentication,
+                    templateType === "Group",
+                    template.properties
+                  )
+                  .then(
+                    () => resolve(createResponse),
+                    () => {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                    }
                   );
-                  resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
-                }
-              );
+              });
           }
         },
         () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies

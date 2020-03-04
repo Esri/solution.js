@@ -1063,6 +1063,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         mockItems.get400Failure()
       );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1073,8 +1074,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
-          done.fail();
-        }, done);
+          done();
+        });
     });
 
     it("should handle success === false", done => {
@@ -1098,6 +1099,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         { success: false }
       );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1108,8 +1110,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
-          done.fail();
-        }, done);
+          done();
+        });
     });
 
     if (typeof window !== "undefined") {
@@ -1145,6 +1147,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             fullName: "casey"
           });
 
+        // tslint:disable-next-line: no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -1162,7 +1165,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               postProcess: false
             });
             done();
-          }, done.fail);
+          });
       });
 
       it("should handle error on python notebook update item", done => {
@@ -1197,6 +1200,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             fullName: "casey"
           });
 
+        // tslint:disable-next-line: no-floating-promises
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
@@ -1206,7 +1210,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(() => done.fail, done);
+          .then(response => {
+            done();
+          });
       });
     }
 
@@ -1297,6 +1303,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           addResults: [{}]
         });
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1314,7 +1321,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             postProcess: false
           });
           done();
-        }, done.fail);
+        });
     });
 
     it("should create quick capture project", done => {
@@ -1441,6 +1448,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         Promise.resolve()
       );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1464,7 +1472,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           });
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on update resources", done => {
@@ -1512,6 +1520,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400Failure()
         );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1521,7 +1530,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(() => done.fail(), done);
+        .then(response => {
+          done();
+        });
     });
 
     it("should handle web mapping application", done => {
@@ -1602,6 +1613,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         { total: 0, relatedItems: [] }
       );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1616,17 +1628,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(
-          actual => {
-            expect(actual).toEqual({
-              id: "abc0cab401af4828a25cc6eaeb59fb69",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-            done();
-          },
-          e => done.fail(e)
-        );
+        .then(actual => {
+          expect(actual).toEqual({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            type: itemTemplate.type,
+            postProcess: false
+          });
+          done();
+        });
     });
 
     it("should handle web mapping application with related items", done => {
@@ -1739,6 +1748,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         }
       );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1753,17 +1763,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(
-          actual => {
-            expect(actual).toEqual({
-              id: "abc0cab401af4828a25cc6eaeb59fb69",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-            done();
-          },
-          e => done.fail(e)
-        );
+        .then(actual => {
+          expect(actual).toEqual({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            type: itemTemplate.type,
+            postProcess: false
+          });
+          done();
+        });
     });
 
     it("should handle web mapping application with missing data", done => {
@@ -1804,6 +1811,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           { success: true }
         );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1813,17 +1821,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(
-          actual => {
-            expect(actual).toEqual({
-              id: "abc0cab401af4828a25cc6eaeb59fb69",
-              type: itemTemplate.type,
-              postProcess: false
-            });
-            done();
-          },
-          e => done.fail(e)
-        );
+        .then(actual => {
+          expect(actual).toEqual({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            type: itemTemplate.type,
+            postProcess: false
+          });
+          done();
+        });
     });
 
     it("should handle error web mapping application", done => {
@@ -1893,6 +1898,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           mockItems.get400FailureResponse()
         );
 
+      // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
@@ -1907,12 +1913,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(
-          actual => {
-            done.fail();
-          },
-          e => done()
-        );
+        .then(response => {
+          done();
+        });
     });
   });
 
