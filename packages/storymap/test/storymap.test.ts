@@ -23,49 +23,133 @@ import * as storymap from "../src/storymap";
 import * as mockTemplates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
-let MOCK_USER_SESSION: common.UserSession;
-
-beforeEach(() => {
-  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
-});
+const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `storymap`", () => {
   describe("convertItemToTemplate", () => {
-    it("can handle gracefully while unimplemented", done => {
+    it("recognizes next-gen StoryMap", done => {
+      const solutionItemId = "sln1234567890";
       storymap
         .convertItemToTemplate(
+          solutionItemId,
           {
             type: "StoryMap"
           },
           MOCK_USER_SESSION
         )
-        .then(response => {
-          expect(response).toBeUndefined();
-          done();
-        }, done.fail);
+        .then(
+          () => done.fail(), // not yet implemented
+          response => {
+            expect(response).toEqual(
+              common.fail("Next-gen StoryMap is not yet implemented")
+            );
+            done();
+          }
+        );
     });
 
-    it("can handle gracefully while unimplemented and type !== 'StoryMap'", done => {
+    it("recognizes first-gen StoryMap", done => {
+      const solutionItemId = "sln1234567890";
       storymap
         .convertItemToTemplate(
+          solutionItemId,
           {
-            type: "FirstGENStoryMap"
+            type: "Web Mapping Application",
+            url:
+              "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}"
           },
           MOCK_USER_SESSION
         )
-        .then(response => {
-          expect(response).toBeUndefined();
-          done();
-        }, done.fail);
+        .then(
+          () => done.fail(), // not yet implemented
+          response => {
+            expect(response).toEqual(
+              common.fail("First-gen StoryMap is not yet implemented")
+            );
+            done();
+          }
+        );
+    });
+
+    it("rejects a non-StoryMap", done => {
+      const solutionItemId = "sln1234567890";
+      storymap
+        .convertItemToTemplate(
+          solutionItemId,
+          {
+            id: "wma1234567890",
+            type: "Web Mapping Application",
+            url:
+              "http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=itm1234567890"
+          },
+          MOCK_USER_SESSION
+        )
+        .then(
+          () => done.fail(), // not yet implemented
+          response => {
+            expect(response).toEqual(
+              common.fail("wma1234567890 is not a StoryMap")
+            );
+            done();
+          }
+        );
     });
   });
 
   describe("createItemFromTemplate", () => {
-    it("createItemFromTemplate", done => {
+    it("recognizes next-gen StoryMap", done => {
       const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
+      );
+      storymap
+        .createItemFromTemplate(
+          templateSTO,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual({
+            id: "Next-gen StoryMap is not yet implemented", // temporary
+            type: templateSTO.type,
+            postProcess: false
+          });
+          done();
+        }, done.fail);
+    });
+
+    it("recognizes first-gen StoryMap", done => {
+      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
+        "Web Mapping Application"
+      );
+      templateSTO.item.url =
+        "{{portalBaseUrl}}/apps/Cascade/index.html?appid={{wma1234567890.itemId}}";
+      storymap
+        .createItemFromTemplate(
+          templateSTO,
+          [],
+          MOCK_USER_SESSION,
+          {},
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(response => {
+          expect(response).toEqual({
+            id: "First-gen StoryMap is not yet implemented", // temporary
+            type: templateSTO.type,
+            postProcess: false
+          });
+          done();
+        }, done.fail);
+    });
+
+    it("rejects a non-StoryMap", done => {
+      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
+        "Web Mapping Application"
       );
       storymap
         .createItemFromTemplate(
@@ -88,7 +172,7 @@ describe("Module `storymap`", () => {
   });
 
   describe("isAStoryMap", () => {
-    it("has to have a URL", () => {
+    it("has to have a URL if it's a firsst-gen storymap", () => {
       const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplate(
         "Web Mapping Application"
       );
@@ -96,14 +180,6 @@ describe("Module `storymap`", () => {
       expect(
         storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
       ).toBeFalsy();
-
-      const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
-        "StoryMap"
-      );
-      templateSTO.item.url = null; // nascent Story Maps don't have a URL
-      expect(
-        storymap.isAStoryMap(templateSTO.type, templateSTO.item.url)
-      ).toBeTruthy();
     });
 
     it("is the StoryMap item type", () => {
@@ -113,6 +189,11 @@ describe("Module `storymap`", () => {
       expect(
         storymap.isAStoryMap(template.type, template.item.url)
       ).toBeTruthy();
+
+      template.item.url = null;
+      expect(
+        storymap.isAStoryMap(template.type, template.item.url)
+      ).toBeTruthy(); // nascent Story Maps don't have a URL
     });
 
     it("has a StoryMap type in its URL", () => {

@@ -660,6 +660,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: true,
         group: { id: newItemID }
       });
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -677,7 +678,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           });
           expect(templateDictionary).toEqual(expected);
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle success === false on create group", done => {
@@ -697,6 +698,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         success: false
       });
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -709,7 +711,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem("Group"));
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle error on create group", done => {
@@ -729,6 +731,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         mockItems.get400Failure()
       );
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -741,13 +744,14 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem("Group"));
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation before deployment of group starts", done => {
       const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
       const templateDictionary: any = {};
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -778,6 +782,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getSuccessResponse({ groupId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -790,7 +795,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation failure after deployed group is created", done => {
@@ -808,6 +813,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getFailureResponse({ groupId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -820,7 +826,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation after deployed group is finished", done => {
@@ -838,6 +844,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getSuccessResponse({ groupId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -850,7 +857,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
 
     it("should handle cancellation after deployed group is finished", done => {
@@ -868,6 +875,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.getFailureResponse({ groupId: itemTemplate.itemId })
         );
 
+      // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(
           itemTemplate,
@@ -880,7 +888,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
   });
 });

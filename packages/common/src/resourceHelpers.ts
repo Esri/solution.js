@@ -212,18 +212,6 @@ export function convertResourceToFile(
   });
 }
 
-export function isSupportedFileType(filename: string): boolean {
-  // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
-  // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
-  const filenameExtension = filename.match(/\.([a-z]+)$/i);
-  const supportedExtensions =
-    "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
-  return (
-    !!filenameExtension &&
-    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
-  );
-}
-
 /**
  * Copies the files described by a list of full URLs and folder/filename combinations for
  * the resources, metadata, and thumbnail of an item or group to an item.
@@ -432,6 +420,27 @@ export function copyResource(
 }
 
 /**
+ * Generates a folder and filename for storing a copy of an item info file in a storage item.
+ *
+ * @param itemId Id of item
+ * @param filename Filename of item
+ * @return Folder and filename for storage; folder is the itemID suffixed with "_info"
+ * @see generateResourceFilenameFromStorage
+ */
+export function generateInfoStorageFilename(
+  itemId: string,
+  filename: string
+): {
+  folder: string;
+  filename: string;
+} {
+  return {
+    folder: itemId + "_info",
+    filename
+  };
+}
+
+/**
  * Generates the full URL and storage folder/filename for storing the thumbnail of a group.
  *
  * @param portalSharingUrl Server/sharing
@@ -473,9 +482,10 @@ export function generateMetadataStorageFilename(
   folder: string;
   filename: string;
 } {
-  const folder = itemId + "_info_metadata";
-  const filename = "metadata.xml";
-  return { folder, filename };
+  return {
+    folder: itemId + "_info_metadata",
+    filename: "metadata.xml"
+  };
 }
 
 /**
@@ -588,6 +598,28 @@ export function generateSourceFilePaths(
       ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
     });
   }
+
+  return filePaths;
+}
+
+export function generateSourceInfoFilePaths(
+  portalSharingUrl: string,
+  itemId: string
+): interfaces.ISourceFileCopyPath[] {
+  const baseUrl = portalSharingUrl + "/content/items/" + itemId + "/info/";
+  const filePaths: interfaces.ISourceFileCopyPath[] = [];
+  ["form.json", "forminfo.json"].forEach(filename =>
+    filePaths.push({
+      url: baseUrl + filename,
+      ...generateInfoStorageFilename(itemId, filename)
+    })
+  );
+
+  filePaths.push({
+    url: baseUrl + "form.webform",
+    folder: itemId + "_info",
+    filename: "form.webform.json.zip"
+  });
 
   return filePaths;
 }
@@ -710,6 +742,18 @@ export function generateThumbnailStorageFilename(
       ? thumbnailUrlParts[0]
       : thumbnailUrlParts[1];
   return { folder, filename };
+}
+
+export function isSupportedFileType(filename: string): boolean {
+  // Supported file formats are: .json, .xml, .txt, .png, .pbf, .zip, .jpeg, .jpg, .gif, .bmp, .gz, .svg,
+  // .svgz, .geodatabase (https://developers.arcgis.com/rest/users-groups-and-items/add-resources.htm)
+  const filenameExtension = filename.match(/\.([a-z]+)$/i);
+  const supportedExtensions =
+    "|.json|.xml|.txt|.png|.pbf|.zip|.jpeg|.jpg|.gif|.bmp|.gz|.svg|.svgz|.geodatabase|";
+  return (
+    !!filenameExtension &&
+    supportedExtensions.indexOf("|" + filenameExtension[0] + "|") >= 0
+  );
 }
 
 /**
