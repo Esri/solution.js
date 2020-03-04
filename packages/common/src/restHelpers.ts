@@ -506,10 +506,9 @@ export function extractDependencies(
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
-    if (itemTemplate.properties.service.isView) {
-      const url: string = itemTemplate.item.url || "";
+    if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
       request
-        .request(url + "/sources?f=json", {
+        .request(itemTemplate.item.url + "/sources?f=json", {
           authentication: authentication
         })
         .then(
@@ -654,14 +653,17 @@ export function getServiceLayersAndTables(
     // full tables
 
     // Get the service description
-    const serviceUrl = itemTemplate.item.url || "";
-    getFeatureServiceProperties(serviceUrl, authentication).then(
-      properties => {
-        itemTemplate.properties = properties;
-        resolve(itemTemplate);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
+    if (itemTemplate.item.url) {
+      getFeatureServiceProperties(itemTemplate.item.url, authentication).then(
+        properties => {
+          itemTemplate.properties = properties;
+          resolve(itemTemplate);
+        },
+        e => reject(generalHelpers.fail(e))
+      );
+    } else {
+      resolve(itemTemplate);
+    }
   });
 }
 
@@ -729,11 +731,43 @@ export function removeFolder(
   folderId: string,
   authentication: interfaces.UserSession
 ): Promise<interfaces.IFolderStatusResponse> {
-  const requestOptions: portal.IFolderIdOptions = {
-    folderId: folderId,
-    authentication: authentication
-  };
-  return portal.removeFolder(requestOptions);
+  return new Promise<interfaces.IFolderStatusResponse>((resolve, reject) => {
+    const requestOptions: portal.IFolderIdOptions = {
+      folderId: folderId,
+      authentication: authentication
+    };
+    portal
+      .removeFolder(requestOptions)
+      .then(
+        result => (result.success ? resolve(result) : reject(result)),
+        reject
+      );
+  });
+}
+
+/**
+ * Removes a group from AGO.
+ *
+ * @param groupId Id of a group to delete
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the result of the request
+ */
+export function removeGroup(
+  groupId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse> {
+  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
+    const requestOptions: portal.IUserGroupOptions = {
+      id: groupId,
+      authentication: authentication
+    };
+    portal
+      .removeGroup(requestOptions)
+      .then(
+        result => (result.success ? resolve(result) : reject(result)),
+        reject
+      );
+  });
 }
 
 /**
@@ -747,11 +781,36 @@ export function removeItem(
   itemId: string,
   authentication: interfaces.UserSession
 ): Promise<interfaces.IStatusResponse> {
-  const requestOptions: portal.IUserItemOptions = {
-    id: itemId,
-    authentication: authentication
-  };
-  return portal.removeItem(requestOptions);
+  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
+    const requestOptions: portal.IUserItemOptions = {
+      id: itemId,
+      authentication: authentication
+    };
+    return portal
+      .removeItem(requestOptions)
+      .then(
+        result => (result.success ? resolve(result) : reject(result)),
+        reject
+      );
+  });
+}
+
+/**
+ * Removes an item or group from AGO.
+ *
+ * @param itemId Id of an item or group to delete
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the result of the request
+ */
+export function removeItemOrGroup(
+  itemId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IStatusResponse> {
+  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
+    removeItem(itemId, authentication).then(resolve, error => {
+      removeGroup(itemId, authentication).then(resolve, () => reject(error));
+    });
+  });
 }
 
 export function searchGroups(

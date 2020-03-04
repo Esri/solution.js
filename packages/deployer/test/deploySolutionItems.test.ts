@@ -28,8 +28,15 @@ import * as utils from "../../common/test/mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-const now = new Date();
-const MOCK_USER_SESSION = utils.createRuntimeMockUserSession(now.getDate());
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+afterEach(() => {
+  fetchMock.restore();
+});
 
 const SERVER_INFO = {
   currentVersion: 10.1,
@@ -52,14 +59,13 @@ describe("Module `deploySolutionItems`", () => {
           {},
           MOCK_USER_SESSION,
           false,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(
-          () => {
+          () => done.fail(),
+          error => {
+            expect(error).toEqual(common.failWithIds([""]));
             done();
-          },
-          () => {
-            done.fail();
           }
         );
     });
@@ -85,33 +91,32 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
             id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3D%27source-" +
             id +
-            "%27",
+            "%27&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: newItemID
+        })
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemID }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             newItemID +
             "/update",
           { success: true, id: newItemID }
@@ -141,7 +146,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -172,30 +177,26 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID;
 
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
-            id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
-          {
-            query: "typekeywords='source-" + id + "'",
-            results: [
-              {
-                id: foundItemID,
-                type: type,
-                name: "name",
-                title: "title",
-                url: url,
-                created: 1582751986000,
-                modified: 1582751989000
-              }
-            ]
-          }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        );
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+        {
+          query: "typekeywords='source-" + id + "'",
+          results: [
+            {
+              id: foundItemID,
+              type: type,
+              name: "name",
+              title: "title",
+              url: url,
+              created: 1582751986000,
+              modified: 1582751989000
+            }
+          ]
+        }
+      );
 
       const expected: any[] = [
         {
@@ -224,7 +225,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -257,18 +258,20 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
             id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3D%27source-" +
             id +
-            "%27",
+            "%27&token=fake-token",
           {
             query: "tags='source-" + id + "'",
             results: [
@@ -283,10 +286,6 @@ describe("Module `deploySolutionItems`", () => {
               }
             ]
           }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
         );
 
       const expected: any[] = [
@@ -315,7 +314,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -350,37 +349,33 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID2;
 
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
-            id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
-          {
-            query: "typekeywords='source-" + id + "'",
-            results: [
-              {
-                id: foundItemID,
-                type: type,
-                name: "name1",
-                title: "title1",
-                url: url1,
-                created: 1582751986000
-              },
-              {
-                id: foundItemID2,
-                type: type,
-                name: "name2",
-                title: "title2",
-                url: url2,
-                created: 1582751989000
-              }
-            ]
-          }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        );
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+        {
+          query: "typekeywords='source-" + id + "'",
+          results: [
+            {
+              id: foundItemID,
+              type: type,
+              name: "name1",
+              title: "title1",
+              url: url1,
+              created: 1582751986000
+            },
+            {
+              id: foundItemID2,
+              type: type,
+              name: "name2",
+              title: "title2",
+              url: url2,
+              created: 1582751989000
+            }
+          ]
+        }
+      );
 
       const expected: any[] = [
         {
@@ -408,7 +403,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -439,37 +434,33 @@ describe("Module `deploySolutionItems`", () => {
         user: mockItems.getAGOLUser("casey")
       };
 
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
-            id +
-            "%20type%3AFeature%20Service%20owner%3Acasey",
-          {
-            query: "typekeywords='source-" + id + "'",
-            results: [
-              {
-                id: foundItemID2,
-                type: type,
-                name: "name2",
-                title: "title2",
-                url: url2,
-                created: 1582751989000
-              },
-              {
-                id: foundItemID,
-                type: type,
-                name: "name1",
-                title: "title1",
-                url: url1,
-                created: 1582751986000
-              }
-            ]
-          }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        );
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AFeature%20Service%20owner%3Acasey&token=fake-token",
+        {
+          query: "typekeywords='source-" + id + "'",
+          results: [
+            {
+              id: foundItemID2,
+              type: type,
+              name: "name2",
+              title: "title2",
+              url: url2,
+              created: 1582751989000
+            },
+            {
+              id: foundItemID,
+              type: type,
+              name: "name1",
+              title: "title1",
+              url: url1,
+              created: 1582751986000
+            }
+          ]
+        }
+      );
 
       const expected: any[] = [
         {
@@ -510,7 +501,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -565,7 +556,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -596,17 +587,13 @@ describe("Module `deploySolutionItems`", () => {
         "https://localdeployment.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=" +
         foundItemID;
 
-      fetchMock
-        .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
-            id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
-          mockItems.get400Failure()
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
-        );
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/search?f=json&q=typekeywords%3Asource-" +
+          id +
+          "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+        mockItems.get400Failure()
+      );
 
       const expected: any[] = [
         {
@@ -635,7 +622,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -663,23 +650,21 @@ describe("Module `deploySolutionItems`", () => {
 
       fetchMock
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=typekeywords%3Asource-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
             id +
-            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey",
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
           {
             query: "typekeywords='source-" + id + "'",
             results: []
           }
         )
         .get(
-          "https://www.arcgis.com/sharing/rest/search?f=json&q=tags%3D%27source-" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3D%27source-" +
             id +
-            "%27",
+            "%27&token=fake-token",
           mockItems.get400Failure()
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          MOCK_USER_SESSION.token
         );
 
       const expected: any[] = [
@@ -708,7 +693,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -723,6 +708,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
+      // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -730,16 +716,12 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
-        .then((response: common.ICreateItemFromTemplateResponse) => {
-          expect(response).toEqual({
-            id: "",
-            type: itemTemplate.type,
-            postProcess: false
-          });
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
 
     it("handles Web Mapping Applications that are not Storymaps", done => {
@@ -754,19 +736,17 @@ describe("Module `deploySolutionItems`", () => {
       const newItemID: string = "wma1234567891";
 
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+          success: true,
+          id: newItemID
+        })
         .post(
-          "https://www.arcgis.com/sharing/rest/generateToken",
-          '{"token":"abc123"}'
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-          { success: true, id: newItemID }
-        )
-        .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/wma1234567891/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/wma1234567891/update",
           { success: true, id: newItemID }
         );
 
+      // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -774,7 +754,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.PROGRESS_CALLBACK
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual({
@@ -783,50 +763,10 @@ describe("Module `deploySolutionItems`", () => {
             postProcess: true
           });
           done();
-        }, done.fail);
+        });
     });
 
     if (typeof window !== "undefined") {
-      it("flags Storymaps implemented as Web Mapping Applications", done => {
-        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-          "Web Mapping Application",
-          [],
-          "https://apl.maps.arcgis.com/apps/MapJournal/index.html?appid=sto1234567890"
-        );
-        itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
-        const templateDictionary: any = {};
-        const newItemID: string = "sto1234567891";
-
-        fetchMock
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/sto1234567891/update",
-            { success: true, id: newItemID }
-          );
-
-        deploySolution
-          ._createItemFromTemplateWhenReady(
-            itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
-            templateDictionary,
-            MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
-          )
-          .then((response: common.ICreateItemFromTemplateResponse) => {
-            expect(response).toEqual({
-              id: newItemID,
-              type: itemTemplate.type,
-              postProcess: true
-            });
-            done();
-          }, done.fail);
-      });
-
       it("fails to deploy file data to the item", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
           "Web Map"
@@ -845,10 +785,10 @@ describe("Module `deploySolutionItems`", () => {
         const newItemID: string = "map1234567891";
 
         fetchMock
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+            success: true,
+            id: newItemID
+          })
           .post(
             "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
             SERVER_INFO
@@ -865,17 +805,15 @@ describe("Module `deploySolutionItems`", () => {
             { sendAsJson: false }
           )
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
               newItemID +
               "/update",
             { success: false }
           )
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
           .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO);
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -883,12 +821,14 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            () => done.fail(),
-            () => done()
-          );
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
 
       it("should handle error on copy group resources", done => {
@@ -921,16 +861,18 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .get(
-            "https://www.arcgis.com/sharing/rest/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups?f=json&q=Dam%20Inspection%20Assignments&token=fake-token",
             searchResult
           )
-          .post("https://www.arcgis.com/sharing/rest/community/createGroup", {
+          .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
             success: true,
             group: { id: newItemID }
           })
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -938,11 +880,14 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(() => {
-            done.fail();
-          }, done);
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
 
       it("can handle error on copyFilesFromStorage", done => {
@@ -958,27 +903,26 @@ describe("Module `deploySolutionItems`", () => {
             folder: "9ed8414bb27a441cbddb1227870ed038_info_thumbnail",
             filename: "thumbnail1581708282265.png",
             url:
-              "https://www.arcgis.com/sharing/rest/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png"
+              utils.PORTAL_SUBSET.restUrl +
+              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png"
           }
         ];
         const templateDictionary: any = {};
         const newItemID: string = "wma1234567891";
 
         fetchMock
+          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
+            success: true,
+            id: newItemID
+          })
           .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            '{"token":"abc123"}'
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: newItemID }
-          )
-          .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/wma1234567891/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/wma1234567891/update",
             { success: true, id: newItemID }
           )
           .post(resourceFilePaths[0].url, 503);
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -986,11 +930,14 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
-          .then((response: common.ICreateItemFromTemplateResponse) => {
-            done.fail();
-          }, done);
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
     }
   });
@@ -1035,17 +982,19 @@ describe("Module `deploySolutionItems`", () => {
         ];
 
         const updateUrl: string =
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/NEW123ABC/update";
         const expectedBody: string =
-          "f=json&text=%7B%22unresolvedVariable%22%3A%22resolved%22%7D&id=NEW123ABC";
+          "f=json&text=%7B%22unresolvedVariable%22%3A%22resolved%22%7D&id=NEW123ABC&token=fake-token";
 
         fetchMock
           .post(
-            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
             workforceData
           )
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/NEW123ABC/update",
             utils.getSuccessResponse()
           );
 
@@ -1096,11 +1045,12 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .post(
-            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
             notebookData
           )
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/NEW123ABC/update",
             utils.getSuccessResponse()
           );
 
@@ -1204,22 +1154,21 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .get(
-            "https://www.arcgis.com/sharing/rest/community/users/casey?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
             {}
           )
           .get(
-            "https://www.arcgis.com/sharing/rest/community/groups/NEWABC123?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/NEWABC123?f=json&token=fake-token",
             groupResponse
           )
-          .post(
-            "https://www.arcgis.com/sharing/rest/generateToken",
-            MOCK_USER_SESSION.token
-          )
-          .post("https://www.arcgis.com/sharing/rest/search", {
+          .post(utils.PORTAL_SUBSET.restUrl + "/search", {
             results: []
           })
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/share",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/NEW123ABC/share",
             { notSharedWith: [], itemId: "NEW123ABC" }
           );
 
@@ -1274,11 +1223,12 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .post(
-            "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
             workforceData
           )
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/NEW123ABC/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/NEW123ABC/update",
             mockItems.get400Failure()
           );
 
@@ -1330,7 +1280,7 @@ describe("Module `deploySolutionItems`", () => {
         ];
 
         fetchMock.post(
-          "https://www.arcgis.com/sharing/rest/content/items/NEW123ABC/data",
+          utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
           mockItems.get400Failure()
         );
 

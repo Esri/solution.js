@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.6.3",
+  "version": "0.7.0",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -15,7 +15,7 @@
   "devDependencies": {
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.7.5"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@esri/arcgis-rest-auth": "^2.7.2",

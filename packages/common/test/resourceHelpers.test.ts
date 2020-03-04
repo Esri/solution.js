@@ -26,32 +26,23 @@ import * as staticRelatedItemsMocks from "./mocks/staticRelatedItemsMocks";
 import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
-import { TOMORROW } from "./lib/utils";
 import * as fetchMock from "fetch-mock";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
-  // Set up a UserSession to use in all of these tests
-  const MOCK_USER_SESSION = new interfaces.UserSession({
-    clientId: "clientId",
-    redirectUri: "https://example-app.com/redirect-uri",
-    token: "fake-token",
-    tokenExpires: TOMORROW,
-    refreshToken: "refreshToken",
-    refreshTokenExpires: TOMORROW,
-    refreshTokenTTL: 1440,
-    username: "casey",
-    password: "123456",
-    portal: "https://myorg.maps.arcgis.com/sharing/rest"
-  });
+let MOCK_USER_SESSION: interfaces.UserSession;
 
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
+
+describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   const SERVER_INFO = {
     currentVersion: 10.1,
     fullVersion: "10.1",
     soapUrl: "http://server/arcgis/services",
     secureSoapUrl: "https://server/arcgis/services",
-    owningSystemUrl: "https://www.arcgis.com",
+    owningSystemUrl: "https://myorg.maps.arcgis.com",
     authInfo: {}
   };
 
@@ -68,7 +59,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const blob = utils.getSampleMetadata();
         const itemId = "itm1234567890";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
@@ -93,7 +85,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const folder = "";
         const filename = "aFilename.xml";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
@@ -150,7 +143,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const folder = "aFolder";
         const filename = "aFilename.xml";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
@@ -178,14 +172,20 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     describe("addThumbnailFromBlob", () => {
-      it("has thumbnail", done => {
+      it("gets a thumbnail from a blob", done => {
         const blob = utils.getSampleImage();
         const itemId = "itm1234567890";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expected = { success: true, id: itemId };
+        const serverInfoUrl: string =
+          "https://myserver/images/thumbnail.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
 
-        fetchMock.post(updateUrl, expected);
+        fetchMock
+          .post(updateUrl, expected)
+          .post(serverInfoUrl, expectedServerInfo);
         resourceHelpers
           .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
@@ -201,11 +201,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     describe("addThumbnailFromUrl", () => {
-      it("has thumbnail", done => {
+      it("gets a thumbnail from a URL", done => {
         const thumbnailUrl = "https://myserver/images/thumbnail.png";
         const itemId = "itm1234567890";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const serverInfoUrl: string =
           "https://myserver/images/thumbnail.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
@@ -331,7 +332,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   }
 
   describe("copyFilesFromStorageItem", () => {
-    it("empty files list", done => {
+    it("handles an empty files list", done => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [] as interfaces.IDeployFileCopyPath[];
       const destinationItemId: string = "itm1234567890";
@@ -353,7 +354,46 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
-      it("single metadata file to copy", done => {
+      it("copies a single data file", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Data,
+            folder: "storageFolder",
+            filename: "storageFilename.png",
+            url: "https://myserver/images/resource.png"
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationAuthentication = MOCK_USER_SESSION;
+        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/images/resource.png";
+        const expectedFetch = mockItems.getAnImageResponse();
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
+          .post(updateUrl, { success: true });
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageAuthentication,
+            filePaths,
+            destinationItemId,
+            destinationAuthentication
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+
+      it("copies a single metadata file", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
@@ -373,7 +413,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
           { type: "text/xml" }
         );
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
 
         fetchMock
@@ -394,7 +435,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("single resource file to copy", done => {
+      it("copies a single resource file", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
@@ -411,7 +452,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl = "https://myserver/images/resource.png";
         const expectedFetch = mockItems.getAnImageResponse();
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate = true;
 
         fetchMock
@@ -432,7 +474,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("single thumbnail file to copy", done => {
+      it("copies a single thumbnail file", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
@@ -445,7 +487,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const destinationItemId: string = "itm1234567890";
         const destinationAuthentication = MOCK_USER_SESSION;
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
         const expectedImage = mockItems.getAnImageResponse();
         const imageUrl: string = "https://myserver/images/thumbnail.png";
@@ -512,7 +555,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl = "https://myserver/images/thumbnail.png";
         const expectedFetch = mockItems.getAnImageResponse();
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
         const expectedUpdate: string[] = ["storageFolder/storageFilename.png"];
 
         fetchMock
@@ -552,7 +596,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expectedFetch = utils.getSampleMetadata();
         const expectedUpdate = { success: true, id: destination.itemId };
         fetchMock
@@ -627,7 +672,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expectedFetch = utils.getSampleMetadata();
         const expectedUpdate = { success: false, id: destination.itemId };
         fetchMock
@@ -655,7 +701,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
         const expectedFetch = utils.getSampleMetadata();
         const expectedUpdate = 500;
         fetchMock
@@ -686,7 +733,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const fetchUrl =
           "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
         const updateUrl =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/addResources";
         const expected = { success: true, id: destination.itemId };
 
         fetchMock
@@ -758,7 +806,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const fetchUrl =
         "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
       const updateUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/addResources";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567890/addResources";
       const expected = 500;
 
       fetchMock
@@ -1384,24 +1433,29 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/qck1234567890/resources/qc.project.json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/ee67658b2a98450cba051fd001463df0/addResources",
             utils.getSuccessResponse()
           );
 
@@ -1443,20 +1497,23 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources/image/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
               solutionItemId +
@@ -1469,20 +1526,23 @@ describe("Module `resourceHelpers`: common functions involving the management of
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/thumbnail/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
@@ -1530,20 +1590,23 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources",
             resources
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/resources/image/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
               MOCK_USER_SESSION.username +
               "/items/" +
               solutionItemId +
@@ -1551,20 +1614,23 @@ describe("Module `resourceHelpers`: common functions involving the management of
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/thumbnail/banner.png",
             expectedFetch,
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/data",
             mockItems.get500Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()

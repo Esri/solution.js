@@ -3,12 +3,12 @@ sudo: false
 notifications:
   email: false
 node_js:
-- '8'
-- '10'
+  - 10
+  - 8
 before_script:
 - npm install
 script:
-- npm run test:ci
+- npm run test:chrome:ci
 env:
 - MOZ_HEADLESS=1
 addons:

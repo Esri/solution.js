@@ -18,8 +18,10 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
+import * as generalHelpers from "../src/generalHelpers";
 import * as restHelpers from "../src/restHelpers";
-import * as utils from "../test/mocks/utils";
+import * as templates from "../test/mocks/templates";
+import * as utils from "./mocks/utils";
 import * as interfaces from "../src/interfaces";
 import * as auth from "@esri/arcgis-rest-auth";
 import * as fetchMock from "fetch-mock";
@@ -28,9 +30,12 @@ import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
+let MOCK_USER_SESSION: interfaces.UserSession;
 let itemTemplate: interfaces.IItemTemplate;
 
 beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+
   itemTemplate = {
     itemId: "",
     key: "",
@@ -56,21 +61,11 @@ beforeEach(() => {
   };
 });
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
-
-// Set up a interfaces.UserSession to use in all these tests
-const MOCK_USER_SESSION = new interfaces.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
+afterEach(() => {
+  fetchMock.restore();
 });
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
 const portalSR: any = {
   wkid: 1
@@ -116,10 +111,6 @@ const solutionItemExtent: any = [
   [1, 1]
 ];
 
-afterEach(() => {
-  fetchMock.restore();
-});
-
 describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
   describe("searchItems passthru", () => {
     it("can handle simple search", done => {
@@ -154,7 +145,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "Survey2Service";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship",
         { success: true }
       );
 
@@ -179,7 +170,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "Survey2Service";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship",
         { success: false }
       );
 
@@ -204,7 +195,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "Survey2Service";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship",
         500
       );
 
@@ -251,7 +242,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       const addRelationshipUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
       // tslint:disable-next-line: no-floating-promises
@@ -295,7 +286,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       const addRelationshipUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       fetchMock.post(addRelationshipUrl, { success: true });
 
       // tslint:disable-next-line: no-floating-promises
@@ -338,7 +329,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       ];
 
       const addRelationshipUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addRelationship";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship";
       let callNum = 0;
       fetchMock.post(
         addRelationshipUrl,
@@ -414,7 +405,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("createFeatureService", () => {
     it("can handle failure", done => {
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createService",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
         mockItems.get400Failure()
       );
 
@@ -483,7 +474,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/createService",
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
           '{"encodedServiceURL":"https://services123.arcgis.com/org1234567890/arcgis/rest/services/' +
             "ROWPermits_publiccomment_" +
             now +
@@ -496,7 +487,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             '/FeatureServer","size":-1,"success":true,"type":"Feature Service","isView":false}'
         )
         .post(
-          "https://www.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/move",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/move",
           '{"success":true,"itemId":"svc1234567890","owner":"casey","folder":"fld1234567890"}'
         );
 
@@ -565,7 +557,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = undefined as string; // default is "private"
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
           (folderId ? folderId + "/addItem" : "addItem"),
         {
           success: true,
@@ -599,7 +592,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
             (folderId ? folderId + "/addItem" : "addItem"),
           {
             success: true,
@@ -608,7 +602,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/share",
           {
             notSharedWith: [] as string[],
             itemId: "itm1234567980"
@@ -650,7 +645,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/" +
               (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
@@ -659,7 +655,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567980/share",
             {
               notSharedWith: [] as string[],
               itemId: "itm1234567980"
@@ -671,11 +668,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567980/update",
             utils.getSuccessResponse({ id: "itm1234567980" })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567980/addResources",
             utils.getSuccessResponse({
               itemId: "itm1234567980",
               owner: MOCK_USER_SESSION.username,
@@ -713,7 +712,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/" +
               (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
@@ -722,7 +722,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567980/addResources",
             utils.getSuccessResponse({
               itemId: "itm1234567980",
               owner: MOCK_USER_SESSION.username,
@@ -761,7 +762,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/" +
               (folderId ? folderId + "/addItem" : "addItem"),
             {
               success: true,
@@ -770,7 +772,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567980/update",
             500
           );
 
@@ -799,7 +802,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = undefined as string; // default is "private"
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
           (folderId ? folderId + "/addItem" : "addItem"),
         {
           success: false,
@@ -832,7 +836,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = undefined as string; // default is "private"
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
           (folderId ? folderId + "/addItem" : "addItem"),
         500
       );
@@ -862,7 +867,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       fetchMock
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/" +
             (folderId ? folderId + "/addItem" : "addItem"),
           {
             success: true,
@@ -871,7 +877,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           }
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567980/share",
           500
         );
 
@@ -898,7 +905,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "private";
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expectedCreate = {
         success: true,
         id: "itm1234567980",
@@ -930,14 +938,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "org";
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expectedCreate = {
         success: true,
         id: "itm1234567980",
         folder: folderId
       };
       const shareUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567980/share";
       const expectedShare = {
         notSharedWith: [] as string[],
         itemId: expectedCreate.id
@@ -968,14 +978,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "public";
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expectedCreate = {
         success: true,
         id: "itm1234567980",
         folder: folderId
       };
       const shareUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567980/share";
       const expectedShare = {
         notSharedWith: [] as string[],
         itemId: expectedCreate.id
@@ -1006,14 +1018,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const access = "public";
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/fld1234567890/addItem";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/fld1234567890/addItem";
       const expectedCreate = {
         success: true,
         id: "itm1234567980",
         folder: folderId
       };
       const shareUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567980/share";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/users/casey/items/itm1234567980/share";
       const expectedShare = mockItems.get400Failure();
       fetchMock.post(createUrl, expectedCreate).post(shareUrl, expectedShare);
 
@@ -1045,7 +1059,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
         JSON.stringify(expectedSuccess)
       );
       restHelpers
@@ -1068,7 +1082,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
         () => {
           return successfulFolderCreation(folderTitleRoot, expectedSuffix);
         }
@@ -1094,7 +1108,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
         () => {
           return JSON.stringify(
             successfulFolderCreation(folderTitleRoot, expectedSuffix)
@@ -1121,7 +1135,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
         () => {
           return JSON.stringify(
             successfulFolderCreation(folderTitleRoot, expectedSuffix)
@@ -1144,7 +1158,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder";
       const expectedCreate = {
         error: {
           code: 400,
@@ -1174,7 +1188,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       };
 
       const createUrl =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/createFolder";
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder";
       const expectedCreate = {
         error: {
           code: 400,
@@ -1754,21 +1768,53 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           () => done.fail()
         );
     });
+
+    it("handles the absence of a url in the item", done => {
+      const template = templates.getItemTemplateSkeleton();
+      restHelpers
+        .getServiceLayersAndTables(
+          generalHelpers.cloneObject(template),
+          MOCK_USER_SESSION
+        )
+        .then(updatedTemplate => {
+          expect(updatedTemplate).toEqual(template);
+          done();
+        }, done.fail);
+    });
   });
 
   describe("removeItem", () => {
     it("removes an item", done => {
       const itemId: string = "ABC123";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
           itemId +
           "/delete",
-        utils.getSuccessResponse()
+        utils.getSuccessResponse({ itemId })
       );
       restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
         expect(actual.success).toEqual(true);
         done();
       }, done.fail);
+    });
+
+    it("fails to remove an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getFailureResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
     });
   });
 
@@ -1776,15 +1822,139 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("removes a folder", done => {
       const folderId: string = "ABC123";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/" +
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
           folderId +
           "/delete",
-        utils.getSuccessResponse()
+        utils.getSuccessResponse({
+          folder: { username: "casey", id: folderId }
+        })
       );
       restHelpers.removeFolder(folderId, MOCK_USER_SESSION).then(actual => {
         expect(actual.success).toEqual(true);
         done();
       }, done.fail);
+    });
+
+    it("fails to remove a folder", done => {
+      const folderId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/" +
+          folderId +
+          "/delete",
+        utils.getFailureResponse({
+          folder: { username: "casey", id: folderId }
+        })
+      );
+      restHelpers.removeFolder(folderId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
+  describe("removeGroup", () => {
+    it("removes a group", done => {
+      const groupId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/" +
+          groupId +
+          "/delete",
+        utils.getSuccessResponse({ groupId })
+      );
+      restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove a group", done => {
+      const groupId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/" +
+          groupId +
+          "/delete",
+        utils.getFailureResponse({ groupId })
+      );
+      restHelpers.removeGroup(groupId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
+  describe("removeItemOrGroup", () => {
+    it("removes an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getSuccessResponse({ itemId })
+      );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("removes a group", done => {
+      const itemId: string = "ABC123";
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemId +
+            "/delete",
+          utils.getSuccessResponse({ itemId })
+        );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove an id", done => {
+      const itemId: string = "ABC123";
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemId +
+            "/delete",
+          utils.getFailureResponse()
+        );
+      restHelpers.removeItemOrGroup(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
     });
   });
 
@@ -1793,7 +1963,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const query: string = "My Group";
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups?f=json&q=My%20Group&token=fake-token",
         utils.getGroupResponse(query, false)
       );
 
@@ -1810,7 +1981,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const query: string = "My Group";
 
       fetchMock.get(
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups?f=json&q=My%20Group&token=fake-token",
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups?f=json&q=My%20Group&token=fake-token",
         utils.getGroupResponse(query, true)
       );
 
@@ -1829,12 +2001,31 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       const groupId: string = "grp1234567890";
       const id: string = "itm1234567890";
       fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/search", {
+          query: {
+            q: `id: itm1234567890 AND group: grp1234567890`,
+            start: 1,
+            num: 10,
+            sortField: "title"
+          },
+          total: 0,
+          start: 1,
+          nextStart: -1,
+          results: []
+        })
         .get(
-          "https://myorg.maps.arcgis.com/sharing/rest/community/users/casey?f=json&token=fake-token",
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group")
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
           mockItems.getAGOLUser(MOCK_USER_SESSION.username)
         )
         .post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567890/update",
           mockItems.get400Failure()
         );
       restHelpers
@@ -1847,7 +2038,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle failure", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
         mockItems.get400Failure()
       );
       restHelpers
@@ -1872,7 +2064,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("without share", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       restHelpers
@@ -1894,11 +2087,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("with public share", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/svc1234567890/share",
         '{"success":true}'
       );
       restHelpers
@@ -1920,11 +2115,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("with org share", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/svc1234567890/share",
         '{"success":true}'
       );
       restHelpers
@@ -1946,11 +2143,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle share failure", done => {
       itemTemplate.item.id = "itm1234567890";
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/itm1234567890/update",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update",
         '{"success":true}'
       );
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/svc1234567890/share",
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/svc1234567890/share",
         mockItems.get400Failure()
       );
       restHelpers
@@ -1979,7 +2178,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/0/update",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
         mockItems.get400Failure()
       );
 
@@ -1997,7 +2196,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
       fetchMock.post(
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/0/update",
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
         '{"success":true}'
       );
 
@@ -2017,7 +2216,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("should add text/plain data", done => {
         const itemId = "itm1234567890";
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
           itemId +
           "/update";
         fetchMock.post(url, '{"success":true}');
@@ -2041,7 +2241,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("should add application/json data", done => {
         const itemId = "itm1234567890";
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
           itemId +
           "/update";
         fetchMock.post(url, '{"success":true}');
@@ -2065,7 +2266,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("should add text data that's not text/plain or application/json", done => {
         const itemId = "itm1234567890";
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
           itemId +
           "/update";
         fetchMock.post(url, '{"success":true}');
@@ -2111,7 +2313,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("should update metadata", done => {
         const itemId = "itm1234567890";
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             itemId +
             "/update",
           '{"success":true}'
@@ -2131,7 +2334,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("should handle failure to update metadata", done => {
         const itemId = "itm1234567890";
         fetchMock.post(
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/" +
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
             itemId +
             "/update",
           '{"success":false}'
@@ -2153,6 +2357,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("_countRelationships", () => {
     it("can handle empty layer array", () => {
       const layers: any[] = [];
+      expect(restHelpers._countRelationships(layers)).toEqual(0);
+    });
+
+    it("can handle layer with missing relationships", () => {
+      const layers: any[] = [
+        {
+          relationships: null
+        }
+      ];
       expect(restHelpers._countRelationships(layers)).toEqual(0);
     });
 
@@ -2548,20 +2761,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers
         ._getCreateServiceOptions(itemTemplate, userSession, templateDictionary)
         .then(done.fail, done);
-    });
-  });
-
-  describe("_getRelationshipUpdates", () => {
-    xit("_getRelationshipUpdates", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getUpdate", () => {
-    xit("_getUpdate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 

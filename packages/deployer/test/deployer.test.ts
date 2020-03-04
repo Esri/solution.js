@@ -31,8 +31,23 @@ import * as deployItems from "../src/deploySolutionItems";
 let MOCK_USER_SESSION: common.UserSession;
 
 beforeEach(() => {
-  MOCK_USER_SESSION = utils.createRuntimeMockUserSession(new Date().getDate());
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
+
+afterEach(() => {
+  fetchMock.restore();
+});
+
+const projectedGeometries: any[] = [
+  {
+    x: -131,
+    y: 16
+  },
+  {
+    x: -57,
+    y: 58
+  }
+];
 
 describe("Module `deploySolution`", () => {
   describe("deploySolution", () => {
@@ -40,17 +55,13 @@ describe("Module `deploySolution`", () => {
     if (typeof window !== "undefined") {
       it("can deploy webmap with dependencies", done => {
         const groupId: string = "aa4a6047326243b290f625e80ebe6531";
-        const foundGroupId: string = "ba4a6047326243b290f625e80ebe6531";
+        const newGroupId: string = "ba4a6047326243b290f625e80ebe6531";
         const groupTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
-        groupTemplate.item.thumbnail = null;
         groupTemplate.itemId = groupId;
         groupTemplate.item.id = "{{" + groupId + ".itemId}}";
 
-        const group: any = mockItems.getAGOLGroup();
-        group.id = foundGroupId;
-        group.tags.push("source-" + groupId);
         const user: any = utils.getContentUser();
-        user.groups = [group];
+        user.groups = [];
 
         // get templates
         const featureServiceTemplate: any = templates.getItemTemplate(
@@ -124,7 +135,8 @@ describe("Module `deploySolution`", () => {
         const expectedMap: any = mockItems.getTrimmedAGOLItem(
           mockItems.getAGOLItem(
             "Web Map",
-            "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+            utils.PORTAL_SUBSET.portalUrl +
+              "/home/webmap/viewer.html?webmap=map1234567890"
           )
         );
         expectedMap.extent = "-88.226,41.708,-88.009,41.844";
@@ -171,13 +183,16 @@ describe("Module `deploySolution`", () => {
               "/content/users/casey?f=json&token=fake-token",
             user
           )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/" +
+              newGroupId +
+              "?f=json&token=fake-token",
+            mockItems.getAGOLGroup(newGroupId)
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse()
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
           )
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
@@ -197,12 +212,13 @@ describe("Module `deploySolution`", () => {
             })
           )
           .post(
-            "https://www.arcgis.com/sharing/rest/community/createGroup",
-            utils.getCreateGroupResponse(groupId)
+            utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
+            utils.getCreateGroupResponse(newGroupId)
           )
-          .post("https://www.arcgis.com/sharing/rest/search", { results: [] })
+          .post(utils.PORTAL_SUBSET.restUrl + "/search", { results: [] })
           .post(
-            "https://www.arcgis.com/sharing/rest/content/users/casey/items/map1234567890/share",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/share",
             utils.getShareResponse("map1234567890")
           )
           .post(
@@ -255,49 +271,7 @@ describe("Module `deploySolution`", () => {
             {}
           );
 
-        const expected: any = {
-          item: {
-            id: "map1234567890",
-            type: "Solution",
-            name: null,
-            title: "title",
-            typeKeywords: ["Solution", "Deployed"],
-            url: "https://www.arcgis.com/home/item.html?id=map1234567890",
-            thumbnailUrl: undefined,
-            tryitUrl: undefined
-          },
-          data: {
-            metadata: {
-              version: "x",
-              resourceStorageItemId: "sln1234567890"
-            },
-            templates: [
-              {
-                itemId: "map1234567890",
-                type: "Web Map",
-                dependencies: ["svc1234567890"],
-                groups: [groupId]
-              },
-              {
-                itemId: "svc1234567890",
-                type: "Feature Service",
-                dependencies: [],
-                groups: []
-              },
-              {
-                itemId: groupId,
-                type: "Group",
-                dependencies: []
-              }
-            ],
-            params: {
-              testProperty: {
-                value: "ABC",
-                type: "Text"
-              }
-            }
-          }
-        };
+        const expected: string = "map1234567890";
 
         delete portalResponse.portalThumbnail;
         delete portalResponse.defaultBasemap.baseMapLayers[0].resourceInfo
@@ -429,18 +403,21 @@ describe("Module `deploySolution`", () => {
           }
         };
         expectedTemplate[groupId] = {
-          itemId: groupId
+          itemId: newGroupId
         };
 
         const expectedUpdateBody: string =
           "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fwww.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&id=map1234567890&" +
-          "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22" +
-          "templates%22%3A%5B%7B%22itemId%22%3A%22map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22" +
-          "svc1234567890%22%5D%2C%22groups%22%3A%5B%22aa4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22" +
-          "%2C%22type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%7D%2C%7B%22itemId%22" +
-          "%3A%22aa4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22dependencies%22%3A%5B%5D%7D%5D%2C%22params%22" +
-          "%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
+          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          "id=map1234567890&thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
+          "items%2Fsln1234567890%2Finfo%2Fundefined&text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
+          "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
+          "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
+          "groups%22%3A%5B%22ba4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22" +
+          "type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%7D%2C%7B%22" +
+          "itemId%22%3A%22ba4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22groups%22%3A%5B%5D%2C%22" +
+          "dependencies%22%3A%5B%5D%7D%5D%2C%22params%22%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22" +
+          "type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
 
         const options: common.IDeploySolutionOptions = {
           templateDictionary: templateDictionary
@@ -463,16 +440,21 @@ describe("Module `deploySolution`", () => {
               const customParams = /someProperty%22%3A%22ABC/.test(
                 JSON.stringify(addToDefCalls[0][1].body)
               );
-              expect(customParams).toBeTrue();
+              expect(customParams)
+                .withContext("test that we have custom params")
+                .toBeTrue();
 
               const updateCalls: any[] = fetchMock.calls(
                 utils.PORTAL_SUBSET.restUrl +
                   "/content/users/casey/items/map1234567890/update"
               );
-              expect(updateCalls[1][1].body).toEqual(expectedUpdateBody);
+
+              expect(updateCalls[1][1].body)
+                .withContext("test the expected update body")
+                .toEqual(expectedUpdateBody);
 
               // Repeat with progress callback
-              options.progressCallback = utils.PROGRESS_CALLBACK;
+              options.progressCallback = utils.SOLUTION_PROGRESS_CALLBACK;
               options.templateDictionary = {};
               deployer
                 .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -495,7 +477,8 @@ describe("Module `deploySolution`", () => {
           url:
             "https://www.arcgis.com/home/item.html?id=c38e59126368495694ca23b7ccacefba",
           thumbnailUrl:
-            "https://www.arcgis.com/sharing/rest/content/items/c38e59126368495694ca23b7ccacefba/info/thumbnail/ago_downloaded_orig.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c38e59126368495694ca23b7ccacefba/info/thumbnail/ago_downloaded_orig.png",
           tryitUrl: "",
           created: 1578000306000,
           tags: [
@@ -509,13 +492,6 @@ describe("Module `deploySolution`", () => {
           deployVersion: 2
         };
         const templateDictionary: any = {};
-        const portalSubset: any = {
-          name: "ArcGIS for Local Government Deployment",
-          id: "org1234567890",
-          restUrl: "https://www.arcgis.com/sharing/rest",
-          portalUrl: "https://www.arcgis.com",
-          urlKey: "localdeployment"
-        };
 
         const solutionResponse: any = {
           metadata: {},
@@ -665,43 +641,56 @@ describe("Module `deploySolution`", () => {
 
         const folderId: string = "bd610311e0e84e41b96f54df2da54f82";
         const imageUrl: string =
-          "https://www.arcgis.com/sharing/rest/content/items/c38e59126368495694ca23b7ccacefba/resources/cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c38e59126368495694ca23b7ccacefba/resources/cc2ccab401af4828a25cc6eaeb59fb69_info_thumbnail/thumbnail1552919935720.png";
         const imageUrl2: string =
-          "https://www.arcgis.com/sharing/rest/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
         const expectedImage = mockItems.getAnImageResponse();
+
+        const portalResponse: any = utils.getPortalResponse();
+        const geometryServer: string =
+          portalResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/c38e59126368495694ca23b7ccacefba/data",
             solutionResponse
           )
           .get(
-            portalSubset.restUrl +
-              "/content/items/c38e59126368495694ca23b7ccacefba?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
             itemInfoCard
           )
           .get(
-            portalSubset.restUrl + "/portals/org1234567890?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/org1234567890?f=json&token=fake-token",
             utils.getPortalResponse()
           )
           .get(
-            "https://www.arcgis.com/sharing/rest/portals/self?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/portals/self?f=json&token=fake-token",
             utils.getPortalResponse()
           )
           .get(
-            portalSubset.restUrl + "/community/users/casey?f=json",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
-          .get(portalSubset.restUrl + "/content/users/casey?f=json", [])
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey?f=json&token=fake-token",
+            []
+          )
           .post(
-            portalSubset.restUrl + "/content/users/casey/createFolder",
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse(folderId)
           )
           .post(imageUrl, expectedImage)
           .post(imageUrl2, expectedImage)
           .post(
-            "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+            geometryServer + "/findTransformations",
             utils.getTransformationsResponse()
           )
           .post(
@@ -709,7 +698,7 @@ describe("Module `deploySolution`", () => {
             utils.getProjectResponse()
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/" +
               folderId +
               "/addItem",
@@ -720,7 +709,7 @@ describe("Module `deploySolution`", () => {
             { overwriteRoutes: false }
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/" +
               folderId +
               "/addItem",
@@ -731,27 +720,41 @@ describe("Module `deploySolution`", () => {
             { overwriteRoutes: false }
           )
           .post(
-            portalSubset.restUrl + "/community/createGroup",
+            utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
             utils.getSuccessResponse({
               group: { id: "987eaa6a496546a58f04796266589ec5" }
             })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/community/groups/987eaa6a496546a58f04796266589ec5/update",
             utils.getSuccessResponse({
               groupId: "987eaa6a496546a58f04796266589ec5"
             })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
             utils.getSuccessResponse({ id: "57a059ec717c4b1282705132fd4720a0" })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
             utils.getSuccessResponse({ id: "82601685fd3c444397d252116d7a3dc0" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
+            utils.getSuccessResponse({
+              folder: { username: "casey", id: folderId }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
+            utils.getSuccessResponse({
+              itemId: "57a059ec717c4b1282705132fd4720a0"
+            })
           );
 
         spyOn(deployItems, "postProcessDependencies").and.callFake(() =>
@@ -819,10 +822,6 @@ describe("Module `deploySolution`", () => {
             utils.getCreateFolderResponse()
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
-          .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
           )
@@ -835,6 +834,16 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             mockItems.get200Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
           );
 
         deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
@@ -856,10 +865,6 @@ describe("Module `deploySolution`", () => {
         const portalResponse: any = utils.getPortalResponse();
 
         fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
@@ -959,10 +964,6 @@ describe("Module `deploySolution`", () => {
             utils.getCreateFolderResponse()
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
-          .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
           )
@@ -973,7 +974,7 @@ describe("Module `deploySolution`", () => {
           .post(geometryServer + "/project", mockItems.get400Failure());
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1079,10 +1080,6 @@ describe("Module `deploySolution`", () => {
             utils.getCreateFolderResponse()
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
-          .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
           )
@@ -1143,6 +1140,21 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/update",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
+            utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
         const options: common.IDeploySolutionOptions = {
@@ -1153,7 +1165,7 @@ describe("Module `deploySolution`", () => {
           thumbnailUrl: "a thumbnailUrl",
           templateDictionary: null,
           additionalTypeKeywords: null,
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1258,10 +1270,6 @@ describe("Module `deploySolution`", () => {
             utils.getCreateFolderResponse()
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
-          .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
           )
@@ -1313,10 +1321,35 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/svc1234567890/delete",
+            utils.getSuccessResponse({ itemId: "svc1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/svc1234567890/delete",
+            utils.getSuccessResponse({ groupId: "svc1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
+            utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1337,6 +1370,8 @@ describe("Module `deploySolution`", () => {
         ]);
 
         const portalResponse: any = utils.getPortalResponse();
+        const geometryServer: string =
+          portalResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -1353,6 +1388,14 @@ describe("Module `deploySolution`", () => {
               "/data",
             itemInfo.data
           )
+          .post(geometryServer + "/findTransformations/rest/info", "{}")
+          .post(
+            geometryServer + "/findTransformations",
+            utils.getTransformationsResponse()
+          )
+          .post(geometryServer + "/project", {
+            geometries: projectedGeometries
+          })
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
@@ -1378,16 +1421,12 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           )
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/generateToken",
-            utils.getTokenResponse()
-          )
-          .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
           );
 
         const options: common.IDeploySolutionOptions = {
-          progressCallback: utils.PROGRESS_CALLBACK
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
@@ -1459,13 +1498,6 @@ describe("Module `deploySolution`", () => {
         newValue
       );
       expect(actualResult).toEqual(expectedResult);
-    });
-  });
-
-  describe("_estimateDeploymentCost", () => {
-    xit("_estimateDeploymentCost", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 });

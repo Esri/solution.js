@@ -27,7 +27,8 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  isGroup?: boolean
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
@@ -68,12 +69,6 @@ export function convertItemToTemplate(
     const relatedPromise = Promise.resolve(
       {} as common.IGetRelatedItemsResponse
     );
-    /*const relatedPromise = common.getItemRelatedItems(
-      itemTemplate.itemId,
-      "Survey2Service",
-      "forward",
-      authentication
-    );*/
 
     // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
     // tslint:disable-next-line:no-floating-promises
@@ -110,7 +105,6 @@ export function convertItemToTemplate(
               resolve(itemTemplate);
             },
             error => {
-              itemTemplate.properties["partial"] = true;
               itemTemplate.properties["error"] = JSON.stringify(error);
               resolve(itemTemplate);
             }
@@ -128,16 +122,24 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      progressTickCallback(
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    // Interrupt process if progress callback returns `false`
+    if (
+      !itemProgressCallback(
         template.itemId,
         common.EItemProgressStatus.Started,
         0
+      )
+    ) {
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Ignored,
+        0
       );
-
+      resolve(_generateEmptyCreationResponse(template.type));
+    } else {
       // Replace the templatized symbols in a copy of the template
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
       newItemTemplate = common.replaceInTemplate(
@@ -155,26 +157,66 @@ export function createItemFromTemplate(
         )
         .then(
           createResponse => {
-            progressTickCallback(
-              template.itemId,
-              common.EItemProgressStatus.Created,
-              template.estimatedDeploymentCostFactor / 2
-            );
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Created,
+                template.estimatedDeploymentCostFactor / 2
+              )
+            ) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Cancelled,
+                0
+              );
+              common
+                .removeItem(createResponse.id, destinationAuthentication)
+                .then(
+                  () => resolve(_generateEmptyCreationResponse(template.type)),
+                  () => resolve(_generateEmptyCreationResponse(template.type))
+                );
+            } else {
+              // Add the new item to the settings
+              newItemTemplate.itemId = createResponse.id;
+              templateDictionary[template.itemId] = {
+                itemId: createResponse.id
+              };
 
-            // Add the new item to the settings
-            newItemTemplate.itemId = createResponse.id;
-            templateDictionary[template.itemId] = {
-              itemId: createResponse.id
-            };
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Finished,
+                template.estimatedDeploymentCostFactor / 2
+              );
 
-            resolve({
-              id: createResponse.id,
-              type: newItemTemplate.type,
-              postProcess: false
-            });
+              resolve({
+                id: createResponse.id,
+                type: newItemTemplate.type,
+                postProcess: false
+              });
+            }
           },
-          e => reject(common.fail(e)) // fails to create item
+          () => {
+            itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Failed,
+              0
+            );
+            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+          }
         );
     }
-  );
+  });
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function _generateEmptyCreationResponse(
+  templateType: string
+): common.ICreateItemFromTemplateResponse {
+  return {
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }

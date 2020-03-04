@@ -204,7 +204,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param destinationAuthentication Credentials for the destination organization
  * @param reuseItems Option to search for existing items
- * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @param solutionProgressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
  */
@@ -216,9 +216,48 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   reuseItems: boolean,
-  progressTickCallback: common.IItemProgressCallback
+  solutionProgressCallback?: common.ISolutionProgressCallback
 ): Promise<any> {
   return new Promise((resolve, reject) => {
+    // Prepare feedback mechanism
+    const totalEstimatedCost = _estimateDeploymentCost(templates) + 1; // solution items, plus avoid divide by 0
+    let percentDone: number = 10; // allow for previous deployment work
+    const progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
+
+    const failedTemplateItemIds: string[] = [];
+    const deployedItemIds: string[] = [];
+    let statusOK = true;
+    const itemProgressCallback: common.IItemProgressCallback = (
+      itemId: string,
+      status: common.EItemProgressStatus,
+      costUsed: number
+    ) => {
+      // ---------------------------------------------------------------------------------------------------------------
+      percentDone += progressPercentStep * costUsed;
+      if (solutionProgressCallback) {
+        solutionProgressCallback(percentDone);
+      }
+
+      console.log(
+        // //???
+        Date.now(),
+        itemId,
+        common.SItemProgressStatus[status],
+        percentDone.toFixed(0) + "%",
+        costUsed
+      );
+
+      if (status === common.EItemProgressStatus.Created) {
+        deployedItemIds.push(itemId);
+      } else if (status === common.EItemProgressStatus.Failed) {
+        failedTemplateItemIds.push(itemId);
+        statusOK = false;
+      }
+
+      return statusOK;
+      // ---------------------------------------------------------------------------------------------------------------
+    };
+
     // Create an ordered graph of the templates so that dependencies are created
     // before the items that need them
     const cloneOrderChecklist: string[] = common.topologicallySortItems(
@@ -256,18 +295,28 @@ export function deploySolutionItems(
               storageAuthentication,
               templateDictionary,
               destinationAuthentication,
-              progressTickCallback
+              itemProgressCallback
             )
           );
         });
 
         // Wait until all items have been created
-        Promise.all(awaitAllItems).then(
-          clonedSolutionItemIds => {
+        // tslint:disable-next-line: no-floating-promises
+        Promise.all(awaitAllItems).then(clonedSolutionItemIds => {
+          if (failedTemplateItemIds.length === 0) {
             resolve(clonedSolutionItemIds);
-          },
-          e => reject(common.fail(e))
-        );
+          } else {
+            // Delete created items
+            Promise.all(
+              deployedItemIds.map(itemId =>
+                common.removeItemOrGroup(itemId, destinationAuthentication)
+              )
+            ).then(
+              () => reject(common.failWithIds(failedTemplateItemIds)),
+              () => reject(common.failWithIds(failedTemplateItemIds))
+            );
+          }
+        });
       },
       e => reject(common.fail(e))
     );
@@ -502,7 +551,7 @@ export function _findExistingItem(
  * @param resourceFilePaths URL, folder, and filename for each item resource/metadata/thumbnail
  * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
  * @param userSession Options for the request
- * @param progressTickCallback Function for reporting progress updates from type-specific template handlers
+ * @param itemProgressCallback Function for reporting progress updates from type-specific template handlers
  * @return A promise that will resolve with the id of the deployed item (which is simply returned if it's
  *         already in the templates list
  * @protected
@@ -513,31 +562,39 @@ export function _createItemFromTemplateWhenReady(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   let itemDef;
   if (!templateDictionary.hasOwnProperty(template.itemId)) {
     templateDictionary[template.itemId] = {};
-    itemDef = new Promise<common.ICreateItemFromTemplateResponse>(
-      (resolve, reject) => {
-        // Wait until all of the item's dependencies are deployed
-        const awaitDependencies = [] as Array<
-          Promise<common.ICreateItemFromTemplateResponse>
-        >;
-        (template.dependencies || []).forEach(dependencyId => {
-          awaitDependencies.push(templateDictionary[dependencyId].def);
-        });
-        Promise.all(awaitDependencies).then(() => {
+    itemDef = new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+      // Wait until all of the item's dependencies are deployed
+      const awaitDependencies = [] as Array<
+        Promise<common.ICreateItemFromTemplateResponse>
+      >;
+      (template.dependencies || []).forEach(dependencyId => {
+        awaitDependencies.push(templateDictionary[dependencyId].def);
+      });
+      Promise.all(awaitDependencies).then(
+        () => {
           // Find the conversion handler for this item type
           const templateType = template.type;
           let itemHandler = moduleMap[templateType];
-          if (!itemHandler) {
-            console.warn(
-              "Unimplemented item type (package level) " +
-                templateType +
-                " for " +
-                template.itemId
-            );
+          if (!itemHandler || itemHandler === UNSUPPORTED) {
+            if (itemHandler === UNSUPPORTED) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Ignored,
+                template.estimatedDeploymentCostFactor
+              );
+            } else {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Failed,
+                0
+              );
+            }
+
             resolve({
               id: "",
               type: templateType,
@@ -545,13 +602,17 @@ export function _createItemFromTemplateWhenReady(
             });
           } else {
             // Handle original Story Maps with next-gen Story Maps
-            if (templateType === "Web Mapping Application") {
-              if (storyMap.isAStoryMap(template) && template.data) {
-                itemHandler = storyMap;
-              }
+            if (
+              storyMap.isAStoryMap(
+                templateType,
+                common.getProp(template, "item.url")
+              )
+            ) {
+              itemHandler = storyMap;
             }
 
             // Delegate the creation of the template to the handler
+            // tslint:disable-next-line: no-floating-promises
             itemHandler
               .createItemFromTemplate(
                 template,
@@ -559,50 +620,77 @@ export function _createItemFromTemplateWhenReady(
                 storageAuthentication,
                 templateDictionary,
                 destinationAuthentication,
-                progressTickCallback
+                itemProgressCallback
               )
-              .then(
-                createResponse => {
-                  // Copy resources, metadata, thumbnail, form
-                  common
-                    .copyFilesFromStorageItem(
-                      storageAuthentication,
-                      resourceFilePaths,
-                      createResponse.id,
-                      destinationAuthentication,
-                      templateType === "Group",
-                      template.properties
-                    )
-                    .then(
-                      () => {
-                        progressTickCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Finished,
-                          template.estimatedDeploymentCostFactor / 2
-                        );
-                        resolve(createResponse);
-                      },
-                      e => reject(common.fail(e))
-                    );
-                },
-                e => reject(common.fail(e))
-              );
+              .then(createResponse => {
+                // Copy resources, metadata, thumbnail, form
+                common
+                  .copyFilesFromStorageItem(
+                    storageAuthentication,
+                    resourceFilePaths,
+                    createResponse.id,
+                    destinationAuthentication,
+                    templateType === "Group",
+                    template.properties
+                  )
+                  .then(
+                    () => resolve(createResponse),
+                    () => {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                    }
+                  );
+              });
           }
-        }, common.fail);
-      }
-    );
+        },
+        () => resolve(_generateEmptyCreationResponse(template.type)) // fails to get item dependencies
+      );
+    });
 
     // Save the deferred for the use of items that depend on this item being created first
     templateDictionary[template.itemId].def = itemDef;
   } else {
     itemDef = templateDictionary[template.itemId].def;
-    progressTickCallback(
+    itemProgressCallback(
       template.itemId,
       common.EItemProgressStatus.Finished,
       template.estimatedDeploymentCostFactor / 2
     );
   }
+
   return itemDef;
+}
+
+/**
+ * Accumulates the estimated deployment cost of a set of templates.
+ *
+ * @param templates Templates to examine
+ * @return Sum of estimated deployment costs
+ * @protected
+ */
+export function _estimateDeploymentCost(
+  templates: common.IItemTemplate[]
+): number {
+  return templates.reduce(
+    (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
+      return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
+    },
+    0
+  );
+}
+
+export function _generateEmptyCreationResponse(
+  templateType: string
+): common.ICreateItemFromTemplateResponse {
+  return {
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }
 
 /**

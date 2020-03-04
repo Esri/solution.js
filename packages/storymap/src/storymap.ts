@@ -26,17 +26,18 @@ import * as simpleTypes from "@esri/solution-simple-types";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
+  solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
     if (itemInfo.type === "StoryMap") {
-      console.log("convertItemToTemplate for a next-gen storymap");
+      reject(common.fail("Next-gen StoryMap is not yet implemented"));
+    } else if (isAStoryMap(itemInfo.type, itemInfo.url)) {
+      reject(common.fail("First-gen StoryMap is not yet implemented"));
     } else {
-      console.log("convertItemToTemplate for a first-gen storymap");
+      reject(common.fail(itemInfo.id + " is not a StoryMap"));
     }
-    console.warn("========== TODO ==========");
-    resolve(undefined);
   });
 }
 
@@ -46,51 +47,53 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      if (template.type === "StoryMap") {
-        /* console.log(
-        "createItemFromTemplate for a " +
-          template.type +
-          " (" +
-          template.itemId +
-          ")"
-      ); */
-        resolve({
-          id: "",
-          type: template.type,
-          postProcess: false
-        });
-      } else {
-        /* console.log(
-        "createItemFromTemplate for a " +
-          template.type +
-          " (StoryMap " +
-          template.itemId +
-          ")"
-      ); */
-        simpleTypes
-          .createItemFromTemplate(
-            template,
-            resourceFilePaths,
-            storageAuthentication,
-            templateDictionary,
-            destinationAuthentication,
-            progressTickCallback
-          )
-          .then(resolve, reject);
-      }
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    if (template.type === "StoryMap") {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "Next-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
+    } else if (isAStoryMap(template.type, template.item.url)) {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "First-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
+    } else {
+      // Not valid
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "",
+        type: template.type,
+        postProcess: false
+      });
     }
-  );
+  });
 }
 
-export function isAStoryMap(template: common.IItemTemplate): boolean {
-  const url = common.getProp(template, "item.url");
-  if (template.type === "StoryMap") {
+export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
+  if (itemType === "StoryMap") {
     return true;
-  } else if (url) {
+  } else if (itemUrl) {
     return [
       /\/apps\/Cascade\//i,
       /\/apps\/MapJournal\//i,
@@ -100,7 +103,7 @@ export function isAStoryMap(template: common.IItemTemplate): boolean {
       /\/apps\/StoryMap\//i,
       /\/apps\/StoryMapBasic\//i,
       /\/apps\/StorytellingSwipe\//i
-    ].some(pattern => pattern.test(url));
+    ].some(pattern => pattern.test(itemUrl));
   }
   return false;
 }

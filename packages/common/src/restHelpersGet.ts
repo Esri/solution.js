@@ -188,8 +188,9 @@ export function getBlobCheckForError(
           // Blob may be an error
           // tslint:disable-next-line: no-floating-promises
           generalHelpers.blobToJson(adjustedBlob).then((json: any) => {
+            // Check for valid JSON with an error
             if (json && json.error) {
-              const code: number = json.error?.code || json.code;
+              const code: number = json.error.code;
               if (code !== undefined && ignoreErrors.indexOf(code) >= 0) {
                 resolve(); // Error, but ignored
               } else {
@@ -204,6 +205,24 @@ export function getBlobCheckForError(
         }
       }, reject);
     }, reject);
+  });
+}
+
+export function getInfoFiles(
+  itemId: string,
+  infoFilenames: string[],
+  authentication: interfaces.UserSession
+): Array<Promise<File>> {
+  return infoFilenames.map(filename => {
+    return new Promise<File>((resolve, reject) => {
+      getItemInfoBlob(itemId, filename, authentication).then(
+        blob =>
+          blob === undefined
+            ? resolve()
+            : resolve(generalHelpers.blobToFile(blob, filename)),
+        reject
+      );
+    });
   });
 }
 
@@ -335,6 +354,44 @@ export function getItemDataBlobUrl(
 }
 
 /**
+ * Gets information item in an AGO item.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with the metadata Blob or null if the item doesn't have a metadata file
+ */
+export function getItemInfoBlob(
+  itemId: string,
+  infoFilename: string,
+  authentication: interfaces.UserSession
+): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    const url = getItemInfoFileUrlPrefix(itemId, authentication) + infoFilename;
+
+    getBlobCheckForError(url, authentication, [400]).then(
+      (blob: Blob) => resolve(_fixTextBlobType(blob)),
+      reject
+    );
+  });
+}
+
+/**
+ * Gets the URL to an information item in an AGO item.
+ *
+ * @param itemId Id of an item whose data information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return URL string
+ */
+export function getItemInfoFileUrlPrefix(
+  itemId: string,
+  authentication: interfaces.UserSession
+): string {
+  return `${getPortalSharingUrlFromAuth(
+    authentication
+  )}/content/items/${itemId}/info/`;
+}
+
+/**
  * Gets the metadata information of an AGO item.
  *
  * @param itemId Id of an item whose data information is sought
@@ -388,9 +445,9 @@ export function getItemMetadataBlobUrl(
   itemId: string,
   authentication: interfaces.UserSession
 ): string {
-  return `${getPortalSharingUrlFromAuth(
-    authentication
-  )}/content/items/${itemId}/info/metadata/metadata.xml`;
+  return (
+    getItemInfoFileUrlPrefix(itemId, authentication) + "metadata/metadata.xml"
+  );
 }
 
 /**
@@ -411,36 +468,26 @@ export function getItemRelatedItems(
   authentication: interfaces.UserSession
 ): Promise<interfaces.IGetRelatedItemsResponse> {
   return new Promise<interfaces.IGetRelatedItemsResponse>((resolve, reject) => {
-    try {
-      const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
-        id: itemId,
-        relationshipType,
-        direction,
-        authentication: authentication
-      };
-      portal.getRelatedItems(itemRelatedItemsParam).then(
-        (response: portal.IGetRelatedItemsResponse) => {
-          resolve(response as interfaces.IGetRelatedItemsResponse);
-        },
-        () => {
-          resolve({
-            total: 0,
-            start: 1,
-            num: 0,
-            nextStart: -1,
-            relatedItems: []
-          } as interfaces.IGetRelatedItemsResponse);
-        }
-      );
-    } catch (err) {
-      resolve({
-        total: 0,
-        start: 1,
-        num: 0,
-        nextStart: -1,
-        relatedItems: []
-      } as interfaces.IGetRelatedItemsResponse);
-    }
+    const itemRelatedItemsParam: portal.IItemRelationshipOptions = {
+      id: itemId,
+      relationshipType,
+      direction,
+      authentication: authentication
+    };
+    portal.getRelatedItems(itemRelatedItemsParam).then(
+      (response: portal.IGetRelatedItemsResponse) => {
+        resolve(response as interfaces.IGetRelatedItemsResponse);
+      },
+      () => {
+        resolve({
+          total: 0,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          relatedItems: []
+        } as interfaces.IGetRelatedItemsResponse);
+      }
+    );
   });
 }
 
@@ -520,20 +567,10 @@ export function getItemResources(
   authentication: interfaces.UserSession
 ): Promise<any> {
   return new Promise<any>(resolve => {
-    try {
-      const requestOptions = {
-        authentication: authentication
-      };
-      portal.getItemResources(id, requestOptions).then(resolve, () => {
-        resolve({
-          total: 0,
-          start: 1,
-          num: 0,
-          nextStart: -1,
-          resources: []
-        } as interfaces.IGetResourcesResponse);
-      });
-    } catch (err) {
+    const requestOptions = {
+      authentication: authentication
+    };
+    portal.getItemResources(id, requestOptions).then(resolve, () => {
       resolve({
         total: 0,
         start: 1,
@@ -541,7 +578,7 @@ export function getItemResources(
         nextStart: -1,
         resources: []
       } as interfaces.IGetResourcesResponse);
-    }
+    });
   });
 }
 

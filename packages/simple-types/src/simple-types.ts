@@ -186,16 +186,24 @@ export function createItemFromTemplate(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  progressTickCallback: common.IItemProgressCallback
+  itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      progressTickCallback(
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    // Interrupt process if progress callback returns `false`
+    if (
+      !itemProgressCallback(
         template.itemId,
         common.EItemProgressStatus.Started,
         0
+      )
+    ) {
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Ignored,
+        0
       );
-
+      resolve(_generateEmptyCreationResponse(template.type));
+    } else {
       // Replace the templatized symbols in a copy of the template
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
       newItemTemplate = common.replaceInTemplate(
@@ -226,125 +234,194 @@ export function createItemFromTemplate(
         )
         .then(
           createResponse => {
-            progressTickCallback(
-              template.itemId,
-              common.EItemProgressStatus.Created,
-              template.estimatedDeploymentCostFactor / 2
-            );
-
-            // Add the new item to the settings
-            templateDictionary[template.itemId] = {
-              itemId: createResponse.id
-            };
-            newItemTemplate.itemId = createResponse.id;
-
-            // Set the appItemId manually to get around cases where the path was incorrectly set
-            // in legacy deployments
+            // Interrupt process if progress callback returns `false`
             if (
-              newItemTemplate.type === "Web Mapping Application" &&
-              template.data
+              !itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Created,
+                template.estimatedDeploymentCostFactor / 2
+              )
             ) {
-              common.setProp(
-                newItemTemplate,
-                "data.appItemId",
-                createResponse.id
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Cancelled,
+                0
               );
-            }
-            const postProcess: boolean = common.hasUnresolvedVariables(
-              newItemTemplate.data
-            );
-
-            // Update the template again now that we have the new item id
-            newItemTemplate = common.replaceInTemplate(
-              newItemTemplate,
-              templateDictionary
-            );
-
-            // Update relationships
-            let relationshipsDef = Promise.resolve(
-              [] as common.IStatusResponse[]
-            );
-            if (newItemTemplate.relatedItems) {
-              // Templatize references in relationships obj
-              const updatedRelatedItems = common.replaceInTemplate(
-                common.templatizeIds(newItemTemplate.relatedItems),
-                templateDictionary
-              ) as common.IRelatedItems[];
-
-              // Add the relationships
-              relationshipsDef = common.addForwardItemRelationships(
-                newItemTemplate.itemId,
-                updatedRelatedItems,
-                destinationAuthentication
-              );
-            }
-
-            // The item's URL includes its id, so it needs to be updated
-            const updateUrlDef: Promise<string> = template.data
-              ? common.updateItemURL(
-                  createResponse.id,
-                  common.replaceInTemplate(
-                    newItemTemplate.item.url,
-                    templateDictionary
-                  ),
-                  destinationAuthentication
-                )
-              : Promise.resolve("");
-
-            // Check for extra processing for web mapping application
-            let customProcDef: Promise<void>;
-            if (template.type === "Web Mapping Application" && template.data) {
-              customProcDef = webmappingapplication.fineTuneCreatedItem(
-                template,
-                newItemTemplate,
-                templateDictionary,
-                destinationAuthentication
-              );
-            } else if (template.type === "Workforce Project") {
-              customProcDef = workforce.fineTuneCreatedItem(
-                newItemTemplate,
-                destinationAuthentication
-              );
-            } else if (template.type === "Notebook") {
-              customProcDef = notebook.fineTuneCreatedItem(
-                template,
-                newItemTemplate,
-                templateDictionary,
-                destinationAuthentication
-              );
-            } else {
-              customProcDef = Promise.resolve();
-            }
-
-            Promise.all([relationshipsDef, updateUrlDef, customProcDef]).then(
-              results => {
-                const [relationships, updatedUrls, customProcs] = results;
-
-                let updateResourceDef: Promise<void> = Promise.resolve();
-                if (template.type === "QuickCapture Project") {
-                  updateResourceDef = quickcapture.fineTuneCreatedItem(
-                    newItemTemplate,
-                    destinationAuthentication
-                  );
-                }
-                updateResourceDef.then(
-                  () => {
-                    resolve({
-                      id: createResponse.id,
-                      type: newItemTemplate.type,
-                      postProcess: postProcess
-                    });
-                  },
-                  e => reject(common.fail(e))
+              common
+                .removeItem(createResponse.id, destinationAuthentication)
+                .then(
+                  () => resolve(_generateEmptyCreationResponse(template.type)),
+                  () => resolve(_generateEmptyCreationResponse(template.type))
                 );
-              },
-              e => reject(common.fail(e))
-            );
+            } else {
+              // Add the new item to the settings
+              templateDictionary[template.itemId] = {
+                itemId: createResponse.id
+              };
+              newItemTemplate.itemId = createResponse.id;
+
+              // Set the appItemId manually to get around cases where the path was incorrectly set
+              // in legacy deployments
+              if (
+                newItemTemplate.type === "Web Mapping Application" &&
+                template.data
+              ) {
+                common.setProp(
+                  newItemTemplate,
+                  "data.appItemId",
+                  createResponse.id
+                );
+              }
+              const postProcess: boolean = common.hasUnresolvedVariables(
+                newItemTemplate.data
+              );
+
+              // Update the template again now that we have the new item id
+              newItemTemplate = common.replaceInTemplate(
+                newItemTemplate,
+                templateDictionary
+              );
+
+              // Update relationships
+              let relationshipsDef = Promise.resolve(
+                [] as common.IStatusResponse[]
+              );
+              if (newItemTemplate.relatedItems) {
+                // Templatize references in relationships obj
+                const updatedRelatedItems = common.replaceInTemplate(
+                  common.templatizeIds(newItemTemplate.relatedItems),
+                  templateDictionary
+                ) as common.IRelatedItems[];
+
+                // Add the relationships
+                relationshipsDef = common.addForwardItemRelationships(
+                  newItemTemplate.itemId,
+                  updatedRelatedItems,
+                  destinationAuthentication
+                );
+              }
+
+              // The item's URL includes its id, so it needs to be updated
+              const updateUrlDef: Promise<string> = template.data
+                ? common.updateItemURL(
+                    createResponse.id,
+                    common.replaceInTemplate(
+                      newItemTemplate.item.url,
+                      templateDictionary
+                    ),
+                    destinationAuthentication
+                  )
+                : Promise.resolve("");
+
+              // Check for extra processing for web mapping application
+              let customProcDef: Promise<void>;
+              if (
+                template.type === "Web Mapping Application" &&
+                template.data
+              ) {
+                customProcDef = webmappingapplication.fineTuneCreatedItem(
+                  template,
+                  newItemTemplate,
+                  templateDictionary,
+                  destinationAuthentication
+                );
+              } else if (template.type === "Workforce Project") {
+                customProcDef = workforce.fineTuneCreatedItem(
+                  newItemTemplate,
+                  destinationAuthentication
+                );
+              } else if (template.type === "Notebook") {
+                customProcDef = notebook.fineTuneCreatedItem(
+                  template,
+                  newItemTemplate,
+                  templateDictionary,
+                  destinationAuthentication
+                );
+              } else {
+                customProcDef = Promise.resolve();
+              }
+
+              Promise.all([relationshipsDef, updateUrlDef, customProcDef]).then(
+                results => {
+                  const [relationships, updatedUrls, customProcs] = results;
+
+                  let updateResourceDef: Promise<void> = Promise.resolve();
+                  if (template.type === "QuickCapture Project") {
+                    updateResourceDef = quickcapture.fineTuneCreatedItem(
+                      newItemTemplate,
+                      destinationAuthentication
+                    );
+                  }
+                  updateResourceDef.then(
+                    () => {
+                      // Interrupt process if progress callback returns `false`
+                      if (
+                        !itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Finished,
+                          template.estimatedDeploymentCostFactor / 2
+                        )
+                      ) {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Cancelled,
+                          0
+                        );
+                        common
+                          .removeItem(
+                            createResponse.id,
+                            destinationAuthentication
+                          )
+                          .then(
+                            () =>
+                              resolve(
+                                _generateEmptyCreationResponse(template.type)
+                              ),
+                            () =>
+                              resolve(
+                                _generateEmptyCreationResponse(template.type)
+                              )
+                          );
+                      } else {
+                        resolve({
+                          id: createResponse.id,
+                          type: newItemTemplate.type,
+                          postProcess: postProcess
+                        });
+                      }
+                    },
+                    () => {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(_generateEmptyCreationResponse(template.type)); // fails to update after fine tuning
+                    }
+                  );
+                },
+                () => {
+                  itemProgressCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Failed,
+                    0
+                  );
+                  resolve(_generateEmptyCreationResponse(template.type)); // fails to deploy all resources to the item
+                }
+              );
+            }
           },
-          e => reject(common.fail(e))
+          () => {
+            itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Failed,
+              0
+            );
+            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+          }
         );
     }
-  );
+  });
 }
 
 /**
@@ -401,4 +478,16 @@ export function postProcessItemDependencies(
       break;
   }
   return p;
+}
+
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function _generateEmptyCreationResponse(
+  templateType: string
+): common.ICreateItemFromTemplateResponse {
+  return {
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }

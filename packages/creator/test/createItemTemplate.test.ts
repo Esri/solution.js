@@ -27,20 +27,6 @@ import * as utils from "../../common/test/mocks/utils";
 import * as common from "@esri/solution-common";
 import * as createItemTemplate from "../src/createItemTemplate";
 
-// Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
-
 const noDataResponse: any = {};
 const noResourcesResponse: any = {
   total: 0,
@@ -57,6 +43,12 @@ const noMetadataResponse: any = {
     details: ["Error getting Item Info from DataStore"]
   }
 };
+
+let MOCK_USER_SESSION: common.UserSession;
+
+beforeEach(() => {
+  MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+});
 
 afterEach(() => {
   fetchMock.restore();
@@ -77,27 +69,32 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
             mockItems.getAGOLItem("Web Map")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
@@ -112,11 +109,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -139,11 +135,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -160,56 +155,65 @@ describe("Module `createItemTemplate`", () => {
         common.setCreateProp(
           wmaData,
           "dataSource.dataSources.fred.url",
-          "https://myorg.maps.arcgis.com/FeatureServer"
+          utils.PORTAL_SUBSET.portalUrl + "/FeatureServer"
         );
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Web Mapping Application")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567890/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/wma1234567890/data",
             wmaData
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Web Map")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           )
           .post(
-            "https://myorg.maps.arcgis.com/FeatureServer",
+            utils.PORTAL_SUBSET.portalUrl + "/FeatureServer",
             mockItems.get500Failure()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
@@ -224,17 +228,14 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               const createdTemplate = common.findTemplateInList(
                 existingTemplates,
                 itemId
               );
-              expect(createdTemplate.properties.partial).not.toBeUndefined();
-              expect(createdTemplate.properties.partial).toBeTruthy();
               expect(createdTemplate.properties.error).not.toBeUndefined();
               expect(createdTemplate.properties.error).toEqual(
                 '{"success":false}'
@@ -254,31 +255,38 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -289,11 +297,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -311,39 +318,47 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(1, "Image")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900?f=json&token=fake-token",
             solutionThumbnail
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -354,11 +369,10 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -376,43 +390,52 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(1, "Image")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900?f=json&token=fake-token",
             solutionThumbnail
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
             mockItems.get400Failure()
           );
 
@@ -422,11 +445,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -444,64 +467,77 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsListByType(["Image", "Web Map"])
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/img12345678900?f=json&token=fake-token",
             solutionThumbnail
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/img12345678900/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/img12345678900/data",
             mockItems.getAnImageResponse()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 1)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: solutionItemId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: solutionItemId })
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map12345678901", {
           total: 0,
@@ -514,11 +550,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -537,51 +573,62 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             groupContents
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Web Map")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
@@ -595,11 +642,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -615,39 +662,48 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/grp1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(1, "Web Map")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/map12345678900?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -657,11 +713,11 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
@@ -677,11 +733,13 @@ describe("Module `createItemTemplate`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/xxx1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/xxx1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Unsupported")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
 
@@ -691,52 +749,18 @@ describe("Module `createItemTemplate`", () => {
             itemId,
             templateDictionary,
             authentication,
-            existingTemplates
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
-              expect(response).toBeTruthy();
               done();
             },
             () => done.fail()
           );
       });
 
-      it("removes unsupported item types", done => {
-        const solutionItemId: string = "sln1234567890";
-        const itemId: string = "code12345678900";
-        const itemType: string = "Code Attachment";
-        const templateDictionary: any = {};
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const existingTemplates: common.IItemTemplate[] = [];
-
-        fetchMock
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/code12345678900?f=json&token=fake-token",
-            mockItems.getAGOLItem(itemType)
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
-            noDataResponse
-          );
-
-        createItemTemplate
-          .createItemTemplate(
-            solutionItemId,
-            itemId,
-            templateDictionary,
-            authentication,
-            existingTemplates
-          )
-          .then(response => {
-            expect(response).toBeTruthy();
-            const item = common.findTemplateInList(existingTemplates, itemId);
-            expect(item).toBeNull();
-            done();
-          }, done.fail);
-      });
-
-      it("removes soure-itemIds from typeKeywords and tags", done => {
+      it("removes source-itemIds from typeKeywords and tags", done => {
         const solutionItemId: string = "sln1234567890";
         const itemId: string = "map12345678900";
         const templateDictionary: any = {};
@@ -754,32 +778,41 @@ describe("Module `createItemTemplate`", () => {
         webmap.typeKeywords.push("source-aa4a6047326243b290f625e80ebe6531");
         webmap.tags.push("source-aa4a6047326243b290f625e80ebe6531");
 
-        expect(webmap.tags).toEqual(preExpectedTags);
-        expect(webmap.typeKeywords).toEqual(preExpectedTypeKeywords);
+        expect(webmap.tags)
+          .withContext("test initial tags")
+          .toEqual(preExpectedTags);
+        expect(webmap.typeKeywords)
+          .withContext("test initial typeKeywords")
+          .toEqual(preExpectedTypeKeywords);
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
             webmap
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
@@ -802,7 +835,7 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.PROGRESS_CALLBACK
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(
             response => {
@@ -812,11 +845,12 @@ describe("Module `createItemTemplate`", () => {
               // }, done.fail);
               const actualTemplate: any = updateItemResources.calls.mostRecent()
                 .args[0];
-              expect(actualTemplate.item.tags).toEqual(expectedTags);
-              expect(actualTemplate.item.typeKeywords).toEqual(
-                expectedTypeKeywords
-              );
-              expect(response).toBeTruthy();
+              expect(actualTemplate.item.tags)
+                .withContext("test final tags")
+                .toEqual(expectedTags);
+              expect(actualTemplate.item.typeKeywords)
+                .withContext("test final typeKeywords")
+                .toEqual(expectedTypeKeywords);
               done();
             },
             () => done.fail()
@@ -845,45 +879,6 @@ describe("Module `createItemTemplate`", () => {
         [template]
       );
       expect(actual).toEqual([]);
-    });
-  });
-
-  describe("_getTemplateTypeHash", () => {
-    xit("_getTemplateTypeHash", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_updateWebMapHashInfo", () => {
-    xit("_updateWebMapHashInfo", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_addMapLayerIds", () => {
-    xit("_addMapLayerIds", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getWebMapFSDependencies", () => {
-    xit("_getWebMapFSDependencies", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_replaceTemplate", () => {
-    it("returns false when no template is found", () => {
-      const actual: boolean = createItemTemplate._replaceTemplate(
-        [],
-        "",
-        initialSolutionTemplates[0]
-      );
-      expect(actual).toBeFalsy();
     });
   });
 });

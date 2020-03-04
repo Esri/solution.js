@@ -19,9 +19,28 @@
 // import * as mFeatureService from "../../../feature-layer/src/feature-layer";
 // import * as fsUtils from "../../../feature-layer/src/featureServiceHelpers";
 import * as interfaces from "../../src/interfaces";
-import * as mockItems from "../mocks/agolItems";
+import * as mockItems from "./agolItems";
+import * as utils from "./utils";
 
 // -- Exports -------------------------------------------------------------------------------------------------------//
+
+export function getFailedDeployment(failedItemIds: string[] = []): any {
+  return {
+    success: false,
+    itemIds: failedItemIds,
+    error: "One or more items cannot be deployed"
+  };
+}
+
+export function getFailedItem(
+  itemType: string
+): interfaces.ICreateItemFromTemplateResponse {
+  return {
+    id: "",
+    type: itemType,
+    postProcess: false
+  };
+}
 
 export function getSolutionTemplateItem(
   templates = [] as interfaces.IItemTemplate[]
@@ -35,7 +54,7 @@ export function getSolutionTemplateItem(
       title: "title",
       type: "Solution",
       typeKeywords: ["Solution", "Template"],
-      url: "https://www.arcgis.com/home/item.html?id=sln1234567890"
+      url: utils.PORTAL_SUBSET.portalUrl + "/home/item.html?id=sln1234567890"
     },
     data: {
       metadata: {
@@ -92,7 +111,6 @@ export function getItemTemplate(
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
-      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Desktop Add In":
@@ -117,6 +135,7 @@ export function getItemTemplate(
       templatePart.item.url = url || "{{svc1234567890.url}}";
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
+      templatePart.estimatedDeploymentCostFactor = 10;
 
       const layer0: any = getLayerOrTableTemplate(
         // removeEditFieldsInfoField(
@@ -126,7 +145,6 @@ export function getItemTemplate(
         [createItemTemplateRelationship(0, 1, "esriRelRoleOrigin")]
       );
       // );
-      templatePart.estimatedDeploymentCostFactor += 2;
 
       const table1: any = getLayerOrTableTemplate(
         // removeEditFieldsInfoField(
@@ -136,7 +154,6 @@ export function getItemTemplate(
         [createItemTemplateRelationship(0, 1, "esriRelRoleDestination")]
       );
       // );
-      templatePart.estimatedDeploymentCostFactor += 2;
 
       const properties: any = {
         service: getServiceTemplate([layer0], [table1]),
@@ -148,6 +165,12 @@ export function getItemTemplate(
       break;
 
     case "Form":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        mockItems.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
       break;
 
     case "Geoprocessing Package":
@@ -178,7 +201,6 @@ export function getItemTemplate(
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
-      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Operation View":
@@ -214,7 +236,6 @@ export function getItemTemplate(
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
-      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Web Mapping Application":
@@ -227,7 +248,6 @@ export function getItemTemplate(
       );
       templatePart.data = getItemTemplateData(type);
       templatePart.resources = [];
-      templatePart.estimatedDeploymentCostFactor = 4;
       break;
 
     case "Workforce Project":
@@ -352,7 +372,8 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       sortOrder: "asc",
       isViewOnly: true,
       thumbnail:
-        "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/groups/grp1234567890/info/ROWPermitManager.png",
       access: "public",
       capabilities: [],
       isFav: false,
@@ -369,8 +390,9 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       collaborationInfo: {},
       type: "Group"
     },
+    groups: [],
     dependencies: dependencies,
-    estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
+    estimatedDeploymentCostFactor: 2
   };
 }
 
@@ -413,7 +435,8 @@ export function getWebMappingApplicationTemplateGroup(): interfaces.IItemTemplat
 
   //  Give the WMA a resource
   template[0].resources = [
-    "https://myorg.maps.arcgis.com/sharing/rest/content/items/wma1234567890/resources/anImage.png"
+    utils.PORTAL_SUBSET.restUrl +
+      "/content/items/wma1234567890/resources/anImage.png"
   ];
 
   return template;
@@ -709,7 +732,8 @@ export function getItemTemplateData(type?: string): any {
               layerType: "VectorTileLayer",
               title: "World Topographic Map",
               styleUrl:
-                "https://www.arcgis.com/sharing/rest/content/items/" +
+                utils.PORTAL_SUBSET.restUrl +
+                "/content/items/" +
                 "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
               itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
             }
@@ -1082,7 +1106,8 @@ function getItemTemplateFundamentals(
       tags: ["test"],
       snippet: "Snippet of an AGOL item",
       thumbnail:
-        "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/" +
         typePrefix +
         "1234567890/info/thumbnail/ago_downloaded.png",
       extent: "{{solutionItemExtent}}",
@@ -1100,7 +1125,7 @@ function getItemTemplateFundamentals(
     dependencies: dependencies,
     groups: groups,
     properties: {},
-    estimatedDeploymentCostFactor: 3 + (dependencies ? dependencies.length : 0)
+    estimatedDeploymentCostFactor: 2
   };
 }
 

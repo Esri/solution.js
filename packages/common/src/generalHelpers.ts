@@ -237,6 +237,21 @@ export function fail(e?: any): any {
 }
 
 /**
+ * Creates an AGO-style JSON failure response with success property and extended with ids list.
+ *
+ * @param ids List of ids
+ * @param e Optional error information
+ * @return JSON structure with property success set to false and optionally including `e`
+ */
+export function failWithIds(itemIds: string[], e?: any): any {
+  if (e) {
+    return { success: false, itemIds, error: e.error || e };
+  } else {
+    return { success: false, itemIds };
+  }
+}
+
+/**
  * Gets a property out of a deeply nested object.
  * Does not handle anything but nested object graph
  *

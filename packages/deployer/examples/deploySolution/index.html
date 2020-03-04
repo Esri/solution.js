@@ -32,11 +32,11 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    <label for="id">ID of the solution item to deploy</label><input type="text" id="id" style="width:256px">
+    <label for="id">ID of the solution item to deploy:&nbsp;</label><input type="text" id="id" style="width:256px">
     <br /><br />
     <i>Credentials in destination organization:</i><br />
-    <label for="username">username:</label><input type="text" id="username">
-    <label for="password">password:</label><input type="password" id="password">
+    <label for="username">username:&nbsp;</label><input type="text" id="username">
+    <label for="password">password:&nbsp;</label><input type="password" id="password">
     <br /><br />
     <button onclick="goFcn()">Go</button>
   </div>
@@ -48,18 +48,18 @@
 
     require.config({
       paths: {
-        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.8.0/dist/umd/auth.umd.min",
-        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.8.0/dist/umd/feature-layer.umd.min",
-        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.8.0/dist/umd/portal.umd.min",
-        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.8.0/dist/umd/request.umd.min",
-        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.8.0/dist/umd/service-admin.umd.min",
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.6.3/dist/umd/common.umd.min",
-        "@esri/solution-deployer": "https://unpkg.com/@esri/solution-deployer@0.6.3/dist/umd/deployer.umd.min",
-        "@esri/solution-feature-layer": "https://unpkg.com/@esri/solution-feature-layer@0.6.3/dist/umd/feature-layer.umd.min",
-        "@esri/solution-file": "https://unpkg.com/@esri/solution-file@0.6.3/dist/umd/file.umd.min",
-        "@esri/solution-group": "https://unpkg.com/@esri/solution-group@0.6.3/dist/umd/group.umd.min",
-        "@esri/solution-simple-types": "https://unpkg.com/@esri/solution-simple-types@0.6.3/dist/umd/simple-types.umd.min",
-        "@esri/solution-storymap": "https://unpkg.com/@esri/solution-storymap@0.6.3/dist/umd/storymap.umd.min"
+        "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.9.0/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.9.0/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.9.0/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.9.0/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.9.0/dist/umd/service-admin.umd.min",
+        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.7.0/dist/umd/common.umd.min",
+        "@esri/solution-deployer": "https://unpkg.com/@esri/solution-deployer@0.7.0/dist/umd/deployer.umd.min",
+        "@esri/solution-feature-layer": "https://unpkg.com/@esri/solution-feature-layer@0.7.0/dist/umd/feature-layer.umd.min",
+        "@esri/solution-file": "https://unpkg.com/@esri/solution-file@0.7.0/dist/umd/file.umd.min",
+        "@esri/solution-group": "https://unpkg.com/@esri/solution-group@0.7.0/dist/umd/group.umd.min",
+        "@esri/solution-simple-types": "https://unpkg.com/@esri/solution-simple-types@0.7.0/dist/umd/simple-types.umd.min",
+        "@esri/solution-storymap": "https://unpkg.com/@esri/solution-storymap@0.7.0/dist/umd/storymap.umd.min"
       }
     });
 
@@ -72,6 +72,7 @@
         function go () {
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
+          var startTime = Date.now();
 
           main.deploySolution(
             document.getElementById("id").value,
@@ -84,12 +85,20 @@
             }
           ).then(
             html => {
+              reportElapsedTime(startTime);
               document.getElementById("output").innerHTML = html;
             },
             error => {
-              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+              var message = error.error || JSON.stringify(error);
+              reportElapsedTime(startTime);
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
             }
           );
+        }
+
+        function reportElapsedTime (startTime) {
+          var endTime = Date.now();
+          console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
         }
       }
     );

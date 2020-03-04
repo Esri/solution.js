@@ -17,7 +17,7 @@
 /**
  * Manages creation of the template of a Solution item via the REST API.
  *
- * @module createSolutionItem
+ * @module createItemTemplate
  */
 
 import * as common from "@esri/solution-common";
@@ -201,7 +201,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
  * @param itemId AGO id string
  * @param authentication Authentication for requesting information from AGO about items to be included in solution item
  * @param existingTemplates A collection of AGO item templates that can be referenced by newly-created templates
- * @return A promise that will resolve with the created template items
+ * @return A promise that will resolve when creation is done
  * @protected
  */
 export function createItemTemplate(
@@ -210,15 +210,17 @@ export function createItemTemplate(
   templateDictionary: any,
   authentication: common.UserSession,
   existingTemplates: common.IItemTemplate[],
-  progressTickCallback?: common.ISolutionProgressTickCallback
-): Promise<boolean> {
+  itemProgressCallback: common.IItemProgressCallback
+): Promise<void> {
   return new Promise(resolve => {
     // Check if item and its dependents are already in list or are queued
     if (common.findTemplateInList(existingTemplates, itemId)) {
-      resolve(true);
+      resolve();
     } else {
       // Add the id as a placeholder to show that it is being fetched
       existingTemplates.push(common.createPlaceholderTemplate(itemId));
+
+      itemProgressCallback(itemId, common.EItemProgressStatus.Started, 0);
 
       // Fetch the item
       common
@@ -227,7 +229,7 @@ export function createItemTemplate(
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
           // between items and groups (the base info for a group doesn't include a type property)
-          _replaceTemplate(
+          common.replaceTemplate(
             existingTemplates,
             itemId,
             common.createPlaceholderTemplate(itemId, "Group")
@@ -267,34 +269,99 @@ export function createItemTemplate(
               ...itemInfo
             } as common.IItemGeneralized;
 
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                itemId,
+                common.EItemProgressStatus.Created,
+                1
+              )
+            ) {
+              itemProgressCallback(
+                itemId,
+                common.EItemProgressStatus.Cancelled,
+                1
+              );
+              resolve(common.fail("Cancelled"));
+              return;
+            }
+
             // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
             if (
               itemInfo.tags &&
               itemInfo.tags.find(tag => tag === "deploy.thumbnail")
             ) {
-              // Set the thumbnail
+              // Resolve the thumbnail setting whether or not there's an error
               common.getItemDataBlob(itemId, authentication).then(
                 blob =>
                   common
                     .addThumbnailFromBlob(blob, solutionItemId, authentication)
                     .then(
-                      () => resolve(true), // solution thumbnail set
-                      () => resolve(true) // unable to add thumbnail to solution
+                      () => {
+                        itemProgressCallback(
+                          itemId,
+                          common.EItemProgressStatus.Ignored,
+                          1
+                        );
+                        resolve();
+                      }, // solution thumbnail set
+                      () => {
+                        itemProgressCallback(
+                          itemId,
+                          common.EItemProgressStatus.Ignored,
+                          1
+                        );
+                        resolve();
+                      } // unable to add thumbnail to solution
                     ),
-                () => resolve(true) // unable to fetch thumbnail
+                () => {
+                  itemProgressCallback(
+                    itemId,
+                    common.EItemProgressStatus.Ignored,
+                    1
+                  );
+                  resolve();
+                } // unable to fetch thumbnail
               );
             } else {
-              const itemHandler = moduleMap[itemType];
+              let itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
-                  _removeTemplate(existingTemplates, itemId!);
+                  itemProgressCallback(
+                    itemId,
+                    common.EItemProgressStatus.Ignored,
+                    1
+                  );
+                  resolve();
                 } else {
-                  placeholder!.properties["partial"] = true;
-                  placeholder!.properties["unimplemented"] = true;
-                  _replaceTemplate(existingTemplates, itemId, placeholder!);
+                  itemProgressCallback(
+                    itemId,
+                    common.EItemProgressStatus.Failed,
+                    1
+                  );
+                  placeholder!.properties["failed"] = true;
+                  common.replaceTemplate(
+                    existingTemplates,
+                    itemId,
+                    placeholder!
+                  );
+                  resolve(
+                    common.fail(
+                      "The type of AGO item " +
+                        itemId +
+                        " ('" +
+                        itemType +
+                        "') is not supported at this time"
+                    )
+                  );
                 }
-                resolve(true);
               } else {
+                // Handle original Story Maps with next-gen Story Maps
+                if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
+                  itemHandler = storyMap;
+                }
+
+                // Delegate the creation of the item to the handler
                 itemHandler
                   .convertItemToTemplate(
                     solutionItemId,
@@ -304,7 +371,7 @@ export function createItemTemplate(
                   .then(
                     itemTemplate => {
                       // Set the value keyed by the id to the created template, replacing the placeholder template
-                      _replaceTemplate(
+                      common.replaceTemplate(
                         existingTemplates,
                         itemTemplate.itemId,
                         itemTemplate
@@ -321,11 +388,16 @@ export function createItemTemplate(
                           itemTemplate.resources = resources;
                           // Trace item dependencies
                           if (itemTemplate.dependencies.length === 0) {
-                            resolve(true);
+                            itemProgressCallback(
+                              itemId,
+                              common.EItemProgressStatus.Finished,
+                              1
+                            );
+                            resolve();
                           } else {
                             // Get its dependencies, asking each to get its dependents via
                             // recursive calls to this function
-                            const dependentDfds: Array<Promise<boolean>> = [];
+                            const dependentDfds: Array<Promise<void>> = [];
                             itemTemplate.dependencies.forEach(dependentId => {
                               if (
                                 !common.findTemplateInList(
@@ -339,26 +411,38 @@ export function createItemTemplate(
                                     dependentId,
                                     templateDictionary,
                                     authentication,
-                                    existingTemplates
+                                    existingTemplates,
+                                    itemProgressCallback
                                   )
                                 );
                               }
                             });
                             // tslint:disable-next-line: no-floating-promises
                             Promise.all(dependentDfds).then(() => {
-                              if (progressTickCallback) {
-                                progressTickCallback();
-                              }
-                              resolve(true);
+                              // Templatization of item and its dependencies done
+                              itemProgressCallback(
+                                itemId,
+                                common.EItemProgressStatus.Finished,
+                                1
+                              );
+                              resolve();
                             });
                           }
                         });
                     },
                     error => {
-                      placeholder!.properties["partial"] = true;
                       placeholder!.properties["error"] = JSON.stringify(error);
-                      _replaceTemplate(existingTemplates, itemId, placeholder!);
-                      resolve(true);
+                      common.replaceTemplate(
+                        existingTemplates,
+                        itemId,
+                        placeholder!
+                      );
+                      itemProgressCallback(
+                        itemId,
+                        common.EItemProgressStatus.Failed,
+                        1
+                      );
+                      resolve();
                     }
                   );
               }
@@ -366,17 +450,9 @@ export function createItemTemplate(
           },
           // Id not found or item is not accessible
           () => {
-            _replaceTemplate(
-              existingTemplates,
-              itemId,
-              common.createPlaceholderTemplate(itemId, "unknown")
-            );
-            console.log(
-              "!----- " +
-                itemId +
-                " ----- FAILED Id not found or item is not accessible -----"
-            ); // ???
-            resolve(true);
+            itemProgressCallback(itemId, common.EItemProgressStatus.Failed, 1);
+            itemProgressCallback(itemId, common.EItemProgressStatus.Failed, 1);
+            resolve();
           }
         );
     }
@@ -592,43 +668,4 @@ export function _getWebMapFSDependencies(
     }
   });
   return webMapFSDependencies;
-}
-
-/**
- * Removes a template entry in a list of templates.
- *
- * @param templates A collection of AGO item templates
- * @param id Id of item in templates list to find; if not found, no replacement is () => done()
- * @protected
- */
-export function _removeTemplate(
-  templates: common.IItemTemplate[],
-  id: string
-): void {
-  const i = common.findTemplateIndexInList(templates, id);
-  if (i >= 0) {
-    templates.splice(i, 1);
-  }
-}
-
-/**
- * Replaces a template entry in a list of templates.
- *
- * @param templates A collection of AGO item templates
- * @param id Id of item in templates list to find; if not found, no replacement is () => done()
- * @param template Replacement template
- * @return True if replacement was made
- * @protected
- */
-export function _replaceTemplate(
-  templates: common.IItemTemplate[],
-  id: string,
-  template: common.IItemTemplate
-): boolean {
-  const i = common.findTemplateIndexInList(templates, id);
-  if (i >= 0) {
-    templates[i] = template;
-    return true;
-  }
-  return false;
 }

@@ -20,32 +20,11 @@
 
 import * as interfaces from "../src/interfaces";
 import * as templatization from "../src/templatization";
-import * as utils from "../test/mocks/utils";
+import * as utils from "./mocks/utils";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `templatization`: common functions involving the adlib library", () => {
-  describe("createInitializedGroupTemplate", () => {
-    xit("createInitializedGroupTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("createInitializedItemTemplate", () => {
-    xit("createInitializedItemTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("createPlaceholderTemplate", () => {
-    xit("createPlaceholderTemplate", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
   describe("findTemplateIndexInList", () => {
     it("should handle an empty list", () => {
       const templates: interfaces.IItemTemplate[] = [];
@@ -372,20 +351,6 @@ describe("Module `templatization`: common functions involving the adlib library"
       const templatizedObj: any = templatization.templatizeIds(obj);
 
       expect(templatizedObj).toEqual(expectedTemplatizedObj);
-    });
-  });
-
-  describe("createId", () => {
-    xit("createId", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
-    });
-  });
-
-  describe("_getRandomNumberInRange", () => {
-    xit("_getRandomNumberInRange", done => {
-      console.warn("========== TODO ==========");
-      done.fail();
     });
   });
 });

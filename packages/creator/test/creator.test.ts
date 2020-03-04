@@ -19,6 +19,7 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as createItemTemplate from "../src/createItemTemplate";
 import * as creator from "../src/creator";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
@@ -27,18 +28,7 @@ import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
 // Set up a UserSession to use in all these tests
-const MOCK_USER_SESSION = new common.UserSession({
-  clientId: "clientId",
-  redirectUri: "https://example-app.com/redirect-uri",
-  token: "fake-token",
-  tokenExpires: utils.TOMORROW,
-  refreshToken: "refreshToken",
-  refreshTokenExpires: utils.TOMORROW,
-  refreshTokenTTL: 1440,
-  username: "casey",
-  password: "123456",
-  portal: "https://myorg.maps.arcgis.com/sharing/rest"
-});
+const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 const noDataResponse: any = {};
 const noResourcesResponse: any = {
@@ -66,115 +56,46 @@ afterEach(() => {
 describe("Module `creator`", () => {
   // Blobs are only available in the browser
   if (typeof window !== "undefined") {
-    describe("createSolutionFromGroupId", () => {
-      it("createSolutionFromGroupId fails to get group", done => {
+    describe("createSolution", () => {
+      it("createSolution fails to get group or item", done => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
 
-        fetchMock
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.get400Failure()
-          );
-        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
-          () => done.fail(),
-          response => {
-            expect(response.name).toEqual("ArcGISRequestError");
-            expect(response.message).toEqual(
-              "CONT_0001: Item does not exist or is inaccessible."
-            );
-            done();
-          }
-        );
-      });
-
-      it("createSolutionFromGroupId fails to get item", done => {
-        const solutionGroupId: string = "grp1234567890";
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const expectedSolutionId = "sln1234567890";
-        const expectedImage = mockItems.getAnImageResponse();
+        const options: common.ICreateSolutionOptions = {
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+        };
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: "sln1234567890", folder: null })
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-            mockItems.getAGOLItem("Group")
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList(1, "Web Map")
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/grp1234567890?f=json&token=fake-token",
             mockItems.get400Failure()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
-            expectedImage
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ itemId: "sln1234567890" })
           )
           .post(
-            // for missing item's placeholder
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: "sln1234567890" })
           );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
-          response => {
-            expect(response).toEqual(expectedSolutionId);
-            done();
-          },
-          () => done.fail()
-        );
-      });
-
-      it("createSolutionFromGroupId fails to update solution item", done => {
-        const solutionGroupId: string = "grp1234567890";
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const expectedSolutionId = "sln1234567890";
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
-            mockItems.getAGOLItem("Group")
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
-            mockItems.getAGOLGroupContentsList(1, "Web Map")
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/map12345678900?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
-            mockItems.getAnImageResponse()
-          )
-          .post(
-            // for missing item's placeholder
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: false, id: expectedSolutionId }
-          );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+        creator.createSolution(solutionGroupId, authentication, options).then(
           () => done.fail(),
           response => {
             expect(response.success).toBeFalsy();
@@ -183,7 +104,118 @@ describe("Module `creator`", () => {
         );
       });
 
-      it("createSolutionFromGroupId with default name", done => {
+      it("createSolution fails to get item in group", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Web Map")
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/map12345678900?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: expectedSolutionId })
+          )
+          .post(
+            // for missing item's placeholder
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolution(solutionGroupId, authentication).then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
+      });
+
+      it("createSolution fails to update solution item", done => {
+        const solutionGroupId: string = "grp1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const expectedSolutionId = "sln1234567890";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem("Group")
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.getAGOLGroupContentsList(1, "Web Map")
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/map12345678900?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            { success: true, itemId: expectedSolutionId }
+          )
+          .post(
+            // for missing item's placeholder
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolution(solutionGroupId, authentication).then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
+      });
+
+      it("createSolution with default name", done => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -192,67 +224,80 @@ describe("Module `creator`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(2, "Web Map")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 1)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             expectedImage
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
@@ -264,12 +309,12 @@ describe("Module `creator`", () => {
           relatedItems: []
         });
 
-        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+        creator.createSolution(solutionGroupId, authentication).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
 
             const addSolnCall = fetchMock.calls(
-              "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
               (addSolnCall[0][1]["body"] as string).indexOf(
@@ -284,7 +329,7 @@ describe("Module `creator`", () => {
         );
       });
 
-      it("createSolutionFromGroupId with specified name", done => {
+      it("createSolution with specified name", done => {
         const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -295,67 +340,80 @@ describe("Module `creator`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(2, "Web Map")
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678900/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678900/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900/resources",
             noResourcesResponse
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901?f=json&token=fake-token",
             mockItems.getAGOLItemWithId("Web Map", 1)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
             mockItems.getAnImageResponse()
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map12345678901/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             expectedImage
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("map12345678900", {
@@ -377,35 +435,34 @@ describe("Module `creator`", () => {
             wma1234567890: {
               itemId: "wma1234567890",
               url:
-                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/wma1234567890",
+                utils.PORTAL_SUBSET.restUrl +
+                "/content/users/casey/items/wma1234567890",
               name: "a map"
             }
           },
           // tslint:disable-next-line: no-empty
           progressCallback: () => {}
         };
-        creator
-          .createSolutionFromGroupId(solutionGroupId, authentication, options)
-          .then(
-            solutionId => {
-              expect(solutionId).toEqual(expectedSolutionId);
+        creator.createSolution(solutionGroupId, authentication, options).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-              const addSolnCall = fetchMock.calls(
-                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
-              );
-              expect(
-                (addSolnCall[0][1]["body"] as string).indexOf(
-                  "title=" + solutionName
-                ) > 0
-              ).toBeTruthy();
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as string).indexOf(
+                "title=" + solutionName
+              ) > 0
+            ).toBeTruthy();
 
-              done();
-            },
-            () => done.fail()
-          );
+            done();
+          },
+          () => done.fail()
+        );
       });
 
-      it("createSolutionFromGroupId with empty group with defaults without progress callback", done => {
+      it("createSolution with empty group with defaults without progress callback", done => {
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
 
@@ -414,40 +471,46 @@ describe("Module `creator`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             expectedImage
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
 
-        creator.createSolutionFromGroupId(solutionGroupId, authentication).then(
+        creator.createSolution(solutionGroupId, authentication).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
 
             const addSolnCall = fetchMock.calls(
-              "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
             );
             expect(
               (addSolnCall[0][1]["body"] as string).indexOf(
@@ -462,7 +525,7 @@ describe("Module `creator`", () => {
         );
       });
 
-      it("createSolutionFromGroupId with empty group without progress callback", done => {
+      it("createSolution with empty group without progress callback", done => {
         const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -473,31 +536,37 @@ describe("Module `creator`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             expectedImage
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
 
@@ -505,28 +574,26 @@ describe("Module `creator`", () => {
           title: solutionName,
           templatizeFields: true
         };
-        creator
-          .createSolutionFromGroupId(solutionGroupId, authentication, options)
-          .then(
-            solutionId => {
-              expect(solutionId).toEqual(expectedSolutionId);
+        creator.createSolution(solutionGroupId, authentication, options).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-              const addSolnCall = fetchMock.calls(
-                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
-              );
-              expect(
-                (addSolnCall[0][1]["body"] as string).indexOf(
-                  "title=" + solutionName
-                ) > 0
-              ).toBeTruthy();
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as string).indexOf(
+                "title=" + solutionName
+              ) > 0
+            ).toBeTruthy();
 
-              done();
-            },
-            () => done.fail()
-          );
+            done();
+          },
+          () => done.fail()
+        );
       });
 
-      it("createSolutionFromGroupId with empty group and progress callback", done => {
+      it("createSolution with empty group and progress callback", done => {
         const solutionName: string = "scratch_" + common.getUTCTimestamp();
         const solutionGroupId: string = "grp1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
@@ -537,31 +604,37 @@ describe("Module `creator`", () => {
 
         fetchMock
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890?f=json&token=fake-token",
             mockItems.getAGOLItem("Group")
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/grp1234567890?f=json&start=1&num=100&token=fake-token",
             mockItems.getAGOLGroupContentsList(0)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map12345678901/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678901/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
             expectedImage
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           );
 
@@ -571,130 +644,144 @@ describe("Module `creator`", () => {
           // tslint:disable-next-line: no-empty
           progressCallback: () => {}
         };
-        creator
-          .createSolutionFromGroupId(solutionGroupId, authentication, options)
-          .then(
-            solutionId => {
-              expect(solutionId).toEqual(expectedSolutionId);
+        creator.createSolution(solutionGroupId, authentication, options).then(
+          solutionId => {
+            expect(solutionId).toEqual(expectedSolutionId);
 
-              const addSolnCall = fetchMock.calls(
-                "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem"
-              );
-              expect(
-                (addSolnCall[0][1]["body"] as string).indexOf(
-                  "title=" + solutionName
-                ) > 0
-              ).toBeTruthy();
+            const addSolnCall = fetchMock.calls(
+              utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem"
+            );
+            expect(
+              (addSolnCall[0][1]["body"] as string).indexOf(
+                "title=" + solutionName
+              ) > 0
+            ).toBeTruthy();
 
-              done();
-            },
-            () => done.fail()
-          );
-      });
-    });
-
-    describe("createSolutionFromItemIds", () => {
-      it("createSolutionFromItemIds fails to create solution item", done => {
-        const itemIds: string[] = [];
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
-
-        fetchMock.post(url, { success: false });
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionFromItemIds(itemIds, authentication).then(
-          () => done.fail(),
-          error => {
-            expect(error.success).toBeFalsy();
-            done();
-          }
-        );
-      });
-
-      it("createSolutionFromItemIds fails to get item", done => {
-        const itemIds: string[] = ["itm1234567890"];
-        const authentication: common.UserSession = MOCK_USER_SESSION;
-        const expectedSolutionId = "sln1234567890";
-        const expectedImage = mockItems.getAnImageResponse();
-
-        fetchMock
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/itm1234567890?f=json&token=fake-token",
-            mockItems.get400Failure()
-          )
-          .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/community/groups/grp1234567890/info/ROWPermitManager.png",
-            expectedImage
-          )
-          .post(
-            // for missing item's placeholder
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
-          );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionFromItemIds(itemIds, authentication).then(
-          response => {
-            expect(response).toEqual(expectedSolutionId);
             done();
           },
           () => done.fail()
         );
       });
 
-      it("createSolutionFromItemIds fails to add items to solution item", done => {
-        const itemIds: string[] = ["itm1234567890"];
+      it("createSolution fails to get item or group", done => {
+        const itemIds: string = "itm1234567890";
         const authentication: common.UserSession = MOCK_USER_SESSION;
-        const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update";
+        const expectedSolutionId = "sln1234567890";
+        const expectedImage = mockItems.getAnImageResponse();
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/itm1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+            expectedImage
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            { success: true, itemId: expectedSolutionId }
+          )
+          .post(
+            // for missing item's placeholder
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        creator.createSolution(itemIds, authentication).then(
+          () => done.fail(),
+          response => {
+            done();
+          }
+        );
+      });
+
+      it("createSolution fails to add items to solution item", done => {
+        const itemIds: string = "itm1234567890";
+        const authentication: common.UserSession = MOCK_USER_SESSION;
         const expectedSolutionId = "sln1234567890";
         const expectedItem = mockItems.getAGOLItem("Web Map");
 
         fetchMock
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
           .get(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/itm1234567890?f=json&token=fake-token",
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/itm1234567890?f=json&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/groups/itm1234567890?f=json&start=1&num=100&token=fake-token",
+            mockItems.get400Failure()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890?f=json&token=fake-token",
             JSON.stringify(expectedItem)
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             noDataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/resources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
             noResourcesResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
             noMetadataResponse
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/addResources",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
             { success: true, id: expectedSolutionId }
           )
-          .post(url, { success: false });
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getFailureResponse({ id: "sln1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            { success: true, itemId: expectedSolutionId }
+          );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
           total: 0,
           relatedItems: []
         });
 
         spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionFromItemIds(itemIds, authentication).then(
+        creator.createSolution(itemIds, authentication).then(
           () => done.fail(),
           error => {
             expect(error.success).toBeFalsy();
@@ -705,16 +792,142 @@ describe("Module `creator`", () => {
     });
   }
 
-  describe("createSolutionItem", () => {
-    it("createSolutionItem with defaults", done => {
+  describe("_addContentToSolution", () => {
+    it("_addContentToSolution item progress callback with new item", done => {
+      const solutionId = "sln1234567890";
+      const itemIds = ["map1234567890"];
+
+      let numSpyCalls = 0;
+      spyOn(createItemTemplate, "createItemTemplate").and.callFake(
+        (
+          solutionItemId: string,
+          itemId: string,
+          templateDictionary: any,
+          authentication: common.UserSession,
+          existingTemplates: common.IItemTemplate[],
+          itemProgressCallback: common.IItemProgressCallback
+        ) => {
+          if (++numSpyCalls === 1) {
+            itemProgressCallback(
+              "wma1234567890",
+              common.EItemProgressStatus.Started,
+              0
+            );
+          }
+          return Promise.resolve();
+        }
+      );
+
+      // tslint:disable-next-line: no-floating-promises
+      creator
+        ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
+        .then(() => {
+          expect(itemIds).toEqual(["map1234567890", "wma1234567890"]);
+          done();
+        });
+    });
+
+    it("_addContentToSolution item progress callback with ignored item", done => {
+      const solutionId = "sln1234567890";
+      const itemIds = ["map1234567890", "wma1234567890"];
+
+      let numSpyCalls = 0;
+      spyOn(createItemTemplate, "createItemTemplate").and.callFake(
+        (
+          solutionItemId: string,
+          itemId: string,
+          templateDictionary: any,
+          authentication: common.UserSession,
+          existingTemplates: common.IItemTemplate[],
+          itemProgressCallback: common.IItemProgressCallback
+        ) => {
+          if (++numSpyCalls === 1) {
+            itemProgressCallback(
+              "wma1234567890",
+              common.EItemProgressStatus.Ignored,
+              0
+            );
+          }
+          return Promise.resolve();
+        }
+      );
+
+      // tslint:disable-next-line: no-floating-promises
+      creator
+        ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
+        .then(() => done());
+    });
+  });
+
+  describe("_createSolutionFromItemIds", () => {
+    it("handles failure to create the solution", done => {
+      const solutionCreationError = "Cannot create solution";
+      const itemIds = ["map1234567890", "wma1234567890"];
+
+      spyOn(common, "createItemWithData").and.returnValue(
+        Promise.reject(solutionCreationError)
+      );
+
+      creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
+        () => done.fail(),
+        response => {
+          expect(response).toEqual(solutionCreationError);
+          done();
+        }
+      );
+    });
+
+    it("handles failure to delete the solution if items can't be added to it", done => {
+      const solutionId = "sln1234567890";
+      const itemIds = ["wma1234567890"];
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: solutionId, folder: null })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567890?f=json&token=fake-token",
+          mockItems.get400Failure()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/wma1234567890?f=json&token=fake-token",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/update",
+          utils.getSuccessResponse({ id: solutionId })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/sln1234567890/delete",
+          utils.getFailureResponse({ itemId: solutionId })
+        );
+
+      creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
+        () => done.fail(),
+        response => {
+          done();
+        }
+      );
+    });
+  });
+
+  describe("_createSolutionItem", () => {
+    it("creates a solution item with defaults", done => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
       const expectedSolutionId = "sln1234567890";
 
-      fetchMock.post(url, { success: true, id: expectedSolutionId });
+      fetchMock.post(
+        url,
+        utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+      );
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionItem(authentication).then(
+      creator._createSolutionItem(authentication).then(
         solutionId => {
           expect(solutionId).toEqual(expectedSolutionId);
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
@@ -729,35 +942,40 @@ describe("Module `creator`", () => {
         () => done.fail()
       );
     });
+
     if (typeof window !== "undefined") {
-      it("createSolutionItem with options", done => {
+      it("creates a solution item with options", done => {
         const options: common.ICreateSolutionOptions = {
           title: "Solution Name",
           snippet: "Solution's snippet",
           description: "Solution's description",
           tags: ["Test", "a tag"],
-          thumbnailUrl: "https://myorg.maps.arcgis.com/logo.png",
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/logo.png",
           templatizeFields: true,
           additionalTypeKeywords: ["Esri", "Government Solutions"]
         };
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const url =
-          "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
         const expectedSolutionId = "sln1234567890";
 
         const blob = new Blob(["fake-blob"], { type: "text/plain" });
 
         fetchMock
-          .post(url, { success: true, id: expectedSolutionId })
-          .post("https://myorg.maps.arcgis.com/logo.png", blob, {
+          .post(
+            url,
+            utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
+          )
+          .post(utils.PORTAL_SUBSET.portalUrl + "/logo.png", blob, {
             sendAsJson: false
           })
           .post(
-            "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/items/sln1234567890/update",
-            { success: true, id: expectedSolutionId }
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/update",
+            utils.getSuccessResponse({ id: expectedSolutionId })
           );
         spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        creator.createSolutionItem(authentication, options).then(
+        creator._createSolutionItem(authentication, options).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
             const fetchOptions: fetchMock.MockOptions = fetchMock.lastOptions(
@@ -788,16 +1006,147 @@ describe("Module `creator`", () => {
           () => done.fail()
         );
       });
+
+      it("handles failure to update the solution item with its icon; success property", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: solutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to update the solution item with its icon; reject", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, mockItems.get400Failure())
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: solutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to delete solution after failing to update the solution item with its icon; success property", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getFailureResponse()
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to delete solution after failing to update the solution item with its icon; reject", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, mockItems.get400Failure())
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getFailureResponse()
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
     }
 
-    it("createSolutionItem fails", done => {
+    it("handles failure to create the solution item", done => {
       const authentication: common.UserSession = MOCK_USER_SESSION;
-      const url =
-        "https://myorg.maps.arcgis.com/sharing/rest/content/users/casey/addItem";
+      const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
 
-      fetchMock.post(url, { success: false });
+      fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      creator.createSolutionItem(authentication).then(
+      creator._createSolutionItem(authentication).then(
         () => done.fail(),
         error => {
           expect(error.success).toBeFalsy();
