@@ -90,7 +90,7 @@ export type IItemProgressCallback = (
   itemId: string,
   status: EItemProgressStatus,
   costUsed: number
-) => void; // FUTURE replace with ) => boolean;
+) => boolean;
 
 export type ISolutionProgressCallback = (percentDone: number) => void;
 

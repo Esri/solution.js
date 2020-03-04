@@ -27,8 +27,7 @@ import * as common from "@esri/solution-common";
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
-  isGroup?: boolean
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Init template
@@ -73,40 +72,65 @@ export function createItemFromTemplate(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      itemProgressCallback(
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    // Interrupt process if progress callback returns `false`
+    if (
+      !itemProgressCallback(
         template.itemId,
         common.EItemProgressStatus.Started,
         0
+      )
+    ) {
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Ignored,
+        0
       );
+      resolve(_generateEmptyCreationResponse(template.type));
+      return;
+    }
 
-      // Replace the templatized symbols in a copy of the template
-      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-      newItemTemplate = common.replaceInTemplate(
-        newItemTemplate,
-        templateDictionary
-      );
+    // Replace the templatized symbols in a copy of the template
+    let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+    newItemTemplate = common.replaceInTemplate(
+      newItemTemplate,
+      templateDictionary
+    );
 
-      // handle group
-      const title: string = common.getUniqueTitle(
-        newItemTemplate.item.title || "",
-        templateDictionary,
-        "user.groups"
-      );
+    // handle group
+    const title: string = common.getUniqueTitle(
+      newItemTemplate.item.title || "",
+      templateDictionary,
+      "user.groups"
+    );
 
-      // Set the item title with a valid name for the ORG
-      newItemTemplate.item.title = title;
-      newItemTemplate.item.access = "private";
-      common.createGroup(newItemTemplate.item, destinationAuthentication).then(
-        createResponse => {
-          itemProgressCallback(
-            template.itemId,
-            common.EItemProgressStatus.Created,
-            template.estimatedDeploymentCostFactor / 2
-          );
-
-          if (createResponse.success) {
+    // Set the item title with a valid name for the ORG
+    newItemTemplate.item.title = title;
+    newItemTemplate.item.access = "private";
+    common.createGroup(newItemTemplate.item, destinationAuthentication).then(
+      createResponse => {
+        if (createResponse.success) {
+          // Interrupt process if progress callback returns `false`
+          if (
+            !itemProgressCallback(
+              createResponse.group.id,
+              common.EItemProgressStatus.Created,
+              template.estimatedDeploymentCostFactor / 2
+            )
+          ) {
+            itemProgressCallback(
+              createResponse.group.id,
+              common.EItemProgressStatus.Cancelled,
+              0
+            );
+            // tslint:disable-next-line: no-floating-promises
+            common
+              .removeGroup(createResponse.group.id, destinationAuthentication)
+              .then(
+                () => resolve(_generateEmptyCreationResponse(template.type)),
+                () => resolve(_generateEmptyCreationResponse(template.type))
+              );
+          } else {
             newItemTemplate.itemId = createResponse.group.id;
             templateDictionary[template.itemId] = {
               itemId: createResponse.group.id
@@ -122,26 +146,63 @@ export function createItemFromTemplate(
             templateDictionary[template.itemId].itemId =
               createResponse.group.id;
 
-            resolve({
-              id: createResponse.group.id,
-              type: newItemTemplate.type,
-              postProcess: false
-            });
-          } else {
-            reject(common.fail());
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                createResponse.group.id,
+                common.EItemProgressStatus.Finished,
+                template.estimatedDeploymentCostFactor / 2
+              )
+            ) {
+              itemProgressCallback(
+                createResponse.group.id,
+                common.EItemProgressStatus.Cancelled,
+                0
+              );
+              // tslint:disable-next-line: no-floating-promises
+              common
+                .removeGroup(createResponse.group.id, destinationAuthentication)
+                .then(
+                  () => resolve(_generateEmptyCreationResponse(template.type)),
+                  () => resolve(_generateEmptyCreationResponse(template.type))
+                );
+            } else {
+              resolve({
+                id: createResponse.group.id,
+                type: newItemTemplate.type,
+                postProcess: false
+              });
+            }
           }
-        },
-        e => reject(common.fail(e))
-      );
-    }
-  );
+        } else {
+          itemProgressCallback(
+            template.itemId,
+            common.EItemProgressStatus.Failed,
+            0
+          );
+          resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+        }
+      },
+      () => {
+        itemProgressCallback(
+          template.itemId,
+          common.EItemProgressStatus.Failed,
+          0
+        );
+        resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
+      }
+    );
+  });
 }
 
-export function postProcessDependencies(
-  templates: common.IItemTemplate[],
-  clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
-  authentication: common.UserSession,
-  templateDictionary: any
-): Promise<any> {
-  return Promise.resolve();
+// ------------------------------------------------------------------------------------------------------------------ //
+
+export function _generateEmptyCreationResponse(
+  templateType: string
+): common.ICreateItemFromTemplateResponse {
+  return {
+    id: "",
+    type: templateType,
+    postProcess: false
+  };
 }

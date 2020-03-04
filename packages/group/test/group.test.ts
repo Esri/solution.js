@@ -707,8 +707,9 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
-          done.fail();
-        }, done);
+          expect(response).toEqual(templates.getFailedItem("Group"));
+          done();
+        }, done.fail);
     });
 
     it("should handle error on create group", done => {
@@ -735,13 +736,151 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(() => {
-          done.fail();
-        }, done);
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem("Group"));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation before deployment of group starts", done => {
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      const templateDictionary: any = {};
+
+      group
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(1)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation after deployed group is created", done => {
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: itemTemplate.itemId }
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890/delete",
+          utils.getSuccessResponse({ groupId: itemTemplate.itemId })
+        );
+
+      group
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(2)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation failure after deployed group is created", done => {
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: itemTemplate.itemId }
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId })
+        );
+
+      group
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(2)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation after deployed group is finished", done => {
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: itemTemplate.itemId }
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890/delete",
+          utils.getSuccessResponse({ groupId: itemTemplate.itemId })
+        );
+
+      group
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(3)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation after deployed group is finished", done => {
+      const itemTemplate: common.IItemTemplate = templates.getGroupTemplatePart();
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: itemTemplate.itemId }
+        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890/delete",
+          utils.getFailureResponse({ groupId: itemTemplate.itemId })
+        );
+
+      group
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(3)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
     });
   });
 });
