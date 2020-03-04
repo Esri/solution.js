@@ -390,6 +390,7 @@ export function getGroupTemplatePart(dependencies = [] as string[]): any {
       collaborationInfo: {},
       type: "Group"
     },
+    groups: [],
     dependencies: dependencies,
     estimatedDeploymentCostFactor: 2
   };
