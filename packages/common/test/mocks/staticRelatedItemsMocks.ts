@@ -26,6 +26,7 @@
  */
 
 import * as fetchMock from "fetch-mock";
+import * as utils from "./utils";
 
 export function fetchMockRelatedItems(
   itemId: string,
@@ -70,7 +71,8 @@ export function fetchMockRelatedItems(
   // Set up fetches
   relationshipTypes.forEach(relationshipType => {
     fetchMock.get(
-      "https://myorg.maps.arcgis.com/sharing/rest/content/items/" +
+      utils.PORTAL_SUBSET.restUrl +
+        "/content/items/" +
         itemId +
         "/relatedItems?f=json&direction=forward&relationshipType=" +
         relationshipType +

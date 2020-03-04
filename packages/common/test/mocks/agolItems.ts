@@ -500,7 +500,8 @@ export function getAGOLItemData(type?: string): any {
               layerType: "VectorTileLayer",
               title: "World Topographic Map",
               styleUrl:
-                "https://www.arcgis.com/sharing/rest/content/items/" +
+                utils.PORTAL_SUBSET.restUrl +
+                "/content/items/" +
                 "7dc6cea0b1764a1f9af2e679f642f0f5/resources/styles/root.json",
               itemId: "7dc6cea0b1764a1f9af2e679f642f0f5"
             }

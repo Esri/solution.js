@@ -376,7 +376,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, { success: true });
@@ -418,7 +418,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
