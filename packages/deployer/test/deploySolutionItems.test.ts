@@ -59,14 +59,13 @@ describe("Module `deploySolutionItems`", () => {
           {},
           MOCK_USER_SESSION,
           false,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(
-          () => {
+          () => done.fail(),
+          error => {
+            expect(error).toEqual(common.failWithIds([""]));
             done();
-          },
-          () => {
-            done.fail();
           }
         );
     });
@@ -147,7 +146,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -226,7 +225,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -315,7 +314,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -404,7 +403,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -502,7 +501,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -557,7 +556,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -623,7 +622,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -694,7 +693,7 @@ describe("Module `deploySolutionItems`", () => {
           templateDictionary,
           MOCK_USER_SESSION,
           true,
-          utils.ITEM_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK
         )
         .then(done.fail, done);
     });
@@ -709,6 +708,7 @@ describe("Module `deploySolutionItems`", () => {
       const resourceFilePaths: common.IDeployFileCopyPath[] = [];
       const templateDictionary: any = {};
 
+      // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -718,14 +718,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then((response: common.ICreateItemFromTemplateResponse) => {
-          expect(response).toEqual({
-            id: "",
-            type: itemTemplate.type,
-            postProcess: false
-          });
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
-        }, done.fail);
+        });
     });
 
     it("handles Web Mapping Applications that are not Storymaps", done => {
@@ -750,6 +746,7 @@ describe("Module `deploySolutionItems`", () => {
           { success: true, id: newItemID }
         );
 
+      // tslint:disable-next-line: no-floating-promises
       deploySolution
         ._createItemFromTemplateWhenReady(
           itemTemplate,
@@ -766,7 +763,7 @@ describe("Module `deploySolutionItems`", () => {
             postProcess: true
           });
           done();
-        }, done.fail);
+        });
     });
 
     if (typeof window !== "undefined") {
@@ -792,6 +789,7 @@ describe("Module `deploySolutionItems`", () => {
             { success: true, id: newItemID }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -808,7 +806,7 @@ describe("Module `deploySolutionItems`", () => {
               postProcess: true
             });
             done();
-          }, done.fail);
+          });
       });
 
       it("fails to deploy file data to the item", done => {
@@ -857,6 +855,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO);
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -866,10 +865,12 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            () => done.fail(),
-            () => done()
-          );
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
 
       it("should handle error on copy group resources", done => {
@@ -913,6 +914,7 @@ describe("Module `deploySolutionItems`", () => {
           .post("http://someurl//rest/info", {})
           .post("http://someurl/", mockItems.get400Failure());
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -922,9 +924,12 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(() => {
-            done.fail();
-          }, done);
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
 
       it("can handle error on copyFilesFromStorage", done => {
@@ -959,6 +964,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .post(resourceFilePaths[0].url, 503);
 
+        // tslint:disable-next-line: no-floating-promises
         deploySolution
           ._createItemFromTemplateWhenReady(
             itemTemplate,
@@ -968,9 +974,12 @@ describe("Module `deploySolutionItems`", () => {
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then((response: common.ICreateItemFromTemplateResponse) => {
-            done.fail();
-          }, done);
+          .then(response => {
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
+            done();
+          });
       });
     }
   });

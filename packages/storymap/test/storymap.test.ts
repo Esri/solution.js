@@ -74,9 +74,7 @@ describe("Module `storymap`", () => {
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
-          () => {
-            return 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
           expect(response).toEqual({
@@ -95,59 +93,83 @@ describe("Module `storymap`", () => {
         "Web Mapping Application"
       );
       templateWMA.item.url = null;
-      expect(storymap.isAStoryMap(templateWMA)).toBeFalsy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeFalsy();
 
       const templateSTO: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
       );
-      templateSTO.item.url = null;
-      expect(storymap.isAStoryMap(templateSTO)).toBeTruthy(); // nascent Story Maps don't have a URL
+      templateSTO.item.url = null; // nascent Story Maps don't have a URL
+      expect(
+        storymap.isAStoryMap(templateSTO.type, templateSTO.item.url)
+      ).toBeTruthy();
     });
 
     it("is the StoryMap item type", () => {
       const template: common.IItemTemplate = mockTemplates.getItemTemplate(
         "StoryMap"
       );
-      expect(storymap.isAStoryMap(template)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(template.type, template.item.url)
+      ).toBeTruthy();
     });
 
     it("has a StoryMap type in its URL", () => {
       const templateWMA: common.IItemTemplate = mockTemplates.getItemTemplate(
         "Web Mapping Application"
       );
-      expect(storymap.isAStoryMap(templateWMA)).toBeFalsy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeFalsy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/Cascade/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/MapJournal/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/MapSeries/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/MapTour/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/Shortlist/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/StoryMap/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/StoryMapBasic/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
 
       templateWMA.item.url =
         "{{portalBaseUrl}}/apps/StorytellingSwipe/index.html?appid={{wma1234567890.itemId}}";
-      expect(storymap.isAStoryMap(templateWMA)).toBeTruthy();
+      expect(
+        storymap.isAStoryMap(templateWMA.type, templateWMA.item.url)
+      ).toBeTruthy();
     });
   });
 });
