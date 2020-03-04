@@ -1070,9 +1070,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
           done.fail();
@@ -1107,9 +1105,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(response => {
           done.fail();
@@ -1156,9 +1152,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            function() {
-              const a: any = "A";
-            }
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(r => {
             expect(templateDictionary).toEqual(expected);
@@ -1210,9 +1204,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
-            function() {
-              const a: any = "A";
-            }
+            utils.ITEM_PROGRESS_CALLBACK
           )
           .then(() => done.fail, done);
       });
@@ -1312,9 +1304,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          function() {
-            const a: any = "A";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
           expect(templateDictionary).toEqual(expected);
@@ -1458,9 +1448,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          () => {
-            return 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
           itemTemplate.itemId = newItemId;
@@ -1763,9 +1751,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           },
           MOCK_USER_SESSION,
-          function() {
-            const tick = 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(
           actual => {
@@ -1825,9 +1811,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
-          function() {
-            const tick = 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(
           actual => {

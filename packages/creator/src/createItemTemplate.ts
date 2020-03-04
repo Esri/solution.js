@@ -25,6 +25,7 @@ import * as featureLayer from "@esri/solution-feature-layer";
 import * as file from "@esri/solution-file";
 import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
+import * as storyMap from "@esri/solution-storymap";
 
 const UNSUPPORTED: common.moduleHandler = null;
 /**
@@ -269,7 +270,7 @@ export function createItemTemplate(
             } as common.IItemGeneralized;
 
             // Interrupt process if progress callback returns `false`
-            /* if (
+            if (
               !itemProgressCallback(
                 itemId,
                 common.EItemProgressStatus.Created,
@@ -283,7 +284,7 @@ export function createItemTemplate(
               );
               resolve(common.fail("Cancelled"));
               return;
-            } */
+            }
 
             // If this is the solution's thumbnail, set the thumbnail rather than include it in solution
             if (
@@ -323,7 +324,7 @@ export function createItemTemplate(
                 } // unable to fetch thumbnail
               );
             } else {
-              const itemHandler = moduleMap[itemType];
+              let itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
                   itemProgressCallback(
@@ -355,10 +356,10 @@ export function createItemTemplate(
                   );
                 }
               } else {
-                /* // Handle original Story Maps with next-gen Story Maps
+                // Handle original Story Maps with next-gen Story Maps
                 if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
                   itemHandler = storyMap;
-                } */
+                }
 
                 // Delegate the creation of the item to the handler
                 itemHandler

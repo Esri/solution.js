@@ -845,10 +845,12 @@ describe("Module `createItemTemplate`", () => {
               // }, done.fail);
               const actualTemplate: any = updateItemResources.calls.mostRecent()
                 .args[0];
-              expect(actualTemplate.item.tags).toEqual(expectedTags);
-              expect(actualTemplate.item.typeKeywords).toEqual(
-                expectedTypeKeywords
-              );
+              expect(actualTemplate.item.tags)
+                .withContext("test final tags")
+                .toEqual(expectedTags);
+              expect(actualTemplate.item.typeKeywords)
+                .withContext("test final typeKeywords")
+                .toEqual(expectedTypeKeywords);
               done();
             },
             () => done.fail()
