@@ -283,6 +283,11 @@ export function _deploySolutionFromTemplate(
             _purgeTemplateProperties(itemTemplate)
         );
 
+        solutionTemplateData.templates = _updateGroupReferences(
+          solutionTemplateData.templates,
+          templateDictionary
+        );
+
         // Update solution items data using template dictionary, and then update the
         // itemId & dependencies in each item template
         solutionTemplateBase.data = common.replaceInTemplate(
@@ -344,4 +349,29 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
+}
+
+export function _updateGroupReferences(
+  itemTemplates: any[],
+  templateDictionary: any
+): any[] {
+  const groupIds = itemTemplates.reduce(
+    (result: string[], t: common.IItemTemplate) => {
+      if (t.type === "Group") {
+        result.push(t.itemId);
+      }
+      return result;
+    },
+    []
+  );
+
+  Object.keys(templateDictionary).forEach(k => {
+    const newId: string = templateDictionary[k].itemId;
+    if (groupIds.indexOf(newId) > -1) {
+      itemTemplates.forEach(t => {
+        t.groups = t.groups.map((id: string) => (id === k ? newId : k));
+      });
+    }
+  });
+  return itemTemplates;
 }

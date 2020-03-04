@@ -1006,6 +1006,138 @@ describe("Module `creator`", () => {
           () => done.fail()
         );
       });
+
+      it("handles failure to update the solution item with its icon; success property", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: solutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to update the solution item with its icon; reject", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, mockItems.get400Failure())
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getSuccessResponse({ itemId: solutionId })
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to delete solution after failing to update the solution item with its icon; success property", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getFailureResponse()
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
+
+      it("handles failure to delete solution after failing to update the solution item with its icon; reject", done => {
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const solutionId = "sln1234567890";
+        const options: common.ICreateSolutionOptions = {
+          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+        };
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/sln1234567890/update";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: solutionId, folder: null })
+          )
+          .post(
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(updateUrl, mockItems.get400Failure())
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/delete",
+            utils.getFailureResponse()
+          );
+        spyOn(common, "createId").and.callFake(() => solutionId);
+        creator._createSolutionItem(authentication, options).then(
+          () => done.fail(),
+          () => done()
+        );
+      });
     }
 
     it("handles failure to create the solution item", done => {
@@ -1027,138 +1159,6 @@ describe("Module `creator`", () => {
           );
           done();
         }
-      );
-    });
-
-    it("handles failure to update the solution item with its icon; success property", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const solutionId = "sln1234567890";
-      const options: common.ICreateSolutionOptions = {
-        thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-      };
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/sln1234567890/update";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: solutionId, folder: null })
-        )
-        .post(
-          utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
-          utils.getSampleImage(),
-          { sendAsJson: false }
-        )
-        .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getSuccessResponse({ itemId: solutionId })
-        );
-      spyOn(common, "createId").and.callFake(() => solutionId);
-      creator._createSolutionItem(authentication, options).then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-    it("handles failure to update the solution item with its icon; reject", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const solutionId = "sln1234567890";
-      const options: common.ICreateSolutionOptions = {
-        thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-      };
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/sln1234567890/update";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: solutionId, folder: null })
-        )
-        .post(
-          utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
-          utils.getSampleImage(),
-          { sendAsJson: false }
-        )
-        .post(updateUrl, mockItems.get400Failure())
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getSuccessResponse({ itemId: solutionId })
-        );
-      spyOn(common, "createId").and.callFake(() => solutionId);
-      creator._createSolutionItem(authentication, options).then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-    it("handles failure to delete solution after failing to update the solution item with its icon; success property", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const solutionId = "sln1234567890";
-      const options: common.ICreateSolutionOptions = {
-        thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-      };
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/sln1234567890/update";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: solutionId, folder: null })
-        )
-        .post(
-          utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
-          utils.getSampleImage(),
-          { sendAsJson: false }
-        )
-        .post(updateUrl, utils.getFailureResponse({ id: solutionId }))
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getFailureResponse()
-        );
-      spyOn(common, "createId").and.callFake(() => solutionId);
-      creator._createSolutionItem(authentication, options).then(
-        () => done.fail(),
-        () => done()
-      );
-    });
-
-    it("handles failure to delete solution after failing to update the solution item with its icon; reject", done => {
-      const authentication: common.UserSession = MOCK_USER_SESSION;
-      const solutionId = "sln1234567890";
-      const options: common.ICreateSolutionOptions = {
-        thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
-      };
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/sln1234567890/update";
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: solutionId, folder: null })
-        )
-        .post(
-          utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
-          utils.getSampleImage(),
-          { sendAsJson: false }
-        )
-        .post(updateUrl, mockItems.get400Failure())
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/sln1234567890/delete",
-          utils.getFailureResponse()
-        );
-      spyOn(common, "createId").and.callFake(() => solutionId);
-      creator._createSolutionItem(authentication, options).then(
-        () => done.fail(),
-        () => done()
       );
     });
   });
