@@ -790,13 +790,13 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/addItem",
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
             utils.getSuccessResponse({ id: newItemID })
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567891/update",
-            utils.getSuccessResponse({ id: newItemID })
+            utils.getFailureResponse()
           )
           .post(
             "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
@@ -812,13 +812,6 @@ describe("Module `deploySolutionItems`", () => {
               type: "text/xml"
             }),
             { sendAsJson: false }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/" +
-              newItemID +
-              "/update",
-            utils.getFailureResponse()
           )
           .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
 
@@ -890,7 +883,9 @@ describe("Module `deploySolutionItems`", () => {
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
-            expect(response).toEqual(utils.getFailureResponse());
+            expect(response).toEqual(
+              templates.getFailedItem(itemTemplate.type)
+            );
             done();
           });
       });
@@ -917,7 +912,7 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/addItem",
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
             utils.getSuccessResponse({ id: newItemID })
           )
           .post(

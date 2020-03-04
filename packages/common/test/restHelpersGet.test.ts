@@ -1062,7 +1062,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       });
       expect(
         restHelpersGet.getPortalSharingUrlFromAuth(mockUserSession)
-      ).toEqual(utils.PORTAL_SUBSET.restUrl);
+      ).toEqual("https://www.arcgis.com/sharing/rest");
     });
 
     it("gets portal sharing url from authentication", () => {
@@ -1086,7 +1086,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         password: "123456"
       });
       expect(restHelpersGet.getPortalUrlFromAuth(mockUserSession)).toEqual(
-        "https://myorg.maps.arcgis.com"
+        "https://www.arcgis.com"
       );
     });
 
