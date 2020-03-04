@@ -23,80 +23,120 @@
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 
-// ------------------------------------------------------------------------------------------------------------------ //
+//#region Entry point ----------------------------------------------------------------------------------------------- //
 
 export function deploySolution(
   templateSolutionId: string,
   authentication: common.UserSession,
   options?: common.IDeploySolutionOptions
-): Promise<common.ISolutionItem> {
-  return new Promise<common.ISolutionItem>((resolve, reject) => {
-    let percentDone = 1;
-    if (options?.progressCallback) {
-      options.progressCallback(percentDone); // let the caller know that we've started
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const deployOptions: common.IDeploySolutionOptions = options || {};
+    if (deployOptions.progressCallback) {
+      deployOptions.progressCallback(1); // let the caller know that we've started
     }
-    const templateDictionary = options?.templateDictionary ?? {};
 
     // Fetch solution item's info
-    const solutionItemBaseDef = common.getItemBase(
-      templateSolutionId,
-      authentication
-    );
-    const solutionItemDataDef = common.getItemDataAsJson(
-      templateSolutionId,
-      authentication
-    );
-
-    // Determine if we are deploying to portal
-    const portalDef = common.getPortal("", authentication);
-
-    const userDef = common.getUser(authentication);
-    const foldersAndGroupsDef = common.getFoldersAndGroups(authentication);
-
-    // Await completion of async actions
     Promise.all([
-      // TODO IE11 does not support Promise
-      solutionItemBaseDef,
-      solutionItemDataDef,
-      portalDef,
-      userDef,
-      foldersAndGroupsDef
+      common.getItemBase(templateSolutionId, authentication),
+      common.getItemDataAsJson(templateSolutionId, authentication)
     ]).then(
       responses => {
-        const [
+        const [itemBase, itemData] = responses;
+
+        deployOptions.title = deployOptions.title ?? itemBase.title;
+        deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
+        deployOptions.description =
+          deployOptions.description ?? itemBase.description;
+        deployOptions.tags = deployOptions.tags ?? itemBase.tags;
+
+        common.deleteItemProps(itemBase);
+
+        _deploySolutionFromTemplate(
+          templateSolutionId,
           itemBase,
           itemData,
+          authentication,
+          deployOptions
+        ).then(
+          createdSolutionId => {
+            if (deployOptions.progressCallback) {
+              deployOptions.progressCallback(100); // we're done
+            }
+            resolve(createdSolutionId);
+          },
+          error => {
+            // Error deploying solution
+            if (deployOptions.progressCallback) {
+              deployOptions.progressCallback(1);
+            }
+            reject(error);
+          }
+        );
+      },
+      error => {
+        // Error fetching solution
+        if (deployOptions.progressCallback) {
+          deployOptions.progressCallback(1);
+        }
+        reject(error);
+      }
+    );
+  });
+}
+
+//#endregion ---------------------------------------------------------------------------------------------------------//
+
+//#region Supporting routines --------------------------------------------------------------------------------------- //
+
+export function _deploySolutionFromTemplate(
+  templateSolutionId: string,
+  solutionTemplateBase: any,
+  solutionTemplateData: any,
+  authentication: common.UserSession,
+  options: common.IDeploySolutionOptions
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Replacement dictionary and high-level deployment ids for cleanup
+    const templateDictionary = options.templateDictionary ?? {};
+    let deployedFolderId: string;
+    let deployedSolutionId: string;
+
+    // Get information about deployment environment
+    Promise.all([
+      common.getPortal("", authentication), // determine if we are deploying to portal
+      common.getUser(authentication), // find out about the user
+      common.getFoldersAndGroups(authentication) // get all folders so that we can create a unique one, and all groups
+    ])
+      .then(responses => {
+        const [
           portalResponse,
           userResponse,
           foldersAndGroupsResponse
         ] = responses;
 
+        // Initialize replacement dictionary
         // swap user defined params before we start...no need to wait
-        if (itemData.params) {
-          templateDictionary.params = itemData.params;
-          itemData.templates = itemData.templates.map((template: any) => {
-            return common.replaceInTemplate(template, templateDictionary);
-          });
+        if (solutionTemplateData.params) {
+          templateDictionary.params = solutionTemplateData.params;
+          solutionTemplateData.templates = solutionTemplateData.templates.map(
+            (template: any) => {
+              return common.replaceInTemplate(template, templateDictionary);
+            }
+          );
         }
 
         // update template items with source-itemId type keyword
-        itemData.templates = itemData.templates.map((template: any) => {
-          const sourceId: string = "source-" + template.itemId;
-          template.item?.typeKeywords?.push(sourceId);
-          if (common.getProp(template, "item.type") === "Group") {
-            template.item?.tags?.push(sourceId);
+        solutionTemplateData.templates = solutionTemplateData.templates.map(
+          (template: any) => {
+            const sourceId: string = "source-" + template.itemId;
+            template.item?.typeKeywords?.push(sourceId);
+            if (common.getProp(template, "item.type") === "Group") {
+              template.item?.tags?.push(sourceId);
+            }
+            return template;
           }
-          return template;
-        });
-
-        const thumbnailUrl = common.getItemThumbnailUrl(
-          templateSolutionId,
-          itemBase.thumbnail,
-          false,
-          authentication
         );
-
-        common.deleteItemProps(itemBase);
 
         templateDictionary.isPortal = portalResponse.isPortal;
         templateDictionary.organization = Object.assign(
@@ -126,228 +166,157 @@ export function deploySolution(
         //  * Manage Right of Way Activities
         //  * Manage Right of Way Activities 1
         //  * Manage Right of Way Activities 2
-        common
-          .createUniqueFolder(
-            itemBase.title,
-            templateDictionary,
-            authentication
-          )
-          .then(
-            folderResponse => {
-              templateDictionary.folderId = folderResponse.folder.id;
-              const portalExtent: any = portalResponse.defaultExtent;
-              common
-                .convertExtent(
-                  portalExtent,
-                  { wkid: 4326 },
-                  portalResponse.helperServices.geometry.url,
-                  authentication
-                )
-                .then(
-                  function(wgs84Extent) {
-                    templateDictionary.solutionItemExtent =
-                      wgs84Extent.xmin +
-                      "," +
-                      wgs84Extent.ymin +
-                      "," +
-                      wgs84Extent.xmax +
-                      "," +
-                      wgs84Extent.ymax;
+        const folderPromise = common.createUniqueFolder(
+          solutionTemplateBase.title,
+          templateDictionary,
+          authentication
+        );
 
-                    const totalEstimatedCost = Math.max(
-                      1,
-                      _estimateDeploymentCost(itemData.templates)
-                    ); // avoid / 0
-                    const progressPercentStep = 95 / totalEstimatedCost; // less than 100% because of solution expenditures in this function
-                    console.log(
-                      "Deploying solution " +
-                        itemBase.title +
-                        " (" +
-                        templateSolutionId +
-                        ") into folder " +
-                        folderResponse.folder.title +
-                        " (" +
-                        folderResponse.folder.id +
-                        ")"
-                    );
-                    console.log(
-                      "totalEstimatedCost, progressPercentStep",
-                      totalEstimatedCost.toString(),
-                      progressPercentStep.toFixed(2).toString()
-                    );
-                    if (options?.progressCallback) {
-                      options.progressCallback((percentDone += 2)); // for data fetch and folder creation
-                    }
+        // Apply the portal extents to the solution
+        const portalExtent: any = portalResponse.defaultExtent;
+        const extentsPromise = common.convertExtent(
+          portalExtent,
+          { wkid: 4326 },
+          portalResponse.helperServices.geometry.url,
+          authentication
+        );
 
-                    // Create a deployed Solution item
-                    const createSolutionItemBase = {
-                      ...itemBase,
-                      type: "Solution",
-                      typeKeywords: ["Solution"],
-                      thumbnailUrl: thumbnailUrl
-                    };
+        // Await completion of async actions: folder creation & extents conversion
+        return Promise.all([folderPromise, extentsPromise]);
+      })
+      .then(responses => {
+        const [folderResponse, wgs84Extent] = responses;
+        deployedFolderId = folderResponse.folder.id;
+        templateDictionary.folderId = deployedFolderId;
+        templateDictionary.solutionItemExtent =
+          wgs84Extent.xmin +
+          "," +
+          wgs84Extent.ymin +
+          "," +
+          wgs84Extent.xmax +
+          "," +
+          wgs84Extent.ymax;
 
-                    common
-                      .createItemWithData(
-                        createSolutionItemBase,
-                        {},
-                        authentication,
-                        templateDictionary.folderId
-                      )
-                      .then(
-                        createSolutionResponse => {
-                          if (options?.progressCallback) {
-                            options.progressCallback(++percentDone); // for solution item creation
-                          }
+        // Create a deployed Solution item
+        const createSolutionItemBase = {
+          ...solutionTemplateBase,
+          type: "Solution",
+          typeKeywords: ["Solution"]
+        };
 
-                          const oldID: string = templateSolutionId;
-                          const newID: string = createSolutionResponse.id;
-                          console.log("Solution " + newID + " created");
-                          templateDictionary.solutionItemId = newID;
-                          itemBase.id = newID;
-                          itemBase.thumbnailUrl = _checkedReplaceAll(
-                            itemBase.thumbnailUrl,
-                            oldID,
-                            newID
-                          );
-                          itemBase.tryitUrl = _checkedReplaceAll(
-                            itemBase.tryitUrl,
-                            oldID,
-                            newID
-                          );
-                          itemBase.url = _checkedReplaceAll(
-                            itemBase.url,
-                            oldID,
-                            newID
-                          );
+        return common.createItemWithData(
+          createSolutionItemBase,
+          {},
+          authentication,
+          deployedFolderId
+        );
+      })
+      .then(createSolutionResponse => {
+        deployedSolutionId = createSolutionResponse.id;
 
-                          // Handle the contained item templates
-                          deployItems
-                            .deploySolutionItems(
-                              authentication.portal,
-                              templateSolutionId,
-                              itemData.templates,
-                              authentication,
-                              templateDictionary,
-                              authentication,
-                              options?.enableItemReuse || false,
-                              (
-                                itemId: string,
-                                status: common.EItemProgressStatus,
-                                costUsed: number
-                              ) => {
-                                if (options?.progressCallback) {
-                                  options.progressCallback(
-                                    (percentDone +=
-                                      progressPercentStep * costUsed)
-                                  ); // callback from deploying item
-                                }
-                              }
-                            )
-                            .then(
-                              clonedSolutionsResponse => {
-                                itemData.templates = itemData.templates.map(
-                                  (itemTemplate: common.IItemTemplate) => {
-                                    // Update ids present in template dictionary
-                                    const itemId = common.getProp(
-                                      templateDictionary,
-                                      itemTemplate.itemId + ".itemId"
-                                    );
-                                    if (itemId) {
-                                      itemTemplate.itemId = itemId;
-                                    }
-                                    itemTemplate.dependencies = itemTemplate.dependencies.map(
-                                      id => {
-                                        const dependId = common.getProp(
-                                          templateDictionary,
-                                          id + ".itemId"
-                                        );
-                                        return dependId ? dependId : id;
-                                      }
-                                    );
-                                    return itemTemplate;
-                                  }
-                                );
+        templateDictionary.solutionItemId = deployedSolutionId;
+        solutionTemplateBase.id = deployedSolutionId;
+        solutionTemplateBase.thumbnailUrl = common.getItemThumbnailUrl(
+          templateSolutionId,
+          solutionTemplateBase.thumbnail,
+          false,
+          authentication
+        );
+        solutionTemplateBase.tryitUrl = _checkedReplaceAll(
+          solutionTemplateBase.tryitUrl,
+          templateSolutionId,
+          deployedSolutionId
+        );
+        solutionTemplateBase.url = _checkedReplaceAll(
+          solutionTemplateBase.url,
+          templateSolutionId,
+          deployedSolutionId
+        );
 
-                                deployItems
-                                  .postProcessDependencies(
-                                    itemData.templates,
-                                    clonedSolutionsResponse,
-                                    authentication,
-                                    templateDictionary
-                                  )
-                                  .then(
-                                    () => {
-                                      // Create solution item using internal representation & and the updated data JSON
-                                      itemBase.typeKeywords = [
-                                        "Solution",
-                                        "Deployed"
-                                      ];
-
-                                      itemData.templates = itemData.templates.map(
-                                        (itemTemplate: common.IItemTemplate) =>
-                                          _purgeTemplateProperties(itemTemplate)
-                                      );
-
-                                      // Update solution items data using template dictionary, and then update the
-                                      // itemId & dependencies in each item template
-                                      itemBase.data = common.replaceInTemplate(
-                                        itemData,
-                                        templateDictionary
-                                      );
-
-                                      common
-                                        .updateItem(
-                                          itemBase,
-                                          authentication,
-                                          templateDictionary.folderId
-                                        )
-                                        .then(
-                                          () => {
-                                            if (options?.progressCallback) {
-                                              options.progressCallback(100); // we're done
-                                            }
-
-                                            delete itemBase.data;
-                                            resolve({
-                                              item: itemBase,
-                                              data: itemData
-                                            });
-                                          },
-                                          e => {
-                                            reject(common.fail(e));
-                                          }
-                                        );
-                                    },
-                                    e => {
-                                      reject(common.fail(e));
-                                    }
-                                  );
-                              },
-                              e => {
-                                reject(common.fail(e));
-                              }
-                            );
-                        },
-                        e => {
-                          reject(common.fail(e));
-                        }
-                      );
-                  },
-                  e => {
-                    reject(common.fail(e));
-                  }
-                );
-            },
-            e => {
-              reject(common.fail(e));
+        // Handle the contained item templates
+        return deployItems.deploySolutionItems(
+          authentication.portal,
+          templateSolutionId,
+          solutionTemplateData.templates,
+          authentication,
+          templateDictionary,
+          authentication,
+          options?.enableItemReuse || false,
+          options.progressCallback
+        );
+      })
+      .then(clonedSolutionsResponse => {
+        solutionTemplateData.templates = solutionTemplateData.templates.map(
+          (itemTemplate: common.IItemTemplate) => {
+            // Update ids present in template dictionary
+            const itemId = common.getProp(
+              templateDictionary,
+              itemTemplate.itemId + ".itemId"
+            );
+            if (itemId) {
+              itemTemplate.itemId = itemId;
             }
+            itemTemplate.dependencies = itemTemplate.dependencies.map(id => {
+              const dependId = common.getProp(
+                templateDictionary,
+                id + ".itemId"
+              );
+              return dependId ? dependId : id;
+            });
+            return itemTemplate;
+          }
+        );
+
+        return deployItems.postProcessDependencies(
+          solutionTemplateData.templates,
+          clonedSolutionsResponse,
+          authentication,
+          templateDictionary
+        );
+      })
+      .then(() => {
+        // Update solution item using internal representation & and the updated data JSON
+        solutionTemplateBase.typeKeywords = ["Solution", "Deployed"];
+
+        solutionTemplateData.templates = solutionTemplateData.templates.map(
+          (itemTemplate: common.IItemTemplate) =>
+            _purgeTemplateProperties(itemTemplate)
+        );
+
+        // Update solution items data using template dictionary, and then update the
+        // itemId & dependencies in each item template
+        solutionTemplateBase.data = common.replaceInTemplate(
+          solutionTemplateData,
+          templateDictionary
+        );
+
+        return common.updateItem(
+          solutionTemplateBase,
+          authentication,
+          deployedFolderId
+        );
+      })
+      .then(
+        () => resolve(solutionTemplateBase.id),
+        error => {
+          // Cleanup solution folder and deployed solution item
+          const cleanupPromises = [] as Array<Promise<any>>;
+          if (deployedFolderId) {
+            cleanupPromises.push(
+              common.removeFolder(deployedFolderId, authentication)
+            );
+          }
+          if (deployedSolutionId) {
+            cleanupPromises.push(
+              common.removeItem(deployedSolutionId, authentication)
+            );
+          }
+          Promise.all(cleanupPromises).then(
+            () => reject(error),
+            () => reject(error)
           );
-      },
-      e => {
-        reject(common.fail(e));
-      }
-    );
+        }
+      );
   });
 }
 
@@ -375,22 +344,4 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
-}
-
-/**
- * Accumulates the estimated deployment cost of a set of templates.
- *
- * @param templates Templates to examine
- * @return Sum of estimated deployment costs
- * @protected
- */
-export function _estimateDeploymentCost(
-  templates: common.IItemTemplate[]
-): number {
-  return templates.reduce(
-    (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
-      return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
-    },
-    0
-  );
 }

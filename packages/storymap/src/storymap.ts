@@ -83,11 +83,10 @@ export function createItemFromTemplate(
   );
 }
 
-export function isAStoryMap(template: common.IItemTemplate): boolean {
-  const url = common.getProp(template, "item.url");
-  if (template.type === "StoryMap") {
+export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
+  if (itemType === "StoryMap") {
     return true;
-  } else if (url) {
+  } else if (itemUrl) {
     return [
       /\/apps\/Cascade\//i,
       /\/apps\/MapJournal\//i,
@@ -97,7 +96,7 @@ export function isAStoryMap(template: common.IItemTemplate): boolean {
       /\/apps\/StoryMap\//i,
       /\/apps\/StoryMapBasic\//i,
       /\/apps\/StorytellingSwipe\//i
-    ].some(pattern => pattern.test(url));
+    ].some(pattern => pattern.test(itemUrl));
   }
   return false;
 }

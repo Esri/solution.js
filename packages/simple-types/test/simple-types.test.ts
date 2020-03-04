@@ -1531,9 +1531,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          () => {
-            return 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
@@ -1628,9 +1626,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           },
           MOCK_USER_SESSION,
-          function() {
-            const tick = 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(
           actual => {
@@ -1925,9 +1921,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             }
           },
           MOCK_USER_SESSION,
-          function() {
-            const tick = 0;
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(
           actual => {

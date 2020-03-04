@@ -38,6 +38,17 @@ afterEach(() => {
   fetchMock.restore();
 });
 
+const projectedGeometries: any[] = [
+  {
+    x: -131,
+    y: 16
+  },
+  {
+    x: -57,
+    y: 58
+  }
+];
+
 describe("Module `deploySolution`", () => {
   describe("deploySolution", () => {
     // Blobs are only available in the browser
@@ -516,13 +527,6 @@ describe("Module `deploySolution`", () => {
           deployVersion: 2
         };
         const templateDictionary: any = {};
-        const portalSubset: any = {
-          name: "ArcGIS for Local Government Deployment",
-          id: "org1234567890",
-          restUrl: utils.PORTAL_SUBSET.restUrl + "",
-          portalUrl: "https://www.arcgis.com",
-          urlKey: "localdeployment"
-        };
 
         const solutionResponse: any = {
           metadata: {},
@@ -679,19 +683,23 @@ describe("Module `deploySolution`", () => {
           "/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
         const expectedImage = mockItems.getAnImageResponse();
 
+        const portalResponse: any = utils.getPortalResponse();
+        const geometryServer: string =
+          portalResponse.helperServices.geometry.url;
+
         fetchMock
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/c38e59126368495694ca23b7ccacefba/data",
             solutionResponse
           )
           .get(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
             itemInfoCard
           )
           .get(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/org1234567890?f=json&token=fake-token",
             utils.getPortalResponse()
           )
@@ -701,23 +709,23 @@ describe("Module `deploySolution`", () => {
             utils.getPortalResponse()
           )
           .get(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/community/users/casey?f=json&token=fake-token",
             utils.getUserResponse()
           )
           .get(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey?f=json&token=fake-token",
             []
           )
           .post(
-            portalSubset.restUrl + "/content/users/casey/createFolder",
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
             utils.getCreateFolderResponse(folderId)
           )
           .post(imageUrl, expectedImage)
           .post(imageUrl2, expectedImage)
           .post(
-            "https://utility.arcgisonline.com/arcgis/rest/services/Geometry/GeometryServer/findTransformations",
+            geometryServer + "/findTransformations",
             utils.getTransformationsResponse()
           )
           .post(
@@ -725,7 +733,7 @@ describe("Module `deploySolution`", () => {
             utils.getProjectResponse()
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/" +
               folderId +
               "/addItem",
@@ -736,7 +744,7 @@ describe("Module `deploySolution`", () => {
             { overwriteRoutes: false }
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/" +
               folderId +
               "/addItem",
@@ -747,27 +755,41 @@ describe("Module `deploySolution`", () => {
             { overwriteRoutes: false }
           )
           .post(
-            portalSubset.restUrl + "/community/createGroup",
+            utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
             utils.getSuccessResponse({
               group: { id: "987eaa6a496546a58f04796266589ec5" }
             })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/community/groups/987eaa6a496546a58f04796266589ec5/update",
             utils.getSuccessResponse({
               groupId: "987eaa6a496546a58f04796266589ec5"
             })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/update",
             utils.getSuccessResponse({ id: "57a059ec717c4b1282705132fd4720a0" })
           )
           .post(
-            portalSubset.restUrl +
+            utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/82601685fd3c444397d252116d7a3dc0/update",
             utils.getSuccessResponse({ id: "82601685fd3c444397d252116d7a3dc0" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/bd610311e0e84e41b96f54df2da54f82/delete",
+            utils.getSuccessResponse({
+              folder: { username: "casey", id: folderId }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/57a059ec717c4b1282705132fd4720a0/delete",
+            utils.getSuccessResponse({
+              itemId: "57a059ec717c4b1282705132fd4720a0"
+            })
           );
 
         spyOn(deployItems, "postProcessDependencies").and.callFake(() =>
@@ -847,6 +869,16 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
             mockItems.get200Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
           );
 
         deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
@@ -1143,6 +1175,21 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/map1234567890/update",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
+            utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
         const options: common.IDeploySolutionOptions = {
@@ -1309,6 +1356,31 @@ describe("Module `deploySolution`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/svc1234567890/update",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/svc1234567890/delete",
+            utils.getSuccessResponse({ itemId: "svc1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/groups/svc1234567890/delete",
+            utils.getSuccessResponse({ groupId: "svc1234567890" })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
+            utils.getSuccessResponse({
+              folder: {
+                username: "casey",
+                id: "a4468da125a64526b359b70d8ba4a9dd"
+              }
+            })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
+            utils.getSuccessResponse({ itemId: "map1234567890" })
           );
 
         const options: common.IDeploySolutionOptions = {
@@ -1333,6 +1405,8 @@ describe("Module `deploySolution`", () => {
         ]);
 
         const portalResponse: any = utils.getPortalResponse();
+        const geometryServer: string =
+          portalResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -1349,6 +1423,14 @@ describe("Module `deploySolution`", () => {
               "/data",
             itemInfo.data
           )
+          .post(geometryServer + "/findTransformations/rest/info", "{}")
+          .post(
+            geometryServer + "/findTransformations",
+            utils.getTransformationsResponse()
+          )
+          .post(geometryServer + "/project", {
+            geometries: projectedGeometries
+          })
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",

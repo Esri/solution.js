@@ -426,9 +426,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
           expect(r).toEqual({
@@ -573,9 +571,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           settings,
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
           expect(r).toEqual({
@@ -682,9 +678,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
@@ -765,9 +759,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
           done.fail();
@@ -846,9 +838,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
@@ -907,9 +897,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(r => {
           expect(r).toEqual({
@@ -1016,9 +1004,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             solutionItemExtent: _solutionItemExtent
           },
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
@@ -1112,9 +1098,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
@@ -1194,9 +1178,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
-          function() {
-            const a = "progressTick";
-          }
+          utils.ITEM_PROGRESS_CALLBACK
         )
         .then(() => done.fail(), done);
     });
