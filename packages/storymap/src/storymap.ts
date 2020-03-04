@@ -26,14 +26,18 @@ import * as simpleTypes from "@esri/solution-simple-types";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
+  solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>(resolve => {
-    /* if (itemInfo.type === "StoryMap") {
+  return new Promise<common.IItemTemplate>((resolve, reject) => {
+    if (itemInfo.type === "StoryMap") {
+      reject(common.fail("Next-gen StoryMap is not yet implemented"));
+    } else if (isAStoryMap(itemInfo.type, itemInfo.url)) {
+      reject(common.fail("First-gen StoryMap is not yet implemented"));
     } else {
-    } */
-    resolve(undefined);
+      reject(common.fail(itemInfo.id + " is not a StoryMap"));
+    }
   });
 }
 
@@ -45,42 +49,45 @@ export function createItemFromTemplate(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(
-    (resolve, reject) => {
-      if (template.type === "StoryMap") {
-        /* console.log(
-        "createItemFromTemplate for a " +
-          template.type +
-          " (" +
-          template.itemId +
-          ")"
-      ); */
-        resolve({
-          id: "",
-          type: template.type,
-          postProcess: false
-        });
-      } else {
-        /* console.log(
-        "createItemFromTemplate for a " +
-          template.type +
-          " (StoryMap " +
-          template.itemId +
-          ")"
-      ); */
-        simpleTypes
-          .createItemFromTemplate(
-            template,
-            resourceFilePaths,
-            storageAuthentication,
-            templateDictionary,
-            destinationAuthentication,
-            itemProgressCallback
-          )
-          .then(resolve, reject);
-      }
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    if (template.type === "StoryMap") {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "Next-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
+    } else if (isAStoryMap(template.type, template.item.url)) {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "First-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
+    } else {
+      // Not valid
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "",
+        type: template.type,
+        postProcess: false
+      });
     }
-  );
+  });
 }
 
 export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
