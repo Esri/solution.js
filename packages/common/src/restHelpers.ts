@@ -822,13 +822,7 @@ export function shareItem(
     };
 
     portal.shareItemWithGroup(shareOptions).then(
-      (shareResponse: any) => {
-        if (shareResponse.notSharedWith.indexOf(groupId) < 0) {
-          resolve();
-        } else {
-          reject(generalHelpers.fail(shareResponse));
-        }
-      },
+      () => resolve(),
       (e: any) => reject(generalHelpers.fail(e))
     );
   });
