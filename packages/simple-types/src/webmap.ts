@@ -121,11 +121,22 @@ export function _getLayerIds(
       authentication: authentication
     };
     const layerPromises: Array<Promise<any>> = [];
+    const layerChecks: any = {};
     const layers: any[] = layerList.filter(layer => {
       if (layer.url) {
-        // use url to find serviceItemId
-        layerPromises.push(common.rest_request(layer.url, options));
-        return true;
+        const results: any = /.+FeatureServer/g.exec(layer.url);
+        const baseUrl: string =
+          Array.isArray(results) && results.length > 0 ? results[0] : undefined;
+        if (baseUrl) {
+          // avoid redundant checks when we have a layer with subLayers
+          if (Object.keys(layerChecks).indexOf(baseUrl) < 0) {
+            layerChecks[baseUrl] = common.rest_request(layer.url, options);
+          }
+          layerPromises.push(layerChecks[baseUrl]);
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -137,7 +148,7 @@ export function _getLayerIds(
           const idChecks: any = {};
           const itemOwnerPromises: Array<Promise<any>> = serviceResponses.map(
             serviceResponse => {
-              // avoid redundant id checks when we have a layer with sub layers referenced in the map
+              // avoid redundant checks when we have a layer with subLayers
               const id: string = common.getProp(
                 serviceResponse,
                 "serviceItemId"
