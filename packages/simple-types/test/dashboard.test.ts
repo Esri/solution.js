@@ -152,7 +152,9 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
         "Dashboard"
       );
 
+      expect(itemTemplate.dependencies).toEqual([]);
       dashboard._getDatasourceDependencies(obj, itemTemplate);
+      expect(itemTemplate.dependencies).toEqual(["AAABBBCCC123"]);
     });
   });
 
@@ -245,7 +247,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
         {
           basePath: "",
           itemId: "AAABBBCCC123",
-          ids: [],
+          ids: ["id"],
           layerId: 0,
           fields: [],
           relationships: [],
@@ -263,6 +265,7 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
       ];
 
       const info = dashboard._getDatasourceInfo(obj, dsInfos);
+      expect(info).toEqual(dsInfos[0]);
     });
 
     it("handles dataSource.itemId", () => {
