@@ -33,60 +33,62 @@ afterEach(() => {
 
 describe("Module `form`", () => {
   describe("convertItemToTemplate", () => {
-    it("handles items without form info files", done => {
-      const itemId = "itm1234567890";
-      const expectedFile = mockItems.get400Failure();
+    if (typeof window !== "undefined") {
+      it("handles items without form info files", done => {
+        const itemId = "itm1234567890";
+        const expectedFile = mockItems.get400Failure();
 
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.json",
-          expectedFile
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/forminfo.json",
-          expectedFile
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.webform",
-          expectedFile
-        );
-      form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(results => {
-        expect(results).toEqual([] as File[]);
-        done();
-      }, done.fail);
-    });
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json",
+            expectedFile
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/forminfo.json",
+            expectedFile
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.webform",
+            expectedFile
+          );
+        form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(results => {
+          expect(results).toEqual([] as File[]);
+          done();
+        }, done.fail);
+      });
 
-    it("handles items with form info files", done => {
-      const itemId = "itm1234567890";
-      const expectedFile = utils.getSampleJsonAsFile("form.json");
+      it("handles items with form info files", done => {
+        const itemId = "itm1234567890";
+        const expectedFile = utils.getSampleJsonAsFile("form.json");
 
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.json",
-          utils.getSampleJsonAsFile("form.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/forminfo.json",
-          utils.getSampleJsonAsFile("forminfo.json")
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/itm1234567890/info/form.webform",
-          utils.getSampleJsonAsFile("form.webform")
-        );
-      form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(results => {
-        expect(results).toEqual([
-          utils.getSampleJsonAsFile("form.json"),
-          utils.getSampleJsonAsFile("forminfo.json"),
-          utils.getSampleJsonAsFile("form.webform")
-        ] as File[]);
-        done();
-      }, done.fail);
-    });
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/forminfo.json",
+            utils.getSampleJsonAsFile("forminfo.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.webform",
+            utils.getSampleJsonAsFile("form.webform")
+          );
+        form.getFormInfoFiles(itemId, MOCK_USER_SESSION).then(results => {
+          expect(results).toEqual([
+            utils.getSampleJsonAsFile("form.json"),
+            utils.getSampleJsonAsFile("forminfo.json"),
+            utils.getSampleJsonAsFile("form.webform")
+          ] as File[]);
+          done();
+        }, done.fail);
+      });
+    }
   });
 });
