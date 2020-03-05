@@ -823,7 +823,11 @@ export function shareItem(
 
     portal.shareItemWithGroup(shareOptions).then(
       (shareResponse: any) => {
-        resolve();
+        if (shareResponse.notSharedWith.indexOf(groupId) < 0) {
+          resolve();
+        } else {
+          reject(generalHelpers.fail(shareResponse));
+        }
       },
       (e: any) => reject(generalHelpers.fail(e))
     );

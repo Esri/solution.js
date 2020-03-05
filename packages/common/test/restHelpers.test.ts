@@ -2025,12 +2025,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567890/update",
-          mockItems.get400Failure()
+            "/content/users/casey/items/itm1234567890/share",
+          {
+            notSharedWith: [groupId] as string[],
+            itemId: "itm1234567980"
+          }
         );
-      restHelpers
-        .shareItem(groupId, id, MOCK_USER_SESSION)
-        .then(() => done.fail, done);
+      restHelpers.shareItem(groupId, id, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 
