@@ -278,6 +278,23 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/info/metadata/metadata.xml",
+            mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/qck1234567890/resources/images/Camera.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/resources/qc.project.json",
             {}
           )
@@ -394,6 +411,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
 
+        const expectedFetch = mockItems.getAnImageResponse();
+
         const expectedTemplate: any = {
           itemId: "map1234567890",
           type: "Web Map",
@@ -426,13 +445,70 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           estimatedDeploymentCostFactor: 2
         };
 
-        fetchMock.post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            itemTemplate.itemId +
-            "/data",
-          mockItems.get500Failure()
-        );
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            {
+              total: 1,
+              start: 1,
+              num: 1,
+              nextStart: -1,
+              resources: [
+                {
+                  resource: "image/banner.png",
+                  created: 1522711362000,
+                  size: 56945
+                }
+              ]
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources/image/banner.png",
+            expectedFetch,
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
+            {
+              success: true,
+              itemId: solutionItemId,
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/thumbnail/banner.png",
+            expectedFetch,
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
+            mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          );
         staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
           total: 0,
           relatedItems: []
@@ -831,6 +907,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               "/addResources",
             mockItems.get400Failure()
           );
+
         staticRelatedItemsMocks.fetchMockRelatedItems(
           "frm1234567890",
           mockItems.get500Failure()
@@ -1058,10 +1135,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const expected: any = {};
       expected[itemId] = newItemID;
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-        mockItems.get400Failure()
-      );
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          mockItems.get400Failure()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
+        );
 
       // tslint:disable-next-line: no-floating-promises
       simpleTypes
@@ -1094,10 +1177,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const expected: any = {};
       expected[itemId] = newItemID;
 
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-        { success: false }
-      );
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getFailureResponse({ id: newItemID, folder: null })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
+        );
 
       // tslint:disable-next-line: no-floating-promises
       simpleTypes
@@ -1131,10 +1220,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "/community/users/casey?f=json&token=fake-token";
 
         fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-            success: true,
-            id: newItemID
-          })
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID, folder: null })
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/" +
@@ -1184,10 +1273,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "/community/users/casey?f=json&token=fake-token";
 
         fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-            success: true,
-            id: newItemID
-          })
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID, folder: null })
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/" +
@@ -1198,7 +1287,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .get(userUrl, {
             username: "casey",
             fullName: "casey"
-          });
+          })
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567890/delete",
+            utils.getSuccessResponse({ itemId: "map1234567890" })
+          );
 
         // tslint:disable-next-line: no-floating-promises
         simpleTypes
@@ -1281,10 +1375,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: newItemID
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID, folder: null })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
@@ -1425,10 +1519,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       fetchMock
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: newItemId
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemId, folder: null })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
@@ -1501,10 +1595,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       };
 
       fetchMock
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: newItemId
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemId, folder: null })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
@@ -1601,7 +1695,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
-          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+          utils.getSuccessResponse({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -1700,7 +1797,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
-          { success: true, id: "abc0cab401af4828a25cc6eaeb59fb69" }
+          utils.getSuccessResponse({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addRelationship",
@@ -1710,7 +1810,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
         );
+
       staticRelatedItemsMocks.fetchMockRelatedItems(
         itemTemplate.itemId,
         { total: 0, relatedItems: [] },
@@ -1801,14 +1907,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.dependencies = [];
 
       fetchMock
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: "abc0cab401af4828a25cc6eaeb59fb69"
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
       // tslint:disable-next-line: no-floating-promises
@@ -1879,13 +1993,19 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
           layer0
         )
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: "abc0cab401af4828a25cc6eaeb59fb69"
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/folderId/addItem",
-          { success: true, id: "abc2cab401af4828a25cc6eaeb59fb69" }
+          utils.getSuccessResponse({
+            id: "abc2cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -1896,6 +2016,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           mockItems.get400FailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
       // tslint:disable-next-line: no-floating-promises
@@ -1916,6 +2041,165 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .then(response => {
           done();
         });
+    });
+
+    it("should handle cancellation before deployment of item starts", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      const templateDictionary: any = {};
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(1)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation after deployed item is created", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(2)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation failure after deployed item is created", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(2)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation after deployed item is finished", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/update",
+          { success: true, id: itemTemplate.itemId }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(3)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
+    });
+
+    it("should handle cancellation failure after deployed item is finished", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Web Map"
+      );
+      const templateDictionary: any = {};
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: itemTemplate.itemId, folder: null })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/update",
+          { success: true, id: itemTemplate.itemId }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/map1234567890/delete",
+          utils.getFailureResponse({ itemId: itemTemplate.itemId })
+        );
+
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          [],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.createFailingItemProgressCallback(3)
+        )
+        .then(response => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        }, done.fail);
     });
   });
 
@@ -2007,6 +2291,35 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         "Dashboard"
       );
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("utils.createFailingItemProgressCallback", () => {
+    it("fails upon first call", () => {
+      const itemId = "itm1234567890";
+      const status = common.EItemProgressStatus.Started;
+      const costUsed = 0;
+      const progressCallback = utils.createFailingItemProgressCallback(1);
+      expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
+    });
+
+    it("fails upon second call", () => {
+      const itemId = "itm1234567890";
+      const status = common.EItemProgressStatus.Started;
+      const costUsed = 0;
+      const progressCallback = utils.createFailingItemProgressCallback(2);
+      expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
+      expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
+    });
+
+    it("fails upon third call", () => {
+      const itemId = "itm1234567890";
+      const status = common.EItemProgressStatus.Started;
+      const costUsed = 0;
+      const progressCallback = utils.createFailingItemProgressCallback(3);
+      expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
+      expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
+      expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
   });
 });

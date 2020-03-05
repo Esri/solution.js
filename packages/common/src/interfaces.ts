@@ -360,21 +360,6 @@ export interface IItemTemplate {
   estimatedDeploymentCostFactor: number;
 }
 
-export interface ICreateItemFromTemplateResponse {
-  /**
-   * Item's AGO id
-   */
-  id: string;
-  /**
-   * AGO item type name
-   */
-  type: string;
-  /**
-   * Does the item need post processing to handle unresolved variables
-   */
-  postProcess: boolean;
-}
-
 /**
  * Function signatures for use in a function lookup array.
  */

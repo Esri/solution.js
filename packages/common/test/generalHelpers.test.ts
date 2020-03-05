@@ -661,6 +661,29 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   });
 
+  describe("failWithIds", () => {
+    it("can return failure with no item ids", () => {
+      const itemIds: string[] = [];
+      const error: any = "Error";
+      const expected: any = {
+        success: false,
+        itemIds,
+        error: "Error"
+      };
+      expect(generalHelpers.failWithIds(itemIds, error)).toEqual(expected);
+    });
+
+    it("can return failure with no error argument", () => {
+      const itemIds: string[] = ["abc", "def"];
+      const error: any = undefined;
+      const expected: any = {
+        success: false,
+        itemIds
+      };
+      expect(generalHelpers.failWithIds(itemIds, error)).toEqual(expected);
+    });
+  });
+
   describe("getProp", () => {
     it("should return a property given a path", () => {
       expect(generalHelpers.getProp({ color: "red" }, "color")).toEqual(

@@ -376,7 +376,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, { success: true });
@@ -418,7 +418,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expectedUpdate = true;
 
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
@@ -585,7 +585,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("copies metadata.xml", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/c6732556e299f1/info/metadata/metadata.xml",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -594,7 +594,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         };
 
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
@@ -615,7 +616,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("handles inability to get metadata.xml", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -624,7 +626,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         };
 
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const expectedFetch = {
           error: {
             code: 400,
@@ -642,7 +645,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("handles inability to get metadata.xml, hard error", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -651,7 +655,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         };
 
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
         fetchMock.post(fetchUrl, 500);
         resourceHelpers.copyMetadata(source, destination).then(response => {
           response.success ? done.fail() : done();
@@ -661,7 +666,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("handles inability to store metadata.xml", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -670,7 +676,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         };
 
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
@@ -690,7 +697,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("handles inability to store metadata.xml, hard error", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c6732556e299f1/info/metadata/metadata.xml",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -699,7 +707,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         };
 
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/info/metadata/metadata.xml";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/info/metadata/metadata.xml";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
@@ -721,7 +730,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       it("copies resource", done => {
         const source = {
           url:
-            "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/c6732556e299f1/resources/image.png",
           authentication: MOCK_USER_SESSION
         };
         const destination = {
@@ -731,7 +741,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
           authentication: MOCK_USER_SESSION
         };
         const fetchUrl =
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/resources/image.png";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/addResources";
@@ -752,7 +763,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("handles inexplicable response", done => {
       const source = {
         url:
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/resources/image.png",
         authentication: MOCK_USER_SESSION
       };
       const destination = {
@@ -762,7 +774,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         authentication: MOCK_USER_SESSION
       };
       const fetchUrl =
-        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/resources/image.png";
 
       fetchMock.post(
         fetchUrl,
@@ -775,7 +788,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("handles inability to get resource", done => {
       const source = {
         url:
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/resources/image.png",
         authentication: MOCK_USER_SESSION
       };
       const destination = {
@@ -785,7 +799,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         authentication: MOCK_USER_SESSION
       };
       const fetchUrl =
-        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/resources/image.png";
 
       fetchMock.post(fetchUrl, 500);
       resourceHelpers.copyResource(source, destination).then(done.fail, done);
@@ -794,7 +809,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("handles inability to copy resource, hard error", done => {
       const source = {
         url:
-          "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png",
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/items/c6732556e299f1/resources/image.png",
         authentication: MOCK_USER_SESSION
       };
       const destination = {
@@ -804,7 +820,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
         authentication: MOCK_USER_SESSION
       };
       const fetchUrl =
-        "https://www.arcgis.com/sharing/content/items/c6732556e299f1/resources/image.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/c6732556e299f1/resources/image.png";
       const updateUrl =
         utils.PORTAL_SUBSET.restUrl +
         "/content/users/casey/items/itm1234567890/addResources";
@@ -819,13 +836,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("generateGroupFilePaths", () => {
     it("generates paths for a group thumbnail", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail.png";
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/8f7ec78195d0479784036387d522e29f/info/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -841,7 +859,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("handles the absence of a group thumbnail", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "";
       const expected: interfaces.IDeployFileCopyPath[] = [];
@@ -856,8 +874,25 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  describe("generateInfoStorageFilename", () => {
+    it("generates storage name for an info file", () => {
+      const itemId = "8f7ec78195d0479784036387d522e29f";
+      const filename = "form.info";
+      const expected = {
+        folder: "8f7ec78195d0479784036387d522e29f_info",
+        filename
+      };
+
+      const actual = resourceHelpers.generateInfoStorageFilename(
+        itemId,
+        filename
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("generateMetadataStorageFilename", () => {
-    it("metadata", () => {
+    it("generates storage name for metadata", () => {
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const expected = {
         folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
@@ -995,20 +1030,22 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("generateSourceFilePaths", () => {
     it("without resources", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames: string[] = [];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1025,26 +1062,29 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("with one resource at top level", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
           filename: "gtnp2.jpg"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1061,26 +1101,29 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("with one resource in folder", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f_myFolder",
           filename: "gtnp2.jpg"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1097,32 +1140,36 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("with multiple resources", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const resourceFilenames = ["gtnp2.jpg", "myFolder/gtnp2.jpg"];
       const expected: interfaces.ISourceFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f",
           filename: "gtnp2.jpg"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/resources/myFolder/gtnp2.jpg",
           folder: "8f7ec78195d0479784036387d522e29f_myFolder",
           filename: "gtnp2.jpg"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml"
         },
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1139,12 +1186,49 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
+  describe("generateSourceFilePaths", () => {
+    it("generates the file paths for the three form info files", () => {
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
+      const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
+      const expected = [
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.json",
+          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
+          filename: "form.json"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/forminfo.json",
+          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
+          filename: "forminfo.json"
+        },
+        {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.webform",
+          folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
+          filename: "form.webform.json.zip"
+        }
+      ];
+
+      const actual = resourceHelpers.generateSourceInfoFilePaths(
+        portalSharingUrl,
+        itemId
+      );
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("generateSourceMetadataUrl", () => {
     it("item", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const expected =
-        "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/metadata/metadata.xml";
 
       const actual = resourceHelpers.generateSourceMetadataUrl(
         portalSharingUrl,
@@ -1156,11 +1240,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("generateSourceResourceUrl", () => {
     it("top-level", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const sourceResourceFilename = "gtnp2.jpg";
       const expected =
-        "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/8f7ec78195d0479784036387d522e29f/resources/gtnp2.jpg";
 
       const actual = resourceHelpers.generateSourceResourceUrl(
         portalSharingUrl,
@@ -1171,11 +1256,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("in folder", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "8f7ec78195d0479784036387d522e29f";
       const sourceResourceFilename = "aFolder/git_merge.png";
       const expected =
-        "https://www.arcgis.com/sharing/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/8f7ec78195d0479784036387d522e29f/resources/aFolder/git_merge.png";
 
       const actual = resourceHelpers.generateSourceResourceUrl(
         portalSharingUrl,
@@ -1188,11 +1274,12 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("generateSourceThumbnailUrl", () => {
     it("item", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const thumbnailUrlPart = "thumbnail/thumbnail.png";
       const expected =
-        "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/thumbnail/thumbnail.png";
 
       const actual = resourceHelpers.generateSourceThumbnailUrl(
         portalSharingUrl,
@@ -1203,12 +1290,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("group", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const itemId = "b6430e0ca08d4b1380f3a5908985da3c";
       const thumbnailUrlPart = "thumbnail1553812391084.png";
       const isGroup = true;
       const expected =
-        "https://www.arcgis.com/sharing/community/groups/b6430e0ca08d4b1380f3a5908985da3c/info/thumbnail1553812391084.png";
+        utils.PORTAL_SUBSET.restUrl +
+        "/community/groups/b6430e0ca08d4b1380f3a5908985da3c/info/thumbnail1553812391084.png";
 
       const actual = resourceHelpers.generateSourceThumbnailUrl(
         portalSharingUrl,
@@ -1222,7 +1310,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
   describe("generateStorageFilePaths", () => {
     it("generates paths without resources", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [];
       const expected: interfaces.IDeployFileCopyPath[] = [];
@@ -1237,7 +1325,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("generates paths with a single top-level file resource", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f/gtnp2.jpg"
@@ -1245,7 +1333,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f/gtnp2.jpg",
           folder: "",
           filename: "gtnp2.jpg",
           type: interfaces.EFileType.Resource
@@ -1262,7 +1351,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("generates paths with a single file resource in a folder", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg"
@@ -1270,7 +1359,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_myFolder/gtnp2.jpg",
           folder: "myFolder",
           filename: "gtnp2.jpg",
           type: interfaces.EFileType.Resource
@@ -1287,7 +1377,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("generates paths with metadata", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml"
@@ -1295,7 +1385,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_metadata/metadata.xml",
           folder: "8f7ec78195d0479784036387d522e29f_info_metadata",
           filename: "metadata.xml",
           type: interfaces.EFileType.Metadata
@@ -1312,7 +1403,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("generates paths with a thumbnail", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames: string[] = [
         "8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png"
@@ -1320,7 +1411,8 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const expected: interfaces.IDeployFileCopyPath[] = [
         {
           url:
-            "https://www.arcgis.com/sharing/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/resources/8f7ec78195d0479784036387d522e29f_info_thumbnail/thumbnail.png",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png",
           type: interfaces.EFileType.Thumbnail
@@ -1337,7 +1429,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     it("handles the absence of resource filenames", () => {
-      const portalSharingUrl = "https://www.arcgis.com/sharing";
+      const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
       const resourceFilenames = null as string[];
       const expected: interfaces.IDeployFileCopyPath[] = [];
@@ -1555,6 +1647,107 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected: string[] = [
           "map1234567890_image/banner.png",
           "map1234567890_info_thumbnail/banner.png"
+        ];
+
+        resourceHelpers
+          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .then(actual => {
+            expect(actual).toEqual(expected);
+            done();
+          }, done.fail);
+      });
+
+      it("can update item resources for a form", done => {
+        const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
+          "Form"
+        );
+        itemTemplate.item.thumbnail = "thumbnail/banner.png";
+        const solutionItemId = "ee67658b2a98450cba051fd001463df0";
+
+        const resources: any = {
+          total: 0,
+          start: 1,
+          num: 0,
+          nextStart: -1,
+          resources: []
+        };
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/resources",
+            resources
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/" +
+              MOCK_USER_SESSION.username +
+              "/items/" +
+              solutionItemId +
+              "/addResources",
+            {
+              success: true,
+              itemId: solutionItemId,
+              owner: MOCK_USER_SESSION.username,
+              folder: null
+            }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/data",
+            mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/thumbnail/banner.png",
+            utils.getSampleImage(),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
+            utils.getSampleJsonAsFile("forminfo.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
+            utils.getSampleJsonAsFile("form.webform")
+          );
+
+        staticRelatedItemsMocks.fetchMockRelatedItems(itemTemplate.itemId, {
+          total: 0,
+          relatedItems: []
+        });
+
+        const expected: string[] = [
+          "frm1234567890_info_thumbnail/banner.png",
+          "frm1234567890_info/form.json",
+          "frm1234567890_info/forminfo.json",
+          "frm1234567890_info/form.webform.json.zip"
         ];
 
         resourceHelpers

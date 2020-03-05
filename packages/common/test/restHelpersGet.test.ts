@@ -138,7 +138,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         const expectedServerInfo = SERVER_INFO;
         const expected = mockItems.getAnImageResponse();
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(getUrl + "/rest/info", expectedServerInfo)
           .post(getUrl, expected, { sendAsJson: false });
 
@@ -154,7 +154,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         const getUrl = "https://myserver/images/thumbnail.png";
         const expectedServerInfo = SERVER_INFO;
         fetchMock
-          .post("https://www.arcgis.com/sharing/rest/info", expectedServerInfo)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(getUrl + "/rest/info", expectedServerInfo)
           .post(getUrl, 503);
         restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(

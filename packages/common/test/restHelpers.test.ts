@@ -663,7 +663,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           )
           .post(
-            "https://www.arcgis.com/sharing/content/items/itm1234567980/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567980/info/thumbnail/thumbnail.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -2025,12 +2026,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/itm1234567890/update",
-          mockItems.get400Failure()
+            "/content/users/casey/items/itm1234567890/share",
+          {
+            notSharedWith: [groupId] as string[],
+            itemId: "itm1234567980"
+          }
         );
-      restHelpers
-        .shareItem(groupId, id, MOCK_USER_SESSION)
-        .then(() => done.fail, done);
+      restHelpers.shareItem(groupId, id, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 

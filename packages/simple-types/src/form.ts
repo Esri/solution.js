@@ -25,3 +25,16 @@ export function convertItemToTemplate(
 
   return itemTemplate;
 }
+
+export function getFormInfoFiles(
+  itemId: string,
+  authentication: common.UserSession
+): Promise<File[]> {
+  return Promise.all(
+    common.getInfoFiles(
+      itemId,
+      ["form.json", "forminfo.json", "form.webform"],
+      authentication
+    )
+  ).then(results => results.filter(result => !!result));
+}
