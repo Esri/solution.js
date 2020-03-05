@@ -131,19 +131,24 @@ export function _getLayerIds(
       }
     });
 
-    // TODO need to avoid redundant queries when we have sublayers
-    // TODO need to figure out how to list as dependency but not templatize??
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
         serviceResponses => {
+          const idChecks: any = {};
           const itemOwnerPromises: Array<Promise<any>> = serviceResponses.map(
             serviceResponse => {
-              return common.getProp(serviceResponse, "serviceItemId")
-                ? common.isUserItemAdmin(
-                    serviceResponse.serviceItemId,
-                    authentication
-                  )
-                : Promise.resolve(false);
+              // avoid redundant id checks when we have a layer with sub layers referenced in the map
+              const id: string = common.getProp(
+                serviceResponse,
+                "serviceItemId"
+              );
+              if (id && Object.keys(idChecks).indexOf(id) < 0) {
+                idChecks[id] = common.isUserItemAdmin(
+                  serviceResponse.serviceItemId,
+                  authentication
+                );
+              }
+              return id ? idChecks[id] : Promise.resolve(false);
             }
           );
 
@@ -151,15 +156,14 @@ export function _getLayerIds(
             Promise.all(itemOwnerPromises).then(
               itemOwnerResponses => {
                 itemOwnerResponses.forEach((canTemplatize, i) => {
-                  if (canTemplatize) {
-                    if (
-                      dependencies.indexOf(serviceResponses[i].serviceItemId) <
-                      0
-                    ) {
-                      dependencies.push(serviceResponses[i].serviceItemId);
-                    }
-                    urlHash[layers[i].url] = serviceResponses[i].serviceItemId;
+                  const id: string = serviceResponses[i].serviceItemId;
+                  if (dependencies.indexOf(id) < 0) {
+                    dependencies.push(id);
                   }
+                  urlHash[layers[i].url] = {
+                    id: id,
+                    canTemplatize: canTemplatize
+                  };
                 });
                 resolve({
                   dependencies: dependencies,
@@ -203,11 +207,12 @@ export function _templatizeWebmapLayerIdsAndUrls(
       const layerId = layer.url.substr(
         (layer.url as string).lastIndexOf("/") + 1
       );
-      const id: any =
+      const hashLayer: any =
         Object.keys(urlHash).indexOf(layer.url) > -1
           ? urlHash[layer.url]
           : undefined;
-      if (id) {
+      if (hashLayer && hashLayer.canTemplatize) {
+        const id: string = hashLayer.id;
         layer.url = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
         layer.itemId = common.templatizeTerm(
           id,
