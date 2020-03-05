@@ -43,7 +43,7 @@ const SERVER_INFO = {
   fullVersion: "10.1",
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://www.arcgis.com",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
   authInfo: {}
 };
 
@@ -110,16 +110,16 @@ describe("Module `deploySolutionItems`", () => {
             results: []
           }
         )
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: newItemID
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
             newItemID +
             "/update",
-          { success: true, id: newItemID }
+          utils.getSuccessResponse({ id: newItemID })
         );
 
       const expected: any[] = [
@@ -150,8 +150,12 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then(actual => {
           delete templateDictionary[id].def;
-          expect(templateDictionary).toEqual(expectedTemplateDictionary);
-          expect(actual).toEqual(expected);
+          expect(templateDictionary)
+            .withContext("test template dictionary")
+            .toEqual(expectedTemplateDictionary);
+          expect(actual)
+            .withContext("test expected result")
+            .toEqual(expected);
           done();
         }, done.fail);
     });
@@ -718,7 +722,7 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
-        .then(response => {
+        .then((response: common.ICreateItemFromTemplateResponse) => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
           done();
         });
@@ -736,14 +740,14 @@ describe("Module `deploySolutionItems`", () => {
       const newItemID: string = "wma1234567891";
 
       fetchMock
-        .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-          success: true,
-          id: newItemID
-        })
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/wma1234567891/update",
-          { success: true, id: newItemID }
+          utils.getSuccessResponse({ id: newItemID })
         );
 
       // tslint:disable-next-line: no-floating-promises
@@ -785,10 +789,15 @@ describe("Module `deploySolutionItems`", () => {
         const newItemID: string = "map1234567891";
 
         fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-            success: true,
-            id: newItemID
-          })
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID })
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567891/update",
+            utils.getFailureResponse()
+          )
           .post(
             "https://myserver/doc/cod1234567890_info_data/Name of an AGOL item.zip/rest/info",
             SERVER_INFO
@@ -804,14 +813,7 @@ describe("Module `deploySolutionItems`", () => {
             }),
             { sendAsJson: false }
           )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/" +
-              newItemID +
-              "/update",
-            { success: false }
-          )
-          .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO);
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO);
 
         // tslint:disable-next-line: no-floating-promises
         deploySolution
@@ -824,9 +826,7 @@ describe("Module `deploySolutionItems`", () => {
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
+            expect(response).toEqual(templates.getFailedItem("Web Map"));
             done();
           });
       });
@@ -911,14 +911,14 @@ describe("Module `deploySolutionItems`", () => {
         const newItemID: string = "wma1234567891";
 
         fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem", {
-            success: true,
-            id: newItemID
-          })
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID })
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/wma1234567891/update",
-            { success: true, id: newItemID }
+            utils.getSuccessResponse({ id: newItemID })
           )
           .post(resourceFilePaths[0].url, 503);
 
@@ -934,7 +934,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .then(response => {
             expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
+              templates.getFailedItem("Web Mapping Application")
             );
             done();
           });
@@ -995,7 +995,7 @@ describe("Module `deploySolutionItems`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/NEW123ABC/update",
-            utils.getSuccessResponse()
+            utils.getSuccessResponse({ id: "NEW123ABC" })
           );
 
         deploySolution
@@ -1051,7 +1051,7 @@ describe("Module `deploySolutionItems`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/NEW123ABC/update",
-            utils.getSuccessResponse()
+            utils.getSuccessResponse({ id: "NEW123ABC" })
           );
 
         spyOn(notebook, "postProcessItemDependencies").and.callThrough();

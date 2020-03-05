@@ -30,7 +30,7 @@ const SERVER_INFO = {
   fullVersion: "10.1",
   soapUrl: "http://server/arcgis/services",
   secureSoapUrl: "https://server/arcgis/services",
-  owningSystemUrl: "https://www.arcgis.com",
+  owningSystemUrl: "https://myorg.maps.arcgis.com",
   authInfo: {}
 };
 
@@ -379,7 +379,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           )
           .then(response => {
             expect(response).toEqual({
-              id: "map1234567891",
+              id: newItemID,
               type: itemTemplate.type,
               postProcess: false
             });
@@ -408,7 +408,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             success: true,
             id: newItemID
           })
-          .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO)
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
           .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
           .post(
             "https://myserver/doc/metadata.xml",
@@ -437,7 +437,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
           )
           .then(response => {
             expect(response).toEqual({
-              id: "map1234567891",
+              id: newItemID,
               type: itemTemplate.type,
               postProcess: false
             });
@@ -456,7 +456,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
 
         fetchMock.post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          { success: false }
+          utils.getFailureResponse()
         );
 
         // tslint:disable-next-line: no-floating-promises
@@ -472,6 +472,190 @@ describe("Module `file`: manages the creation and deployment of item types that 
           .then(response => {
             done();
           });
+      });
+
+      it("should handle cancellation before deployment of item starts", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+          {
+            type: common.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+          }
+        ];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID, folder: null })
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
+          .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
+          .post(
+            "https://myserver/doc/metadata.xml",
+            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+              type: "text/xml"
+            }),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: true }
+          );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.createFailingItemProgressCallback(1)
+          )
+          .then(
+            response => {
+              expect(response).toEqual(
+                templates.getFailedItem(itemTemplate.type)
+              );
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("should handle cancellation after deployed item is created", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+          {
+            type: common.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+          }
+        ];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID, folder: null })
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
+          .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
+          .post(
+            "https://myserver/doc/metadata.xml",
+            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+              type: "text/xml"
+            }),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: true }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567891/delete",
+            utils.getSuccessResponse({ itemId: itemTemplate.itemId })
+          );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.createFailingItemProgressCallback(2)
+          )
+          .then(
+            response => {
+              expect(response).toEqual(
+                templates.getFailedItem(itemTemplate.type)
+              );
+              done();
+            },
+            () => done.fail()
+          );
+      });
+
+      it("should handle cancellation failure after deployed item is created", done => {
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+          "Web Map"
+        );
+        itemTemplate.item.thumbnail = null;
+        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+          {
+            type: common.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+          }
+        ];
+        const templateDictionary: any = {};
+        const newItemID: string = "map1234567891";
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+            utils.getSuccessResponse({ id: newItemID, folder: null })
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
+          .post("https://myserver/doc/metadata.xml/rest/info", SERVER_INFO)
+          .post(
+            "https://myserver/doc/metadata.xml",
+            new Blob(["<meta><value1>a</value1><value2>b</value2></meta>"], {
+              type: "text/xml"
+            }),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
+              newItemID +
+              "/update",
+            { success: true }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/map1234567891/delete",
+            utils.getFailureResponse({ itemId: itemTemplate.itemId })
+          );
+
+        file
+          .createItemFromTemplate(
+            itemTemplate,
+            resourceFilePaths,
+            MOCK_USER_SESSION,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.createFailingItemProgressCallback(2)
+          )
+          .then(
+            response => {
+              expect(response).toEqual(
+                templates.getFailedItem(itemTemplate.type)
+              );
+              done();
+            },
+            () => done.fail()
+          );
       });
     }
   });

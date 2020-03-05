@@ -106,12 +106,15 @@ export function _extractDependencies(
     const objs: IDashboardWidget[] = common.getProp(itemTemplate, path);
     if (Array.isArray(objs)) {
       objs.forEach(obj => {
+        /* istanbul ignore else */
         if (obj.type === "mapWidget") {
+          /* istanbul ignore else */
           if (itemTemplate.dependencies.indexOf(obj.itemId) < 0) {
             itemTemplate.dependencies.push(obj.itemId);
           }
           obj.itemId = common.templatizeTerm(obj.itemId, obj.itemId, ".itemId");
         }
+        /* istanbul ignore else */
         if (Array.isArray(obj.datasets)) {
           _getDatasourceDependencies(obj, itemTemplate);
         }
@@ -131,7 +134,7 @@ export function _extractDependencies(
 export function _getDatasourceDependencies(
   obj: any,
   itemTemplate: common.IItemTemplate
-) {
+): void {
   obj.datasets.forEach((dataset: IDashboardDataset) => {
     // when the datasource has an itemId is an external datasource
     const itemId: string = common.getProp(dataset, "dataSource.itemId");
@@ -145,6 +148,7 @@ export function _getDatasourceDependencies(
         itemId,
         layerId !== undefined ? ".layer" + layerId + ".itemId" : ".itemId"
       );
+      /* istanbul ignore else */
       if (layerId !== undefined) {
         dataset.dataSource.layerId = common.templatizeTerm(
           itemId,
@@ -201,6 +205,7 @@ export function _updateDatasourceReferences(
   datasourceInfos: common.IDatasourceInfo[]
 ) {
   // objects can be events or widgets
+  /* istanbul ignore else */
   if (objs && Array.isArray(objs)) {
     objs.forEach(obj => {
       if (Array.isArray(obj.datasets)) {
@@ -257,6 +262,7 @@ export function _templatize(
   datasourceInfos: common.IDatasourceInfo[]
 ) {
   const obj: any[] = common.getProp(itemTemplate, path);
+  /* istanbul ignore else */
   if (obj) {
     common.setProp(
       itemTemplate,
@@ -287,6 +293,7 @@ export function _templatizeByDatasource(
         // Handle these specifically first to ensure that it has the correct layer reference
         _obj.events = _obj.events.map((event: any) => {
           const _event: any = event;
+          /* istanbul ignore else */
           if (Array.isArray(_event.actions)) {
             _event.actions = _event.actions.map((action: any) => {
               const _action: any = action;
@@ -299,6 +306,7 @@ export function _templatizeByDatasource(
                   _action,
                   datasourceInfos
                 );
+                /* istanbul ignore else */
                 if (datasourceInfo) {
                   const fields: any[] = common.getProp(
                     datasourceInfo,
@@ -308,6 +316,7 @@ export function _templatizeByDatasource(
                     datasourceInfo,
                     "basePath"
                   );
+                  /* istanbul ignore else */
                   if (Array.isArray(fields) && basePath) {
                     _action.fieldMap = _action.fieldMap.map((m: any) => {
                       const _m: any = m;
@@ -332,12 +341,14 @@ export function _templatizeByDatasource(
           let _dataset: any = dataset;
           if (_dataset.type === "serviceDataset") {
             const datasourceInfo = _getDatasourceInfo(dataset, datasourceInfos);
+            /* istanbul ignore else */
             if (datasourceInfo) {
               const fields: any[] = common.getProp(datasourceInfo, "fields");
               const basePath: string = common.getProp(
                 datasourceInfo,
                 "basePath"
               );
+              /* istanbul ignore else */
               if (Array.isArray(fields) && basePath) {
                 _obj = common.templatizeFieldReferences(_obj, fields, basePath);
                 _dataset = common.templatizeFieldReferences(
@@ -401,6 +412,7 @@ export function _getDatasourceInfo(
     const layerId: any = common.cleanLayerId(
       common.getProp(obj, "dataSource.layerId")
     );
+    /* istanbul ignore else */
     if (itemId) {
       datasourceInfos.some(di => {
         const matches: boolean = itemId === di.itemId && layerId === di.layerId;

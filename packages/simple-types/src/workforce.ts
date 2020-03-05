@@ -89,12 +89,14 @@ export function _extractDependencies(
  */
 export function _templatize(data: any, keyProperties: string[]): any {
   keyProperties.forEach(p => {
+    /* istanbul ignore else */
     if (common.getProp(data, p)) {
       if (common.getProp(data[p], "serviceItemId")) {
         // templatize properties with id and url
         const id: string = data[p].serviceItemId;
         let serviceItemIdSuffix: string = ".itemId";
 
+        /* istanbul ignore else */
         if (common.getProp(data[p], "url")) {
           const layerId = data[p].url.substr(
             (data[p].url as string).lastIndexOf("/") + 1
@@ -123,6 +125,7 @@ export function _templatize(data: any, keyProperties: string[]): any {
   // templatize app integrations
   const templatizeUrlTemplate = function(item: any) {
     let ids: string[];
+    /* istanbul ignore else */
     if (common.getProp(item, "urlTemplate")) {
       ids = item.urlTemplate.match(/itemID=[0-9A-F]{32}/gim) || [];
       ids.forEach(id => {
@@ -138,6 +141,7 @@ export function _templatize(data: any, keyProperties: string[]): any {
   const integrations: any[] = data.assignmentIntegrations || [];
   integrations.forEach(i => {
     templatizeUrlTemplate(i);
+    /* istanbul ignore else */
     if (i.assignmentTypes && Array.isArray(i.assignmentTypes)) {
       const assignmentTypes: string[] = i.assignmentTypes;
       assignmentTypes.forEach((assignType: any) => {

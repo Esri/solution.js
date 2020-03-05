@@ -173,7 +173,7 @@ export function copyData(
           data: convertResourceToFile({
             blob: blob,
             filename: destination.filename,
-            mimeType: destination.mimeType
+            mimeType: destination.mimeType || blob.type
           })
         };
 
@@ -420,27 +420,6 @@ export function copyResource(
 }
 
 /**
- * Generates a folder and filename for storing a copy of an item info file in a storage item.
- *
- * @param itemId Id of item
- * @param filename Filename of item
- * @return Folder and filename for storage; folder is the itemID suffixed with "_info"
- * @see generateResourceFilenameFromStorage
- */
-export function generateInfoStorageFilename(
-  itemId: string,
-  filename: string
-): {
-  folder: string;
-  filename: string;
-} {
-  return {
-    folder: itemId + "_info",
-    filename
-  };
-}
-
-/**
  * Generates the full URL and storage folder/filename for storing the thumbnail of a group.
  *
  * @param portalSharingUrl Server/sharing
@@ -467,6 +446,27 @@ export function generateGroupFilePaths(
       ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
     }
   ];
+}
+
+/**
+ * Generates a folder and filename for storing a copy of an item info file in a storage item.
+ *
+ * @param itemId Id of item
+ * @param filename Filename of item
+ * @return Folder and filename for storage; folder is the itemID suffixed with "_info"
+ * @see generateResourceFilenameFromStorage
+ */
+export function generateInfoStorageFilename(
+  itemId: string,
+  filename: string
+): {
+  folder: string;
+  filename: string;
+} {
+  return {
+    folder: itemId + "_info",
+    filename
+  };
 }
 
 /**
@@ -779,13 +779,21 @@ export function updateItemResources(
         const itemResources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
         );
-        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+        let resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
           authentication.portal,
           itemTemplate.itemId,
           itemTemplate.item.thumbnail,
           itemResources,
           itemTemplate.type === "Group"
         );
+        if (itemTemplate.type === "Form") {
+          resourceItemFilePaths = resourceItemFilePaths.concat(
+            generateSourceInfoFilePaths(
+              authentication.portal,
+              itemTemplate.itemId
+            )
+          );
+        }
         // tslint:disable-next-line: no-floating-promises
         copyFilesToStorageItem(
           authentication,

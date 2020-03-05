@@ -475,7 +475,8 @@ describe("Module `deploySolution`", () => {
           snippet: "",
           description: "",
           url:
-            "https://www.arcgis.com/home/item.html?id=c38e59126368495694ca23b7ccacefba",
+            utils.PORTAL_SUBSET.portalUrl +
+            "/home/item.html?id=c38e59126368495694ca23b7ccacefba",
           thumbnailUrl:
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/c38e59126368495694ca23b7ccacefba/info/thumbnail/ago_downloaded_orig.png",

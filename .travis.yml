@@ -8,7 +8,7 @@ node_js:
 before_script:
 - npm install
 script:
-- npm run test:chrome:ci
+- npm run test:ci
 env:
 - MOZ_HEADLESS=1
 addons:

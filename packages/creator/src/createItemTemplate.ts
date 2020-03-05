@@ -385,7 +385,9 @@ export function createItemTemplate(
                         )
                         .then(resources => {
                           // update the templates resources
-                          itemTemplate.resources = resources;
+                          itemTemplate.resources = itemTemplate.resources.concat(
+                            resources
+                          );
                           // Trace item dependencies
                           if (itemTemplate.dependencies.length === 0) {
                             itemProgressCallback(
