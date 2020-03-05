@@ -48,9 +48,9 @@ export function convertItemToTemplate(
       itemInfo
     );
 
-    common.isUserItemAdmin(template.itemId, authentication).then(
-      canTemplatize => {
-        if (!canTemplatize) {
+    common.hasInvalidGroupDesignations(template.itemId, authentication).then(
+      hasInvalidDesignations => {
+        if (hasInvalidDesignations) {
           resolve(template);
         } else {
           // Update the estimated cost factor to deploy this item

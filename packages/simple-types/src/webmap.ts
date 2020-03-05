@@ -146,7 +146,7 @@ export function _getLayerIds(
       Promise.all(layerPromises).then(
         serviceResponses => {
           const idChecks: any = {};
-          const itemOwnerPromises: Array<Promise<any>> = serviceResponses.map(
+          const itemPromises: Array<Promise<any>> = serviceResponses.map(
             serviceResponse => {
               // avoid redundant checks when we have a layer with subLayers
               const id: string = common.getProp(
@@ -154,7 +154,7 @@ export function _getLayerIds(
                 "serviceItemId"
               );
               if (id && Object.keys(idChecks).indexOf(id) < 0) {
-                idChecks[id] = common.isUserItemAdmin(
+                idChecks[id] = common.hasInvalidGroupDesignations(
                   serviceResponse.serviceItemId,
                   authentication
                 );
@@ -163,17 +163,17 @@ export function _getLayerIds(
             }
           );
 
-          if (itemOwnerPromises.length > 0) {
-            Promise.all(itemOwnerPromises).then(
-              itemOwnerResponses => {
-                itemOwnerResponses.forEach((canTemplatize, i) => {
+          if (itemPromises.length > 0) {
+            Promise.all(itemPromises).then(
+              itemResponses => {
+                itemResponses.forEach((hasInvalidDesignations, i) => {
                   const id: string = serviceResponses[i].serviceItemId;
-                  if (dependencies.indexOf(id) < 0) {
+                  if (!hasInvalidDesignations && dependencies.indexOf(id) < 0) {
                     dependencies.push(id);
                   }
                   urlHash[layers[i].url] = {
                     id: id,
-                    canTemplatize: canTemplatize
+                    canTemplatize: !hasInvalidDesignations
                   };
                 });
                 resolve({
