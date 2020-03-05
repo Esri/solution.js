@@ -663,7 +663,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             }
           )
           .post(
-            "https://www.arcgis.com/sharing/content/items/itm1234567980/info/thumbnail/thumbnail.png",
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567980/info/thumbnail/thumbnail.png",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
