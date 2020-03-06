@@ -51,7 +51,14 @@ export function convertItemToTemplate(
     common.hasInvalidGroupDesignations(template.itemId, authentication).then(
       hasInvalidDesignations => {
         if (hasInvalidDesignations) {
-          resolve(template);
+          common
+            .updateTemplateForInvalidDesignations(template, authentication)
+            .then(
+              _template => {
+                resolve(_template);
+              },
+              e => reject(common.fail(e))
+            );
         } else {
           // Update the estimated cost factor to deploy this item
           template.estimatedDeploymentCostFactor = 10;

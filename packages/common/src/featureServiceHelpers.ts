@@ -326,6 +326,55 @@ export function updateSettingsFieldInfos(
 }
 
 /**
+ * Add flag to indicate item should be ignored.
+ * Construct template dictionary to detemplatize any references to this item by other items.
+ *
+ * @param template Template for feature service item
+ * @param authentication Credentials for the request
+ * @return A promise that will resolve when template has been updated
+ * @protected
+ */
+export function updateTemplateForInvalidDesignations(
+  template: interfaces.IItemTemplate,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IItemTemplate> {
+  return new Promise<interfaces.IItemTemplate>((resolve, reject) => {
+    template.properties.hasInvalidDesignations = true;
+    if (template.item.url) {
+      const url: string = template.item.url;
+      restHelpers
+        .rest_request(url + "?f=json", {
+          authentication: authentication
+        })
+        .then(
+          serviceData => {
+            const layerInfos: any = {};
+            const layersAndTables: any[] = (serviceData.layers || []).concat(
+              serviceData.tables || []
+            );
+            layersAndTables.forEach((l: any) => {
+              if (l && l.hasOwnProperty("id")) {
+                layerInfos[l.id] = l;
+              }
+            });
+
+            template.data[template.itemId] = Object.assign(
+              {
+                itemId: template.itemId
+              },
+              getLayerSettings(layerInfos, url, template.itemId)
+            );
+            resolve(template);
+          },
+          e => reject(generalHelpers.fail(e))
+        );
+    } else {
+      resolve(template);
+    }
+  });
+}
+
+/**
  * Replace the field name reference templates with the new field names after deployment.
  *
  * @param fieldInfos The object that stores the cached layer properties and name mapping

@@ -145,50 +145,17 @@ export function _getLayerIds(
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
         serviceResponses => {
-          const idChecks: any = {};
-          const itemPromises: Array<Promise<any>> = serviceResponses.map(
-            serviceResponse => {
-              // avoid redundant checks when we have a layer with subLayers
-              const id: string = common.getProp(
-                serviceResponse,
-                "serviceItemId"
-              );
-              if (id && Object.keys(idChecks).indexOf(id) < 0) {
-                idChecks[id] = common.hasInvalidGroupDesignations(
-                  serviceResponse.serviceItemId,
-                  authentication
-                );
-              }
-              return id ? idChecks[id] : Promise.resolve(false);
+          serviceResponses.forEach((service, i) => {
+            const id: string = service.serviceItemId;
+            if (dependencies.indexOf(id) < 0) {
+              dependencies.push(id);
             }
-          );
-
-          if (itemPromises.length > 0) {
-            Promise.all(itemPromises).then(
-              itemResponses => {
-                itemResponses.forEach((hasInvalidDesignations, i) => {
-                  const id: string = serviceResponses[i].serviceItemId;
-                  if (!hasInvalidDesignations && dependencies.indexOf(id) < 0) {
-                    dependencies.push(id);
-                  }
-                  urlHash[layers[i].url] = {
-                    id: id,
-                    canTemplatize: !hasInvalidDesignations
-                  };
-                });
-                resolve({
-                  dependencies: dependencies,
-                  urlHash: urlHash
-                });
-              },
-              e => reject(common.fail(e))
-            );
-          } else {
-            resolve({
-              dependencies: dependencies,
-              urlHash: urlHash
-            });
-          }
+            urlHash[layers[i].url] = id;
+          });
+          resolve({
+            dependencies: dependencies,
+            urlHash: urlHash
+          });
         },
         e => reject(common.fail(e))
       );
@@ -218,12 +185,11 @@ export function _templatizeWebmapLayerIdsAndUrls(
       const layerId = layer.url.substr(
         (layer.url as string).lastIndexOf("/") + 1
       );
-      const hashLayer: any =
+      const id: string =
         Object.keys(urlHash).indexOf(layer.url) > -1
           ? urlHash[layer.url]
           : undefined;
-      if (hashLayer && hashLayer.canTemplatize) {
-        const id: string = hashLayer.id;
+      if (id) {
         layer.url = common.templatizeTerm(id, id, ".layer" + layerId + ".url");
         layer.itemId = common.templatizeTerm(
           id,
