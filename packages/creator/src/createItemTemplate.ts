@@ -388,7 +388,7 @@ export function createItemTemplate(
                       );
 
                       common
-                        .updateItemResources(
+                        .storeItemResources(
                           itemTemplate,
                           solutionItemId,
                           authentication

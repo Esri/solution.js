@@ -1214,7 +1214,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }
       ];
 
-      const actual = resourceHelpers.generateSourceInfoFilePaths(
+      const actual = resourceHelpers.generateSourceFormFilePaths(
         portalSharingUrl,
         itemId
       );
@@ -1500,7 +1500,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   if (typeof window !== "undefined") {
-    describe("updateItemResources", () => {
+    describe("storeItemResources", () => {
       it("can update item resources for quick capture project", done => {
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
@@ -1557,7 +1557,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
@@ -1650,7 +1650,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
@@ -1751,7 +1751,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
@@ -1830,7 +1830,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           );
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual([]);
             done();

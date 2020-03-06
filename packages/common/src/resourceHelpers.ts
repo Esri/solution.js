@@ -602,7 +602,7 @@ export function generateSourceFilePaths(
   return filePaths;
 }
 
-export function generateSourceInfoFilePaths(
+export function generateSourceFormFilePaths(
   portalSharingUrl: string,
   itemId: string
 ): interfaces.ISourceFileCopyPath[] {
@@ -757,6 +757,82 @@ export function isSupportedFileType(filename: string): boolean {
 }
 
 /**
+ * Updates the solution item with form files from the itemTemplate
+ *
+ * @param itemTemplate Template for AGOL item
+ * @param itemData Item's data
+ * @param solutionItemId item id for the solution
+ * @param authentication Credentials for the request to the storage
+ * @return A promise which resolves with an array of resources that have been added to the item
+ */
+export function storeFormItemFiles(
+  itemTemplate: interfaces.IItemTemplate,
+  itemData: any,
+  solutionItemId: string,
+  authentication: interfaces.UserSession
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    const storagePromises: Array<Promise<string[]>> = [];
+
+    // Store form data
+    if (itemData) {
+      const filename =
+        itemTemplate.item.name || (itemData as File).name || "formData.zip";
+      itemTemplate.item.name = filename;
+      const storageName = generateResourceStorageFilename(
+        itemTemplate.itemId,
+        filename,
+        "info_data"
+      );
+      storagePromises.push(
+        new Promise(resolveDataStorage => {
+          // tslint:disable-next-line: no-floating-promises
+          addResourceFromBlob(
+            itemData,
+            solutionItemId,
+            storageName.folder,
+            storageName.filename,
+            authentication
+          ).then(() =>
+            resolveDataStorage([
+              storageName.folder + "/" + storageName.filename
+            ])
+          );
+        })
+      );
+    }
+
+    // Store form info files
+    const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFormFilePaths(
+      authentication.portal,
+      itemTemplate.itemId
+    );
+
+    // tslint:disable-next-line: no-floating-promises
+    storagePromises.push(
+      copyFilesToStorageItem(
+        authentication,
+        resourceItemFilePaths,
+        solutionItemId,
+        authentication
+      )
+    );
+
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(storagePromises).then(savedResourceFilenameSets => {
+      let savedResourceFilenames: string[] = [];
+      savedResourceFilenameSets.forEach(filenameSet => {
+        // Remove any empty names before adding set to cumulative list
+        savedResourceFilenames = savedResourceFilenames.concat(
+          filenameSet.filter(item => !!item)
+        );
+      });
+      resolve(savedResourceFilenames);
+    });
+  });
+}
+
+/**
  * Updates the solution item with resources from the itemTemplate
  *
  * @param itemTemplate Template for AGOL item
@@ -764,7 +840,7 @@ export function isSupportedFileType(filename: string): boolean {
  * @param authentication Credentials for the request to the storage
  * @return A promise which resolves with an array of resources that have been added to the item
  */
-export function updateItemResources(
+export function storeItemResources(
   itemTemplate: interfaces.IItemTemplate,
   solutionItemId: string,
   authentication: interfaces.UserSession
@@ -779,21 +855,14 @@ export function updateItemResources(
         const itemResources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
         );
-        let resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
           authentication.portal,
           itemTemplate.itemId,
           itemTemplate.item.thumbnail,
           itemResources,
           itemTemplate.type === "Group"
         );
-        if (itemTemplate.type === "Form") {
-          resourceItemFilePaths = resourceItemFilePaths.concat(
-            generateSourceInfoFilePaths(
-              authentication.portal,
-              itemTemplate.itemId
-            )
-          );
-        }
+
         // tslint:disable-next-line: no-floating-promises
         copyFilesToStorageItem(
           authentication,
