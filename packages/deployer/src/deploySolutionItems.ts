@@ -239,6 +239,7 @@ export function deploySolutionItems(
         solutionProgressCallback(percentDone);
       }
 
+      /* istanbul ignore if */
       if (consoleProgress) {
         console.log(
           // //???
@@ -582,7 +583,7 @@ export function _createItemFromTemplateWhenReady(
         () => {
           // Find the conversion handler for this item type
           const templateType = template.type;
-          let itemHandler = moduleMap[templateType];
+          const itemHandler = moduleMap[templateType];
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
               itemProgressCallback(
@@ -605,6 +606,7 @@ export function _createItemFromTemplateWhenReady(
             });
           } else {
             // Handle original Story Maps with next-gen Story Maps
+            /* Not yet supported
             if (
               storyMap.isAStoryMap(
                 templateType,
@@ -613,6 +615,7 @@ export function _createItemFromTemplateWhenReady(
             ) {
               itemHandler = storyMap;
             }
+            */
 
             // Delegate the creation of the template to the handler
             // tslint:disable-next-line: no-floating-promises

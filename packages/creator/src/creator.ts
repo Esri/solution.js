@@ -158,6 +158,7 @@ export function _addContentToSolution(
         options.progressCallback(percentDone);
       }
 
+      /* istanbul ignore if */
       if (options.consoleProgress) {
         console.log(
           // //???
