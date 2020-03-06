@@ -145,12 +145,14 @@ export function _getLayerIds(
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
         serviceResponses => {
-          serviceResponses.forEach((service, i) => {
-            const id: string = service.serviceItemId;
-            if (dependencies.indexOf(id) < 0) {
-              dependencies.push(id);
+          serviceResponses.forEach((serviceResponse, i) => {
+            if (common.getProp(serviceResponse, "serviceItemId")) {
+              const id: string = serviceResponse.serviceItemId;
+              if (dependencies.indexOf(id) < 0) {
+                dependencies.push(id);
+              }
+              urlHash[layers[i].url] = id;
             }
-            urlHash[layers[i].url] = id;
           });
           resolve({
             dependencies: dependencies,
@@ -185,7 +187,7 @@ export function _templatizeWebmapLayerIdsAndUrls(
       const layerId = layer.url.substr(
         (layer.url as string).lastIndexOf("/") + 1
       );
-      const id: string =
+      const id: any =
         Object.keys(urlHash).indexOf(layer.url) > -1
           ? urlHash[layer.url]
           : undefined;
