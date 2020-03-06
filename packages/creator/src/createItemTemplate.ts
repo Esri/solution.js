@@ -630,8 +630,8 @@ export function _updateWebMapHashInfo(
  * @return string Amended datasource URL
  */
 export function _addLayerIdToDatasourceUrl(
-  datasourceUrl: string,
-  layerId: any
+  datasourceUrl?: string,
+  layerId?: any
 ): string {
   return datasourceUrl && !isNaN(layerId)
     ? datasourceUrl.replace(/[.]/, ".layer" + layerId + ".")

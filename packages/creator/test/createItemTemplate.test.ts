@@ -990,12 +990,11 @@ describe("Module `createItemTemplate`", () => {
     });
 
     it("returns an empty string if the datasource URL is missing", () => {
-      const datasourceUrl = "";
       const layerId = 8;
       const expectedAmendedDatasourceUrl = "";
 
       const actualAmendedDatasourceUrl: string = createItemTemplate._addLayerIdToDatasourceUrl(
-        datasourceUrl,
+        undefined,
         layerId
       );
       expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
@@ -1010,6 +1009,13 @@ describe("Module `createItemTemplate`", () => {
         datasourceUrl,
         layerId
       );
+      expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
+    });
+
+    it("returns an empty string if the layer id not supplied", () => {
+      const expectedAmendedDatasourceUrl = "";
+
+      const actualAmendedDatasourceUrl: string = createItemTemplate._addLayerIdToDatasourceUrl();
       expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
     });
   });
