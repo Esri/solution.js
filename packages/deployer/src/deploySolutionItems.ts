@@ -622,8 +622,6 @@ export function _createItemFromTemplateWhenReady(
             itemHandler
               .createItemFromTemplate(
                 template,
-                resourceFilePaths,
-                storageAuthentication,
                 templateDictionary,
                 destinationAuthentication,
                 itemProgressCallback

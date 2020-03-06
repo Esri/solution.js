@@ -375,8 +375,6 @@ export interface IItemTemplateConversions {
   ): Promise<IItemTemplate>;
   createItemFromTemplate(
     template: IItemTemplate,
-    resourceFilePaths: IDeployFileCopyPath[],
-    storageAuthentication: UserSession,
     templateDictionary: any,
     destinationAuthentication: UserSession,
     itemProgressCallback: IItemProgressCallback
