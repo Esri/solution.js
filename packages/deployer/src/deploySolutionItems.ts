@@ -216,7 +216,8 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   reuseItems: boolean,
-  solutionProgressCallback?: common.ISolutionProgressCallback
+  solutionProgressCallback?: common.ISolutionProgressCallback,
+  consoleProgress?: boolean
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
@@ -238,14 +239,17 @@ export function deploySolutionItems(
         solutionProgressCallback(percentDone);
       }
 
-      console.log(
-        // //???
-        Date.now(),
-        itemId,
-        common.SItemProgressStatus[status],
-        percentDone.toFixed(0) + "%",
-        costUsed
-      );
+      /* istanbul ignore if */
+      if (consoleProgress) {
+        console.log(
+          // //???
+          Date.now(),
+          itemId,
+          common.SItemProgressStatus[status],
+          percentDone.toFixed(0) + "%",
+          costUsed
+        );
+      }
 
       if (status === common.EItemProgressStatus.Created) {
         deployedItemIds.push(itemId);
@@ -579,7 +583,7 @@ export function _createItemFromTemplateWhenReady(
         () => {
           // Find the conversion handler for this item type
           const templateType = template.type;
-          let itemHandler = moduleMap[templateType];
+          const itemHandler = moduleMap[templateType];
           if (!itemHandler || itemHandler === UNSUPPORTED) {
             if (itemHandler === UNSUPPORTED) {
               itemProgressCallback(
@@ -602,6 +606,7 @@ export function _createItemFromTemplateWhenReady(
             });
           } else {
             // Handle original Story Maps with next-gen Story Maps
+            /* Not yet supported
             if (
               storyMap.isAStoryMap(
                 templateType,
@@ -610,6 +615,7 @@ export function _createItemFromTemplateWhenReady(
             ) {
               itemHandler = storyMap;
             }
+            */
 
             // Delegate the creation of the template to the handler
             // tslint:disable-next-line: no-floating-promises

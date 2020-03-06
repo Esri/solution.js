@@ -122,10 +122,12 @@ export interface ICreateSolutionOptions {
   description?: string; // default: ""
   tags?: string[]; // default: []
   thumbnailUrl?: string; // default: ""
+  folderId?: string; // default is top level
   templateDictionary?: any; // default: {}
   templatizeFields?: boolean; // default: false
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Template"]
   progressCallback?: ISolutionProgressCallback;
+  consoleProgress?: boolean; // default: false
 }
 
 /**
@@ -230,6 +232,7 @@ export interface IDeploySolutionOptions {
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
   progressCallback?: ISolutionProgressCallback;
+  consoleProgress?: boolean; // default: false
 }
 
 /**

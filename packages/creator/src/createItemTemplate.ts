@@ -34,6 +34,8 @@ const UNSUPPORTED: common.moduleHandler = null;
  * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
  */
 export const moduleMap: common.IItemTypeModuleMap = {
+  ////////////////////////////////////////////////////////
+  // Group type
   Group: group,
 
   ////////////////////////////////////////////////////////
@@ -189,7 +191,12 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Windows Mobile Package": file,
   "Windows Viewer Add In": file,
   "Windows Viewer Configuration": file,
-  "Workflow Manager Package": file
+  "Workflow Manager Package": file,
+
+  ////////////////////////////////////////////////////////
+  // Testing "types"
+  Undefined: undefined,
+  Unsupported: UNSUPPORTED
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -246,6 +253,7 @@ export function createItemTemplate(
               );
             }
             // Remove any source-itemId tags
+            /* istanbul ignore else */
             if (Array.isArray(itemInfo.tags)) {
               itemInfo.tags = itemInfo.tags.filter(v =>
                 idTest.test(v) ? false : true
@@ -324,7 +332,7 @@ export function createItemTemplate(
                 } // unable to fetch thumbnail
               );
             } else {
-              let itemHandler = moduleMap[itemType];
+              const itemHandler = moduleMap[itemType];
               if (!itemHandler || itemHandler === UNSUPPORTED) {
                 if (itemHandler === UNSUPPORTED) {
                   itemProgressCallback(
@@ -357,9 +365,11 @@ export function createItemTemplate(
                 }
               } else {
                 // Handle original Story Maps with next-gen Story Maps
-                if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
+                /* istanbul ignore else */
+                /* Not yet supported
+                  if (storyMap.isAStoryMap(itemType, itemInfo.url)) {
                   itemHandler = storyMap;
-                }
+                } */
 
                 // Delegate the creation of the item to the handler
                 itemHandler
@@ -477,6 +487,7 @@ export function postProcessFieldReferences(
   const templateTypeHash: any = _getTemplateTypeHash(templates);
 
   return templates.map(template => {
+    /* istanbul ignore else */
     if (
       template.type === "Web Mapping Application" ||
       template.type === "Dashboard" ||
@@ -487,6 +498,7 @@ export function postProcessFieldReferences(
         templateTypeHash
       );
       const itemHandler: any = moduleMap[template.item.type];
+      /* istanbul ignore else */
       if (itemHandler) {
         const dependencies: string[] = webMapFSDependencies.concat(
           template.dependencies
@@ -533,6 +545,7 @@ export function _getDatasourceInfos(
       const tables: any[] = common.getProp(t, "properties.tables") || [];
       const layersAndTables: any[] = layers.concat(tables);
       layersAndTables.forEach(obj => {
+        /* istanbul ignore else */
         if (!common.hasDatasource(datasourceInfos, t.itemId, obj.id)) {
           datasourceInfos.push({
             itemId: t.itemId,
@@ -593,9 +606,11 @@ export function _updateWebMapHashInfo(
     layersAndTables.forEach(layer => {
       const obj: any = {};
       let itemId: any;
+      /* istanbul ignore else */
       if (layer.itemId) {
         itemId = layer.itemId;
       }
+      /* istanbul ignore else */
       if (itemId) {
         obj[common.cleanLayerBasedItemId(itemId)] = {
           id: layer.id,
@@ -605,6 +620,22 @@ export function _updateWebMapHashInfo(
       }
     });
   }
+}
+
+/**
+ * Updates a templatized datasource URL with a layer id.
+ *
+ * @param dataSourceUrl Templatized datasource URL
+ * @param layerId Layer id
+ * @return string Amended datasource URL
+ */
+export function _addLayerIdToDatasourceUrl(
+  datasourceUrl?: string,
+  layerId?: any
+): string {
+  return datasourceUrl && !isNaN(layerId)
+    ? datasourceUrl.replace(/[.]/, ".layer" + layerId + ".")
+    : "";
 }
 
 /**
@@ -629,10 +660,7 @@ export function _addMapLayerIds(
     webMapIds.forEach(webMapId => {
       templateTypeHash[webMapId].layersAndTables.forEach((opLayer: any) => {
         const opLayerInfo: any = opLayer[ds.itemId];
-        const url: string =
-          ds.url && !isNaN(ds.layerId)
-            ? ds.url.replace(/[.]/, ".layer" + ds.layerId + ".")
-            : "";
+        const url: string = _addLayerIdToDatasourceUrl(ds.url, ds.layerId);
         if (
           opLayerInfo &&
           url === opLayerInfo.url &&
@@ -663,6 +691,7 @@ export function _getWebMapFSDependencies(
     const depObj: any = templateTypeHash[dep];
     if (depObj.type === "Web Map") {
       depObj.dependencies.forEach((depObjDependency: string) => {
+        /* istanbul ignore else */
         if (templateTypeHash[depObjDependency].type === "Feature Service") {
           webMapFSDependencies.push(depObjDependency);
         }

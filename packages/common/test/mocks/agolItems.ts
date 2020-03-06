@@ -188,6 +188,10 @@ export function getAGOLItem(type?: string, url = ""): any {
       item = getAGOLItemFundamentals(type);
       break;
 
+    case "Undefined":
+      item = getAGOLItemFundamentals(type);
+      break;
+
     case "Unsupported":
       item = getAGOLItemFundamentals(type);
       break;
@@ -1121,6 +1125,8 @@ export function getItemTypeAbbrev(type: string): string {
   // Supported item types
   return (
     ({
+      ////////////////////////////////////////////////////////
+      // Group type
       Group: "grp",
 
       ////////////////////////////////////////////////////////
