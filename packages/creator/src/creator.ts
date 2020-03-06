@@ -158,14 +158,16 @@ export function _addContentToSolution(
         options.progressCallback(percentDone);
       }
 
-      console.log(
-        // //???
-        Date.now(),
-        itemId,
-        common.SItemProgressStatus[status],
-        percentDone.toFixed(0) + "%",
-        costUsed
-      );
+      if (options.consoleProgress) {
+        console.log(
+          // //???
+          Date.now(),
+          itemId,
+          common.SItemProgressStatus[status],
+          percentDone.toFixed(0) + "%",
+          costUsed
+        );
+      }
 
       if (status === common.EItemProgressStatus.Failed) {
         common.removeTemplate(solutionTemplates, itemId);
@@ -315,7 +317,7 @@ export function _createSolutionItem(
         solutionItem,
         solutionData,
         authentication,
-        undefined // use top-level folder
+        options?.folderId
       )
       .then(createResponse => {
         // Thumbnail must be added manually

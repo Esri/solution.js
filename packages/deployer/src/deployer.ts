@@ -242,7 +242,8 @@ export function _deploySolutionFromTemplate(
           templateDictionary,
           authentication,
           options?.enableItemReuse || false,
-          options.progressCallback
+          options.progressCallback,
+          options.consoleProgress
         );
       })
       .then(clonedSolutionsResponse => {

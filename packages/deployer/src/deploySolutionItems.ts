@@ -216,7 +216,8 @@ export function deploySolutionItems(
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   reuseItems: boolean,
-  solutionProgressCallback?: common.ISolutionProgressCallback
+  solutionProgressCallback?: common.ISolutionProgressCallback,
+  consoleProgress?: boolean
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
@@ -238,14 +239,16 @@ export function deploySolutionItems(
         solutionProgressCallback(percentDone);
       }
 
-      console.log(
-        // //???
-        Date.now(),
-        itemId,
-        common.SItemProgressStatus[status],
-        percentDone.toFixed(0) + "%",
-        costUsed
-      );
+      if (consoleProgress) {
+        console.log(
+          // //???
+          Date.now(),
+          itemId,
+          common.SItemProgressStatus[status],
+          percentDone.toFixed(0) + "%",
+          costUsed
+        );
+      }
 
       if (status === common.EItemProgressStatus.Created) {
         deployedItemIds.push(itemId);
