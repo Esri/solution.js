@@ -102,6 +102,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -111,12 +112,70 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
+      });
+
+      it("should handle cancellation after item's template is created", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "map12345678900";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map12345678900?f=json&token=fake-token",
+            mockItems.getAGOLItem("Web Map")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+            mockItems.getAnImageResponse()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
+            noDataResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/info/metadata/metadata.xml",
+            noMetadataResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890/resources",
+            noResourcesResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            { success: true, id: solutionItemId }
           );
+        staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+          total: 0,
+          relatedItems: []
+        });
+
+        // tslint:disable-next-line: no-floating-promises
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates,
+            utils.createFailingItemProgressCallback(2)
+          )
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
       });
 
       it("shortcuts if template is already done or in progress", done => {
@@ -128,6 +187,7 @@ describe("Module `createItemTemplate`", () => {
           templates.getItemTemplate("Web Map")
         ];
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -137,12 +197,11 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
       });
 
       it("handles problem creating a template for an item", done => {
@@ -221,6 +280,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -230,20 +290,17 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              const createdTemplate = common.findTemplateInList(
-                existingTemplates,
-                itemId
-              );
-              expect(createdTemplate.properties.error).not.toBeUndefined();
-              expect(createdTemplate.properties.error).toEqual(
-                '{"success":false}'
-              );
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            const createdTemplate = common.findTemplateInList(
+              existingTemplates,
+              itemId
+            );
+            expect(createdTemplate.properties.error).not.toBeUndefined();
+            expect(createdTemplate.properties.error).toEqual(
+              '{"success":false}'
+            );
+            done();
+          });
       });
 
       it("creates a template for an empty group", done => {
@@ -290,6 +347,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -299,12 +357,11 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
       });
 
       it("creates a template for an empty group, but solution thumbnail can't be fetched", done => {
@@ -362,6 +419,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -371,12 +429,12 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(2);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            expect(existingTemplates[1].itemId).toEqual("img12345678900");
+            done();
+          });
       });
 
       it("creates a template for an empty group, but solution's thumbnail can't be set", done => {
@@ -439,6 +497,7 @@ describe("Module `createItemTemplate`", () => {
             mockItems.get400Failure()
           );
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -448,12 +507,12 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(2);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            expect(existingTemplates[1].itemId).toEqual("img12345678900");
+            done();
+          });
       });
 
       it("creates a template for a group", done => {
@@ -544,6 +603,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -553,12 +613,13 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(3);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            expect(existingTemplates[1].itemId).toEqual("img12345678900");
+            expect(existingTemplates[2].itemId).toEqual("map12345678901");
+            done();
+          });
       });
 
       it("creates a template for a group, testing duplication removal", done => {
@@ -636,6 +697,7 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -645,12 +707,14 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(2);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            expect(existingTemplates[1].itemId).toEqual(
+              groupContents.items[0].id
+            );
+            done();
+          });
       });
 
       it("handles inability to get a dependency", done => {
@@ -707,6 +771,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -716,12 +781,12 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(2);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            expect(existingTemplates[1].itemId).toEqual("map12345678900");
+            done();
+          });
       });
 
       it("creates inserts a placeholder template for an item type that's not handled", done => {
@@ -735,7 +800,7 @@ describe("Module `createItemTemplate`", () => {
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/xxx1234567890?f=json&token=fake-token",
-            mockItems.getAGOLItem("Unsupported")
+            mockItems.getAGOLItem("Undefined")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -743,6 +808,7 @@ describe("Module `createItemTemplate`", () => {
             { success: true, id: solutionItemId }
           );
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -752,12 +818,41 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
+      });
+
+      it("shortcuts if item type is not supported", done => {
+        const solutionItemId: string = "sln1234567890";
+        const itemId: string = "xxx1234567890";
+        const templateDictionary: any = {};
+        const authentication: common.UserSession = MOCK_USER_SESSION;
+        const existingTemplates: common.IItemTemplate[] = [];
+
+        fetchMock.get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/xxx1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Unsupported")
+        );
+
+        // tslint:disable-next-line: no-floating-promises
+        createItemTemplate
+          .createItemTemplate(
+            solutionItemId,
+            itemId,
+            templateDictionary,
+            authentication,
+            existingTemplates,
+            utils.ITEM_PROGRESS_CALLBACK
+          )
+          .then(() => {
+            expect(existingTemplates.length).toEqual(1);
+            expect(existingTemplates[0].itemId).toEqual(itemId);
+            done();
+          });
       });
 
       it("removes source-itemIds from typeKeywords and tags", done => {
@@ -828,6 +923,7 @@ describe("Module `createItemTemplate`", () => {
         const expectedTags: string[] = ["test"];
         const expectedTypeKeywords: string[] = ["JavaScript"];
 
+        // tslint:disable-next-line: no-floating-promises
         createItemTemplate
           .createItemTemplate(
             solutionItemId,
@@ -837,24 +933,21 @@ describe("Module `createItemTemplate`", () => {
             existingTemplates,
             utils.ITEM_PROGRESS_CALLBACK
           )
-          .then(
-            response => {
-              // getItem.calls.mostRecent().returnValue.then(v => {
-              //   expect(v.tags).toEqual(preExpectedTags);
-              //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
-              // }, done.fail);
-              const actualTemplate: any = updateItemResources.calls.mostRecent()
-                .args[0];
-              expect(actualTemplate.item.tags)
-                .withContext("test final tags")
-                .toEqual(expectedTags);
-              expect(actualTemplate.item.typeKeywords)
-                .withContext("test final typeKeywords")
-                .toEqual(expectedTypeKeywords);
-              done();
-            },
-            () => done.fail()
-          );
+          .then(() => {
+            // getItem.calls.mostRecent().returnValue.then(v => {
+            //   expect(v.tags).toEqual(preExpectedTags);
+            //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
+            // }, done.fail);
+            const actualTemplate: any = updateItemResources.calls.mostRecent()
+              .args[0];
+            expect(actualTemplate.item.tags)
+              .withContext("test final tags")
+              .toEqual(expectedTags);
+            expect(actualTemplate.item.typeKeywords)
+              .withContext("test final typeKeywords")
+              .toEqual(expectedTypeKeywords);
+            done();
+          });
       });
     });
   }
@@ -879,6 +972,45 @@ describe("Module `createItemTemplate`", () => {
         [template]
       );
       expect(actual).toEqual([]);
+    });
+  });
+
+  describe("_addLayerIdToDatasourceUrl", () => {
+    it("inserts numeric layer id into datasource URL", () => {
+      const datasourceUrl = "{{b19aec399444407da84fffe2a55d4151.url}}";
+      const layerId = 8;
+      const expectedAmendedDatasourceUrl =
+        "{{b19aec399444407da84fffe2a55d4151.layer8.url}}";
+
+      const actualAmendedDatasourceUrl: string = createItemTemplate._addLayerIdToDatasourceUrl(
+        datasourceUrl,
+        layerId
+      );
+      expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
+    });
+
+    it("returns an empty string if the datasource URL is missing", () => {
+      const datasourceUrl = "";
+      const layerId = 8;
+      const expectedAmendedDatasourceUrl = "";
+
+      const actualAmendedDatasourceUrl: string = createItemTemplate._addLayerIdToDatasourceUrl(
+        datasourceUrl,
+        layerId
+      );
+      expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
+    });
+
+    it("returns an empty string if the layer id isn't numeric", () => {
+      const datasourceUrl = "{{b19aec399444407da84fffe2a55d4151.url}}";
+      const layerId = "a";
+      const expectedAmendedDatasourceUrl = "";
+
+      const actualAmendedDatasourceUrl: string = createItemTemplate._addLayerIdToDatasourceUrl(
+        datasourceUrl,
+        layerId
+      );
+      expect(actualAmendedDatasourceUrl).toEqual(expectedAmendedDatasourceUrl);
     });
   });
 });
