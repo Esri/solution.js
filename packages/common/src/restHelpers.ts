@@ -707,36 +707,12 @@ export function getFeatureServiceProperties(
 }
 
 export function hasInvalidGroupDesignations(
-  itemId: string,
-  authentication: interfaces.UserSession
-): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    restHelpersGet.getItem(itemId, authentication).then(
-      item => {
-        const invalidGroupDesignations: string[] = ["livingatlas"];
-        resolve(
-          item.groupDesignations
-            ? invalidGroupDesignations.indexOf(item.groupDesignations) > -1
-            : false
-        );
-      },
-      (e: any) => reject(generalHelpers.fail(e))
-    );
-  });
-}
-
-export function isUserItemAdmin(
-  itemId: string,
-  authentication: interfaces.UserSession
-): Promise<boolean> {
-  return new Promise<boolean>((resolve, reject) => {
-    restHelpersGet.getItem(itemId, authentication).then(
-      item => {
-        resolve(item && item?.itemControl === "admin");
-      },
-      (e: any) => reject(generalHelpers.fail(e))
-    );
-  });
+  groupDesignations: string
+): boolean {
+  const invalidGroupDesignations: string[] = ["livingatlas"];
+  return groupDesignations
+    ? invalidGroupDesignations.indexOf(groupDesignations) > -1
+    : false;
 }
 
 /**

@@ -1250,4 +1250,112 @@ describe("Module `creator`", () => {
       done();
     });
   });
+
+  describe("_postProcessIgnoredItems", () => {
+    it("handle templates with invalid designations", () => {
+      // My Layer
+      const fsItemId: string = "bbb34ae01aad44c499d12feec782b386";
+      const fsTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      fsTemplate.item = mockItems.getAGOLItem(
+        "Feature Service",
+        `{{${fsItemId}.url}}`
+      );
+      fsTemplate.itemId = fsItemId;
+      fsTemplate.item.id = `{{${fsItemId}.itemId}}`;
+      fsTemplate.data = mockItems.getAGOLItemData("Feature Service");
+
+      // Living atlas layer
+      const livingAtlasItemId: string = "ccc34ae01aad44c499d12feec782b386";
+      const livingAtlasUrl: string =
+        "https://services9.arcgis.com/RHVPKKiFTONKtxq3/arcgis/rest/services/NWS_Watches_Warnings_v1/FeatureServer";
+      const livingAtlasTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      livingAtlasTemplate.item = mockItems.getAGOLItem(
+        "Feature Service",
+        livingAtlasUrl
+      );
+      livingAtlasTemplate.itemId = livingAtlasItemId;
+      livingAtlasTemplate.item.id = livingAtlasItemId;
+      const livingAtlasTemplateData: any = {};
+      livingAtlasTemplateData[livingAtlasItemId] = {
+        itemId: livingAtlasItemId,
+        layer0: {
+          fields: {},
+          url: livingAtlasUrl + "/0",
+          layerId: "0",
+          itemId: livingAtlasItemId
+        }
+      };
+      livingAtlasTemplate.data = mockItems.getAGOLItemData("Feature Service");
+      livingAtlasTemplate.data = livingAtlasTemplateData;
+      livingAtlasTemplate.properties = {
+        hasInvalidDesignations: true
+      };
+
+      // Web map
+      const mapItemId: string = "aaa26f145e1a4cab9ae2f519f5e7f5d7";
+      const mapTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      mapTemplate.item = mockItems.getAGOLItem("Web Map");
+      mapTemplate.itemId = mapItemId;
+      mapTemplate.item.id = `{{${mapItemId}.itemId}}`;
+      mapTemplate.data = {
+        operationalLayers: [
+          {
+            id: "NDFD_Precipitation_v1_4323",
+            url: `{{${livingAtlasItemId}.layer0.url}}`,
+            itemId: `{{${livingAtlasItemId}.layer0.itemId}}`
+          },
+          {
+            id: "My Data",
+            url: `{{${fsItemId}.layer0.url}}`,
+            itemId: `{{${fsItemId}.layer0.itemId}}`
+          }
+        ]
+      };
+      mapTemplate.dependencies = [fsItemId, livingAtlasItemId];
+
+      const itemTemplates: common.IItemTemplate[] = [
+        fsTemplate,
+        livingAtlasTemplate,
+        mapTemplate
+      ];
+
+      const expectedMapData: any = {
+        operationalLayers: [
+          {
+            id: "NDFD_Precipitation_v1_4323",
+            url: livingAtlasUrl + "/0",
+            itemId: livingAtlasItemId
+          },
+          {
+            id: "My Data",
+            url: `{{${fsItemId}.layer0.url}}`,
+            itemId: `{{${fsItemId}.layer0.itemId}}`
+          }
+        ]
+      };
+
+      const expectedMapDependencies: any[] = [fsItemId];
+
+      const expectedMapTemplate: common.IItemTemplate = common.cloneObject(
+        mapTemplate
+      );
+      expectedMapTemplate.data = expectedMapData;
+      expectedMapTemplate.dependencies = expectedMapDependencies;
+      const expectedTemplates: common.IItemTemplate[] = [
+        common.cloneObject(fsTemplate),
+        expectedMapTemplate
+      ];
+
+      const actualTemplates: common.IItemTemplate[] = creator._postProcessIgnoredItems(
+        itemTemplates
+      );
+      const actualWebMapTemplate: common.IItemTemplate = actualTemplates[1];
+
+      expect(actualTemplates).toEqual(expectedTemplates);
+      expect(actualWebMapTemplate.data).toEqual(expectedMapData);
+      expect(actualWebMapTemplate.dependencies).toEqual(
+        expectedMapDependencies
+      );
+    });
+  });
 });

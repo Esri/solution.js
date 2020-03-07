@@ -353,6 +353,7 @@ export function updateTemplateForInvalidDesignations(
               serviceData.tables || []
             );
             layersAndTables.forEach((l: any) => {
+              /* istanbul ignore else */
               if (l && l.hasOwnProperty("id")) {
                 layerInfos[l.id] = l;
               }
