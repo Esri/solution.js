@@ -242,7 +242,6 @@ export function deploySolutionItems(
       /* istanbul ignore if */
       if (consoleProgress) {
         console.log(
-          // //???
           Date.now(),
           itemId,
           common.SItemProgressStatus[status],

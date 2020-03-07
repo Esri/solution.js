@@ -161,7 +161,6 @@ export function _addContentToSolution(
       /* istanbul ignore if */
       if (options.consoleProgress) {
         console.log(
-          // //???
           Date.now(),
           itemId,
           common.SItemProgressStatus[status],

@@ -116,23 +116,24 @@ export function convertItemToTemplate(
             itemTemplate.data = null;
             form.convertItemToTemplate(itemTemplate);
 
-            wrapupPromise = new Promise(resolveFormStorage => {
-              // tslint:disable-next-line: no-floating-promises
-              common
-                .storeFormItemFiles(
-                  itemTemplate,
-                  itemDataResponse,
-                  solutionItemId,
-                  authentication
-                )
-                .then(formFilenames => {
-                  // update the templates resources
-                  itemTemplate.resources = itemTemplate.resources.concat(
-                    formFilenames
-                  );
-                  resolveFormStorage();
-                });
-            });
+            wrapupPromise = new Promise(
+              (resolveFormStorage, rejectFormStorage) => {
+                common
+                  .storeFormItemFiles(
+                    itemTemplate,
+                    itemDataResponse,
+                    solutionItemId,
+                    authentication
+                  )
+                  .then(formFilenames => {
+                    // update the templates resources
+                    itemTemplate.resources = itemTemplate.resources.concat(
+                      formFilenames
+                    );
+                    resolveFormStorage();
+                  }, rejectFormStorage);
+              }
+            );
             break;
           case "Notebook":
             notebook.convertItemToTemplate(itemTemplate);

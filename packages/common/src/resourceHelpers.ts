@@ -314,9 +314,9 @@ export function copyFilesToStorageItem(
   storageItemId: string,
   storageAuthentication: interfaces.UserSession
 ): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
+  return new Promise<string[]>(resolve => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
-      return new Promise<string>(resolveThisFile => {
+      return new Promise<string>((resolveThisFile, rejectThisFile) => {
         copyResource(
           {
             url: filePath.url,
@@ -337,7 +337,8 @@ export function copyFilesToStorageItem(
     });
 
     // Wait until all items have been copied
-    Promise.all(awaitAllItems).then(r => resolve(r), reject);
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(awaitAllItems).then(r => resolve(r));
   });
 }
 
@@ -881,18 +882,19 @@ export function storeFormItemFiles(
         "info_data"
       );
       storagePromises.push(
-        new Promise(resolveDataStorage => {
-          // tslint:disable-next-line: no-floating-promises
+        new Promise((resolveDataStorage, rejectDataStorage) => {
           addResourceFromBlob(
             itemData,
             solutionItemId,
             storageName.folder,
             storageName.filename,
             authentication
-          ).then(() =>
-            resolveDataStorage([
-              storageName.folder + "/" + storageName.filename
-            ])
+          ).then(
+            () =>
+              resolveDataStorage([
+                storageName.folder + "/" + storageName.filename
+              ]),
+            rejectDataStorage
           );
         })
       );
@@ -914,7 +916,6 @@ export function storeFormItemFiles(
       )
     );
 
-    // tslint:disable-next-line: no-floating-promises
     Promise.all(storagePromises).then(savedResourceFilenameSets => {
       let savedResourceFilenames: string[] = [];
       savedResourceFilenameSets.forEach(filenameSet => {
@@ -924,7 +925,7 @@ export function storeFormItemFiles(
         );
       });
       resolve(savedResourceFilenames);
-    });
+    }, reject);
   });
 }
 

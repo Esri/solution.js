@@ -1657,7 +1657,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("can update item resources for a form", done => {
+      it("can store item resources for a form", done => {
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
           "Form"
         );
@@ -1743,12 +1743,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           relatedItems: []
         });
 
-        const expected: string[] = [
-          "frm1234567890_info_thumbnail/banner.png",
-          "frm1234567890_info/form.json",
-          "frm1234567890_info/forminfo.json",
-          "frm1234567890_info/form.webform.json.zip"
-        ];
+        const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
 
         resourceHelpers
           .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
