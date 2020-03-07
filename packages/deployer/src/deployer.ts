@@ -32,6 +32,7 @@ export function deploySolution(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const deployOptions: common.IDeploySolutionOptions = options || {};
+    /* istanbul ignore else */
     if (deployOptions.progressCallback) {
       deployOptions.progressCallback(1); // let the caller know that we've started
     }
@@ -60,6 +61,7 @@ export function deploySolution(
           deployOptions
         ).then(
           createdSolutionId => {
+            /* istanbul ignore else */
             if (deployOptions.progressCallback) {
               deployOptions.progressCallback(100); // we're done
             }
@@ -67,6 +69,7 @@ export function deploySolution(
           },
           error => {
             // Error deploying solution
+            /* istanbul ignore else */
             if (deployOptions.progressCallback) {
               deployOptions.progressCallback(1);
             }
@@ -76,6 +79,7 @@ export function deploySolution(
       },
       error => {
         // Error fetching solution
+        /* istanbul ignore else */
         if (deployOptions.progressCallback) {
           deployOptions.progressCallback(1);
         }

@@ -435,6 +435,45 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
+      it("copies a single info file", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Info,
+            folder: null,
+            filename: "form.json",
+            url:
+              utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json"
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationAuthentication = MOCK_USER_SESSION;
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/updateinfo";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageAuthentication,
+            filePaths,
+            destinationItemId,
+            destinationAuthentication
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+
       it("copies a single resource file", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
@@ -987,6 +1026,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
         type: interfaces.EFileType.Data,
         folder: "8f7ec78195d0479784036387d522e29f_info_dataz",
         filename: "data.pkg"
+      };
+
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles the form.webform info file", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info/form.webform.json";
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Info,
+        folder: "8f7ec78195d0479784036387d522e29f_info",
+        filename: "form.webform.json"
       };
 
       const actual = resourceHelpers.generateResourceFilenameFromStorage(
