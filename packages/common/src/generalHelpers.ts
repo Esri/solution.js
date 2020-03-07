@@ -50,10 +50,17 @@ export function blobToJson(blob: Blob): Promise<any> {
  *
  * @param blob Blob to use as source
  * @param filename Name to use for file
+ * @param mimeType MIME type to override blob's MIME type
  * @return File created out of Blob and filename
  */
-export function blobToFile(blob: Blob, filename: string): File {
-  return new File([blob], filename ? filename : "", { type: blob.type });
+export function blobToFile(
+  blob: Blob,
+  filename: string,
+  mimeType?: string
+): File {
+  return new File([blob], filename ? filename : "", {
+    type: mimeType || blob.type
+  });
 }
 
 /**
