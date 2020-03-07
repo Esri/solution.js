@@ -641,7 +641,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "frm1234567890_info_data/formData.zip",
             "frm1234567890_info/form.json",
             "frm1234567890_info/forminfo.json",
-            "frm1234567890_info/form.webform.json.zip"
+            "frm1234567890_info/form.webform.json"
           ],
           relatedItems: [
             {
@@ -925,7 +925,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             expect(newItemTemplate.resources).toEqual([
               "frm1234567890_info/form.json",
               "frm1234567890_info/forminfo.json",
-              "frm1234567890_info/form.webform.json.zip"
+              "frm1234567890_info/form.webform.json"
             ]);
             expect(newItemTemplate.dependencies).toEqual([]);
             done();

@@ -611,13 +611,6 @@ export function generateResourceFilenameFromStorage(
     }
   }
 
-  // Handle camouflaged form filename
-  if (filename.endsWith(".json.zip")) {
-    // We need to leave the ".json" part on because AGO uses the extension
-    // rather than the MIME type for updateinfo
-    filename = filename.replace(/\.zip$/, "");
-  }
-
   return { type, folder, filename };
 }
 
@@ -712,10 +705,12 @@ export function generateSourceFormFilePaths(
     })
   );
 
+  // We need to add the ".json" extension because AGO uses the extension
+  // rather than the MIME type for updateinfo; it strips it automatically
   filePaths.push({
     url: baseUrl + "form.webform",
     folder: itemId + "_info",
-    filename: "form.webform.json.zip"
+    filename: "form.webform.json"
   });
 
   return filePaths;

@@ -1210,7 +1210,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.webform",
           folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
-          filename: "form.webform.json.zip"
+          filename: "form.webform.json"
         }
       ];
 
