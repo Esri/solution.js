@@ -358,7 +358,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -371,8 +370,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -392,14 +389,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-          }
-        ];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -429,8 +418,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -450,7 +437,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -463,8 +449,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -479,14 +463,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-          }
-        ];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -515,8 +491,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.createFailingItemProgressCallback(1)
@@ -537,14 +511,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-          }
-        ];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -578,8 +544,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.createFailingItemProgressCallback(2)
@@ -600,14 +564,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
           "Web Map"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
-          {
-            type: common.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
-          }
-        ];
         const templateDictionary: any = {};
         const newItemID: string = "map1234567891";
 
@@ -641,8 +597,6 @@ describe("Module `file`: manages the creation and deployment of item types that 
         file
           .createItemFromTemplate(
             itemTemplate,
-            resourceFilePaths,
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.createFailingItemProgressCallback(2)

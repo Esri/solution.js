@@ -106,8 +106,6 @@ describe("Module `storymap`", () => {
       storymap
         .createItemFromTemplate(
           templateSTO,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -131,8 +129,6 @@ describe("Module `storymap`", () => {
       storymap
         .createItemFromTemplate(
           templateSTO,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -154,8 +150,6 @@ describe("Module `storymap`", () => {
       storymap
         .createItemFromTemplate(
           templateSTO,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK

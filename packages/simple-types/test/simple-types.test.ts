@@ -1150,8 +1150,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1192,8 +1190,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1240,8 +1236,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
-            [],
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -1298,8 +1292,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
-            [],
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -1401,8 +1393,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1546,8 +1536,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1618,8 +1606,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1714,8 +1700,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
@@ -1858,8 +1842,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
@@ -1929,8 +1911,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -2027,8 +2007,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderId",
             abc0cab401af4828a25cc6eaeb59fb69: {
@@ -2052,8 +2030,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(1)
@@ -2084,8 +2060,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(2)
@@ -2116,8 +2090,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(2)
@@ -2153,8 +2125,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(3)
@@ -2190,8 +2160,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(3)
