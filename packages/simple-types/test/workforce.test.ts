@@ -338,6 +338,54 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       expect(actual).toEqual(expected);
     });
 
+    it("should bypass invalid props", () => {
+      const data = mockItems.getAGOLItemData("Workforce Project");
+      delete data.assignmentIntegrations;
+
+      const expected: any = mockItems.getAGOLItemData("Workforce Project");
+      delete expected.assignmentIntegrations;
+      expected["folderId"] = "{{folderId}}";
+
+      const actual = workforce._templatize(data, ["fake"]);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should bypass missing urls", () => {
+      const data = mockItems.getAGOLItemData("Workforce Project");
+      delete data.assignmentIntegrations;
+      delete data["dispatchers"].url;
+      const expected: any = mockItems.getAGOLItemData("Workforce Project");
+      delete expected.assignmentIntegrations;
+      delete expected["dispatchers"].url;
+      expected["dispatchers"].serviceItemId =
+        "{{abc302ec12b74d2f9f2b3cc549420086.itemId}}";
+      expected["folderId"] = "{{folderId}}";
+      expected["assignments"].serviceItemId =
+        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.itemId}}";
+      expected["assignments"].url =
+        "{{abc4494043c3459faabcfd0e1ab557fc.layer0.url}}";
+
+      const actual = workforce._templatize(data, [
+        "dispatchers",
+        "assignments"
+      ]);
+      expect(actual).toEqual(expected);
+    });
+
+    it("should bypass missing urlTemplate and missing assignment types", () => {
+      const data = mockItems.getAGOLItemData("Workforce Project");
+      delete data["assignmentIntegrations"][0].urlTemplate;
+      delete data["assignmentIntegrations"][0].assignmentTypes;
+
+      const expected: any = mockItems.getAGOLItemData("Workforce Project");
+      expected["folderId"] = "{{folderId}}";
+      delete expected["assignmentIntegrations"][0].urlTemplate;
+      delete expected["assignmentIntegrations"][0].assignmentTypes;
+
+      const actual = workforce._templatize(data, []);
+      expect(actual).toEqual(expected);
+    });
+
     it("should handle urlTemplate without itemId", () => {
       const data = mockItems.getAGOLItemData("Workforce Project");
       data.assignmentIntegrations[0].urlTemplate = "ABC123";

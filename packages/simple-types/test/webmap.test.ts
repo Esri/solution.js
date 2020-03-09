@@ -150,7 +150,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "badb9ef8efa7448fa8ddf7b13cef0240",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/2"
             },
             {
               itemId: null
@@ -158,7 +158,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "badc9ef8efa7448fa8ddf7b13cef0240",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/4"
             }
           ],
           tables: []
@@ -216,11 +216,11 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abca9ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/2",
           { serviceItemId: "abcb9ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/4",
           { serviceItemId: "abcc9ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -256,7 +256,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "table3",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/3"
             },
             {
               itemId: null
@@ -314,7 +314,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/3",
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -344,7 +344,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
             },
             {
               itemId: null
@@ -352,14 +352,14 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer4",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4"
             }
           ],
           tables: [
             {
               itemId: "table1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
             },
             {
               itemId: null
@@ -367,7 +367,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "table3",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3"
             },
             {
               itemId: null
@@ -438,19 +438,19 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
       fetchMock
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3",
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4",
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -541,19 +541,19 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           operationalLayers: [
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
             },
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
             },
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3"
             },
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4"
             }
           ],
           tables: []
@@ -609,19 +609,19 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
       fetchMock
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3",
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4",
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -648,21 +648,21 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
             },
             {
               itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
             },
             {
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
             },
             {
               itemId: "layer3",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3"
             }
           ],
           tables: []
@@ -717,15 +717,15 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
 
       fetchMock
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/3",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService3/FeatureServer/3",
           { serviceItemId: "abc39ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -752,21 +752,21 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             {
               itemId: "layer1",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
             },
             {
               itemId: "layer2",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
             },
             {
               itemId: "layer3",
-              url: "http://myserver/arcgis/services/myService/FeatureServer/3"
+              url: "http://myserver/arcgis/services/myService3/FeatureServer/3"
             },
             {
               itemId: "layer4",
               url:
-                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+                "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4"
             }
           ],
           tables: []
@@ -799,7 +799,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
             },
             {
               itemId: "layer3",
-              url: "http://myserver/arcgis/services/myService/FeatureServer/3"
+              url: "http://myserver/arcgis/services/myService3/FeatureServer/3"
             },
             {
               itemId: "{{abc49ef8efa7448fa8ddf7b13cef0240.layer4.itemId}}",
@@ -822,20 +822,20 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
       fetchMock
         .post(utils.PORTAL_SUBSET.restUrl + "/info", SERVER_INFO)
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240" }
         )
         .post(
-          "http://myserver/arcgis/services/myService/FeatureServer/3/rest/info",
+          "http://myserver/arcgis/services/myService3/FeatureServer/3/rest/info",
           SERVER_INFO
         )
-        .post("http://myserver/arcgis/services/myService/FeatureServer/3", {})
+        .post("http://myserver/arcgis/services/myService3/FeatureServer/3", {})
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4",
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240" }
         );
 
@@ -855,32 +855,35 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
         {
           itemId: "layer1",
           url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1"
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1"
         },
         {
           itemId: "layer2",
           url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2"
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2"
         },
         {
           itemId: "layer4",
           url:
-            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4"
+            "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4"
+        },
+        {
+          url: "http://myServer/ArcGIS/services/myService4/MapServer/4"
         }
       ];
       const dependencies: string[] = [];
 
       fetchMock
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1",
           { serviceItemId: "abc19ef8efa7448fa8ddf7b13cef0240", id: 1 }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2",
           { serviceItemId: "abc29ef8efa7448fa8ddf7b13cef0240", id: 2 }
         )
         .post(
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4",
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4",
           { serviceItemId: "abc49ef8efa7448fa8ddf7b13cef0240", id: 4 }
         );
 
@@ -891,11 +894,11 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           "abc49ef8efa7448fa8ddf7b13cef0240"
         ],
         urlHash: {
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/1":
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService1/FeatureServer/1":
             "abc19ef8efa7448fa8ddf7b13cef0240",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/2":
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService2/FeatureServer/2":
             "abc29ef8efa7448fa8ddf7b13cef0240",
-          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService/FeatureServer/4":
+          "http://services.arcgis.com/myOrg/ArcGIS/rest/services/myService4/FeatureServer/4":
             "abc49ef8efa7448fa8ddf7b13cef0240"
         }
       };
@@ -905,9 +908,7 @@ describe("Module `webmap`: manages the creation and deployment of web map item t
           expect(actual).toEqual(expected);
           done();
         },
-        e => {
-          done.fail();
-        }
+        e => done.fail
       );
     });
   });

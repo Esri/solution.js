@@ -168,10 +168,134 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             done();
           }, done.fail);
       });
-    }
 
-    // Blobs are only available in the browser
-    if (typeof window !== "undefined") {
+      it("handle invalid group designations", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.item.groupDesignations = "livingatlas";
+
+        fetchMock.post(url + "?f=json", itemTemplate.properties.service);
+
+        const expected: any = {};
+        expected[id] = {
+          itemId: id,
+          layer0: {
+            fields: {},
+            url: url + "/0",
+            layerId: "0",
+            itemId: id
+          },
+          layer1: {
+            fields: {},
+            url: url + "/1",
+            layerId: "1",
+            itemId: id
+          }
+        };
+
+        featureLayer
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            true
+          )
+          .then(r => {
+            // verify the state after
+            expect(r.item.id).toEqual(id);
+            expect(r.item.url).toEqual(url);
+            expect(r.dependencies).toEqual([]);
+            expect(r.properties).toEqual({
+              hasInvalidDesignations: true
+            });
+            expect(r.data).toEqual(expected);
+            done();
+          }, done.fail);
+      });
+
+      it("handle error on updateTemplateForInvalidDesignations", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.item.groupDesignations = "livingatlas";
+
+        fetchMock.post(url + "?f=json", mockItems.get400Failure());
+
+        featureLayer
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            true
+          )
+          .then(() => done.fail, done);
+      });
+
+      it("handle template item with missing url for invalid group designations", done => {
+        const id: string = "svc1234567890";
+
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.item.groupDesignations = "livingatlas";
+        delete itemTemplate.item.url;
+
+        featureLayer
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            true
+          )
+          .then(r => {
+            // verify the state after
+            expect(r.item.id).toEqual(id);
+            expect(r.dependencies).toEqual([]);
+            expect(r.properties).toEqual({
+              hasInvalidDesignations: true
+            });
+            done();
+          }, done.fail);
+      });
+
+      it("handle invalid service data for invalid group designations", done => {
+        const id: string = "svc1234567890";
+        const url: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+        itemTemplate.itemId = id;
+        itemTemplate.item.id = id;
+        itemTemplate.item.groupDesignations = "livingatlas";
+        delete itemTemplate.properties.service.layers;
+        delete itemTemplate.properties.service.tables;
+
+        fetchMock.post(url + "?f=json", itemTemplate.properties.service);
+
+        featureLayer
+          .convertItemToTemplate(
+            "A",
+            itemTemplate.item,
+            MOCK_USER_SESSION,
+            true
+          )
+          .then(r => {
+            // verify the state after
+            expect(r.item.id).toEqual(id);
+            expect(r.item.url).toEqual(url);
+            expect(r.dependencies).toEqual([]);
+            expect(r.properties).toEqual({
+              hasInvalidDesignations: true
+            });
+            done();
+          }, done.fail);
+      });
+
       it("should handle error on extractDependencies", done => {
         const id: string = "svc1234567890";
         const url: string =

@@ -24,6 +24,7 @@ import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
+import * as restHelpersGet from "./restHelpersGet";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as templatization from "./templatization";
 
@@ -703,6 +704,15 @@ export function getFeatureServiceProperties(
         );
     }
   );
+}
+
+export function hasInvalidGroupDesignations(
+  groupDesignations: string
+): boolean {
+  const invalidGroupDesignations: string[] = ["livingatlas"];
+  return groupDesignations
+    ? invalidGroupDesignations.indexOf(groupDesignations) > -1
+    : false;
 }
 
 /**

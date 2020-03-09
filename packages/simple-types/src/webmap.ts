@@ -121,11 +121,22 @@ export function _getLayerIds(
       authentication: authentication
     };
     const layerPromises: Array<Promise<any>> = [];
+    const layerChecks: any = {};
     const layers: any[] = layerList.filter(layer => {
       if (layer.url) {
-        // use url to find serviceItemId
-        layerPromises.push(common.rest_request(layer.url, options));
-        return true;
+        const results: any = /.+FeatureServer/g.exec(layer.url);
+        const baseUrl: string =
+          Array.isArray(results) && results.length > 0 ? results[0] : undefined;
+        if (baseUrl) {
+          // avoid redundant checks when we have a layer with subLayers
+          if (Object.keys(layerChecks).indexOf(baseUrl) < 0) {
+            layerChecks[baseUrl] = common.rest_request(layer.url, options);
+          }
+          layerPromises.push(layerChecks[baseUrl]);
+          return true;
+        } else {
+          return false;
+        }
       } else {
         return false;
       }
@@ -134,15 +145,14 @@ export function _getLayerIds(
     if (layerPromises.length > 0) {
       Promise.all(layerPromises).then(
         serviceResponses => {
-          let i: number = 0;
-          serviceResponses.forEach(serviceResponse => {
+          serviceResponses.forEach((serviceResponse, i) => {
             if (common.getProp(serviceResponse, "serviceItemId")) {
-              if (dependencies.indexOf(serviceResponse.serviceItemId) < 0) {
-                dependencies.push(serviceResponse.serviceItemId);
+              const id: string = serviceResponse.serviceItemId;
+              if (dependencies.indexOf(id) < 0) {
+                dependencies.push(id);
               }
-              urlHash[layers[i].url] = serviceResponse.serviceItemId;
+              urlHash[layers[i].url] = id;
             }
-            i++;
           });
           resolve({
             dependencies: dependencies,

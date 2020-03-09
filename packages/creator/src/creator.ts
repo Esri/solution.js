@@ -215,6 +215,7 @@ export function _addContentToSolution(
         if (solutionTemplates.length > 0) {
           // test for and update group dependencies
           solutionTemplates = _postProcessGroupDependencies(solutionTemplates);
+          solutionTemplates = _postProcessIgnoredItems(solutionTemplates);
 
           // Update solution item with its data JSON
           const solutionData: common.ISolutionItemData = {
@@ -390,6 +391,35 @@ export function _postProcessGroupDependencies(
     }
     return template;
   });
+}
+
+/**
+ * Check for feature service items that have been flagged for invalid designations.
+ * Reomve templates that have invalid designations from the solution item and other item dependencies.
+ * Clean up any references to items with invalid designations in the other templates.
+ *
+ * @param templates The array of templates to evaluate
+ * @return Updated version of the templates
+ * @protected
+ */
+export function _postProcessIgnoredItems(
+  templates: common.IItemTemplate[]
+): common.IItemTemplate[] {
+  // replace in template
+  const updateDictionary: any = templates.reduce((result, template) => {
+    return template.properties.hasInvalidDesignations
+      ? Object.assign(result, template.data)
+      : result;
+  }, {});
+  Object.keys(updateDictionary).forEach(k => {
+    common.removeTemplate(templates, k);
+    templates = templates.map(t => {
+      t.dependencies = t.dependencies.filter(id => id !== k);
+      return common.replaceInTemplate(t, updateDictionary);
+    });
+  });
+
+  return templates;
 }
 
 //#endregion ---------------------------------------------------------------------------------------------------------//
