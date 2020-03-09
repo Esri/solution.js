@@ -154,13 +154,16 @@ export function getBlobAsFile(
   url: string,
   filename: string,
   authentication: interfaces.UserSession,
-  ignoreErrors: number[] = []
+  ignoreErrors: number[] = [],
+  mimeType?: string
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob =>
-        !blob ? resolve() : resolve(generalHelpers.blobToFile(blob, filename)),
+        !blob
+          ? resolve()
+          : resolve(generalHelpers.blobToFile(blob, filename, mimeType)),
       reject
     );
   });

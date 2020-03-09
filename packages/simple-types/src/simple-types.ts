@@ -116,28 +116,24 @@ export function convertItemToTemplate(
             itemTemplate.data = null;
             form.convertItemToTemplate(itemTemplate);
 
-            if (itemDataResponse) {
-              const filename =
-                itemTemplate.item.name ||
-                (itemDataResponse as File).name ||
-                "formData.zip";
-              itemTemplate.item.name = filename;
-              const storageName = common.generateResourceStorageFilename(
-                itemTemplate.itemId,
-                filename,
-                "info_data"
-              );
-              itemTemplate.resources.push(
-                storageName.folder + "/" + storageName.filename
-              );
-              wrapupPromise = common.addResourceFromBlob(
-                itemDataResponse,
-                solutionItemId,
-                storageName.folder,
-                storageName.filename,
-                authentication
-              );
-            }
+            wrapupPromise = new Promise(
+              (resolveFormStorage, rejectFormStorage) => {
+                common
+                  .storeFormItemFiles(
+                    itemTemplate,
+                    itemDataResponse,
+                    solutionItemId,
+                    authentication
+                  )
+                  .then(formFilenames => {
+                    // update the templates resources
+                    itemTemplate.resources = itemTemplate.resources.concat(
+                      formFilenames
+                    );
+                    resolveFormStorage();
+                  }, rejectFormStorage);
+              }
+            );
             break;
           case "Notebook":
             notebook.convertItemToTemplate(itemTemplate);
@@ -182,8 +178,6 @@ export function convertItemToTemplate(
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,
-  resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback

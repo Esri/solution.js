@@ -368,8 +368,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -503,8 +501,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           settings,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -600,8 +596,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             organization: _organization,
             svc1234567890: {},
@@ -679,8 +673,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -758,8 +750,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -828,8 +818,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             organization: _organization,
             svc1234567890: {},
@@ -881,8 +869,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -980,8 +966,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             organization: _organization,
             svc1234567890: {},
@@ -1072,8 +1056,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1147,8 +1129,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1168,8 +1148,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(1)
@@ -1249,8 +1227,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -1334,8 +1310,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -1419,8 +1393,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,
@@ -1504,8 +1476,6 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       featureLayer
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             svc1234567890: {},
             organization: _organization,

@@ -296,12 +296,11 @@ function showBlob(blob: Blob): Promise<string> {
     const file = blob as File;
     const filename = file.name || "";
 
-    // Undo camouflage around a JSON file with an unsupported extension
-    if (filename.endsWith(".json.zip")) {
-      const nameToUse = filename.replace(/\.json\.zip$/, "");
+    // Make sure that a JSON file has the right MIME type; forms have a JSON file with an unsupported extension
+    if (filename.endsWith(".json")) {
       blob = common.convertResourceToFile({
         blob: file,
-        filename: nameToUse,
+        filename: filename,
         mimeType: "application/json"
       });
     }
