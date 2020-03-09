@@ -92,18 +92,23 @@ export function convertItemToTemplate(
       responses => {
         const [itemDataResponse, relatedItemsResponse] = responses;
         itemTemplate.data = itemDataResponse;
+        const relationships = relatedItemsResponse as common.IRelatedItems[];
 
-        // Save the mappings to related items & add those items to the dependencies
-        if ((relatedItemsResponse as common.IRelatedItems[]).length > 0) {
-          itemTemplate.relatedItems = relatedItemsResponse as common.IRelatedItems[];
-          const relationships = itemTemplate.relatedItems.map(relationship => {
+        // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
+        itemTemplate.dependencies = itemTemplate.dependencies || [];
+        itemTemplate.relatedItems = [] as common.IRelatedItems[];
+
+        relationships.forEach(relationship => {
+          /* istanbul ignore else */
+          if (relationship.relationshipType !== "WMA2Code") {
+            itemTemplate.relatedItems!.push(relationship);
             relationship.relatedItemIds.forEach(relatedItemId => {
               if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
                 itemTemplate.dependencies.push(relatedItemId);
               }
             });
-          });
-        }
+          }
+        });
 
         let wrapupPromise = Promise.resolve();
         let webappPromise = Promise.resolve(itemTemplate);
@@ -296,7 +301,7 @@ export function createItemFromTemplate(
               }
 
               // The item's URL includes its id, so it needs to be updated
-              const updateUrlDef: Promise<string> = template.data
+              const updateUrlDef: Promise<string> = newItemTemplate.item.url
                 ? common.updateItemURL(
                     createResponse.id,
                     common.replaceInTemplate(
@@ -307,7 +312,7 @@ export function createItemFromTemplate(
                   )
                 : Promise.resolve("");
 
-              // Check for extra processing for web mapping application
+              // Check for extra processing for web mapping application et al.
               let customProcDef: Promise<void>;
               if (
                 template.type === "Web Mapping Application" &&
