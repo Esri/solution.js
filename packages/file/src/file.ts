@@ -118,8 +118,6 @@ export function convertItemToTemplate(
 
 export function createItemFromTemplate(
   template: common.IItemTemplate,
-  resourceFilePaths: common.IDeployFileCopyPath[],
-  storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback

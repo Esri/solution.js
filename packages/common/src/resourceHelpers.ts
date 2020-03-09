@@ -247,6 +247,18 @@ export function copyFilesFromStorageItem(
               authentication: destinationAuthentication
             }
           );
+        case interfaces.EFileType.Info:
+          return copyFormInfoFile(
+            {
+              url: filePath.url,
+              filename: filePath.filename,
+              authentication: storageAuthentication
+            },
+            {
+              itemId: destinationItemId,
+              authentication: destinationAuthentication
+            }
+          );
         case interfaces.EFileType.Metadata:
           return copyMetadata(
             {
@@ -302,9 +314,9 @@ export function copyFilesToStorageItem(
   storageItemId: string,
   storageAuthentication: interfaces.UserSession
 ): Promise<string[]> {
-  return new Promise<string[]>((resolve, reject) => {
+  return new Promise<string[]>(resolve => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
-      return new Promise<string>(resolveThisFile => {
+      return new Promise<string>((resolveThisFile, rejectThisFile) => {
         copyResource(
           {
             url: filePath.url,
@@ -325,9 +337,82 @@ export function copyFilesToStorageItem(
     });
 
     // Wait until all items have been copied
-    Promise.all(awaitAllItems).then(r => resolve(r), reject);
+    // tslint:disable-next-line: no-floating-promises
+    Promise.all(awaitAllItems).then(r => resolve(r));
   });
 }
+
+export function copyFormInfoFile(
+  source: {
+    url: string;
+    filename: string;
+    authentication: interfaces.UserSession;
+  },
+  destination: {
+    itemId: string;
+    authentication: interfaces.UserSession;
+  }
+): Promise<any> {
+  return new Promise<any>((resolve, reject) => {
+    // Get the info file
+    restHelpersGet
+      .getBlobAsFile(
+        source.url,
+        source.filename,
+        source.authentication,
+        [],
+        "application/json"
+      )
+      .then(file => {
+        // Send it to the destination item
+        /*portal.*/ updateItemInfo({
+          id: destination.itemId,
+          file,
+          authentication: destination.authentication
+        }).then(resolve, reject);
+      }, reject);
+  });
+}
+
+// =====================================================================================================================
+// submitted to arcgis-rest-js's portal package
+
+interface IItemInfoOptions extends portal.IUserItemOptions {
+  /**
+   * Subfolder for added information.
+   */
+  folderName?: string;
+  /**
+   * Object to store
+   */
+  file: any;
+}
+
+interface IItemInfoResponse {
+  success: boolean;
+  itemId: string;
+  owner: string;
+  folder: string;
+}
+
+function updateItemInfo(
+  requestOptions: IItemInfoOptions
+): Promise<IItemInfoResponse> {
+  const owner = portal.determineOwner(requestOptions);
+  const url = `${portal.getPortalUrl(
+    requestOptions as request.IRequestOptions
+  )}/content/users/${owner}/items/${requestOptions.id}/updateinfo`;
+
+  // mix in user supplied params
+  requestOptions.params = {
+    folderName: requestOptions.folderName,
+    file: requestOptions.file,
+    ...requestOptions.params
+  };
+
+  return request.request(url, requestOptions);
+}
+// =====================================================================================================================
 
 export function copyMetadata(
   source: {
@@ -503,11 +588,15 @@ export function generateResourceFilenameFromStorage(
 ): interfaces.IDeployFilename {
   let type = interfaces.EFileType.Resource;
   let [folder, filename] = storageResourceFilename.split("/");
+
+  // Handle special "folders"
   if (folder.endsWith("_info_thumbnail")) {
     type = interfaces.EFileType.Thumbnail;
   } else if (folder.endsWith("_info_metadata")) {
     type = interfaces.EFileType.Metadata;
     filename = "metadata.xml";
+  } else if (folder.endsWith("_info")) {
+    type = interfaces.EFileType.Info;
   } else if (folder.endsWith("_info_data")) {
     type = interfaces.EFileType.Data;
   } else if (folder.endsWith("_info_dataz")) {
@@ -521,6 +610,7 @@ export function generateResourceFilenameFromStorage(
       folder = "";
     }
   }
+
   return { type, folder, filename };
 }
 
@@ -602,7 +692,7 @@ export function generateSourceFilePaths(
   return filePaths;
 }
 
-export function generateSourceInfoFilePaths(
+export function generateSourceFormFilePaths(
   portalSharingUrl: string,
   itemId: string
 ): interfaces.ISourceFileCopyPath[] {
@@ -615,10 +705,12 @@ export function generateSourceInfoFilePaths(
     })
   );
 
+  // We need to add the ".json" extension because AGO uses the extension
+  // rather than the MIME type for updateinfo; it strips it automatically
   filePaths.push({
     url: baseUrl + "form.webform",
     folder: itemId + "_info",
-    filename: "form.webform.json.zip"
+    filename: "form.webform.json"
   });
 
   return filePaths;
@@ -757,6 +849,82 @@ export function isSupportedFileType(filename: string): boolean {
 }
 
 /**
+ * Updates the solution item with form files from the itemTemplate
+ *
+ * @param itemTemplate Template for AGOL item
+ * @param itemData Item's data
+ * @param solutionItemId item id for the solution
+ * @param authentication Credentials for the request to the storage
+ * @return A promise which resolves with an array of resources that have been added to the item
+ */
+export function storeFormItemFiles(
+  itemTemplate: interfaces.IItemTemplate,
+  itemData: any,
+  solutionItemId: string,
+  authentication: interfaces.UserSession
+): Promise<string[]> {
+  return new Promise<string[]>((resolve, reject) => {
+    const storagePromises: Array<Promise<string[]>> = [];
+
+    // Store form data
+    if (itemData) {
+      const filename =
+        itemTemplate.item.name || (itemData as File).name || "formData.zip";
+      itemTemplate.item.name = filename;
+      const storageName = generateResourceStorageFilename(
+        itemTemplate.itemId,
+        filename,
+        "info_data"
+      );
+      storagePromises.push(
+        new Promise((resolveDataStorage, rejectDataStorage) => {
+          addResourceFromBlob(
+            itemData,
+            solutionItemId,
+            storageName.folder,
+            storageName.filename,
+            authentication
+          ).then(
+            () =>
+              resolveDataStorage([
+                storageName.folder + "/" + storageName.filename
+              ]),
+            rejectDataStorage
+          );
+        })
+      );
+    }
+
+    // Store form info files
+    const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFormFilePaths(
+      authentication.portal,
+      itemTemplate.itemId
+    );
+
+    // tslint:disable-next-line: no-floating-promises
+    storagePromises.push(
+      copyFilesToStorageItem(
+        authentication,
+        resourceItemFilePaths,
+        solutionItemId,
+        authentication
+      )
+    );
+
+    Promise.all(storagePromises).then(savedResourceFilenameSets => {
+      let savedResourceFilenames: string[] = [];
+      savedResourceFilenameSets.forEach(filenameSet => {
+        // Remove any empty names before adding set to cumulative list
+        savedResourceFilenames = savedResourceFilenames.concat(
+          filenameSet.filter(item => !!item)
+        );
+      });
+      resolve(savedResourceFilenames);
+    }, reject);
+  });
+}
+
+/**
  * Updates the solution item with resources from the itemTemplate
  *
  * @param itemTemplate Template for AGOL item
@@ -764,7 +932,7 @@ export function isSupportedFileType(filename: string): boolean {
  * @param authentication Credentials for the request to the storage
  * @return A promise which resolves with an array of resources that have been added to the item
  */
-export function updateItemResources(
+export function storeItemResources(
   itemTemplate: interfaces.IItemTemplate,
   solutionItemId: string,
   authentication: interfaces.UserSession
@@ -779,21 +947,14 @@ export function updateItemResources(
         const itemResources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
         );
-        let resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
           authentication.portal,
           itemTemplate.itemId,
           itemTemplate.item.thumbnail,
           itemResources,
           itemTemplate.type === "Group"
         );
-        if (itemTemplate.type === "Form") {
-          resourceItemFilePaths = resourceItemFilePaths.concat(
-            generateSourceInfoFilePaths(
-              authentication.portal,
-              itemTemplate.itemId
-            )
-          );
-        }
+
         // tslint:disable-next-line: no-floating-promises
         copyFilesToStorageItem(
           authentication,

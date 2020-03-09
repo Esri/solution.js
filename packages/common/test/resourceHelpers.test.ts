@@ -435,6 +435,45 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
+      it("copies a single info file", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Info,
+            folder: null,
+            filename: "form.json",
+            url:
+              utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json"
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationAuthentication = MOCK_USER_SESSION;
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/updateinfo";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567890/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageAuthentication,
+            filePaths,
+            destinationItemId,
+            destinationAuthentication
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+
       it("copies a single resource file", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
@@ -994,6 +1033,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
       );
       expect(actual).toEqual(expected);
     });
+
+    it("handles the form.webform info file", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f_info/form.webform.json";
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Info,
+        folder: "8f7ec78195d0479784036387d522e29f_info",
+        filename: "form.webform.json"
+      };
+
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
+      expect(actual).toEqual(expected);
+    });
   });
 
   describe("generateResourceStorageFilename", () => {
@@ -1210,11 +1264,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
             "/content/items/03744d6b7a9b4b76bfd45dc2d1e642a5/info/form.webform",
           folder: "03744d6b7a9b4b76bfd45dc2d1e642a5_info",
-          filename: "form.webform.json.zip"
+          filename: "form.webform.json"
         }
       ];
 
-      const actual = resourceHelpers.generateSourceInfoFilePaths(
+      const actual = resourceHelpers.generateSourceFormFilePaths(
         portalSharingUrl,
         itemId
       );
@@ -1500,7 +1554,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   });
 
   if (typeof window !== "undefined") {
-    describe("updateItemResources", () => {
+    describe("storeItemResources", () => {
       it("can update item resources for quick capture project", done => {
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("QuickCapture Project", null);
@@ -1557,7 +1611,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
@@ -1650,14 +1704,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
         ];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
           }, done.fail);
       });
 
-      it("can update item resources for a form", done => {
+      it("can store item resources for a form", done => {
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplate(
           "Form"
         );
@@ -1743,15 +1797,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
           relatedItems: []
         });
 
-        const expected: string[] = [
-          "frm1234567890_info_thumbnail/banner.png",
-          "frm1234567890_info/form.json",
-          "frm1234567890_info/forminfo.json",
-          "frm1234567890_info/form.webform.json.zip"
-        ];
+        const expected: string[] = ["frm1234567890_info_thumbnail/banner.png"];
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual(expected);
             done();
@@ -1830,7 +1879,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           );
 
         resourceHelpers
-          .updateItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
+          .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual([]);
             done();

@@ -90,6 +90,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/wrk1234567890/info/metadata/metadata.xml",
             mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wrk1234567890", {
           total: 0,
@@ -637,7 +642,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url: ""
           },
           data: null, // forms don't store info here
-          resources: ["frm1234567890_info_data/formData.zip"],
+          resources: [
+            "frm1234567890_info_data/formData.zip",
+            "frm1234567890_info/form.json",
+            "frm1234567890_info/forminfo.json",
+            "frm1234567890_info/form.webform.json"
+          ],
           relatedItems: [
             {
               relationshipType: "Survey2Service",
@@ -675,6 +685,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
+            utils.getSampleJsonAsFile("forminfo.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
+            utils.getSampleJsonAsFile("form.webform")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -806,6 +837,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
+            { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("wma1234567890", {
           total: 0,
@@ -847,6 +885,34 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/frm1234567890/data",
             mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
+            utils.getSampleJsonAsFile("forminfo.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
+            utils.getSampleJsonAsFile("form.webform")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/" +
+              solutionItemId +
+              "/addResources",
+            { success: true, id: solutionItemId }
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
           "frm1234567890",
@@ -861,7 +927,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           )
           .then(newItemTemplate => {
             expect(newItemTemplate.data).toBeNull();
-            expect(newItemTemplate.resources).toEqual([]);
+            expect(newItemTemplate.resources).toEqual([
+              "frm1234567890_info/form.json",
+              "frm1234567890_info/forminfo.json",
+              "frm1234567890_info/form.webform.json"
+            ]);
             expect(newItemTemplate.dependencies).toEqual([]);
             done();
           }, done.fail);
@@ -897,6 +967,27 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.json",
+            utils.getSampleJsonAsFile("form.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/forminfo.json",
+            utils.getSampleJsonAsFile("forminfo.json")
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemTemplate.itemId +
+              "/info/form.webform",
+            utils.getSampleJsonAsFile("form.webform")
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -1096,6 +1187,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             data
           )
           .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
+          )
+          .post(
             "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
             mockItems.get400FailureResponse()
           );
@@ -1150,8 +1246,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1192,8 +1286,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1240,8 +1332,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
-            [],
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -1298,8 +1388,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         simpleTypes
           .createItemFromTemplate(
             itemTemplate,
-            [],
-            MOCK_USER_SESSION,
             templateDictionary,
             MOCK_USER_SESSION,
             utils.ITEM_PROGRESS_CALLBACK
@@ -1401,8 +1489,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1546,8 +1632,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1618,8 +1702,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -1714,8 +1796,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
@@ -1858,8 +1938,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
@@ -1929,8 +2007,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
@@ -2027,8 +2103,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           {
             folderId: "folderId",
             abc0cab401af4828a25cc6eaeb59fb69: {
@@ -2052,8 +2126,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(1)
@@ -2084,8 +2156,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(2)
@@ -2116,8 +2186,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(2)
@@ -2153,8 +2221,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(3)
@@ -2190,8 +2256,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          [],
-          MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
           utils.createFailingItemProgressCallback(3)

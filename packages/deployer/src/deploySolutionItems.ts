@@ -242,7 +242,6 @@ export function deploySolutionItems(
       /* istanbul ignore if */
       if (consoleProgress) {
         console.log(
-          // //???
           Date.now(),
           itemId,
           common.SItemProgressStatus[status],
@@ -622,8 +621,6 @@ export function _createItemFromTemplateWhenReady(
             itemHandler
               .createItemFromTemplate(
                 template,
-                resourceFilePaths,
-                storageAuthentication,
                 templateDictionary,
                 destinationAuthentication,
                 itemProgressCallback
