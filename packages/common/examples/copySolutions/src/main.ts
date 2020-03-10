@@ -124,17 +124,23 @@ export function copyItemInfo(
  */
 export function getCopyableItemBaseProperties(sourceItem: any): any {
   const copyableItem: any = {
-    name: sourceItem.name,
-    title: sourceItem.title,
-    type: sourceItem.type,
-    typeKeywords: sourceItem.typeKeywords,
+    accessInformation: sourceItem.accessInformation,
+    categories: sourceItem.categories,
+    culture: sourceItem.culture,
     description: sourceItem.description,
-    tags: sourceItem.tags,
-    snippet: sourceItem.snippet,
     documentation: sourceItem.documentation,
     extent: sourceItem.extent,
-    categories: sourceItem.categories,
-    spatialReference: sourceItem.spatialReference
+    largeThumbnail: sourceItem.largeThumbnail,
+    licenseInfo: sourceItem.licenseInfo,
+    name: sourceItem.name,
+    properties: sourceItem.properties,
+    snippet: sourceItem.snippet,
+    spatialReference: sourceItem.spatialReference,
+    tags: sourceItem.tags,
+    thumbnail: sourceItem.thumbnail,
+    title: sourceItem.title,
+    type: sourceItem.type,
+    typeKeywords: sourceItem.typeKeywords
   };
   return copyableItem;
 }
