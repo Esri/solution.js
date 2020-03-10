@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1] - March 10th 2020
+
 ## [Unreleased][HEAD]
 
 ## [0.7.0] - February 28th 2020
@@ -40,4 +42,6 @@ All notable changes to this project will be documented in this file.
 [0.6.2]: https://github.com/Esri/solution.js/compare/v0.6.1...v0.6.2 "v0.6.2"
 [0.6.3]: https://github.com/Esri/solution.js/compare/v0.6.2...v0.6.3 "v0.6.3"
 [0.7.0]: https://github.com/Esri/solution.js/compare/v0.6.3...v0.7.0 "v0.7.0"
-[HEAD]: https://github.com/Esri/solution.js/compare/v0.7.0...HEAD "Unreleased Changes"
+[0.8.0]: https://github.com/Esri/solution.js/compare/v0.7.0...v0.8.0 "v0.8.0"
+[0.8.1]: https://github.com/Esri/solution.js/compare/v0.8.0...v0.8.1 "v0.8.1"
+[HEAD]: https://github.com/Esri/solution.js/compare/v0.8.1...HEAD "Unreleased Changes"
