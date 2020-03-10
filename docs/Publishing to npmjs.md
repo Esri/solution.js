@@ -137,15 +137,17 @@ One can mark a version or versions deprecated using the `npm deprecate` command.
 4. Deprecate packages using two-factor code; this example uses the deprecation message "obsolete" and deprecates every version below 0.5.4
 ```
 twoFactorCode=<2-factor-code>
-npm deprecate @esri/solution-common@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-creator@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-deployer@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-feature-layer@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-file@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-group@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-simple-types@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-storymap@"<0.5.4" "obsolete" --otp=$twoFactorCode
-npm deprecate @esri/solution-viewer@"<0.5.4" "obsolete" --otp=$twoFactorCode
+newVersion=<new-version-number>
+npm deprecate @esri/solution-common@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-creator@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-deployer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-feature-layer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-file@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-group@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-simple-types@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-storymap@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-viewer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+echo done
 ```
 
 ---
@@ -167,15 +169,16 @@ One can mark a version or versions deprecated using the `npm deprecate` command.
 4. Unpublish package(s) using two-factor code; this example unpublishes version 0.5.1
 ```
 twoFactorCode=<2-factor-code>
-npm unpublish @esri/solution-common@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-creator@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-deployer@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-feature-layer@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-file@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-group@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-simple-types@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-storymap@0.5.1 --otp=$twoFactorCode
-npm unpublish @esri/solution-viewer@0.5.1 --otp=$twoFactorCode
+newVersion=<new-version-number>
+npm unpublish @esri/solution-common@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-creator@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-deployer@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-feature-layer@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-file@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-group@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-simple-types@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-storymap@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
