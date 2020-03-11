@@ -1163,6 +1163,81 @@ describe("Module `creator`", () => {
     });
   });
 
+  describe("_getDeploymentProperties", () => {
+    it("finds both deployment properties", () => {
+      const tags = [
+        "a_tag",
+        "deploy.id.abc",
+        "another_tag",
+        "deploy.version.12.3"
+      ];
+      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
+        tags
+      );
+      expect(properties).toEqual({
+        version: "12.3",
+        id: "abc"
+      });
+    });
+
+    it("finds only version deployment property", () => {
+      const tags = ["a_tag", "another_tag", "deploy.version.12.3"];
+      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
+        tags
+      );
+      expect(properties).toEqual({
+        version: "12.3",
+        id: "guid"
+      });
+    });
+
+    it("finds only id deployment property", () => {
+      const tags = ["a_tag", "deploy.id.abc", "another_tag"];
+      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
+        tags
+      );
+      expect(properties).toEqual({
+        version: "1.0",
+        id: "abc"
+      });
+    });
+
+    it("doesn't find either deployment property", () => {
+      const tags = ["a_tag", "another_tag"];
+      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
+        tags
+      );
+      expect(properties).toEqual({
+        version: "1.0",
+        id: "guid"
+      });
+    });
+  });
+
+  describe("_getDeploymentProperty", () => {
+    it("finds a desired prefix", () => {
+      const desiredTagPrefix = "aPrefix";
+      const tags = ["abcdef", "aprefixNotValue", "aPrefixValue"];
+      const value: string = creator._getDeploymentProperty(
+        desiredTagPrefix,
+        tags
+      );
+      expect(value).toEqual("Value");
+    });
+
+    it("doesn't finds a desired prefix", () => {
+      const desiredTagPrefix = "aPrefix";
+      const tags = ["abcdef", "aprefixNotValue"];
+      const value: string = creator._getDeploymentProperty(
+        desiredTagPrefix,
+        tags
+      );
+      expect(value).toBeNull();
+    });
+  });
+
   describe("_postProcessGroupDependencies", () => {
     it("remove group dependencies if we find a circular dependency with one of its items", done => {
       const groupTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();

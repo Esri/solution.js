@@ -292,13 +292,16 @@ export function _createSolutionItem(
   options?: common.ICreateSolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    // Solution uses all supplied tags but for deploy.* tags; that information goes into properties
+    const creationTags = options?.tags ?? [];
     const solutionItem: any = {
       type: "Solution",
       title: options?.title ?? common.createId(),
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
+      properties: _getDeploymentProperties(creationTags),
       thumbnailUrl: options?.thumbnailUrl ?? "",
-      tags: options?.tags ?? [],
+      tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
       typeKeywords: ["Solution", "Template"]
     };
     if (Array.isArray(options?.additionalTypeKeywords)) {
@@ -354,6 +357,41 @@ export function _createSolutionItem(
         }
       }, reject);
   });
+}
+
+/**
+ * Gets the deploy.version and deploy.id tag values.
+ *
+ * @param tags A list of item tags
+ * @return A list ocntaining the two values found in the tags, or defaulting to "1.0" and a new GUID, respectively,
+ * as needed
+ */
+export function _getDeploymentProperties(
+  tags: string[]
+): common.ISolutionItemProperties {
+  return {
+    version: _getDeploymentProperty("deploy.version.", tags) ?? "1.0",
+    id: _getDeploymentProperty("deploy.id.", tags) ?? common.pseudoGUID()
+  } as common.ISolutionItemProperties;
+}
+
+/**
+ * Searches for a tag that has the specified prefix and returns the rest of the tag following that prefix.
+ *
+ * @param desiredTagPrefix Tag prefix to look for
+ * @param tags A list of item tags
+ * @return The extracted value of the first matching tag or null if a tag with the specified prefix is not found
+ */
+export function _getDeploymentProperty(
+  desiredTagPrefix: string,
+  tags: string[]
+): string {
+  const foundTagAsList = tags.filter(tag => tag.startsWith(desiredTagPrefix));
+  if (foundTagAsList.length > 0) {
+    return foundTagAsList[0].substr(desiredTagPrefix.length);
+  } else {
+    return null;
+  }
 }
 
 /**
