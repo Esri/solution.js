@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common getItemInfo TypeScript example
+// @esri/solution-common getItemInfo example
 
 import * as common from "@esri/solution-common";
 

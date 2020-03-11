@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-deployer implementedTypes TypeScript example
+// @esri/solution-deployer implementedTypes example
 
 import * as creatorModuleMap from "@esri/solution-creator";
 import * as deployerModuleMap from "@esri/solution-deployer";

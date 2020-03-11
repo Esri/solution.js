@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common convertExtent TypeScript example
+// @esri/solution-common convertExtent example
 
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restTypes from "@esri/arcgis-rest-types";
