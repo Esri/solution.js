@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @esri/solution-common copySolutions TypeScript example
+// @esri/solution-common copySolutions example
 
 import * as common from "@esri/solution-common";
 
@@ -186,7 +186,9 @@ export function getTemplates(
           return;
         }
 
-        let availSolnsQuery = "type:Solution typekeywords:Solution,Template";
+        let availSolnsQuery =
+          "type:Solution typekeywords:Solution,Template owner:" +
+          portalResponse.user.username;
         if (portalResponse.user.orgId) {
           availSolnsQuery += " orgid:" + portalResponse.user.orgId;
         }
