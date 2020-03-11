@@ -79,6 +79,7 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     resources: [],
     properties: {},
     dependencies: [],
+    relatedItems: [],
     groups: [],
     estimatedDeploymentCostFactor: 0
   };
@@ -1123,6 +1124,7 @@ function getItemTemplateFundamentals(
     data: undefined,
     resources: [],
     dependencies: dependencies,
+    relatedItems: [],
     groups: groups,
     properties: {},
     estimatedDeploymentCostFactor: 2

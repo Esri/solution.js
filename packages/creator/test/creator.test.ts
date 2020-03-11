@@ -927,15 +927,17 @@ describe("Module `creator`", () => {
         utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
       );
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
+      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         solutionId => {
           expect(solutionId).toEqual(expectedSolutionId);
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=&thumbnailUrl=&tags=" +
-              "&typeKeywords=Solution%2CTemplate&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D" +
-              "&token=fake-token"
+            "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
+              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
+              "&thumbnailUrl=&tags=&typeKeywords=Solution%2CTemplate" +
+              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
         },
@@ -975,6 +977,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
         spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        spyOn(common, "pseudoGUID").and.callFake(() => "guid");
         creator._createSolutionItem(authentication, options).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
@@ -990,6 +993,7 @@ describe("Module `creator`", () => {
                 encodeURIComponent(options.snippet) +
                 "&description=" +
                 encodeURIComponent(options.description) +
+                "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
                 "&thumbnailUrl=" +
                 encodeURIComponent(options.thumbnailUrl) +
                 "&tags=" +
@@ -1146,6 +1150,7 @@ describe("Module `creator`", () => {
 
       fetchMock.post(url, utils.getFailureResponse());
       spyOn(common, "createId").and.callFake(() => "xfakeidx");
+      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         () => done.fail(),
         error => {
@@ -1153,9 +1158,10 @@ describe("Module `creator`", () => {
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=&thumbnailUrl=&tags=" +
-              "&typeKeywords=Solution%2CTemplate&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D" +
-              "&token=fake-token"
+            "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
+              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
+              "&thumbnailUrl=&tags=&typeKeywords=Solution%2CTemplate" +
+              "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
         }

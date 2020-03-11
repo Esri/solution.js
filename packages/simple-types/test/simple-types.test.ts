@@ -326,6 +326,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: Object({ application: Object({}), name: "qc.project.json" }),
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           type: "QuickCapture Project",
           item: {
@@ -445,6 +446,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: undefined,
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -565,6 +567,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: ["abc", "def", "ghi"],
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -811,6 +814,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: null,
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -1091,6 +1095,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           },
           resources: [] as any[],
           dependencies: ["myMapId"],
+          relatedItems: [] as common.IRelatedItems[],
           groups: [] as string[],
           properties: {} as any,
           estimatedDeploymentCostFactor: 2
