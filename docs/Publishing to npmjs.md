@@ -34,7 +34,23 @@ Logged in as <npm username> on https://registry.npmjs.org/
 
 5. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
-6. Prepare the release.
+6. Ensure you have access to the zip command
+```
+zip -?
+Copyright (c) 1990-2008 Info-ZIP...
+```
+
+If the command is missing:
+```
+Navigate to https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
+Download zip-3.0-bin.zip
+Copy\paste zip.exe from .\bin to to your "mingw64" bin folder (example: C:\Program Files\Git\mingw64\bin)
+Navigate to https://sourceforge.net/projects/gnuwin32/files/bzip2/1.0.5/
+Download bzip2-1.0.5-bin.zip
+Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
+```
+
+7. Prepare the release.
 The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
 ```
 npm run prerelease:prepare
@@ -42,15 +58,15 @@ npm run release:prepare
 npm run release:review
 ```
 
-7. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.)
+8. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.)
 *Note: To confirm the expected set at the end of this file visit the repos webpage and navigate to releases > tags. If you see additional tags in the CHANGELOG.md you can remove them. To remove them permanently from your local repo use:*
 ```
 git tag -d tagName
 ```
 
-8. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+9. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
 
-9. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+10. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -59,7 +75,7 @@ npm run release:publish
 ? publish release to github? (y/N)
 ```
 
-10. Update the package.json files in the package examples with the new version number and run `npm install` for each.
+11. Update the package.json files in the package examples with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub
@@ -120,15 +136,18 @@ One can mark a version or versions deprecated using the `npm deprecate` command.
 
 4. Deprecate packages using two-factor code; this example uses the deprecation message "obsolete" and deprecates every version below 0.5.4
 ```
-npm deprecate @esri/solution-common@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-creator@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-deployer@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-feature-layer@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-file@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-group@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-simple-types@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-storymap@"<0.5.4" "obsolete" --otp=<2-factor-code>
-npm deprecate @esri/solution-viewer@"<0.5.4" "obsolete" --otp=<2-factor-code>
+twoFactorCode=<2-factor-code>
+newVersion=<new-version-number>
+npm deprecate @esri/solution-common@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-creator@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-deployer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-feature-layer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-file@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-group@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-simple-types@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-storymap@"<$newVersion" "obsolete" --otp=$twoFactorCode
+npm deprecate @esri/solution-viewer@"<$newVersion" "obsolete" --otp=$twoFactorCode
+echo done
 ```
 
 ---
@@ -149,15 +168,17 @@ One can mark a version or versions deprecated using the `npm deprecate` command.
 
 4. Unpublish package(s) using two-factor code; this example unpublishes version 0.5.1
 ```
-npm unpublish @esri/solution-common@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-creator@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-deployer@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-feature-layer@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-file@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-group@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-simple-types@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-storymap@0.5.1 --otp=<2-factor-code>
-npm unpublish @esri/solution-viewer@0.5.1 --otp=<2-factor-code>
+twoFactorCode=<2-factor-code>
+newVersion=<new-version-number>
+npm unpublish @esri/solution-common@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-creator@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-deployer@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-feature-layer@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-file@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-group@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-simple-types@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-storymap@$newVersion --otp=$twoFactorCode
+npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
