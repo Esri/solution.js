@@ -2221,12 +2221,70 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           updatedItem
         );
 
-      restHelpers.updateItemURL("0", url, MOCK_USER_SESSION).then(
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION).then(
         id => {
           expect(id).toEqual("0");
           done();
         },
         () => done.fail()
+      );
+    });
+
+    it("should handle error on first attempt to update a URL", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
+
+      const originalItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        url + "0"
+      );
+      const updatedItem = mockItems.getAGOLItem("Web Mapping Application", url);
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
+          utils.getSuccessResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/0?f=json&token=fake-token",
+          utils.returnOnNthCall(2, updatedItem, originalItem)
+        );
+
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
+        id => {
+          expect(id).toEqual("0");
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("should handle error on all attempts to update a URL", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
+
+      const originalItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        url + "0"
+      );
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
+          utils.getSuccessResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/0?f=json&token=fake-token",
+          originalItem
+        );
+
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
+        () => done.fail(),
+        () => done()
       );
     });
   });

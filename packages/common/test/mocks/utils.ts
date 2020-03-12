@@ -1169,6 +1169,26 @@ export function getCreateServiceResponse(
   });
 }
 
+/**
+ * Provides a supplied item with the nth call.
+ *
+ * @param trigger 1-based call count on which to return itemForNthCall; before this call,
+ * function returns itemBeforeNthCall
+ * @param itemForNthCall Item to return when trigger reached
+ * @param itemBeforeNthCall Item to return before trigger reached
+ * @return Function that tracks calls and provides items
+ */
+export function returnOnNthCall(
+  trigger: number,
+  itemForNthCall: any,
+  itemBeforeNthCall: any
+): interfaces.INoArgFunction {
+  let numCalls = 0;
+  return function() {
+    return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
+  };
+}
+
 function _imageAsDataUri(withUri: boolean) {
   let uri = "";
   if (withUri) {

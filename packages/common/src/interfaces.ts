@@ -95,6 +95,8 @@ export type IItemProgressCallback = (
 
 export type ISolutionProgressCallback = (percentDone: number) => void;
 
+export type INoArgFunction = () => any;
+
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
