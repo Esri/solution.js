@@ -165,6 +165,15 @@ describe("Module `deploySolution`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/content/items/map1234567890?f=json&token=fake-token",
+            mockItems.getAGOLItem(
+              "Web Map",
+              utils.PORTAL_SUBSET.portalUrl +
+                "/home/webmap/viewer.html?webmap=map1234567890"
+            )
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
             portalResponse
           )

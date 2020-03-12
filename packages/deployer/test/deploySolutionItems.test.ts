@@ -85,6 +85,11 @@ describe("Module `deploySolutionItems`", () => {
       itemTemplate.item.thumbnail = null;
       itemTemplate.itemId = id;
 
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+
       const templateDictionary: any = {
         user: mockItems.getAGOLUser("casey")
       };
@@ -120,6 +125,13 @@ describe("Module `deploySolutionItems`", () => {
             newItemID +
             "/update",
           utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemID +
+            "?f=json&token=fake-token",
+          updatedItem
         );
 
       const expected: any[] = [
@@ -739,6 +751,11 @@ describe("Module `deploySolutionItems`", () => {
       const templateDictionary: any = {};
       const newItemID: string = "wma1234567891";
 
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -748,6 +765,20 @@ describe("Module `deploySolutionItems`", () => {
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/wma1234567891/update",
           utils.getSuccessResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem(
+            "Web Mapping Application",
+            utils.PORTAL_SUBSET.portalUrl +
+              "/home/webmap/viewer.html?webmap=wma1234567890"
+          )
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/wma1234567891?f=json&token=fake-token",
+          updatedItem
         );
 
       // tslint:disable-next-line: no-floating-promises
@@ -910,6 +941,11 @@ describe("Module `deploySolutionItems`", () => {
         const templateDictionary: any = {};
         const newItemID: string = "wma1234567891";
 
+        const updatedItem = mockItems.getAGOLItem(
+          "Web Mapping Application",
+          "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+        );
+
         fetchMock
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -919,6 +955,11 @@ describe("Module `deploySolutionItems`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/items/wma1234567891/update",
             utils.getSuccessResponse({ id: newItemID })
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/wma1234567891?f=json&token=fake-token",
+            updatedItem
           )
           .post(resourceFilePaths[0].url, 503);
 
