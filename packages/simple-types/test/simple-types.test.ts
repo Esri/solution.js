@@ -2183,7 +2183,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(1)
+          utils.createFailingItemProgressCallbackOnNthCall(1)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2213,7 +2213,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2243,7 +2243,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2290,7 +2290,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2337,7 +2337,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2437,12 +2437,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     });
   });
 
-  describe("utils.createFailingItemProgressCallback", () => {
+  describe("utils.createFailingItemProgressCallbackOnNthCall", () => {
     it("fails upon first call", () => {
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(1);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        1
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
 
@@ -2450,7 +2452,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(2);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        2
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
@@ -2459,7 +2463,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(3);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        3
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();

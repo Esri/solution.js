@@ -169,7 +169,7 @@ describe("Module `createItemTemplate`", () => {
             templateDictionary,
             authentication,
             existingTemplates,
-            utils.createFailingItemProgressCallback(2)
+            utils.createFailingItemProgressCallbackOnNthCall(2)
           )
           .then(() => {
             expect(existingTemplates.length).toEqual(1);

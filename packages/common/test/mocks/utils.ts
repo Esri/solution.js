@@ -96,7 +96,7 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
  * @param callToFailOn 1-based call to fail on; before this call, function returns true
  * @return Callback function that tracks calls and fails when specified
  */
-export function createFailingItemProgressCallback(
+export function createFailingItemProgressCallbackOnNthCall(
   callToFailOn: number
 ): interfaces.IItemProgressCallback {
   let numCalls = 0;
