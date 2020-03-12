@@ -21,41 +21,43 @@
 import * as lib from "../src/lib";
 
 describe("Module `lib`: common third-party helper functions shared across packages", () => {
-  describe("pseudoGUID", () => {
-    it("creates GUID without dashes", () => {
-      const guid = lib.pseudoGUID();
-      expect(guid.length)
-        .withContext("length check")
-        .toEqual(32);
-      expect(/[^0-9a-f]/.test(guid))
-        .withContext("character check")
-        .toBeFalsy();
-    });
+  if (typeof window !== "undefined") {
+    describe("pseudoGUID", () => {
+      it("creates GUID without dashes", () => {
+        const guid = lib.pseudoGUID();
+        expect(guid.length)
+          .withContext("length check")
+          .toEqual(32);
+        expect(/[^0-9a-f]/.test(guid))
+          .withContext("character check")
+          .toBeFalsy();
+      });
 
-    it("creates GUID with dashes", () => {
-      const guid = lib.pseudoGUID(true);
-      expect(guid.length)
-        .withContext("length check")
-        .toEqual(36);
-      expect(/[^0-9a-f\-]/.test(guid))
-        .withContext("character check")
-        .toBeFalsy();
-      const guidParts = guid.split("-");
-      expect(guidParts[0].length)
-        .withContext("part 1 length check")
-        .toEqual(8);
-      expect(guidParts[1].length)
-        .withContext("part 2 length check")
-        .toEqual(4);
-      expect(guidParts[2].length)
-        .withContext("part 3 length check")
-        .toEqual(4);
-      expect(guidParts[3].length)
-        .withContext("part 4 length check")
-        .toEqual(4);
-      expect(guidParts[4].length)
-        .withContext("part 5 length check")
-        .toEqual(12);
+      it("creates GUID with dashes", () => {
+        const guid = lib.pseudoGUID(true);
+        expect(guid.length)
+          .withContext("length check")
+          .toEqual(36);
+        expect(/[^0-9a-f\-]/.test(guid))
+          .withContext("character check")
+          .toBeFalsy();
+        const guidParts = guid.split("-");
+        expect(guidParts[0].length)
+          .withContext("part 1 length check")
+          .toEqual(8);
+        expect(guidParts[1].length)
+          .withContext("part 2 length check")
+          .toEqual(4);
+        expect(guidParts[2].length)
+          .withContext("part 3 length check")
+          .toEqual(4);
+        expect(guidParts[3].length)
+          .withContext("part 4 length check")
+          .toEqual(4);
+        expect(guidParts[4].length)
+          .withContext("part 5 length check")
+          .toEqual(12);
+      });
     });
-  });
+  }
 });

@@ -860,22 +860,24 @@ describe("Module `creator`", () => {
   });
 
   describe("_createSolutionFromItemIds", () => {
-    it("handles failure to create the solution", done => {
-      const solutionCreationError = "Cannot create solution";
-      const itemIds = ["map1234567890", "wma1234567890"];
+    if (typeof window !== "undefined") {
+      it("handles failure to create the solution", done => {
+        const solutionCreationError = "Cannot create solution";
+        const itemIds = ["map1234567890", "wma1234567890"];
 
-      spyOn(common, "createItemWithData").and.returnValue(
-        Promise.reject(solutionCreationError)
-      );
+        spyOn(common, "createItemWithData").and.returnValue(
+          Promise.reject(solutionCreationError)
+        );
 
-      creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
-        () => done.fail(),
-        response => {
-          expect(response).toEqual(solutionCreationError);
-          done();
-        }
-      );
-    });
+        creator._createSolutionFromItemIds(itemIds, MOCK_USER_SESSION, {}).then(
+          () => done.fail(),
+          response => {
+            expect(response).toEqual(solutionCreationError);
+            done();
+          }
+        );
+      });
+    }
 
     it("handles failure to delete the solution if items can't be added to it", done => {
       const solutionId = "sln1234567890";
