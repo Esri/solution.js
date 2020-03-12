@@ -385,7 +385,7 @@ export function _getDeploymentProperties(
 export function _getDeploymentProperty(
   desiredTagPrefix: string,
   tags: string[]
-): string {
+): string | null {
   const foundTagAsList = tags.filter(tag => tag.startsWith(desiredTagPrefix));
   if (foundTagAsList.length > 0) {
     return foundTagAsList[0].substr(desiredTagPrefix.length);
