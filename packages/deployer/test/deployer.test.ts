@@ -80,6 +80,7 @@ describe("Module `deploySolution`", () => {
           featureServiceTemplate,
           groupTemplate
         ]);
+        itemInfo.item.thumbnail = "thumbnail/ago_downloaded.png";
 
         itemInfo.data.params = {
           testProperty: {
@@ -278,6 +279,11 @@ describe("Module `deploySolution`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/map1234567890/data",
             {}
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse({ id: "sln1234567890" })
           );
 
         const expected: string = "map1234567890";
@@ -419,7 +425,7 @@ describe("Module `deploySolution`", () => {
           "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
           "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
           "id=map1234567890&thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fundefined&text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
+          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
           "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
           "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
           "groups%22%3A%5B%22ba4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22" +
