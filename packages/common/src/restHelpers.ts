@@ -1261,17 +1261,6 @@ export function _updateItemURL(
             .getItem(id, { authentication: authentication })
             .then(item => {
               if (url === item.url) {
-                console.log(
-                  "URL updated for " +
-                    item.type +
-                    " " +
-                    item.id +
-                    ": " +
-                    item.url +
-                    " (" +
-                    numAttempts +
-                    ")"
-                );
                 resolve(id);
               } else {
                 // If it fails, try again if we have sufficient attempts remaining
