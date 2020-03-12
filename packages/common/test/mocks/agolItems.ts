@@ -1282,7 +1282,12 @@ export function getItemTypeAbbrev(type: string): string {
       "Windows Mobile Package": "xxx",
       "Windows Viewer Add In": "xxx",
       "Windows Viewer Configuration": "xxx",
-      "Workflow Manager Package": "xxx"
+      "Workflow Manager Package": "xxx",
+
+      ////////////////////////////////////////////////////////
+      // Testing "types"
+      Undefined: "und",
+      Unsupported: "unk"
     } as IItemTypeAbbrev)[type] || "xxx"
   );
 }

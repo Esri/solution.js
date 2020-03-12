@@ -1274,7 +1274,6 @@ export function _updateItemURL(
                   " (" +
                   numAttempts +
                   ")";
-                console.error(errorMsg);
                 if (--numAttempts > 0) {
                   _updateItemURL(id, url, authentication, numAttempts).then(
                     resolve,

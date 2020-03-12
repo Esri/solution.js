@@ -59,7 +59,8 @@ describe("Module `deploySolutionItems`", () => {
           {},
           MOCK_USER_SESSION,
           false,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          utils.SOLUTION_PROGRESS_CALLBACK,
+          true
         )
         .then(
           () => done.fail(),
@@ -717,6 +718,30 @@ describe("Module `deploySolutionItems`", () => {
 
   describe("_createItemFromTemplateWhenReady", () => {
     it("flags unimplemented item types", done => {
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        "Undefined"
+      );
+      itemTemplate.item.thumbnail = null;
+      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
+      const templateDictionary: any = {};
+
+      // tslint:disable-next-line: no-floating-promises
+      deploySolution
+        ._createItemFromTemplateWhenReady(
+          itemTemplate,
+          resourceFilePaths,
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then((response: common.ICreateItemFromTemplateResponse) => {
+          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
+          done();
+        });
+    });
+
+    it("flags unsupported item types", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Unsupported"
       );

@@ -262,6 +262,17 @@ export function getItemTemplate(
       templatePart.resources = [];
       break;
 
+    case "Undefined":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        "und",
+        dependencies,
+        url
+      );
+      templatePart.data = getItemTemplateData(type);
+      templatePart.resources = [];
+      break;
+
     case "Unsupported":
       templatePart = getItemTemplateFundamentals(
         type,

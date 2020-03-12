@@ -189,7 +189,12 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Windows Mobile Package": file,
   "Windows Viewer Add In": file,
   "Windows Viewer Configuration": file,
-  "Workflow Manager Package": file
+  "Workflow Manager Package": file,
+
+  ////////////////////////////////////////////////////////
+  // Testing "types"
+  Undefined: undefined,
+  Unsupported: UNSUPPORTED
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
