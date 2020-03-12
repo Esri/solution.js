@@ -50,7 +50,12 @@ export function deploySolution(
         deployOptions.description =
           deployOptions.description ?? itemBase.description;
         deployOptions.tags = deployOptions.tags ?? itemBase.tags;
-
+        deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
+          templateSolutionId,
+          itemBase.thumbnail,
+          false,
+          authentication
+        );
         common.deleteItemProps(itemBase);
 
         _deploySolutionFromTemplate(
@@ -220,12 +225,7 @@ export function _deploySolutionFromTemplate(
 
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
-        solutionTemplateBase.thumbnailUrl = common.getItemThumbnailUrl(
-          templateSolutionId,
-          solutionTemplateBase.thumbnail,
-          false,
-          authentication
-        );
+        solutionTemplateBase.thumbnailUrl = options.thumbnailUrl;
         solutionTemplateBase.tryitUrl = _checkedReplaceAll(
           solutionTemplateBase.tryitUrl,
           templateSolutionId,
