@@ -493,7 +493,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             itemTemplate,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.createFailingItemProgressCallback(1)
+            utils.createFailingItemProgressCallbackOnNthCall(1)
           )
           .then(
             response => {
@@ -546,7 +546,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             itemTemplate,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.createFailingItemProgressCallback(2)
+            utils.createFailingItemProgressCallbackOnNthCall(2)
           )
           .then(
             response => {
@@ -599,7 +599,7 @@ describe("Module `file`: manages the creation and deployment of item types that 
             itemTemplate,
             templateDictionary,
             MOCK_USER_SESSION,
-            utils.createFailingItemProgressCallback(2)
+            utils.createFailingItemProgressCallbackOnNthCall(2)
           )
           .then(
             response => {

@@ -233,7 +233,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     describe("copyData", () => {
-      it("should handle error", done => {
+      it("should handle error getting data", done => {
         const source: any = {
           url: undefined,
           authentication: MOCK_USER_SESSION
@@ -250,6 +250,39 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "https://myserver/files/filename.txt/rest/info",
           mockItems.get400Failure()
         );
+
+        resourceHelpers
+          .copyData(source, destination)
+          .then(() => done.fail, done);
+      });
+
+      it("should handle error updating item with data", done => {
+        const source: any = {
+          url:
+            utils.PORTAL_SUBSET.restUrl +
+            "/content/items/itm1234567980/info/filename.txt",
+          authentication: MOCK_USER_SESSION
+        };
+
+        const destination: any = {
+          itemId: "itm1234567890",
+          filename: "filename.txt",
+          mimeType: "text/plain",
+          authentication: MOCK_USER_SESSION
+        };
+
+        fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/itm1234567980/info/filename.txt",
+            utils.getSampleTextAsFile("filename.txt"),
+            { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/itm1234567890/update",
+            mockItems.get400Failure()
+          );
 
         resourceHelpers
           .copyData(source, destination)
@@ -393,25 +426,25 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("copies a single metadata file", done => {
+      it("copies a single data file using list of MIME types", done => {
         const storageAuthentication = MOCK_USER_SESSION;
         const filePaths: interfaces.IDeployFileCopyPath[] = [
           {
-            type: interfaces.EFileType.Metadata,
-            folder: "",
-            filename: "",
-            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+            type: interfaces.EFileType.Data,
+            folder: "storageFolder",
+            filename: "storageFilename.png",
+            url: "https://myserver/images/resource.png"
           }
         ];
         const destinationItemId: string = "itm1234567890";
         const destinationAuthentication = MOCK_USER_SESSION;
-        const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
+        const mimeTypes: interfaces.IMimeTypes = {
+          "storageFilename.png": "image/png"
+        };
+        const serverInfoUrl = "https://myserver/images/resource.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
-        const fetchUrl = "https://myserver/doc/metadata.xml";
-        const expectedFetch = new Blob(
-          ["<meta><value1>a</value1><value2>b</value2></meta>"],
-          { type: "text/xml" }
-        );
+        const fetchUrl = "https://myserver/images/resource.png";
+        const expectedFetch = mockItems.getAnImageResponse();
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
@@ -421,13 +454,15 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
           .post(serverInfoUrl, expectedServerInfo)
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
-          .post(updateUrl, expectedUpdate);
+          .post(updateUrl, { success: true });
         resourceHelpers
           .copyFilesFromStorageItem(
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            false,
+            mimeTypes
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -460,6 +495,48 @@ describe("Module `resourceHelpers`: common functions involving the management of
               "/content/items/itm1234567890/info/form.json",
             utils.getSampleJsonAsFile("form.json")
           )
+          .post(updateUrl, expectedUpdate);
+        resourceHelpers
+          .copyFilesFromStorageItem(
+            storageAuthentication,
+            filePaths,
+            destinationItemId,
+            destinationAuthentication
+          )
+          .then((response: any) => {
+            expect(response).toEqual(expectedUpdate);
+            done();
+          }, done.fail);
+      });
+
+      it("copies a single metadata file", done => {
+        const storageAuthentication = MOCK_USER_SESSION;
+        const filePaths: interfaces.IDeployFileCopyPath[] = [
+          {
+            type: interfaces.EFileType.Metadata,
+            folder: "",
+            filename: "",
+            url: "https://myserver/doc/metadata.xml" // Metadata uses only URL
+          }
+        ];
+        const destinationItemId: string = "itm1234567890";
+        const destinationAuthentication = MOCK_USER_SESSION;
+        const serverInfoUrl = "https://myserver/doc/metadata.xml/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+        const fetchUrl = "https://myserver/doc/metadata.xml";
+        const expectedFetch = new Blob(
+          ["<meta><value1>a</value1><value2>b</value2></meta>"],
+          { type: "text/xml" }
+        );
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/itm1234567890/update";
+        const expectedUpdate = true;
+
+        fetchMock
+          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+          .post(serverInfoUrl, expectedServerInfo)
+          .post(fetchUrl, expectedFetch, { sendAsJson: false })
           .post(updateUrl, expectedUpdate);
         resourceHelpers
           .copyFilesFromStorageItem(

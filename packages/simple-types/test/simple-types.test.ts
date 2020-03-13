@@ -137,6 +137,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/abc0cab401af4828a25cc6eaeb59fb69/info/metadata/metadata.xml",
             mockItems.get500Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
           "abc0cab401af4828a25cc6eaeb59fb69",
@@ -326,6 +331,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: Object({ application: Object({}), name: "qc.project.json" }),
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           type: "QuickCapture Project",
           item: {
@@ -445,6 +451,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: undefined,
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -565,6 +572,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: ["abc", "def", "ghi"],
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -811,6 +819,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           data: null,
           resources: [],
           dependencies: [],
+          relatedItems: [],
           groups: [],
           properties: {},
           estimatedDeploymentCostFactor: 2
@@ -1091,6 +1100,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           },
           resources: [] as any[],
           dependencies: ["myMapId"],
+          relatedItems: [] as common.IRelatedItems[],
           groups: [] as string[],
           properties: {} as any,
           estimatedDeploymentCostFactor: 2
@@ -1109,6 +1119,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               type: "application/json"
             }),
             { sendAsJson: false }
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
           "abc0cab401af4828a25cc6eaeb59fb69",
@@ -1755,6 +1770,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         id: 0
       };
 
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        utils.PORTAL_SUBSET.portalUrl +
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+      );
+      updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
+
       const expectedData: any = {
         appItemId: "abc0cab401af4828a25cc6eaeb59fb69",
         values: {
@@ -1786,6 +1808,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          updatedItem
         );
       staticRelatedItemsMocks.fetchMockRelatedItems(
         "abc0cab401af4828a25cc6eaeb59fb69",
@@ -1797,6 +1824,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .createItemFromTemplate(
           itemTemplate,
           {
+            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
               itemId: "map0cab401af4828a25cc6eaeb59fb69"
@@ -1869,6 +1897,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         id: 0
       };
 
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        utils.PORTAL_SUBSET.portalUrl +
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+      );
+      updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
+
       fetchMock
         .post(
           "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
@@ -1890,6 +1925,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -1939,6 +1979,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .createItemFromTemplate(
           itemTemplate,
           {
+            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
               itemId: "map0cab401af4828a25cc6eaeb59fb69"
@@ -1984,6 +2025,13 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data = undefined;
       itemTemplate.dependencies = [];
 
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        utils.PORTAL_SUBSET.portalUrl +
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+      );
+      updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
+
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -1997,6 +2045,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
           { success: true }
         )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          updatedItem
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/delete",
@@ -2007,7 +2060,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          {},
+          {
+            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+          },
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -2128,7 +2183,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(1)
+          utils.createFailingItemProgressCallbackOnNthCall(1)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2158,7 +2213,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2188,7 +2243,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2200,7 +2255,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Map"
       );
-      const templateDictionary: any = {};
+      const templateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Map",
+        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+      );
 
       fetchMock
         .post(
@@ -2211,6 +2273,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/update",
           { success: true, id: itemTemplate.itemId }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890?f=json&token=fake-token",
+          updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -2223,7 +2290,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2235,7 +2302,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Web Map"
       );
-      const templateDictionary: any = {};
+      const templateDictionary: any = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+      };
+
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Map",
+        "https://myorg.maps.arcgis.com/home/webmap/viewer.html?webmap=map1234567890"
+      );
 
       fetchMock
         .post(
@@ -2246,6 +2320,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/map1234567890/update",
           { success: true, id: itemTemplate.itemId }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/map1234567890?f=json&token=fake-token",
+          updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -2258,7 +2337,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -2358,12 +2437,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     });
   });
 
-  describe("utils.createFailingItemProgressCallback", () => {
+  describe("utils.createFailingItemProgressCallbackOnNthCall", () => {
     it("fails upon first call", () => {
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(1);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        1
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
 
@@ -2371,7 +2452,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(2);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        2
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
     });
@@ -2380,7 +2463,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const itemId = "itm1234567890";
       const status = common.EItemProgressStatus.Started;
       const costUsed = 0;
-      const progressCallback = utils.createFailingItemProgressCallback(3);
+      const progressCallback = utils.createFailingItemProgressCallbackOnNthCall(
+        3
+      );
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();

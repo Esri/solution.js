@@ -96,7 +96,7 @@ export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = 
  * @param callToFailOn 1-based call to fail on; before this call, function returns true
  * @return Callback function that tracks calls and fails when specified
  */
-export function createFailingItemProgressCallback(
+export function createFailingItemProgressCallbackOnNthCall(
   callToFailOn: number
 ): interfaces.IItemProgressCallback {
   let numCalls = 0;
@@ -1167,6 +1167,26 @@ export function getCreateServiceResponse(
     type: "Feature Service",
     isView: isView
   });
+}
+
+/**
+ * Provides a supplied item with the nth call.
+ *
+ * @param trigger 1-based call count on which to return itemForNthCall; before this call,
+ * function returns itemBeforeNthCall
+ * @param itemForNthCall Item to return when trigger reached
+ * @param itemBeforeNthCall Item to return before trigger reached
+ * @return Function that tracks calls and provides items
+ */
+export function returnOnNthCall(
+  trigger: number,
+  itemForNthCall: any,
+  itemBeforeNthCall: any
+): interfaces.INoArgFunction {
+  let numCalls = 0;
+  return function() {
+    return ++numCalls < trigger ? itemBeforeNthCall : itemForNthCall;
+  };
 }
 
 function _imageAsDataUri(withUri: boolean) {

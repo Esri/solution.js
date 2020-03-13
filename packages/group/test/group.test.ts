@@ -751,7 +751,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(1)
+          utils.createFailingItemProgressCallbackOnNthCall(1)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -780,7 +780,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -809,7 +809,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(2)
+          utils.createFailingItemProgressCallbackOnNthCall(2)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -838,7 +838,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
@@ -867,7 +867,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
           itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION,
-          utils.createFailingItemProgressCallback(3)
+          utils.createFailingItemProgressCallbackOnNthCall(3)
         )
         .then(response => {
           expect(response).toEqual(templates.getFailedItem(itemTemplate.type));

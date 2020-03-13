@@ -908,23 +908,8 @@ export function updateItemURL(
   url: string,
   authentication: interfaces.UserSession
 ): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // Update its URL
-    const options = {
-      item: {
-        id,
-        url
-      },
-      authentication: authentication
-    };
-
-    portal.updateItem(options).then(
-      () => {
-        resolve(id);
-      },
-      e => reject(generalHelpers.fail(e))
-    );
-  });
+  const numAttempts = 3;
+  return _updateItemURL(id, url, authentication, numAttempts);
 }
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -1244,4 +1229,64 @@ export function _setItemProperties(
   }
 
   return item;
+}
+
+/**
+ * Updates the URL of an item.
+ *
+ * @param id AGOL id of item to update
+ * @param url URL to assign to item's base section
+ * @param authentication Credentials for the request
+ * @param numAttempts Number of times to try to set the URL if AGO says that it updated the URL, but really didn't
+ * @return A promise that will resolve with the item id when the item has been updated or an AGO-style JSON failure
+ *         response
+ */
+export function _updateItemURL(
+  id: string,
+  url: string,
+  authentication: interfaces.UserSession,
+  numAttempts = 1
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    // Update the item's URL
+    const options = { item: { id, url }, authentication: authentication };
+
+    portal.updateItem(options).then(
+      result => {
+        if (!result.success) {
+          reject(generalHelpers.fail(result));
+        } else {
+          // Get the item to see if the URL really changed
+          return portal
+            .getItem(id, { authentication: authentication })
+            .then(item => {
+              if (url === item.url) {
+                resolve(id);
+              } else {
+                // If it fails, try again if we have sufficient attempts remaining
+                const errorMsg =
+                  "URL not updated for " +
+                  item.type +
+                  " " +
+                  item.id +
+                  ": " +
+                  item.url +
+                  " (" +
+                  numAttempts +
+                  ")";
+                if (--numAttempts > 0) {
+                  _updateItemURL(id, url, authentication, numAttempts).then(
+                    resolve,
+                    reject
+                  );
+                } else {
+                  reject(errorMsg);
+                }
+              }
+            });
+        }
+      },
+      e => reject(generalHelpers.fail(e))
+    );
+  });
 }

@@ -79,6 +79,7 @@ export function getItemTemplateSkeleton(): interfaces.IItemTemplate {
     resources: [],
     properties: {},
     dependencies: [],
+    relatedItems: [],
     groups: [],
     estimatedDeploymentCostFactor: 0
   };
@@ -254,6 +255,17 @@ export function getItemTemplate(
       templatePart = getItemTemplateFundamentals(
         type,
         mockItems.getItemTypeAbbrev(type),
+        dependencies,
+        url
+      );
+      templatePart.data = getItemTemplateData(type);
+      templatePart.resources = [];
+      break;
+
+    case "Undefined":
+      templatePart = getItemTemplateFundamentals(
+        type,
+        "und",
         dependencies,
         url
       );
@@ -1123,6 +1135,7 @@ function getItemTemplateFundamentals(
     data: undefined,
     resources: [],
     dependencies: dependencies,
+    relatedItems: [],
     groups: groups,
     properties: {},
     estimatedDeploymentCostFactor: 2

@@ -189,7 +189,12 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Windows Mobile Package": file,
   "Windows Viewer Add In": file,
   "Windows Viewer Configuration": file,
-  "Workflow Manager Package": file
+  "Workflow Manager Package": file,
+
+  ////////////////////////////////////////////////////////
+  // Testing "types"
+  Undefined: undefined,
+  Unsupported: UNSUPPORTED
 };
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -626,27 +631,31 @@ export function _createItemFromTemplateWhenReady(
                 itemProgressCallback
               )
               .then(createResponse => {
-                // Copy resources, metadata, thumbnail, form
-                common
-                  .copyFilesFromStorageItem(
-                    storageAuthentication,
-                    resourceFilePaths,
-                    createResponse.id,
-                    destinationAuthentication,
-                    templateType === "Group",
-                    template.properties
-                  )
-                  .then(
-                    () => resolve(createResponse),
-                    () => {
-                      itemProgressCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Failed,
-                        0
-                      );
-                      resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
-                    }
-                  );
+                if (_isEmptyCreationResponse(template.type, createResponse)) {
+                  resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                } else {
+                  // Copy resources, metadata, thumbnail, form
+                  common
+                    .copyFilesFromStorageItem(
+                      storageAuthentication,
+                      resourceFilePaths,
+                      createResponse.id,
+                      destinationAuthentication,
+                      templateType === "Group",
+                      template.properties
+                    )
+                    .then(
+                      () => resolve(createResponse),
+                      () => {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Failed,
+                          0
+                        );
+                        resolve(_generateEmptyCreationResponse(template.type)); // fails to copy resources from storage
+                      }
+                    );
+                }
               });
           }
         },
@@ -694,6 +703,13 @@ export function _generateEmptyCreationResponse(
     type: templateType,
     postProcess: false
   };
+}
+
+export function _isEmptyCreationResponse(
+  templateType: string,
+  response: common.ICreateItemFromTemplateResponse
+): boolean {
+  return response.id === "";
 }
 
 /**
