@@ -1,6 +1,6 @@
 {
   "name": "convertExtent",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "description": "Example use of @esri/solution-common.",
   "author": "Esri",
   "license": "Apache-2.0",
@@ -16,7 +16,7 @@
     "@esri/arcgis-rest-portal": "^2.9.0",
     "@esri/arcgis-rest-request": "^2.9.0",
     "@esri/arcgis-rest-service-admin": "^2.9.0",
-    "@esri/solution-common": "^0.8.1",
+    "@esri/solution-common": "^0.8.2",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1"
   },
