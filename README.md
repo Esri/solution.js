@@ -63,20 +63,14 @@ The API documentation is published at https://esri.github.io/solution.js/ ([sour
 
 Currently, the item types that can be converted into a template are:
 
-* Dashboard
-* Feature Collection
-* Feature Service (Hosted only and Hosted Feature Layer Views)
-* Web Map
-* Web Mapping Application
-
-Planned item types are:
-
 * ArcGIS Pro Add In
 * Code Attachment
 * Code Sample
+* Dashboard
 * Desktop Add In
 * Desktop Application Template
 * Document Link
+* Feature Service (Hosted only and Hosted Feature Layer Views)
 * Form
 * Geoprocessing Package
 * Geoprocessing Sample
@@ -86,8 +80,15 @@ Planned item types are:
 * Pro Map
 * Project Package
 * Project Template
-* Storymap
+* Web Map
+* Web Mapping Application
 * Workforce Project
+* various file types, such as images and documents
+
+Planned item types are:
+
+* Feature Collection
+* Storymap
 
 ### Instructions
 
