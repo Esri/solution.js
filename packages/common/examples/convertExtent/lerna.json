@@ -1,0 +1,8 @@
+{
+  "lerna": "3.19.0",
+  "packages": [
+    "../convertExtent",
+    "../../../../packages/*"
+  ],
+  "version": "0.7.0"
+}

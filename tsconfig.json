@@ -2,19 +2,18 @@
   "compilerOptions": {
     /* Basic Options */
     "target": "es5",                          /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', or 'ESNEXT'. */
-    "module": "umd",                     /* Specify module code generation: 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
+    "module": "es2015",                     /* Specify module code generation: 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
     "lib": [
       "dom",
-      "es2017"                                /* es8 */
+      "es2015"
     ],                             /* Specify library files to be included in the compilation:  */
     // "allowJs": true,                       /* Allow javascript files to be compiled. */
     // "checkJs": true,                       /* Report errors in .js files. */
     // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
-    "declaration": false,                   /* Generates corresponding '.d.ts' file. */
-    //"declarationDir": "./types",
+    "declaration": true,                   /* Generates corresponding '.d.ts' file. */
     "sourceMap": true,                     /* Generates corresponding '.map' file. */
     // "outFile": "./",                       /* Concatenate and emit output to single file. */
-    "outDir": "./dist/",                        /* Redirect output structure to the directory. */
+    // "outDir": "./",                        /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "removeComments": true,                /* Do not emit comments to output. */
     // "noEmit": true,                        /* Do not emit outputs. */
@@ -24,10 +23,10 @@
 
     /* Strict Type-Checking Options */
     "strict": true,                            /* Enable all strict type-checking options. */
-    "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
+    // "noImplicitAny": true,                 /* Raise error on expressions and declarations with an implied 'any' type. */
     "strictNullChecks": false,              /* Enable strict null checks. */
     // "noImplicitThis": true,                /* Raise error on 'this' expressions with an implied 'any' type. */
-    "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
+    // "alwaysStrict": true,                  /* Parse in strict mode and emit "use strict" for each source file. */
 
     /* Additional Checks */
     // "noUnusedLocals": true,                /* Report errors on unused locals. */
@@ -43,6 +42,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],                                        /* List of folders to include type definitions from. */
+    "skipLibCheck": true,
     "types": [
       "node",
       "jasmine"
@@ -60,11 +60,12 @@
     // "emitDecoratorMetadata": true,         /* Enables experimental support for emitting type metadata for decorators. */
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "packages/**/examples"
   ],
   "include": [
     "./node_modules/@types",
-    "src",
-    "test"
+    "packages",
+    "support"
   ]
 }
