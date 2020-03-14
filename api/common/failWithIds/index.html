@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, user-scalable=no">
-    <title>postProcessFields | API Reference | solution.js library</title>
+    <title>failWithIds | API Reference | solution.js library</title>
     
     <meta name="description" content="A modular, high quality toolkit.">
     
@@ -271,7 +271,7 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/postProcessFields/" class="is-active tsd-kind-icon padding-right-1">postProcessFields</a>
+              <a href="/solution.js/api/common/postProcessFields/" class="tsd-kind-icon padding-right-1">postProcessFields</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -359,7 +359,7 @@
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
-              <a href="/solution.js/api/common/failWithIds/" class="tsd-kind-icon padding-right-1">failWithIds</a>
+              <a href="/solution.js/api/common/failWithIds/" class="is-active tsd-kind-icon padding-right-1">failWithIds</a>
             </li>
             
             <li class="tsd-kind-function padding-right-1 visually-hidden api-list-item">
@@ -1614,7 +1614,7 @@
 
 
 <div class="clearfix trailer-half">
-  <h1 class="left font-size-5 code-face trailer-0">postProcessFields</h1>
+  <h1 class="left font-size-5 code-face trailer-0">failWithIds</h1>
   <small class="tsd-kind-function font-size--2 right leader-half margin-right-half"><span class="tsd-kind-icon">Function</span></small>
 </div>
 
@@ -1633,8 +1633,7 @@
 
 
 
-  <p>Update the names of fields for each layer or table after it has been
-added to the definition</p>
+  <p>Creates an AGO-style JSON failure response with success property and extended with ids list.</p>
 
 
   
@@ -1642,7 +1641,7 @@ added to the definition</p>
   <div class="panel padding-leader-half padding-trailer-half padding-right-quarter padding-left-half trailer-half">
     <ul class="list-plain tsd-signatures tsd-kind-function trailer-0 leader-0">
       
-        <li class="code-face tsd-signature tsd-kind-icon trailer-0 leader-0">postProcessFields<span class="text-light-gray">(</span>itemTemplate: <i><a href="/solution.js/api/common/IItemTemplate/">IItemTemplate</a></i>, layerInfos: <i class="text-purple">any</i>, popupInfos: <i class="text-purple">any</i>, adminLayerInfos: <i class="text-purple">any</i>, templateDictionary: <i class="text-purple">any</i>, requestOptions: <i>IUserRequestOptions</i><span class="text-light-gray">) : </span><i>Promise</i><i><span class="text-light-gray">&lt;</span><i class="text-purple">any</i><span class="text-light-gray">&gt;</span></i></li>
+        <li class="code-face tsd-signature tsd-kind-icon trailer-0 leader-0">failWithIds<span class="text-light-gray">(</span>itemIds: <i class="no-wrap"><i class="text-purple">string</i><span class="text-light-gray">[]</span></i><span class="text-light-gray"> | </span><i class="text-purple">string</i>, e: <i class="text-purple">any</i><span class="text-light-gray">) : </span><i class="text-purple">any</i></li>
       
     </ul>
   </div>
@@ -1661,12 +1660,12 @@ added to the definition</p>
         </tr>
       </thead>
       <tbody>
-        <tr id="postProcessFields-itemTemplate">
+        <tr id="failWithIds-itemIds">
             <td class="code-face">
-              <a href="#postProcessFields-itemTemplate" class="table-link">
+              <a href="#failWithIds-itemIds" class="table-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
               </a>
-              <span class="code-face">itemTemplate</span>
+              <span class="code-face">itemIds</span>
               
                 
   
@@ -1683,29 +1682,28 @@ added to the definition</p>
 
               
             </td>
-            <td class="code-face"><i><a href="/solution.js/api/common/IItemTemplate/">IItemTemplate</a></i></td>
+            <td class="code-face"><i class="no-wrap"><i class="text-purple">string</i><span class="text-light-gray">[]</span></i><span class="text-light-gray"> | </span><i class="text-purple">string</i></td>
             <td class="code-face"></td>
             <td class="body-face api-param-comment">
               
-              <p>Item to be created</p>
-
+              
             </td>
-          </tr><tr id="postProcessFields-layerInfos">
+          </tr><tr id="failWithIds-e">
             <td class="code-face">
-              <a href="#postProcessFields-layerInfos" class="table-link">
+              <a href="#failWithIds-e" class="table-link">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
               </a>
-              <span class="code-face">layerInfos</span>
+              <span class="code-face">e</span>
               
                 
   
-
+  <span class="label">Optional</span>
   
 
   
 
   
-  <span class="label">Required</span>
+
   
 
   
@@ -1716,122 +1714,8 @@ added to the definition</p>
             <td class="code-face"></td>
             <td class="body-face api-param-comment">
               
-              <p>Hash map of properties that contain field references and various layer info</p>
+              <p>Optional error information</p>
 
-            </td>
-          </tr><tr id="postProcessFields-popupInfos">
-            <td class="code-face">
-              <a href="#postProcessFields-popupInfos" class="table-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
-              </a>
-              <span class="code-face">popupInfos</span>
-              
-                
-  
-
-  
-
-  
-
-  
-  <span class="label">Required</span>
-  
-
-  
-
-              
-            </td>
-            <td class="code-face"><i class="text-purple">any</i></td>
-            <td class="code-face"></td>
-            <td class="body-face api-param-comment">
-              
-              <p>Hash map of a layers popupInfo</p>
-
-            </td>
-          </tr><tr id="postProcessFields-adminLayerInfos">
-            <td class="code-face">
-              <a href="#postProcessFields-adminLayerInfos" class="table-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
-              </a>
-              <span class="code-face">adminLayerInfos</span>
-              
-                
-  
-
-  
-
-  
-
-  
-  <span class="label">Required</span>
-  
-
-  
-
-              
-            </td>
-            <td class="code-face"><i class="text-purple">any</i></td>
-            <td class="code-face"></td>
-            <td class="body-face api-param-comment">
-              
-              <p>Hash map of a layers adminLayerInfo</p>
-
-            </td>
-          </tr><tr id="postProcessFields-templateDictionary">
-            <td class="code-face">
-              <a href="#postProcessFields-templateDictionary" class="table-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
-              </a>
-              <span class="code-face">templateDictionary</span>
-              
-                
-  
-
-  
-
-  
-
-  
-  <span class="label">Required</span>
-  
-
-  
-
-              
-            </td>
-            <td class="code-face"><i class="text-purple">any</i></td>
-            <td class="code-face"></td>
-            <td class="body-face api-param-comment">
-              
-              
-            </td>
-          </tr><tr id="postProcessFields-requestOptions">
-            <td class="code-face">
-              <a href="#postProcessFields-requestOptions" class="table-link">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" class="svg-icon"><path d="M28.633 17.945l-4.118-4.426c.076 1.131-.034 2.262-.355 3.241l2.83 2.827a5.281 5.281 0 0 1 0 7.459 5.223 5.223 0 0 1-3.723 1.54 5.227 5.227 0 0 1-3.728-1.542l-5.459-5.459a5.276 5.276 0 0 1 0-7.452c.607-.609 1.361-1.048 2.1-1.229a1.833 1.833 0 0 0-.279-.414l-1.344-1.461c-.845.404-1.54.881-2.12 1.461a7.554 7.554 0 0 0-2.223 5.371c0 2.027.791 3.934 2.223 5.366l5.459 5.459a7.544 7.544 0 0 0 5.371 2.225 7.55 7.55 0 0 0 5.366-2.223c2.962-2.962 2.962-7.782 0-10.745zM8.711 3.497a5.23 5.23 0 0 1 3.726 1.54l5.459 5.457a5.279 5.279 0 0 1 0 7.454c-.605.605-1.356 1.043-2.105 1.222.086.154.166.301.287.421l1.422 1.422c.808-.394 1.476-.862 2.039-1.422 2.96-2.962 2.96-7.777 0-10.74L14.08 3.394c-1.434-1.435-3.342-2.225-5.369-2.225s-3.934.791-5.369 2.225C1.908 4.828 1.117 6.736 1.117 8.763s.791 3.934 2.225 5.369L7.46 18.56c-.076-1.131.034-2.262.355-3.239l-2.83-2.833c-.994-.991-1.542-2.316-1.542-3.726s.548-2.732 1.542-3.726a5.23 5.23 0 0 1 3.726-1.54z"/></svg>
-              </a>
-              <span class="code-face">requestOptions</span>
-              
-                
-  
-
-  
-
-  
-
-  
-  <span class="label">Required</span>
-  
-
-  
-
-              
-            </td>
-            <td class="code-face"><i>IUserRequestOptions</i></td>
-            <td class="code-face"></td>
-            <td class="body-face api-param-comment">
-              
-              
             </td>
           </tr>
       </tbody>
@@ -1849,50 +1733,12 @@ added to the definition</p>
 
     
   
-    
 
-    
-  
-    
-
-    
-  
-    
-
-    
-  
-    
-      
-      
-  
-    <h2 class="font-size-1 trailer-half">Available <code>requestOptions</code></h2>
-  
-  <div class="overflow-auto trailer-1">
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Property</th>
-          <th>Type</th>
-          <th>Notes</th>
-        </tr>
-      </thead>
-      <tbody>
-        
-
-      </tbody>
-    </table>
-  </div>
-
-    
-
-    
-  
-
-  <h2 class="font-size-1 trailer-half">Returns</h2><p>An object with detemplatized field references</p>
+  <h2 class="font-size-1 trailer-half">Returns</h2><p>JSON structure with property success set to false and optionally including <code>e</code></p>
 
 
   <div class="fonts-size--1 panel padding-leader-half padding-trailer-half padding-right-half padding-left-half trailer-half">
-  <i>Promise</i><i><span class="text-light-gray">&lt;</span><i class="text-purple">any</i><span class="text-light-gray">&gt;</span></i>
+  <i class="text-purple">any</i>
   </div>
 
   
@@ -1903,7 +1749,7 @@ added to the definition</p>
 
 
 
-<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/featureServiceHelpers.ts#L669">packages/common/src/featureServiceHelpers.ts:669</a></small>
+<small class="font-size--2">Function defined in <a href="https://github.com/Esri/solution.js/blob/master/packages/common/src/generalHelpers.ts#L253">packages/common/src/generalHelpers.ts:253</a></small>
 
 
   <details class="leader-1">
