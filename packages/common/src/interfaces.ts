@@ -120,10 +120,10 @@ export interface ICreateItemFromTemplateResponse {
  * Options for creating a solution item.
  */
 export interface ICreateSolutionOptions {
-  title?: string; // default: random string from common.createId()
-  snippet?: string; // default: ""
-  description?: string; // default: ""
-  tags?: string[]; // default: []
+  title?: string; // defaults: for a group, group title; for an item, random string from common.createId()
+  snippet?: string; // defaults: for a group, group snippet; for an item, ""
+  description?: string; // defaults: for a group, group description; for an item, ""
+  tags?: string[]; // defaults: for a group, group tags; for an item, []
   thumbnailUrl?: string; // default: ""
   folderId?: string; // default is top level
   templateDictionary?: any; // default: {}
