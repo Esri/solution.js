@@ -150,9 +150,19 @@ export function _deploySolutionFromTemplate(
         solutionTemplateData.templates = solutionTemplateData.templates.map(
           (template: any) => {
             const sourceId: string = "source-" + template.itemId;
-            template.item?.typeKeywords?.push(sourceId);
-            if (common.getProp(template, "item.type") === "Group") {
-              template.item?.tags?.push(sourceId);
+            /* istanbul ignore else */
+            if (template.item) {
+              /* istanbul ignore else */
+              if (template.item!.typeKeywords) {
+                template.item!.typeKeywords!.push(sourceId);
+              }
+              /* istanbul ignore else */
+              if (
+                template.item!.tags &&
+                common.getProp(template, "item.type") === "Group"
+              ) {
+                template.item!.tags!.push(sourceId);
+              }
             }
             return template;
           }
@@ -267,16 +277,13 @@ export function _deploySolutionFromTemplate(
               templateDictionary,
               itemTemplate.itemId + ".itemId"
             );
+            /* istanbul ignore else */
             if (itemId) {
               itemTemplate.itemId = itemId;
             }
-            itemTemplate.dependencies = itemTemplate.dependencies.map(id => {
-              const dependId = common.getProp(
-                templateDictionary,
-                id + ".itemId"
-              );
-              return dependId ? dependId : id;
-            });
+            itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
+              _getNewItemId(id, templateDictionary)
+            );
             return itemTemplate;
           }
         );
@@ -341,13 +348,15 @@ export function _deploySolutionFromTemplate(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function _purgeTemplateProperties(itemTemplate: any): any {
-  const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
-  const deleteProps: string[] = Object.keys(itemTemplate).filter(
-    k => retainProps.indexOf(k) < 0
-  );
-  common.deleteProps(itemTemplate, deleteProps);
-  return itemTemplate;
+/**
+ * Returns a match of a supplied id with the suffix ".itemId" in the template dictionary.
+ *
+ * @param id Id to look for
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @return Match in template dictionary or original id
+ */
+export function _getNewItemId(id: string, templateDictionary: any): string {
+  return common.getProp(templateDictionary, id + ".itemId") ?? id;
 }
 
 export function _checkedReplaceAll(
@@ -363,6 +372,15 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
+}
+
+export function _purgeTemplateProperties(itemTemplate: any): any {
+  const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
+  const deleteProps: string[] = Object.keys(itemTemplate).filter(
+    k => retainProps.indexOf(k) < 0
+  );
+  common.deleteProps(itemTemplate, deleteProps);
+  return itemTemplate;
 }
 
 export function _updateGroupReferences(
