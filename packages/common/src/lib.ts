@@ -5,7 +5,7 @@
  * cc by-sa 4.0 with attribution required
  * Modified to create string without dashes
  */
-export function pseudoGUID(withDashes = false): string {
+export function createPseudoGUID(withDashes = false): string {
   const baseString = withDashes
     ? "" + 1e7 + -1e3 + -4e3 + -8e3 + -1e11
     : "" + 1e7 + 1e3 + 4e3 + 8e3 + 1e11;

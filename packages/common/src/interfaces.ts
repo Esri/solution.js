@@ -93,7 +93,10 @@ export type IItemProgressCallback = (
   costUsed: number
 ) => boolean;
 
-export type ISolutionProgressCallback = (percentDone: number) => void;
+export type ISolutionProgressCallback = (
+  percentDone: number,
+  jobId?: string
+) => void;
 
 export type INoArgFunction = () => any;
 
@@ -120,7 +123,8 @@ export interface ICreateItemFromTemplateResponse {
  * Options for creating a solution item.
  */
 export interface ICreateSolutionOptions {
-  title?: string; // defaults: for a group, group title; for an item, random string from common.createId()
+  jobId?: string; // default: group id
+  title?: string; // defaults: for a group, group title; for an item, random string from common.createShortId()
   snippet?: string; // defaults: for a group, group snippet; for an item, ""
   description?: string; // defaults: for a group, group description; for an item, ""
   tags?: string[]; // defaults: for a group, group tags; for an item, []
@@ -226,6 +230,7 @@ export interface IDeployFilename {
  * Options for deploying a solution item and for creating the solution index item representing the deployment
  */
 export interface IDeploySolutionOptions {
+  jobId?: string; // default: solution id
   title?: string; // default: copied from solution item
   snippet?: string; // default: copied from solution item
   description?: string; // default: copied from solution item

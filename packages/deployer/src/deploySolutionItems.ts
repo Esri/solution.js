@@ -208,8 +208,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
  * @param storageAuthentication Credentials for the organization with the source items
  * @param templateDictionary Hash of facts: org URL, adlib replacements
  * @param destinationAuthentication Credentials for the destination organization
- * @param reuseItems Option to search for existing items
- * @param solutionProgressCallback Function for reporting progress updates from type-specific template handlers
+ * @param options Options to tune deployment
  * @return A promise that will resolve with the item's template (which is simply returned if it's
  *         already in the templates list
  */
@@ -220,9 +219,7 @@ export function deploySolutionItems(
   storageAuthentication: common.UserSession,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,
-  reuseItems: boolean,
-  solutionProgressCallback?: common.ISolutionProgressCallback,
-  consoleProgress?: boolean
+  options: common.IDeploySolutionOptions
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
@@ -240,15 +237,16 @@ export function deploySolutionItems(
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
       percentDone += progressPercentStep * costUsed;
-      if (solutionProgressCallback) {
-        solutionProgressCallback(percentDone);
+      if (options.progressCallback) {
+        options.progressCallback(percentDone, options.jobId);
       }
 
       /* istanbul ignore if */
-      if (consoleProgress) {
+      if (options.consoleProgress) {
         console.log(
           Date.now(),
           itemId,
+          options.jobId ?? "",
           common.SItemProgressStatus[status],
           percentDone.toFixed(0) + "%",
           costUsed
@@ -282,7 +280,7 @@ export function deploySolutionItems(
 
     const existingItemsDef: Promise<any> = _evaluateExistingItems(
       templates,
-      reuseItems,
+      options.enableItemReuse ?? false,
       templateDictionary,
       destinationAuthentication
     );
