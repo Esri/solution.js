@@ -45,42 +45,53 @@ export function deploySolution(
       responses => {
         const [itemBase, itemData] = responses;
 
-        deployOptions.title = deployOptions.title ?? itemBase.title;
-        deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
-        deployOptions.description =
-          deployOptions.description ?? itemBase.description;
-        deployOptions.tags = deployOptions.tags ?? itemBase.tags;
-        deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
-          templateSolutionId,
-          itemBase.thumbnail,
-          false,
-          authentication
-        );
-        common.deleteItemProps(itemBase);
+        if (
+          itemBase.type !== "Solution" ||
+          itemBase.typeKeywords.indexOf("Solution") < 0 ||
+          itemBase.typeKeywords.indexOf("Template") < 0
+        ) {
+          reject(
+            common.fail(templateSolutionId + " is not a Solution Template")
+          );
+        } else {
+          deployOptions.title = deployOptions.title ?? itemBase.title;
+          deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
+          deployOptions.description =
+            deployOptions.description ?? itemBase.description;
+          deployOptions.tags = deployOptions.tags ?? itemBase.tags;
+          deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
+            templateSolutionId,
+            itemBase.thumbnail,
+            false,
+            authentication
+          );
 
-        _deploySolutionFromTemplate(
-          templateSolutionId,
-          itemBase,
-          itemData,
-          authentication,
-          deployOptions
-        ).then(
-          createdSolutionId => {
-            /* istanbul ignore else */
-            if (deployOptions.progressCallback) {
-              deployOptions.progressCallback(100); // we're done
+          common.deleteItemProps(itemBase);
+
+          _deploySolutionFromTemplate(
+            templateSolutionId,
+            itemBase,
+            itemData,
+            authentication,
+            deployOptions
+          ).then(
+            createdSolutionId => {
+              /* istanbul ignore else */
+              if (deployOptions.progressCallback) {
+                deployOptions.progressCallback(100); // we're done
+              }
+              resolve(createdSolutionId);
+            },
+            error => {
+              // Error deploying solution
+              /* istanbul ignore else */
+              if (deployOptions.progressCallback) {
+                deployOptions.progressCallback(1);
+              }
+              reject(error);
             }
-            resolve(createdSolutionId);
-          },
-          error => {
-            // Error deploying solution
-            /* istanbul ignore else */
-            if (deployOptions.progressCallback) {
-              deployOptions.progressCallback(1);
-            }
-            reject(error);
-          }
-        );
+          );
+        }
       },
       error => {
         // Error fetching solution
