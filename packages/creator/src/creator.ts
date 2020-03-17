@@ -155,7 +155,7 @@ export function _addContentToSolution(
       totalExpended += costUsed;
       percentDone += progressPercentStep * costUsed;
       if (options.progressCallback) {
-        options.progressCallback(percentDone);
+        options.progressCallback(percentDone, options.jobId);
       }
 
       /* istanbul ignore if */
@@ -163,6 +163,7 @@ export function _addContentToSolution(
         console.log(
           Date.now(),
           itemId,
+          options.jobId ?? "",
           common.SItemProgressStatus[status],
           percentDone.toFixed(0) + "%",
           costUsed
@@ -296,7 +297,7 @@ export function _createSolutionItem(
     const creationTags = options?.tags ?? [];
     const solutionItem: any = {
       type: "Solution",
-      title: options?.title ?? common.createId(),
+      title: options?.title ?? common.createShortId(),
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
       properties: _getDeploymentProperties(creationTags),
@@ -371,7 +372,7 @@ export function _getDeploymentProperties(
 ): common.ISolutionItemProperties {
   return {
     version: _getDeploymentProperty("deploy.version.", tags) ?? "1.0",
-    id: _getDeploymentProperty("deploy.id.", tags) ?? common.pseudoGUID()
+    id: _getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID()
   } as common.ISolutionItemProperties;
 }
 

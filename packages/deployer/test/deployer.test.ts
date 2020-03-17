@@ -920,14 +920,19 @@ describe("Module `deploySolution`", () => {
             mockItems.get400Failure()
           );
 
-        deployer.deploySolution(itemInfo.item.id, MOCK_USER_SESSION).then(
-          () => {
-            done.fail();
-          },
-          () => {
-            done();
-          }
-        );
+        const options: common.IDeploySolutionOptions = {
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+        };
+        deployer
+          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
+          .then(
+            () => {
+              done.fail();
+            },
+            () => {
+              done();
+            }
+          );
       });
 
       it("can handle error on project", done => {
@@ -1456,6 +1461,15 @@ describe("Module `deploySolution`", () => {
           );
       });
     }
+  });
+
+  describe("_getNewItemId", () => {
+    it("handles id not found in template dictionary", () => {
+      const sourceId = "itm1234567890";
+      const templateDictionary = {};
+      const actualResult = deployer._getNewItemId(sourceId, templateDictionary);
+      expect(actualResult).toEqual(sourceId);
+    });
   });
 
   describe("_checkedReplaceAll", () => {

@@ -58,9 +58,11 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           {},
           MOCK_USER_SESSION,
-          false,
-          utils.SOLUTION_PROGRESS_CALLBACK,
-          true
+          {
+            enableItemReuse: false,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            consoleProgress: true
+          }
         )
         .then(
           () => done.fail(),
@@ -158,8 +160,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -241,8 +245,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -330,8 +336,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -419,8 +427,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -517,8 +527,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -572,8 +584,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(actual => {
           delete templateDictionary[id].def;
@@ -638,8 +652,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(done.fail, done);
     });
@@ -709,8 +725,10 @@ describe("Module `deploySolutionItems`", () => {
           MOCK_USER_SESSION,
           templateDictionary,
           MOCK_USER_SESSION,
-          true,
-          utils.SOLUTION_PROGRESS_CALLBACK
+          {
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
+          }
         )
         .then(done.fail, done);
     });

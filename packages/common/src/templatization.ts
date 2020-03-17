@@ -72,7 +72,7 @@ export const TRANSFORMS: any = {
  *
  * @return An alphanumeric string in the range [a0000000..zzzzzzzz]
  */
-export function createId(): string {
+export function createShortId(): string {
   // Return a random number, but beginning with an alphabetic character so that it can be used as a valid
   // dotable property name. Used for unique identifiers that do not require the rigor of a full UUID -
   // i.e. node ids, process ids, etc.
@@ -130,7 +130,7 @@ export function createInitializedItemTemplate(
  *
  * @param id AGO id of item
  * @param type AGO item type; defaults to ""
- * @return Empty template containing supplied id, optional type, and a key created using the function createId()
+ * @return Empty template containing supplied id, optional type, and a key created using the function createShortId()
  */
 export function createPlaceholderTemplate(
   id: string,
@@ -139,7 +139,7 @@ export function createPlaceholderTemplate(
   return {
     itemId: id,
     type,
-    key: createId(),
+    key: createShortId(),
     item: {
       id,
       type

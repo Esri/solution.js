@@ -85,7 +85,8 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
 };
 
 export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
-  percentDone: number
+  percentDone: number,
+  jobId: string
 ): void {
   const tick = "tok";
 };

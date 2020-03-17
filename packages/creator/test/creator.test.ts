@@ -151,7 +151,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
           () => done.fail(),
           response => {
@@ -206,7 +206,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
           () => done.fail(),
           response => {
@@ -705,7 +705,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(itemIds, authentication).then(
           () => done.fail(),
           response => {
@@ -780,7 +780,7 @@ describe("Module `creator`", () => {
           relatedItems: []
         });
 
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
+        spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(itemIds, authentication).then(
           () => done.fail(),
           error => {
@@ -928,8 +928,8 @@ describe("Module `creator`", () => {
         url,
         utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
       );
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
+      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         solutionId => {
           expect(solutionId).toEqual(expectedSolutionId);
@@ -978,8 +978,8 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
-        spyOn(common, "createId").and.callFake(() => "xfakeidx");
-        spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+        spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
+        spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
         creator._createSolutionItem(authentication, options).then(
           solutionId => {
             expect(solutionId).toEqual(expectedSolutionId);
@@ -1039,7 +1039,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getSuccessResponse({ itemId: solutionId })
           );
-        spyOn(common, "createId").and.callFake(() => solutionId);
+        spyOn(common, "createShortId").and.callFake(() => solutionId);
         creator._createSolutionItem(authentication, options).then(
           () => done.fail(),
           () => done()
@@ -1072,7 +1072,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getSuccessResponse({ itemId: solutionId })
           );
-        spyOn(common, "createId").and.callFake(() => solutionId);
+        spyOn(common, "createShortId").and.callFake(() => solutionId);
         creator._createSolutionItem(authentication, options).then(
           () => done.fail(),
           () => done()
@@ -1105,7 +1105,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getFailureResponse()
           );
-        spyOn(common, "createId").and.callFake(() => solutionId);
+        spyOn(common, "createShortId").and.callFake(() => solutionId);
         creator._createSolutionItem(authentication, options).then(
           () => done.fail(),
           () => done()
@@ -1138,7 +1138,7 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getFailureResponse()
           );
-        spyOn(common, "createId").and.callFake(() => solutionId);
+        spyOn(common, "createShortId").and.callFake(() => solutionId);
         creator._createSolutionItem(authentication, options).then(
           () => done.fail(),
           () => done()
@@ -1151,8 +1151,8 @@ describe("Module `creator`", () => {
       const url = utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem";
 
       fetchMock.post(url, utils.getFailureResponse());
-      spyOn(common, "createId").and.callFake(() => "xfakeidx");
-      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
+      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
       creator._createSolutionItem(authentication).then(
         () => done.fail(),
         error => {
@@ -1190,7 +1190,7 @@ describe("Module `creator`", () => {
 
     it("finds only version deployment property", () => {
       const tags = ["a_tag", "another_tag", "deploy.version.12.3"];
-      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
       const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
         tags
       );
@@ -1213,7 +1213,7 @@ describe("Module `creator`", () => {
 
     it("doesn't find either deployment property", () => {
       const tags = ["a_tag", "another_tag"];
-      spyOn(common, "pseudoGUID").and.callFake(() => "guid");
+      spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
       const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
         tags
       );
