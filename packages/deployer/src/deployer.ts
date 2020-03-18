@@ -54,6 +54,7 @@ export function deploySolution(
             common.fail(templateSolutionId + " is not a Solution Template")
           );
         } else {
+          deployOptions.jobId = deployOptions.jobId ?? templateSolutionId;
           deployOptions.title = deployOptions.title ?? itemBase.title;
           deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
           deployOptions.description =
