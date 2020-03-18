@@ -297,6 +297,7 @@ export function createFullItem(
     if (itemThumbnailUrl) {
       createOptions.item.thumbnailurl = itemThumbnailUrl;
       const token = authentication.token;
+      /* istanbul ignore else */
       if (token) {
         createOptions.item.thumbnailurl += "?token=" + token;
       }
