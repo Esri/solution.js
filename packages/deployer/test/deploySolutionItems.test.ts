@@ -732,6 +732,124 @@ describe("Module `deploySolutionItems`", () => {
         )
         .then(done.fail, done);
     });
+
+    it("handles failure to delete all items when unwinding after failure to deploy", done => {
+      const id: string = "aa4a6047326243b290f625e80ebe6531";
+      const newItemID: string = "ba4a6047326243b290f625e80ebe6531";
+      const type: string = "Web Mapping Application";
+
+      const url: string =
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890";
+      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
+        type,
+        null,
+        url
+      );
+      itemTemplate.item.thumbnail = null;
+      itemTemplate.itemId = id;
+
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
+      );
+
+      const templateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=typekeywords%3Asource-" +
+            id +
+            "%20type%3AWeb%20Mapping%20Application%20owner%3Acasey&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/search?f=json&q=tags%3D%27source-" +
+            id +
+            "%27&token=fake-token",
+          {
+            query: "typekeywords='source-" + id + "'",
+            results: []
+          }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
+          utils.getSuccessResponse({ id: newItemID })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemID +
+            "/update",
+          utils.getFailureResponse({ id: newItemID })
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/" +
+            newItemID +
+            "?f=json&token=fake-token",
+          updatedItem
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/aa4a6047326243b290f625e80ebe6531/delete",
+          utils.getFailureResponse({
+            itemId: "aa4a6047326243b290f625e80ebe6531"
+          })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/aa4a6047326243b290f625e80ebe6531/delete",
+          utils.getFailureResponse({
+            groupId: "aa4a6047326243b290f625e80ebe6531"
+          })
+        );
+
+      const expected: any[] = [
+        {
+          id: newItemID,
+          type: type,
+          postProcess: true
+        }
+      ];
+
+      const expectedTemplateDictionary: any = {
+        user: mockItems.getAGOLUser("casey")
+      };
+      expectedTemplateDictionary[id] = {
+        itemId: newItemID
+      };
+
+      deploySolution
+        .deploySolutionItems(
+          utils.PORTAL_URL,
+          "sln1234567890",
+          [itemTemplate],
+          MOCK_USER_SESSION,
+          templateDictionary,
+          MOCK_USER_SESSION,
+          {
+            jobId: "abc",
+            enableItemReuse: true,
+            progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+            consoleProgress: true
+          }
+        )
+        .then(done.fail, actual => {
+          expect(actual).toEqual(
+            utils.getFailureResponse({
+              itemIds: ["aa4a6047326243b290f625e80ebe6531"]
+            })
+          );
+          done();
+        });
+    });
   });
 
   describe("_createItemFromTemplateWhenReady", () => {
@@ -1024,6 +1142,17 @@ describe("Module `deploySolutionItems`", () => {
           });
       });
     }
+  });
+
+  describe("_findExistingItemByKeyword", () => {
+    it("handles group items without user groups in template dictionary", () => {
+      const actual = deploySolution._findExistingItemByKeyword(
+        [templates.getItemTemplate("Group")],
+        {},
+        MOCK_USER_SESSION
+      );
+      expect(actual.length).toEqual(0);
+    });
   });
 
   describe("postProcessDependencies", () => {
