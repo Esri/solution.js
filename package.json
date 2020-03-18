@@ -47,7 +47,7 @@
     "minimatch": "^3.0.4",
     "node-sass": "^4.13.0",
     "onchange": "^6.0.0",
-    "prettier": "^1.17.0",
+    "prettier": "^1.19.1",
     "resolve": "^1.5.0",
     "rimraf": "^2.6.2",
     "rollup": "^1.26.0",

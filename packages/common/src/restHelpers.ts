@@ -895,6 +895,7 @@ export function searchGroupContents(
 // =====================================================================================================================
 // changes submitted to arcgis-rest-js's portal package
 
+/* istanbul ignore next */
 export function genericSearch<
   T extends portal.IItem | portal.IGroup | portal.IUser
 >(
