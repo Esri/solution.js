@@ -180,6 +180,10 @@ export function getItemTemplate(
     case "Geoprocessing Sample":
       break;
 
+    case "Group":
+      templatePart = getGroupTemplatePart(dependencies);
+      break;
+
     case "Layer Package":
       break;
 
