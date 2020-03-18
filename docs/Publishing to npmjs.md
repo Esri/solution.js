@@ -42,15 +42,15 @@ zip -?
 Copyright (c) 1990-2008 Info-ZIP...
 ```
 
-	If the command is missing:
-	```
-	Navigate to https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
-	Download zip-3.0-bin.zip
-	Copy\paste zip.exe from .\bin to to your "mingw64" bin folder (example: C:\Program Files\Git\mingw64\bin)
-	Navigate to https://sourceforge.net/projects/gnuwin32/files/bzip2/1.0.5/
-	Download bzip2-1.0.5-bin.zip
-	Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
-	```
+ If the command is missing:
+ ```
+ Navigate to https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
+ Download zip-3.0-bin.zip
+ Copy\paste zip.exe from .\bin to to your "mingw64" bin folder (example: C:\Program Files\Git\mingw64\bin)
+ Navigate to https://sourceforge.net/projects/gnuwin32/files/bzip2/1.0.5/
+ Download bzip2-1.0.5-bin.zip
+ Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
+ ```
 
 8. Prepare the release.
 The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
@@ -86,9 +86,15 @@ npm run release:publish
 The publish step
 1. commits and pushes the publishing changes to GitHub
 2. tags the commit with the new version number that you chose in `release:prepare`
-3. pushes the version to npmjs
+3. pushes the version to npmjs and unpkg
 
 Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
+
+15. Push your `master` branch to GitHub.
+
+16. Delete the `release` branch locally and in GitHub.
+
+17. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 
@@ -188,4 +194,4 @@ npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
-1/23/20 mkt
+3/18/20 mkt
