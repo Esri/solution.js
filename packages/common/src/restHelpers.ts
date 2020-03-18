@@ -296,6 +296,11 @@ export function createFullItem(
     };
     if (itemThumbnailUrl) {
       createOptions.item.thumbnailurl = itemThumbnailUrl;
+      const token = authentication.token;
+      /* istanbul ignore else */
+      if (token) {
+        createOptions.item.thumbnailurl += "?token=" + token;
+      }
     }
 
     portal.createItemInFolder(createOptions).then(
@@ -473,6 +478,7 @@ export function createUniqueFolder(
   authentication: interfaces.UserSession
 ): Promise<interfaces.IAddFolderResponse> {
   return new Promise<interfaces.IAddFolderResponse>((resolve, reject) => {
+    // Get a title that is not already in use
     const folderTitle: string = generalHelpers.getUniqueTitle(
       title,
       templateDictionary,
@@ -485,7 +491,29 @@ export function createUniqueFolder(
     portal.createFolder(folderCreationParam).then(
       ok => resolve(ok),
       err => {
-        reject(err);
+        // If the name already exists, we'll try again
+        const errorDetails = generalHelpers.getProp(
+          err,
+          "response.error.details"
+        ) as string[];
+        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+          const nameNotAvailMsg =
+            "Folder title '" + folderTitle + "' not available.";
+          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            templateDictionary.user.folders.push({
+              title: folderTitle
+            });
+            createUniqueFolder(title, templateDictionary, authentication).then(
+              resolve,
+              reject
+            );
+          } else {
+            reject(err);
+          }
+        } else {
+          // Otherwise, error out
+          reject(err);
+        }
       }
     );
   });

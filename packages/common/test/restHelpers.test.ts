@@ -629,7 +629,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       it("can create an org item with goodies", done => {
         const itemInfo: any = {};
         const folderId: string = null as string; // default is top level
-        const itemThumbnailUrl: string = "thumbnail/thumbnail.png";
+        const itemThumbnailUrl: string =
+          "https://myserver/thumbnail/thumbnail.png";
         const dataFile: File = new File(
           [utils.getSampleJsonAsBlob()],
           "data.json"
@@ -661,12 +662,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
               notSharedWith: [] as string[],
               itemId: "itm1234567980"
             }
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/itm1234567980/info/thumbnail/thumbnail.png",
-            utils.getSampleImage(),
-            { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +

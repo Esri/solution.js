@@ -1,6 +1,8 @@
 ## Publishing solution.js to npmjs
 
-1. Remove the node_modules directories.
+1. Create a branch off of `develop` called `release`.
+
+2. Remove the node_modules directories.
 ```
   ..\solution.js\node_modules
   ..\solution.js\packages\common\node_modules
@@ -14,14 +16,14 @@
   ..\solution.js\packages\viewer\node_modules
  ```
 
-2. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+3. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
 
-3. From the repo's root folder install a fresh copy of the node modules
+4. From the repo's root folder install a fresh copy of the node modules
 ```
 npm install
 ```
 
-4. Log in to npmjs
+5. Log in to npmjs
 *Note: the computer remembers for a long time that you're logged in; you can check that you are logged in by typing `npm whoami`*
 ```
 npm login
@@ -32,25 +34,25 @@ Enter one-time password from your authenticator app: <e.g., from Okta Verify>
 Logged in as <npm username> on https://registry.npmjs.org/
 ```
 
-5. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+6. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
-6. Ensure you have access to the zip command
+7. Ensure you have access to the zip command
 ```
 zip -?
 Copyright (c) 1990-2008 Info-ZIP...
 ```
 
-If the command is missing:
-```
-Navigate to https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
-Download zip-3.0-bin.zip
-Copy\paste zip.exe from .\bin to to your "mingw64" bin folder (example: C:\Program Files\Git\mingw64\bin)
-Navigate to https://sourceforge.net/projects/gnuwin32/files/bzip2/1.0.5/
-Download bzip2-1.0.5-bin.zip
-Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
-```
+	If the command is missing:
+	```
+	Navigate to https://sourceforge.net/projects/gnuwin32/files/zip/3.0/
+	Download zip-3.0-bin.zip
+	Copy\paste zip.exe from .\bin to to your "mingw64" bin folder (example: C:\Program Files\Git\mingw64\bin)
+	Navigate to https://sourceforge.net/projects/gnuwin32/files/bzip2/1.0.5/
+	Download bzip2-1.0.5-bin.zip
+	Copy\paste the bzip2.dll from .\bin to your "mingw64" bin folder
+	```
 
-7. Prepare the release.
+8. Prepare the release.
 The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
 ```
 npm run prerelease:prepare
@@ -58,15 +60,19 @@ npm run release:prepare
 npm run release:review
 ```
 
-8. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.) For some reason, in CHANGELOG.md, the unreleased section appears below this release. So please move it to the top.
+9. Check, and fix if necessary, CHANGELOG.md by removing any link lines (the ones that begin with, e.g., `[0.5.0]: https://github.com`) except the set at the end of the file. (The set at the end is a full set; if there are any under the previous version(s), they are redundant and don't display properly because their definitions are overwritten by the set at the end.) Also, for some reason, in CHANGELOG.md, the unreleased section appears below the new release. So please move it to the top.
 *Note: To confirm the expected set at the end of this file visit the repos webpage and navigate to releases > tags. If you see additional tags in the CHANGELOG.md you can remove them. To remove them permanently from your local repo use:*
 ```
 git tag -d tagName
 ```
 
-9. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+10. Change the example app package.jsons and htmls to use the new version.
 
-10. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+11. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json, html files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+
+12. Switch to the `master` branch and merge in the `release` branch, but without committing it.
+
+13. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -75,7 +81,7 @@ npm run release:publish
 ? publish release to github? (y/N)
 ```
 
-11. Update the package.json files in the package examples with the new version number and run `npm install` for each.
+14. Update the package.json files in the package examples with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub

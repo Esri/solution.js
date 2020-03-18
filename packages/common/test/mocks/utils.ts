@@ -85,7 +85,8 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
 };
 
 export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
-  percentDone: number
+  percentDone: number,
+  jobId: string
 ): void {
   const tick = "tok";
 };
@@ -1172,7 +1173,7 @@ export function getCreateServiceResponse(
 /**
  * Provides a supplied item with the nth call.
  *
- * @param trigger 1-based call count on which to return itemForNthCall; before this call,
+ * @param trigger 1-based call count on which to start returning itemForNthCall; before this call,
  * function returns itemBeforeNthCall
  * @param itemForNthCall Item to return when trigger reached
  * @param itemBeforeNthCall Item to return before trigger reached

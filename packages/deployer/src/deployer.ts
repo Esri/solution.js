@@ -45,42 +45,54 @@ export function deploySolution(
       responses => {
         const [itemBase, itemData] = responses;
 
-        deployOptions.title = deployOptions.title ?? itemBase.title;
-        deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
-        deployOptions.description =
-          deployOptions.description ?? itemBase.description;
-        deployOptions.tags = deployOptions.tags ?? itemBase.tags;
-        deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
-          templateSolutionId,
-          itemBase.thumbnail,
-          false,
-          authentication
-        );
-        common.deleteItemProps(itemBase);
+        if (
+          itemBase.type !== "Solution" ||
+          itemBase.typeKeywords.indexOf("Solution") < 0 ||
+          itemBase.typeKeywords.indexOf("Template") < 0
+        ) {
+          reject(
+            common.fail(templateSolutionId + " is not a Solution Template")
+          );
+        } else {
+          deployOptions.jobId = deployOptions.jobId ?? templateSolutionId;
+          deployOptions.title = deployOptions.title ?? itemBase.title;
+          deployOptions.snippet = deployOptions.snippet ?? itemBase.snippet;
+          deployOptions.description =
+            deployOptions.description ?? itemBase.description;
+          deployOptions.tags = deployOptions.tags ?? itemBase.tags;
+          deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
+            templateSolutionId,
+            itemBase.thumbnail,
+            false,
+            authentication
+          );
 
-        _deploySolutionFromTemplate(
-          templateSolutionId,
-          itemBase,
-          itemData,
-          authentication,
-          deployOptions
-        ).then(
-          createdSolutionId => {
-            /* istanbul ignore else */
-            if (deployOptions.progressCallback) {
-              deployOptions.progressCallback(100); // we're done
+          common.deleteItemProps(itemBase);
+
+          _deploySolutionFromTemplate(
+            templateSolutionId,
+            itemBase,
+            itemData,
+            authentication,
+            deployOptions
+          ).then(
+            createdSolutionId => {
+              /* istanbul ignore else */
+              if (deployOptions.progressCallback) {
+                deployOptions.progressCallback(100); // we're done
+              }
+              resolve(createdSolutionId);
+            },
+            error => {
+              // Error deploying solution
+              /* istanbul ignore else */
+              if (deployOptions.progressCallback) {
+                deployOptions.progressCallback(1);
+              }
+              reject(error);
             }
-            resolve(createdSolutionId);
-          },
-          error => {
-            // Error deploying solution
-            /* istanbul ignore else */
-            if (deployOptions.progressCallback) {
-              deployOptions.progressCallback(1);
-            }
-            reject(error);
-          }
-        );
+          );
+        }
       },
       error => {
         // Error fetching solution
@@ -139,9 +151,19 @@ export function _deploySolutionFromTemplate(
         solutionTemplateData.templates = solutionTemplateData.templates.map(
           (template: any) => {
             const sourceId: string = "source-" + template.itemId;
-            template.item?.typeKeywords?.push(sourceId);
-            if (common.getProp(template, "item.type") === "Group") {
-              template.item?.tags?.push(sourceId);
+            /* istanbul ignore else */
+            if (template.item) {
+              /* istanbul ignore else */
+              if (template.item!.typeKeywords) {
+                template.item!.typeKeywords!.push(sourceId);
+              }
+              /* istanbul ignore else */
+              if (
+                template.item!.tags &&
+                common.getProp(template, "item.type") === "Group"
+              ) {
+                template.item!.tags!.push(sourceId);
+              }
             }
             return template;
           }
@@ -245,9 +267,7 @@ export function _deploySolutionFromTemplate(
           authentication,
           templateDictionary,
           authentication,
-          options?.enableItemReuse || false,
-          options.progressCallback,
-          options.consoleProgress
+          options
         );
       })
       .then(clonedSolutionsResponse => {
@@ -258,16 +278,13 @@ export function _deploySolutionFromTemplate(
               templateDictionary,
               itemTemplate.itemId + ".itemId"
             );
+            /* istanbul ignore else */
             if (itemId) {
               itemTemplate.itemId = itemId;
             }
-            itemTemplate.dependencies = itemTemplate.dependencies.map(id => {
-              const dependId = common.getProp(
-                templateDictionary,
-                id + ".itemId"
-              );
-              return dependId ? dependId : id;
-            });
+            itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
+              _getNewItemId(id, templateDictionary)
+            );
             return itemTemplate;
           }
         );
@@ -332,13 +349,15 @@ export function _deploySolutionFromTemplate(
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
-export function _purgeTemplateProperties(itemTemplate: any): any {
-  const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
-  const deleteProps: string[] = Object.keys(itemTemplate).filter(
-    k => retainProps.indexOf(k) < 0
-  );
-  common.deleteProps(itemTemplate, deleteProps);
-  return itemTemplate;
+/**
+ * Returns a match of a supplied id with the suffix ".itemId" in the template dictionary.
+ *
+ * @param id Id to look for
+ * @param templateDictionary Hash mapping property names to replacement values
+ * @return Match in template dictionary or original id
+ */
+export function _getNewItemId(id: string, templateDictionary: any): string {
+  return common.getProp(templateDictionary, id + ".itemId") ?? id;
 }
 
 export function _checkedReplaceAll(
@@ -354,6 +373,15 @@ export function _checkedReplaceAll(
     newTemplate = template;
   }
   return newTemplate;
+}
+
+export function _purgeTemplateProperties(itemTemplate: any): any {
+  const retainProps: string[] = ["itemId", "type", "dependencies", "groups"];
+  const deleteProps: string[] = Object.keys(itemTemplate).filter(
+    k => retainProps.indexOf(k) < 0
+  );
+  common.deleteProps(itemTemplate, deleteProps);
+  return itemTemplate;
 }
 
 export function _updateGroupReferences(

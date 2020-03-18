@@ -172,13 +172,13 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
 
     describe("addThumbnailFromBlob", () => {
-      it("gets a thumbnail from a blob", done => {
+      it("gets an item's thumbnail from a blob", done => {
         const blob = utils.getSampleImage();
         const itemId = "itm1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
-        const expected = { success: true, id: itemId };
+        const expected = utils.getSuccessResponse({ id: itemId });
         const serverInfoUrl: string =
           "https://myserver/images/thumbnail.png/rest/info";
         const expectedServerInfo = SERVER_INFO;
@@ -188,6 +188,33 @@ describe("Module `resourceHelpers`: common functions involving the management of
           .post(serverInfoUrl, expectedServerInfo);
         resourceHelpers
           .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION)
+          .then((response: any) => {
+            expect(response).toEqual(expected);
+            const options: fetchMock.MockOptions = fetchMock.lastOptions(
+              updateUrl
+            );
+            const fetchBody = (options as fetchMock.MockResponseObject).body;
+            expect(typeof fetchBody).toEqual("object");
+            done();
+          }, done.fail);
+      });
+
+      it("gets a group's thumbnail from a blob", done => {
+        const blob = utils.getSampleImage();
+        const itemId = "grp1234567890";
+        const updateUrl =
+          utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/grp1234567890/update";
+        const expected = utils.getSuccessResponse({ id: itemId });
+        const serverInfoUrl: string =
+          "https://myserver/images/thumbnail.png/rest/info";
+        const expectedServerInfo = SERVER_INFO;
+
+        fetchMock
+          .post(updateUrl, expected)
+          .post(serverInfoUrl, expectedServerInfo);
+        resourceHelpers
+          .addThumbnailFromBlob(blob, itemId, MOCK_USER_SESSION, true)
           .then((response: any) => {
             expect(response).toEqual(expected);
             const options: fetchMock.MockOptions = fetchMock.lastOptions(

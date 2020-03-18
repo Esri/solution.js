@@ -22,9 +22,9 @@ import * as lib from "../src/lib";
 
 describe("Module `lib`: common third-party helper functions shared across packages", () => {
   if (typeof window !== "undefined") {
-    describe("pseudoGUID", () => {
+    describe("createPseudoGUID", () => {
       it("creates GUID without dashes", () => {
-        const guid = lib.pseudoGUID();
+        const guid = lib.createPseudoGUID();
         expect(guid.length)
           .withContext("length check")
           .toEqual(32);
@@ -34,7 +34,7 @@ describe("Module `lib`: common third-party helper functions shared across packag
       });
 
       it("creates GUID with dashes", () => {
-        const guid = lib.pseudoGUID(true);
+        const guid = lib.createPseudoGUID(true);
         expect(guid.length)
           .withContext("length check")
           .toEqual(36);
