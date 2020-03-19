@@ -95,7 +95,7 @@ export function convertItemToTemplate(
         const relationships = relatedItemsResponse as common.IRelatedItems[];
 
         // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
-        itemTemplate.dependencies = [] as string[];
+        itemTemplate.dependencies = itemTemplate.dependencies || [];
         itemTemplate.relatedItems = [] as common.IRelatedItems[];
 
         relationships.forEach(relationship => {

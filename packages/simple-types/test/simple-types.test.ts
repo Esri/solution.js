@@ -113,12 +113,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       it("should handle error on dataPromise", done => {
         const solutionItemId = "sln1234567890";
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Web Mapping Application",
+          null
+        );
         const itemId: string = "abc0cab401af4828a25cc6eaeb59fb69";
-        const item = {
+        itemTemplate.item = {
           id: itemId,
           type: "Web Mapping Application",
           title: "Dam Inspection Assignments"
         };
+        itemTemplate.itemId = itemId;
 
         const url = common.getItemDataBlobUrl(itemId, MOCK_USER_SESSION);
         fetchMock
@@ -144,7 +149,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
 
         simpleTypes
-          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+          .convertItemToTemplate(
+            solutionItemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
           .then(() => {
             done.fail();
           }, done);
@@ -152,11 +161,17 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       it("should handle workforce project", done => {
         const solutionItemId = "sln1234567890";
-        const item = {
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Workforce Project",
+          null
+        );
+
+        itemTemplate.item = {
           id: "abc0cab401af4828a25cc6eaeb59fb69",
           type: "Workforce Project",
           title: "Dam Inspection Assignments"
         };
+        itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
 
         const expectedTemplateData: any = {
           workerWebMapId: "{{abc116555b16437f8435e079033128d0.itemId}}",
@@ -236,7 +251,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
 
         simpleTypes
-          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+          .convertItemToTemplate(
+            solutionItemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
           .then(newItemTemplate => {
             expect(newItemTemplate.data).toEqual(expectedTemplateData);
             done();
@@ -350,9 +369,12 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
       it("should handle python notebook", done => {
         const solutionItemId = "sln1234567890";
-        const item = {
+        const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+          "Notebook"
+        );
+        itemTemplate.item = {
           id: "abc0cab401af4828a25cc6eaeb59fb69",
-          type: "Notebook",
+          type: itemTemplate.type,
           title: "Simple Notebook"
         };
 
@@ -380,7 +402,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         );
 
         simpleTypes
-          .convertItemToTemplate(solutionItemId, item, MOCK_USER_SESSION)
+          .convertItemToTemplate(
+            solutionItemId,
+            itemTemplate.item,
+            MOCK_USER_SESSION
+          )
           .then(newItemTemplate => {
             expect(newItemTemplate.data).toEqual(
               templates.getItemTemplateData("Notebook")

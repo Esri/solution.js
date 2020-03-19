@@ -289,11 +289,6 @@ export interface IGetResourcesResponse {
   resources: IResource[];
 }
 
-export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
-}
-
 /**
  * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
  */
@@ -313,11 +308,6 @@ export interface IItemGeneralized {
   typeKeywords?: string[];
   url?: string;
   [key: string]: any;
-}
-
-export interface IItemSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
 }
 
 /**
@@ -497,13 +487,6 @@ export interface IResource {
   resource: string;
   created: number;
   size: number;
-}
-
-export interface ISharedSearchOptions {
-  start?: number;
-  num?: number;
-  sortField?: string;
-  sortOrder?: string;
 }
 
 /**
