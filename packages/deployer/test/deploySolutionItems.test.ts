@@ -962,67 +962,6 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
 
-    it("handles inability to get dependencies", done => {
-      const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
-        "Web Mapping Application",
-        ["svc1234567890"],
-        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
-      );
-      itemTemplate.item.thumbnail = null;
-      const resourceFilePaths: common.IDeployFileCopyPath[] = [];
-      const templateDictionary: any = {
-        svc1234567890: {
-          def: Promise.reject(utils.getFailureResponse())
-        }
-      };
-      const newItemID: string = "wma1234567891";
-
-      const updatedItem = mockItems.getAGOLItem(
-        "Web Mapping Application",
-        "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
-      );
-
-      fetchMock
-        .post(
-          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: newItemID })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/wma1234567891/update",
-          utils.getSuccessResponse({ id: newItemID })
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wma1234567890?f=json&token=fake-token",
-          mockItems.getAGOLItem(
-            "Web Mapping Application",
-            utils.PORTAL_SUBSET.portalUrl +
-              "/home/webmap/viewer.html?webmap=wma1234567890"
-          )
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/wma1234567891?f=json&token=fake-token",
-          updatedItem
-        );
-
-      // tslint:disable-next-line: no-floating-promises
-      deploySolution
-        ._createItemFromTemplateWhenReady(
-          itemTemplate,
-          resourceFilePaths,
-          MOCK_USER_SESSION,
-          templateDictionary,
-          MOCK_USER_SESSION,
-          utils.ITEM_PROGRESS_CALLBACK
-        )
-        .then((response: common.ICreateItemFromTemplateResponse) => {
-          expect(response).toEqual(templates.getFailedItem(itemTemplate.type));
-          done();
-        });
-    });
-
     if (typeof window !== "undefined") {
       it("fails to deploy file data to the item", done => {
         const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
@@ -1079,9 +1018,7 @@ describe("Module `deploySolutionItems`", () => {
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(response => {
-            expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
-            );
+            expect(response).toEqual(templates.getFailedItem("Web Map"));
             done();
           });
       });
@@ -1199,7 +1136,7 @@ describe("Module `deploySolutionItems`", () => {
           )
           .then(response => {
             expect(response).toEqual(
-              templates.getFailedItem(itemTemplate.type)
+              templates.getFailedItem("Web Mapping Application")
             );
             done();
           });

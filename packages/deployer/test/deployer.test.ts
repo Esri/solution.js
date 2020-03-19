@@ -1356,7 +1356,7 @@ describe("Module `deploySolution`", () => {
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/delete",
-            utils.getFailureResponse({
+            utils.getSuccessResponse({
               folder: {
                 username: "casey",
                 id: "a4468da125a64526b359b70d8ba4a9dd"
