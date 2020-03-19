@@ -355,6 +355,57 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       templatize(itemTemplate, dependencies, true);
       expect(itemTemplate).toEqual(expected);
     });
+
+    it("should handle absence of layers and tables itemTemplate properties", () => {
+      const dependencies: interfaces.IDependency[] = [];
+      itemTemplate = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "ab766cba0dd44ec080420acc10990282",
+            fullExtent: {},
+            initialExtent: {}
+          }
+        },
+        type: "",
+        item: {
+          extent: "",
+          id: "ab766cba0dd44ec080420acc10990282",
+          type: ""
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      const expected: any = {
+        itemId: "ab766cba0dd44ec080420acc10990282",
+        key: "ABC123",
+        properties: {
+          service: {
+            serviceItemId: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+            fullExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}",
+            initialExtent: "{{ab766cba0dd44ec080420acc10990282.solutionExtent}}"
+          }
+        },
+        type: "",
+        item: {
+          extent: "", // only set through createItemTemplate
+          id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+          type: "",
+          url: "{{ab766cba0dd44ec080420acc10990282.url}}"
+        },
+        data: {},
+        resources: [],
+        dependencies: [],
+        groups: [],
+        estimatedDeploymentCostFactor: 0
+      };
+      templatize(itemTemplate, dependencies, true);
+      expect(itemTemplate).toEqual(expected);
+    });
   });
 
   describe("cacheFieldInfos", () => {
@@ -2389,6 +2440,14 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       ];
       expect(layersAndTables).toEqual(expected);
     });
+
+    it("should handle absence of layers and tables", () => {
+      itemTemplate.properties.layers = null;
+      itemTemplate.properties.tables = null;
+      const layersAndTables: any = getLayersAndTables(itemTemplate);
+      const expected: any[] = [];
+      expect(layersAndTables).toEqual(expected);
+    });
   });
 
   describe("addFeatureServiceLayersAndTables", () => {
@@ -2638,6 +2697,73 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       settings[expectedId] = {
         id: expectedId,
         url: expectedUrl,
+        organization: _organization
+      };
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(adminUrl + "/refresh", mockItems.get400Failure())
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success": "true"}'
+        );
+
+      addFeatureServiceLayersAndTables(
+        itemTemplate,
+        settings,
+        {
+          layers: [],
+          tables: []
+        },
+        MOCK_USER_REQOPTS
+      ).then(() => done.fail(), done);
+    });
+
+    it("should handle absence of item url", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate.itemId = expectedId;
+      itemTemplate.item.id = id;
+      itemTemplate.estimatedDeploymentCostFactor = 0;
+      itemTemplate.properties.service.serviceItemId = id;
+      itemTemplate.properties.service.spatialReference = {
+        wkid: 102100
+      };
+
+      itemTemplate.properties.layers[0].serviceItemId = id;
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].serviceItemId = id;
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+      delete itemTemplate.item.item;
+      itemTemplate.item.url = null;
+
+      const settings = utils.createMockSettings();
+      settings.folderId = "fld1234567890";
+      settings[expectedId] = {
+        id: expectedId,
         organization: _organization
       };
 

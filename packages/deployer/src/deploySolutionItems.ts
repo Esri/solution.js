@@ -665,11 +665,6 @@ export function _createItemFromTemplateWhenReady(
     templateDictionary[template.itemId].def = itemDef;
   } else {
     itemDef = templateDictionary[template.itemId].def;
-    itemProgressCallback(
-      template.itemId,
-      common.EItemProgressStatus.Finished,
-      template.estimatedDeploymentCostFactor / 2
-    );
   }
 
   return itemDef;

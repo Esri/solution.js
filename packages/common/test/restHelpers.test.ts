@@ -1992,6 +1992,46 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchGroupContents", () => {
+    it("can handle no results", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "My Group";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        utils.getGroupResponse(query, false)
+      );
+
+      restHelpers.searchGroupContents(groupId, query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a result", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "My Group";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        utils.getGroupResponse(query, true)
+      );
+
+      restHelpers.searchGroupContents(groupId, query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(1);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("shareItem", () => {
     it("can handle error on shareItem", done => {
       const groupId: string = "grp1234567890";

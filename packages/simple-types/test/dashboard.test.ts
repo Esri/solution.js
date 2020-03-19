@@ -268,6 +268,38 @@ describe("Module `dashboard`: manages the creation and deployment of dashboard i
       expect(info).toEqual(dsInfos[0]);
     });
 
+    it("handles dataSource.id without match in datasourceInfos", () => {
+      const obj: any = {
+        dataSource: {
+          id: "widget#id"
+        }
+      };
+
+      const dsInfos: common.IDatasourceInfo[] = [
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 0,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        },
+        {
+          basePath: "",
+          itemId: "AAABBBCCC123",
+          ids: [],
+          layerId: 1,
+          fields: [],
+          relationships: [],
+          adminLayerInfo: {}
+        }
+      ];
+
+      const info = dashboard._getDatasourceInfo(obj, dsInfos);
+      expect(info).toBeUndefined();
+    });
+
     it("handles dataSource.itemId", () => {
       const obj: any = {
         dataSource: {
