@@ -1530,4 +1530,43 @@ describe("Module `deploySolution`", () => {
       expect(actualResult).toEqual(expectedResult);
     });
   });
+
+  describe("_updateGroupReferences", () => {
+    it("replaces group references", () => {
+      const itemTemplates = [
+        {
+          type: "Group",
+          itemId: "xyz",
+          groups: ["abc", "ghi"]
+        },
+        {
+          type: "Group",
+          itemId: "def",
+          groups: ["abc", "ghi"]
+        }
+      ];
+      const templateDictionary = {
+        abc: {
+          itemId: "xyz"
+        }
+      };
+
+      const actual = deployer._updateGroupReferences(
+        itemTemplates,
+        templateDictionary
+      );
+      expect(actual).toEqual([
+        {
+          type: "Group",
+          itemId: "xyz",
+          groups: ["xyz", "ghi"]
+        },
+        {
+          type: "Group",
+          itemId: "def",
+          groups: ["xyz", "ghi"]
+        }
+      ]);
+    });
+  });
 });
