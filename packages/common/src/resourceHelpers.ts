@@ -144,12 +144,14 @@ export function addThumbnailFromUrl(
   isGroup: boolean = false
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet.getBlob(url, authentication).then(async blob => {
-      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
-        resolve,
-        reject
-      );
-    }, reject);
+    restHelpersGet
+      .getBlob(generalHelpers.appendQueryParam(url, "w=400"), authentication)
+      .then(async blob => {
+        addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
+          resolve,
+          reject
+        );
+      }, reject);
   });
 }
 
@@ -774,12 +776,13 @@ export function generateSourceThumbnailUrl(
   thumbnailUrlPart: string,
   isGroup = false
 ): string {
-  return (
+  return generalHelpers.appendQueryParam(
     sourcePortalSharingUrl +
-    (isGroup ? "/community/groups/" : "/content/items/") +
-    itemId +
-    "/info/" +
-    thumbnailUrlPart
+      (isGroup ? "/community/groups/" : "/content/items/") +
+      itemId +
+      "/info/" +
+      thumbnailUrlPart,
+    "w=400"
   );
 }
 
