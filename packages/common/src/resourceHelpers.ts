@@ -715,17 +715,22 @@ export function generateSourceFilePaths(
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
+
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
-    filePaths.push({
-      url: generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        isGroup
+    const path = {
+      url: generalHelpers.appendQueryParam(
+        generateSourceThumbnailUrl(
+          portalSharingUrl,
+          itemId,
+          thumbnailUrlPart,
+          isGroup
+        ),
+        "w=400"
       ),
       ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    });
+    };
+    filePaths.push(path);
   }
 
   return filePaths;
@@ -813,13 +818,12 @@ export function generateSourceThumbnailUrl(
   thumbnailUrlPart: string,
   isGroup = false
 ): string {
-  return generalHelpers.appendQueryParam(
+  return (
     sourcePortalSharingUrl +
-      (isGroup ? "/community/groups/" : "/content/items/") +
-      itemId +
-      "/info/" +
-      thumbnailUrlPart,
-    "w=400"
+    (isGroup ? "/community/groups/" : "/content/items/") +
+    itemId +
+    "/info/" +
+    thumbnailUrlPart
   );
 }
 

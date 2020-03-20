@@ -49,7 +49,7 @@ const projectedGeometries: any[] = [
   }
 ];
 
-describe("Module `deploySolution`", () => {
+describe("Module `deployer`", () => {
   describe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
