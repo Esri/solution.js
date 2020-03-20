@@ -404,54 +404,16 @@ export function copyFormInfoFile(
       )
       .then(file => {
         // Send it to the destination item
-        /*portal.*/ updateItemInfo({
-          id: destination.itemId,
-          file,
-          authentication: destination.authentication
-        }).then(resolve, reject);
+        portal
+          .updateItemInfo({
+            id: destination.itemId,
+            file,
+            authentication: destination.authentication
+          })
+          .then(resolve, reject);
       }, reject);
   });
 }
-
-// =====================================================================================================================
-// submitted to arcgis-rest-js's portal package
-
-interface IItemInfoOptions extends portal.IUserItemOptions {
-  /**
-   * Subfolder for added information.
-   */
-  folderName?: string;
-  /**
-   * Object to store
-   */
-  file: any;
-}
-
-interface IItemInfoResponse {
-  success: boolean;
-  itemId: string;
-  owner: string;
-  folder: string;
-}
-
-function updateItemInfo(
-  requestOptions: IItemInfoOptions
-): Promise<IItemInfoResponse> {
-  const owner = portal.determineOwner(requestOptions);
-  const url = `${portal.getPortalUrl(
-    requestOptions as request.IRequestOptions
-  )}/content/users/${owner}/items/${requestOptions.id}/updateinfo`;
-
-  // mix in user supplied params
-  requestOptions.params = {
-    folderName: requestOptions.folderName,
-    file: requestOptions.file,
-    ...requestOptions.params
-  };
-
-  return request.request(url, requestOptions);
-}
-// =====================================================================================================================
 
 export function copyMetadata(
   source: {
