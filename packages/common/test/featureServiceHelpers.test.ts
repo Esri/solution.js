@@ -2527,7 +2527,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [],
           tables: []
         },
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(e => done.fail, done);
     });
 
@@ -2570,7 +2570,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [],
           tables: []
         },
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(() => done(), done.fail);
     });
 
@@ -2644,7 +2644,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [],
           tables: []
         },
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(() => done.fail(), done);
     });
 
@@ -2719,7 +2719,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [],
           tables: []
         },
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(() => done.fail(), done);
     });
 
@@ -2786,7 +2786,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           layers: [],
           tables: []
         },
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(() => done.fail(), done);
     });
   });
@@ -2865,7 +2865,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         popupInfos,
         adminLayerInfos,
         settings,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(
         (layerInfos: any) => {
           // verify that fieldInfos are set
@@ -2922,7 +2922,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         {},
         adminLayerInfos,
         settings,
-        MOCK_USER_REQOPTS
+        MOCK_USER_SESSION
       ).then(done.fail, done);
     });
   });

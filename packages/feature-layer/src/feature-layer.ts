@@ -109,7 +109,7 @@ export function convertItemToTemplate(
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
  * @param settings Hash mapping property names to replacement values
- * @param requestOptions Options for the request
+ * @param authentication Credentials for the request
  * @return A promise that will resolve with the id of the created item
  * @protected
  */
@@ -135,10 +135,6 @@ export function createItemFromTemplate(
       );
       resolve(_generateEmptyCreationResponse(template.type));
     } else {
-      const requestOptions: common.IUserRequestOptions = {
-        authentication: destinationAuthentication
-      };
-
       let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
 
       // cache the popup info to be added later
@@ -150,7 +146,7 @@ export function createItemFromTemplate(
       common
         .createFeatureService(
           newItemTemplate,
-          requestOptions.authentication,
+          destinationAuthentication,
           templateDictionary
         )
         .then(
@@ -192,7 +188,7 @@ export function createItemFromTemplate(
                     newItemTemplate,
                     templateDictionary,
                     popupInfos,
-                    requestOptions
+                    destinationAuthentication
                   )
                   .then(
                     () => {
@@ -207,7 +203,7 @@ export function createItemFromTemplate(
                           createResponse.serviceItemId,
                           newItemTemplate.item,
                           newItemTemplate.data,
-                          requestOptions.authentication
+                          destinationAuthentication
                         )
                         .then(
                           () => {

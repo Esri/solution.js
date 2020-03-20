@@ -460,7 +460,7 @@ export function getLayersAndTables(
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
  *            service)
  * @param popupInfos the cached popup info from the layers
- * @param requestOptions Options for the request
+ * @param authentication Credentials for the request
  * @return A promise that will resolve when all layers and tables have been added
  * @protected
  */
@@ -468,7 +468,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     // Create a hash of various properties that contain field references
@@ -481,7 +481,7 @@ export function addFeatureServiceLayersAndTables(
         itemTemplate.item.url || "",
         layersAndTables,
         templateDictionary,
-        requestOptions,
+        authentication,
         itemTemplate.key,
         adminLayerInfos,
         fieldInfos,
@@ -495,7 +495,7 @@ export function addFeatureServiceLayersAndTables(
             popupInfos,
             adminLayerInfos,
             templateDictionary,
-            requestOptions
+            authentication
           ).then(
             r => {
               // Update relationships and layer definitions
@@ -504,7 +504,7 @@ export function addFeatureServiceLayersAndTables(
                   message: "updated layer definition",
                   objects: r.layerInfos.fieldInfos,
                   itemTemplate: r.itemTemplate,
-                  authentication: requestOptions.authentication
+                  authentication
                 } as interfaces.IPostProcessArgs
               );
               // Process the updates sequentially
@@ -537,7 +537,7 @@ export function addFeatureServiceLayersAndTables(
  * @param listToAdd List of layers and/or tables to add
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
  *            service)
- * @param requestOptions Options for requesting information from AGOL
+ * @param authentication Credentials for the request
  * @param key
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param fieldInfos Hash map of properties that contain field references
@@ -549,7 +549,7 @@ export function updateFeatureServiceDefinition(
   serviceUrl: string,
   listToAdd: any[],
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions,
+  authentication: interfaces.UserSession,
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
@@ -559,7 +559,7 @@ export function updateFeatureServiceDefinition(
     const options: any = {
       layers: [],
       tables: [],
-      ...requestOptions
+      authentication
     };
 
     listToAdd.forEach(toAdd => {
@@ -617,7 +617,7 @@ export function updateFeatureServiceDefinition(
  * @param popupInfos Hash map of a layers popupInfo
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @param requestOptions Options for requesting information from AGOL
+ * @param authentication Credentials for the request
  * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
@@ -627,7 +627,7 @@ export function updateLayerFieldReferences(
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields
@@ -638,7 +638,7 @@ export function updateLayerFieldReferences(
       popupInfos,
       adminLayerInfos,
       templateDictionary,
-      requestOptions
+      authentication
     ).then(
       (layerInfos: any) => {
         // Update the items text with detemplatized popupInfo
@@ -662,7 +662,7 @@ export function updateLayerFieldReferences(
  * @param popupInfos Hash map of a layers popupInfo
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary
- * @param requestOptions
+ * @param authentication Credentials for the request
  * @return An object with detemplatized field references
  * @protected
  */
@@ -672,7 +672,7 @@ export function postProcessFields(
   popupInfos: any,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     const id = itemTemplate.itemId;
@@ -682,16 +682,8 @@ export function postProcessFields(
 
     const serviceData: any = itemTemplate.properties;
     Promise.all([
-      restHelpers.getLayers(
-        url,
-        serviceData["layers"],
-        requestOptions.authentication
-      ),
-      restHelpers.getLayers(
-        url,
-        serviceData["tables"],
-        requestOptions.authentication
-      )
+      restHelpers.getLayers(url, serviceData["layers"], authentication),
+      restHelpers.getLayers(url, serviceData["tables"], authentication)
     ]).then(
       results => {
         const layers: any[] = results[0] || [];
