@@ -2925,6 +2925,69 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         MOCK_USER_SESSION
       ).then(done.fail, done);
     });
+
+    it("should handle missing url", done => {
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate.item.url = null;
+
+      postProcessFields(
+        itemTemplate,
+        null,
+        null,
+        null,
+        null,
+        MOCK_USER_SESSION
+      ).then(
+        () => done.fail(),
+        error => {
+          expect(error).toEqual(
+            utils.getFailureResponse({
+              error:
+                "Feature layer " + itemTemplate.itemId + " does not have a URL"
+            })
+          );
+          done();
+        }
+      );
+    });
+
+    it("should handle missing layers and tables", done => {
+      const url: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate = mockSolutions.getItemTemplate(
+        "Feature Service",
+        null,
+        url
+      );
+      itemTemplate.data = {
+        tables: [],
+        layers: []
+      };
+      itemTemplate.properties.layers = [];
+      itemTemplate.properties.tables = [];
+
+      postProcessFields(
+        itemTemplate,
+        {},
+        cachePopupInfos(itemTemplate.data),
+        {},
+        {},
+        MOCK_USER_SESSION
+      ).then(layerInfos => {
+        expect(layerInfos).toEqual({
+          popupInfos: {
+            layers: {},
+            tables: {}
+          },
+          fieldInfos: {},
+          adminLayerInfos: {}
+        });
+        done();
+      }, done.fail);
+    });
   });
 
   describe("_getFieldVisibilityUpdates", () => {
