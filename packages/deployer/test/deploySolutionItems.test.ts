@@ -1185,7 +1185,12 @@ describe("Module `deploySolutionItems`", () => {
               "/content/items/wma1234567891?f=json&token=fake-token",
             updatedItem
           )
-          .post(resourceFilePaths[0].url, 503);
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/" +
+              "9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png?w=400",
+            503
+          );
 
         // tslint:disable-next-line: no-floating-promises
         deploySolution
