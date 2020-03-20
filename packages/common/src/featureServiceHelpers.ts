@@ -694,8 +694,8 @@ export function postProcessFields(
         restHelpers.getLayers(url, serviceData["tables"], authentication)
       ]).then(
         results => {
-          const layers: any[] = results[0] || [];
-          const tables: any[] = results[1] || [];
+          const layers: any[] = results[0];
+          const tables: any[] = results[1];
           const layersAndTables: any[] = layers.concat(tables);
           // Set the newFields property for the layerInfos...this will contain all fields
           // as they are after being added to the definition.
