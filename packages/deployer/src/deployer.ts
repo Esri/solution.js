@@ -402,7 +402,7 @@ export function _updateGroupReferences(
     const newId: string = templateDictionary[k].itemId;
     if (groupIds.indexOf(newId) > -1) {
       itemTemplates.forEach(t => {
-        t.groups = t.groups.map((id: string) => (id === k ? newId : k));
+        t.groups = t.groups.map((id: string) => (id === k ? newId : id));
       });
     }
   });
