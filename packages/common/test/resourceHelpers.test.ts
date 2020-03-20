@@ -229,22 +229,21 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     describe("addThumbnailFromUrl", () => {
       it("gets a thumbnail from a URL", done => {
-        const thumbnailUrl = "https://myserver/images/thumbnail.png";
+        const thumbnailUrl =
+          utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png";
         const itemId = "itm1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
-        const serverInfoUrl: string =
-          "https://myserver/images/thumbnail.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
 
         const expected = { success: true, id: itemId };
         const expectedImage = mockItems.getAnImageResponse();
 
         fetchMock
           .post(updateUrl, expected)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post(thumbnailUrl, expectedImage, { sendAsJson: false });
+          .post(utils.PORTAL_SUBSET.restUrl, SERVER_INFO)
+          .post(thumbnailUrl + "?w=400", expectedImage, { sendAsJson: false });
+
         resourceHelpers
           .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
@@ -624,7 +623,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             type: interfaces.EFileType.Thumbnail,
             folder: "",
             filename: "",
-            url: "https://myserver/images/thumbnail.png" // Thumbnail uses only URL
+            url: utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png" // Thumbnail uses only URL
           }
         ];
         const destinationItemId: string = "itm1234567890";
@@ -634,16 +633,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "/content/users/casey/items/itm1234567890/update";
         const expectedUpdate = true;
         const expectedImage = mockItems.getAnImageResponse();
-        const imageUrl: string = "https://myserver/images/thumbnail.png";
-        const serverInfoUrl: string =
-          "https://myserver/images/thumbnail.png/rest/info";
-        const expectedServerInfo = SERVER_INFO;
+        const imageUrl: string =
+          utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png?w=400";
 
         fetchMock
           .post(updateUrl, expectedUpdate)
-          .post(serverInfoUrl, expectedServerInfo)
-          .post("https://www.arcgis.com/sharing/rest/info", SERVER_INFO)
+          .post(utils.PORTAL_SUBSET.restUrl, SERVER_INFO)
           .post(imageUrl, expectedImage, { sendAsJson: false });
+
         resourceHelpers
           .copyFilesFromStorageItem(
             storageAuthentication,
@@ -1203,7 +1200,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           url:
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1242,7 +1239,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           url:
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1281,7 +1278,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           url:
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1327,7 +1324,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         {
           url:
             utils.PORTAL_SUBSET.restUrl +
-            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png",
+            "/content/items/8f7ec78195d0479784036387d522e29f/info/thumbnail/thumbnail.png?w=400",
           folder: "8f7ec78195d0479784036387d522e29f_info_thumbnail",
           filename: "thumbnail.png"
         }
@@ -1694,7 +1691,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/qck1234567890/info/thumbnail/ago_downloaded.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -1779,7 +1776,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemTemplate.itemId +
-              "/info/thumbnail/banner.png",
+              "/info/thumbnail/banner.png?w=400",
             expectedFetch,
             { sendAsJson: false }
           )
@@ -1863,7 +1860,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemTemplate.itemId +
-              "/info/thumbnail/banner.png",
+              "/info/thumbnail/banner.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -1915,7 +1912,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.itemId = itemTemplate.item.id;
-        itemTemplate.item.thumbnail = "thumbnail/banner.png";
+        itemTemplate.item.thumbnail = null;
         const solutionItemId = "ee67658b2a98450cba051fd001463df0";
 
         const expectedFetch = mockItems.getAnImageResponse();
@@ -1963,7 +1960,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemTemplate.itemId +
-              "/info/thumbnail/banner.png",
+              "/info/thumbnail/banner.png?w=400",
             expectedFetch,
             { sendAsJson: false }
           )

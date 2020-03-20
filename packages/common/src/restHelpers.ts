@@ -295,11 +295,17 @@ export function createFullItem(
       authentication: authentication
     };
     if (itemThumbnailUrl) {
-      createOptions.item.thumbnailurl = itemThumbnailUrl;
+      createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
+        itemThumbnailUrl,
+        "w=400"
+      );
       const token = authentication.token;
       /* istanbul ignore else */
       if (token) {
-        createOptions.item.thumbnailurl += "?token=" + token;
+        createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
+          createOptions.item.thumbnailurl,
+          "token=" + token
+        );
       }
     }
 

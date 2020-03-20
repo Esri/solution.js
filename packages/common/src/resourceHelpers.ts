@@ -144,12 +144,14 @@ export function addThumbnailFromUrl(
   isGroup: boolean = false
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet.getBlob(url, authentication).then(async blob => {
-      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
-        resolve,
-        reject
-      );
-    }, reject);
+    restHelpersGet
+      .getBlob(generalHelpers.appendQueryParam(url, "w=400"), authentication)
+      .then(async blob => {
+        addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
+          resolve,
+          reject
+        );
+      }, reject);
   });
 }
 
@@ -232,63 +234,100 @@ export function copyFilesFromStorageItem(
   mimeTypes?: interfaces.IMimeTypes
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
+    // Introduce a lag because AGO update appears to choke with rapid subsequent calls
+    const msLag = 1000;
+
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
         case interfaces.EFileType.Data:
-          return copyData(
-            {
-              url: filePath.url,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              filename: filePath.filename,
-              mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
-              authentication: destinationAuthentication
+          return new Promise<interfaces.IUpdateItemResponse>(
+            (resolveData, rejectData) => {
+              setTimeout(() => {
+                copyData(
+                  {
+                    url: filePath.url,
+                    authentication: storageAuthentication
+                  },
+                  {
+                    itemId: destinationItemId,
+                    filename: filePath.filename,
+                    mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
+                    authentication: destinationAuthentication
+                  }
+                ).then(resolveData, rejectData);
+              }, msLag);
             }
           );
+
         case interfaces.EFileType.Info:
-          return copyFormInfoFile(
-            {
-              url: filePath.url,
-              filename: filePath.filename,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              authentication: destinationAuthentication
+          return new Promise<interfaces.IUpdateItemResponse>(
+            (resolveInfo, rejectInfo) => {
+              setTimeout(() => {
+                copyFormInfoFile(
+                  {
+                    url: filePath.url,
+                    filename: filePath.filename,
+                    authentication: storageAuthentication
+                  },
+                  {
+                    itemId: destinationItemId,
+                    authentication: destinationAuthentication
+                  }
+                ).then(resolveInfo, rejectInfo);
+              }, msLag);
             }
           );
+
         case interfaces.EFileType.Metadata:
-          return copyMetadata(
-            {
-              url: filePath.url,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              authentication: destinationAuthentication
+          return new Promise<interfaces.IUpdateItemResponse>(
+            (resolveMetadata, rejectMetadata) => {
+              setTimeout(() => {
+                copyMetadata(
+                  {
+                    url: filePath.url,
+                    authentication: storageAuthentication
+                  },
+                  {
+                    itemId: destinationItemId,
+                    authentication: destinationAuthentication
+                  }
+                ).then(resolveMetadata, rejectMetadata);
+              }, msLag);
             }
           );
+
         case interfaces.EFileType.Resource:
-          return copyResource(
-            {
-              url: filePath.url,
-              authentication: storageAuthentication
-            },
-            {
-              itemId: destinationItemId,
-              folder: filePath.folder,
-              filename: filePath.filename,
-              authentication: destinationAuthentication
+          return new Promise<interfaces.IUpdateItemResponse>(
+            (resolveResource, rejectResource) => {
+              setTimeout(() => {
+                copyResource(
+                  {
+                    url: filePath.url,
+                    authentication: storageAuthentication
+                  },
+                  {
+                    itemId: destinationItemId,
+                    folder: filePath.folder,
+                    filename: filePath.filename,
+                    authentication: destinationAuthentication
+                  }
+                ).then(resolveResource, rejectResource);
+              }, msLag);
             }
           );
+
         case interfaces.EFileType.Thumbnail:
-          return addThumbnailFromUrl(
-            filePath.url,
-            destinationItemId,
-            destinationAuthentication,
-            isGroup
+          return new Promise<interfaces.IUpdateItemResponse>(
+            (resolveThumbnail, rejectThumbnail) => {
+              setTimeout(() => {
+                addThumbnailFromUrl(
+                  filePath.url,
+                  destinationItemId,
+                  destinationAuthentication,
+                  isGroup
+                ).then(resolveThumbnail, rejectThumbnail);
+              }, msLag);
+            }
           );
       }
     });
@@ -676,17 +715,22 @@ export function generateSourceFilePaths(
     url: generateSourceMetadataUrl(portalSharingUrl, itemId, isGroup),
     ...generateMetadataStorageFilename(itemId)
   });
+
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
-    filePaths.push({
-      url: generateSourceThumbnailUrl(
-        portalSharingUrl,
-        itemId,
-        thumbnailUrlPart,
-        isGroup
+    const path = {
+      url: generalHelpers.appendQueryParam(
+        generateSourceThumbnailUrl(
+          portalSharingUrl,
+          itemId,
+          thumbnailUrlPart,
+          isGroup
+        ),
+        "w=400"
       ),
       ...generateThumbnailStorageFilename(itemId, thumbnailUrlPart)
-    });
+    };
+    filePaths.push(path);
   }
 
   return filePaths;

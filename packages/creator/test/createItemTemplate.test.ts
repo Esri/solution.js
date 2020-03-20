@@ -75,7 +75,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -134,7 +134,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -225,7 +225,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/wma1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/wma1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -249,7 +249,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -323,7 +323,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -386,7 +386,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -459,7 +459,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -537,7 +537,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -575,7 +575,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -645,7 +645,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -670,7 +670,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -737,7 +737,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -888,7 +888,7 @@ describe("Module `createItemTemplate`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -1040,7 +1040,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       name: "TestLayerForDashBoardMap",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayerForDashBoardMap",
       typeKeywords: [
         "ArcGIS Server",
@@ -5767,7 +5767,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       name: null,
       snippet: null,
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
       typeKeywords: [
         "ArcGIS Online",
@@ -6066,7 +6066,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       }
     },
     resources: [
-      "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png"
+      "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png?w=400"
     ],
     dependencies: ["4efe5f693de34620934787ead6693f19"],
     groups: [],
@@ -6088,7 +6088,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       name: null,
       snippet: null,
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
       typeKeywords: [
         "JavaScript",
@@ -15987,7 +15987,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
     resources: [
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/5422652170345252.png",
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/6495853091034287.png",
-      "6f87e1912d6f4c889bbdcfb14dce7484_info_thumbnail/ago_downloaded.png"
+      "6f87e1912d6f4c889bbdcfb14dce7484_info_thumbnail/ago_downloaded.png?w=400"
     ],
     dependencies: [
       "eb6dc49be6f44f76aa195d6de8ce5c48",
@@ -19282,7 +19282,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       name: "LayerForDashboardExteternal",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "LayerForDashboardExteternal",
       typeKeywords: [
         "ArcGIS Server",
@@ -24016,7 +24016,7 @@ const initialSolutionTemplates: common.IItemTemplate[] = [
       name: "TestLayer2FromWebApp",
       snippet: null,
       tags: ["activity", "harvest", "Forestry", "chemical"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",
       typeKeywords: [
         "ArcGIS Server",
@@ -29057,7 +29057,7 @@ const expected: common.IItemTemplate[] = [
       name: "TestLayerForDashBoardMap",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayerForDashBoardMap",
       typeKeywords: [
         "ArcGIS Server",
@@ -33784,7 +33784,7 @@ const expected: common.IItemTemplate[] = [
       name: null,
       snippet: null,
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "DashboardMap",
       typeKeywords: [
         "ArcGIS Online",
@@ -34083,7 +34083,7 @@ const expected: common.IItemTemplate[] = [
       }
     },
     resources: [
-      "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png"
+      "7e6c41c72d4548d9a312329e0c5a984f_info_thumbnail/ago_downloaded.png?w=400"
     ],
     dependencies: ["4efe5f693de34620934787ead6693f19"],
     groups: [],
@@ -34105,7 +34105,7 @@ const expected: common.IItemTemplate[] = [
       name: null,
       snippet: null,
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestWABAPP",
       typeKeywords: [
         "JavaScript",
@@ -44765,7 +44765,7 @@ const expected: common.IItemTemplate[] = [
     resources: [
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/5422652170345252.png",
       "6f87e1912d6f4c889bbdcfb14dce7484_inConfig/6495853091034287.png",
-      "6f87e1912d6f4c889bbdcfb14dce7484_info_thumbnail/ago_downloaded.png"
+      "6f87e1912d6f4c889bbdcfb14dce7484_info_thumbnail/ago_downloaded.png?w=400"
     ],
     dependencies: [
       "eb6dc49be6f44f76aa195d6de8ce5c48",
@@ -48389,7 +48389,7 @@ const expected: common.IItemTemplate[] = [
       name: "LayerForDashboardExteternal",
       snippet: "Incident Analysis data and symbology for Situational Awareness",
       tags: ["test"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "LayerForDashboardExteternal",
       typeKeywords: [
         "ArcGIS Server",
@@ -53123,7 +53123,7 @@ const expected: common.IItemTemplate[] = [
       name: "TestLayer2FromWebApp",
       snippet: null,
       tags: ["activity", "harvest", "Forestry", "chemical"],
-      thumbnail: "thumbnail/ago_downloaded.png",
+      thumbnail: "thumbnail/ago_downloaded.png?w=400",
       title: "TestLayer2FromWebApp",
       typeKeywords: [
         "ArcGIS Server",
