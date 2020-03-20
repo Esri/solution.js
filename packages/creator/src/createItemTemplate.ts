@@ -380,13 +380,6 @@ export function createItemTemplate(
                   )
                   .then(
                     itemTemplate => {
-                      // Set the value keyed by the id to the created template, replacing the placeholder template
-                      common.replaceTemplate(
-                        existingTemplates,
-                        itemTemplate.itemId,
-                        itemTemplate
-                      );
-
                       common
                         .storeItemResources(
                           itemTemplate,
@@ -395,9 +388,18 @@ export function createItemTemplate(
                         )
                         .then(resources => {
                           // update the templates resources
+                          itemTemplate.item.thumbnail = null; // no longer needed; use resources
                           itemTemplate.resources = itemTemplate.resources.concat(
                             resources
                           );
+
+                          // Set the value keyed by the id to the created template, replacing the placeholder template
+                          common.replaceTemplate(
+                            existingTemplates,
+                            itemTemplate.itemId,
+                            itemTemplate
+                          );
+
                           // Trace item dependencies
                           if (itemTemplate.dependencies.length === 0) {
                             itemProgressCallback(

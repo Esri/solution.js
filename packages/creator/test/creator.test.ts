@@ -137,7 +137,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -192,7 +192,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -244,7 +244,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
+              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -268,7 +268,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -287,7 +287,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -360,7 +360,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png",
+              "/content/items/map12345678900/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -384,7 +384,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png",
+              "/content/items/map12345678901/info/thumbnail/ago_downloaded.png?w=400",
             mockItems.getAnImageResponse()
           )
           .post(
@@ -403,7 +403,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -491,7 +491,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -556,7 +556,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -624,7 +624,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -691,7 +691,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/grp1234567890/info/ROWPermitManager.png",
+              "/community/groups/grp1234567890/info/ROWPermitManager.png?w=400",
             expectedImage
           )
           .post(
@@ -756,7 +756,7 @@ describe("Module `creator`", () => {
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
-              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png",
+              "/content/items/map1234567890/info/thumbnail/ago_downloaded.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -970,7 +970,7 @@ describe("Module `creator`", () => {
             url,
             utils.getSuccessResponse({ id: expectedSolutionId, folder: null })
           )
-          .post(utils.PORTAL_SUBSET.portalUrl + "/logo.png", blob, {
+          .post(utils.PORTAL_SUBSET.portalUrl + "/logo.png?w=400", blob, {
             sendAsJson: false
           })
           .post(
@@ -1029,7 +1029,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: solutionId, folder: null })
           )
           .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -1062,7 +1062,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: solutionId, folder: null })
           )
           .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -1095,7 +1095,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: solutionId, folder: null })
           )
           .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
@@ -1128,7 +1128,7 @@ describe("Module `creator`", () => {
             utils.getSuccessResponse({ id: solutionId, folder: null })
           )
           .post(
-            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png",
+            utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png?w=400",
             utils.getSampleImage(),
             { sendAsJson: false }
           )
