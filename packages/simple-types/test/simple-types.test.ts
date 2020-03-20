@@ -395,6 +395,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/abc0cab401af4828a25cc6eaeb59fb69/data",
             dataResponse
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems(
           "abc0cab401af4828a25cc6eaeb59fb69",
@@ -599,6 +604,11 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
               itemTemplate.itemId +
               "/info/metadata/metadata.xml",
             mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/users/casey/items/sln1234567890/addResources",
+            utils.getSuccessResponse()
           );
         staticRelatedItemsMocks.fetchMockRelatedItems("dsh1234567890", {
           total: 0,

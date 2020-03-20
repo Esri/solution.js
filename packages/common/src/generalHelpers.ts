@@ -25,6 +25,17 @@ import * as interfaces from "./interfaces";
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
+ * Returns a URL with a query parameter appended
+ *
+ * @param url URL to append to
+ * @param parameter Query parameter to append, prefixed with "?" or "&" as appropriate to what url already has
+ * @return New URL combining url and parameter
+ */
+export function appendQueryParam(url: string, parameter: string): string {
+  return url + (url.indexOf("?") === -1 ? "?" : "&") + parameter;
+}
+
+/**
  * Extracts JSON from a Blob.
  *
  * @param blob Blob to use as source
