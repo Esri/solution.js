@@ -11,11 +11,11 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/arcgis-rest-auth": "^2.9.0",
-    "@esri/arcgis-rest-feature-layer": "^2.9.0",
-    "@esri/arcgis-rest-portal": "^2.9.0",
-    "@esri/arcgis-rest-request": "^2.9.0",
-    "@esri/arcgis-rest-service-admin": "^2.9.0",
+    "@esri/arcgis-rest-auth": "^2.10.0",
+    "@esri/arcgis-rest-feature-layer": "^2.10.0",
+    "@esri/arcgis-rest-portal": "^2.10.0",
+    "@esri/arcgis-rest-request": "^2.10.0",
+    "@esri/arcgis-rest-service-admin": "^2.10.0",
     "@esri/solution-common": "^0.8.4",
     "@esri/solution-deployer": "^0.8.4",
     "@esri/solution-feature-layer": "^0.8.4",
