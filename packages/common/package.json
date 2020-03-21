@@ -27,7 +27,6 @@
     "@types/lodash.isplainobject": "^4.0.6",
     "lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
-    "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.10.0",
     "xss": "^1.0.6"
   },
