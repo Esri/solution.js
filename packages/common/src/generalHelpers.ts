@@ -504,6 +504,7 @@ export function getTemplateById(
       template = _template;
       return true;
     }
+    return false;
   });
   return template;
 }
