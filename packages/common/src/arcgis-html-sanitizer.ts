@@ -41,6 +41,7 @@ export interface ISanitizeOptions {
  * @export
  * @class Sanitizer
  */
+/* istanbul ignore next */
 export class Sanitizer {
   // Supported HTML Spec: https://doc.arcgis.com/en/arcgis-online/reference/supported-html.htm
   public readonly arcgisWhiteList: IWhiteList = {
