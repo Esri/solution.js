@@ -18,13 +18,15 @@
  * Provides tests for third-party helper functions.
  */
 
-import * as lib from "../src/lib";
+import * as libs from "../src/libs";
 
-describe("Module `lib`: common third-party helper functions shared across packages", () => {
+// ------------------------------------------------------------------------------------------------------------------ //
+
+describe("Module `libs`: common third-party helper functions shared across packages", () => {
   if (typeof window !== "undefined") {
     describe("createPseudoGUID", () => {
       it("creates GUID without dashes", () => {
-        const guid = lib.createPseudoGUID();
+        const guid = libs.createPseudoGUID();
         expect(guid.length)
           .withContext("length check")
           .toEqual(32);
@@ -34,7 +36,7 @@ describe("Module `lib`: common third-party helper functions shared across packag
       });
 
       it("creates GUID with dashes", () => {
-        const guid = lib.createPseudoGUID(true);
+        const guid = libs.createPseudoGUID(true);
         expect(guid.length)
           .withContext("length check")
           .toEqual(36);
