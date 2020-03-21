@@ -15,7 +15,8 @@
   "devDependencies": {
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "xss": "^1.0.6"
   },
   "dependencies": {
     "@esri/arcgis-rest-auth": "^2.7.2",
@@ -23,8 +24,12 @@
     "@esri/arcgis-rest-portal": "^2.7.2",
     "@esri/arcgis-rest-request": "^2.7.2",
     "@esri/arcgis-rest-service-admin": "^2.7.2",
+    "@types/lodash.isplainobject": "^4.0.6",
+    "lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
-    "tslib": "^1.10.0"
+    "lodash.isplainobject": "^4.0.6",
+    "tslib": "^1.10.0",
+    "xss": "^1.0.6"
   },
   "scripts": {
     "prepare": "npm run build",
