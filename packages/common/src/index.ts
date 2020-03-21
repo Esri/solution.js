@@ -20,6 +20,7 @@
  * @module common
  */
 
+export * from "./arcgis-html-sanitizer";
 export * from "./dependencies";
 export * from "./generalHelpers";
 export * from "./interfaces";
