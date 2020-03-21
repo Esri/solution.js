@@ -23,6 +23,7 @@
  */
 
 import * as arcgisSanitizer from "../src/arcgis-html-sanitizer";
+import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -54,6 +55,23 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
         isValid: false,
         sanitized: '<img src="https://example.com/fake-image.jpg" />'
       });
+    });
+
+    it("tests XSS cases", () => {
+      console.log(
+        "Running " +
+          xssFilterEvasionTestCases.testCases.length +
+          " XSS test cases"
+      );
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      xssFilterEvasionTestCases.testCases.forEach(
+        (testCase: xssFilterEvasionTestCases.IXSSTestCase) => {
+          expect(sanitizer.sanitize(testCase.example))
+            .withContext(testCase.label)
+            .toEqual(testCase.cleanedHtml);
+        }
+      );
     });
   });
 });
