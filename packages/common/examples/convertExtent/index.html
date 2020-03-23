@@ -37,7 +37,6 @@
   <script>
     var goFcn;
 
-    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.9.0/dist/umd/auth.umd.min",
@@ -61,6 +60,9 @@
           main.convertPortalExtents(document.getElementById("id").value).then(
             html => {
               document.getElementById("output").innerHTML = html;
+            },
+            error => {
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
             }
           );
         }
