@@ -1,8 +1,0 @@
-{
-  "lerna": "3.19.0",
-  "packages": [
-    "../copySolutions",
-    "../../../../packages/*"
-  ],
-  "version": "0.7.0"
-}

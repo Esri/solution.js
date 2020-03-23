@@ -18,7 +18,7 @@
    | See the License for the specific language governing permissions and
    | limitations under the License.
   -->
-  <link rel="stylesheet" href="https://js.arcgis.com/4.13/esri/themes/light/main.css" />
+  <link rel="stylesheet" href="https://js.arcgis.com/4.14/esri/themes/light/main.css" />
   <style>
   html {
     font-family: Arial;
@@ -66,13 +66,12 @@
         "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.9.0/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.9.0/dist/umd/service-admin.umd.min",
 
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.8.4/dist/umd/common.umd.min",
-
+        "lib": package_path + "/lib",
         "src": package_path + "/src"
       }
     };
   </script>
-  <script src="https://js.arcgis.com/4.13/"></script>
+  <script src="https://js.arcgis.com/4.14/"></script>
 </head>
 <body>
   <h3>Copy solution templates</h3>
@@ -132,8 +131,8 @@
   <script>
     var connectToSourceFcn, connectToDestinationFcn;
 
-    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "@esri/solution-common", "src/main"],
-      function (auth, portal, common, main) {
+    require(["@esri/arcgis-rest-auth", "@esri/arcgis-rest-portal", "src/main"],
+      function (auth, portal, main) {
         "use strict";
         removeItem("page_busySymbol");
         connectToSourceFcn = getSourceTemplates;

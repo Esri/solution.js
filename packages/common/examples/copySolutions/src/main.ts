@@ -15,7 +15,7 @@
  */
 // @esri/solution-common copySolutions example
 
-import * as common from "@esri/solution-common";
+import * as common from "../lib/common.umd";
 
 /**
  * Copies an item.

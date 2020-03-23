@@ -15,9 +15,9 @@
  */
 // @esri/solution-common convertExtent example
 
+import * as common from "../lib/common.umd";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restTypes from "@esri/arcgis-rest-types";
-import * as common from "@esri/solution-common";
 
 export function convertPortalExtents(portalId: string): Promise<string> {
   return new Promise<string>(resolve => {
