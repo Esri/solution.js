@@ -66,13 +66,11 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Change the example app package.jsons and htmls to use the new version.
+10. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
 
-11. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json, html files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+11. Switch to the `master` branch and merge in the `release` branch, but without committing it.
 
-12. Switch to the `master` branch and merge in the `release` branch, but without committing it.
-
-13. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -81,7 +79,7 @@ npm run release:publish
 ? publish release to github? (y/N)
 ```
 
-14. Update the package.json files in the package examples with the new version number and run `npm install` for each.
+13. Update the package.json files in the package examples with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub
@@ -90,11 +88,11 @@ The publish step
 
 Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
 
-15. Push your `master` branch to GitHub.
+14. Push your `master` branch to GitHub.
 
-16. Delete the `release` branch locally and in GitHub.
+15. Delete the `release` branch locally and in GitHub.
 
-17. Merge `master` into `develop` and push `develop` to GitHub.
+16. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 
