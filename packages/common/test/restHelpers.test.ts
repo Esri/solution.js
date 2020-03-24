@@ -18,15 +18,16 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
+import * as auth from "@esri/arcgis-rest-auth";
+import * as fetchMock from "fetch-mock";
 import * as generalHelpers from "../src/generalHelpers";
+import * as interfaces from "../src/interfaces";
+import * as mockItems from "../test/mocks/agolItems";
+import * as polyfills from "../src/polyfills";
+import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
-import * as interfaces from "../src/interfaces";
-import * as auth from "@esri/arcgis-rest-auth";
-import * as fetchMock from "fetch-mock";
-import * as mockItems from "../test/mocks/agolItems";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -631,16 +632,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const folderId: string = null as string; // default is top level
         const itemThumbnailUrl: string =
           "https://myserver/thumbnail/thumbnail.png";
-        const dataFile: File = new File(
+        const dataFile: File = polyfills.new_File(
           [utils.getSampleJsonAsBlob()],
           "data.json"
         );
-        const metadataFile: File = new File(
+        const metadataFile: File = polyfills.new_File(
           [utils.getSampleMetadata()],
           "metadata.xml"
         );
         const resourcesFiles: File[] = [
-          new File([utils.getSampleImage()], "image.png")
+          polyfills.new_File([utils.getSampleImage()], "image.png")
         ];
         const access = "org";
 
@@ -702,7 +703,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const dataFile: File = null as File;
         const metadataFile: File = null as File;
         const resourcesFiles: File[] = [
-          new File([utils.getSampleImage()], "resourceFolder/image.png")
+          polyfills.new_File([utils.getSampleImage()], "resourceFolder/image.png")
         ];
         const access = undefined as string; // default is "private"
 
@@ -749,7 +750,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const folderId: string = null as string; // default is top level
         const itemThumbnailUrl: string = null as string;
         const dataFile: File = null as File;
-        const metadataFile: File = new File(
+        const metadataFile: File = polyfills.new_File(
           [utils.getSampleMetadata()],
           "metadata.xml"
         );
@@ -2366,7 +2367,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
                     break;
                   case "file":
                     expect(value.valueOf()).toEqual(
-                      new File([utils.getSampleMetadata()], "file")
+                      polyfills.new_File([utils.getSampleMetadata()], "file")
                     );
                     break;
                   case "token":
