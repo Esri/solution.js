@@ -26,38 +26,38 @@ export function convertPortalExtents(portalId: string): Promise<string> {
 
     // Get the extents of a portal
     // tslint:disable-next-line: no-floating-promises
-    portal
-      .getPortal(portalId, { authentication: authorization })
-      .then(
-        portalResponse => {
-          const portalExtent: any = portalResponse.defaultExtent;
-          let html = "";
+    portal.getPortal(portalId, { authentication: authorization }).then(
+      portalResponse => {
+        const portalExtent: any = portalResponse.defaultExtent;
+        let html = "";
 
-          html += "<h4>Source extents</h4>";
-          if (!portalId) {
-            html += "<i>Using sample extents</i><br/>";
-          }
-          html += "<pre>" + JSON.stringify(portalExtent, null, 4) + "</pre>";
+        html += "<h4>Source extents</h4>";
+        if (!portalId) {
+          html += "<i>Using sample extents</i><br/>";
+        }
+        html += "<pre>" + JSON.stringify(portalExtent, null, 4) + "</pre>";
 
-          // Convert the extents
-          const outSR: restTypes.ISpatialReference = { wkid: 4326 };
-          const geometryServiceUrl: string =
-            "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
-          // tslint:disable-next-line: no-floating-promises
-          common
-            .convertExtent(portalExtent, outSR, geometryServiceUrl, authorization)
-            .then(
-              conversionResponse => {
-                html += "<h4>Projected extents</h4>";
-                html +=
-                  "<pre>" + JSON.stringify(conversionResponse, null, 4) + "</pre>";
+        // Convert the extents
+        const outSR: restTypes.ISpatialReference = { wkid: 4326 };
+        const geometryServiceUrl: string =
+          "http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer";
+        // tslint:disable-next-line: no-floating-promises
+        common
+          .convertExtent(portalExtent, outSR, geometryServiceUrl, authorization)
+          .then(
+            conversionResponse => {
+              html += "<h4>Projected extents</h4>";
+              html +=
+                "<pre>" +
+                JSON.stringify(conversionResponse, null, 4) +
+                "</pre>";
 
-                resolve(html);
-              },
-              (error: any) => reject(JSON.stringify(error))
-            );
-        },
-        (error: any) => reject(JSON.stringify(error))
-      );
+              resolve(html);
+            },
+            (error: any) => reject(JSON.stringify(error))
+          );
+      },
+      (error: any) => reject(JSON.stringify(error))
+    );
   });
 }
