@@ -289,9 +289,7 @@ export function templatizeFieldReferences(
   let objString: string = JSON.stringify(obj);
   fields.forEach(field => {
     let expression: string =
-      "(?<![{]{2})(?<!" +
-      field.name +
-      "[.])\\b" +
+      "\\b" +
       field.name +
       "\\b(?![.])(?![}]{2})";
     if (!templatizeKeys) {
