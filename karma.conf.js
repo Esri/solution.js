@@ -97,9 +97,10 @@ module.exports = function(config) {
     browsers: [
       // 'Chrome',
       // 'ChromeCanary',
+      // 'ChromeHeadlessCI',
+      // 'Edge',
       // 'Firefox',
-      // 'Safari',
-      // 'IE'
+      // 'Safari'
     ],
 
     // Continuous Integration mode
