@@ -23,11 +23,55 @@
 // ------------------------------------------------------------------------------------------------------------------ //
 
 /**
- * Supplies the File constructor for Microsoft Edge.
+ * Supplies Blob.text for Microsoft Legacy Edge
  *
- * @param fileBits
+ * @param blob Blob to read
+ * @return Promise resolving to blob's text
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+ */
+export function getBlobText(
+  blob: Blob
+): Promise<string> {
+  let textPromise: Promise<string>;
+
+  if (typeof blob.text !== "undefined") {
+    // Modern browser
+    textPromise = blob.text();
+  } else {
+    // Microsoft Legacy Edge
+    textPromise = new Promise<string>(
+      (resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          if (event.target && event.target.result) {
+            // event.target.result is typed as "string | ArrayBuffer | null", but for the readAsText function,
+            // the result is a string
+            resolve(event.target.result as string);
+          } else {
+            resolve("");
+          }
+        };
+        reader.onerror = function(event) {
+          reject(event);
+        };
+        reader.readAsText(blob);
+      }
+    );
+  }
+
+  return textPromise;
+}
+
+/**
+ * Supplies the File constructor for Microsoft Legacy Edge.
  *
- * @return File
+ * @param fileBits Contents for file
+ * @param fileName Name for file
+ * @param options Bucket of options, euch as `type` for the MIME type; defaults to empty string for `type`
+ * @return File or, for Microsoft Legacy Edge, Blob
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/File/File
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
  */
 export function new_File(
   fileBits: BlobPart[],
@@ -39,8 +83,15 @@ export function new_File(
   try {
     file = new File(fileBits, fileName, options);
   } catch (error) {
+    /* istanbul ignore else */
+    if (typeof options === "undefined") {
+      // Microsoft Legacy Edge fails in karma if options is not defined
+      options = {
+        type: ""
+      };
+    }
     const blob = new Blob(fileBits, options) as any;
-    blob.lastModifiedDate = new Date();
+    blob.lastModified = new Date();
     blob.name = fileName;
     file = blob as File;
   }
