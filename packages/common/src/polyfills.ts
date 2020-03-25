@@ -35,9 +35,11 @@ export function getBlobText(
 ): Promise<string> {
   let textPromise: Promise<string>;
 
+  /* istanbul ignore else */
   if (typeof blob.text !== "undefined") {
     // Modern browser
     textPromise = blob.text();
+
   } else {
     // Microsoft Legacy Edge
     textPromise = new Promise<string>(
@@ -81,19 +83,25 @@ export function new_File(
   let file: File;
 
   try {
+    // Modern browser
     file = new File(fileBits, fileName, options);
-  } catch (error) {
-    /* istanbul ignore else */
-    if (typeof options === "undefined") {
-      // Microsoft Legacy Edge fails in karma if options is not defined
-      options = {
-        type: ""
-      };
-    }
-    const blob = new Blob(fileBits, options) as any;
-    blob.lastModified = new Date();
-    blob.name = fileName;
-    file = blob as File;
+  }
+
+  catch (error) {
+    // Microsoft Legacy Edge
+    /* istanbul ignore next */
+    file = (function(): File {
+      if (typeof options === "undefined") {
+        // Microsoft Legacy Edge fails in karma if options is not defined
+        options = {
+          type: ""
+        };
+      }
+      const blob = new Blob(fileBits, options) as any;
+      blob.lastModified = new Date();
+      blob.name = fileName;
+      return blob as File;
+    }());
   }
 
   return file;
