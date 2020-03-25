@@ -15,9 +15,9 @@
  */
 // @esri/solution-creator createSolution example
 
-import * as common from "@esri/solution-common";
-import * as creator from "@esri/solution-creator";
-import * as getItemInfo from "../lib/getItemInfo";
+import * as common from "../lib/common.umd";
+import * as creator from "../lib/creator.umd";
+import * as getItemInfo from "./getItemInfo";
 
 export function createSolution(
   sourceId: string,
@@ -32,7 +32,6 @@ export function createSolution(
 
     // Create a solution from the supplied id
     const options: common.ICreateSolutionOptions = {
-      title: sourceId + "_solution",
       progressCallback: progressCallback
     };
     creator.createSolution(sourceId.trim(), authentication, options).then(

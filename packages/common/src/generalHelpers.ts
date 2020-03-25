@@ -21,6 +21,7 @@
  */
 
 import * as interfaces from "./interfaces";
+import * as polyfills from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -69,7 +70,7 @@ export function blobToFile(
   filename: string,
   mimeType?: string
 ): File {
-  return new File([blob], filename ? filename : "", {
+  return polyfills.new_File([blob], filename ? filename : "", {
     type: mimeType || blob.type
   });
 }

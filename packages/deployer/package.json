@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-deployer",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Manages the deployment of a Solution for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/deployer.umd.min.js",
@@ -17,12 +17,12 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.8.4",
-    "@esri/solution-feature-layer": "^0.8.4",
-    "@esri/solution-file": "^0.8.4",
-    "@esri/solution-group": "^0.8.4",
-    "@esri/solution-simple-types": "^0.8.4",
-    "@esri/solution-storymap": "^0.8.4",
+    "@esri/solution-common": "^0.8.5",
+    "@esri/solution-feature-layer": "^0.8.5",
+    "@esri/solution-file": "^0.8.5",
+    "@esri/solution-group": "^0.8.5",
+    "@esri/solution-simple-types": "^0.8.5",
+    "@esri/solution-storymap": "^0.8.5",
     "tslib": "^1.10.0"
   },
   "scripts": {

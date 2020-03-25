@@ -46,6 +46,7 @@
   <script>
     var goFcn;
 
+    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     require.config({
       paths: {
         "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.9.0/dist/umd/auth.umd.min",
@@ -54,13 +55,13 @@
         "@esri/arcgis-rest-request": "https://unpkg.com/@esri/arcgis-rest-request@2.9.0/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.9.0/dist/umd/service-admin.umd.min",
 
-        "@esri/solution-common": "https://unpkg.com/@esri/solution-common@0.8.4/dist/umd/common.umd.min",
-        "@esri/solution-creator": "https://unpkg.com/@esri/solution-creator@0.8.4/dist/umd/creator.umd.min",
-        "@esri/solution-feature-layer": "https://unpkg.com/@esri/solution-feature-layer@0.8.4/dist/umd/feature-layer.umd.min",
-        "@esri/solution-file": "https://unpkg.com/@esri/solution-file@0.8.4/dist/umd/file.umd.min",
-        "@esri/solution-group": "https://unpkg.com/@esri/solution-group@0.8.4/dist/umd/group.umd.min",
-        "@esri/solution-simple-types": "https://unpkg.com/@esri/solution-simple-types@0.8.4/dist/umd/simple-types.umd.min",
-        "@esri/solution-storymap": "https://unpkg.com/@esri/solution-storymap@0.8.4/dist/umd/storymap.umd.min"
+        "@esri/solution-common": package_path + "/lib/common.umd",
+        "@esri/solution-creator": package_path + "/lib/creator.umd",
+        "@esri/solution-feature-layer": package_path + "/lib/feature-layer.umd",
+        "@esri/solution-file": package_path + "/lib/file.umd",
+        "@esri/solution-group": package_path + "/lib/group.umd",
+        "@esri/solution-simple-types": package_path + "/lib/simple-types.umd",
+        "@esri/solution-storymap": package_path + "/lib/storymap.umd"
       }
     });
 

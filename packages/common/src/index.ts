@@ -24,6 +24,7 @@ export * from "./dependencies";
 export * from "./generalHelpers";
 export * from "./interfaces";
 export * from "./lib";
+export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./restHelpers";
 export * from "./restHelpersGet";

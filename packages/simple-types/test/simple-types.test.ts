@@ -306,7 +306,8 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/qck1234567890/resources/qc.project.json",
-            {}
+            utils.getSampleJsonAsFile("qc.project.json"),
+            { sendAsJson: false }
           )
           .post(
             utils.PORTAL_SUBSET.restUrl +
@@ -328,7 +329,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         const expected: common.IItemTemplate = {
           itemId: "qck1234567890",
           key: "vx3ubyx3",
-          data: Object({ application: Object({}), name: "qc.project.json" }),
+          data: Object({ application: Object(utils.getSampleJson()), name: "qc.project.json" }),
           resources: [],
           dependencies: [],
           relatedItems: [],
@@ -360,11 +361,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
 
         simpleTypes
           .convertItemToTemplate(solutionItemId, itemInfo, MOCK_USER_SESSION)
-          .then(actual => {
-            actual.key = expected.key;
-            expect(actual).toEqual(expected);
-            done();
-          }, done.fail);
+          .then(
+            actual => {
+              actual.key = expected.key;
+              expect(actual).toEqual(expected);
+              done();
+            },
+            done.fail
+          );
       });
 
       it("should handle python notebook", done => {

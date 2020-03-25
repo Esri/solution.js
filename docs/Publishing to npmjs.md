@@ -2,7 +2,9 @@
 
 1. Create a branch off of `develop` called `release`.
 
-2. Remove the node_modules directories.
+2. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+
+3. Remove the node_modules directories.
 ```
   ..\solution.js\node_modules
   ..\solution.js\packages\common\node_modules
@@ -16,9 +18,9 @@
   ..\solution.js\packages\viewer\node_modules
  ```
 
-3. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+4. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
 
-4. From the repo's root folder install a fresh copy of the node modules
+5. From the repo's root folder install a fresh copy of the node modules
 ```
 npm install
 ```
@@ -33,8 +35,6 @@ Email: (this IS public) <Esri email address>
 Enter one-time password from your authenticator app: <e.g., from Okta Verify>
 Logged in as <npm username> on https://registry.npmjs.org/
 ```
-
-6. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
 7. Ensure you have access to the zip command
 ```
@@ -53,7 +53,7 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
+The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version.
 ```
 npm run prerelease:prepare
 npm run release:prepare
@@ -66,13 +66,11 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Change the example app package.jsons and htmls to use the new version.
+10. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
 
-11. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json, html files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+11. Switch to the `master` branch and merge in the `release` branch, but without committing it.
 
-12. Switch to the `master` branch and merge in the `release` branch, but without committing it.
-
-13. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -81,7 +79,7 @@ npm run release:publish
 ? publish release to github? (y/N)
 ```
 
-14. Update the package.json files in the package examples with the new version number and run `npm install` for each.
+13. Update the package.json files in the package examples with the new version number and run `npm install` for each.
 
 The publish step
 1. commits and pushes the publishing changes to GitHub
@@ -90,11 +88,11 @@ The publish step
 
 Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
 
-15. Push your `master` branch to GitHub.
+14. Push your `master` branch to GitHub.
 
-16. Delete the `release` branch locally and in GitHub.
+15. Delete the `release` branch locally and in GitHub.
 
-17. Merge `master` into `develop` and push `develop` to GitHub.
+16. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 
