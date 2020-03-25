@@ -33,10 +33,10 @@ export function convertItemToTemplate(
     if (data && Array.isArray(data)) {
       let applicationRequest: Promise<any> = Promise.resolve();
       let applicationName: string = "";
-      data.some(item => {
+      data.some((item: File) => {
         if (item.type === "application/json") {
-          applicationRequest = item.text();
           applicationName = item.name;
+          applicationRequest = common.getBlobText(item);
           return true;
         }
       });

@@ -421,11 +421,10 @@ describe("Module `deployer`", () => {
           itemId: newGroupId
         };
 
-        const expectedUpdateBody: string =
-          "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
-          "id=map1234567890&thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
+        const expectedUpdateBodyCommon: string =
+          "thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
+          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&" +
+          "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
           "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
           "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
           "groups%22%3A%5B%22ba4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22" +
@@ -433,6 +432,18 @@ describe("Module `deployer`", () => {
           "itemId%22%3A%22ba4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22groups%22%3A%5B%5D%2C%22" +
           "dependencies%22%3A%5B%5D%7D%5D%2C%22params%22%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22" +
           "type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
+
+        // Chrome & Firefox
+        const expectedUpdateBody: string =
+          "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
+          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&id=map1234567890&" +
+          expectedUpdateBodyCommon;
+
+        // Legacy Edge
+        const expectedUpdateBodyLegacyEdge: string =
+          "f=json&id=map1234567890&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
+          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          expectedUpdateBodyCommon;
 
         const options: common.IDeploySolutionOptions = {
           templateDictionary: templateDictionary
@@ -464,9 +475,13 @@ describe("Module `deployer`", () => {
                   "/content/users/casey/items/map1234567890/update"
               );
 
-              expect(updateCalls[1][1].body)
+              const actualUpdateBody = updateCalls[1][1].body;
+              expect(
+                actualUpdateBody === expectedUpdateBody ||
+                  actualUpdateBody === expectedUpdateBodyLegacyEdge
+              )
                 .withContext("test the expected update body")
-                .toEqual(expectedUpdateBody);
+                .toBeTruthy();
 
               // Repeat with progress callback
               options.progressCallback = utils.SOLUTION_PROGRESS_CALLBACK;

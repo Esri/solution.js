@@ -15,20 +15,19 @@
  */
 // @esri/solution-common convertExtent example
 
+import * as common from "../lib/common.umd";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restTypes from "@esri/arcgis-rest-types";
-import * as common from "@esri/solution-common";
 
 export function convertPortalExtents(portalId: string): Promise<string> {
-  return new Promise<string>(resolve => {
+  return new Promise<string>((resolve, reject) => {
     const usOptions: common.IUserSessionOptions = {};
     const authorization: common.UserSession = new common.UserSession(usOptions);
 
     // Get the extents of a portal
     // tslint:disable-next-line: no-floating-promises
-    portal
-      .getPortal(portalId, { authentication: authorization })
-      .then(portalResponse => {
+    portal.getPortal(portalId, { authentication: authorization }).then(
+      portalResponse => {
         const portalExtent: any = portalResponse.defaultExtent;
         let html = "";
 
@@ -45,13 +44,20 @@ export function convertPortalExtents(portalId: string): Promise<string> {
         // tslint:disable-next-line: no-floating-promises
         common
           .convertExtent(portalExtent, outSR, geometryServiceUrl, authorization)
-          .then(conversionResponse => {
-            html += "<h4>Projected extents</h4>";
-            html +=
-              "<pre>" + JSON.stringify(conversionResponse, null, 4) + "</pre>";
+          .then(
+            conversionResponse => {
+              html += "<h4>Projected extents</h4>";
+              html +=
+                "<pre>" +
+                JSON.stringify(conversionResponse, null, 4) +
+                "</pre>";
 
-            resolve(html);
-          });
-      });
+              resolve(html);
+            },
+            (error: any) => reject(JSON.stringify(error))
+          );
+      },
+      (error: any) => reject(JSON.stringify(error))
+    );
   });
 }

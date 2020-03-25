@@ -49,6 +49,7 @@
 
 import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
+import * as polyfills from "./polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
 import * as restHelpers from "./restHelpers";
@@ -200,7 +201,7 @@ export function convertBlobToSupportableResource(
   }
 
   return {
-    blob: new File([blob], filenameToUse, { type: blob.type }),
+    blob: polyfills.new_File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
     mimeType: blob.type
   };
@@ -209,7 +210,7 @@ export function convertBlobToSupportableResource(
 export function convertResourceToFile(
   resource: interfaces.IFileMimeType
 ): File {
-  return new File([resource.blob], resource.filename, {
+  return polyfills.new_File([resource.blob], resource.filename, {
     type: resource.mimeType
   });
 }
