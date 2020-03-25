@@ -2,7 +2,9 @@
 
 1. Create a branch off of `develop` called `release`.
 
-2. Remove the node_modules directories.
+2. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+
+3. Remove the node_modules directories.
 ```
   ..\solution.js\node_modules
   ..\solution.js\packages\common\node_modules
@@ -16,9 +18,9 @@
   ..\solution.js\packages\viewer\node_modules
  ```
 
-3. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
+4. Launch a git-bash window (e.g., C:\Program Files\Git\git-bash.exe on a Windows computer or using the "Git bash" icon in the Git Extensions program)
 
-4. From the repo's root folder install a fresh copy of the node modules
+5. From the repo's root folder install a fresh copy of the node modules
 ```
 npm install
 ```
@@ -33,8 +35,6 @@ Email: (this IS public) <Esri email address>
 Enter one-time password from your authenticator app: <e.g., from Okta Verify>
 Logged in as <npm username> on https://registry.npmjs.org/
 ```
-
-6. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
 
 7. Ensure you have access to the zip command
 ```
@@ -53,7 +53,7 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line *above* the desired version.
+The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version.
 ```
 npm run prerelease:prepare
 npm run release:prepare
