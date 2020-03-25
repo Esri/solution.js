@@ -18,6 +18,7 @@ import { UserSession } from "@esri/arcgis-rest-auth";
 
 import * as interfaces from "../../src/interfaces";
 import * as generalHelpers from "../../src/generalHelpers";
+import * as polyfills from "../../src/polyfills";
 
 // -------------------------------------------------------------------------------------------------------------------//
 
@@ -106,7 +107,7 @@ export function createFailingItemProgressCallbackOnNthCall(
   };
 }
 
-export function getSampleMetadata(mimeType = "text/xml"): Blob {
+export function getSampleMetadataAsBlob(mimeType = "text/xml"): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
       <dataIdInfo>
         <idCitation>
@@ -142,6 +143,15 @@ export function getSampleMetadata(mimeType = "text/xml"): Blob {
   return xmlToBlob(xml, mimeType);
 }
 
+export function getSampleMetadataAsFile(
+  filename = "meatadata.xml",
+  mimeType = "text/xml"
+): File {
+  return polyfills.new_File([getSampleMetadataAsBlob(mimeType)], filename, {
+    type: mimeType
+  });
+}
+
 export function jsonToBlob(json: any): Blob {
   return new Blob([JSON.stringify(json)], { type: "application/json" });
 }
@@ -172,7 +182,7 @@ export function getSampleJsonAsFile(
   filename: string,
   mimeType = "application/json"
 ): File {
-  return new File([getSampleJsonAsBlob(mimeType)], filename, {
+  return polyfills.new_File([getSampleJsonAsBlob(mimeType)], filename, {
     type: mimeType
   });
 }
@@ -185,7 +195,7 @@ export function getSampleTextAsFile(
   filename: string,
   mimeType = "text/plain"
 ): File {
-  return new File([getSampleTextAsBlob(mimeType)], filename, {
+  return polyfills.new_File([getSampleTextAsBlob(mimeType)], filename, {
     type: mimeType
   });
 }
@@ -210,7 +220,9 @@ EB352600 00002600 00000700 00006373\
 }
 
 export function getSampleZipFile(name: string): File {
-  return new File([getSampleZip()], name, { type: "application/zip" });
+  return polyfills.new_File([getSampleZip()], name, {
+    type: "application/zip"
+  });
 }
 
 export function imageAsDataUriToBlob(imageAsDataUri: string): Blob {

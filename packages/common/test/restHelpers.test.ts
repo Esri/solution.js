@@ -18,15 +18,16 @@
  * Provides tests for functions involving the arcgis-rest-js library.
  */
 
+import * as auth from "@esri/arcgis-rest-auth";
+import * as fetchMock from "fetch-mock";
 import * as generalHelpers from "../src/generalHelpers";
+import * as interfaces from "../src/interfaces";
+import * as mockItems from "../test/mocks/agolItems";
+import * as polyfills from "../src/polyfills";
+import * as portal from "@esri/arcgis-rest-portal";
 import * as restHelpers from "../src/restHelpers";
 import * as templates from "../test/mocks/templates";
 import * as utils from "./mocks/utils";
-import * as interfaces from "../src/interfaces";
-import * as auth from "@esri/arcgis-rest-auth";
-import * as fetchMock from "fetch-mock";
-import * as mockItems from "../test/mocks/agolItems";
-import * as portal from "@esri/arcgis-rest-portal";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -377,7 +378,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers.addToServiceDefinition(url, {}).then(
         () => done.fail(),
         error => {
-          jasmine.clock().uninstall();
           expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(true);
           done();
         }
@@ -393,10 +393,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       fetchMock.post(adminUrl + "/addToDefinition", '{"success": true}');
 
       restHelpers.addToServiceDefinition(url, {}).then(
-        () => {
-          jasmine.clock().uninstall();
-          done();
-        },
+        () => done(),
         () => done.fail()
       );
     });
@@ -448,12 +445,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       restHelpers
         .createFeatureService(template, MOCK_USER_SESSION, templateDictionary)
         .then(
-          () => {
-            jasmine.clock().uninstall();
-            done.fail();
-          },
+          () => done.fail(),
           error => {
-            jasmine.clock().uninstall();
             expect(utils.checkForArcgisRestSuccessRequestError(error)).toBe(
               true
             );
@@ -465,7 +458,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can create a service", done => {
       // Because we make the service name unique by appending a timestamp, set up a clock & user session
       // with known results
-      jasmine.clock().uninstall();
       const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
       const now = date.getTime();
       const sessionWithMockedTime: interfaces.UserSession = utils.createRuntimeMockUserSession(
@@ -631,16 +623,13 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const folderId: string = null as string; // default is top level
         const itemThumbnailUrl: string =
           "https://myserver/thumbnail/thumbnail.png";
-        const dataFile: File = new File(
+        const dataFile: File = polyfills.new_File(
           [utils.getSampleJsonAsBlob()],
           "data.json"
         );
-        const metadataFile: File = new File(
-          [utils.getSampleMetadata()],
-          "metadata.xml"
-        );
+        const metadataFile: File = utils.getSampleMetadataAsFile();
         const resourcesFiles: File[] = [
-          new File([utils.getSampleImage()], "image.png")
+          polyfills.new_File([utils.getSampleImage()], "image.png")
         ];
         const access = "org";
 
@@ -702,7 +691,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const dataFile: File = null as File;
         const metadataFile: File = null as File;
         const resourcesFiles: File[] = [
-          new File([utils.getSampleImage()], "resourceFolder/image.png")
+          polyfills.new_File(
+            [utils.getSampleImage()],
+            "resourceFolder/image.png"
+          )
         ];
         const access = undefined as string; // default is "private"
 
@@ -749,10 +741,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const folderId: string = null as string; // default is top level
         const itemThumbnailUrl: string = null as string;
         const dataFile: File = null as File;
-        const metadataFile: File = new File(
-          [utils.getSampleMetadata()],
-          "metadata.xml"
-        );
+        const metadataFile: File = utils.getSampleMetadataAsFile();
         const resourcesFiles: File[] = null as File[];
         const access = undefined as string; // default is "private"
 
@@ -2378,6 +2367,11 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       });
 
       it("should add text data that's not text/plain or application/json", done => {
+        // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
+        // the File constructor, so we'll have Date return the same value each time it is called for this test
+        const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
+        utils.setMockDateTime(date.getTime());
+
         const itemId = "itm1234567890";
         const url =
           utils.PORTAL_SUBSET.restUrl +
@@ -2388,33 +2382,42 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         restHelpers
           ._addItemDataFile(
             itemId,
-            utils.getSampleMetadata() as File,
+            utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION
           )
           .then(response => {
-            expect(response.success).toBeTruthy();
+            expect(response.success)
+              .withContext("response.success")
+              .toBeTruthy();
             const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
             const fetchBody = (options as fetchMock.MockResponseObject).body;
             (fetchBody as FormData).forEach(
               (value: FormDataEntryValue, key: string) => {
                 switch (key) {
                   case "f":
-                    expect(value.toString()).toEqual("json");
+                    expect(value.toString())
+                      .withContext("key = f")
+                      .toEqual("json");
                     break;
                   case "id":
-                    expect(value.toString()).toEqual(itemId);
+                    expect(value.toString())
+                      .withContext("key = id")
+                      .toEqual(itemId);
                     break;
                   case "file":
-                    expect(value.valueOf()).toEqual(
-                      new File([utils.getSampleMetadata()], "file")
-                    );
+                    expect(value.valueOf())
+                      .withContext("key = file")
+                      .toEqual(utils.getSampleMetadataAsFile());
                     break;
                   case "token":
-                    expect(value.toString()).toEqual("fake-token");
+                    expect(value.toString())
+                      .withContext("key = token")
+                      .toEqual("fake-token");
                     break;
                 }
               }
             );
+            jasmine.clock().uninstall();
             done();
           }, done.fail);
       });
@@ -2436,7 +2439,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         restHelpers
           ._addItemMetadataFile(
             itemId,
-            utils.getSampleMetadata() as File,
+            utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION
           )
           .then(response => {
@@ -2457,7 +2460,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         restHelpers
           ._addItemMetadataFile(
             itemId,
-            utils.getSampleMetadata() as File,
+            utils.getSampleMetadataAsFile(),
             MOCK_USER_SESSION
           )
           .then(response => {
