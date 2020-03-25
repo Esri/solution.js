@@ -107,7 +107,7 @@ export function createFailingItemProgressCallbackOnNthCall(
   };
 }
 
-export function getSampleMetadata(mimeType = "text/xml"): Blob {
+export function getSampleMetadataAsBlob(mimeType = "text/xml"): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
       <dataIdInfo>
         <idCitation>
@@ -141,6 +141,15 @@ export function getSampleMetadata(mimeType = "text/xml"): Blob {
       </mdContact>
     </metadata>`;
   return xmlToBlob(xml, mimeType);
+}
+
+export function getSampleMetadataAsFile(
+  filename = "meatadata.xml",
+  mimeType = "text/xml"
+): File {
+  return polyfills.new_File([getSampleMetadataAsBlob(mimeType)], filename, {
+    type: mimeType
+  });
 }
 
 export function jsonToBlob(json: any): Blob {

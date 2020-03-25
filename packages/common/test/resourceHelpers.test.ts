@@ -56,7 +56,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
   if (typeof window !== "undefined") {
     describe("addMetadataFromBlob", () => {
       it("has metadata", done => {
-        const blob = utils.getSampleMetadata();
+        const blob = utils.getSampleMetadataAsBlob();
         const itemId = "itm1234567890";
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -80,7 +80,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     describe("addResourceFromBlob", () => {
       it("has filename without folder", done => {
-        const blob = utils.getSampleMetadata();
+        const blob = utils.getSampleMetadataAsBlob();
         const itemId = "itm1234567890";
         const folder = "";
         const filename = "aFilename.xml";
@@ -112,7 +112,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("has a filename without an extension", done => {
-        const blob = utils.getSampleMetadata();
+        const blob = utils.getSampleMetadataAsBlob();
         const itemId = "itm1234567890";
         const folder = "aFolder";
         const filename = "aFilename";
@@ -138,7 +138,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       });
 
       it("has filename with folder", done => {
-        const blob = utils.getSampleMetadata();
+        const blob = utils.getSampleMetadataAsBlob();
         const itemId = "itm1234567890";
         const folder = "aFolder";
         const filename = "aFilename.xml";
@@ -739,7 +739,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadata();
+        const expectedFetch = utils.getSampleMetadataAsBlob();
         const expectedUpdate = { success: true, id: destination.itemId };
         fetchMock
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -821,7 +821,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadata();
+        const expectedFetch = utils.getSampleMetadataAsBlob();
         const expectedUpdate = { success: false, id: destination.itemId };
         fetchMock
           .post(fetchUrl, expectedFetch, { sendAsJson: false })
@@ -852,7 +852,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
           "/content/users/casey/items/itm1234567890/update";
-        const expectedFetch = utils.getSampleMetadata();
+        const expectedFetch = utils.getSampleMetadataAsBlob();
         const expectedUpdate = 500;
         fetchMock
           .post(fetchUrl, expectedFetch, { sendAsJson: false })

@@ -652,7 +652,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
           itemId,
           MOCK_USER_SESSION
         );
-        fetchMock.post(url, utils.getSampleMetadata(), {
+        fetchMock.post(url, utils.getSampleMetadataAsFile(), {
           sendAsJson: false
         });
         restHelpersGet
@@ -1130,7 +1130,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
 
       it("should pass text/xml blobs through unchanged", done => {
         const testBlobType = "text/xml";
-        const testBlob = utils.getSampleMetadata();
+        const testBlob = utils.getSampleMetadataAsBlob();
         restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
           expect(ok.type).toEqual(testBlobType);
           const resultBlobContentsDef = generalHelpers.blobToText(ok);
@@ -1195,7 +1195,7 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
       it("should re-type text/xml blobs claiming to be text/plain", done => {
         const testBlobType = "text/plain";
         const realBlobType = "text/xml";
-        const testBlob = utils.getSampleMetadata(testBlobType);
+        const testBlob = utils.getSampleMetadataAsBlob(testBlobType);
         restHelpersGet._fixTextBlobType(testBlob).then((ok: Blob) => {
           expect(ok.type).toEqual(realBlobType);
           const resultBlobContentsDef = generalHelpers.blobToText(ok);
