@@ -3367,6 +3367,15 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_templatizeSourceServiceName", () => {
+    it("returns undefined when no dependencies remain after filtering by lookup name", () => {
+      const lookupName = "abc";
+      const dependencies: interfaces.IDependency[] = [];
+      const actual = _templatizeSourceServiceName(lookupName, dependencies);
+      expect(actual).toBeUndefined();
+    });
+  });
+
   describe("_templatizeAdminLayerInfoFields", () => {
     it("should not fail with empty layer", () => {
       const layer: any = {};
@@ -3527,6 +3536,23 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_getDependantItemId", () => {
+    it("returns an empty string when no dependencies remain after filtering by lookup name", () => {
+      const lookupName = "abc";
+      const dependencies: interfaces.IDependency[] = [];
+      const actual = _getDependantItemId(lookupName, dependencies);
+      expect(actual).toEqual("");
+    });
+  });
+
+  describe("_templatizeTopFilter", () => {
+    it("handles missing topFilter fields via no-ops", () => {
+      const topFilter: any = {};
+      _templatizeTopFilter(topFilter, basePath);
+      expect(topFilter).toEqual({});
+    });
+  });
+
   describe("_templatizeRelationshipFields", () => {
     it("should not fail with undefined layer", () => {
       const layer: any = undefined;
@@ -3574,7 +3600,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
   });
 
   describe("_templatizePopupInfo", () => {
-    it("should not fail with undefiend", () => {
+    it("should not fail with undefined", () => {
       const layerDefinition: any = undefined;
       const layer: any = undefined;
       const fieldNames: any = undefined;
@@ -3602,6 +3628,21 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         fieldNames
       );
       expect(layerDefinition).toEqual({});
+      expect(layer).toEqual({});
+    });
+
+    it("should not fail with empty popup", () => {
+      const layerDefinition: any = { popupInfo: {} };
+      const layer: any = {};
+      const fieldNames: any = ["A", "B", "AA", "BB", "name"];
+      _templatizePopupInfo(
+        layerDefinition,
+        layer,
+        basePath,
+        itemId,
+        fieldNames
+      );
+      expect(layerDefinition).toEqual({ popupInfo: {} });
       expect(layer).toEqual({});
     });
 
@@ -4117,6 +4158,19 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       };
       _templatizeName(obj, prop, fieldNames, basePath);
       expect(obj).toEqual(expected);
+    });
+  });
+
+  describe("_templatizeMediaInfos", () => {
+    it("should not fail when a mediaInfo value doesn't have fields", () => {
+      const mediaInfos: any = [
+        {
+          value: {}
+        }
+      ];
+      const fieldNames: string[] = [];
+      const layer: any = null;
+      _templatizeMediaInfos(mediaInfos, fieldNames, basePath, layer, itemId);
     });
   });
 
@@ -4916,7 +4970,80 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(labelingInfo).toEqual([]);
     });
 
-    it("should templatize field references in labelingInfo", () => {
+    it("should not fail with missing information in labelingInfo", () => {
+      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
+      const labelingInfo: any[] = [
+        {
+          labelExpression: null,
+          labelExpressionInfo: null,
+          fieldInfos: null,
+          useCodedValues: false,
+          maxScale: 0,
+          minScale: 0,
+          labelPlacement: "esriServerPointLabelPlacementAboveLeft",
+          symbol: {}
+        }
+      ];
+      const expected: any[] = [
+        {
+          labelExpression: null,
+          labelExpressionInfo: null,
+          fieldInfos: null,
+          useCodedValues: false,
+          maxScale: 0,
+          minScale: 0,
+          labelPlacement: "esriServerPointLabelPlacementAboveLeft",
+          symbol: {}
+        }
+      ];
+
+      _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
+      expect(labelingInfo).toEqual(expected);
+    });
+
+    xit("should templatize field references in labelingInfo: braces", () => {
+      const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
+      const labelingInfo: any[] = [
+        {
+          labelExpression: null,
+          labelExpressionInfo: {
+            value:
+              'return $feature["{STATE_NAME}"] + $feature["{ACRES}"] + " (arcade)";'
+          },
+          fieldInfos: [],
+          useCodedValues: false,
+          maxScale: 0,
+          minScale: 0,
+          labelPlacement: "esriServerPointLabelPlacementAboveLeft",
+          symbol: {}
+        }
+      ];
+
+      const expected: any[] = [
+        {
+          labelExpression: null,
+          labelExpressionInfo: {
+            value:
+              'return $feature["{{' +
+              basePath +
+              '.state_name.name}}"] + $feature["{{' +
+              basePath +
+              '.acres.name}}"] + " (arcade)";'
+          },
+          fieldInfos: [],
+          useCodedValues: false,
+          maxScale: 0,
+          minScale: 0,
+          labelPlacement: "esriServerPointLabelPlacementAboveLeft",
+          symbol: {}
+        }
+      ];
+
+      _templatizeLabelingInfo(labelingInfo, basePath, fieldNames);
+      expect(labelingInfo).toEqual(expected);
+    });
+
+    it("should templatize field references in labelingInfo: brackets", () => {
       const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
       const labelingInfo: any[] = [
         {
@@ -5146,6 +5273,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layer).toEqual(expected);
 
       layer.viewDefinitionQuery = undefined;
+      _templatizeDefinitionQuery(layer, basePath, fieldNames);
+      expect(layer).toEqual(expected);
+    });
+
+    it("should not fail with empty definitionQuery", () => {
+      const layer: any = {
+        definitionQuery: ""
+      };
+      const fieldNames: any = [];
+      const expected: any = {
+        definitionQuery: ""
+      };
+      _templatizeDefinitionQuery(layer, basePath, fieldNames);
+      expect(layer).toEqual(expected);
+
+      layer.definitionQuery = undefined;
       _templatizeDefinitionQuery(layer, basePath, fieldNames);
       expect(layer).toEqual(expected);
     });

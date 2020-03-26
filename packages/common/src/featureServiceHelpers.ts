@@ -1268,7 +1268,7 @@ export function _templatizePopupInfo(
   // the data layer does not have the fields...will need to get those
   // from the associated layer json
   if (fieldNames && layerDefinition.popupInfo) {
-    const popupInfo: any = layerDefinition.popupInfo || {};
+    const popupInfo: any = layerDefinition.popupInfo;
     _templatizeName(popupInfo, "title", fieldNames, basePath);
     _templatizeName(popupInfo, "description", fieldNames, basePath);
 
