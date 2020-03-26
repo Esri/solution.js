@@ -4248,6 +4248,22 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layer).toEqual(expected);
     });
 
+    it("should not fail without parameterizedExpression", () => {
+      const fieldNames: string[] = ["A", "B", "C", "name"];
+      const layer: any = {
+        definitionEditor: {
+          parameterizedExpression: undefined
+        }
+      };
+      const expected: any = {
+        definitionEditor: {
+          parameterizedExpression: ""
+        }
+      };
+      _templatizeDefinitionEditor(layer, basePath, fieldNames);
+      expect(layer).toEqual(expected);
+    });
+
     it("should templatize field references in definitionEditor", () => {
       const fieldNames: string[] = ["A", "B", "C", "name"];
       const layer: any = {

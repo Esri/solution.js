@@ -2285,6 +2285,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
+    it("should handle error attempting to check if item got updated", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
+
+      const originalItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        url + "0"
+      );
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
+          utils.getSuccessResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/0?f=json&token=fake-token",
+          500
+        );
+
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
     it("should handle error on all attempts to update a URL", done => {
       const url =
         utils.PORTAL_SUBSET.restUrl +
