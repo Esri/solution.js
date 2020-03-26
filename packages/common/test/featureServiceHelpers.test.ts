@@ -3384,6 +3384,53 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layer).toEqual({});
     });
 
+    it("should handle empty properties", () => {
+      const layer = {
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Table",
+              sourceLayerId: 0,
+              relatedTables: [
+                {
+                  sourceServiceName: "Table",
+                  sourceLayerId: 1
+                }
+              ]
+            }
+          }
+        }
+      };
+      const dependencies = [
+        {
+          name: "Table",
+          id: "cd766cba0dd44ec080420acc10990282"
+        }
+      ];
+
+      const expected: any = {
+        adminLayerInfo: {
+          viewLayerDefinition: {
+            table: {
+              sourceServiceName: "Table",
+              sourceLayerId: 0,
+              relatedTables: [
+                {
+                  sourceServiceName: "Table",
+                  sourceLayerId: 1,
+                  parentKeyFields: [],
+                  keyFields: []
+                }
+              ]
+            }
+          }
+        }
+      };
+
+      _templatizeAdminLayerInfoFields(layer, dependencies);
+      expect(layer).toEqual(expected);
+    });
+
     it("should templatize field source references and leave the name", () => {
       const layer = {
         adminLayerInfo: {
