@@ -2033,19 +2033,20 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         newFieldNames.indexOf(field.name) === -1 &&
         newFieldNames.indexOf(lName) === -1
       ) {
-        if (f.alias === field.alias) {
+        // If both new (f) and source (field) aliases are defined and are equal, map the source name to the new name
+        if (f.alias && f.alias === field.alias) {
           nameMapping[lName] = {
             name: f.name,
             alias: f.alias,
-            type: f.type
+            type: f.type ? f.type : ""
           };
         }
       }
       if (String(f.name).toLowerCase() === lName) {
         nameMapping[lName] = {
           name: f.name,
-          alias: f.alias,
-          type: f.type
+          alias: f.alias ? f.alias : "",
+          type: f.type ? f.type : ""
         };
       }
     });
@@ -2060,8 +2061,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
       const lowerEfi: string = String(efi[k]).toLowerCase();
       if (
         (nameMappingKeys.indexOf(lowerEfi) === -1 ||
-          (nameMappingKeys.indexOf(lowerEfi) > -1 &&
-            nameMapping[lowerEfi] !== newEfi[k])) &&
+          nameMapping[lowerEfi] !== newEfi[k]) &&
         newFieldNames.indexOf(lowerEfi) > -1
       ) {
         // Only add delete fields if source schema changes allowed
@@ -2085,8 +2085,9 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         });
         nameMapping[lowerEfi] = {
           name: newEfi[k],
-          alias: sourceEfiField ? sourceEfiField.alias : "",
-          type: sourceEfiField ? sourceEfiField.type : ""
+          alias:
+            sourceEfiField && sourceEfiField.alias ? sourceEfiField.alias : "",
+          type: sourceEfiField && sourceEfiField.type ? sourceEfiField.type : ""
         };
       }
     });

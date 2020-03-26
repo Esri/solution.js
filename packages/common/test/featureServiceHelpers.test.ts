@@ -5520,4 +5520,84 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(layer).toEqual(expected);
     });
   });
+
+  describe("_getNameMapping", () => {
+    it("should not fail when an edit fields info object doesn't have a source alias or type", () => {
+      const fieldInfos: any = {
+        cd766cba0dd44ec080420acc10990282: {
+          newFields: [
+            {
+              name: "a0",
+              alias: "A"
+            },
+            {
+              name: "b"
+            },
+            {
+              name: "createdate"
+            },
+            {
+              name: "create_date"
+            },
+            {
+              name: "editdate"
+            }
+          ],
+          sourceFields: [
+            {
+              name: "A",
+              alias: "A"
+            },
+            {
+              name: "B"
+            },
+            {
+              name: "CreateDate"
+            },
+            {
+              name: "EditDate"
+            }
+          ],
+          otherProperty: {
+            test: "test"
+          },
+          editFieldsInfo: {
+            createDateField: "CreateDate",
+            editDateField: "EditDate"
+          },
+          newEditFieldsInfo: {
+            createDateField: "create_date",
+            editDateField: "editdate"
+          },
+          sourceSchemaChangesAllowed: true
+        }
+      };
+
+      const expected = {
+        a: {
+          name: "a0",
+          alias: "A",
+          type: ""
+        },
+        b: {
+          name: "b",
+          alias: "",
+          type: ""
+        },
+        createdate: {
+          name: "create_date",
+          alias: "",
+          type: ""
+        },
+        editdate: {
+          name: "editdate",
+          alias: "",
+          type: ""
+        }
+      };
+
+      const actual = _getNameMapping(fieldInfos, itemId);
+      expect(actual).toEqual(expected);
+    });
+  });
 });
