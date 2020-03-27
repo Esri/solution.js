@@ -18,7 +18,7 @@
  * Provides tests for third-party helper functions.
  */
 
-import * as libs from "../src/libs";
+import * as libs from "../src/libs/uuidv4";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

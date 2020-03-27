@@ -20,11 +20,10 @@
  * @module common
  */
 
-export * from "./arcgis-html-sanitizer";
 export * from "./dependencies";
 export * from "./generalHelpers";
 export * from "./interfaces";
-export * from "./libs";
+export * from "./libs/uuidv4";
 export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./restHelpers";

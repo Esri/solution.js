@@ -46,7 +46,7 @@
       "jasmine"
     ],                           /* Type declaration files to be included in compilation. */
     "allowSyntheticDefaultImports": true,  /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */
-    "esModuleInterop": true,
+    //"esModuleInterop": true,
     "suppressImplicitAnyIndexErrors": true
 
     /* Source Map Options */
