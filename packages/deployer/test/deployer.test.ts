@@ -423,7 +423,7 @@ describe("Module `deployer`", () => {
 
         const expectedUpdateBodyCommon: string =
           "thumbnailUrl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png&" +
+          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
           "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
           "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
           "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
