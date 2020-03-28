@@ -18,9 +18,9 @@
  * Provides tests for third-party helper functions.
  */
 
-import * as libs from "../src/libs/uuidv4";
+//#region uuidv4 ---------------------------------------------------------------------------------------------------- //
 
-// ------------------------------------------------------------------------------------------------------------------ //
+import * as libs from "../src/libs/uuidv4";
 
 describe("Module `libs`: common third-party helper functions shared across packages", () => {
   if (typeof window !== "undefined") {
@@ -63,3 +63,61 @@ describe("Module `libs`: common third-party helper functions shared across packa
     });
   }
 });
+
+//#endregion ------------------------------------------------------------------------------------------------------------//
+
+//#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
+
+import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
+import * as xssFilterEvasionTestCases from "../src/XssFilterEvasionTestCases";
+
+describe("Module `arcgis-html-sanitizer`: ", () => {
+  describe("Sanitizer", () => {
+    it("sanitizes a string", () => {
+      // Instantiate a new Sanitizer object
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      // Sanitize a string
+      const sanitizedHtml = sanitizer.sanitize(
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+      );
+      expect(sanitizedHtml).toEqual(
+        '<img src="https://example.com/fake-image.jpg" />'
+      );
+    });
+
+    it("validates a string", () => {
+      // Instantiate a new Sanitizer object
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      // Sanitize a string
+      // Check if a string contains invalid HTML
+      const validation = sanitizer.validate(
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+      );
+      expect(validation).toEqual({
+        isValid: false,
+        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+      });
+    });
+
+    it("tests XSS cases", () => {
+      console.log(
+        "Running " +
+          xssFilterEvasionTestCases.testCases.length +
+          " XSS test cases"
+      );
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      xssFilterEvasionTestCases.testCases.forEach(
+        (testCase: xssFilterEvasionTestCases.IXSSTestCase) => {
+          expect(sanitizer.sanitize(testCase.example))
+            .withContext(testCase.label)
+            .toEqual(testCase.cleanedHtml);
+        }
+      );
+    });
+  });
+});
+
+//#endregion ------------------------------------------------------------------------------------------------------------//

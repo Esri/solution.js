@@ -21,6 +21,7 @@
  */
 
 export * from "./dependencies";
+export * from "./featureServiceHelpers";
 export * from "./generalHelpers";
 export * from "./interfaces";
 export * from "./libs/uuidv4";
@@ -29,4 +30,4 @@ export * from "./resourceHelpers";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
 export * from "./templatization";
-export * from "./featureServiceHelpers";
+export * from "./XssFilterEvasionTestCases";
