@@ -5064,7 +5064,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       expect(labelingInfo).toEqual(expected);
     });
 
-    xit("should templatize field references in labelingInfo: braces", () => {
+    it("should templatize field references in labelingInfo: braces", () => {
       const fieldNames: any[] = ["Description", "STATE_NAME", "ACRES", "name"];
       const labelingInfo: any[] = [
         {
@@ -5087,11 +5087,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           labelExpression: null,
           labelExpressionInfo: {
             value:
-              'return $feature["{{' +
+              'return $feature["{{{' +
               basePath +
-              '.state_name.name}}"] + $feature["{{' +
+              '.state_name.name}}}"] + $feature["{{{' +
               basePath +
-              '.acres.name}}"] + " (arcade)";'
+              '.acres.name}}}"] + " (arcade)";'
           },
           fieldInfos: [],
           useCodedValues: false,
