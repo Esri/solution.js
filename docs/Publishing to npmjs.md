@@ -69,11 +69,12 @@ git tag -d tagName
 10. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
 
 11. Switch to the `master` branch and merge in the `release` branch, but without committing it.
-
-12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 ```
 git merge --no-ff --no-commit release
 ```
+
+12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+
 *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
 ```
 npm run release:publish
@@ -195,4 +196,4 @@ npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
-3/27/20 mkt
+3/30/20 mkt
