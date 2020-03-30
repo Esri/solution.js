@@ -154,7 +154,7 @@ export function convertExtent(
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
-    if (extent.spatialReference!.wkid === outSR.wkid) {
+    if (extent.spatialReference!.wkid === outSR?.wkid || !outSR) {
       resolve(extent);
     } else {
       _requestOptions.params = {
