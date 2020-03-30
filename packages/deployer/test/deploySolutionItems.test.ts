@@ -1152,14 +1152,12 @@ describe("Module `deploySolutionItems`", () => {
           "https://apl.maps.arcgis.com/apps/Viewer/index.html?appid=map1234567890"
         );
         itemTemplate.item.thumbnail = null;
-        const resourceFilePaths: common.IDeployFileCopyPath[] = [
+        const resourceFilePaths: any[] = [
           {
-            type: common.EFileType.Thumbnail,
-            folder: "9ed8414bb27a441cbddb1227870ed038_info_thumbnail",
-            filename: "thumbnail1581708282265.png",
-            url:
-              utils.PORTAL_SUBSET.restUrl +
-              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png"
+            type: common.EFileType.Resource,
+            folder: "aFolder",
+            filename: "git_merge.png",
+            url: "http://someurl"
           }
         ];
         const templateDictionary: any = {};
@@ -1185,12 +1183,8 @@ describe("Module `deploySolutionItems`", () => {
               "/content/items/wma1234567891?f=json&token=fake-token",
             updatedItem
           )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/" +
-              "9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png?w=400",
-            503
-          );
+          .post("http://someurl//rest/info", {})
+          .post("http://someurl/", mockItems.get400Failure());
 
         // tslint:disable-next-line: no-floating-promises
         deploySolution
