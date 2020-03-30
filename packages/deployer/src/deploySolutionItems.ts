@@ -619,6 +619,14 @@ export function _createItemFromTemplateWhenReady(
             }
             */
 
+            // Glean item content that can be added via the create call rather than as an update, e.g.,
+            // metadata, thumbnail; this content is moved from the resourceFilePaths into the template
+            resourceFilePaths = _moveResourcesIntoTemplate(
+              resourceFilePaths,
+              template,
+              storageAuthentication
+            );
+
             // Delegate the creation of the template to the handler
             // tslint:disable-next-line: no-floating-promises
             itemHandler
@@ -696,13 +704,6 @@ export function _generateEmptyCreationResponse(
     type: templateType,
     postProcess: false
   };
-}
-
-export function _isEmptyCreationResponse(
-  templateType: string,
-  response: common.ICreateItemFromTemplateResponse
-): boolean {
-  return response.id === "";
 }
 
 /**
@@ -818,4 +819,41 @@ export function _getGroupUpdates(
     });
   }
   return updates;
+}
+
+export function _isEmptyCreationResponse(
+  templateType: string,
+  response: common.ICreateItemFromTemplateResponse
+): boolean {
+  return response.id === "";
+}
+
+export function _moveResourcesIntoTemplate(
+  filePaths: common.IDeployFileCopyPath[],
+  template: common.IItemTemplate,
+  authentication: common.UserSession
+): common.IDeployFileCopyPath[] {
+  // Find content in the file paths that can be moved into the template
+  const updatedFilePaths = filePaths.filter(filePath => {
+    switch (filePath.type) {
+      case common.EFileType.Thumbnail:
+        delete template.item.thumbnail;
+        template.item.thumbnailurl = common.appendQueryParam(
+          filePath.url,
+          "w=400"
+        );
+        const token = authentication.token;
+        /* istanbul ignore else */
+        if (token) {
+          template.item.thumbnailurl = common.appendQueryParam(
+            template.item.thumbnailurl,
+            "token=" + token
+          );
+        }
+        return false;
+      default:
+        return true;
+    }
+  });
+  return updatedFilePaths;
 }
