@@ -60,7 +60,7 @@ export function deploySolution(
           deployOptions.description =
             deployOptions.description ?? itemBase.description;
           deployOptions.tags = deployOptions.tags ?? itemBase.tags;
-          deployOptions.thumbnailUrl = common.getItemThumbnailUrl(
+          deployOptions.thumbnailurl = common.getItemThumbnailUrl(
             templateSolutionId,
             itemBase.thumbnail,
             false,
@@ -247,7 +247,21 @@ export function _deploySolutionFromTemplate(
 
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
-        solutionTemplateBase.thumbnailUrl = options.thumbnailUrl;
+        /* istanbul ignore else */
+        if (options.thumbnailurl) {
+          solutionTemplateBase.thumbnailurl = common.appendQueryParam(
+            options.thumbnailurl,
+            "w=400"
+          );
+          const token = authentication.token;
+          /* istanbul ignore else */
+          if (token) {
+            solutionTemplateBase.thumbnailurl = common.appendQueryParam(
+              solutionTemplateBase.thumbnailurl,
+              "token=" + token
+            );
+          }
+        }
         solutionTemplateBase.tryitUrl = _checkedReplaceAll(
           solutionTemplateBase.tryitUrl,
           templateSolutionId,

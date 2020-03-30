@@ -65,12 +65,12 @@ export function createSolution(
           createOptions.tags = createOptions.tags ?? groupInfo.tags;
 
           /* istanbul ignore else*/ if (
-            !createOptions.thumbnailUrl &&
+            !createOptions.thumbnailurl &&
             groupInfo.thumbnail
           ) {
             // Copy the group's thumbnail to the new item
             // createOptions.thumbnail needs to be a full URL
-            createOptions.thumbnailUrl = common.generateSourceThumbnailUrl(
+            createOptions.thumbnailurl = common.generateSourceThumbnailUrl(
               authentication.portal,
               sourceId,
               groupInfo.thumbnail,
@@ -301,7 +301,7 @@ export function _createSolutionItem(
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
       properties: _getDeploymentProperties(creationTags),
-      thumbnailUrl: options?.thumbnailUrl ?? "",
+      thumbnailurl: options?.thumbnailurl ?? "",
       tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
       typeKeywords: ["Solution", "Template"]
     };
@@ -326,10 +326,10 @@ export function _createSolutionItem(
       )
       .then(createResponse => {
         // Thumbnail must be added manually
-        if (solutionItem.thumbnailUrl) {
+        if (solutionItem.thumbnailurl) {
           common
             .addThumbnailFromUrl(
-              solutionItem.thumbnailUrl,
+              solutionItem.thumbnailurl,
               createResponse.id,
               authentication
             )

@@ -24,7 +24,6 @@ import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
-import * as restHelpersGet from "./restHelpersGet";
 import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
 import * as templatization from "./templatization";
 
@@ -1419,9 +1418,8 @@ export function _updateItemURL(
           reject(generalHelpers.fail(result));
         } else {
           // Get the item to see if the URL really changed
-          return portal
-            .getItem(id, { authentication: authentication })
-            .then(item => {
+          portal.getItem(id, { authentication: authentication }).then(
+            item => {
               if (url === item.url) {
                 resolve(id);
               } else {
@@ -1445,7 +1443,9 @@ export function _updateItemURL(
                   reject(errorMsg);
                 }
               }
-            });
+            },
+            e => reject(generalHelpers.fail(e))
+          );
         }
       },
       e => reject(generalHelpers.fail(e))

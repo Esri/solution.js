@@ -829,13 +829,13 @@ export function generateStorageFilePaths(
  */
 export function generateThumbnailStorageFilename(
   itemId: string,
-  thumbnailUrl: string
+  thumbnailurl: string
 ): {
   folder: string;
   filename: string;
 } {
   const folder = itemId + "_info_thumbnail";
-  const thumbnailUrlParts = thumbnailUrl.split("/");
+  const thumbnailUrlParts = thumbnailurl.split("/");
   const filename =
     thumbnailUrlParts.length === 1
       ? thumbnailUrlParts[0]
