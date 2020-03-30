@@ -50,6 +50,8 @@ const SERVER_INFO = {
 describe("Module `deploySolutionItems`", () => {
   describe("deploySolutionItems", () => {
     it("can handle unimplemented item type gracefully", done => {
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "log").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           "",
@@ -826,6 +828,8 @@ describe("Module `deploySolutionItems`", () => {
         itemId: newItemID
       };
 
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "log").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
