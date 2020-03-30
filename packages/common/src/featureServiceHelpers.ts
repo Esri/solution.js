@@ -460,7 +460,7 @@ export function getLayersAndTables(
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
  *            service)
  * @param popupInfos the cached popup info from the layers
- * @param requestOptions Options for the request
+ * @param authentication Credentials for the request
  * @return A promise that will resolve when all layers and tables have been added
  * @protected
  */
@@ -468,7 +468,7 @@ export function addFeatureServiceLayersAndTables(
   itemTemplate: interfaces.IItemTemplate,
   templateDictionary: any,
   popupInfos: IPopupInfos,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
     // Create a hash of various properties that contain field references
@@ -481,7 +481,7 @@ export function addFeatureServiceLayersAndTables(
         itemTemplate.item.url || "",
         layersAndTables,
         templateDictionary,
-        requestOptions,
+        authentication,
         itemTemplate.key,
         adminLayerInfos,
         fieldInfos,
@@ -495,7 +495,7 @@ export function addFeatureServiceLayersAndTables(
             popupInfos,
             adminLayerInfos,
             templateDictionary,
-            requestOptions
+            authentication
           ).then(
             r => {
               // Update relationships and layer definitions
@@ -504,7 +504,7 @@ export function addFeatureServiceLayersAndTables(
                   message: "updated layer definition",
                   objects: r.layerInfos.fieldInfos,
                   itemTemplate: r.itemTemplate,
-                  authentication: requestOptions.authentication
+                  authentication
                 } as interfaces.IPostProcessArgs
               );
               // Process the updates sequentially
@@ -537,7 +537,7 @@ export function addFeatureServiceLayersAndTables(
  * @param listToAdd List of layers and/or tables to add
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature
  *            service)
- * @param requestOptions Options for requesting information from AGOL
+ * @param authentication Credentials for the request
  * @param key
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param fieldInfos Hash map of properties that contain field references
@@ -549,7 +549,7 @@ export function updateFeatureServiceDefinition(
   serviceUrl: string,
   listToAdd: any[],
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions,
+  authentication: interfaces.UserSession,
   key: string,
   adminLayerInfos: any,
   fieldInfos: any,
@@ -559,7 +559,7 @@ export function updateFeatureServiceDefinition(
     const options: any = {
       layers: [],
       tables: [],
-      ...requestOptions
+      authentication
     };
 
     listToAdd.forEach(toAdd => {
@@ -617,7 +617,7 @@ export function updateFeatureServiceDefinition(
  * @param popupInfos Hash map of a layers popupInfo
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
- * @param requestOptions Options for requesting information from AGOL
+ * @param authentication Credentials for the request
  * @return A promise that will resolve when the feature service has been updated
  * @protected
  */
@@ -627,7 +627,7 @@ export function updateLayerFieldReferences(
   popupInfos: IPopupInfos,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
     // Will need to do some post processing for fields
@@ -638,7 +638,7 @@ export function updateLayerFieldReferences(
       popupInfos,
       adminLayerInfos,
       templateDictionary,
-      requestOptions
+      authentication
     ).then(
       (layerInfos: any) => {
         // Update the items text with detemplatized popupInfo
@@ -662,7 +662,7 @@ export function updateLayerFieldReferences(
  * @param popupInfos Hash map of a layers popupInfo
  * @param adminLayerInfos Hash map of a layers adminLayerInfo
  * @param templateDictionary
- * @param requestOptions
+ * @param authentication Credentials for the request
  * @return An object with detemplatized field references
  * @protected
  */
@@ -672,93 +672,94 @@ export function postProcessFields(
   popupInfos: any,
   adminLayerInfos: any,
   templateDictionary: any,
-  requestOptions: interfaces.IUserRequestOptions
+  authentication: interfaces.UserSession
 ): Promise<any> {
   return new Promise((resolveFn, rejectFn) => {
-    const id = itemTemplate.itemId;
-    const settingsKeys = Object.keys(templateDictionary);
-    // concat any layers and tables to process
-    const url: string = itemTemplate.item.url || "";
+    if (!itemTemplate.item.url) {
+      rejectFn(
+        generalHelpers.fail(
+          "Feature layer " + itemTemplate.itemId + " does not have a URL"
+        )
+      );
+    } else {
+      const id = itemTemplate.itemId;
+      const settingsKeys = Object.keys(templateDictionary);
 
-    const serviceData: any = itemTemplate.properties;
-    Promise.all([
-      restHelpers.getLayers(
-        url,
-        serviceData["layers"],
-        requestOptions.authentication
-      ),
-      restHelpers.getLayers(
-        url,
-        serviceData["tables"],
-        requestOptions.authentication
-      )
-    ]).then(
-      results => {
-        const layers: any[] = results[0] || [];
-        const tables: any[] = results[1] || [];
-        const layersAndTables: any[] = layers.concat(tables);
-        // Set the newFields property for the layerInfos...this will contain all fields
-        // as they are after being added to the definition.
-        // This allows us to handle any potential field name changes after deploy to portal
-        layersAndTables.forEach((item: any) => {
-          /* istanbul ignore else */
-          if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
-            layerInfos[item.id]["newFields"] = item.fields;
-            layerInfos[item.id]["sourceSchemaChangesAllowed"] =
-              item.sourceSchemaChangesAllowed;
+      // concat any layers and tables to process
+      const url: string = itemTemplate.item.url;
+
+      const serviceData: any = itemTemplate.properties;
+      Promise.all([
+        restHelpers.getLayers(url, serviceData["layers"], authentication),
+        restHelpers.getLayers(url, serviceData["tables"], authentication)
+      ]).then(
+        results => {
+          const layers: any[] = results[0];
+          const tables: any[] = results[1];
+          const layersAndTables: any[] = layers.concat(tables);
+          // Set the newFields property for the layerInfos...this will contain all fields
+          // as they are after being added to the definition.
+          // This allows us to handle any potential field name changes after deploy to portal
+          layersAndTables.forEach((item: any) => {
             /* istanbul ignore else */
-            if (item.editFieldsInfo) {
-              // more than case change when deployed to protal so keep track of the new names
-              layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
-                JSON.stringify(item.editFieldsInfo)
-              );
-            }
+            if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
+              layerInfos[item.id]["newFields"] = item.fields;
+              layerInfos[item.id]["sourceSchemaChangesAllowed"] =
+                item.sourceSchemaChangesAllowed;
+              /* istanbul ignore else */
+              if (item.editFieldsInfo) {
+                // more than case change when deployed to protal so keep track of the new names
+                layerInfos[item.id]["newEditFieldsInfo"] = JSON.parse(
+                  JSON.stringify(item.editFieldsInfo)
+                );
+              }
 
-            // fields that are marked as visible false on a view are all set to
-            // visible true when added with the layer definition
-            // update the field visibility to match that of the source
-            /* istanbul ignore else */
-            if (item.isView) {
-              let fieldUpdates: any[] = _getFieldVisibilityUpdates(
-                layerInfos[item.id]
-              );
+              // fields that are marked as visible false on a view are all set to
+              // visible true when added with the layer definition
+              // update the field visibility to match that of the source
+              /* istanbul ignore else */
+              if (item.isView) {
+                let fieldUpdates: any[] = _getFieldVisibilityUpdates(
+                  layerInfos[item.id]
+                );
 
-              // view field domains can contain different values than the source field domains
-              // use the cached view domain when it differs from the source view domain
-              fieldUpdates = _validateDomains(
-                layerInfos[item.id],
-                fieldUpdates
-              );
+                // view field domains can contain different values than the source field domains
+                // use the cached view domain when it differs from the source view domain
+                fieldUpdates = _validateDomains(
+                  layerInfos[item.id],
+                  fieldUpdates
+                );
 
-              if (fieldUpdates.length > 0) {
-                layerInfos[item.id].fields = fieldUpdates;
+                if (fieldUpdates.length > 0) {
+                  layerInfos[item.id].fields = fieldUpdates;
+                }
               }
             }
-          }
-        });
+          });
 
-        // Add the layerInfos to the settings object to be used while detemplatizing
-        settingsKeys.forEach((k: any) => {
-          if (id === templateDictionary[k].itemId) {
-            templateDictionary[k] = Object.assign(
-              templateDictionary[k],
-              getLayerSettings(layerInfos, templateDictionary[k].url, id)
-            );
-          }
-        });
+          // Add the layerInfos to the settings object to be used while detemplatizing
+          settingsKeys.forEach((k: any) => {
+            if (id === templateDictionary[k].itemId) {
+              templateDictionary[k] = Object.assign(
+                templateDictionary[k],
+                getLayerSettings(layerInfos, templateDictionary[k].url, id)
+              );
+            }
+          });
 
-        // update the layerInfos object with current field names
-        resolveFn(
-          deTemplatizeFieldInfos(
-            layerInfos,
-            popupInfos,
-            adminLayerInfos,
-            templateDictionary
-          )
-        );
-      },
-      e => rejectFn(generalHelpers.fail(e))
-    );
+          // update the layerInfos object with current field names
+          resolveFn(
+            deTemplatizeFieldInfos(
+              layerInfos,
+              popupInfos,
+              adminLayerInfos,
+              templateDictionary
+            )
+          );
+        },
+        e => rejectFn(generalHelpers.fail(e))
+      );
+    }
   });
 }
 
@@ -1267,7 +1268,7 @@ export function _templatizePopupInfo(
   // the data layer does not have the fields...will need to get those
   // from the associated layer json
   if (fieldNames && layerDefinition.popupInfo) {
-    const popupInfo: any = layerDefinition.popupInfo || {};
+    const popupInfo: any = layerDefinition.popupInfo;
     _templatizeName(popupInfo, "title", fieldNames, basePath);
     _templatizeName(popupInfo, "description", fieldNames, basePath);
 
@@ -2032,19 +2033,20 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         newFieldNames.indexOf(field.name) === -1 &&
         newFieldNames.indexOf(lName) === -1
       ) {
-        if (f.alias === field.alias) {
+        // If both new (f) and source (field) aliases are defined and are equal, map the source name to the new name
+        if (f.alias && f.alias === field.alias) {
           nameMapping[lName] = {
             name: f.name,
             alias: f.alias,
-            type: f.type
+            type: f.type ? f.type : ""
           };
         }
       }
       if (String(f.name).toLowerCase() === lName) {
         nameMapping[lName] = {
           name: f.name,
-          alias: f.alias,
-          type: f.type
+          alias: f.alias ? f.alias : "",
+          type: f.type ? f.type : ""
         };
       }
     });
@@ -2059,8 +2061,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
       const lowerEfi: string = String(efi[k]).toLowerCase();
       if (
         (nameMappingKeys.indexOf(lowerEfi) === -1 ||
-          (nameMappingKeys.indexOf(lowerEfi) > -1 &&
-            nameMapping[lowerEfi] !== newEfi[k])) &&
+          nameMapping[lowerEfi] !== newEfi[k]) &&
         newFieldNames.indexOf(lowerEfi) > -1
       ) {
         // Only add delete fields if source schema changes allowed
@@ -2084,8 +2085,9 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         });
         nameMapping[lowerEfi] = {
           name: newEfi[k],
-          alias: sourceEfiField ? sourceEfiField.alias : "",
-          type: sourceEfiField ? sourceEfiField.type : ""
+          alias:
+            sourceEfiField && sourceEfiField.alias ? sourceEfiField.alias : "",
+          type: sourceEfiField && sourceEfiField.type ? sourceEfiField.type : ""
         };
       }
     });

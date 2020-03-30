@@ -128,7 +128,7 @@ export interface ICreateSolutionOptions {
   snippet?: string; // defaults: for a group, group snippet; for an item, ""
   description?: string; // defaults: for a group, group description; for an item, ""
   tags?: string[]; // defaults: for a group, group tags; for an item, []
-  thumbnailUrl?: string; // default: ""
+  thumbnailurl?: string; // default: ""
   folderId?: string; // default is top level
   templateDictionary?: any; // default: {}
   templatizeFields?: boolean; // default: false
@@ -235,7 +235,7 @@ export interface IDeploySolutionOptions {
   snippet?: string; // default: copied from solution item
   description?: string; // default: copied from solution item
   tags?: string[]; // default: copied from solution item
-  thumbnailUrl?: string; // default: copied from solution item
+  thumbnailurl?: string; // default: copied from solution item
   templateDictionary?: any; // default: {}
   additionalTypeKeywords?: string[]; // default: []; supplements ["Solution", "Deployed"]
   enableItemReuse?: boolean; // when true items with source-itemId type keyword will be reused
@@ -289,6 +289,11 @@ export interface IGetResourcesResponse {
   resources: IResource[];
 }
 
+export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
+  bbox?: string; // e.g., "-118,32,-116,34"
+  categories?: string[]; // maximum of 8
+}
+
 /**
  * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
  */
@@ -308,6 +313,11 @@ export interface IItemGeneralized {
   typeKeywords?: string[];
   url?: string;
   [key: string]: any;
+}
+
+export interface IItemSearchOptions extends ISharedSearchOptions {
+  bbox?: string; // e.g., "-118,32,-116,34"
+  categories?: string[]; // maximum of 8
 }
 
 /**
@@ -487,6 +497,13 @@ export interface IResource {
   resource: string;
   created: number;
   size: number;
+}
+
+export interface ISharedSearchOptions {
+  start?: number;
+  num?: number;
+  sortField?: string;
+  sortOrder?: string;
 }
 
 /**

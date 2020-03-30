@@ -41,22 +41,19 @@ export function convertItemToTemplate(
         }
       });
 
-      applicationRequest.then(
-        result => {
-          // replace the template data array with the templatized application JSON
-          itemTemplate.data = result
-            ? {
-                application: _templatizeApplication(
-                  JSON.parse(result),
-                  itemTemplate
-                ),
-                name: applicationName
-              }
-            : {};
-          resolve(itemTemplate);
-        },
-        reject
-      );
+      applicationRequest.then(result => {
+        // replace the template data array with the templatized application JSON
+        itemTemplate.data = result
+          ? {
+              application: _templatizeApplication(
+                JSON.parse(result),
+                itemTemplate
+              ),
+              name: applicationName
+            }
+          : {};
+        resolve(itemTemplate);
+      }, reject);
     } else {
       resolve(itemTemplate);
     }

@@ -30,36 +30,31 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/API/Blob/Blob
  * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
  */
-export function getBlobText(
-  blob: Blob
-): Promise<string> {
+export function getBlobText(blob: Blob): Promise<string> {
   let textPromise: Promise<string>;
 
   /* istanbul ignore else */
   if (typeof blob.text !== "undefined") {
     // Modern browser
     textPromise = blob.text();
-
   } else {
     // Microsoft Legacy Edge
-    textPromise = new Promise<string>(
-      (resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = function(event) {
-          if (event.target && event.target.result) {
-            // event.target.result is typed as "string | ArrayBuffer | null", but for the readAsText function,
-            // the result is a string
-            resolve(event.target.result as string);
-          } else {
-            resolve("");
-          }
-        };
-        reader.onerror = function(event) {
-          reject(event);
-        };
-        reader.readAsText(blob);
-      }
-    );
+    textPromise = new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        if (event.target && event.target.result) {
+          // event.target.result is typed as "string | ArrayBuffer | null", but for the readAsText function,
+          // the result is a string
+          resolve(event.target.result as string);
+        } else {
+          resolve("");
+        }
+      };
+      reader.onerror = function(event) {
+        reject(event);
+      };
+      reader.readAsText(blob);
+    });
   }
 
   return textPromise;
@@ -85,9 +80,7 @@ export function new_File(
   try {
     // Modern browser
     file = new File(fileBits, fileName, options);
-  }
-
-  catch (error) {
+  } catch (error) {
     // Microsoft Legacy Edge
     /* istanbul ignore next */
     file = (function(): File {
@@ -101,7 +94,7 @@ export function new_File(
       blob.lastModified = new Date();
       blob.name = fileName;
       return blob as File;
-    }());
+    })();
   }
 
   return file;

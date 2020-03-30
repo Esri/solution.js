@@ -691,7 +691,10 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const dataFile: File = null as File;
         const metadataFile: File = null as File;
         const resourcesFiles: File[] = [
-          polyfills.new_File([utils.getSampleImage()], "resourceFolder/image.png")
+          polyfills.new_File(
+            [utils.getSampleImage()],
+            "resourceFolder/image.png"
+          )
         ];
         const access = undefined as string; // default is "private"
 
@@ -1259,6 +1262,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtent", () => {
+    it("can handle undefined out SR", done => {
+      restHelpers
+        .convertExtent(extent, undefined, geometryServiceUrl, MOCK_USER_SESSION)
+        .then(_extent => {
+          expect(_extent).toEqual(extent);
+          done();
+        }, done.fail);
+    });
+
     it("can handle unmatched wkid", done => {
       fetchMock
         .post(geometryServiceUrl + "/findTransformations", {
@@ -1978,6 +1990,46 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("searchGroupContents", () => {
+    it("can handle no results", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "My Group";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        utils.getGroupResponse(query, false)
+      );
+
+      restHelpers.searchGroupContents(groupId, query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(0);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+
+    it("can handle a result", done => {
+      const groupId: string = "grp1234567890";
+      const query: string = "My Group";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          `/content/groups/${groupId}/search?f=json&q=My%20Group&token=fake-token`,
+        utils.getGroupResponse(query, true)
+      );
+
+      restHelpers.searchGroupContents(groupId, query, MOCK_USER_SESSION).then(
+        groupResponse => {
+          expect(groupResponse.results.length).toEqual(1);
+          done();
+        },
+        () => done.fail()
+      );
+    });
+  });
+
   describe("shareItem", () => {
     it("can handle error on shareItem", done => {
       const groupId: string = "grp1234567890";
@@ -2242,6 +2294,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
+    it("should handle error attempting to check if item got updated", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
+
+      const originalItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        url + "0"
+      );
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
+          utils.getSuccessResponse()
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/0?f=json&token=fake-token",
+          500
+        );
+
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
     it("should handle error on all attempts to update a URL", done => {
       const url =
         utils.PORTAL_SUBSET.restUrl +
@@ -2327,7 +2406,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
         // the File constructor, so we'll have Date return the same value each time it is called for this test
         const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
-        utils.setMockDateTime(date.getTime())
+        utils.setMockDateTime(date.getTime());
 
         const itemId = "itm1234567890";
         const url =
@@ -2343,25 +2422,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             MOCK_USER_SESSION
           )
           .then(response => {
-            expect(response.success).withContext("response.success").toBeTruthy();
+            expect(response.success)
+              .withContext("response.success")
+              .toBeTruthy();
             const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
             const fetchBody = (options as fetchMock.MockResponseObject).body;
             (fetchBody as FormData).forEach(
               (value: FormDataEntryValue, key: string) => {
                 switch (key) {
                   case "f":
-                    expect(value.toString()).withContext("key = f").toEqual("json");
+                    expect(value.toString())
+                      .withContext("key = f")
+                      .toEqual("json");
                     break;
                   case "id":
-                    expect(value.toString()).withContext("key = id").toEqual(itemId);
+                    expect(value.toString())
+                      .withContext("key = id")
+                      .toEqual(itemId);
                     break;
                   case "file":
-                    expect(value.valueOf()).withContext("key = file").toEqual(
-                      utils.getSampleMetadataAsFile()
-                    );
+                    expect(value.valueOf())
+                      .withContext("key = file")
+                      .toEqual(utils.getSampleMetadataAsFile());
                     break;
                   case "token":
-                    expect(value.toString()).withContext("key = token").toEqual("fake-token");
+                    expect(value.toString())
+                      .withContext("key = token")
+                      .toEqual("fake-token");
                     break;
                 }
               }

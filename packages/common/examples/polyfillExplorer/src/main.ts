@@ -20,13 +20,17 @@ import * as common from "../lib/common.umd";
 export function runLegacies(): Promise<string> {
   return new Promise<string>(resolve => {
     let html =
-      "appVersion: " + navigator.appVersion + "<br><br>" +
-      "userAgent: " + navigator.userAgent + "<br><br>" +
-      "msSaveBlob: " + (typeof navigator.msSaveBlob) + "<br><br>";
-
+      "appVersion: " +
+      navigator.appVersion +
+      "<br><br>" +
+      "userAgent: " +
+      navigator.userAgent +
+      "<br><br>" +
+      "msSaveBlob: " +
+      typeof navigator.msSaveBlob +
+      "<br><br>";
 
     html += test_new_File(["foo"], "filename.txt", { type: "text/plain" });
-
 
     resolve(html);
   });
@@ -39,11 +43,10 @@ function test_new_File(
 ): string {
   const file = common.new_File(fileBits, fileName, options);
   if (file) {
-     return "Created file";
+    return "Created file";
   } else {
-     return "<span style=\"color:red\">Failed to create file</span><br>";
+    return "<span style=\"color:red\">Failed to create file</span><br>";
   }
 }
 
 // ================================================================================================================== //
-

@@ -229,7 +229,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
 
     describe("addThumbnailFromUrl", () => {
       it("gets a thumbnail from a URL", done => {
-        const thumbnailUrl =
+        const thumbnailurl =
           utils.PORTAL_SUBSET.restUrl + "/images/thumbnail.png";
         const itemId = "itm1234567890";
         const updateUrl =
@@ -242,10 +242,10 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post(updateUrl, expected)
           .post(utils.PORTAL_SUBSET.restUrl, SERVER_INFO)
-          .post(thumbnailUrl + "?w=400", expectedImage, { sendAsJson: false });
+          .post(thumbnailurl + "?w=400", expectedImage, { sendAsJson: false });
 
         resourceHelpers
-          .addThumbnailFromUrl(thumbnailUrl, itemId, MOCK_USER_SESSION)
+          .addThumbnailFromUrl(thumbnailurl, itemId, MOCK_USER_SESSION)
           .then((response: any) => {
             expect(response).toEqual(expected);
             const options: fetchMock.MockOptions = fetchMock.lastOptions(

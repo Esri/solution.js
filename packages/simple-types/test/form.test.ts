@@ -64,7 +64,7 @@ describe("Module `form`", () => {
         // With Microsoft Legacy Edge, we have potential date mismatches because of Edge's lack of support for
         // the File constructor, so we'll have Date return the same value each time it is called for this test
         const date = new Date(Date.UTC(2019, 2, 4, 5, 6, 7)); // 0-based month
-        utils.setMockDateTime(date.getTime())
+        utils.setMockDateTime(date.getTime());
 
         const itemId = "itm1234567890";
         const expectedFile = utils.getSampleJsonAsFile("form.json");

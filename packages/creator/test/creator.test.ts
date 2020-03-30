@@ -938,7 +938,7 @@ describe("Module `creator`", () => {
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
               "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
-              "&thumbnailUrl=&tags=&typeKeywords=Solution%2CTemplate" +
+              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
@@ -954,7 +954,7 @@ describe("Module `creator`", () => {
           snippet: "Solution's snippet",
           description: "Solution's description",
           tags: ["Test", "a tag"],
-          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/logo.png",
+          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/logo.png",
           templatizeFields: true,
           additionalTypeKeywords: ["Esri", "Government Solutions"]
         };
@@ -996,8 +996,8 @@ describe("Module `creator`", () => {
                 "&description=" +
                 encodeURIComponent(options.description) +
                 "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
-                "&thumbnailUrl=" +
-                encodeURIComponent(options.thumbnailUrl) +
+                "&thumbnailurl=" +
+                encodeURIComponent(options.thumbnailurl) +
                 "&tags=" +
                 options.tags.map(encodeURIComponent).join("%2C") +
                 "&typeKeywords=" +
@@ -1017,7 +1017,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const solutionId = "sln1234567890";
         const options: common.ICreateSolutionOptions = {
-          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
         };
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -1050,7 +1050,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const solutionId = "sln1234567890";
         const options: common.ICreateSolutionOptions = {
-          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
         };
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -1083,7 +1083,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const solutionId = "sln1234567890";
         const options: common.ICreateSolutionOptions = {
-          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
         };
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -1116,7 +1116,7 @@ describe("Module `creator`", () => {
         const authentication: common.UserSession = MOCK_USER_SESSION;
         const solutionId = "sln1234567890";
         const options: common.ICreateSolutionOptions = {
-          thumbnailUrl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
+          thumbnailurl: utils.PORTAL_SUBSET.portalUrl + "/thumbnail.png"
         };
         const updateUrl =
           utils.PORTAL_SUBSET.restUrl +
@@ -1162,7 +1162,7 @@ describe("Module `creator`", () => {
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
               "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
-              "&thumbnailUrl=&tags=&typeKeywords=Solution%2CTemplate" +
+              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();

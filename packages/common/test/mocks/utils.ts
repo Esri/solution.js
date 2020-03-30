@@ -220,7 +220,9 @@ EB352600 00002600 00000700 00006373\
 }
 
 export function getSampleZipFile(name: string): File {
-  return polyfills.new_File([getSampleZip()], name, { type: "application/zip" });
+  return polyfills.new_File([getSampleZip()], name, {
+    type: "application/zip"
+  });
 }
 
 export function imageAsDataUriToBlob(imageAsDataUri: string): Blob {
