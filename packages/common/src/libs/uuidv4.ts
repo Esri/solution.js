@@ -5,6 +5,7 @@
  * cc by-sa 4.0 with attribution required
  * Modified to create string without dashes
  */
+
 /**
  * Creates a GUID-like string.
  *
