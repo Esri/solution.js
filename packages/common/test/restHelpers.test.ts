@@ -1262,6 +1262,15 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("convertExtent", () => {
+    it("can handle undefined out SR", done => {
+      restHelpers
+        .convertExtent(extent, undefined, geometryServiceUrl, MOCK_USER_SESSION)
+        .then(_extent => {
+          expect(_extent).toEqual(extent);
+          done();
+        }, done.fail);
+    });
+
     it("can handle unmatched wkid", done => {
       fetchMock
         .post(geometryServiceUrl + "/findTransformations", {
