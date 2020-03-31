@@ -1,3 +1,5 @@
 coverage:
   round: up
   range: 50..95
+codecov:
+  branch: develop
