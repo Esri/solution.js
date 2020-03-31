@@ -7,11 +7,20 @@ node_js:
   - 10
   - 8
 before_script:
-- npm install
+  - npm install
 script:
-- npm run test:ci
+  - npm run test:ci
+  - codecov
+deploy:
+  provider: pages
+  skip_cleanup: true
+  keep-history: true
+  github_token: "$GITHUB_TOKEN"
+  on:
+    branch: master
+  local-dir: docs/build/solution.js
 env:
-- MOZ_HEADLESS=1
+  - MOZ_HEADLESS=1
 addons:
   chrome: stable
   firefox: latest
