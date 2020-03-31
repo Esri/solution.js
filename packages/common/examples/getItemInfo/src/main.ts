@@ -148,6 +148,7 @@ export function getItemInfo(
           html += "<p><i>none</i>";
         } else {
           html += "<ol>";
+          // tslint:disable-next-line: prefer-for-of
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
             html += "<li><div>";
             html += await showBlob(itemResourceFiles[i]);
@@ -237,7 +238,7 @@ export function getItemInfo(
           )
             .then(results => results.filter(result => !!result))
             .then(
-              // (itemFormInfoFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
+              // (formFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
               async formFiles => {
                 formFiles = formFiles.filter(result => !!result);
                 console.log("formFiles", formFiles);
@@ -246,6 +247,7 @@ export function getItemInfo(
                   html += "<p><i>none</i>";
                 } else {
                   html += "<ol>";
+                  // tslint:disable-next-line: prefer-for-of
                   for (let i: number = 0; i < formFiles.length; ++i) {
                     html += "<li><div>";
                     html += await showBlob(formFiles[i]);
