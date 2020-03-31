@@ -2068,6 +2068,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
         // Only add delete fields if source schema changes allowed
         /* istanbul ignore else */
         if (fInfo.sourceSchemaChangesAllowed && !fInfo.isView) {
+          /* istanbul ignore else */
           if (!fInfo.hasOwnProperty("deleteFields")) {
             fInfo.deleteFields = [];
           }

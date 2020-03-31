@@ -1038,7 +1038,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           otherProperty: {
             test: "test"
           },
-          deleteFields: ["createdate", "editdate"]
+          deleteFields: ["createdate"]
         },
         "1": {
           otherProperty: {
