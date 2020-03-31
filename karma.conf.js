@@ -21,10 +21,10 @@ module.exports = function(config) {
       coverageOptions: {
         threshold: {
           global: {
-            statements: 25,
-            branches: 25,
-            functions: 25,
-            lines: 25,
+            statements: 90,
+            branches: 90,
+            functions: 90,
+            lines: 90,
             excludes: [
               'packages/*/examples/**/*.ts',
               'packages/*/test/**/*.ts'
