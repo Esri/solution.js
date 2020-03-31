@@ -2097,6 +2097,7 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
     generalHelpers.deleteProp(fInfo, "sourceSchemaChangesAllowed");
     generalHelpers.deleteProp(fInfo, "editFieldsInfo");
     generalHelpers.deleteProp(fInfo, "newEditFieldsInfo");
+    generalHelpers.deleteProp(fInfo, "isView");
   }
   return nameMapping;
 }
