@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-storymap",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "description": "Manages the creation and deployment of Story Map item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/storymap.umd.min.js",
@@ -17,8 +17,8 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.8.7",
-    "@esri/solution-simple-types": "^0.8.7",
+    "@esri/solution-common": "^0.8.8",
+    "@esri/solution-simple-types": "^0.8.8",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -71,5 +71,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "7005ceaa97952c19b0699682298a41ae4a28f218"
+  "gitHead": "6c681610170b146bb5325d66714ddee94e9f421d"
 }
