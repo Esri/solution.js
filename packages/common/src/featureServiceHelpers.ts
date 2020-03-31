@@ -703,6 +703,7 @@ export function postProcessFields(
           layersAndTables.forEach((item: any) => {
             /* istanbul ignore else */
             if (layerInfos && layerInfos.hasOwnProperty(item.id)) {
+              layerInfos[item.id]["isView"] = item.isView;
               layerInfos[item.id]["newFields"] = item.fields;
               layerInfos[item.id]["sourceSchemaChangesAllowed"] =
                 item.sourceSchemaChangesAllowed;
@@ -2061,12 +2062,12 @@ export function _getNameMapping(fieldInfos: any, id: string): any {
       const lowerEfi: string = String(efi[k]).toLowerCase();
       if (
         (nameMappingKeys.indexOf(lowerEfi) === -1 ||
-          nameMapping[lowerEfi] !== newEfi[k]) &&
+          nameMapping[lowerEfi].name !== newEfi[k]) &&
         newFieldNames.indexOf(lowerEfi) > -1
       ) {
         // Only add delete fields if source schema changes allowed
         /* istanbul ignore else */
-        if (fInfo.sourceSchemaChangesAllowed) {
+        if (fInfo.sourceSchemaChangesAllowed && !fInfo.isView) {
           if (!fInfo.hasOwnProperty("deleteFields")) {
             fInfo.deleteFields = [];
           }
