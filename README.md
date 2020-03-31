@@ -1,6 +1,5 @@
 [![npm status][npm-img]][npm-url]
 [![Build status][travis-img]][travis-url]
-[![Coveralls coverage status][coveralls-coverage-img]][coveralls-coverage-url]
 [![Codecov coverage status][codecov-coverage-img]][codecov-coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
@@ -8,8 +7,6 @@
 [npm-url]: https://www.npmjs.com/package/@esri/solution-common
 [travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
 [travis-url]: https://travis-ci.org/Esri/solution.js
-[coveralls-coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
-[coveralls-coverage-url]: https://coveralls.io/github/Esri/solution.js
 [codecov-coverage-img]: https://codecov.io/gh/Esri/solution.js/branch/master/graph/badge.svg
 [codecov-coverage-url]: https://codecov.io/gh/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
