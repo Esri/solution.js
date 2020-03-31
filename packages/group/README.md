@@ -4,21 +4,21 @@
 [![Coverage status][coverage-img]][coverage-url]
 [![Apache 2.0 licensed][license-img]][license-url]
 
-[npm-img]: https://img.shields.io/npm/v/@esri/solution-simple-types.svg?style=round-square&color=blue
-[npm-url]: https://www.npmjs.com/package/@esri/solution-simple-types
+[npm-img]: https://img.shields.io/npm/v/@esri/solution-group.svg?style=round-square&color=blue
+[npm-url]: https://www.npmjs.com/package/@esri/solution-group
 [travis-img]: https://img.shields.io/travis/Esri/solution.js/develop.svg
 [travis-url]: https://travis-ci.org/Esri/solution.js
-[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.min.js?compression=gzip
+[gzip-img]: https://img.badgesize.io/https://unpkg.com/@esri/solution-group/dist/umd/group.umd.min.js?compression=gzip
 [coverage-img]: https://coveralls.io/repos/github/Esri/solution.js/badge.svg
 [coverage-url]: https://coveralls.io/github/Esri/solution.js
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
-# @esri/solution-simple-types
+# @esri/solution-group
 
 > Manages the creation and deployment of group item types for [`@esri/solution-*`](https://github.com/Esri/solution.js).
 
-### [API Reference](https://esri.github.io/solution.js/api/simple-types/)
+### [API Reference](https://esri.github.io/solution.js/api/group/)
 
 ### Issues
 
