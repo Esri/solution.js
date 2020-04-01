@@ -29,6 +29,10 @@ Makes a copy of an ArcGIS Online item.
 
 Copies an ArcGIS Online solution from one organization to another.
 
+### getGroupInfo
+
+Gets information about an ArcGIS Online group.
+
 ### getGUID
 
 Generates a pseudo GUID with and without dashes.
