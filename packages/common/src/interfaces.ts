@@ -290,8 +290,7 @@ export interface IGetResourcesResponse {
 }
 
 export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
+  groupId: string;
 }
 
 /**
