@@ -210,6 +210,68 @@ export function getInfoFiles(
 }
 
 /**
+ * Gets the primary information of an AGO group.
+ *
+ * @param itemId Id of an group whose primary information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
+ *         or response error code
+ */
+export function getGroupBase(
+  groupId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IGroup> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getGroup(groupId, requestOptions);
+}
+
+export function getGroupCategorySchema(
+  groupId: string,
+  authentication: interfaces.UserSession
+  // ): Promise<portal.IGroupCategorySchema> {
+): Promise<IGroupCategorySchema> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  // return portal.getGroupCategorySchema(groupId, requestOptions);
+  return portal_getGroupCategorySchema(groupId, requestOptions);
+}
+
+// =====================================================================================================================
+// changes submitted to arcgis-rest-js's portal package
+
+export interface IGroupCategorySchema {
+  categorySchema: IGroupCategory[];
+}
+
+export interface IGroupCategory {
+  title: string;
+  description?: string;
+  categories?: IGroupCategory[];
+}
+
+/* istanbul ignore next */
+export function portal_getGroupCategorySchema(
+  id: string,
+  requestOptions: request.IRequestOptions
+): Promise<IGroupCategorySchema> {
+  const url = `${portal.getPortalUrl(
+    requestOptions
+  )}/community/groups/${id}/categorySchema`;
+
+  // default to a GET request
+  const options: request.IRequestOptions = {
+    ...{ httpMethod: "GET" },
+    ...requestOptions
+  };
+  return request.request(url, options);
+}
+
+// =====================================================================================================================
+
+/**
  * Gets the ids of the dependencies (contents) of an AGO group.
  *
  * @param groupId Id of a group whose contents are sought
