@@ -73,6 +73,7 @@ export function getGroupInfo(
         console.log("groupBase", groupBase);
         console.log("groupData", JSON.stringify(groupData));
         console.log("groupThumbnail", groupThumbnail);
+        console.log("groupCategorySchema", JSON.stringify(groupCategorySchema));
 
         const portalUrl = common.getPortalUrlFromAuth(authentication);
 
@@ -111,7 +112,10 @@ export function getGroupInfo(
         if (groupCategorySchema.categorySchema.length === 0) {
           html += "<p><i>none</i>";
         } else {
-          html += JSON.stringify(groupCategorySchema.categorySchema, null, 2);
+          html +=
+            '<textarea rows="10" style="width:99%;font-size:x-small">' +
+            JSON.stringify(groupCategorySchema.categorySchema, null, 2) +
+            "</textarea>";
         }
         html += "</div></p>";
 
