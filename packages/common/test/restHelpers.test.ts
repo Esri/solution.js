@@ -2270,7 +2270,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const originalItem = mockItems.getAGOLItem(
         "Web Mapping Application",
-        url + "0"
+        url + "{0}"
       );
       const updatedItem = mockItems.getAGOLItem("Web Mapping Application", url);
 
