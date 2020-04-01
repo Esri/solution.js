@@ -12,38 +12,17 @@
 [license-img]: https://img.shields.io/badge/license-Apache%202.0-blue.svg
 [license-url]: #license
 
-## solution-common package examples
+## solution-deployer package examples
 
-These examples illustrate the use of the solution-common package.
+These examples illustrate the use of the solution-deployer package.
 
-### convertExtent
+### deploySolution
 
-Gets the extents of an ArcGIS Online portal and converts them to WGS84 (wkid 4326).
-Includes the RunKit example for [@esri/solution-common](https://www.npmjs.com/package/@esri/solution-common).
+Deploys a solution using its AGO id.
 
-### copyItemInfo
+### implementedTypes
 
-Makes a copy of an ArcGIS Online item.
-
-### copySolutions
-
-Copies an ArcGIS Online solution from one organization to another.
-
-### getGUID
-
-Generates a pseudo GUID with and without dashes.
-
-### getItemInfo
-
-Gets information about an ArcGIS Online item.
-
-### polyfillExplorer
-
-Runs polyfill examples for testing in Microsoft browsers.
-
-### sanitizer
-
-Sanitizes HTML snippets.
+Lists the AGO item types supported or in progress to be supported.
 
 ### Frequently Asked Questions
 
