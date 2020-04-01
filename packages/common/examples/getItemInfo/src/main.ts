@@ -89,7 +89,7 @@ export function getItemInfo(
         ] = responses;
         // Summarize what we have
         // ----------------------
-        // (itemBase: any)  text/plain JSON
+        // (itemBase: interfaces.IItem)  text/plain JSON
         // (itemData: File)  */*
         // (itemThumbnail: Blob)  image/*
         // (itemMetadata: Blob)  application/xml

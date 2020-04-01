@@ -247,7 +247,7 @@ export function getGroupContents(
 export function getItemBase(
   itemId: string,
   authentication: interfaces.UserSession
-): Promise<any> {
+): Promise<interfaces.IItem> {
   const itemParam: request.IRequestOptions = {
     authentication: authentication
   };
