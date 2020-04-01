@@ -885,7 +885,8 @@ export function searchGroupContents(
   authentication: interfaces.UserSession,
   additionalSearchOptions?: interfaces.IGroupContentsSearchOptions
 ): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
-  const searchOptions: portal.ISearchOptions = {
+  // const searchOptions: portal.ISearchGroupContentOptions = {
+  const searchOptions: ISearchGroupContentOptions = {
     groupId,
     q: searchString,
     params: {
@@ -893,19 +894,27 @@ export function searchGroupContents(
     },
     authentication: authentication
   };
-  // return portal.searchGroups(searchOptions);
+  // return portal.searchGroupContent(searchOptions);
   return genericSearch<portal.IGroup>(searchOptions, "group");
 }
 
 // =====================================================================================================================
 // changes submitted to arcgis-rest-js's portal package
 
+interface ISearchGroupContentOptions extends portal.ISearchOptions {
+  groupId: string;
+}
+
 /* istanbul ignore next */
 export function genericSearch<
   T extends portal.IItem | portal.IGroup | portal.IUser
 >(
-  search: string | portal.ISearchOptions | portal.SearchQueryBuilder,
-  searchType: "item" | "group" | "user"
+  search:
+    | string
+    | portal.ISearchOptions
+    | ISearchGroupContentOptions
+    | portal.SearchQueryBuilder,
+  searchType: "item" | "group" | "groupContent" | "user"
 ): Promise<portal.ISearchResult<T>> {
   let url: string;
   let options: request.IRequestOptions;
@@ -936,12 +945,25 @@ export function genericSearch<
       break;
     case "group":
       path = "/community/groups";
+      break;
+    case "groupContent":
+      // Need to have groupId property to do group contents search,
+      // cso filter out all but ISearchGroupContentOptions
       if (
         typeof search !== "string" &&
         !(search instanceof portal.SearchQueryBuilder) &&
         search.groupId
       ) {
         path = `/content/groups/${search.groupId}/search`;
+      } else {
+        return Promise.reject({
+          query: options.params.q,
+          total: 0,
+          start: 1,
+          num: 1,
+          nextStart: -1,
+          results: [] as portal.IItem[]
+        } as portal.ISearchResult<portal.IItem>);
       }
       break;
     default:
