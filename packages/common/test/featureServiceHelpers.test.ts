@@ -1038,13 +1038,221 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           otherProperty: {
             test: "test"
           },
-          deleteFields: ["createdate", "editdate"]
+          deleteFields: ["createdate"]
         },
         "1": {
           otherProperty: {
             test: "test"
           },
           deleteFields: ["createdate"]
+        }
+      };
+      const settings: any = getLayerSettings(
+        fieldInfos,
+        serviceUrl,
+        "33298a2612ba4899adc41180c435425f"
+      );
+      expect(fieldInfos).toEqual(expectedFieldInfos);
+      expect(settings).toEqual(expectedSettings);
+    });
+
+    it("should not delete view fields", () => {
+      const serviceUrl: string = "https://services/serviceName/FeatureServer";
+      const fieldInfos: any = {
+        "0": {
+          newFields: [
+            {
+              name: "a0",
+              alias: "A_a",
+              type: "fieldTypeA"
+            },
+            {
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            {
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          sourceFields: [
+            {
+              name: "A",
+              alias: "A_a",
+              type: "fieldTypeA"
+            },
+            {
+              name: "B",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            {
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          otherProperty: {
+            test: "test"
+          },
+          editFieldsInfo: {
+            createDateField: "CreateDate",
+            editDateField: "EditDate"
+          },
+          newEditFieldsInfo: {
+            createDateField: "create_date",
+            editDateField: "editdate"
+          },
+          sourceSchemaChangesAllowed: true,
+          isView: true
+        },
+        "1": {
+          newFields: [
+            {
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            {
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            {
+              name: "createdate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          sourceFields: [
+            {
+              name: "C",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            {
+              name: "D",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            {
+              name: "CreateDate",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            {
+              name: "EditDate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          ],
+          otherProperty: {
+            test: "test"
+          },
+          editFieldsInfo: {
+            createDateField: "CreateDate"
+          },
+          newEditFieldsInfo: {
+            createDateField: "create_date",
+            editDateField: "editdate"
+          },
+          sourceSchemaChangesAllowed: true,
+          isView: true
+        }
+      };
+      const expectedSettings: any = {
+        layer0: {
+          itemId: "33298a2612ba4899adc41180c435425f",
+          url: serviceUrl + "/" + 0,
+          layerId: "0",
+          fields: {
+            a: {
+              name: "a0",
+              alias: "A_a",
+              type: "fieldTypeA"
+            },
+            b: {
+              name: "b",
+              alias: "B",
+              type: "fieldTypeB"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          }
+        },
+        layer1: {
+          itemId: "33298a2612ba4899adc41180c435425f",
+          url: serviceUrl + "/" + 1,
+          layerId: "1",
+          fields: {
+            c: {
+              name: "c",
+              alias: "C",
+              type: "fieldTypeC"
+            },
+            d: {
+              name: "d",
+              alias: "D",
+              type: "fieldTypeD"
+            },
+            createdate: {
+              name: "create_date",
+              alias: "Create Date",
+              type: "fieldTypeDate"
+            },
+            editdate: {
+              name: "editdate",
+              alias: "EditDate",
+              type: "fieldTypeDate"
+            }
+          }
+        }
+      };
+      const expectedFieldInfos = {
+        "0": {
+          otherProperty: {
+            test: "test"
+          }
+        },
+        "1": {
+          otherProperty: {
+            test: "test"
+          }
         }
       };
       const settings: any = getLayerSettings(

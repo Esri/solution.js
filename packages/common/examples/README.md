@@ -21,7 +21,6 @@ These examples illustrate the use of the solution-common package.
 Gets the extents of an ArcGIS Online portal and converts them to WGS84 (wkid 4326).
 Includes the RunKit example for [@esri/solution-common](https://www.npmjs.com/package/@esri/solution-common).
 
-
 ### copyItemInfo
 
 Makes a copy of an ArcGIS Online item.
@@ -30,14 +29,25 @@ Makes a copy of an ArcGIS Online item.
 
 Copies an ArcGIS Online solution from one organization to another.
 
+### getGUID
+
+Generates a pseudo GUID with and without dashes.
+
 ### getItemInfo
 
 Gets information about an ArcGIS Online item.
 
+### polyfillExplorer
+
+Runs polyfill examples for testing in Microsoft browsers.
+
+### sanitizer
+
+Sanitizes HTML snippets.
+
 ### Frequently Asked Questions
 
-* [Is this a supported Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
-* [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
+* [Is this a supported Esri product?](../../../docs/FAQ.md#is-this-a-supported-esri-product)
 
 ### Issues
 
@@ -50,7 +60,7 @@ Esri welcomes contributions from anyone and everyone. Please see our [guidelines
 
 ### License
 
-Copyright &copy; 2018-2019 Esri
+Copyright &copy; 2018-2020 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
