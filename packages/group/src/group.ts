@@ -47,7 +47,7 @@ export function convertItemToTemplate(
       groupContents => {
         itemTemplate.type = "Group";
         itemTemplate.dependencies = groupContents;
-        common.getGroup(itemInfo.id, authentication).then(
+        common.getGroupBase(itemInfo.id, authentication).then(
           groupResponse => {
             groupResponse.id = itemTemplate.item.id;
             itemTemplate.item = {

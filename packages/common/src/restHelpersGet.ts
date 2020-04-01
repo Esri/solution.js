@@ -29,26 +29,6 @@ import * as request from "@esri/arcgis-rest-request";
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
-export function getGroup(
-  id: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IGroup> {
-  const requestOptions = {
-    authentication: authentication
-  };
-  return portal.getGroup(id, requestOptions);
-}
-
-export function getItem(
-  id: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IItem> {
-  const requestOptions = {
-    authentication: authentication
-  };
-  return portal.getItem(id, requestOptions);
-}
-
 export function getPortal(
   id: string,
   authentication: interfaces.UserSession
