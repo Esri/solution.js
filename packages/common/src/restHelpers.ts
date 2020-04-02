@@ -895,7 +895,7 @@ export function searchGroupContents(
     authentication: authentication
   };
   // return portal.searchGroupContent(searchOptions);
-  return genericSearch<portal.IGroup>(searchOptions, "group");
+  return genericSearch<portal.IGroup>(searchOptions, "groupContent");
 }
 
 // =====================================================================================================================
