@@ -212,7 +212,7 @@ export function getInfoFiles(
 /**
  * Gets the primary information of an AGO group.
  *
- * @param itemId Id of an group whose primary information is sought
+ * @param groupId Id of an group whose primary information is sought
  * @param authentication Credentials for the request to AGO
  * @return A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
  *         or response error code
@@ -227,11 +227,19 @@ export function getGroupBase(
   return portal.getGroup(groupId, requestOptions);
 }
 
+/**
+ * Gets the category schema set on a group.
+ *
+ * @param groupId Id of an group whose category schema information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with JSON of group's category schema
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
+ */
 export function getGroupCategorySchema(
   groupId: string,
   authentication: interfaces.UserSession
   // ): Promise<portal.IGroupCategorySchema> {
-): Promise<IGroupCategorySchema> {
+): Promise<interfaces.IGroupCategorySchema> {
   const requestOptions = {
     authentication: authentication
   };
@@ -242,21 +250,11 @@ export function getGroupCategorySchema(
 // =====================================================================================================================
 // changes submitted to arcgis-rest-js's portal package
 
-export interface IGroupCategorySchema {
-  categorySchema: IGroupCategory[];
-}
-
-export interface IGroupCategory {
-  title: string;
-  description?: string;
-  categories?: IGroupCategory[];
-}
-
 /* istanbul ignore next */
 export function portal_getGroupCategorySchema(
   id: string,
   requestOptions: request.IRequestOptions
-): Promise<IGroupCategorySchema> {
+): Promise<interfaces.IGroupCategorySchema> {
   const url = `${portal.getPortalUrl(
     requestOptions
   )}/community/groups/${id}/categorySchema`;

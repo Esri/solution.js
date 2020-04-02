@@ -289,6 +289,16 @@ export interface IGetResourcesResponse {
   resources: IResource[];
 }
 
+export interface IGroupCategorySchema {
+  categorySchema: IGroupCategory[];
+}
+
+export interface IGroupCategory {
+  title: string;
+  description?: string;
+  categories?: IGroupCategory[];
+}
+
 export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
   groupId: string;
 }

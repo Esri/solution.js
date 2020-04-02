@@ -390,6 +390,25 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     }
   });
 
+  describe("getGroupCategorySchema", () => {
+    it("should return group's category schema", done => {
+      const groupId = "grp1234567890";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/grp1234567890/categorySchema?f=json&token=fake-token",
+        mockItems.getAGOLGroupCategorySchema()
+      );
+
+      restHelpersGet
+        .getGroupCategorySchema(groupId, MOCK_USER_SESSION)
+        .then(schema => {
+          expect(schema).toEqual(mockItems.getAGOLGroupCategorySchema());
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("getItemBase", () => {
     it("item doesn't allow access to item", done => {
       const itemId = "itm1234567890";
