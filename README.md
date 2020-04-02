@@ -113,6 +113,7 @@ Some useful commands include:
 
 * testing
   * `npm run test` lints, then runs tests `test:node` and `test:chrome` to confirm that the API is functioning as expected
+  * `npm run test:browsers` runs karma in the Chrome, Firefox, and Legacy Edge browsers (not yet able to connect to Chromium Edge)
   * `npm run test:chrome` runs karma in the Chrome browser
   * `npm run test:chrome:ci` runs karma in the ChromeHeadlessCI browser
   * `npm run test:chrome:debug` runs karma in the Chrome browser and leaves the browser open for debugging tests

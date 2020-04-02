@@ -1408,6 +1408,9 @@ export function _updateItemURL(
   authentication: interfaces.UserSession,
   numAttempts = 1
 ): Promise<string> {
+  // Introduce a lag because AGO update appears to choke with rapid subsequent calls
+  const msLag = 1000;
+
   return new Promise((resolve, reject) => {
     // Update the item's URL
     const options = { item: { id, url }, authentication: authentication };
@@ -1417,35 +1420,46 @@ export function _updateItemURL(
         if (!result.success) {
           reject(generalHelpers.fail(result));
         } else {
-          // Get the item to see if the URL really changed
-          portal.getItem(id, { authentication: authentication }).then(
-            item => {
-              if (url === item.url) {
-                resolve(id);
-              } else {
-                // If it fails, try again if we have sufficient attempts remaining
-                const errorMsg =
-                  "URL not updated for " +
-                  item.type +
-                  " " +
-                  item.id +
-                  ": " +
-                  item.url +
-                  " (" +
-                  numAttempts +
-                  ")";
-                if (--numAttempts > 0) {
-                  _updateItemURL(id, url, authentication, numAttempts).then(
-                    resolve,
-                    reject
+          // Get the item to see if the URL really changed; we'll delay a bit before testing because AGO
+          // has a timing problem with URL updates
+          setTimeout(() => {
+            portal.getItem(id, { authentication: authentication }).then(
+              item => {
+                const iBrace = item.url.indexOf("{");
+                if (iBrace > -1) {
+                  console.warn(
+                    id + " has template variable: " + item.url.substr(iBrace)
                   );
-                } else {
-                  reject(errorMsg);
                 }
-              }
-            },
-            e => reject(generalHelpers.fail(e))
-          );
+
+                if (url === item.url) {
+                  resolve(id);
+                } else {
+                  // If it fails, try again if we have sufficient attempts remaining
+                  const errorMsg =
+                    "URL not updated for " +
+                    item.type +
+                    " " +
+                    item.id +
+                    ": " +
+                    item.url +
+                    " (" +
+                    numAttempts +
+                    ")";
+                  if (--numAttempts > 0) {
+                    _updateItemURL(id, url, authentication, numAttempts).then(
+                      resolve,
+                      reject
+                    );
+                  } else {
+                    console.error(id + ": " + errorMsg + "; FAILED");
+                    reject(errorMsg);
+                  }
+                }
+              },
+              e => reject(generalHelpers.fail(e))
+            );
+          }, msLag);
         }
       },
       e => reject(generalHelpers.fail(e))
