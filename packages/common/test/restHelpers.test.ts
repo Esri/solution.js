@@ -1953,7 +1953,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroups", () => {
-    it("can handle no results", done => {
+    it("can handle no results from searching groups", done => {
       const query: string = "My Group";
 
       fetchMock.get(
@@ -1991,7 +1991,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroupContents", () => {
-    it("can handle no results", done => {
+    it("can handle no results from searching group contents", done => {
       const groupId: string = "grp1234567890";
       const query: string = "My Group";
 
