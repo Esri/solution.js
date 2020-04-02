@@ -50,7 +50,7 @@ afterEach(() => {
 
 describe("Module `group`: manages the creation and deployment of groups", () => {
   describe("convertItemToTemplate", () => {
-    it("should handle error on getGroup", done => {
+    it("should handle error on getGroupBase", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);
@@ -108,7 +108,7 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         }, done.fail);
     });
 
-    it("should handle error on portal getGroup", done => {
+    it("should handle error on portal getGroupBase", done => {
       const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
       itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
       itemTemplate.item = mockItems.getAGOLItem("Group", null);

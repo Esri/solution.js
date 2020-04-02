@@ -231,7 +231,7 @@ export function createItemTemplate(
 
       // Fetch the item
       common
-        .getItem(itemId, authentication)
+        .getItemBase(itemId, authentication)
         .catch(() => {
           // If item query fails, try fetching item as a group
           // Change its placeholder from an empty type to the Group type so that we can later distinguish
@@ -241,7 +241,7 @@ export function createItemTemplate(
             itemId,
             common.createPlaceholderTemplate(itemId, "Group")
           );
-          return common.getGroup(itemId, authentication);
+          return common.getGroupBase(itemId, authentication);
         })
         .then(
           itemInfo => {

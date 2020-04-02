@@ -289,9 +289,18 @@ export interface IGetResourcesResponse {
   resources: IResource[];
 }
 
-export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
+export interface IGroupCategorySchema {
+  categorySchema: IGroupCategory[];
+}
+
+export interface IGroupCategory {
+  title: string;
+  description?: string;
+  categories?: IGroupCategory[];
+}
+
+export interface IGroupContentsSearchOptions extends IItemSearchOptions {
+  groupId: string;
 }
 
 /**

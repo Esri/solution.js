@@ -22,7 +22,7 @@
 
 import * as libs from "../src/libs/uuidv4";
 
-describe("Module `libs`: common third-party helper functions shared across packages", () => {
+describe("Module `libs`: pseudo-GUID generator", () => {
   if (typeof window !== "undefined") {
     describe("createPseudoGUID", () => {
       it("creates GUID without dashes", () => {

@@ -1953,7 +1953,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroups", () => {
-    it("can handle no results", done => {
+    it("can handle no results from searching groups", done => {
       const query: string = "My Group";
 
       fetchMock.get(
@@ -1991,7 +1991,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("searchGroupContents", () => {
-    it("can handle no results", done => {
+    it("can handle no results from searching group contents", done => {
       const groupId: string = "grp1234567890";
       const query: string = "My Group";
 
@@ -2284,6 +2284,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "/content/items/0?f=json&token=fake-token",
           utils.returnOnNthCall(2, updatedItem, originalItem)
         );
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "warn").and.callFake(() => {});
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
         id => {
@@ -2341,6 +2343,8 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             "/content/items/0?f=json&token=fake-token",
           originalItem
         );
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
 
       restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
         () => done.fail(),
