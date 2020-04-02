@@ -299,7 +299,7 @@ export interface IGroupCategory {
   categories?: IGroupCategory[];
 }
 
-export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
+export interface IGroupContentsSearchOptions extends IItemSearchOptions {
   groupId: string;
 }
 
