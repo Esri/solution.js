@@ -165,7 +165,7 @@ describe("Module `templatization`: common functions involving the adlib library"
         }
       };
       const templateDictionary: any = {
-        organization: utils.getPortalResponse()
+        organization: utils.getPortalsSelfResponse()
       };
       const expected: any = {
         item: {

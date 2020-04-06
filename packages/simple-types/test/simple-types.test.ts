@@ -1447,6 +1447,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
     });
 
     it("should create and fine tune workforce project", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = templates.getItemTemplate(
         "Workforce Project"
       );
@@ -1461,11 +1462,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27casey%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
           utils.getSuccessResponse({ id: newItemID, folder: null })
@@ -1477,10 +1483,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             "/update",
           { success: true }
         )
-        .get(userUrl, {
-          username: "casey",
-          fullName: "casey"
-        })
         .get(queryUrl, {
           features: []
         })

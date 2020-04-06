@@ -71,10 +71,11 @@ afterEach(() => {
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
   describe("getUsername", () => {
     it("can get the username from the authentication", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
+      communitySelfResponse.username = "casey";
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token",
-        mockItems.getAGOLUser(MOCK_USER_SESSION.username)
+        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
+        communitySelfResponse
       );
       restHelpersGet.getUsername(MOCK_USER_SESSION).then(
         username => {

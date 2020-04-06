@@ -41,7 +41,7 @@ beforeEach(() => {
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
-const _organization: any = utils.getPortalResponse();
+const _organization: any = utils.getPortalsSelfResponse();
 
 const _solutionItemExtent: any = [
   [0, 0],
