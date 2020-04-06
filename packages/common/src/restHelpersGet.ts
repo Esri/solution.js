@@ -238,36 +238,12 @@ export function getGroupBase(
 export function getGroupCategorySchema(
   groupId: string,
   authentication: interfaces.UserSession
-  // ): Promise<portal.IGroupCategorySchema> {
-): Promise<interfaces.IGroupCategorySchema> {
+): Promise<portal.IGroupCategorySchema> {
   const requestOptions = {
     authentication: authentication
   };
-  // return portal.getGroupCategorySchema(groupId, requestOptions);
-  return portal_getGroupCategorySchema(groupId, requestOptions);
+  return portal.getGroupCategorySchema(groupId, requestOptions);
 }
-
-// =====================================================================================================================
-// changes submitted to arcgis-rest-js's portal package
-
-/* istanbul ignore next */
-export function portal_getGroupCategorySchema(
-  id: string,
-  requestOptions: request.IRequestOptions
-): Promise<interfaces.IGroupCategorySchema> {
-  const url = `${portal.getPortalUrl(
-    requestOptions
-  )}/community/groups/${id}/categorySchema`;
-
-  // default to a GET request
-  const options: request.IRequestOptions = {
-    ...{ httpMethod: "GET" },
-    ...requestOptions
-  };
-  return request.request(url, options);
-}
-
-// =====================================================================================================================
 
 /**
  * Gets the ids of the dependencies (contents) of an AGO group.
