@@ -136,7 +136,7 @@ export function runQuery(): void {
           html += "<i>nothing found</i>";
         } else {
           html += '<ol style="padding-inline-start:1em;">';
-          results.forEach(result => {
+          results.forEach((result: any) => {
             html +=
               "<li>" +
               result.title +

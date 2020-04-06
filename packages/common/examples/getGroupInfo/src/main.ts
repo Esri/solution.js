@@ -29,6 +29,23 @@ export function getGroupInfo(
 
     // Get the group information
     const groupBaseDef = common.getGroupBase(groupId, authentication);
+    const groupDataDef = common.getGroupContents(groupId, authentication);
+    const groupThumbnailDef = new Promise<Blob>((resolve3, reject3) => {
+      // tslint:disable-next-line: no-floating-promises
+      groupBaseDef.then(
+        // any error fetching item base will be handled via Promise.all later
+        (groupBase: any) => {
+          common
+            .getItemThumbnail(
+              groupId,
+              groupBase.thumbnail,
+              true,
+              authentication
+            )
+            .then(resolve3, (error: any) => reject3(JSON.stringify(error)));
+        }
+      );
+    });
     const groupCategorySchemaDef = common.getGroupCategorySchema(
       groupId,
       authentication
