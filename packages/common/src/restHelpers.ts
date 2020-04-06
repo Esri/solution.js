@@ -855,7 +855,7 @@ export function removeItemOrGroup(
 export function searchGroups(
   searchString: string,
   authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.ISharedSearchOptions
+  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
 ): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
   const searchOptions: portal.ISearchOptions = {
     q: searchString,
@@ -883,7 +883,7 @@ export function searchGroupContents(
   groupId: string,
   searchString: string,
   authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.IGroupContentsSearchOptions
+  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
 ): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
   // const searchOptions: portal.ISearchGroupContentOptions = {
   const searchOptions: ISearchGroupContentOptions = {
@@ -956,14 +956,9 @@ export function genericSearch<
       ) {
         path = `/content/groups/${search.groupId}/search`;
       } else {
-        return Promise.reject({
-          query: options.params.q,
-          total: 0,
-          start: 1,
-          num: 1,
-          nextStart: -1,
-          results: [] as portal.IItem[]
-        } as portal.ISearchResult<portal.IItem>);
+        return Promise.reject(
+          new Error("you must pass a `groupId` option to `searchGroupContent`")
+        );
       }
       break;
     default:
