@@ -29,23 +29,6 @@ export function getGroupInfo(
 
     // Get the group information
     const groupBaseDef = common.getGroupBase(groupId, authentication);
-    const groupDataDef = common.getGroupContents(groupId, authentication);
-    const groupThumbnailDef = new Promise<Blob>((resolve3, reject3) => {
-      // tslint:disable-next-line: no-floating-promises
-      groupBaseDef.then(
-        // any error fetching group base will be handled via Promise.all later
-        (groupBase: any) => {
-          common
-            .getItemThumbnail(
-              groupId,
-              groupBase.thumbnail,
-              true,
-              authentication
-            )
-            .then(resolve3, (error: any) => reject3(JSON.stringify(error)));
-        }
-      );
-    });
     const groupCategorySchemaDef = common.getGroupCategorySchema(
       groupId,
       authentication
@@ -66,10 +49,10 @@ export function getGroupInfo(
         ] = responses;
         // Summarize what we have
         // ----------------------
-        // (groupBase: interfaces.IGroup)  text/plain JSON
+        // (groupBase: common.IGroup)  text/plain JSON
         // (groupData: string[])  group contents
         // (groupThumbnail: Blob)  image/*
-        // (groupCategorySchema: JSON)
+        // (groupCategorySchema: common.IGroupCategorySchema)
         console.log("groupBase", groupBase);
         console.log("groupData", JSON.stringify(groupData));
         console.log("groupThumbnail", groupThumbnail);
@@ -94,13 +77,12 @@ export function getGroupInfo(
           '<div style="width:48%;display:inline-block;">Group</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Contents</div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
-          JSON.stringify(groupBase, null, 2) +
-          "</textarea></div>" +
-          '<div style="width:2%;display:inline-block;"></div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
-          JSON.stringify(groupData, null, 2) +
-          "</textarea></div>";
+          '<div style="width:48%;display:inline-block;">' +
+          textAreaHtml(JSON.stringify(groupBase, null, 2)) +
+          '</div><div style="width:2%;display:inline-block;"></div>' +
+          '<div style="width:48%;display:inline-block;">' +
+          textAreaHtml(JSON.stringify(groupData, null, 2)) +
+          "</div>";
 
         // Show thumbnail section
         html += "<p>Thumbnail<br/><div>";
@@ -112,10 +94,9 @@ export function getGroupInfo(
         if (groupCategorySchema.categorySchema.length === 0) {
           html += "<p><i>none</i>";
         } else {
-          html +=
-            '<textarea rows="10" style="width:99%;font-size:x-small">' +
-            JSON.stringify(groupCategorySchema.categorySchema, null, 2) +
-            "</textarea>";
+          html += textAreaHtml(
+            JSON.stringify(groupCategorySchema.categorySchema, null, 2)
+          );
         }
         html += "</div></p>";
 
