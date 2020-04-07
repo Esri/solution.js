@@ -90,7 +90,8 @@ export const SItemProgressStatus = [
 export type IItemProgressCallback = (
   itemId: string,
   status: EItemProgressStatus,
-  costUsed: number
+  costUsed: number,
+  createdItemId?: string // supplied when status is EItemProgressStatus.Created
 ) => boolean;
 
 export type ISolutionProgressCallback = (
@@ -103,6 +104,16 @@ export type INoArgFunction = () => any;
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
+
+export interface IAdditionalSearchOptions {
+  start?: number;
+  num?: number;
+  sortField?: string;
+  sortOrder?: string;
+  bbox?: string; // e.g., "-118,32,-116,34"
+  categories?: string[]; // maximum of 8
+  [key: string]: any;
+}
 
 export interface ICreateItemFromTemplateResponse {
   /**
@@ -289,9 +300,14 @@ export interface IGetResourcesResponse {
   resources: IResource[];
 }
 
-export interface IGroupContentsSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
+export interface IGroupCategorySchema {
+  categorySchema: IGroupCategory[];
+}
+
+export interface IGroupCategory {
+  title: string;
+  description?: string;
+  categories?: IGroupCategory[];
 }
 
 /**
@@ -313,11 +329,6 @@ export interface IItemGeneralized {
   typeKeywords?: string[];
   url?: string;
   [key: string]: any;
-}
-
-export interface IItemSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
 }
 
 /**
@@ -497,13 +508,6 @@ export interface IResource {
   resource: string;
   created: number;
   size: number;
-}
-
-export interface ISharedSearchOptions {
-  start?: number;
-  num?: number;
-  sortField?: string;
-  sortOrder?: string;
 }
 
 /**

@@ -47,7 +47,7 @@ export function createSolution(
     // Get group information
     // tslint:disable-next-line: no-floating-promises
     Promise.all([
-      common.getGroup(sourceId, authentication),
+      common.getGroupBase(sourceId, authentication),
       common.getGroupContents(sourceId, authentication)
     ])
       .then(

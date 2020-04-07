@@ -233,7 +233,8 @@ export function deploySolutionItems(
     const itemProgressCallback: common.IItemProgressCallback = (
       itemId: string,
       status: common.EItemProgressStatus,
-      costUsed: number
+      costUsed: number,
+      createdItemId: string // supplied when status is EItemProgressStatus.Created
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
       percentDone += progressPercentStep * costUsed;
@@ -249,12 +250,13 @@ export function deploySolutionItems(
           options.jobId ?? "",
           common.SItemProgressStatus[status],
           percentDone.toFixed(0) + "%",
-          costUsed
+          costUsed,
+          createdItemId ? "==> " + createdItemId : ""
         );
       }
 
       if (status === common.EItemProgressStatus.Created) {
-        deployedItemIds.push(itemId);
+        deployedItemIds.push(createdItemId);
       } else if (status === common.EItemProgressStatus.Failed) {
         failedTemplateItemIds.push(itemId);
         statusOK = false;

@@ -71,10 +71,11 @@ afterEach(() => {
 describe("Module `restHelpersGet`: common REST fetch functions shared across packages", () => {
   describe("getUsername", () => {
     it("can get the username from the authentication", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
+      communitySelfResponse.username = "casey";
       fetchMock.get(
-        utils.PORTAL_SUBSET.restUrl +
-          "/community/users/casey?f=json&token=fake-token",
-        mockItems.getAGOLUser(MOCK_USER_SESSION.username)
+        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
+        communitySelfResponse
       );
       restHelpersGet.getUsername(MOCK_USER_SESSION).then(
         username => {
@@ -388,6 +389,25 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
         );
       });
     }
+  });
+
+  describe("getGroupCategorySchema", () => {
+    it("should return group's category schema", done => {
+      const groupId = "grp1234567890";
+
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl +
+          "/community/groups/grp1234567890/categorySchema?f=json&token=fake-token",
+        mockItems.getAGOLGroupCategorySchema()
+      );
+
+      restHelpersGet
+        .getGroupCategorySchema(groupId, MOCK_USER_SESSION)
+        .then(schema => {
+          expect(schema).toEqual(mockItems.getAGOLGroupCategorySchema());
+          done();
+        }, done.fail);
+    });
   });
 
   describe("getItemBase", () => {

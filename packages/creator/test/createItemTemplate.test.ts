@@ -915,8 +915,8 @@ describe("Module `createItemTemplate`", () => {
           relatedItems: []
         });
 
-        const getItem = spyOn(common, "getItem");
-        getItem.and.callThrough();
+        const getItemBase = spyOn(common, "getItemBase");
+        getItemBase.and.callThrough();
 
         const storeItemResources = spyOn(common, "storeItemResources");
         storeItemResources.and.callThrough();
@@ -934,7 +934,7 @@ describe("Module `createItemTemplate`", () => {
             utils.ITEM_PROGRESS_CALLBACK
           )
           .then(() => {
-            // getItem.calls.mostRecent().returnValue.then(v => {
+            // getItemBase.calls.mostRecent().returnValue.then(v => {
             //   expect(v.tags).toEqual(preExpectedTags);
             //   expect(v.typeKeywords).toEqual(preExpectedTypeKeywords);
             // }, done.fail);

@@ -22,7 +22,7 @@
 
 import * as libs from "../src/libs/uuidv4";
 
-describe("Module `libs`: common third-party helper functions shared across packages", () => {
+describe("Module `libs`: pseudo-GUID generator", () => {
   if (typeof window !== "undefined") {
     describe("createPseudoGUID", () => {
       it("creates GUID without dashes", () => {
@@ -69,7 +69,7 @@ describe("Module `libs`: common third-party helper functions shared across packa
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
 import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
-import * as xssFilterEvasionTestCases from "../src/XssFilterEvasionTestCases";
+import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases";
 
 describe("Module `arcgis-html-sanitizer`: ", () => {
   describe("Sanitizer", () => {

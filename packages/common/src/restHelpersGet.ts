@@ -29,26 +29,6 @@ import * as request from "@esri/arcgis-rest-request";
 
 const ZIP_FILE_HEADER_SIGNATURE = "PK";
 
-export function getGroup(
-  id: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IGroup> {
-  const requestOptions = {
-    authentication: authentication
-  };
-  return portal.getGroup(id, requestOptions);
-}
-
-export function getItem(
-  id: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IItem> {
-  const requestOptions = {
-    authentication: authentication
-  };
-  return portal.getItem(id, requestOptions);
-}
-
 export function getPortal(
   id: string,
   authentication: interfaces.UserSession
@@ -230,6 +210,42 @@ export function getInfoFiles(
 }
 
 /**
+ * Gets the primary information of an AGO group.
+ *
+ * @param groupId Id of an group whose primary information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with group's JSON or error JSON or throws ArcGISRequestError in case of HTTP error
+ *         or response error code
+ */
+export function getGroupBase(
+  groupId: string,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IGroup> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getGroup(groupId, requestOptions);
+}
+
+/**
+ * Gets the category schema set on a group.
+ *
+ * @param groupId Id of an group whose category schema information is sought
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve with JSON of group's category schema
+ * @see https://developers.arcgis.com/rest/users-groups-and-items/group-category-schema.htm
+ */
+export function getGroupCategorySchema(
+  groupId: string,
+  authentication: interfaces.UserSession
+): Promise<portal.IGroupCategorySchema> {
+  const requestOptions = {
+    authentication: authentication
+  };
+  return portal.getGroupCategorySchema(groupId, requestOptions);
+}
+
+/**
  * Gets the ids of the dependencies (contents) of an AGO group.
  *
  * @param groupId Id of a group whose contents are sought
@@ -267,7 +283,7 @@ export function getGroupContents(
 export function getItemBase(
   itemId: string,
   authentication: interfaces.UserSession
-): Promise<any> {
+): Promise<interfaces.IItem> {
   const itemParam: request.IRequestOptions = {
     authentication: authentication
   };

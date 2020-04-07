@@ -145,9 +145,10 @@ describe("Module `deployer`", () => {
           utils.ORG_URL +
           "/sharing/rest/content/items/map1234567890/info/thumbnail/ago_downloaded.png";
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -175,13 +176,18 @@ describe("Module `deployer`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -288,12 +294,12 @@ describe("Module `deployer`", () => {
 
         const expected: string = "map1234567890";
 
-        delete portalResponse.portalThumbnail;
-        delete portalResponse.defaultBasemap.baseMapLayers[0].resourceInfo
+        delete portalsSelfResponse.portalThumbnail;
+        delete portalsSelfResponse.defaultBasemap.baseMapLayers[0].resourceInfo
           .layers[0].subLayerIds;
-        delete portalResponse.portalProperties.sharedTheme.logo.small;
+        delete portalsSelfResponse.portalProperties.sharedTheme.logo.small;
         const expectedTemplate: any = {
-          organization: portalResponse,
+          organization: portalsSelfResponse,
           portalBaseUrl: "https://myorg.maps.arcgis.com",
           user: Object.assign({ folders: [] }, utils.getUserResponse()),
           solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
@@ -679,9 +685,10 @@ describe("Module `deployer`", () => {
           "/content/items/c38e59126368495694ca23b7ccacefba/resources/47bb15c2df2b466da05577776e82d044_info_thumbnail/thumbnail1552923181520.png";
         const expectedImage = mockItems.getAnImageResponse();
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .post(
@@ -697,12 +704,17 @@ describe("Module `deployer`", () => {
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/org1234567890?f=json&token=fake-token",
-            utils.getPortalResponse()
+            utils.getPortalsSelfResponse()
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            utils.getPortalResponse()
+            utils.getPortalsSelfResponse()
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -809,9 +821,10 @@ describe("Module `deployer`", () => {
           templates.getItemTemplate("Feature Service")
         ]);
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -830,13 +843,18 @@ describe("Module `deployer`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -893,18 +911,24 @@ describe("Module `deployer`", () => {
           templates.getItemTemplate("Feature Service")
         ]);
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
 
         fetchMock
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -956,9 +980,10 @@ describe("Module `deployer`", () => {
           templates.getItemTemplate("Feature Service")
         ]);
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -977,13 +1002,18 @@ describe("Module `deployer`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -1071,10 +1101,11 @@ describe("Module `deployer`", () => {
           true
         );
 
-        const portalResponse: any = utils.getPortalResponse();
-        portalResponse.urlKey = null;
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
+        portalsSelfResponse.urlKey = null;
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -1093,13 +1124,18 @@ describe("Module `deployer`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -1262,9 +1298,10 @@ describe("Module `deployer`", () => {
           true
         );
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -1283,13 +1320,18 @@ describe("Module `deployer`", () => {
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -1405,9 +1447,10 @@ describe("Module `deployer`", () => {
           templates.getItemTemplate("Feature Service")
         ]);
 
-        const portalResponse: any = utils.getPortalResponse();
+        const communitySelfResponse: any = utils.getUserResponse();
+        const portalsSelfResponse: any = utils.getPortalsSelfResponse();
         const geometryServer: string =
-          portalResponse.helperServices.geometry.url;
+          portalsSelfResponse.helperServices.geometry.url;
 
         fetchMock
           .get(
@@ -1434,13 +1477,18 @@ describe("Module `deployer`", () => {
           })
           .get(
             utils.PORTAL_SUBSET.restUrl +
+              "/community/self?f=json&token=fake-token",
+            communitySelfResponse
+          )
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
               "/portals/self?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/portals/abCDefG123456?f=json&token=fake-token",
-            portalResponse
+            portalsSelfResponse
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +

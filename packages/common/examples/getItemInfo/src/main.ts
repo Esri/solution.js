@@ -89,7 +89,7 @@ export function getItemInfo(
         ] = responses;
         // Summarize what we have
         // ----------------------
-        // (itemBase: any)  text/plain JSON
+        // (itemBase: common.IItem)  text/plain JSON
         // (itemData: File)  */*
         // (itemThumbnail: Blob)  image/*
         // (itemMetadata: Blob)  application/xml
@@ -124,11 +124,10 @@ export function getItemInfo(
           '<div style="width:48%;display:inline-block;">Item</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Data</div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
-          JSON.stringify(itemBase, null, 2) +
-          "</textarea></div>" +
-          '<div style="width:2%;display:inline-block;"></div>' +
-          '<div style="width:48%;display:inline-block;vertical-align: top;">';
+          '<div style="width:48%;display:inline-block;">' +
+          textAreaHtml(JSON.stringify(itemBase, null, 2)) +
+          '</div><div style="width:2%;display:inline-block;"></div>' +
+          '<div style="width:48%;display:inline-block;vertical-align:top;">';
         html += await showBlob(itemDataFile);
         html += "</div>";
 
@@ -148,6 +147,7 @@ export function getItemInfo(
           html += "<p><i>none</i>";
         } else {
           html += "<ol>";
+          // tslint:disable-next-line: prefer-for-of
           for (let i: number = 0; i < itemResourceFiles.length; ++i) {
             html += "<li><div>";
             html += await showBlob(itemResourceFiles[i]);
@@ -237,7 +237,7 @@ export function getItemInfo(
           )
             .then(results => results.filter(result => !!result))
             .then(
-              // (itemFormInfoFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
+              // (formFiles: Blob[3])  list of a Form's "form.json", "forminfo.json", & "form.webform" info files
               async formFiles => {
                 formFiles = formFiles.filter(result => !!result);
                 console.log("formFiles", formFiles);
@@ -246,6 +246,7 @@ export function getItemInfo(
                   html += "<p><i>none</i>";
                 } else {
                   html += "<ol>";
+                  // tslint:disable-next-line: prefer-for-of
                   for (let i: number = 0; i < formFiles.length; ++i) {
                     html += "<li><div>";
                     html += await showBlob(formFiles[i]);

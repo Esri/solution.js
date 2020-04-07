@@ -855,7 +855,7 @@ export function removeItemOrGroup(
 export function searchGroups(
   searchString: string,
   authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.ISharedSearchOptions
+  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
 ): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
   const searchOptions: portal.ISearchOptions = {
     q: searchString,
@@ -883,9 +883,9 @@ export function searchGroupContents(
   groupId: string,
   searchString: string,
   authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.IGroupContentsSearchOptions
-): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
-  const searchOptions: portal.ISearchOptions = {
+  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
+): Promise<interfaces.ISearchResult<interfaces.IItem>> {
+  const searchOptions: portal.ISearchGroupContentOptions = {
     groupId,
     q: searchString,
     params: {
@@ -893,92 +893,8 @@ export function searchGroupContents(
     },
     authentication: authentication
   };
-  // return portal.searchGroups(searchOptions);
-  return genericSearch<portal.IGroup>(searchOptions, "group");
+  return portal.searchGroupContent(searchOptions);
 }
-
-// =====================================================================================================================
-// changes submitted to arcgis-rest-js's portal package
-
-/* istanbul ignore next */
-export function genericSearch<
-  T extends portal.IItem | portal.IGroup | portal.IUser
->(
-  search: string | portal.ISearchOptions | portal.SearchQueryBuilder,
-  searchType: "item" | "group" | "user"
-): Promise<portal.ISearchResult<T>> {
-  let url: string;
-  let options: request.IRequestOptions;
-  if (
-    typeof search === "string" ||
-    search instanceof portal.SearchQueryBuilder
-  ) {
-    options = {
-      httpMethod: "GET",
-      params: {
-        q: search
-      }
-    };
-  } else {
-    options = request.appendCustomParams<portal.ISearchOptions>(
-      search,
-      ["q", "num", "start", "sortField", "sortOrder"],
-      {
-        httpMethod: "GET"
-      }
-    );
-  }
-
-  let path;
-  switch (searchType) {
-    case "item":
-      path = "/search";
-      break;
-    case "group":
-      path = "/community/groups";
-      if (
-        typeof search !== "string" &&
-        !(search instanceof portal.SearchQueryBuilder) &&
-        search.groupId
-      ) {
-        path = `/content/groups/${search.groupId}/search`;
-      }
-      break;
-    default:
-      // "users"
-      path = "/portals/self/users/search";
-      break;
-  }
-  url = portal.getPortalUrl(options) + path;
-
-  // send the request
-  return request.request(url, options).then(r => {
-    if (r.nextStart && r.nextStart !== -1) {
-      r.nextPage = function() {
-        let newOptions: portal.ISearchOptions;
-
-        if (
-          typeof search === "string" ||
-          search instanceof portal.SearchQueryBuilder
-        ) {
-          newOptions = {
-            q: search,
-            start: r.nextStart
-          };
-        } else {
-          newOptions = search;
-          newOptions.start = r.nextStart;
-        }
-
-        return genericSearch<T>(newOptions, searchType);
-      };
-    }
-
-    return r;
-  });
-}
-
-// =====================================================================================================================
 
 export function shareItem(
   groupId: string,

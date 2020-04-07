@@ -159,7 +159,6 @@ Some useful commands include:
 ### Frequently Asked Questions
 
 * [Is this a supported Esri product?](docs/FAQ.md#is-this-a-supported-esri-product)
-* [Why TypeScript?](docs/FAQ.md#why-typescript) What if I prefer [VanillaJS](https://stackoverflow.com/questions/20435653/what-is-vanillajs)?
 
 ### Issues
 

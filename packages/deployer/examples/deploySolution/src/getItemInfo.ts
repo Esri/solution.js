@@ -124,10 +124,9 @@ export function getItemInfo(
           '<div style="width:48%;display:inline-block;">Item</div>' +
           '<div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;">Data</div>' +
-          '<div style="width:48%;display:inline-block;"><textarea rows="10" style="width:99%;font-size:x-small">' +
-          JSON.stringify(itemBase, null, 2) +
-          "</textarea></div>" +
-          '<div style="width:2%;display:inline-block;"></div>' +
+          '<div style="width:48%;display:inline-block;">' +
+          textAreaHtml(JSON.stringify(itemBase, null, 2)) +
+          '</div><div style="width:2%;display:inline-block;"></div>' +
           '<div style="width:48%;display:inline-block;vertical-align: top;">';
         html += await showBlob(itemDataFile);
         html += "</div>";
