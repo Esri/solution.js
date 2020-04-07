@@ -429,7 +429,7 @@ export function copyMetadata(
   return new Promise<any>((resolve, reject) => {
     restHelpersGet.getBlob(source.url, source.authentication).then(
       blob => {
-        if (blob.type !== "text/xml") {
+        if (blob.type !== "text/xml" && blob.type !== "application/xml") {
           reject(generalHelpers.fail()); // unable to get resource
           return;
         }
