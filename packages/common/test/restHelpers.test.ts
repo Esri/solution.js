@@ -105,7 +105,7 @@ const projectedGeometries: any[] = [
   }
 ];
 
-const organization: any = utils.getPortalResponse();
+const organization: any = utils.getPortalsSelfResponse();
 
 const solutionItemExtent: any = [
   [0, 0],

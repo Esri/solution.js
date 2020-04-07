@@ -104,6 +104,16 @@ export type INoArgFunction = () => any;
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
 
+export interface IAdditionalSearchOptions {
+  start?: number;
+  num?: number;
+  sortField?: string;
+  sortOrder?: string;
+  bbox?: string; // e.g., "-118,32,-116,34"
+  categories?: string[]; // maximum of 8
+  [key: string]: any;
+}
+
 export interface ICreateItemFromTemplateResponse {
   /**
    * Item's AGO id
@@ -299,10 +309,6 @@ export interface IGroupCategory {
   categories?: IGroupCategory[];
 }
 
-export interface IGroupContentsSearchOptions extends IItemSearchOptions {
-  groupId: string;
-}
-
 /**
  * Subset of portal.IItem containing just the properties that are stored in a template--the item's "base" section.
  */
@@ -322,11 +328,6 @@ export interface IItemGeneralized {
   typeKeywords?: string[];
   url?: string;
   [key: string]: any;
-}
-
-export interface IItemSearchOptions extends ISharedSearchOptions {
-  bbox?: string; // e.g., "-118,32,-116,34"
-  categories?: string[]; // maximum of 8
 }
 
 /**
@@ -506,13 +507,6 @@ export interface IResource {
   resource: string;
   created: number;
   size: number;
-}
-
-export interface ISharedSearchOptions {
-  start?: number;
-  num?: number;
-  sortField?: string;
-  sortOrder?: string;
 }
 
 /**

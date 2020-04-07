@@ -69,7 +69,7 @@ describe("Module `libs`: pseudo-GUID generator", () => {
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
 import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
-import * as xssFilterEvasionTestCases from "../src/XssFilterEvasionTestCases";
+import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases";
 
 describe("Module `arcgis-html-sanitizer`: ", () => {
   describe("Sanitizer", () => {

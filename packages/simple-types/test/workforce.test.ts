@@ -404,6 +404,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
 
   describe("fineTuneCreatedItem", () => {
     it("should update dispatchers service", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -414,15 +415,16 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
-        .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, {
           features: []
         })
@@ -452,7 +454,11 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
-        .get(userUrl, {})
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          {}
+        )
         .get(queryUrl, {
           features: []
         })
@@ -467,6 +473,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should handle error on update dispatchers", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -477,12 +484,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(userUrl, {
-          username: "MrClaypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, mockItems.get400Failure());
 
       workforce
@@ -491,6 +500,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should handle error on getUser", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -498,10 +508,12 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const userUrl: string =
-        utils.PORTAL_SUBSET.restUrl +
-        "/community/users/casey?f=json&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
-      fetchMock.get(userUrl, mockItems.get400Failure());
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
+        mockItems.get400Failure()
+      );
 
       workforce
         .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
@@ -509,6 +521,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should not update dispatchers service if it contains records", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -519,13 +532,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, {
           features: [{}]
         });
@@ -539,6 +553,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should handle failure to add features", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -549,15 +564,16 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
-        .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, {
           features: []
         })
@@ -575,6 +591,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should handle error on add dispatcher features", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -585,14 +602,16 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
       fetchMock
-        .get(userUrl, {
-          fullName: "Mr Claypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, {
           features: []
         })
@@ -609,6 +628,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should have success === false when query does not return a features property", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -619,13 +639,14 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
       fetchMock
-        .get(userUrl, {
-          username: "MrClaypool",
-          fullName: "Mr Claypool"
-        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(queryUrl, {});
 
       workforce.fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION).then(r => {
@@ -637,6 +658,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should have success === false when dispatchers does not have url", done => {
+      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -650,6 +672,11 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27MrClaypool%27&outFields=*&token=fake-token";
 
       fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/self?f=json&token=fake-token",
+          communitySelfResponse
+        )
         .get(userUrl, {
           username: "MrClaypool",
           fullName: "Mr Claypool"

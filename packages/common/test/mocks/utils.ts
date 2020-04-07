@@ -337,7 +337,7 @@ export function createMockSettings(
   access = "private"
 ): any {
   const settings: any = {
-    organization: getPortalResponse(),
+    organization: getPortalsSelfResponse(),
     portalBaseUrl: ORG_URL,
     solutionName,
     folderId,
@@ -410,7 +410,8 @@ export function setMockDateTime(now: number): number {
   return now;
 }
 
-export function getPortalResponse() {
+export function getPortalsSelfResponse() {
+  // https://developers.arcgis.com/rest/users-groups-and-items/portal-self.htm
   return {
     access: "public",
     allSSL: true,
