@@ -439,7 +439,6 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
     });
 
     it("should update dispatchers service even with default names", done => {
-      const communitySelfResponse: any = utils.getUserResponse();
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Workforce Project",
         null
@@ -450,7 +449,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         utils.PORTAL_SUBSET.restUrl +
         "/community/users/casey?f=json&token=fake-token";
       const queryUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27%27&outFields=*&token=fake-token";
       const addUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/addFeatures";
 
@@ -458,7 +457,7 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
         .get(
           utils.PORTAL_SUBSET.restUrl +
             "/community/self?f=json&token=fake-token",
-          communitySelfResponse
+          {}
         )
         .get(queryUrl, {
           features: []
@@ -511,13 +510,10 @@ describe("Module `workforce`: manages the creation and deployment of workforce p
       const userUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/dispatchers_47bb15c2df2b466da05577776e82d044/FeatureServer/0/query?f=json&where=userId%20%3D%20%27LocalGovDeployCasey%27&outFields=*&token=fake-token";
 
-      fetchMock
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/community/self?f=json&token=fake-token",
-          communitySelfResponse
-        )
-        .get(userUrl, mockItems.get400Failure());
+      fetchMock.get(
+        utils.PORTAL_SUBSET.restUrl + "/community/self?f=json&token=fake-token",
+        mockItems.get400Failure()
+      );
 
       workforce
         .fineTuneCreatedItem(itemTemplate, MOCK_USER_SESSION)
