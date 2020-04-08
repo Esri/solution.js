@@ -300,7 +300,8 @@ export function handleServiceRequests(
               objString = replaceUrl(
                 objString,
                 requestUrls[i],
-                serviceTemplate
+                serviceTemplate,
+                true
               );
             }
             i++;
@@ -345,7 +346,7 @@ export function findUrls(
       } else if (portalUrl && url.indexOf(portalUrl) > -1) {
         testString = replaceUrl(
           testString,
-          url,
+          portalUrl,
           common.PLACEHOLDER_SERVER_NAME
         );
       } else if (url.indexOf("FeatureServer") > -1) {
@@ -363,9 +364,26 @@ export function findUrls(
   };
 }
 
-export function replaceUrl(obj: string, url: string, newUrl: string) {
-  const re = new RegExp(url, "gmi");
-  return obj.replace(re, newUrl);
+/**
+ * Replace url with templatized url value
+ *
+ * @param obj can be a single url string or a stringified JSON object
+ * @param url the current url we are testing for
+ * @param newUrl the templatized url
+ * @param validateFullUrl should only replace url when we have a full match.
+ * This property is only relevant when the obj is a stringified JSON object.
+ *
+ * @returns the obj with any instances of the url replaced
+ */
+export function replaceUrl(
+  obj: string,
+  url: string,
+  newUrl: string,
+  validateFullUrl: boolean = false
+) {
+  const enforceFullUrl: boolean = validateFullUrl && obj.indexOf('"') > -1;
+  const re = new RegExp(enforceFullUrl ? '"' + url + '"' : url, "gmi");
+  return obj.replace(re, enforceFullUrl ? '"' + newUrl + '"' : newUrl);
 }
 
 export function setValues(
