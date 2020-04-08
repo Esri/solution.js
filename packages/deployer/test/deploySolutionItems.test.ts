@@ -800,14 +800,18 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/aa4a6047326243b290f625e80ebe6531/delete",
+            "/content/users/casey/items/" +
+            newItemID +
+            "/delete",
           utils.getFailureResponse({
             itemId: "aa4a6047326243b290f625e80ebe6531"
           })
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
-            "/community/groups/aa4a6047326243b290f625e80ebe6531/delete",
+            "/community/groups/" +
+            newItemID +
+            "/delete",
           utils.getFailureResponse({
             groupId: "aa4a6047326243b290f625e80ebe6531"
           })

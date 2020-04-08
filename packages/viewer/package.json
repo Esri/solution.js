@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -14,7 +14,7 @@
   ],
   "devDependencies": {
     "@esri/arcgis-html-sanitizer": "^2.2.0",
-    "@esri/solution-common": "^0.8.10",
+    "@esri/solution-common": "^0.8.11",
     "rollup": "^1.22.0",
     "typescript": "^3.8.3"
   },
