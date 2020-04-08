@@ -45,6 +45,10 @@ Gets information about an ArcGIS Online item.
 
 Runs polyfill examples for testing in Microsoft browsers.
 
+### sanitizeGroupItems
+
+Fetches the contents of a group and sanitizes the results, which includes the base portion of each item.
+
 ### sanitizer
 
 Sanitizes HTML snippets.
