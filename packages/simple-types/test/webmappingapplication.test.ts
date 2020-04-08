@@ -527,7 +527,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                       "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   somePortalPath: {
-                    s: "{{portalBaseUrl}}"
+                    s: "{{portalBaseUrl}}/"
                   },
                   geocodeProps: {
                     service:
@@ -1317,7 +1317,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
               someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
             },
             somePortalPath: {
-              s: "{{portalBaseUrl}}"
+              s: "{{portalBaseUrl}}/"
             },
             geocodeProps: {
               service:
@@ -1564,7 +1564,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
             },
             somePortalPath: {
-              s: "{{portalBaseUrl}}"
+              s: "{{portalBaseUrl}}/"
             },
             geocodeProps: {
               service:

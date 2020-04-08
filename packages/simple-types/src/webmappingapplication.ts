@@ -346,7 +346,7 @@ export function findUrls(
       } else if (portalUrl && url.indexOf(portalUrl) > -1) {
         testString = replaceUrl(
           testString,
-          url,
+          portalUrl,
           common.PLACEHOLDER_SERVER_NAME
         );
       } else if (url.indexOf("FeatureServer") > -1) {
