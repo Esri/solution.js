@@ -13,16 +13,16 @@
     "dist/**"
   ],
   "devDependencies": {
-    "rollup": "^1.22.0",
-    "typescript": "^3.8.3"
-  },
-  "dependencies": {
     "@esri/solution-common": "^0.8.10",
     "@esri/solution-feature-layer": "^0.8.10",
     "@esri/solution-file": "^0.8.10",
     "@esri/solution-group": "^0.8.10",
     "@esri/solution-simple-types": "^0.8.10",
     "@esri/solution-storymap": "^0.8.10",
+    "rollup": "^1.22.0",
+    "typescript": "^3.8.3"
+  },
+  "dependencies": {
     "tslib": "^1.10.0"
   },
   "scripts": {

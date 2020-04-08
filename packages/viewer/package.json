@@ -13,12 +13,16 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-html-sanitizer": "^2.2.0",
+    "@esri/solution-common": "^0.8.10",
     "rollup": "^1.22.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.8.10",
-    "tslib": "^1.10.0"
+    "@types/lodash.isplainobject": "^4.0.6",
+    "lodash.isplainobject": "^4.0.6",
+    "tslib": "^1.10.0",
+    "xss": "^1.0.6"
   },
   "scripts": {
     "prepare": "npm run build",
