@@ -527,7 +527,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                       "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
                   },
                   somePortalPath: {
-                    s: "{{portalBaseUrl}}"
+                    s: "{{portalBaseUrl}}/"
                   },
                   geocodeProps: {
                     service:
@@ -1317,7 +1317,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
               someHttpsUrl: "{{2ea59a64b34646f8972a71c7d536e4a3.layer1.url}}"
             },
             somePortalPath: {
-              s: "{{portalBaseUrl}}"
+              s: "{{portalBaseUrl}}/"
             },
             geocodeProps: {
               service:
@@ -1564,7 +1564,7 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
                 "https://fake.com/arcgis/rest/services/test/FeatureServer/1"
             },
             somePortalPath: {
-              s: "{{portalBaseUrl}}"
+              s: "{{portalBaseUrl}}/"
             },
             geocodeProps: {
               service:
@@ -2294,6 +2294,88 @@ describe("Module `webmappingapplication`: manages the creation and deployment of
         false
       );
       expect(actual).toEqual(expected);
+    });
+  });
+
+  describe("replaceUrl", () => {
+    it("can replace partial url", () => {
+      const url: string = "https://localdeployment.maps.arcgis.com";
+      const newUrl: string = "{{portalBaseUrl}}";
+      const objString: string = JSON.stringify({
+        url:
+          "https://localdeployment.maps.arcgis.com/sharing/rest/content/items/"
+      });
+      const expected: string = JSON.stringify({
+        url: "{{portalBaseUrl}}/sharing/rest/content/items/"
+      });
+      const actual: string = webmappingapplication.replaceUrl(
+        objString,
+        url,
+        newUrl
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("can enforce must match full url", () => {
+      let objString: any = JSON.stringify({
+        url1:
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+        url2:
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+        url3:
+          "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+      });
+
+      const urls: string[] = [
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+      ];
+
+      const newUrls: string[] = [
+        "{{206386ad6806406280093882b5cb049c.layer0.url}}",
+        "{{206386ad6806406280093882b5cb049c.url}}",
+        "{{206386ad6806406280093882b5cb049c.layer1.url}}"
+      ];
+
+      for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        const newUrl = newUrls[i];
+        objString = webmappingapplication.replaceUrl(
+          objString,
+          url,
+          newUrl,
+          true
+        );
+      }
+
+      const expected: string = JSON.stringify({
+        url1: "{{206386ad6806406280093882b5cb049c.layer0.url}}",
+        url2: "{{206386ad6806406280093882b5cb049c.url}}",
+        url3: "{{206386ad6806406280093882b5cb049c.layer1.url}}"
+      });
+      expect(objString).toEqual(expected);
+    });
+
+    it("can ignore force full url for simple url", () => {
+      const urls: string[] = [
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/0",
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/",
+        "https://services7.arcgis.com/piPfTFmrV9d1DIvN/arcgis/rest/services/EducationalFacilities_public/FeatureServer/1"
+      ];
+
+      const newUrls: string[] = [
+        "{{206386ad6806406280093882b5cb049c.layer0.url}}",
+        "{{206386ad6806406280093882b5cb049c.url}}",
+        "{{206386ad6806406280093882b5cb049c.layer1.url}}"
+      ];
+
+      for (let i = 0; i < urls.length; i++) {
+        const url = urls[i];
+        const newUrl = newUrls[i];
+        const actual = webmappingapplication.replaceUrl(url, url, newUrl, true);
+        expect(actual).toEqual(newUrl);
+      }
     });
   });
 
