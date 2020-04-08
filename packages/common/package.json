@@ -15,8 +15,7 @@
   "devDependencies": {
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.8.3",
-    "xss": "^1.0.6"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "^2.2.0",
