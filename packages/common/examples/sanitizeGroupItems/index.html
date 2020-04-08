@@ -75,8 +75,21 @@
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
+          const searchString = "local government";
+          const additionalSearchOptions = {
+            start: 1,
+            num: 30,
+            sortField: "title",
+            sortOrder: "asc",
+            categories: [
+              "/Categories/State and Local Government/Elections,/Categories/State and Local Government/Land Records"
+            ] // maximum of 8
+          };
+
           main.sanitizeGroupItems(
             document.getElementById("id").value,
+            searchString,
+            additionalSearchOptions,
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value
@@ -84,8 +97,18 @@
           ).then(
             screenedGroupItems => {
               reportElapsedTime(startTime);
-              document.getElementById("output").innerHTML =
-                "Found and screened " + screenedGroupItems.length + " items in group";
+              var html = "Found and screened " + screenedGroupItems.length +
+                " items in group matching search criteria<br><ul>" +
+                "<li>Search string: " + searchString + "</li>" +
+                "<li>Categories: " + JSON.stringify(additionalSearchOptions.categories) + "</li></ul>";
+
+              html += "<h4>Titles</h4><ol>";
+              screenedGroupItems.forEach(
+                item => html += "<li>" + item.title + "</li>"
+              );
+              html += "</ul>";
+
+              document.getElementById("output").innerHTML = html;
             },
             error => {
               var message = error.error || JSON.stringify(error);
