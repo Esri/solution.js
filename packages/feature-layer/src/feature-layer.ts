@@ -157,7 +157,8 @@ export function createItemFromTemplate(
                 !itemProgressCallback(
                   template.itemId,
                   common.EItemProgressStatus.Created,
-                  template.estimatedDeploymentCostFactor / 2
+                  template.estimatedDeploymentCostFactor / 2,
+                  createResponse.serviceItemId
                 )
               ) {
                 itemProgressCallback(

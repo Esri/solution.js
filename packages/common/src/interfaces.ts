@@ -90,7 +90,8 @@ export const SItemProgressStatus = [
 export type IItemProgressCallback = (
   itemId: string,
   status: EItemProgressStatus,
-  costUsed: number
+  costUsed: number,
+  createdItemId?: string // supplied when status is EItemProgressStatus.Created
 ) => boolean;
 
 export type ISolutionProgressCallback = (
