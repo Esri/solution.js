@@ -15,7 +15,7 @@
  */
 // @esri/solution-common sanitizeGroupItems example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 
 /**
  * Fetches the items in a group sanitizes their base portions.

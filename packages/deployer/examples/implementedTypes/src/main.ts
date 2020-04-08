@@ -15,8 +15,8 @@
  */
 // @esri/solution-deployer implementedTypes example
 
-import * as creatorModuleMap from "../lib/creator.umd";
-import * as deployerModuleMap from "../lib/deployer.umd";
+import * as creatorModuleMap from "../lib/creator.umd.min";
+import * as deployerModuleMap from "../lib/deployer.umd.min";
 
 export function implementedTypes(): string {
   let html: string =

@@ -15,7 +15,7 @@
  */
 // @esri/solution-common searchGroupCategories example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 
 //#region External ---------------------------------------------------------------------------------------------------//
 
