@@ -26,6 +26,8 @@ import * as common from "../lib/common.umd";
  */
 export function sanitizeGroupItems(
   groupId: string,
+  searchString: string,
+  additionalSearchOptions: common.IAdditionalSearchOptions,
   authentication: common.UserSession
 ): Promise<common.IItem[]> {
   return new Promise<common.IItem[]>((resolve, reject) => {
@@ -36,8 +38,6 @@ export function sanitizeGroupItems(
 
     // Get the items in the group matching the supplied search criteria
     // and run them through a sanitizer
-    const searchString = "";
-    const additionalSearchOptions: common.IAdditionalSearchOptions = {};
     common
       .searchGroupContents(
         groupId,
