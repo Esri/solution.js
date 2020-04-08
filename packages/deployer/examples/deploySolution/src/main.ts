@@ -15,8 +15,8 @@
  */
 // @esri/solution-deployer deploySolution example
 
-import * as common from "../lib/common.umd";
-import * as deployer from "../lib/deployer.umd";
+import * as common from "../lib/common.umd.min";
+import * as deployer from "../lib/deployer.umd.min";
 import * as getItemInfo from "./getItemInfo";
 
 export function deploySolution(

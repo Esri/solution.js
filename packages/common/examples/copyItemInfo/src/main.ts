@@ -15,7 +15,7 @@
  */
 // @esri/solution-common copyItemInfo example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 
 export function copyItemInfo(
   itemId: string,
