@@ -428,8 +428,6 @@ describe("Module `deployer`", () => {
         };
 
         const expectedUpdateBodyCommon: string =
-          "thumbnailurl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
           "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
           "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
           "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
@@ -442,13 +440,18 @@ describe("Module `deployer`", () => {
         // Chrome & Firefox
         const expectedUpdateBody: string =
           "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&id=map1234567890&" +
+          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          "thumbnailurl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
+          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
+          "id=map1234567890&" +
           expectedUpdateBodyCommon;
 
         // Legacy Edge
         const expectedUpdateBodyLegacyEdge: string =
           "f=json&id=map1234567890&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
           "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
+          "thumbnailurl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
+          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
           expectedUpdateBodyCommon;
 
         const options: common.IDeploySolutionOptions = {
@@ -508,7 +511,6 @@ describe("Module `deployer`", () => {
         const itemInfoCard: any = {
           id: "c38e59126368495694ca23b7ccacefba",
           title: "Election Management",
-          snippet: "",
           description: "",
           url:
             utils.PORTAL_SUBSET.portalUrl +
@@ -1236,7 +1238,7 @@ describe("Module `deployer`", () => {
           tags: ["a tag"],
           thumbnailurl: "a thumbnailurl",
           templateDictionary: null,
-          additionalTypeKeywords: null,
+          additionalTypeKeywords: ["UnitTest"],
           progressCallback: utils.SOLUTION_PROGRESS_CALLBACK
         };
         deployer
