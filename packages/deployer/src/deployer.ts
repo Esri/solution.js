@@ -125,7 +125,7 @@ export function _deploySolutionFromTemplate(
 
     ["title", "snippet", "description", "tags", "thumbnailurl"].forEach(
       property => {
-        if (property) {
+        if (options[property]) {
           solutionTemplateBase[property] = options[property];
         }
       }
@@ -340,6 +340,7 @@ export function _deploySolutionFromTemplate(
         const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf(
           "Template"
         );
+        /* istanbul ignore else */
         if (iTemplateKeyword >= 0) {
           solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
         }
