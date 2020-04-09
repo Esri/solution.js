@@ -484,7 +484,7 @@ describe("Module `deployer`", () => {
                   "/content/users/casey/items/map1234567890/update"
               );
 
-              const actualUpdateBody = updateCalls[1][1].body;
+              const actualUpdateBody = updateCalls[0][1].body;
               expect(
                 actualUpdateBody === expectedUpdateBody ||
                   actualUpdateBody === expectedUpdateBodyLegacyEdge
