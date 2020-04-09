@@ -301,24 +301,25 @@ export function createItemFromTemplate(
                 );
               }
 
-              // The item's URL includes its id, so it needs to be updated
-              const updateUrlDef: Promise<string> = newItemTemplate.item.url
-                ? common.updateItemURL(
-                    createResponse.id,
-                    common.replaceInTemplate(
-                      newItemTemplate.item.url,
-                      templateDictionary
-                    ),
-                    destinationAuthentication
-                  )
-                : Promise.resolve("");
+              // If item's URL includes its id, it needs to be updated
+              const originalURL = newItemTemplate.item.url;
+              common.replaceInTemplate(
+                newItemTemplate.item.url,
+                templateDictionary
+              );
 
               // Check for extra processing for web mapping application et al.
               let customProcDef: Promise<void>;
               if (
                 template.type === "Web Mapping Application" &&
-                template.data
+                template.data &&
+                common.hasAnyKeyword(template, [
+                  "WAB2D",
+                  "WAB3D",
+                  "Web AppBuilder"
+                ])
               ) {
+                // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
                 customProcDef = webmappingapplication.fineTuneCreatedItem(
                   template,
                   newItemTemplate,
@@ -337,13 +338,23 @@ export function createItemFromTemplate(
                   templateDictionary,
                   destinationAuthentication
                 );
+              } else if (originalURL !== newItemTemplate.item.url) {
+                customProcDef = new Promise<void>((resolve2, reject2) => {
+                  common
+                    .updateItemURL(
+                      createResponse.id,
+                      newItemTemplate.item.url,
+                      destinationAuthentication
+                    )
+                    .then(() => resolve2(), reject2);
+                });
               } else {
                 customProcDef = Promise.resolve();
               }
 
-              Promise.all([relationshipsDef, updateUrlDef, customProcDef]).then(
+              Promise.all([relationshipsDef, customProcDef]).then(
                 results => {
-                  const [relationships, updatedUrls, customProcs] = results;
+                  const [relationships, customProcs] = results;
 
                   let updateResourceDef: Promise<void> = Promise.resolve();
                   if (template.type === "QuickCapture Project") {
