@@ -123,6 +123,21 @@ export function _deploySolutionFromTemplate(
     let deployedFolderId: string;
     let deployedSolutionId: string;
 
+    ["title", "snippet", "description", "tags", "thumbnailurl"].forEach(
+      property => {
+        if (options[property]) {
+          solutionTemplateBase[property] = options[property];
+        }
+      }
+    );
+
+    if (options.additionalTypeKeywords) {
+      solutionTemplateBase.typeKeywords = [].concat(
+        solutionTemplateBase.typeKeywords,
+        options.additionalTypeKeywords
+      );
+    }
+
     // Get information about deployment environment
     Promise.all([
       common.getPortal("", authentication), // determine if we are deploying to portal
@@ -235,6 +250,12 @@ export function _deploySolutionFromTemplate(
           typeKeywords: ["Solution"]
         };
 
+        if (options.additionalTypeKeywords) {
+          createSolutionItemBase.typeKeywords = ["Solution"].concat(
+            options.additionalTypeKeywords
+          );
+        }
+
         return common.createItemWithData(
           createSolutionItemBase,
           {},
@@ -312,7 +333,17 @@ export function _deploySolutionFromTemplate(
       })
       .then(() => {
         // Update solution item using internal representation & and the updated data JSON
-        solutionTemplateBase.typeKeywords = ["Solution", "Deployed"];
+        solutionTemplateBase.typeKeywords = [].concat(
+          solutionTemplateBase.typeKeywords,
+          ["Deployed"]
+        );
+        const iTemplateKeyword = solutionTemplateBase.typeKeywords.indexOf(
+          "Template"
+        );
+        /* istanbul ignore else */
+        if (iTemplateKeyword >= 0) {
+          solutionTemplateBase.typeKeywords.splice(iTemplateKeyword, 1);
+        }
 
         solutionTemplateData.templates = solutionTemplateData.templates.map(
           (itemTemplate: common.IItemTemplate) =>

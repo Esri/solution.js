@@ -15,7 +15,7 @@
  */
 // @esri/solution-common convertExtent example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as restTypes from "@esri/arcgis-rest-types";
 

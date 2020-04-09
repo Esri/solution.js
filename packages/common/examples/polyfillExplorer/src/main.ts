@@ -15,7 +15,7 @@
  */
 // @esri/solution-common convertExtent example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 
 export function runLegacies(): Promise<string> {
   return new Promise<string>(resolve => {

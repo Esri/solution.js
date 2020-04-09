@@ -1,8 +1,29 @@
 ## Publishing solution.js to npmjs
 
-1. Create a branch off of `develop` called `release`.
+#### Checklist
 
-2. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+* \[ \] Stop automatic recompilation software
+* \[ \] Create `release` branch
+* \[ \] Remove node_modules and run `npm install`
+* \[ \] Run `npm run prerelease:prepare`
+* \[ \] Run `npm run release:prepare` and pick new version number
+* \[ \] Run `npm run release:review`
+* \[ \] Fix CHANGELOG.md
+* \[ \] Commit & push changes as a release prep
+* \[ \] Switch to `master` branch
+* \[ \] Merge `release` branch into `master` branch but don't commit
+* \[ \] Run `npm run release:publish`
+* \[ \] Push `master` branch to GitHub
+* \[ \] Delete `release` branch
+* \[ \] Switch to `develop` branch
+* \[ \] Merge `master` branch into `develop` branch
+* \[ \] Push `develop` branch to GitHub
+
+#### Details
+
+1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
+
+2. Create a branch off of `develop` called `release`.
 
 3. Remove the node_modules directories.
 ```
@@ -75,20 +96,20 @@ git merge --no-ff --no-commit release
 
 12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 
-	*Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
-	```
-	npm run release:publish
-	    :        :
-	? Enter OTP: <2-factor-code>
-	? publish release to github? (y/N)
-	```
-	
-	The publish step
-	1. commits and pushes the publishing changes to GitHub
-	2. tags the commit with the new version number that you chose in `release:prepare`
-	3. pushes the version to npmjs and unpkg
-	
-	Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
+ *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
+ ```
+ npm run release:publish
+     :        :
+ ? Enter OTP: <2-factor-code>
+ ? publish release to github? (y/N)
+ ```
+
+ The publish step
+ 1. commits and pushes the publishing changes to GitHub
+ 2. tags the commit with the new version number that you chose in `release:prepare`
+ 3. pushes the version to npmjs and unpkg
+
+ Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
 
 13. Push your `master` branch to GitHub.
 
@@ -194,4 +215,4 @@ npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
-3/31/20 mkt
+4/7/20 mkt

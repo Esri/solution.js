@@ -20,13 +20,13 @@
 
 //#region uuidv4 ---------------------------------------------------------------------------------------------------- //
 
-import * as libs from "../src/libs/uuidv4";
+import * as uuidv4 from "../src/libs/uuidv4";
 
-describe("Module `libs`: pseudo-GUID generator", () => {
+describe("Module `uuidv4`: pseudo-GUID generator", () => {
   if (typeof window !== "undefined") {
     describe("createPseudoGUID", () => {
       it("creates GUID without dashes", () => {
-        const guid = libs.createPseudoGUID();
+        const guid = uuidv4.createPseudoGUID();
         expect(guid.length)
           .withContext("length check")
           .toEqual(32);
@@ -36,7 +36,7 @@ describe("Module `libs`: pseudo-GUID generator", () => {
       });
 
       it("creates GUID with dashes", () => {
-        const guid = libs.createPseudoGUID(true);
+        const guid = uuidv4.createPseudoGUID(true);
         expect(guid.length)
           .withContext("length check")
           .toEqual(36);
@@ -69,31 +69,146 @@ describe("Module `libs`: pseudo-GUID generator", () => {
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
 import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
+import * as libs from "../src/libs";
 import * as xssFilterEvasionTestCases from "./XssFilterEvasionTestCases";
 
 describe("Module `arcgis-html-sanitizer`: ", () => {
   describe("Sanitizer", () => {
     it("sanitizes a string", () => {
-      // Instantiate a new Sanitizer object
-      const sanitizer = new arcgisSanitizer.Sanitizer();
-
-      // Sanitize a string
-      const sanitizedHtml = sanitizer.sanitize(
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeHTML(
         '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
       );
-      expect(sanitizedHtml).toEqual(
+      expect(sanitized).toEqual(
         '<img src="https://example.com/fake-image.jpg" />'
       );
     });
 
-    it("validates a string", () => {
+    it("sanitizes a string, supplying a sanitizer", () => {
       // Instantiate a new Sanitizer object
       const sanitizer = new arcgisSanitizer.Sanitizer();
 
-      // Sanitize a string
+      // Sanitize
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeHTML(
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
+        sanitizer
+      );
+      expect(sanitized).toEqual(
+        '<img src="https://example.com/fake-image.jpg" />'
+      );
+    });
+
+    it("sanitizes JSON", () => {
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeJSON({
+        sample: [
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);\
+          " />'
+        ]
+      });
+      expect(sanitized).toEqual({
+        sample: ['<img src="https://example.com/fake-image.jpg" />']
+      });
+    });
+
+    it("sanitizes JSON, supplying a sanitizer", () => {
+      // Instantiate a new Sanitizer object
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      // Sanitize
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeJSON(
+        {
+          sample: [
+            '<img src="https://example.com/fake-image.jpg" onerror="alert(1);\
+          " />'
+          ]
+        },
+        sanitizer
+      );
+      expect(sanitized).toEqual({
+        sample: ['<img src="https://example.com/fake-image.jpg" />']
+      });
+    });
+
+    it("handles a missing value", () => {
+      const sanitized = libs.sanitizeJSON(null);
+      expect(sanitized).toEqual(null);
+    });
+
+    it("handles a an empty structure", () => {
+      const sanitized = libs.sanitizeJSON({});
+      expect(sanitized).toEqual({});
+    });
+
+    it("handles a an empty array", () => {
+      const sanitized = libs.sanitizeJSON([]);
+      expect(sanitized).toEqual([]);
+    });
+
+    it("sanitizes an unsupported URL protocol", () => {
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeURLProtocol(
+        "smb://example.com/path/to/file.html"
+      );
+      expect(sanitized).toEqual("");
+    });
+
+    it("sanitizes a supported URL protocol", () => {
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeURLProtocol(
+        "https://example.com/about/index.html"
+      );
+      expect(sanitized).toEqual("https://example.com/about/index.html");
+    });
+
+    it("sanitizes a supported URL protocol, supplying a sanitizer", () => {
+      // Instantiate a new Sanitizer object
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      // Sanitize
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const sanitized = libs.sanitizeURLProtocol(
+        "https://example.com/about/index.html",
+        sanitizer
+      );
+      expect(sanitized).toEqual("https://example.com/about/index.html");
+    });
+
+    it("validates a string containing valid HTML", () => {
       // Check if a string contains invalid HTML
-      const validation = sanitizer.validate(
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const validation = libs.validateHTML(
+        '<img src="https://example.com/fake-image.jpg" />'
+      );
+      expect(validation).toEqual({
+        isValid: true,
+        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+      });
+    });
+
+    it("validates a string containing invalid HTML", () => {
+      // Check if a string contains invalid HTML
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const validation = libs.validateHTML(
         '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+      );
+      expect(validation).toEqual({
+        isValid: false,
+        sanitized: '<img src="https://example.com/fake-image.jpg" />'
+      });
+    });
+
+    it("validates a string, supplying a sanitizer", () => {
+      // Instantiate a new Sanitizer object
+      const sanitizer = new arcgisSanitizer.Sanitizer();
+
+      // Check if a string contains invalid HTML
+      // from https://github.com/esri/arcgis-html-sanitizer
+      const validation = libs.validateHTML(
+        '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
+        sanitizer
       );
       expect(validation).toEqual({
         isValid: false,
@@ -111,7 +226,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
 
       xssFilterEvasionTestCases.testCases.forEach(
         (testCase: xssFilterEvasionTestCases.IXSSTestCase) => {
-          expect(sanitizer.sanitize(testCase.example))
+          expect(libs.sanitizeHTML(testCase.example, sanitizer))
             .withContext(testCase.label)
             .toEqual(testCase.cleanedHtml);
         }

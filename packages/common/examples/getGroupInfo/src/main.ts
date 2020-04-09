@@ -15,7 +15,7 @@
  */
 // @esri/solution-common getGroupInfo example
 
-import * as common from "../lib/common.umd";
+import * as common from "../lib/common.umd.min";
 
 export function getGroupInfo(
   groupId: string,
