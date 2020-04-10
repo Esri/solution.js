@@ -112,7 +112,7 @@ const solutionItemExtent: any = [
   [1, 1]
 ];
 
-describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
+xdescribe("Module `restHelpers`: common REST utility functions shared across packages", () => {
   describe("searchItems passthru", () => {
     it("can handle simple search", done => {
       fetchMock.get(
@@ -1174,13 +1174,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
 
       const createUrl =
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder";
-      const expectedCreate = {
-        error: {
-          code: 400,
-          message: "Unable to create folder.",
-          details: ["Folder title '" + folderTitleRoot + "' not available."]
-        }
-      };
+      const expectedCreate = failedFolderCreation(folderTitleRoot, 0);
       fetchMock.post(createUrl, expectedCreate);
 
       restHelpers
@@ -1190,6 +1184,186 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           response => {
             expect(response.success).toBeUndefined();
             expect(response.message).toEqual("400: Unable to create folder.");
+            done();
+          }
+        );
+    });
+  });
+
+  describe("createUniqueGroup", () => {
+    it("group doesn't already exist", done => {
+      const groupTitleRoot = "group name";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const suffix = 0;
+      const expectedSuccess = successfulGroupCreation(groupTitleRoot, suffix);
+      const user: any = {
+        groups: []
+      };
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
+        JSON.stringify(expectedSuccess)
+      );
+      restHelpers
+        .createUniqueGroup(
+          groupTitleRoot,
+          groupItem,
+          { user },
+          MOCK_USER_SESSION
+        )
+        .then((response: interfaces.IAddGroupResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        }, done.fail);
+    });
+
+    it("initial version of group exists", done => {
+      const groupTitleRoot = "group name";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const expectedSuffix = 1;
+      const expectedSuccess = successfulGroupCreation(
+        groupTitleRoot,
+        expectedSuffix
+      );
+      const user: any = {
+        groups: [groupTitleRoot]
+      };
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
+        () => {
+          return successfulGroupCreation(groupTitleRoot, expectedSuffix);
+        }
+      );
+      restHelpers
+        .createUniqueGroup(
+          groupTitleRoot,
+          groupItem,
+          { user },
+          MOCK_USER_SESSION
+        )
+        .then((response: interfaces.IAddGroupResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        }, done.fail);
+    });
+
+    it("two versions of group exist", done => {
+      const groupTitleRoot = "group name";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const expectedSuffix = 2;
+      const expectedSuccess = successfulGroupCreation(
+        groupTitleRoot,
+        expectedSuffix
+      );
+
+      const user: any = {
+        groups: ["group name", "group name 1"]
+      };
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
+        () => {
+          return JSON.stringify(
+            successfulGroupCreation(groupTitleRoot, expectedSuffix)
+          );
+        }
+      );
+      restHelpers
+        .createUniqueGroup(
+          groupTitleRoot,
+          groupItem,
+          { user },
+          MOCK_USER_SESSION
+        )
+        .then((response: interfaces.IAddGroupResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        }, done.fail);
+    });
+
+    it("three versions of group exist", done => {
+      const groupTitleRoot = "group name";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const expectedSuffix = 3;
+      const expectedSuccess = successfulGroupCreation(
+        groupTitleRoot,
+        expectedSuffix
+      );
+      const user: any = {
+        groups: ["group name", "group name 1", "group name 2"]
+      };
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/community/createGroup",
+        () => {
+          return JSON.stringify(
+            successfulGroupCreation(groupTitleRoot, expectedSuffix)
+          );
+        }
+      );
+      restHelpers
+        .createUniqueGroup(
+          groupTitleRoot,
+          groupItem,
+          { user },
+          MOCK_USER_SESSION
+        )
+        .then((response: interfaces.IAddGroupResponse) => {
+          expect(response).toEqual(expectedSuccess);
+          done();
+        }, done.fail);
+    });
+
+    it("can handle abbreviated error", done => {
+      const groupTitleRoot = "My Group";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const userSession = MOCK_USER_SESSION;
+      const user: any = {
+        groups: []
+      };
+
+      const createUrl = utils.PORTAL_SUBSET.restUrl + "/community/createGroup";
+      const expectedCreate = {
+        error: {
+          code: 400,
+          message: "Unable to create group.",
+          details: [] as any[]
+        }
+      };
+      fetchMock.post(createUrl, expectedCreate);
+
+      restHelpers
+        .createUniqueGroup(groupTitleRoot, groupItem, { user }, userSession)
+        .then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeUndefined();
+            expect(response.message).toEqual("400: Unable to create group.");
+            done();
+          }
+        );
+    });
+
+    it("can handle extended error", done => {
+      const groupTitleRoot = "My Group";
+      const groupItem = utils.getSampleGroupToAdd(groupTitleRoot);
+      const userSession = MOCK_USER_SESSION;
+      const user: any = {
+        groups: []
+      };
+
+      const createUrl = utils.PORTAL_SUBSET.restUrl + "/community/createGroup";
+      const expectedCreate = failedGroupCreation(groupTitleRoot, 0);
+      fetchMock.post(createUrl, expectedCreate);
+
+      restHelpers
+        .createUniqueGroup(groupTitleRoot, groupItem, { user }, userSession)
+        .then(
+          () => done.fail(),
+          response => {
+            expect(response.success).toBeUndefined();
+            expect(response.message).toEqual("400: Unable to create group.");
             done();
           }
         );
@@ -2984,6 +3158,60 @@ function failedFolderCreation(folderTitleRoot: string, suffix: number): any {
       code: 400,
       message: "Unable to create folder.",
       details: ["Folder title '" + folderName + "' not available."]
+    }
+  };
+}
+
+function successfulGroupCreation(groupTitleRoot: string, suffix: number): any {
+  const groupName =
+    groupTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+  return {
+    success: true,
+    group: {
+      id: "grp1234567890",
+      title: groupName,
+      isInvitationOnly: false,
+      owner: "casey",
+      description: "",
+      snippet: "",
+      tags: ["test"],
+      phone: null,
+      sortField: null,
+      sortOrder: null,
+      isViewOnly: false,
+      thumbnail: "thumbnail.png",
+      created: 1586548922651,
+      modified: 1586548922947,
+      access: "private",
+      capabilities: [],
+      isFav: false,
+      isReadOnly: false,
+      protected: false,
+      autoJoin: false,
+      notificationsEnabled: false,
+      provider: null,
+      providerGroupName: null,
+      leavingDisallowed: false,
+      hiddenMembers: false,
+      displaySettings: {
+        itemTypes: ""
+      }
+    }
+  };
+}
+
+function failedGroupCreation(groupTitleRoot: string, suffix: number): any {
+  const groupName =
+    groupTitleRoot + (suffix > 0 ? " " + suffix.toString() : "");
+  return {
+    error: {
+      code: 400,
+      message: "Unable to create group.",
+      details: [
+        "You already have a group named '" +
+          groupName +
+          "'. Try a different name."
+      ]
     }
   };
 }

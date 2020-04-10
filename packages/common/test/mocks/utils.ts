@@ -107,6 +107,18 @@ export function createFailingItemProgressCallbackOnNthCall(
   };
 }
 
+export function getSampleGroupToAdd(title: string): interfaces.IGroupAdd {
+  return {
+    title: title,
+    access: "private",
+    owner: "casey",
+    tags: ["test"],
+    description: "",
+    thumbnail: null,
+    snippet: ""
+  };
+}
+
 export function getSampleMetadataAsBlob(mimeType = "text/xml"): Blob {
   const xml = `<?xml version="1.0" encoding="UTF-8" standalone="no"?><metadata xml:lang="en">
       <dataIdInfo>
