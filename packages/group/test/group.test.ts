@@ -650,16 +650,25 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
       itemTemplate.itemId = itemId;
       itemTemplate.type = "Group";
       itemTemplate.item.title = "Dam Inspection Assignments";
+      itemTemplate.item.thumbnailurl =
+        "abc9cab401af4828a25cc6eaeb59fb69_info_thumbnail/ago_downloaded.png";
 
       const expected: any = { user };
       expected[itemId] = {
         itemId: newItemID
       };
 
-      fetchMock.post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
-        success: true,
-        group: { id: newItemID }
-      });
+      fetchMock
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc9cab401af4828a25cc6eaeb59fb69/resources/" +
+            itemTemplate.item.thumbnail,
+          utils.getSampleImage()
+        )
+        .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+          success: true,
+          group: { id: newItemID }
+        });
       // tslint:disable-next-line: no-floating-promises
       group
         .createItemFromTemplate(

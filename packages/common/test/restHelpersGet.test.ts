@@ -289,6 +289,39 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
     }
   });
 
+  describe("getFilenameFromUrl", () => {
+    it("extract name from url without query params", () => {
+      const url = "https://myorg.arcgis.com//resources/image.png";
+      const expectedFilename = "image.png";
+      expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
+    });
+
+    it("extract name from url with query params", () => {
+      const url =
+        "https://myorg.arcgis.com//resources/image.png?w=400&token=fake-token";
+      const expectedFilename = "image.png";
+      expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
+    });
+
+    it("handles missing name in url without query params", () => {
+      const url = "https://myorg.arcgis.com//resources/";
+      const expectedFilename = "";
+      expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
+    });
+
+    it("handles missing name in url with query params", () => {
+      const url = "https://myorg.arcgis.com//resources/?w=400&token=fake-token";
+      const expectedFilename = "";
+      expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
+    });
+
+    it("handles empty url", () => {
+      const url = "";
+      const expectedFilename = "";
+      expect(restHelpersGet.getFilenameFromUrl(url)).toEqual(expectedFilename);
+    });
+  });
+
   describe("getInfoFiles", () => {
     if (typeof window !== "undefined") {
       it("gets info files", done => {
