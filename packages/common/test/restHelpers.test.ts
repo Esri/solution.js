@@ -112,7 +112,7 @@ const solutionItemExtent: any = [
   [1, 1]
 ];
 
-xdescribe("Module `restHelpers`: common REST utility functions shared across packages", () => {
+describe("Module `restHelpers`: common REST utility functions shared across packages", () => {
   describe("searchItems passthru", () => {
     it("can handle simple search", done => {
       fetchMock.get(

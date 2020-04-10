@@ -538,38 +538,35 @@ export function createUniqueGroup(
       group: groupItem,
       authentication: authentication
     };
-    portal.createGroup(groupCreationParam).then(
-      ok => resolve(ok),
-      err => {
-        // If the name already exists, we'll try again
-        const errorDetails = generalHelpers.getProp(
-          err,
-          "response.error.details"
-        ) as string[];
-        if (Array.isArray(errorDetails) && errorDetails.length > 0) {
-          const nameNotAvailMsg =
-            "You already have a group named '" +
-            groupItem.title +
-            "'. Try a different name.";
-          if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
-            templateDictionary.user.groups.push({
-              title: groupItem.title
-            });
-            createUniqueGroup(
-              title,
-              groupItem,
-              templateDictionary,
-              authentication
-            ).then(resolve, reject);
-          } else {
-            reject(err);
-          }
+    portal.createGroup(groupCreationParam).then(resolve, err => {
+      // If the name already exists, we'll try again
+      const errorDetails = generalHelpers.getProp(
+        err,
+        "response.error.details"
+      ) as string[];
+      if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+        const nameNotAvailMsg =
+          "You already have a group named '" +
+          groupItem.title +
+          "'. Try a different name.";
+        if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+          templateDictionary.user.groups.push({
+            title: groupItem.title
+          });
+          createUniqueGroup(
+            title,
+            groupItem,
+            templateDictionary,
+            authentication
+          ).then(resolve, reject);
         } else {
-          // Otherwise, error out
           reject(err);
         }
+      } else {
+        // Otherwise, error out
+        reject(err);
       }
-    );
+    });
   });
 }
 
