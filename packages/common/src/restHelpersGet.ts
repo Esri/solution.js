@@ -191,6 +191,30 @@ export function getBlobCheckForError(
   });
 }
 
+/**
+ * Extracts the text in a url between the last forward slash and the beginning of the url's parameters.
+ *
+ * @param url URL to work with
+ * @return Text extracted; empty if url ends with a forward slash or has a "?" immediately after the last
+ * forward slash
+ */
+export function getFilenameFromUrl(url: string): string {
+  if (!url) {
+    return "";
+  }
+
+  let iParamsStart = url.indexOf("?");
+  /* istanbul ignore else */
+  if (iParamsStart < 0) {
+    iParamsStart = url.length;
+  }
+  const iFilenameStart = url.lastIndexOf("/", iParamsStart) + 1;
+
+  return iFilenameStart < iParamsStart
+    ? url.substring(iFilenameStart, iParamsStart)
+    : "";
+}
+
 export function getInfoFiles(
   itemId: string,
   infoFilenames: string[],
