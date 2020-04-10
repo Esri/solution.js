@@ -392,17 +392,6 @@ export function createFullItem(
   });
 }
 
-export function createGroup(
-  groupItem: any,
-  authentication: interfaces.UserSession
-): Promise<{ success: boolean; group: interfaces.IGroup }> {
-  const requestOptions = {
-    group: groupItem,
-    authentication: authentication
-  };
-  return portal.createGroup(requestOptions);
-}
-
 /**
  * Publishes an item and its data as an AGOL item.
  *
@@ -521,6 +510,63 @@ export function createUniqueFolder(
         }
       }
     );
+  });
+}
+
+/**
+ * Creates a group using numeric suffix to ensure uniqueness.
+ *
+ * @param title Group title, used as-is if possible and with suffix otherwise
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, user
+ * @param authentication Credentials for creating group
+ * @return Information about created group
+ */
+export function createUniqueGroup(
+  title: string,
+  groupItem: interfaces.IGroupAdd,
+  templateDictionary: any,
+  authentication: interfaces.UserSession
+): Promise<interfaces.IAddGroupResponse> {
+  return new Promise<interfaces.IAddGroupResponse>((resolve, reject) => {
+    // Get a title that is not already in use
+    groupItem.title = generalHelpers.getUniqueTitle(
+      title,
+      templateDictionary,
+      "user.groups"
+    );
+    const groupCreationParam = {
+      group: groupItem,
+      authentication: authentication
+    };
+    portal.createGroup(groupCreationParam).then(resolve, err => {
+      // If the name already exists, we'll try again
+      const errorDetails = generalHelpers.getProp(
+        err,
+        "response.error.details"
+      ) as string[];
+      if (Array.isArray(errorDetails) && errorDetails.length > 0) {
+        const nameNotAvailMsg =
+          "You already have a group named '" +
+          groupItem.title +
+          "'. Try a different name.";
+        if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+          templateDictionary.user.groups.push({
+            title: groupItem.title
+          });
+          createUniqueGroup(
+            title,
+            groupItem,
+            templateDictionary,
+            authentication
+          ).then(resolve, reject);
+        } else {
+          reject(err);
+        }
+      } else {
+        // Otherwise, error out
+        reject(err);
+      }
+    });
   });
 }
 
