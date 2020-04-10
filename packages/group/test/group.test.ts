@@ -679,6 +679,58 @@ describe("Module `group`: manages the creation and deployment of groups", () => 
         });
     });
 
+    if (typeof window !== "undefined") {
+      it("should create group with thumbnail", done => {
+        const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
+        const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
+        const user: any = {
+          groups: []
+        };
+        const templateDictionary: any = { user };
+
+        const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+        itemTemplate.itemId = itemId;
+        itemTemplate.type = "Group";
+        itemTemplate.item.title = "Dam Inspection Assignments";
+        itemTemplate.item.thumbnailurl =
+          "abc9cab401af4828a25cc6eaeb59fb69_info_thumbnail/ago_downloaded.png";
+
+        const expected: any = { user };
+        expected[itemId] = {
+          itemId: newItemID
+        };
+
+        fetchMock
+          .get(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/abc9cab401af4828a25cc6eaeb59fb69/resources/" +
+              itemTemplate.item.thumbnail,
+            utils.getSampleImage()
+          )
+          .post(utils.PORTAL_SUBSET.restUrl + "/community/createGroup", {
+            success: true,
+            group: { id: newItemID }
+          });
+        // tslint:disable-next-line: no-floating-promises
+        group
+          .createItemFromTemplate(
+            itemTemplate,
+            templateDictionary,
+            MOCK_USER_SESSION,
+            utils.ITEM_PROGRESS_CALLBACK
+          )
+          .then(response => {
+            expect(response).toEqual({
+              id: newItemID,
+              type: itemTemplate.type,
+              postProcess: false
+            });
+            expect(templateDictionary).toEqual(expected);
+            done();
+          });
+      });
+    }
+
     it("should handle success === false on create group", done => {
       const itemId: string = "abc9cab401af4828a25cc6eaeb59fb69";
       const newItemID: string = "abc8cab401af4828a25cc6eaeb59fb69";
