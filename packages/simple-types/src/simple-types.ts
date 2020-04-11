@@ -301,13 +301,6 @@ export function createItemFromTemplate(
                 );
               }
 
-              // If item's URL includes its id, it needs to be updated
-              const originalURL = newItemTemplate.item.url;
-              common.replaceInTemplate(
-                newItemTemplate.item.url,
-                templateDictionary
-              );
-
               // Check for extra processing for web mapping application et al.
               let customProcDef: Promise<void>;
               if (
@@ -338,16 +331,6 @@ export function createItemFromTemplate(
                   templateDictionary,
                   destinationAuthentication
                 );
-              } else if (originalURL !== newItemTemplate.item.url) {
-                customProcDef = new Promise<void>((resolve2, reject2) => {
-                  common
-                    .updateItemURL(
-                      createResponse.id,
-                      newItemTemplate.item.url,
-                      destinationAuthentication
-                    )
-                    .then(() => resolve2(), reject2);
-                });
               } else {
                 customProcDef = Promise.resolve();
               }
