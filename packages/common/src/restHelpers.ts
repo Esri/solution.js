@@ -470,10 +470,12 @@ export function createItemWithData(
 }
 
 /**
- * Creates a folder using numeric suffix to ensure uniqueness.
+ * Creates a folder using a numeric suffix to ensure uniqueness if necessary.
  *
  * @param title Folder title, used as-is if possible and with suffix otherwise
- * @param templateDictionary Hash of facts: org URL, adlib replacements, user
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, user; .user.folders property contains a list
+ * of known folder names; function updates list with existing names not yet known, and creates .user.folders if it
+ * doesn't exist in the dictionary
  * @param authentication Credentials for creating folder
  * @return Id of created folder
  */
@@ -505,6 +507,15 @@ export function createUniqueFolder(
           const nameNotAvailMsg =
             "Folder title '" + folderTitle + "' not available.";
           if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            // Create the user.folders property if it doesn't exist
+            /* istanbul ignore else */
+            if (!generalHelpers.getProp(templateDictionary, "user.folders")) {
+              generalHelpers.setCreateProp(
+                templateDictionary,
+                "user.folders",
+                []
+              );
+            }
             templateDictionary.user.folders.push({
               title: folderTitle
             });
