@@ -1951,41 +1951,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("removeItem", () => {
-    it("removes an item", done => {
-      const itemId: string = "ABC123";
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
-        utils.getSuccessResponse({ itemId })
-      );
-      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
-        expect(actual.success).toEqual(true);
-        done();
-      }, done.fail);
-    });
-
-    it("fails to remove an item", done => {
-      const itemId: string = "ABC123";
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
-        utils.getFailureResponse({ itemId })
-      );
-      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        actual => {
-          expect(actual.success).toEqual(false);
-          done();
-        }
-      );
-    });
-  });
-
   describe("removeFolder", () => {
     it("removes a folder", done => {
       const folderId: string = "ABC123";
@@ -2060,6 +2025,41 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("removeItem", () => {
+    it("removes an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getSuccessResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getFailureResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
   describe("removeItemOrGroup", () => {
     it("removes an item", done => {
       const itemId: string = "ABC123";
@@ -2123,6 +2123,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         }
       );
+    });
+  });
+
+  describe("removeListOfItemsOrGroups", () => {
+    it("handles failure to remove all of a list of items", done => {
+      const itemIds = ["itm1234567890"];
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemIds[0] +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemIds[0] +
+            "/delete",
+          utils.getFailureResponse()
+        );
+
+      // tslint:disable-next-line: no-floating-promises
+      restHelpers
+        .removeListOfItemsOrGroups(itemIds, MOCK_USER_SESSION)
+        .then(() => done());
     });
   });
 

@@ -888,6 +888,27 @@ export function removeItemOrGroup(
 }
 
 /**
+ * Removes a list of items and/or groups from AGO.
+ *
+ * @param itemIds Ids of items or groups to delete
+ * @param authentication Credentials for the request to AGO
+ * @return A promise that will resolve when deletion is done or fails
+ */
+export function removeListOfItemsOrGroups(
+  itemIds: string[],
+  authentication: interfaces.UserSession
+): Promise<void> {
+  return new Promise<void>(resolve => {
+    Promise.all(
+      itemIds.map(itemId => removeItemOrGroup(itemId, authentication))
+    ).then(
+      () => resolve(),
+      () => resolve()
+    );
+  });
+}
+
+/**
  * Searches for groups matching criteria.
  *
  * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'

@@ -291,6 +291,8 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/sln1234567890/addResources",
             utils.getSuccessResponse({ id: "sln1234567890" })
           );
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "log").and.callFake(() => {});
 
         const expected: string = "map1234567890";
 
@@ -455,7 +457,9 @@ describe("Module `deployer`", () => {
           expectedUpdateBodyCommon;
 
         const options: common.IDeploySolutionOptions = {
-          templateDictionary: templateDictionary
+          templateDictionary: templateDictionary,
+          progressCallback: utils.SOLUTION_PROGRESS_CALLBACK,
+          consoleProgress: true
         };
         deployer
           .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, options)
