@@ -95,102 +95,139 @@ export function createItemFromTemplate(
       templateDictionary
     );
 
-    // handle group
-    const title: string = common.getUniqueTitle(
-      newItemTemplate.item.title || "",
-      templateDictionary,
-      "user.groups"
-    );
+    // Group uses `thumbnail` instead of `thumbnailurl`, and it has to be an actual file
+    let thumbnailBlobDef = Promise.resolve(null);
+    if (newItemTemplate.item.thumbnailurl) {
+      thumbnailBlobDef = new Promise(resolveThumb => {
+        common
+          .getBlobAsFile(
+            newItemTemplate.item.thumbnailurl,
+            common.getFilenameFromUrl(newItemTemplate.item.thumbnailurl),
+            destinationAuthentication
+          )
+          .then(resolveThumb, () => resolveThumb(null));
+      });
+    }
 
-    // Set the item title with a valid name for the ORG
-    newItemTemplate.item.title = title;
-    newItemTemplate.item.access = "private";
-    common.createGroup(newItemTemplate.item, destinationAuthentication).then(
-      createResponse => {
-        if (createResponse.success) {
-          // Interrupt process if progress callback returns `false`
-          if (
-            !itemProgressCallback(
-              createResponse.group.id,
-              common.EItemProgressStatus.Created,
-              template.estimatedDeploymentCostFactor / 2,
-              createResponse.group.id
-            )
-          ) {
-            itemProgressCallback(
-              createResponse.group.id,
-              common.EItemProgressStatus.Cancelled,
-              0
-            );
-            // tslint:disable-next-line: no-floating-promises
-            common
-              .removeGroup(createResponse.group.id, destinationAuthentication)
-              .then(
-                () => resolve(_generateEmptyCreationResponse(template.type)),
-                () => resolve(_generateEmptyCreationResponse(template.type))
-              );
-          } else {
-            newItemTemplate.itemId = createResponse.group.id;
-            templateDictionary[template.itemId] = {
-              itemId: createResponse.group.id
-            };
+    thumbnailBlobDef.then(thumbnailBlob => {
+      // Set up properties needed to create group
+      const newGroup: common.IGroupAdd = {
+        title: newItemTemplate.item.title || "",
+        access: "private",
+        owner: newItemTemplate.item.owner,
+        tags: newItemTemplate.item.tags,
+        description: newItemTemplate.item.description,
+        thumbnail: thumbnailBlob,
+        snippet: newItemTemplate.item.snippet
+      };
 
-            // Update the template again now that we have the new item id
-            newItemTemplate = common.replaceInTemplate(
-              newItemTemplate,
-              templateDictionary
-            );
+      // Create a group, appending a sequential suffix to its name if the group exists, e.g.,
+      //  * Manage Right of Way Activities
+      //  * Manage Right of Way Activities 1
+      //  * Manage Right of Way Activities 2
+      common
+        .createUniqueGroup(
+          newGroup.title,
+          newGroup,
+          templateDictionary,
+          destinationAuthentication
+        )
+        .then(
+          (createResponse: common.IAddGroupResponse) => {
+            if (createResponse.success) {
+              // Interrupt process if progress callback returns `false`
+              if (
+                !itemProgressCallback(
+                  createResponse.group.id,
+                  common.EItemProgressStatus.Created,
+                  template.estimatedDeploymentCostFactor / 2,
+                  createResponse.group.id
+                )
+              ) {
+                itemProgressCallback(
+                  createResponse.group.id,
+                  common.EItemProgressStatus.Cancelled,
+                  0
+                );
+                // tslint:disable-next-line: no-floating-promises
+                common
+                  .removeGroup(
+                    createResponse.group.id,
+                    destinationAuthentication
+                  )
+                  .then(
+                    () =>
+                      resolve(_generateEmptyCreationResponse(template.type)),
+                    () => resolve(_generateEmptyCreationResponse(template.type))
+                  );
+              } else {
+                newItemTemplate.itemId = createResponse.group.id;
+                templateDictionary[template.itemId] = {
+                  itemId: createResponse.group.id
+                };
 
-            // Update the template dictionary with the new id
-            templateDictionary[template.itemId].itemId =
-              createResponse.group.id;
+                // Update the template again now that we have the new item id
+                newItemTemplate = common.replaceInTemplate(
+                  newItemTemplate,
+                  templateDictionary
+                );
 
-            // Interrupt process if progress callback returns `false`
-            if (
-              !itemProgressCallback(
-                createResponse.group.id,
-                common.EItemProgressStatus.Finished,
-                template.estimatedDeploymentCostFactor / 2
-              )
-            ) {
+                // Update the template dictionary with the new id
+                templateDictionary[template.itemId].itemId =
+                  createResponse.group.id;
+
+                // Interrupt process if progress callback returns `false`
+                if (
+                  !itemProgressCallback(
+                    createResponse.group.id,
+                    common.EItemProgressStatus.Finished,
+                    template.estimatedDeploymentCostFactor / 2
+                  )
+                ) {
+                  itemProgressCallback(
+                    createResponse.group.id,
+                    common.EItemProgressStatus.Cancelled,
+                    0
+                  );
+                  // tslint:disable-next-line: no-floating-promises
+                  common
+                    .removeGroup(
+                      createResponse.group.id,
+                      destinationAuthentication
+                    )
+                    .then(
+                      () =>
+                        resolve(_generateEmptyCreationResponse(template.type)),
+                      () =>
+                        resolve(_generateEmptyCreationResponse(template.type))
+                    );
+                } else {
+                  resolve({
+                    id: createResponse.group.id,
+                    type: newItemTemplate.type,
+                    postProcess: false
+                  });
+                }
+              }
+            } else {
               itemProgressCallback(
-                createResponse.group.id,
-                common.EItemProgressStatus.Cancelled,
+                template.itemId,
+                common.EItemProgressStatus.Failed,
                 0
               );
-              // tslint:disable-next-line: no-floating-promises
-              common
-                .removeGroup(createResponse.group.id, destinationAuthentication)
-                .then(
-                  () => resolve(_generateEmptyCreationResponse(template.type)),
-                  () => resolve(_generateEmptyCreationResponse(template.type))
-                );
-            } else {
-              resolve({
-                id: createResponse.group.id,
-                type: newItemTemplate.type,
-                postProcess: false
-              });
+              resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
             }
+          },
+          () => {
+            itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Failed,
+              0
+            );
+            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
           }
-        } else {
-          itemProgressCallback(
-            template.itemId,
-            common.EItemProgressStatus.Failed,
-            0
-          );
-          resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
-        }
-      },
-      () => {
-        itemProgressCallback(
-          template.itemId,
-          common.EItemProgressStatus.Failed,
-          0
         );
-        resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
-      }
-    );
+    });
   });
 }
 

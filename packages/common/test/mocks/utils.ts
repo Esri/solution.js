@@ -80,7 +80,8 @@ export const PORTAL_SUBSET = {
 export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function(
   itemId: string,
   status: interfaces.EItemProgressStatus,
-  costUsed: number
+  costUsed: number,
+  createdItemId: string // supplied when status is EItemProgressStatus.Created
 ): boolean {
   return true;
 };
@@ -104,6 +105,18 @@ export function createFailingItemProgressCallbackOnNthCall(
   let numCalls = 0;
   return function(itemId, status, costUsed) {
     return callToFailOn !== ++numCalls;
+  };
+}
+
+export function getSampleGroupToAdd(title: string): interfaces.IGroupAdd {
+  return {
+    title: title,
+    access: "private",
+    owner: "casey",
+    tags: ["test"],
+    description: "",
+    thumbnail: null,
+    snippet: ""
   };
 }
 
