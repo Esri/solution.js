@@ -66,10 +66,11 @@ export function convertItemToTemplate(
       case "Web Map":
       case "Web Mapping Application":
       case "Notebook":
-        dataPromise = common.getItemDataAsJson(
-          itemTemplate.itemId,
-          authentication
-        );
+        dataPromise = new Promise((resolveJSON, rejectJSON) => {
+          common
+            .getItemDataAsJson(itemTemplate.itemId, authentication)
+            .then(json => resolveJSON(common.sanitizeJSON(json)), rejectJSON);
+        });
         break;
       case "Form":
         dataPromise = common.getItemDataAsFile(

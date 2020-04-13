@@ -245,6 +245,8 @@ export function createItemTemplate(
         })
         .then(
           itemInfo => {
+            itemInfo = common.sanitizeJSON(itemInfo);
+
             const idTest: RegExp = /^source-[0-9A-F]{32}/i;
             // Remove any source-itemId type keywords
             if (Array.isArray(itemInfo.typeKeywords)) {
