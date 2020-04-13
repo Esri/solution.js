@@ -424,6 +424,7 @@ export function fineTuneCreatedItem(
       // Update item so properties like appItemId can now be set now that we know the new apps ID
       const updateOptions: common.IItemUpdate = {
         id: newlyCreatedItem.itemId,
+        url: newlyCreatedItem.item.url,
         data: newlyCreatedItem.data
       };
       const updateDef = common.updateItem(
