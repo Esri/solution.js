@@ -1,7 +1,7 @@
 ---
-title: Browser-based authentication with ArcGIS REST JS
+title: Browser-based authentication with Solutions.js
 navTitle: Browser-based OAuth 2.0
-description: Learn how to authenticate users with ArcGIS REST JS and OAuth 2.0 in a browser.
+description: Learn how to authenticate users with Solutions.js and OAuth 2.0 in a browser.
 order: 1
 group: 2-authentication
 ---

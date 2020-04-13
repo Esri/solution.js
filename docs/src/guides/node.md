@@ -1,20 +1,20 @@
 ---
-title: Using ArcGIS REST JS in Node.js
+title: Using Solutions.js in Node.js
 navTitle: Node.js
-description: Learn how to integrate the ArcGIS REST JS library into a Node.js app.
+description: Learn how to integrate the Solutions.js library into a Node.js app.
 order: 50
 group: 1-get-started
 ---
 
 # Get Started with Node.js
 
-Make sure you have polyfills for [`fetch`](https://github.com/lquixada/cross-fetch) and [`FormData`](https://github.com/form-data/isomorphic-form-data) installed before using any ArcGIS REST JS library. You can find `npm install` commands for all packages in the [API reference](/solution.js/api).
+Make sure you have polyfills for [`fetch`](https://github.com/lquixada/cross-fetch) and [`FormData`](https://github.com/form-data/isomorphic-form-data) installed before using any Solutions.js library. You can find `npm install` commands for all packages in the [API reference](/solution.js/api).
 
 ```bash
 npm install @esri/arcgis-rest-request @esri/arcgis-rest-auth cross-fetch isomorphic-form-data
 ```
 
-Require `cross-fetch` and `isomorphic-form-data` before using any of the ArcGIS REST JS methods.
+Require `cross-fetch` and `isomorphic-form-data` before using any of the Solutions.js methods.
 ```js
 // ensures fetch is available as a global
 require("cross-fetch/polyfill");
