@@ -238,6 +238,7 @@ export function deploySolutionItems(
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
       percentDone += progressPercentStep * costUsed;
+      /* istanbul ignore else */
       if (options.progressCallback) {
         options.progressCallback(percentDone, options.jobId);
       }
@@ -317,14 +318,13 @@ export function deploySolutionItems(
             resolve(clonedSolutionItemIds);
           } else {
             // Delete created items
-            Promise.all(
-              deployedItemIds.map(itemId =>
-                common.removeItemOrGroup(itemId, destinationAuthentication)
+            // tslint:disable-next-line: no-floating-promises
+            common
+              .removeListOfItemsOrGroups(
+                deployedItemIds,
+                destinationAuthentication
               )
-            ).then(
-              () => reject(common.failWithIds(failedTemplateItemIds)),
-              () => reject(common.failWithIds(failedTemplateItemIds))
-            );
+              .then(() => reject(common.failWithIds(failedTemplateItemIds)));
           }
         });
       },
