@@ -431,7 +431,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url:
               "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
-          data: undefined,
+          data: null,
           resources: [],
           dependencies: [],
           relatedItems: [],
