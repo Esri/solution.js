@@ -429,32 +429,8 @@ describe("Module `deployer`", () => {
           itemId: newGroupId
         };
 
-        const expectedUpdateBodyCommon: string =
-          "text=%7B%22metadata%22%3A%7B%22version%22%3A%22x%22%2C%22" +
-          "resourceStorageItemId%22%3A%22sln1234567890%22%7D%2C%22templates%22%3A%5B%7B%22itemId%22%3A%22" +
-          "map1234567890%22%2C%22type%22%3A%22Web%20Map%22%2C%22dependencies%22%3A%5B%22svc1234567890%22%5D%2C%22" +
-          "groups%22%3A%5B%22ba4a6047326243b290f625e80ebe6531%22%5D%7D%2C%7B%22itemId%22%3A%22svc1234567890%22%2C%22" +
-          "type%22%3A%22Feature%20Service%22%2C%22dependencies%22%3A%5B%5D%2C%22groups%22%3A%5B%5D%7D%2C%7B%22" +
-          "itemId%22%3A%22ba4a6047326243b290f625e80ebe6531%22%2C%22type%22%3A%22Group%22%2C%22groups%22%3A%5B%5D%2C%22" +
-          "dependencies%22%3A%5B%5D%7D%5D%2C%22params%22%3A%7B%22testProperty%22%3A%7B%22value%22%3A%22ABC%22%2C%22" +
-          "type%22%3A%22Text%22%7D%7D%7D&token=fake-token";
-
-        // Chrome & Firefox
         const expectedUpdateBody: string =
-          "f=json&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
-          "thumbnailurl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
-          "id=map1234567890&" +
-          expectedUpdateBodyCommon;
-
-        // Legacy Edge
-        const expectedUpdateBodyLegacyEdge: string =
-          "f=json&id=map1234567890&title=title&type=Solution&typeKeywords=Solution%2CDeployed&" +
-          "url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fitem.html%3Fid%3Dmap1234567890&" +
-          "thumbnailurl=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fsharing%2Frest%2Fcontent%2F" +
-          "items%2Fsln1234567890%2Finfo%2Fthumbnail%2Fago_downloaded.png%3Fw%3D400%26token%3Dfake-token&" +
-          expectedUpdateBodyCommon;
+          "f=json&id=map1234567890&url=https%3A%2F%2Fmyorg.maps.arcgis.com%2Fhome%2Fwebmap%2Fviewer.html%3Fwebmap%3Dmap1234567890&token=fake-token";
 
         const options: common.IDeploySolutionOptions = {
           templateDictionary: templateDictionary,
@@ -489,10 +465,7 @@ describe("Module `deployer`", () => {
               );
 
               const actualUpdateBody = updateCalls[0][1].body;
-              expect(
-                actualUpdateBody === expectedUpdateBody ||
-                  actualUpdateBody === expectedUpdateBodyLegacyEdge
-              )
+              expect(actualUpdateBody === expectedUpdateBody)
                 .withContext("test the expected update body")
                 .toBeTruthy();
 
