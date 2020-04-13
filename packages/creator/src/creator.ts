@@ -319,7 +319,7 @@ export function _createSolutionItem(
     // Create new solution item
     common
       .createItemWithData(
-        solutionItem,
+        common.sanitizeJSON(solutionItem),
         solutionData,
         authentication,
         options?.folderId

@@ -69,12 +69,14 @@ export function deploySolution(
 
           common.deleteItemProps(itemBase);
 
+          const sanitizer = new common.Sanitizer();
+
           _deploySolutionFromTemplate(
             templateSolutionId,
-            itemBase,
-            itemData,
+            common.sanitizeJSON(itemBase, sanitizer),
+            common.sanitizeJSON(itemData, sanitizer),
             authentication,
-            deployOptions
+            common.sanitizeJSON(deployOptions, sanitizer)
           ).then(
             createdSolutionId => {
               /* istanbul ignore else */
@@ -245,7 +247,7 @@ export function _deploySolutionFromTemplate(
 
         // Create a deployed Solution item
         const createSolutionItemBase = {
-          ...solutionTemplateBase,
+          ...common.sanitizeJSON(solutionTemplateBase),
           type: "Solution",
           typeKeywords: ["Solution"]
         };
