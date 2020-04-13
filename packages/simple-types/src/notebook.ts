@@ -77,11 +77,21 @@ export function fineTuneCreatedItem(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<void> {
-  const data: any = common.replaceInTemplate(
-    originalTemplate.data,
-    templateDictionary
-  );
-  return _updateItemData(newlyCreatedItem.itemId, data, authentication);
+  return new Promise<void>((resolve, reject) => {
+    const data: any = common.replaceInTemplate(
+      originalTemplate.data,
+      templateDictionary
+    );
+
+    const updateOptions: common.IItemUpdate = {
+      id: newlyCreatedItem.itemId,
+      url: newlyCreatedItem.item.url,
+      data: common.jsonToBlob(data)
+    };
+    common
+      .updateItem(updateOptions, authentication)
+      .then(() => resolve(), reject);
+  });
 }
 
 /**

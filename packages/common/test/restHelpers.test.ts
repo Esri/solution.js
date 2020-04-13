@@ -1951,41 +1951,6 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("removeItem", () => {
-    it("removes an item", done => {
-      const itemId: string = "ABC123";
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
-        utils.getSuccessResponse({ itemId })
-      );
-      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
-        expect(actual.success).toEqual(true);
-        done();
-      }, done.fail);
-    });
-
-    it("fails to remove an item", done => {
-      const itemId: string = "ABC123";
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          itemId +
-          "/delete",
-        utils.getFailureResponse({ itemId })
-      );
-      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        actual => {
-          expect(actual.success).toEqual(false);
-          done();
-        }
-      );
-    });
-  });
-
   describe("removeFolder", () => {
     it("removes a folder", done => {
       const folderId: string = "ABC123";
@@ -2060,6 +2025,41 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("removeItem", () => {
+    it("removes an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getSuccessResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(actual => {
+        expect(actual.success).toEqual(true);
+        done();
+      }, done.fail);
+    });
+
+    it("fails to remove an item", done => {
+      const itemId: string = "ABC123";
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          itemId +
+          "/delete",
+        utils.getFailureResponse({ itemId })
+      );
+      restHelpers.removeItem(itemId, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        actual => {
+          expect(actual.success).toEqual(false);
+          done();
+        }
+      );
+    });
+  });
+
   describe("removeItemOrGroup", () => {
     it("removes an item", done => {
       const itemId: string = "ABC123";
@@ -2123,6 +2123,33 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         }
       );
+    });
+  });
+
+  describe("removeListOfItemsOrGroups", () => {
+    it("handles failure to remove all of a list of items", done => {
+      const itemIds = ["itm1234567890"];
+
+      fetchMock
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            itemIds[0] +
+            "/delete",
+          utils.getFailureResponse()
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/" +
+            itemIds[0] +
+            "/delete",
+          utils.getFailureResponse()
+        );
+
+      // tslint:disable-next-line: no-floating-promises
+      restHelpers
+        .removeListOfItemsOrGroups(itemIds, MOCK_USER_SESSION)
+        .then(() => done());
     });
   });
 
@@ -2446,6 +2473,27 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         "Web Mapping Application",
         url + "{0}"
       );
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl + "/content/users/casey/items/0/update",
+        utils.getFailureResponse()
+      );
+
+      restHelpers._updateItemURL("0", url, MOCK_USER_SESSION, 2).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+
+    it("should handle no-op on first attempt to update a URL", done => {
+      const url =
+        utils.PORTAL_SUBSET.restUrl +
+        "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";
+
+      const originalItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        url + "{0}"
+      );
       const updatedItem = mockItems.getAGOLItem("Web Mapping Application", url);
 
       fetchMock
@@ -2497,7 +2545,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
       );
     });
 
-    it("should handle error on all attempts to update a URL", done => {
+    it("should handle no-op on all attempts to update a URL", done => {
       const url =
         utils.PORTAL_SUBSET.restUrl +
         "/apps/CrowdsourcePolling/index.html?appid=wma1234567890";

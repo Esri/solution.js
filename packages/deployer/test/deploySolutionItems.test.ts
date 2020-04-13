@@ -782,21 +782,7 @@ describe("Module `deploySolutionItems`", () => {
         )
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
-          utils.getSuccessResponse({ id: newItemID })
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/" +
-            newItemID +
-            "/update",
           utils.getFailureResponse({ id: newItemID })
-        )
-        .get(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/items/" +
-            newItemID +
-            "?f=json&token=fake-token",
-          updatedItem
         )
         .post(
           utils.PORTAL_SUBSET.restUrl +
@@ -804,7 +790,7 @@ describe("Module `deploySolutionItems`", () => {
             newItemID +
             "/delete",
           utils.getFailureResponse({
-            itemId: "aa4a6047326243b290f625e80ebe6531"
+            itemId: newItemID
           })
         )
         .post(
