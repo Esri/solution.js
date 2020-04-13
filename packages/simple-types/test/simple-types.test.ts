@@ -1716,7 +1716,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         });
     });
 
-    it("should handle web mapping application", done => {
+    it("should handle web mapping application that is a WAB", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
@@ -1818,6 +1818,126 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
               itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            }
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(actual => {
+          expect(actual).toEqual({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            type: itemTemplate.type,
+            postProcess: false
+          });
+          done();
+        });
+    });
+
+    it("should handle web mapping application that's not a WAB", done => {
+      const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        null
+      );
+      itemTemplate.itemId = "abc0cab401af4828a25cc6eaeb59fb69";
+      itemTemplate.item = {
+        title: "Voting Centers",
+        id: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        type: "Web Mapping Application",
+        categories: undefined,
+        culture: undefined,
+        description: undefined,
+        extent: undefined,
+        tags: undefined,
+        thumbnail: undefined,
+        typeKeywords: [],
+        url:
+          "{{portalBaseUrl}}/home/item.html?id={{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        licenseInfo: undefined,
+        properties: null,
+        name: undefined,
+        snippet: undefined
+      };
+      itemTemplate.data = {
+        appItemId: "{{abc0cab401af4828a25cc6eaeb59fb69.itemId}}",
+        values: {
+          webmap: "{{myMapId.itemId}}"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "{{myMapId.itemId}}"
+          },
+          itemId: "{{myMapId.itemId}}"
+        },
+        folderId: "{{folderId}}"
+      };
+      itemTemplate.dependencies = ["myMapId"];
+
+      const layer0: any = {
+        serviceItemId: "2ea59a64b34646f8972a71c7d536e4a3",
+        id: 0
+      };
+
+      const updatedItem = mockItems.getAGOLItem(
+        "Web Mapping Application",
+        utils.PORTAL_SUBSET.portalUrl +
+          "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
+      );
+      updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
+
+      const expectedData: any = {
+        appItemId: "abc0cab401af4828a25cc6eaeb59fb69",
+        values: {
+          webmap: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        map: {
+          appProxy: {
+            mapItemId: "map0cab401af4828a25cc6eaeb59fb69"
+          },
+          itemId: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        folderId: "folderb401af4828a25cc6eaeb59fb69"
+      };
+
+      fetchMock
+        .post(
+          "https://fake.com/arcgis/rest/services/test/FeatureServer/0",
+          layer0
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/folderb401af4828a25cc6eaeb59fb69/addItem",
+          utils.getSuccessResponse({
+            id: "abc0cab401af4828a25cc6eaeb59fb69",
+            folder: null
+          })
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/abc0cab401af4828a25cc6eaeb59fb69/update",
+          { success: true }
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
+          updatedItem
+        );
+      staticRelatedItemsMocks.fetchMockRelatedItems(
+        "abc0cab401af4828a25cc6eaeb59fb69",
+        { total: 0, relatedItems: [] }
+      );
+
+      // tslint:disable-next-line: no-floating-promises
+      simpleTypes
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
+            folderId: "folderb401af4828a25cc6eaeb59fb69",
+            myMapId: {
+              itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            },
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              itemId: "abc0cab401af4828a25cc6eaeb59fb69"
             }
           },
           MOCK_USER_SESSION,
