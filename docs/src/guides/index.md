@@ -8,10 +8,9 @@ description: Get started with Solutions.js.
 Solutions.js can be deployed with a variety of build tools, including:
 
 * [From a CDN](./from-a-cdn/)
-* [webpack, Rollup and Parcel](./bundlers/)
 * [AMD (Require.js or Dojo)](./amd-requirejs-dojo/)
 * [Node.js](./node/)
-* [What's New in `v2.0.0`?](./whats-new-v2-0/)
+
 ## Requirements
 
 Solutions.js takes advantage of web standards that are supported in all modern desktop browsers and most mobile browsers.
