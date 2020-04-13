@@ -49,6 +49,7 @@
 
 import * as generalHelpers from "./generalHelpers";
 import * as interfaces from "./interfaces";
+import * as libs from "./libs";
 import * as polyfills from "./polyfills";
 import * as portal from "@esri/arcgis-rest-portal";
 import * as request from "@esri/arcgis-rest-request";
@@ -255,7 +256,10 @@ export function copyFilesFromStorageItem(
                     mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
                     authentication: destinationAuthentication
                   }
-                ).then(resolveData, rejectData);
+                ).then(
+                  result => resolveData(libs.sanitizeJSON(result)),
+                  rejectData
+                );
               }, msLag);
             }
           );
@@ -274,7 +278,10 @@ export function copyFilesFromStorageItem(
                     itemId: destinationItemId,
                     authentication: destinationAuthentication
                   }
-                ).then(resolveInfo, rejectInfo);
+                ).then(
+                  result => resolveInfo(libs.sanitizeJSON(result)),
+                  rejectInfo
+                );
               }, msLag);
             }
           );
