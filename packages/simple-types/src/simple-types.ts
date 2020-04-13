@@ -278,6 +278,7 @@ export function createItemFromTemplate(
               );
 
               // Update the template again now that we have the new item id
+              const originalURL = newItemTemplate.item.url;
               newItemTemplate = common.replaceInTemplate(
                 newItemTemplate,
                 templateDictionary
@@ -332,6 +333,17 @@ export function createItemFromTemplate(
                   templateDictionary,
                   destinationAuthentication
                 );
+              } else if (originalURL !== newItemTemplate.item.url) {
+                // For web mapping applications that are not Web AppBuilder apps
+                customProcDef = new Promise<void>((resolve2, reject2) => {
+                  common
+                    .updateItemURL(
+                      createResponse.id,
+                      newItemTemplate.item.url,
+                      destinationAuthentication
+                    )
+                    .then(() => resolve2(), reject2);
+                });
               } else {
                 customProcDef = Promise.resolve();
               }
