@@ -33,6 +33,7 @@ export {
   IAddFolderResponse,
   ICreateItemResponse,
   IGroup,
+  IGroupAdd,
   IItem,
   IPagingParams,
   IPortal,
@@ -104,6 +105,11 @@ export type INoArgFunction = () => any;
 //#endregion ---------------------------------------------------------------------------------------------------------//
 
 //#region Interfaces -------------------------------------------------------------------------------------------------//
+
+export interface IAddGroupResponse {
+  success: boolean;
+  group: portal.IGroup;
+}
 
 export interface IAdditionalSearchOptions {
   start?: number;
