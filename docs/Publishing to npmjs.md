@@ -19,6 +19,15 @@
 * \[ \] Merge `master` branch into `develop` branch
 * \[ \] Push `develop` branch to GitHub
 
+#### Versioning
+
+"...increment the:
+1. MAJOR version when you make incompatible API changes,
+2. MINOR version when you add functionality in a backwards compatible manner, and
+3. PATCH version when you make backwards compatible bug fixes."
+
+*[source](https://semver.org/#summary)*
+
 #### Details
 
 1. Stop any code-change watchers that automatically recompile TypeScript, e.g., the watch task in Visual Studio Code
