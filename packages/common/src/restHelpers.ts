@@ -966,6 +966,7 @@ export function searchGroups(
  * @param searchString Text for which to search, e.g., 'redlands+map', 'type:"Web Map" -type:"Web Mapping Application"'
  * @param authentication Credentials for the request to AGO
  * @param additionalSearchOptions Adjustments to search, such as tranche size and categories of interest
+ * @param portalUrl Rest Url of the portal to perform the search
  * @return A promise that will resolve with a structure with a tranche of results and
  * describing how many items are available
  * @see https://developers.arcgis.com/rest/users-groups-and-items/group-content-search.htm
@@ -975,7 +976,8 @@ export function searchGroupContents(
   groupId: string,
   searchString: string,
   authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
+  additionalSearchOptions?: interfaces.IAdditionalSearchOptions,
+  portalUrl?: string
 ): Promise<interfaces.ISearchResult<interfaces.IItem>> {
   const searchOptions: portal.ISearchGroupContentOptions = {
     groupId,
@@ -983,7 +985,8 @@ export function searchGroupContents(
     params: {
       ...additionalSearchOptions
     },
-    authentication: authentication
+    authentication: authentication,
+    portal: portalUrl
   };
   return portal.searchGroupContent(searchOptions);
 }
