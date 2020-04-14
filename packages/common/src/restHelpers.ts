@@ -165,7 +165,11 @@ export function convertExtent(
         extentOfInterest: JSON.stringify(extent)
       };
       request
-        .request(geometryServiceUrl + "/findTransformations", _requestOptions)
+        .request(
+          generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
+            "findTransformations",
+          _requestOptions
+        )
         .then(
           response => {
             const transformations =
@@ -197,7 +201,11 @@ export function convertExtent(
               transformation: transformation
             };
             request
-              .request(geometryServiceUrl + "/project", _requestOptions)
+              .request(
+                generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
+                  "project",
+                _requestOptions
+              )
               .then(
                 projectResponse => {
                   const projectGeom: any =
@@ -598,9 +606,13 @@ export function extractDependencies(
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
       request
-        .request(itemTemplate.item.url + "/sources?f=json", {
-          authentication: authentication
-        })
+        .request(
+          generalHelpers.checkUrlPathTermination(itemTemplate.item.url) +
+            "sources?f=json",
+          {
+            authentication: authentication
+          }
+        )
         .then(
           response => {
             /* istanbul ignore else */
@@ -642,7 +654,9 @@ export function getLayers(
       };
       requestsDfd.push(
         request.request(
-          serviceUrl + "/" + layer["id"] + "?f=json",
+          generalHelpers.checkUrlPathTermination(serviceUrl) +
+            layer["id"] +
+            "?f=json",
           requestOptions
         )
       );
@@ -1276,7 +1290,10 @@ export function _getUpdate(
 ): interfaces.IUpdate {
   const ops: any = {
     delete: {
-      url: url + "/" + id + "/deleteFromDefinition",
+      url:
+        generalHelpers.checkUrlPathTermination(url) +
+        id +
+        "/deleteFromDefinition",
       params: {
         deleteFromDefinition: {
           fields:
@@ -1285,19 +1302,20 @@ export function _getUpdate(
       }
     },
     update: {
-      url: url + "/" + id + "/updateDefinition",
+      url:
+        generalHelpers.checkUrlPathTermination(url) + id + "/updateDefinition",
       params: {
         updateDefinition: obj
       }
     },
     add: {
-      url: url + "/addToDefinition",
+      url: generalHelpers.checkUrlPathTermination(url) + "addToDefinition",
       params: {
         addToDefinition: obj
       }
     },
     refresh: {
-      url: url + "/refresh",
+      url: generalHelpers.checkUrlPathTermination(url) + "refresh",
       params: {
         f: "json"
       }

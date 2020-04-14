@@ -318,7 +318,7 @@ describe("Module `deployer`", () => {
               spatialReference: { wkid: 102100 }
             },
             itemId: "svc1234567890",
-            url: featureServerUrl,
+            url: featureServerUrl + "/",
             name: "ROWPermits_publiccomment",
             layer0: {
               itemId: "svc1234567890",
