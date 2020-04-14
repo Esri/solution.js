@@ -705,8 +705,10 @@ export function getItemThumbnailUrl(
   authentication: interfaces.UserSession
 ): string {
   return (
-    getPortalSharingUrlFromAuth(authentication) +
-    (isGroup ? "/community/groups/" : "/content/items/") +
+    generalHelpers.checkUrlPathTermination(
+      getPortalSharingUrlFromAuth(authentication)
+    ) +
+    (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/" +
     thumbnailUrlPart

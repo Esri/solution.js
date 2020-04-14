@@ -95,6 +95,16 @@ export function blobToText(blob: Blob): Promise<string> {
 }
 
 /**
+ * Checks that a URL path ends with a slash.
+ *
+ * @param url URL to check
+ * @return URL, appended with slash if missing
+ */
+export function checkUrlPathTermination(url: string): string {
+  return url ? (url.endsWith("/") ? url : url + "/") : url;
+}
+
+/**
  * Converts JSON to a Blob.
  *
  * @param json JSON to use as source

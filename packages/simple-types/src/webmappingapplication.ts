@@ -26,14 +26,14 @@ export function convertItemToTemplate(
     // Remove org base URL and app id, e.g.,
     //   http://anOrg.maps.arcgis.com/apps/CrowdsourcePolling/index.html?appid=6fc5992522d34a6b5ce80d17835eea21
     // to
-    //   <PLACEHOLDER_SERVER_NAME>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
+    //   <placeholder(SERVER_NAME)>/apps/CrowdsourcePolling/index.html?appid={{<itemId>.id}}
     // Need to add placeholder server name because otherwise AGOL makes URL null
     let portalUrl: string = "";
     if (itemTemplate.item.url) {
       const templatizedUrl = itemTemplate.item.url;
       const iSep = templatizedUrl.indexOf("//");
       itemTemplate.item.url =
-        common.PLACEHOLDER_SERVER_NAME + // add placeholder server name
+        common.placeholder(common.SERVER_NAME) + // add placeholder server name
         templatizedUrl.substring(
           templatizedUrl.indexOf("/", iSep + 2),
           templatizedUrl.lastIndexOf("=") + 1
@@ -71,13 +71,13 @@ export function convertItemToTemplate(
         "data.portalUrl",
         "data.httpProxy.url"
       ],
-      common.PLACEHOLDER_SERVER_NAME
+      common.placeholder(common.SERVER_NAME)
     );
 
     common.setProp(
       itemTemplate,
       "data.geometryService",
-      common.PLACEHOLDER_GEOMETRY_SERVER_NAME
+      common.placeholder(common.GEOMETRY_SERVER_NAME)
     );
 
     templatizeDatasources(itemTemplate, authentication, portalUrl).then(
@@ -133,7 +133,7 @@ export function templatizeDatasources(
       const pendingRequests = new Array<Promise<void>>();
       Object.keys(dataSources).forEach(k => {
         const ds: any = dataSources[k];
-        common.setProp(ds, "portalUrl", common.PLACEHOLDER_SERVER_NAME);
+        common.setProp(ds, "portalUrl", common.placeholder(common.SERVER_NAME));
         const itemId: any = common.getProp(ds, "itemId");
         if (common.getProp(ds, "url")) {
           if (itemId) {
@@ -198,7 +198,7 @@ export function templatizeWidgets(
 
     widgets.forEach(widget => {
       if (common.getProp(widget, "icon")) {
-        setValues(widget, ["icon"], common.PLACEHOLDER_SERVER_NAME);
+        setValues(widget, ["icon"], common.placeholder(common.SERVER_NAME));
       }
       const config: any = widget.config;
       if (config) {
@@ -246,7 +246,7 @@ export function templatizeValues(
 
     if (values) {
       if (common.getProp(values, "icon")) {
-        setValues(values, ["icon"], common.PLACEHOLDER_SERVER_NAME);
+        setValues(values, ["icon"], common.placeholder(common.SERVER_NAME));
       }
 
       const sConfig: string = JSON.stringify(values);
@@ -335,19 +335,19 @@ export function findUrls(
         testString = replaceUrl(
           testString,
           url,
-          common.PLACEHOLDER_NA_SERVER_NAME
+          common.placeholder(common.NA_SERVER_NAME)
         );
       } else if (url.indexOf("GeocodeServer") > -1) {
         testString = replaceUrl(
           testString,
           url,
-          common.PLACEHOLDER_GEOCODE_SERVER_NAME
+          common.placeholder(common.GEOCODE_SERVER_NAME)
         );
       } else if (portalUrl && url.indexOf(portalUrl) > -1) {
         testString = replaceUrl(
           testString,
           portalUrl,
-          common.PLACEHOLDER_SERVER_NAME
+          common.placeholder(common.SERVER_NAME)
         );
       } else if (url.indexOf("FeatureServer") > -1) {
         if (requestUrls.indexOf(url) === -1) {
@@ -440,11 +440,13 @@ export function fineTuneCreatedItem(
         relationshipType: "WMA2Code",
         originItemId: newlyCreatedItem.itemId,
         url:
-          common.replaceInTemplate(
-            common.PLACEHOLDER_SERVER_NAME,
-            templateDictionary
+          common.checkUrlPathTermination(
+            common.replaceInTemplate(
+              common.placeholder(common.SERVER_NAME),
+              templateDictionary
+            )
           ) +
-          "/sharing/rest/content/items/" +
+          "sharing/rest/content/items/" +
           newlyCreatedItem.itemId +
           "/package"
       };

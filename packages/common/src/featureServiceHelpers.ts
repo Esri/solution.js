@@ -252,7 +252,7 @@ export function updateTemplate(
     templateDictionary[itemTemplate.itemId] || {},
     {
       itemId: createResponse.serviceItemId,
-      url: createResponse.serviceurl,
+      url: generalHelpers.checkUrlPathTermination(createResponse.serviceurl),
       name: createResponse.name
     }
   );
@@ -281,7 +281,7 @@ export function getLayerSettings(
   ids.forEach((id: any) => {
     settings["layer" + id] = {
       fields: _getNameMapping(layerInfos, id),
-      url: url + "/" + id,
+      url: generalHelpers.checkUrlPathTermination(url) + id,
       layerId: id,
       itemId: itemId
     };

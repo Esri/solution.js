@@ -165,7 +165,11 @@ export function convertExtent(
         extentOfInterest: JSON.stringify(extent)
       };
       request
-        .request(geometryServiceUrl + "/findTransformations", _requestOptions)
+        .request(
+          generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
+            "findTransformations",
+          _requestOptions
+        )
         .then(
           response => {
             const transformations =
@@ -197,7 +201,11 @@ export function convertExtent(
               transformation: transformation
             };
             request
-              .request(geometryServiceUrl + "/project", _requestOptions)
+              .request(
+                generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
+                  "project",
+                _requestOptions
+              )
               .then(
                 projectResponse => {
                   const projectGeom: any =
@@ -459,10 +467,12 @@ export function createItemWithData(
 }
 
 /**
- * Creates a folder using numeric suffix to ensure uniqueness.
+ * Creates a folder using a numeric suffix to ensure uniqueness if necessary.
  *
  * @param title Folder title, used as-is if possible and with suffix otherwise
- * @param templateDictionary Hash of facts: org URL, adlib replacements, user
+ * @param templateDictionary Hash of facts: org URL, adlib replacements, user; .user.folders property contains a list
+ * of known folder names; function updates list with existing names not yet known, and creates .user.folders if it
+ * doesn't exist in the dictionary
  * @param authentication Credentials for creating folder
  * @return Id of created folder
  */
@@ -494,6 +504,15 @@ export function createUniqueFolder(
           const nameNotAvailMsg =
             "Folder title '" + folderTitle + "' not available.";
           if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
+            // Create the user.folders property if it doesn't exist
+            /* istanbul ignore else */
+            if (!generalHelpers.getProp(templateDictionary, "user.folders")) {
+              generalHelpers.setCreateProp(
+                templateDictionary,
+                "user.folders",
+                []
+              );
+            }
             templateDictionary.user.folders.push({
               title: folderTitle
             });
@@ -587,9 +606,13 @@ export function extractDependencies(
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
       request
-        .request(itemTemplate.item.url + "/sources?f=json", {
-          authentication: authentication
-        })
+        .request(
+          generalHelpers.checkUrlPathTermination(itemTemplate.item.url) +
+            "sources?f=json",
+          {
+            authentication: authentication
+          }
+        )
         .then(
           response => {
             /* istanbul ignore else */
@@ -631,7 +654,9 @@ export function getLayers(
       };
       requestsDfd.push(
         request.request(
-          serviceUrl + "/" + layer["id"] + "?f=json",
+          generalHelpers.checkUrlPathTermination(serviceUrl) +
+            layer["id"] +
+            "?f=json",
           requestOptions
         )
       );
@@ -1265,7 +1290,10 @@ export function _getUpdate(
 ): interfaces.IUpdate {
   const ops: any = {
     delete: {
-      url: url + "/" + id + "/deleteFromDefinition",
+      url:
+        generalHelpers.checkUrlPathTermination(url) +
+        id +
+        "/deleteFromDefinition",
       params: {
         deleteFromDefinition: {
           fields:
@@ -1274,19 +1302,20 @@ export function _getUpdate(
       }
     },
     update: {
-      url: url + "/" + id + "/updateDefinition",
+      url:
+        generalHelpers.checkUrlPathTermination(url) + id + "/updateDefinition",
       params: {
         updateDefinition: obj
       }
     },
     add: {
-      url: url + "/addToDefinition",
+      url: generalHelpers.checkUrlPathTermination(url) + "addToDefinition",
       params: {
         addToDefinition: obj
       }
     },
     refresh: {
-      url: url + "/refresh",
+      url: generalHelpers.checkUrlPathTermination(url) + "refresh",
       params: {
         f: "json"
       }

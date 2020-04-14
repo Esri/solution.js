@@ -29,6 +29,10 @@ Makes a copy of an ArcGIS Online item.
 
 Copies an ArcGIS Online solution from one organization to another.
 
+### createFolder
+
+Creates a folder using a numeric suffix to ensure uniqueness if necessary.
+
 ### getGroupInfo
 
 Gets information about an ArcGIS Online group.
