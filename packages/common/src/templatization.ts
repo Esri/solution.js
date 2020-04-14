@@ -31,41 +31,50 @@ import * as interfaces from "./interfaces";
  * made before attempting to create the item.
  * @protected
  */
-export const PLACEHOLDER_SERVER_NAME: string = "{{portalBaseUrl}}";
+export const SERVER_NAME: string = "portalBaseUrl";
 
 /**
  * A parameterized geometry server name
  * @protected
  */
-export const PLACEHOLDER_GEOMETRY_SERVER_NAME: string =
-  "{{organization.helperServices.geometry.url}}";
+export const GEOMETRY_SERVER_NAME: string =
+  "organization.helperServices.geometry.url";
 
 /**
  * A parameterized geocode server name
  * @protected
  */
-export const PLACEHOLDER_GEOCODE_SERVER_NAME: string =
-  "{{organization.helperServices.geocode:getDefaultLocatorURL}}";
+export const GEOCODE_SERVER_NAME: string =
+  "organization.helperServices.geocode:getDefaultLocatorURL";
 
 /**
  * A parameterized network analyst server name
  * @protected
  */
-export const PLACEHOLDER_NA_SERVER_NAME: string =
-  "{{organization.helperServices.route.url}}";
+export const NA_SERVER_NAME: string = "organization.helperServices.route.url";
 
 /**
  * A parameterized network analyst server name
  * @protected
  */
-export const PLACEHOLDER_PRINT_SERVER_NAME: string =
-  "{{organization.helperServices.printTask.url}}";
+export const PRINT_SERVER_NAME: string =
+  "organization.helperServices.printTask.url";
 
 export const TRANSFORMS: any = {
   getDefaultLocatorURL(key: string, val: any, settings: any) {
     return val[0].url;
   }
 };
+
+/**
+ * Wraps double brackets around the supplied term.
+ *
+ * @param term Term to be wrapped, e.g., SERVER_NAME's "portalBaseUrl"
+ * @return Wrapped term, e.g., "{{portalBaseUrl}}"
+ */
+export function placeholder(term: string): string {
+  return "{{" + term + "}}";
+}
 
 /**
  * Creates a random 8-character alphanumeric string that begins with an alphabetic character.

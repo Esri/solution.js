@@ -38,7 +38,7 @@ export function convertItemToTemplate(
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
     itemTemplate.item.url =
-      common.PLACEHOLDER_SERVER_NAME +
+      common.placeholder(common.SERVER_NAME) +
       WEBMAP_APP_URL_PART +
       itemTemplate.item.id; // templatized id
 

@@ -1,6 +1,6 @@
 ---
 title: Package Overview
-description: Overview of packages provided by ArcGIS REST JS.
+description: Overview of packages provided by Solutions.js.
 order: 10
 group: 0-introduction
 ---
