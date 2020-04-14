@@ -20,7 +20,7 @@ import * as common from "@esri/solution-common";
  * The portion of a Webmap URL between the server and the map id.
  * @protected
  */
-const WEBMAP_APP_URL_PART: string = "/home/webmap/viewer.html?webmap=";
+const WEBMAP_APP_URL_PART: string = "home/webmap/viewer.html?webmap=";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,7 +38,7 @@ export function convertItemToTemplate(
   return new Promise<common.IItemTemplate>((resolve, reject) => {
     // Templatize the app URL
     itemTemplate.item.url =
-      common.placeholder(common.SERVER_NAME) +
+      common.checkUrlPathTermination(common.placeholder(common.SERVER_NAME)) +
       WEBMAP_APP_URL_PART +
       itemTemplate.item.id; // templatized id
 

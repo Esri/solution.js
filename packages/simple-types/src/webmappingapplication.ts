@@ -440,11 +440,13 @@ export function fineTuneCreatedItem(
         relationshipType: "WMA2Code",
         originItemId: newlyCreatedItem.itemId,
         url:
-          common.replaceInTemplate(
-            common.placeholder(common.SERVER_NAME),
-            templateDictionary
+          common.checkUrlPathTermination(
+            common.replaceInTemplate(
+              common.placeholder(common.SERVER_NAME),
+              templateDictionary
+            )
           ) +
-          "/sharing/rest/content/items/" +
+          "sharing/rest/content/items/" +
           newlyCreatedItem.itemId +
           "/package"
       };

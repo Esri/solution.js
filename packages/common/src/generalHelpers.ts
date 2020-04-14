@@ -101,7 +101,7 @@ export function blobToText(blob: Blob): Promise<string> {
  * @return URL, appended with slash if missing
  */
 export function checkUrlPathTermination(url: string): string {
-  return url.endsWith("/") ? url : url + "/";
+  return url ? (url.endsWith("/") ? url : url + "/") : url;
 }
 
 /**
