@@ -61,6 +61,18 @@ describe("Module `generalHelpers`: common utility functions shared across packag
     });
   }
 
+  describe("checkUrlPathTermination", () => {
+    it("doesn't change terminated URL", () => {
+      const url = "https://myOrg.arcgis.com/a/path/";
+      expect(generalHelpers.checkUrlPathTermination(url)).toEqual(url);
+    });
+
+    it("changes unterminated URL", () => {
+      const url = "https://myOrg.arcgis.com/a/path";
+      expect(generalHelpers.checkUrlPathTermination(url)).toEqual(url + "/");
+    });
+  });
+
   describe("cloneObject", () => {
     it("can clone a shallow object", () => {
       const obj = {

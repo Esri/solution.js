@@ -662,7 +662,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         item: {
           id: "DDDEEEFFF456",
           type: "",
-          url: "http://test/FeatureServer"
+          url: "http://test/FeatureServer/"
         },
         data: {},
         resources: [],
@@ -674,7 +674,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedSettings: any = {
         AAABBBCCC123: {
           itemId: "DDDEEEFFF456",
-          url: "http://test/FeatureServer",
+          url: "http://test/FeatureServer/",
           name: "TheService"
         }
       };

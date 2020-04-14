@@ -2,9 +2,9 @@
 <html lang="en" dir="ltr">
 <head>
   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-  <title>@esri/solution-common getGUID example</title>
+  <title>@esri/solution-common createFolder example</title>
   <!--
-   | Copyright 2019 Esri
+   | Copyright 2020 Esri
    |
    | Licensed under the Apache License, Version 2.0 (the "License");
    | you may not use this file except in compliance with the License.
@@ -26,8 +26,14 @@
 </head>
 <body>
   <div id="input" style="display:none">
-    Get GUID:&nbsp;<button onclick="goFcn()">Go</button>
+    <label for="desiredFolderName">Desired folder name:&nbsp;</label><input type="text" id="desiredFolderName" style="width:256px">
+    <br /><br />
+    <label for="username">username:&nbsp;</label><input type="text" id="username">
+    <label for="password">password:&nbsp;</label><input type="password" id="password">
+    <br /><br />
+    <button onclick="goFcn()">Go</button>
   </div>
+    <br />
   <div id="output" style="display:none"></div>
 
   <script src="lib/require.js"></script>
@@ -47,18 +53,33 @@
       }
     });
 
-    require(["@esri/solution-common"],
-      function (common) {
+    require(["@esri/arcgis-rest-auth", "@esri/solution-common"],
+      function (auth, common) {
         "use strict";
         goFcn = go;
         document.getElementById("input").style.display = "block";
         document.getElementById("output").style.display = "block";
 
         function go () {
-          document.getElementById("output").innerHTML = "<ul>" +
-            "<li>" + common.createPseudoGUID() + "</li>" +
-            "<li>" + common.createPseudoGUID(true) + "</li>" +
-            "</ul>";
+          common.createUniqueFolder(
+            document.getElementById("desiredFolderName").value,
+            {},
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value
+            })
+          ).then(
+            addFolderResponse => {
+              if (addFolderResponse.success) {
+                document.getElementById("output").innerHTML = "Created folder \"" + addFolderResponse.folder.title + "\"";
+              } else {
+                document.getElementById("output").innerHTML = "Unable to create folder";
+              }
+            },
+            error => {
+              document.getElementById("output").innerHTML = "Failed to create folder: " + JSON.stringify(error);
+            }
+          );
         }
       });
   </script>

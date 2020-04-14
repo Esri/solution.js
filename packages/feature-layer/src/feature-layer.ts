@@ -202,7 +202,10 @@ export function createItemFromTemplate(
                       common
                         .updateItemExtended(
                           createResponse.serviceItemId,
-                          newItemTemplate.item,
+                          {
+                            ...newItemTemplate.item,
+                            url: undefined // can't update the URL of a feature service
+                          },
                           newItemTemplate.data,
                           destinationAuthentication
                         )

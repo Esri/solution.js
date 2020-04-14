@@ -710,7 +710,11 @@ export function generateSourceFormFilePaths(
   portalSharingUrl: string,
   itemId: string
 ): interfaces.ISourceFileCopyPath[] {
-  const baseUrl = portalSharingUrl + "/content/items/" + itemId + "/info/";
+  const baseUrl =
+    generalHelpers.checkUrlPathTermination(portalSharingUrl) +
+    "content/items/" +
+    itemId +
+    "/info/";
   const filePaths: interfaces.ISourceFileCopyPath[] = [];
   ["form.json", "forminfo.json"].forEach(filename =>
     filePaths.push({
@@ -744,8 +748,8 @@ export function generateSourceMetadataUrl(
   isGroup = false
 ): string {
   return (
-    sourcePortalSharingUrl +
-    (isGroup ? "/community/groups/" : "/content/items/") +
+    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/metadata/metadata.xml"
   );
@@ -765,8 +769,8 @@ export function generateSourceResourceUrl(
   sourceResourceFilename: string
 ): string {
   return (
-    sourcePortalSharingUrl +
-    "/content/items/" +
+    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    "content/items/" +
     itemId +
     "/resources/" +
     sourceResourceFilename
@@ -789,8 +793,8 @@ export function generateSourceThumbnailUrl(
   isGroup = false
 ): string {
   return (
-    sourcePortalSharingUrl +
-    (isGroup ? "/community/groups/" : "/content/items/") +
+    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/" +
     thumbnailUrlPart

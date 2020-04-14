@@ -1168,25 +1168,20 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle extended error", done => {
       const folderTitleRoot = "My Folder";
       const userSession = MOCK_USER_SESSION;
-      const user: any = {
-        folders: []
-      };
 
       const createUrl =
         utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder";
       const expectedCreate = failedFolderCreation(folderTitleRoot, 0);
       fetchMock.post(createUrl, expectedCreate);
 
-      restHelpers
-        .createUniqueFolder(folderTitleRoot, { user }, userSession)
-        .then(
-          () => done.fail(),
-          response => {
-            expect(response.success).toBeUndefined();
-            expect(response.message).toEqual("400: Unable to create folder.");
-            done();
-          }
-        );
+      restHelpers.createUniqueFolder(folderTitleRoot, {}, userSession).then(
+        () => done.fail(),
+        response => {
+          expect(response.success).toBeUndefined();
+          expect(response.message).toEqual("400: Unable to create folder.");
+          done();
+        }
+      );
     });
   });
 
