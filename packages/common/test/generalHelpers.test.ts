@@ -21,6 +21,8 @@
 import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as mockItems from "../test/mocks/agolItems";
+import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
+import * as utils from "../test/mocks/utils";
 
 describe("Module `generalHelpers`: common utility functions shared across packages", () => {
   // Blobs are only available in the browser
@@ -182,6 +184,176 @@ describe("Module `generalHelpers`: common utility functions shared across packag
           expect(entry[prop]).toBe(orig[prop]);
         });
       });
+    });
+  });
+
+  interface ITestCompareJSONProperties {
+    isInvitationOnly: boolean;
+    views: number;
+    id: string;
+    tags: string[];
+    phone: string;
+    extent: number[][];
+    spatialReference: serviceAdmin.ISpatialReference;
+  }
+
+  describe("compareJSONProperties", () => {
+    it("should not report if no property changed", () => {
+      const json1: ITestCompareJSONProperties = {
+        isInvitationOnly: true,
+        views: 5,
+        id: "{{grp1234567890.itemId}}",
+        tags: ["JavaScript"],
+        phone: null,
+        extent: [
+          [-111.299, 43.4327],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 102100,
+          latestWkid: 3857
+        }
+      };
+      const json2: ITestCompareJSONProperties = {
+        isInvitationOnly: true,
+        views: 5,
+        id: "{{grp1234567890.itemId}}",
+        tags: ["JavaScript"],
+        phone: null,
+        extent: [
+          [-111.299, 43.4327],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 102100,
+          latestWkid: 3857
+        }
+      };
+
+      const messages = generalHelpers.compareJSONProperties(json1, json2);
+      expect(messages.length).toEqual(0);
+    });
+
+    it("should compare different property types", () => {
+      const json1: ITestCompareJSONProperties = {
+        isInvitationOnly: true,
+        views: 5,
+        id: "{{grp1234567890.itemId}}",
+        tags: ["JavaScript"],
+        phone: null,
+        extent: [
+          [-111.299, 43.4327],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 102100,
+          latestWkid: 3857
+        }
+      };
+      const json2: ITestCompareJSONProperties = {
+        isInvitationOnly: false,
+        views: 6,
+        id: "{{grp1234567890.name}}",
+        tags: ["JavaScript", "Group"],
+        phone: "555-1212",
+        extent: [
+          [-111.299, 53],
+          [-109.7829, 44.1159]
+        ],
+        spatialReference: {
+          wkid: 4326
+        }
+      };
+
+      const messages = generalHelpers.compareJSONProperties(json1, json2);
+      expect(messages.length).toEqual(7);
+      expect(messages).toEqual([
+        "Value difference: true vs. false",
+        "Value difference: 5 vs. 6",
+        'String difference: "{{grp1234567890.itemId}}" vs. "{{grp1234567890.name}}"',
+        "Array length difference: [1] vs. [2]",
+        "Type difference: null vs. string",
+        "Value difference: 43.4327 vs. 53",
+        'Props difference: ["wkid","latestWkid"] vs. ["wkid"]'
+      ]);
+    });
+  });
+
+  describe("sanitizeJSONAndReportChanges", () => {
+    it("should not report if no property changed", () => {
+      const json = {
+        a: "an innocuous string"
+      };
+      const expectedSanitizedJSON = {
+        a: "an innocuous string"
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(0);
+    });
+
+    it("should report changed property", () => {
+      const json = {
+        a:
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />'
+      };
+      const expectedSanitizedJSON = {
+        a: '<img src="https://example.com/fake-image.jpg" />'
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(2);
+      expect(messages).toEqual([
+        "Changed 1 property",
+        '    String difference: "' +
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"'
+      ]);
+    });
+
+    it("should report changed properties", () => {
+      const json = {
+        a:
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />',
+        b: "<IMG SRC=JaVaScRiPt:alert('XSS')>"
+      };
+      const expectedSanitizedJSON = {
+        a: '<img src="https://example.com/fake-image.jpg" />',
+        b: "<img src>"
+      };
+
+      const messages = [] as string[];
+      spyOn(console, "warn").and.callFake((message: string) => {
+        messages.push(message);
+      });
+      const sanitizedJSON = generalHelpers.sanitizeJSONAndReportChanges(json);
+      expect(sanitizedJSON).toEqual(expectedSanitizedJSON);
+      expect(messages.length).toEqual(3);
+      expect(messages).toEqual([
+        "Changed 2 properties",
+        '    String difference: "' +
+          '<img src="https://example.com/fake-image.jpg" onerror="alert(1);" />' +
+          '" vs. "' +
+          '<img src="https://example.com/fake-image.jpg" />' +
+          '"',
+        '    String difference: "' +
+          "<IMG SRC=JaVaScRiPt:alert('XSS')>" +
+          '" vs. "' +
+          "<img src>" +
+          '"'
+      ]);
     });
   });
 
