@@ -51,6 +51,19 @@ const projectedGeometries: any[] = [
 
 describe("Module `deployer`", () => {
   describe("deploySolution", () => {
+    it("reports an error if the solution id is not supplied", done => {
+      deployer.deploySolution(null, MOCK_USER_SESSION).then(
+        () => done.fail(),
+        err => {
+          expect(err).toEqual({
+            success: false,
+            error: "The Solution Template id is missing"
+          });
+          done();
+        }
+      );
+    });
+
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("can deploy webmap with dependencies", done => {

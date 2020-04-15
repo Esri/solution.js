@@ -31,6 +31,10 @@ export function deploySolution(
   options?: common.IDeploySolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (!templateSolutionId) {
+      reject(common.fail("The Solution Template id is missing"));
+    }
+
     const deployOptions: common.IDeploySolutionOptions = options || {};
     /* istanbul ignore else */
     if (deployOptions.progressCallback) {
