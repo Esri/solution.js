@@ -47,7 +47,9 @@ export function sanitizeGroupItems(
       )
       .then(
         (response: common.ISearchResult<common.IItem>) => {
-          const screenedGroupItems = common.sanitizeJSON(response.results);
+          const screenedGroupItems = common.sanitizeJSONAndReportChanges(
+            response.results
+          );
           resolve(screenedGroupItems);
         },
         err => {

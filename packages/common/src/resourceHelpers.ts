@@ -257,7 +257,10 @@ export function copyFilesFromStorageItem(
                     authentication: destinationAuthentication
                   }
                 ).then(
-                  result => resolveData(libs.sanitizeJSON(result)),
+                  result =>
+                    resolveData(
+                      generalHelpers.sanitizeJSONAndReportChanges(result)
+                    ),
                   rejectData
                 );
               }, msLag);
@@ -279,7 +282,10 @@ export function copyFilesFromStorageItem(
                     authentication: destinationAuthentication
                   }
                 ).then(
-                  result => resolveInfo(libs.sanitizeJSON(result)),
+                  result =>
+                    resolveInfo(
+                      generalHelpers.sanitizeJSONAndReportChanges(result)
+                    ),
                   rejectInfo
                 );
               }, msLag);

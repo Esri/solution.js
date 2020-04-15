@@ -73,14 +73,27 @@ export function deploySolution(
 
           common.deleteItemProps(itemBase);
 
+          // Sanitize individual parts of deployOptions because sanitizer gets rid of progress callback
           const sanitizer = new common.Sanitizer();
+          deployOptions.title = common.sanitizeJSONAndReportChanges(
+            deployOptions.title,
+            sanitizer
+          );
+          deployOptions.snippet = common.sanitizeJSONAndReportChanges(
+            deployOptions.snippet,
+            sanitizer
+          );
+          deployOptions.description = common.sanitizeJSONAndReportChanges(
+            deployOptions.description,
+            sanitizer
+          );
 
           _deploySolutionFromTemplate(
             templateSolutionId,
-            common.sanitizeJSON(itemBase, sanitizer),
-            common.sanitizeJSON(itemData, sanitizer),
+            common.sanitizeJSONAndReportChanges(itemBase, sanitizer),
+            common.sanitizeJSONAndReportChanges(itemData, sanitizer),
             authentication,
-            common.sanitizeJSON(deployOptions, sanitizer)
+            deployOptions
           ).then(
             createdSolutionId => {
               /* istanbul ignore else */
@@ -251,7 +264,7 @@ export function _deploySolutionFromTemplate(
 
         // Create a deployed Solution item
         const createSolutionItemBase = {
-          ...common.sanitizeJSON(solutionTemplateBase),
+          ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),
           type: "Solution",
           typeKeywords: ["Solution"]
         };
