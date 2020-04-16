@@ -31,6 +31,10 @@ export function deploySolution(
   options?: common.IDeploySolutionOptions
 ): Promise<string> {
   return new Promise((resolve, reject) => {
+    if (!templateSolutionId) {
+      reject(common.fail("The Solution Template id is missing"));
+    }
+
     const deployOptions: common.IDeploySolutionOptions = options || {};
     /* istanbul ignore else */
     if (deployOptions.progressCallback) {
@@ -69,10 +73,25 @@ export function deploySolution(
 
           common.deleteItemProps(itemBase);
 
+          // Sanitize individual parts of deployOptions because sanitizer gets rid of progress callback
+          const sanitizer = new common.Sanitizer();
+          deployOptions.title = common.sanitizeJSONAndReportChanges(
+            deployOptions.title,
+            sanitizer
+          );
+          deployOptions.snippet = common.sanitizeJSONAndReportChanges(
+            deployOptions.snippet,
+            sanitizer
+          );
+          deployOptions.description = common.sanitizeJSONAndReportChanges(
+            deployOptions.description,
+            sanitizer
+          );
+
           _deploySolutionFromTemplate(
             templateSolutionId,
-            itemBase,
-            itemData,
+            common.sanitizeJSONAndReportChanges(itemBase, sanitizer),
+            common.sanitizeJSONAndReportChanges(itemData, sanitizer),
             authentication,
             deployOptions
           ).then(
@@ -245,7 +264,7 @@ export function _deploySolutionFromTemplate(
 
         // Create a deployed Solution item
         const createSolutionItemBase = {
-          ...solutionTemplateBase,
+          ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),
           type: "Solution",
           typeKeywords: ["Solution"]
         };

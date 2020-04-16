@@ -16,6 +16,10 @@
 
 These examples illustrate the use of the solution-common package.
 
+### compareJSON
+
+Compares two JSON structures; the second structure may be a sanitized version of the first structure.
+
 ### convertExtent
 
 Gets the extents of an ArcGIS Online portal and converts them to WGS84 (wkid 4326).

@@ -86,7 +86,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
 
     it("sanitizes a string, supplying a sanitizer", () => {
       // Instantiate a new Sanitizer object
-      const sanitizer = new arcgisSanitizer.Sanitizer();
+      const sanitizer = new libs.Sanitizer();
 
       // Sanitize
       // from https://github.com/esri/arcgis-html-sanitizer
@@ -114,7 +114,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
 
     it("sanitizes JSON, supplying a sanitizer", () => {
       // Instantiate a new Sanitizer object
-      const sanitizer = new arcgisSanitizer.Sanitizer();
+      const sanitizer = new libs.Sanitizer();
 
       // Sanitize
       // from https://github.com/esri/arcgis-html-sanitizer
@@ -165,7 +165,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
 
     it("sanitizes a supported URL protocol, supplying a sanitizer", () => {
       // Instantiate a new Sanitizer object
-      const sanitizer = new arcgisSanitizer.Sanitizer();
+      const sanitizer = new libs.Sanitizer();
 
       // Sanitize
       // from https://github.com/esri/arcgis-html-sanitizer
@@ -202,7 +202,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
 
     it("validates a string, supplying a sanitizer", () => {
       // Instantiate a new Sanitizer object
-      const sanitizer = new arcgisSanitizer.Sanitizer();
+      const sanitizer = new libs.Sanitizer();
 
       // Check if a string contains invalid HTML
       // from https://github.com/esri/arcgis-html-sanitizer
@@ -222,7 +222,7 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
           xssFilterEvasionTestCases.testCases.length +
           " XSS test cases"
       );
-      const sanitizer = new arcgisSanitizer.Sanitizer();
+      const sanitizer = new libs.Sanitizer();
 
       xssFilterEvasionTestCases.testCases.forEach(
         (testCase: xssFilterEvasionTestCases.IXSSTestCase) => {

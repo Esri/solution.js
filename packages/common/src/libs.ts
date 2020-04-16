@@ -19,7 +19,8 @@
 
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
-import * as arcgisSanitizer from "@esri/arcgis-html-sanitizer";
+import { Sanitizer } from "@esri/arcgis-html-sanitizer";
+export { Sanitizer } from "@esri/arcgis-html-sanitizer";
 
 /**
  * Result of checking if a string contains invalid HTML.
@@ -43,12 +44,9 @@ export interface IValidationResult {
  * @return Sanitized version of `html`
  * @see https://github.com/esri/arcgis-html-sanitizer#basic-usage
  */
-export function sanitizeHTML(
-  html: string,
-  sanitizer?: arcgisSanitizer.Sanitizer
-): string {
+export function sanitizeHTML(html: string, sanitizer?: Sanitizer): string {
   if (!sanitizer) {
-    sanitizer = new arcgisSanitizer.Sanitizer();
+    sanitizer = new Sanitizer();
   }
 
   return sanitizer.sanitize(html);
@@ -62,12 +60,9 @@ export function sanitizeHTML(
  * @return Sanitized version of `json`
  * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-json
  */
-export function sanitizeJSON(
-  json: any,
-  sanitizer?: arcgisSanitizer.Sanitizer
-): any {
+export function sanitizeJSON(json: any, sanitizer?: Sanitizer): any {
   if (!sanitizer) {
-    sanitizer = new arcgisSanitizer.Sanitizer();
+    sanitizer = new Sanitizer();
   }
 
   return sanitizer.sanitize(json);
@@ -83,10 +78,10 @@ export function sanitizeJSON(
  */
 export function sanitizeURLProtocol(
   url: string,
-  sanitizer?: arcgisSanitizer.Sanitizer
+  sanitizer?: Sanitizer
 ): string {
   if (!sanitizer) {
-    sanitizer = new arcgisSanitizer.Sanitizer();
+    sanitizer = new Sanitizer();
   }
 
   return sanitizer.sanitizeUrl(url);
@@ -103,10 +98,10 @@ export function sanitizeURLProtocol(
  */
 export function validateHTML(
   html: string,
-  sanitizer?: arcgisSanitizer.Sanitizer
+  sanitizer?: Sanitizer
 ): IValidationResult {
   if (!sanitizer) {
-    sanitizer = new arcgisSanitizer.Sanitizer();
+    sanitizer = new Sanitizer();
   }
 
   return sanitizer.validate(html);

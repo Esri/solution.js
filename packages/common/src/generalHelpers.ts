@@ -21,6 +21,7 @@
  */
 
 import * as interfaces from "./interfaces";
+import * as libs from "./libs";
 import * as polyfills from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -178,6 +179,110 @@ export function compareJSONNoEmptyStrings(json1: any, json2: any): boolean {
   const jsonStr1 = JSON.stringify(json1).replace(/\"\:\"\"/g, '":null');
   const jsonStr2 = JSON.stringify(json2).replace(/\"\:\"\"/g, '":null');
   return jsonStr1 === jsonStr2;
+}
+
+/**
+ *  Compares two JSON objects property by property and reports each mismatch.
+ *
+ * @param json1 First object
+ * @param json2 Second object
+ * @return A list of mismatch report strings
+ */
+export function compareJSONProperties(json1: any, json2: any): string[] {
+  let mismatches = [] as string[];
+
+  const type1 = _typeof_null(json1);
+  const type2 = _typeof_null(json2);
+
+  if (type1 !== type2) {
+    // Ignore "undefined" vs. "null" and vice versa
+    if (
+      (type1 !== "undefined" && type1 !== "null") ||
+      (type2 !== "null" && type2 !== "undefined")
+    ) {
+      mismatches.push("Type difference: " + type1 + " vs. " + type2);
+    }
+  } else {
+    if (json1 !== json2) {
+      switch (type1) {
+        case "boolean":
+          mismatches.push("Value difference: " + json1 + " vs. " + json2);
+          break;
+        case "number":
+          mismatches.push("Value difference: " + json1 + " vs. " + json2);
+          break;
+        case "string":
+          mismatches.push(
+            'String difference: "' + json1 + '" vs. "' + json2 + '"'
+          );
+          break;
+        case "object":
+          const keys1 = Object.keys(json1);
+          const keys2 = Object.keys(json2);
+          if (
+            keys1.length !== keys2.length ||
+            JSON.stringify(keys1) !== JSON.stringify(keys2)
+          ) {
+            if (Array.isArray(json1) && Array.isArray(json2)) {
+              mismatches.push(
+                "Array length difference: [" +
+                  keys1.length +
+                  "] vs. [" +
+                  keys2.length +
+                  "]"
+              );
+            } else {
+              mismatches.push(
+                "Props difference: " +
+                  JSON.stringify(keys1) +
+                  " vs. " +
+                  JSON.stringify(keys2)
+              );
+            }
+          } else {
+            for (let k = 0; k < keys1.length; ++k) {
+              const submismatches = compareJSONProperties(
+                json1[keys1[k]],
+                json2[keys2[k]]
+              );
+              if (submismatches.length > 0) {
+                mismatches = mismatches.concat(submismatches);
+              }
+            }
+          }
+          break;
+      }
+    }
+  }
+
+  return mismatches;
+}
+
+/**
+ * Sanitizes JSON and echoes changes to console.
+ *
+ * @param json JSON to sanitize
+ * @param sanitizer Instance of Sanitizer class
+ * @return Sanitized version of `json`
+ * @see https://github.com/esri/arcgis-html-sanitizer#sanitize-json
+ */
+export function sanitizeJSONAndReportChanges(
+  json: any,
+  sanitizer?: libs.Sanitizer
+): any {
+  const sanitizedJSON = libs.sanitizeJSON(json, sanitizer);
+
+  const mismatches = compareJSONProperties(json, sanitizedJSON);
+  if (mismatches.length > 0) {
+    console.warn(
+      "Changed " +
+        mismatches.length +
+        (mismatches.length === 1 ? " property" : " properties")
+    );
+    mismatches.forEach(mismatch => console.warn("    " + mismatch));
+  }
+
+  return sanitizedJSON;
 }
 
 export function deleteItemProps(itemTemplate: any): any {
@@ -537,4 +642,16 @@ export function _padPositiveNum(n: number, totalSize: number): string {
     numStr = "0".repeat(numPads) + numStr; // TODO IE11 does not support repeat()
   }
   return numStr;
+}
+
+/**
+ * Implements rejected ECMA proposal to change `typeof null` from "object" to "null".
+ *
+ * @param value Value whose type is sought
+ * @return "null" if `value` is null; `typeof value` otherwise
+ * @see https://web.archive.org/web/20160331031419/http://wiki.ecmascript.org:80/doku.php?id=harmony:typeof_null
+ * @protected
+ */
+function _typeof_null(value: any): string {
+  return value === null ? "null" : typeof value;
 }

@@ -431,7 +431,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             url:
               "{{portalBaseUrl}}/home/webmap/viewer.html?webmap={{map1234567890.itemId}}"
           },
-          data: undefined,
+          data: null,
           resources: [],
           dependencies: [],
           relatedItems: [],
@@ -767,7 +767,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           }, done.fail);
       });
 
-      it("should handle web mapping application with missing data", done => {
+      it("should handle web mapping application with missing data section and source URL", done => {
         const solutionItemId = "sln1234567890";
         // Related to issue: #56
         // To add support for simple apps such as those that we create for "Getting to Know"
@@ -2108,7 +2108,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         });
     });
 
-    it("should handle web mapping application with missing data", done => {
+    it("should handle web mapping application with missing data section and templatized URL", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "Web Mapping Application",
         null
@@ -2141,6 +2141,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           "/home/item.html?id=abc0cab401af4828a25cc6eaeb59fb69"
       );
       updatedItem.id = "abc0cab401af4828a25cc6eaeb59fb69";
+      updatedItem.thumbnail = null;
 
       fetchMock
         .post(
@@ -2159,11 +2160,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/items/abc0cab401af4828a25cc6eaeb59fb69?f=json&token=fake-token",
           updatedItem
-        )
-        .post(
-          utils.PORTAL_SUBSET.restUrl +
-            "/content/users/casey/items/map1234567890/delete",
-          utils.getSuccessResponse({ itemId: "map1234567890" })
         );
 
       // tslint:disable-next-line: no-floating-promises
