@@ -165,6 +165,13 @@ describe("Module `deployer`", () => {
               "/data",
             itemInfo.data
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/map1234567890?f=json&token=fake-token",
@@ -675,6 +682,12 @@ describe("Module `deployer`", () => {
               "/content/items/c38e59126368495694ca23b7ccacefba/data",
             solutionResponse
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/c38e59126368495694ca23b7ccacefba/info/metadata/metadata.xml",
+            utils.getSampleMetadataAsFile(),
+            { sendAsJson: false }
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/c38e59126368495694ca23b7ccacefba?f=json&token=fake-token",
@@ -820,6 +833,13 @@ describe("Module `deployer`", () => {
               "/data",
             itemInfo.data
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/community/self?f=json&token=fake-token",
@@ -934,6 +954,13 @@ describe("Module `deployer`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/items/" +
               itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
               "/data",
             mockItems.get400Failure()
           );
@@ -1011,6 +1038,13 @@ describe("Module `deployer`", () => {
           .post(
             "https://utility.arcgisonline.com/arcgis/rest/info",
             utils.UTILITY_SERVER_INFO
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
           )
           .post(
             geometryServer + "/findTransformations",
@@ -1100,6 +1134,13 @@ describe("Module `deployer`", () => {
               itemInfo.item.id +
               "/data",
             itemInfo.data
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
           )
           .get(
             utils.PORTAL_SUBSET.restUrl +
@@ -1297,6 +1338,13 @@ describe("Module `deployer`", () => {
               "/data",
             itemInfo.data
           )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
+          )
           .get(
             utils.PORTAL_SUBSET.restUrl +
               "/community/self?f=json&token=fake-token",
@@ -1478,6 +1526,13 @@ describe("Module `deployer`", () => {
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey?f=json&token=fake-token",
             utils.getContentUser()
+          )
+          .post(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/" +
+              itemInfo.item.id +
+              "/info/metadata/metadata.xml",
+            mockItems.get400Failure()
           )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createFolder",
