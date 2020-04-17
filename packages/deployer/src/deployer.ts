@@ -44,10 +44,11 @@ export function deploySolution(
     // Fetch solution item's info
     Promise.all([
       common.getItemBase(templateSolutionId, authentication),
-      common.getItemDataAsJson(templateSolutionId, authentication)
+      common.getItemDataAsJson(templateSolutionId, authentication),
+      common.getItemMetadataAsFile(templateSolutionId, authentication)
     ]).then(
       responses => {
-        const [itemBase, itemData] = responses;
+        const [itemBase, itemData, itemMetadata] = responses;
 
         if (
           itemBase.type !== "Solution" ||
@@ -92,6 +93,7 @@ export function deploySolution(
             templateSolutionId,
             common.sanitizeJSONAndReportChanges(itemBase, sanitizer),
             common.sanitizeJSONAndReportChanges(itemData, sanitizer),
+            itemMetadata,
             authentication,
             deployOptions
           ).then(
@@ -133,6 +135,7 @@ export function _deploySolutionFromTemplate(
   templateSolutionId: string,
   solutionTemplateBase: any,
   solutionTemplateData: any,
+  solutionTemplateMetadata: File,
   authentication: common.UserSession,
   options: common.IDeploySolutionOptions
 ): Promise<string> {
@@ -381,10 +384,12 @@ export function _deploySolutionFromTemplate(
           templateDictionary
         );
 
+        // Pass metadata in via params because item property is serialized, which discards a File
         return common.updateItem(
           solutionTemplateBase,
           authentication,
-          deployedFolderId
+          deployedFolderId,
+          { metadata: solutionTemplateMetadata }
         );
       })
       .then(

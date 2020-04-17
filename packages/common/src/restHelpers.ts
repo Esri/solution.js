@@ -1013,13 +1013,17 @@ export function shareItem(
 export function updateItem(
   itemInfo: interfaces.IItemUpdate,
   authentication: interfaces.UserSession,
-  folderId?: string
+  folderId?: string,
+  additionalParams?: any
 ): Promise<interfaces.IUpdateItemResponse> {
   return new Promise((resolve, reject) => {
     const updateOptions: portal.IUpdateItemOptions = {
       item: itemInfo,
       folderId: folderId,
-      authentication: authentication
+      authentication: authentication,
+      params: {
+        ...(additionalParams ?? {})
+      }
     };
     portal.updateItem(updateOptions).then(
       response => (response.success ? resolve(response) : reject(response)),
