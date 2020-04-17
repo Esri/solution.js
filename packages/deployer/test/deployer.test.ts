@@ -53,6 +53,19 @@ describe("Module `deployer`", () => {
   describe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
+      it("reports an error if the solution id is not supplied", done => {
+        deployer.deploySolution(null, MOCK_USER_SESSION).then(
+          () => done.fail(),
+          err => {
+            expect(err).toEqual({
+              success: false,
+              error: "The Solution Template id is missing"
+            });
+            done();
+          }
+        );
+      });
+
       it("can deploy webmap with dependencies", done => {
         const groupId: string = "aa4a6047326243b290f625e80ebe6531";
         const newGroupId: string = "ba4a6047326243b290f625e80ebe6531";

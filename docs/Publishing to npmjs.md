@@ -9,7 +9,7 @@
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
 * \[ \] Fix CHANGELOG.md
-* \[ \] Commit & push changes as a release prep
+* \[ \] Commit changes as a release prep
 * \[ \] Switch to `master` branch
 * \[ \] Merge `release` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
@@ -96,7 +96,7 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Commit and push the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release.
+10. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub.
 
 11. Switch to the `master` branch and merge in the `release` branch, but without committing it.
 ```
@@ -224,4 +224,4 @@ npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
 ---
-4/7/20 mkt
+4/14/20 mkt
