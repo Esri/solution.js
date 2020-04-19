@@ -64,7 +64,6 @@ The API documentation is published at https://esri.github.io/solution.js/ ([sour
 Currently, the item types that can be converted into a template are:
 
 * ArcGIS Pro Add In
-* Code Attachment
 * Code Sample
 * Dashboard
 * Desktop Add In

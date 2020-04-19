@@ -17,19 +17,16 @@
 
 import * as common from "../lib/common.umd.min";
 
-export function compareJSON(
-  json1: any,
-  json2: any
-): string {
+export function compareJSON(json1: any, json2: any): string {
   const mismatches = common.compareJSONProperties(json1, json2);
 
   let html = "";
   if (mismatches.length === 0) {
-    html = "JSONs match"
+    html = "JSONs match";
   } else {
     html = "Mismatches:<ol>";
     mismatches.forEach(
-      mismatch => html += "<li>" + encodeHTML(mismatch) + "</li>"
+      mismatch => (html += "<li>" + encodeHTML(mismatch) + "</li>")
     );
     html += "</ol>";
   }
@@ -37,9 +34,6 @@ export function compareJSON(
   return html;
 }
 
-function encodeHTML(
-  text: string
-): string {
-  return text.replace(/</g, "&lt;").replace(/>/g, "&gt;")
+function encodeHTML(text: string): string {
+  return text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
-
