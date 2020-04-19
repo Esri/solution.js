@@ -1585,6 +1585,28 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getLayers", () => {
+    it("can handle success", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate.item.url = url;
+
+      fetchMock.post(
+        adminUrl + "/0?f=json",
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      );
+      restHelpers
+        .getLayers(url, [{ id: 0 }], MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toEqual([
+            mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+          ]);
+          done();
+        }, done.fail);
+    });
+
     it("can handle error", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1601,6 +1623,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         }
       );
+    });
+
+    it("can handle empty layer list", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+      restHelpers.getLayers(url, [], MOCK_USER_SESSION).then(result => {
+        expect(result).toEqual([]);
+        done();
+      }, done.fail);
     });
   });
 

@@ -31,6 +31,7 @@ import {
   deTemplatizeFieldInfos,
   getLayersAndTables,
   addFeatureServiceLayersAndTables,
+  updateLayerFieldReferences,
   postProcessFields,
   _getFieldVisibilityUpdates,
   _validateDomains,
@@ -73,6 +74,7 @@ import {
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
+import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -2920,6 +2922,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         MOCK_USER_SESSION
       ).then(() => done.fail(), done);
+    });
+  });
+
+  describe("updateLayerFieldReferences", () => {
+    it("should handle error from postProcessFields", done => {
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate.item.url = null;
+
+      updateLayerFieldReferences(
+        itemTemplate,
+        null,
+        null,
+        null,
+        null,
+        MOCK_USER_SESSION
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
     });
   });
 

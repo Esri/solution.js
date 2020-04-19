@@ -640,7 +640,7 @@ export function getLayers(
   authentication: interfaces.UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
+    if (layerList.length === 0) {
       resolve([]);
     }
 

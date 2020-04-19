@@ -495,6 +495,7 @@ export function addFeatureServiceLayersAndTables(
       ).then(
         () => {
           // Detemplatize field references and update the layer properties
+          // tslint:disable-next-line: no-floating-promises only failure path is handled by updateFeatureServiceDefinition
           updateLayerFieldReferences(
             itemTemplate,
             fieldInfos,
@@ -502,33 +503,28 @@ export function addFeatureServiceLayersAndTables(
             adminLayerInfos,
             templateDictionary,
             authentication
-          ).then(
-            r => {
-              // Update relationships and layer definitions
-              const updates: interfaces.IUpdate[] = restHelpers.getLayerUpdates(
-                {
-                  message: "updated layer definition",
-                  objects: r.layerInfos.fieldInfos,
-                  itemTemplate: r.itemTemplate,
-                  authentication
-                } as interfaces.IPostProcessArgs
+          ).then(r => {
+            // Update relationships and layer definitions
+            const updates: interfaces.IUpdate[] = restHelpers.getLayerUpdates({
+              message: "updated layer definition",
+              objects: r.layerInfos.fieldInfos,
+              itemTemplate: r.itemTemplate,
+              authentication
+            } as interfaces.IPostProcessArgs);
+            // Process the updates sequentially
+            updates
+              .reduce((prev, update) => {
+                return prev.then(() => {
+                  return restHelpers.getRequest(update);
+                });
+              }, Promise.resolve())
+              .then(
+                () => resolve(),
+                (e: any) => reject(generalHelpers.fail(e)) // getRequest
               );
-              // Process the updates sequentially
-              updates
-                .reduce((prev, update) => {
-                  return prev.then(() => {
-                    return restHelpers.getRequest(update);
-                  });
-                }, Promise.resolve())
-                .then(
-                  () => resolve(),
-                  (e: any) => reject(generalHelpers.fail(e))
-                );
-            },
-            e => reject(generalHelpers.fail(e))
-          );
+          });
         },
-        e => reject(generalHelpers.fail(e))
+        e => reject(generalHelpers.fail(e)) // updateFeatureServiceDefinition
       );
     } else {
       resolve();
