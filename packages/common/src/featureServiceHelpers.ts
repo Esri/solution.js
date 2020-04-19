@@ -341,9 +341,15 @@ export function updateTemplateForInvalidDesignations(
   return new Promise<interfaces.IItemTemplate>((resolve, reject) => {
     template.properties.hasInvalidDesignations = true;
     if (template.item.url) {
+      // get the admin URL
       const url: string = template.item.url;
+      const adminUrl: string = url.replace(
+        "/rest/services",
+        "/rest/admin/services"
+      );
+
       restHelpers
-        .rest_request(url + "?f=json", {
+        .rest_request(adminUrl + "?f=json", {
           authentication: authentication
         })
         .then(
@@ -358,10 +364,6 @@ export function updateTemplateForInvalidDesignations(
                 layerInfos[l.id] = l;
               }
             });
-
-            // Move the layers and tables out of the service's data section
-            template.properties.layers = serviceData.layers || [];
-            template.properties.tables = serviceData.tables || [];
 
             template.data[template.itemId] = Object.assign(
               {
