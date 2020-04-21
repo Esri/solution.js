@@ -99,6 +99,7 @@ export function copyItemInfo(
             undefined, // folder id
             destinationAuthentication,
             itemThumbnailUrl,
+            sourceAuthentication,
             itemDataFile,
             itemMetadataFile,
             itemResourceFiles,
@@ -190,7 +191,12 @@ export function getTemplates(
         if (portalResponse.user.orgId) {
           availSolnsQuery += " orgid:" + portalResponse.user.orgId;
         }
-        const pagingParam = { start: 1, num: 100 };
+        const pagingParam = {
+          start: 1,
+          num: 100,
+          sortField: "title",
+          sortOrder: "asc"
+        };
         const requestOptions = {
           authentication: authentication
         };
