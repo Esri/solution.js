@@ -260,6 +260,9 @@
                 if (responses.filter(response => !JSON.parse(response).success).length === 0) {
                   getDestinationTemplates();
                 }
+              },
+              error => {
+                listDiv.innerHTML = "Unable to copy Solution templates: " + error;
               }
             );
           } else {
