@@ -31,6 +31,7 @@ import {
   deTemplatizeFieldInfos,
   getLayersAndTables,
   addFeatureServiceLayersAndTables,
+  updateLayerFieldReferences,
   postProcessFields,
   _getFieldVisibilityUpdates,
   _validateDomains,
@@ -73,6 +74,7 @@ import {
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
+import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -2715,9 +2717,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       createResponse.success = true;
 
       fetchMock
-        .post(url + "?f=json", itemTemplate.properties.service)
-        .post(adminUrl + "/0?f=json", mockItems.get400Failure())
-        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(adminUrl + "?f=json", itemTemplate.properties.service)
         .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
@@ -2780,80 +2780,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         MOCK_USER_SESSION
       ).then(() => done(), done.fail);
-    });
-
-    it("should handle error on updateLayerFieldReferences", done => {
-      const expectedId: string = "svc1234567890";
-      const id: string = "{{" + expectedId + ".itemId}}";
-
-      const expectedUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const url: string = "{{" + expectedId + ".url}}";
-
-      const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-
-      const layerKeyField: string =
-        "{{" + expectedId + ".layer0.fields.globalid.name}}";
-      const tableKeyField: string =
-        "{{" + expectedId + ".layer1.fields.globalid.name}}";
-      const layerDefQuery: string =
-        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
-      const tableDefQuery: string =
-        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
-
-      itemTemplate = mockSolutions.getItemTemplate(
-        "Feature Service",
-        [],
-        expectedUrl
-      );
-      itemTemplate.itemId = expectedId;
-      itemTemplate.item.id = id;
-      itemTemplate.estimatedDeploymentCostFactor = 0;
-      itemTemplate.properties.service.serviceItemId = id;
-      itemTemplate.properties.service.spatialReference = {
-        wkid: 102100
-      };
-
-      itemTemplate.properties.layers[0].serviceItemId = id;
-      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
-      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
-      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
-
-      itemTemplate.properties.tables[0].serviceItemId = id;
-      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
-      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
-      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
-      delete itemTemplate.item.item;
-
-      const settings = utils.createMockSettings();
-      settings.folderId = "fld1234567890";
-      settings[expectedId] = {
-        id: expectedId,
-        url: expectedUrl,
-        organization: _organization
-      };
-
-      const createResponse: any = mockItems.getAGOLService([], [], true);
-      createResponse.success = true;
-
-      fetchMock
-        .post(adminUrl + "/0?f=json", mockItems.get400Failure())
-        .post(adminUrl + "/1?f=json", mockItems.get400Failure())
-        .post(
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
-          '{"success": "true"}'
-        );
-
-      addFeatureServiceLayersAndTables(
-        itemTemplate,
-        settings,
-        {
-          layers: [],
-          tables: []
-        },
-        MOCK_USER_SESSION
-      ).then(() => done.fail(), done);
     });
 
     it("should handle error on layer updates", done => {
@@ -2999,6 +2925,25 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("updateLayerFieldReferences", () => {
+    it("should handle error from postProcessFields", done => {
+      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate.item.url = null;
+
+      updateLayerFieldReferences(
+        itemTemplate,
+        null,
+        null,
+        null,
+        null,
+        MOCK_USER_SESSION
+      ).then(
+        () => done.fail(),
+        () => done()
+      );
+    });
+  });
+
   describe("postProcessFields", () => {
     it("should update fieldInfos, settings, and layerInfos", done => {
       const url: string =
@@ -3101,37 +3046,6 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         },
         error => done.fail(error)
       );
-    });
-
-    it("should handle error when post-processing fields", done => {
-      const url: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-      const adminUrl: string =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
-
-      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
-      itemTemplate.item.url = url;
-
-      const settings = utils.createMockSettings();
-      settings.folderId = "fld1234567890";
-      settings[itemTemplate.itemId] = {
-        id: itemTemplate.itemId,
-        url: url
-      };
-      const adminLayerInfos: any = {};
-
-      fetchMock
-        .post(adminUrl + "/0?f=json", mockItems.get400Failure())
-        .post(adminUrl + "/1?f=json", mockItems.get400Failure());
-
-      postProcessFields(
-        itemTemplate,
-        {},
-        {},
-        adminLayerInfos,
-        settings,
-        MOCK_USER_SESSION
-      ).then(done.fail, done);
     });
 
     it("should handle missing url", done => {

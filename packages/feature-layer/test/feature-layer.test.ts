@@ -76,17 +76,25 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const expectedTableDefQuery: string =
           "status = '{{" + id + ".layer1.fields.boardreview.name}}'";
 
+        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+        layer0.relationships = [{}];
+        layer0.relationships[0].keyField = keyField;
+        layer0.viewDefinitionQuery = defQuery;
+
+        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+        table0.relationships = [{}];
+        table0.relationships[0].keyField = keyField;
+        table0.viewDefinitionQuery = defQuery;
+
+        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
         itemTemplate.properties.service.serviceItemId = id;
-
-        itemTemplate.properties.layers[0].serviceItemId = id;
-        itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
-
-        itemTemplate.properties.tables[0].serviceItemId = id;
-        itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
+        itemTemplate.properties.service.cacheMaxAge =
+          serviceResponse.adminServiceInfo.cacheMaxAge;
+        itemTemplate.properties.layers[0] = layer0;
+        itemTemplate.properties.tables[0] = table0;
         delete itemTemplate.item.item;
 
         // verify the state up front
@@ -120,9 +128,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         );
 
         fetchMock
-          .post(url + "?f=json", itemTemplate.properties.service)
-          .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
-          .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+          .post(adminUrl + "?f=json", serviceResponse)
           .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/svc1234567890/data",
@@ -173,12 +179,19 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const id: string = "svc1234567890";
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const adminUrl: string =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+        const serviceResponse = mockItems.getAGOLService(
+          [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
+          [mockItems.getAGOLLayerOrTable(1, "B", "Table")]
+        );
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
         itemTemplate.item.groupDesignations = "livingatlas";
 
-        fetchMock.post(url + "?f=json", itemTemplate.properties.service);
+        fetchMock.post(adminUrl + "?f=json", serviceResponse);
 
         const expected: any = {};
         expected[id] = {
@@ -220,7 +233,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
       it("handle error on updateTemplateForInvalidDesignations", done => {
         const id: string = "svc1234567890";
         const url: string =
-          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
@@ -268,14 +281,16 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const id: string = "svc1234567890";
         const url: string =
           "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        const adminUrl =
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+        const serviceResponse = mockItems.getAGOLService();
 
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
         itemTemplate.item.groupDesignations = "livingatlas";
-        delete itemTemplate.properties.service.layers;
-        delete itemTemplate.properties.service.tables;
 
-        fetchMock.post(url + "?f=json", itemTemplate.properties.service);
+        fetchMock.post(adminUrl + "?f=json", serviceResponse);
 
         featureLayer
           .convertItemToTemplate(
@@ -308,24 +323,30 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         const keyField: string = "globalid";
         const defQuery: string = "status = 'BoardReview'";
 
+        const layer0 = mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer");
+        layer0.relationships = [{}];
+        layer0.relationships[0].keyField = keyField;
+        layer0.viewDefinitionQuery = defQuery;
+
+        const table0 = mockItems.getAGOLLayerOrTable(1, "B", "Table");
+        table0.relationships = [{}];
+        table0.relationships[0].keyField = keyField;
+        table0.viewDefinitionQuery = defQuery;
+
+        const serviceResponse = mockItems.getAGOLService([layer0], [table0]);
+
         itemTemplate.itemId = id;
         itemTemplate.item.id = id;
         itemTemplate.properties.service.serviceItemId = id;
-
-        itemTemplate.properties.layers[0].serviceItemId = id;
-        itemTemplate.properties.layers[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.layers[0].viewDefinitionQuery = defQuery;
-
-        itemTemplate.properties.tables[0].serviceItemId = id;
-        itemTemplate.properties.tables[0].relationships[0].keyField = keyField;
-        itemTemplate.properties.tables[0].viewDefinitionQuery = defQuery;
+        itemTemplate.properties.service.cacheMaxAge =
+          serviceResponse.adminServiceInfo.cacheMaxAge;
+        itemTemplate.properties.layers[0] = layer0;
+        itemTemplate.properties.tables[0] = table0;
         delete itemTemplate.item.item;
 
         fetchMock
           .post(itemDataUrl, "{}")
-          .post(url + "?f=json", itemTemplate.properties.service)
-          .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
-          .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+          .post(adminUrl + "?f=json", serviceResponse)
           .post(url + "/sources?f=json", mockItems.get400Failure());
 
         featureLayer
@@ -383,9 +404,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
 
         fetchMock
           .post(itemDataUrl, "{}")
-          .post(url + "?f=json", mockItems.get400Failure())
-          .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
-          .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+          .post(adminUrl + "?f=json", mockItems.get400Failure())
           .post(url + "/sources?f=json", mockItems.get400Failure());
 
         featureLayer

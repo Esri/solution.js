@@ -680,7 +680,7 @@ export function getLayers(
   authentication: interfaces.UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
-    if (!Array.isArray(layerList) || layerList.length === 0) {
+    if (layerList.length === 0) {
       resolve([]);
     }
 
@@ -823,6 +823,9 @@ export function getFeatureServiceProperties(
         tables: []
       };
 
+      // get the admin URL
+      serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
+
       // Get the service description
       request
         .request(serviceUrl + "?f=json", {
@@ -832,17 +835,36 @@ export function getFeatureServiceProperties(
           serviceData => {
             properties.service = serviceData;
 
-            Promise.all([
-              getLayers(serviceUrl, serviceData["layers"], authentication),
-              getLayers(serviceUrl, serviceData["tables"], authentication)
-            ]).then(
-              results => {
-                properties.layers = results[0];
-                properties.tables = results[1];
-                resolve(properties);
-              },
-              (e: any) => reject(generalHelpers.fail(e))
-            );
+            // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
+            properties.service.cacheMaxAge =
+              serviceData.adminServiceInfo.cacheMaxAge;
+
+            // Move the layers and tables out of the service's data section
+            /* istanbul ignore else */
+            if (serviceData.layers) {
+              properties.layers = serviceData.layers;
+
+              // Fill in properties that the service layer doesn't provide
+              properties.layers.forEach(layer => {
+                layer.serviceItemId = properties.service.serviceItemId;
+                layer.extent = null;
+              });
+            }
+            delete serviceData.layers;
+
+            /* istanbul ignore else */
+            if (serviceData.tables) {
+              properties.tables = serviceData.tables;
+
+              // Fill in properties that the service layer doesn't provide
+              properties.tables.forEach(table => {
+                table.serviceItemId = properties.service.serviceItemId;
+                table.extent = null;
+              });
+            }
+            delete serviceData.tables;
+
+            resolve(properties);
           },
           (e: any) => reject(generalHelpers.fail(e))
         );

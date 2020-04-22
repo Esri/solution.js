@@ -1585,6 +1585,28 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   });
 
   describe("getLayers", () => {
+    it("can handle success", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      itemTemplate.item.url = url;
+
+      fetchMock.post(
+        adminUrl + "/0?f=json",
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      );
+      restHelpers
+        .getLayers(url, [{ id: 0 }], MOCK_USER_SESSION)
+        .then(result => {
+          expect(result).toEqual([
+            mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+          ]);
+          done();
+        }, done.fail);
+    });
+
     it("can handle error", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
@@ -1601,6 +1623,16 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           done();
         }
       );
+    });
+
+    it("can handle empty layer list", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+
+      restHelpers.getLayers(url, [], MOCK_USER_SESSION).then(result => {
+        expect(result).toEqual([]);
+        done();
+      }, done.fail);
     });
   });
 
@@ -1773,7 +1805,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
   describe("getServiceLayersAndTables", () => {
     it("can handle failure to fetch service", done => {
       const url =
-        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
       itemTemplate.item.url = url;
       fetchMock.post(url + "?f=json", mockItems.get400Failure());
@@ -1793,20 +1825,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can handle failure to fetch layer", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
       const adminUrl =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const expected: any = Object.assign({}, itemTemplate);
-      expected.properties.service = mockItems.getAGOLService([{ id: 0 }], []);
-      expected.properties.service.layers[0].name = "A";
-      expected.properties.layers[0] = expected.properties.service.layers[0];
-      expected.item.url = url;
-      expected.estimatedDeploymentCostFactor = 1;
+      const serviceResponse = mockItems.getAGOLService([
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ]);
 
       itemTemplate.item.url = url;
-      fetchMock.post(url + "?f=json", expected.properties.service);
-      fetchMock.post(adminUrl + "/0?f=json", mockItems.get400Failure());
+      const expected: any = Object.assign({}, itemTemplate);
+      expected.properties.service = mockItems.getAGOLService(); // layers and tables have been moved up a level
+      expected.properties.service.cacheMaxAge =
+        expected.properties.service.adminServiceInfo.cacheMaxAge;
+      expected.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ];
+      expected.properties.layers[0].extent = null;
+
+      fetchMock.post(adminUrl + "?f=json", mockItems.get400Failure());
       restHelpers
         .getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION)
         .then(
@@ -1823,22 +1859,24 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch layers", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
       const adminUrl =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const expected: any = Object.assign({}, itemTemplate);
-      expected.properties.service = mockItems.getAGOLService([{ id: 0 }], []);
-      expected.properties.service.layers[0].name = "A";
-      expected.properties.layers[0] = expected.properties.service.layers[0];
-      expected.item.url = url;
+      const serviceResponse = mockItems.getAGOLService([
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ]);
 
       itemTemplate.item.url = url;
-      fetchMock.post(url + "?f=json", expected.properties.service);
-      fetchMock.post(
-        adminUrl + "/0?f=json",
-        expected.properties.service.layers[0]
-      );
+      const expected: any = Object.assign({}, itemTemplate);
+      expected.properties.service = mockItems.getAGOLService(); // layers and tables have been moved up a level
+      expected.properties.service.cacheMaxAge =
+        expected.properties.service.adminServiceInfo.cacheMaxAge;
+      expected.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ];
+      expected.properties.layers[0].extent = null;
+
+      fetchMock.post(adminUrl + "?f=json", serviceResponse);
       restHelpers
         .getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION)
         .then(
@@ -1853,31 +1891,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch layers and tables", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
       const adminUrl =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const expected: any = Object.assign({}, itemTemplate);
-      expected.properties.service = mockItems.getAGOLService(
-        [{ id: 0 }],
-        [{ id: 1 }]
+      const serviceResponse = mockItems.getAGOLService(
+        [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")],
+        [mockItems.getAGOLLayerOrTable(1, "B", "Table")]
       );
-      expected.properties.service.layers[0].name = "A";
-      expected.properties.service.tables[0].name = "B";
-      expected.properties.layers[0] = expected.properties.service.layers[0];
-      expected.properties.tables[0] = expected.properties.service.tables[0];
-      expected.item.url = url;
 
       itemTemplate.item.url = url;
-      fetchMock.post(url + "?f=json", expected.properties.service);
-      fetchMock.post(
-        adminUrl + "/0?f=json",
-        expected.properties.service.layers[0]
-      );
-      fetchMock.post(
-        adminUrl + "/1?f=json",
-        expected.properties.service.tables[0]
-      );
+      const expected: any = Object.assign({}, itemTemplate);
+      expected.properties.service = mockItems.getAGOLService(); // layers and tables have been moved up a level
+      expected.properties.service.cacheMaxAge =
+        expected.properties.service.adminServiceInfo.cacheMaxAge;
+      expected.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer")
+      ];
+      expected.properties.layers[0].extent = null;
+      expected.properties.tables = [
+        mockItems.getAGOLLayerOrTable(1, "B", "Table")
+      ];
+      expected.properties.tables[0].extent = null;
+
+      fetchMock.post(adminUrl + "?f=json", serviceResponse);
       restHelpers
         .getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION)
         .then(
@@ -1892,35 +1928,29 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     it("can fetch layers and tables with a relationship", done => {
       const url =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
-
       const adminUrl =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      const expected: any = Object.assign({}, itemTemplate);
-      expected.properties.service = mockItems.getAGOLService(
-        [{ id: 0 }],
-        [{ id: 1 }]
+      const serviceResponse = mockItems.getAGOLService(
+        [mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])],
+        [mockItems.getAGOLLayerOrTable(1, "B", "Table", [{}])]
       );
-      expected.properties.service.layers[0].name = "A";
-      expected.properties.service.tables[0].name = "B";
-      expected.properties.layers[0] = mockItems.getAGOLLayerOrTable(
-        0,
-        "A",
-        "Feature Layer",
-        [{}]
-      );
-      expected.properties.tables[0] = mockItems.getAGOLLayerOrTable(
-        1,
-        "B",
-        "Table",
-        [{}]
-      );
-      expected.item.url = url;
 
       itemTemplate.item.url = url;
-      fetchMock.post(url + "?f=json", expected.properties.service);
-      fetchMock.post(adminUrl + "/0?f=json", expected.properties.layers[0]);
-      fetchMock.post(adminUrl + "/1?f=json", expected.properties.tables[0]);
+      const expected: any = Object.assign({}, itemTemplate);
+      expected.properties.service = mockItems.getAGOLService(); // layers and tables have been moved up a level
+      expected.properties.service.cacheMaxAge =
+        expected.properties.service.adminServiceInfo.cacheMaxAge;
+      expected.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ];
+      expected.properties.layers[0].extent = null;
+      expected.properties.tables = [
+        mockItems.getAGOLLayerOrTable(1, "B", "Table", [{}])
+      ];
+      expected.properties.tables[0].extent = null;
+
+      fetchMock.post(adminUrl + "?f=json", serviceResponse);
       restHelpers
         .getServiceLayersAndTables(itemTemplate, MOCK_USER_SESSION)
         .then(
