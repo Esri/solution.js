@@ -848,6 +848,12 @@ export function getAGOLService(
   isView?: boolean
 ): any {
   const service: any = {
+    adminServiceInfo: {
+      name: "a feature service",
+      type: "FeatureServer",
+      cacheMaxAge: 60,
+      status: "Started"
+    },
     currentVersion: 10.61,
     serviceItemId: "svc1234567890",
     isView: isView === null || isView === undefined ? true : isView,
@@ -906,31 +912,13 @@ export function getAGOLService(
       xssPreventionEnabled: true,
       xssPreventionRule: "InputOnly",
       xssInputRule: "rejectInvalid"
-    },
-    layers: [],
-    tables: []
+    }
   };
 
-  function addCondensedFormOfLayer(
-    layersOrTables: any[],
-    serviceLayerList: any[]
-  ) {
-    layersOrTables.forEach(layer => {
-      serviceLayerList.push({
-        id: layer.id,
-        name: layer.name,
-        parentLayerId: -1,
-        defaultVisibility: true,
-        subLayerIds: null,
-        minScale: 0,
-        maxScale: 0,
-        geometryType: "esriGeometryPoint"
-      });
-    });
+  if (layers.length > 0 || tables.length > 0) {
+    service.layers = layers;
+    service.tables = tables;
   }
-
-  addCondensedFormOfLayer(layers, service.layers);
-  addCondensedFormOfLayer(tables, service.tables);
 
   return service;
 }

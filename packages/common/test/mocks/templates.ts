@@ -157,7 +157,7 @@ export function getItemTemplate(
       // );
 
       const properties: any = {
-        service: getServiceTemplate([layer0], [table1]),
+        service: getServiceTemplate(),
         layers: [layer0],
         tables: [table1]
       };
@@ -856,7 +856,7 @@ export function getItemTemplateData(type?: string): any {
   return data;
 }
 
-function getServiceTemplate(layers = [] as any, tables = [] as any): any {
+function getServiceTemplate(): any {
   const service: any = {
     currentVersion: 10.61,
     serviceItemId: "{{svc1234567890.itemId}}",
@@ -916,13 +916,8 @@ function getServiceTemplate(layers = [] as any, tables = [] as any): any {
       xssPreventionEnabled: true,
       xssPreventionRule: "InputOnly",
       xssInputRule: "rejectInvalid"
-    },
-    layers: [],
-    tables: []
+    }
   };
-
-  addCondensedFormOfLayer(layers, service.layers);
-  addCondensedFormOfLayer(tables, service.tables);
 
   return service;
 }
