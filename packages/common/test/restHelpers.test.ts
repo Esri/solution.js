@@ -565,6 +565,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           folderId,
           MOCK_USER_SESSION,
           itemThumbnailUrl,
+          MOCK_USER_SESSION,
           dataFile,
           metadataFile,
           resourcesFiles,
@@ -608,6 +609,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           folderId,
           MOCK_USER_SESSION,
           itemThumbnailUrl,
+          MOCK_USER_SESSION,
           dataFile,
           metadataFile,
           resourcesFiles,
@@ -634,6 +636,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
         const access = "org";
 
         fetchMock
+          .post(itemThumbnailUrl + "/rest/info", "{}")
           .post(
             utils.PORTAL_SUBSET.restUrl +
               "/content/users/casey/" +
@@ -673,6 +676,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             folderId,
             MOCK_USER_SESSION,
             itemThumbnailUrl,
+            MOCK_USER_SESSION,
             dataFile,
             metadataFile,
             resourcesFiles,
@@ -725,6 +729,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             folderId,
             MOCK_USER_SESSION,
             itemThumbnailUrl,
+            MOCK_USER_SESSION,
             dataFile,
             metadataFile,
             resourcesFiles,
@@ -768,6 +773,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             folderId,
             MOCK_USER_SESSION,
             itemThumbnailUrl,
+            MOCK_USER_SESSION,
             dataFile,
             metadataFile,
             resourcesFiles,
@@ -803,6 +809,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           folderId,
           MOCK_USER_SESSION,
           itemThumbnailUrl,
+          MOCK_USER_SESSION,
           dataFile,
           metadataFile,
           resourcesFiles,
@@ -833,6 +840,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           folderId,
           MOCK_USER_SESSION,
           itemThumbnailUrl,
+          MOCK_USER_SESSION,
           dataFile,
           metadataFile,
           resourcesFiles,
@@ -873,6 +881,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           folderId,
           MOCK_USER_SESSION,
           itemThumbnailUrl,
+          MOCK_USER_SESSION,
           dataFile,
           metadataFile,
           resourcesFiles,

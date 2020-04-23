@@ -1581,19 +1581,18 @@ describe("Module `deploySolutionItems`", () => {
         "Web Map"
       );
 
-      const updatedFilePaths = deploySolution._moveResourcesIntoTemplate(
-        filePaths,
-        template,
-        MOCK_USER_SESSION
-      );
-
-      expect(updatedFilePaths.length).toEqual(0);
-      expect(template.item.thumbnail).toBeUndefined();
-      expect(template.item.thumbnailurl).toEqual(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
-          "?w=400&token=fake-token"
-      );
+      // tslint:disable-next-line: no-floating-promises
+      deploySolution
+        ._moveResourcesIntoTemplate(filePaths, template, MOCK_USER_SESSION)
+        .then(updatedFilePaths => {
+          expect(updatedFilePaths.length).toEqual(0);
+          expect(template.item.thumbnail).toBeUndefined();
+          expect(template.item.thumbnailurl).toEqual(
+            utils.PORTAL_SUBSET.restUrl +
+              "/content/items/ffb0b76754ae4ce497bb4789f3940146/resources/9ed8414bb27a441cbddb1227870ed038_info_thumbnail/thumbnail1581708282265.png" +
+              "?token=fake-token&w=400"
+          );
+        });
     });
   });
 });
