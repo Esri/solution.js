@@ -223,5 +223,3 @@ npm unpublish @esri/solution-storymap@$newVersion --otp=$twoFactorCode
 npm unpublish @esri/solution-viewer@$newVersion --otp=$twoFactorCode
 ```
 
----
-4/14/20 mkt

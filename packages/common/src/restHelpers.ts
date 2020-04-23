@@ -122,6 +122,36 @@ export function addForwardItemRelationships(
   });
 }
 
+/**
+ * Adds a token to the query parameters of a URL.
+ *
+ * @param url URL to use as base
+ * @param authentication Credentials to be used to generate token for URL
+ * @return A promise that will resolve with the supplied URL with `token=&lt;token&gt;` added to its query params
+ * unless either the URL doesn't exist or the token can't be generated
+ */
+export function addTokenToUrl(
+  url: string,
+  authentication: interfaces.UserSession
+): Promise<string> {
+  return new Promise<string>(resolve => {
+    if (!url || !authentication) {
+      resolve(url);
+    } else {
+      authentication.getToken(url).then(
+        token => {
+          /* istanbul ignore else */
+          if (token) {
+            url = generalHelpers.appendQueryParam(url, "token=" + token);
+          }
+          resolve(url);
+        },
+        () => resolve(url)
+      );
+    }
+  });
+}
+
 export function addToServiceDefinition(
   url: string,
   options: any
@@ -274,8 +304,9 @@ export function createFeatureService(
  * @param itemInfo Item's `item` section
  * @param folderId Id of folder to receive item; null indicates that the item goes into the root
  *                 folder; ignored for Group item type
- * @param authentication Credentials for the request
+ * @param destinationAuthentication Credentials for for requests to where the item is to be created
  * @param itemThumbnailUrl URL to image to use for item thumbnail
+ * @param itemThumbnailAuthentication Credentials for requests to the thumbnail source
  * @param dataFile Item's `data` section
  * @param metadataFile Item's metadata file
  * @param resourcesFiles Item's resources
@@ -285,8 +316,9 @@ export function createFeatureService(
 export function createFullItem(
   itemInfo: any,
   folderId: string | undefined,
-  authentication: interfaces.UserSession,
+  destinationAuthentication: interfaces.UserSession,
   itemThumbnailUrl?: string,
+  itemThumbnailAuthentication?: interfaces.UserSession,
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
@@ -299,103 +331,111 @@ export function createFullItem(
         ...itemInfo
       },
       folderId,
-      authentication: authentication
+      authentication: destinationAuthentication
     };
-    if (itemThumbnailUrl) {
-      createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
-        itemThumbnailUrl,
-        "w=400"
-      );
-      const token = authentication.token;
-      /* istanbul ignore else */
-      if (token) {
-        createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
-          createOptions.item.thumbnailurl,
-          "token=" + token
-        );
-      }
-    }
 
-    portal.createItemInFolder(createOptions).then(
-      createResponse => {
-        if (createResponse.success) {
-          let accessDef: Promise<portal.ISharingResponse>;
+    // tslint:disable-next-line: no-floating-promises
+    addTokenToUrl(itemThumbnailUrl, itemThumbnailAuthentication).then(
+      updatedThumbnailUrl => {
+        /* istanbul ignore else */
+        if (updatedThumbnailUrl) {
+          createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
+            updatedThumbnailUrl,
+            "w=400"
+          );
+        }
 
-          // Set access if it is not AGOL default
-          // Set the access manually since the access value in createItem appears to be ignored
-          // Need to run serially; will not work reliably if done in parallel with adding the data section
-          if (access !== "private") {
-            const accessOptions: portal.ISetAccessOptions = {
-              id: createResponse.id,
-              access: access === "public" ? "public" : "org", // need to use constants rather than string
-              authentication: authentication
-            };
-            accessDef = portal.setItemAccess(accessOptions);
-          } else {
-            accessDef = Promise.resolve({
-              itemId: createResponse.id
-            } as portal.ISharingResponse);
-          }
+        portal.createItemInFolder(createOptions).then(
+          createResponse => {
+            if (createResponse.success) {
+              let accessDef: Promise<portal.ISharingResponse>;
 
-          // Now add attached items
-          accessDef.then(
-            () => {
-              const updateDefs: Array<Promise<any>> = [];
-
-              // Add the data section
-              if (dataFile) {
-                updateDefs.push(
-                  _addItemDataFile(createResponse.id, dataFile, authentication)
-                );
+              // Set access if it is not AGOL default
+              // Set the access manually since the access value in createItem appears to be ignored
+              // Need to run serially; will not work reliably if done in parallel with adding the data section
+              if (access !== "private") {
+                const accessOptions: portal.ISetAccessOptions = {
+                  id: createResponse.id,
+                  access: access === "public" ? "public" : "org", // need to use constants rather than string
+                  authentication: destinationAuthentication
+                };
+                accessDef = portal.setItemAccess(accessOptions);
+              } else {
+                accessDef = Promise.resolve({
+                  itemId: createResponse.id
+                } as portal.ISharingResponse);
               }
 
-              // Add the resources
-              if (Array.isArray(resourcesFiles) && resourcesFiles.length > 0) {
-                resourcesFiles.forEach(file => {
-                  const addResourceOptions: portal.IItemResourceOptions = {
-                    id: createResponse.id,
-                    resource: file,
-                    name: file.name,
-                    authentication: authentication,
-                    params: {}
-                  };
+              // Now add attached items
+              accessDef.then(
+                () => {
+                  const updateDefs: Array<Promise<any>> = [];
 
-                  // Check for folder in resource filename
-                  const filenameParts = file.name.split("/");
-                  if (filenameParts.length > 1) {
-                    addResourceOptions.name = filenameParts[1];
-                    addResourceOptions.params = {
-                      resourcesPrefix: filenameParts[0]
-                    };
+                  // Add the data section
+                  if (dataFile) {
+                    updateDefs.push(
+                      _addItemDataFile(
+                        createResponse.id,
+                        dataFile,
+                        destinationAuthentication
+                      )
+                    );
                   }
-                  updateDefs.push(portal.addItemResource(addResourceOptions));
-                });
-              }
 
-              // Add the metadata section
-              if (metadataFile) {
-                updateDefs.push(
-                  _addItemMetadataFile(
-                    createResponse.id,
-                    metadataFile,
-                    authentication
-                  )
-                );
-              }
+                  // Add the resources
+                  if (
+                    Array.isArray(resourcesFiles) &&
+                    resourcesFiles.length > 0
+                  ) {
+                    resourcesFiles.forEach(file => {
+                      const addResourceOptions: portal.IItemResourceOptions = {
+                        id: createResponse.id,
+                        resource: file,
+                        name: file.name,
+                        authentication: destinationAuthentication,
+                        params: {}
+                      };
 
-              // Wait until all adds are done
-              Promise.all(updateDefs).then(
-                () => resolve(createResponse),
+                      // Check for folder in resource filename
+                      const filenameParts = file.name.split("/");
+                      if (filenameParts.length > 1) {
+                        addResourceOptions.name = filenameParts[1];
+                        addResourceOptions.params = {
+                          resourcesPrefix: filenameParts[0]
+                        };
+                      }
+                      updateDefs.push(
+                        portal.addItemResource(addResourceOptions)
+                      );
+                    });
+                  }
+
+                  // Add the metadata section
+                  if (metadataFile) {
+                    updateDefs.push(
+                      _addItemMetadataFile(
+                        createResponse.id,
+                        metadataFile,
+                        destinationAuthentication
+                      )
+                    );
+                  }
+
+                  // Wait until all adds are done
+                  Promise.all(updateDefs).then(
+                    () => resolve(createResponse),
+                    e => reject(generalHelpers.fail(e))
+                  );
+                },
                 e => reject(generalHelpers.fail(e))
               );
-            },
-            e => reject(generalHelpers.fail(e))
-          );
-        } else {
-          reject(generalHelpers.fail());
-        }
-      },
-      e => reject(generalHelpers.fail(e))
+            } else {
+              reject(generalHelpers.fail());
+            }
+          },
+          e => reject(generalHelpers.fail(e))
+        );
+      }
     );
   });
 }

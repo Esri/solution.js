@@ -290,21 +290,18 @@ export function _deploySolutionFromTemplate(
 
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
+
+        return common.addTokenToUrl(options.thumbnailurl, authentication);
+      })
+      .then(updatedThumbnailUrl => {
         /* istanbul ignore else */
-        if (options.thumbnailurl) {
+        if (updatedThumbnailUrl) {
           solutionTemplateBase.thumbnailurl = common.appendQueryParam(
-            options.thumbnailurl,
+            updatedThumbnailUrl,
             "w=400"
           );
-          const token = authentication.token;
-          /* istanbul ignore else */
-          if (token) {
-            solutionTemplateBase.thumbnailurl = common.appendQueryParam(
-              solutionTemplateBase.thumbnailurl,
-              "token=" + token
-            );
-          }
         }
+
         solutionTemplateBase.tryitUrl = _checkedReplaceAll(
           solutionTemplateBase.tryitUrl,
           templateSolutionId,
