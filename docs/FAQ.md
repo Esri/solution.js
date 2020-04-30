@@ -2,6 +2,28 @@
 
 **Yes**, starting with version 1.0.0.
 
+## What is the development workflow?
+
+We use the [Atlassian Gitflow Workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow). To quote from that article,
+
+> The overall flow of Gitflow is:
+> 
+> 1. A develop branch is created from master
+> 2. A release branch is created from develop
+> 3. Feature branches are created from develop
+> 4. When a feature is complete it is merged into the develop branch
+> 5. When the release branch is done it is merged into... master
+> 6. If an issue in master is detected a hotfix branch is created from master
+> 7. Once the hotfix is complete it is merged to both develop and master
+
+One variation is that after a point release is created in `master`, it is merged into `develop` to maintain the two-way connectivity between them. (Gitflow merges from the release branch into `master` and `develop` in line 5, above.) 
+
+Two main constraints:
+
+* The `master` branch has client-ready software
+* The `develop` branch has demo-ready software
+
+
 ## Why TypeScript
 
 Using TypeScript allows us to add type information to request params and response structures. This vastly simplifies development. TypeScript also has excellent support for newer `async`/`await` patterns and for generating API documentation with [TypeDoc](http://typedoc.org/).
