@@ -69,12 +69,16 @@
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
     "typescript": "^3.8.3",
-    "uuid": "^3.3.3"
+    "uuid": "^3.3.3",
+    "@types/sinon": "^9.0.0",
+    "sinon": "^9.0.2"
   },
   "dependencies": {
+    "@esri/hub-common": "^3.7.5",
     "es6-promise": "^4.2.1",
     "isomorphic-fetch": "^2.2.1",
     "isomorphic-form-data": "^2.0.0"
+
   },
   "lint-staged": {
     "*.ts": [
