@@ -74,94 +74,96 @@ describe("Module `deployer`", () => {
         });
     });
     describe("happy pathing", () => {
-      // declare things we want in the `it` fns
-      let itemInfo: any;
-      let solTmplStub: any;
-      let metaStub: any;
-      let deployFnStub: any;
-      // setup the stubs in before each... ensures they are clean each time
-      beforeEach(() => {
-        itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
-        solTmplStub = sinon
-          .stub(deployUtils, "_getSolutionTemplateItem")
-          .callsFake((idOrObj, auth) => {
-            return Promise.resolve({
-              item: itemInfo.item,
-              data: itemInfo.data
+      if (typeof window !== "undefined") {
+        // declare things we want in the `it` fns
+        let itemInfo: any;
+        let solTmplStub: any;
+        let metaStub: any;
+        let deployFnStub: any;
+        // setup the stubs in before each... ensures they are clean each time
+        beforeEach(() => {
+          itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
+          solTmplStub = sinon
+            .stub(deployUtils, "_getSolutionTemplateItem")
+            .callsFake((idOrObj, auth) => {
+              return Promise.resolve({
+                item: itemInfo.item,
+                data: itemInfo.data
+              });
             });
+          // create a fake file
+          const xmlFile = new File(["xml"], "metadata.xml", {
+            type: "application/xml"
           });
-        // create a fake file
-        const xmlFile = new File(["xml"], "metadata.xml", {
-          type: "application/xml"
+          metaStub = sinon
+            .stub(common, "getItemMetadataAsFile")
+            .resolves(xmlFile);
+
+          deployFnStub = sinon
+            .stub(deploySolutionFromTemplate, "_deploySolutionFromTemplate")
+            .resolves("3ef");
         });
-        metaStub = sinon
-          .stub(common, "getItemMetadataAsFile")
-          .resolves(xmlFile);
 
-        deployFnStub = sinon
-          .stub(deploySolutionFromTemplate, "_deploySolutionFromTemplate")
-          .resolves("3ef");
-      });
+        it("ensure main fns are called using stubs", done => {
+          // this test assumes all is good and simply checks that
+          // the expected delegation occurs
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
+            .then(() => {
+              expect(solTmplStub.calledOnce).toBe(
+                true,
+                "_getSolutionTemplateItem should be called"
+              );
+              expect(metaStub.calledOnce).toBe(
+                true,
+                "getItemMetadataAsFile should be called once"
+              );
+              expect(deployFnStub.calledOnce).toBe(
+                true,
+                "_deploySolutionFromTemplate should be called once"
+              );
+              // TODO: verify inputs to deployFn
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+        it("calls progress callback if passed", done => {
+          // create options hash w/ progress callback
+          const opts = {
+            progressCallback: (pct: number) => pct
+          };
 
-      it("ensure main fns are called using stubs", done => {
-        // this test assumes all is good and simply checks that
-        // the expected delegation occurs
-        return deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION)
-          .then(() => {
-            expect(solTmplStub.calledOnce).toBe(
-              true,
-              "_getSolutionTemplateItem should be called"
-            );
-            expect(metaStub.calledOnce).toBe(
-              true,
-              "getItemMetadataAsFile should be called once"
-            );
-            expect(deployFnStub.calledOnce).toBe(
-              true,
-              "_deploySolutionFromTemplate should be called once"
-            );
-            // TODO: verify inputs to deployFn
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
-      });
-      it("calls progress callback if passed", done => {
-        // create options hash w/ progress callback
-        const opts = {
-          progressCallback: (pct: number) => pct
-        };
-
-        // create stub...
-        const pgStub = sinon.stub(opts, "progressCallback");
-        return deployer
-          .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
-          .then(() => {
-            expect(solTmplStub.calledOnce).toBe(
-              true,
-              "_getSolutionTemplateItem should be called"
-            );
-            expect(metaStub.calledOnce).toBe(
-              true,
-              "getItemMetadataAsFile should be called once"
-            );
-            expect(deployFnStub.calledOnce).toBe(
-              true,
-              "_deploySolutionFromTemplate should be called once"
-            );
-            // TODO: verify inputs to deployFn
-            expect(pgStub.calledTwice).toBe(
-              true,
-              "progressCallback should be called twice"
-            );
-            done();
-          })
-          .catch(err => {
-            fail(err.error);
-          });
-      });
+          // create stub...
+          const pgStub = sinon.stub(opts, "progressCallback");
+          return deployer
+            .deploySolution(itemInfo.item.id, MOCK_USER_SESSION, opts)
+            .then(() => {
+              expect(solTmplStub.calledOnce).toBe(
+                true,
+                "_getSolutionTemplateItem should be called"
+              );
+              expect(metaStub.calledOnce).toBe(
+                true,
+                "getItemMetadataAsFile should be called once"
+              );
+              expect(deployFnStub.calledOnce).toBe(
+                true,
+                "_deploySolutionFromTemplate should be called once"
+              );
+              // TODO: verify inputs to deployFn
+              expect(pgStub.calledTwice).toBe(
+                true,
+                "progressCallback should be called twice"
+              );
+              done();
+            })
+            .catch(err => {
+              fail(err.error);
+            });
+        });
+      }
     });
   });
   describe("deploySolution", () => {
