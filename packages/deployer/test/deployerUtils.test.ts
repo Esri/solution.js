@@ -29,7 +29,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
 });
 
-describe("Module: `_deployerUtils", () => {
+describe("Module: `_deployerUtils`", () => {
   describe("_isModel", () => {
     it("returns true if the object is Modelish", () => {
       expect(_isModel({})).toBe(false);
