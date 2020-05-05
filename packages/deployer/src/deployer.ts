@@ -82,7 +82,7 @@ export function deploySolution(
       common.deleteItemProps(item);
 
       return _deploySolutionFromTemplate(
-        item.id,
+        deployOptions.jobId,
         item,
         data,
         itemMetadata,
