@@ -396,6 +396,10 @@ export interface IItemTemplate {
    * function calls made during while deploying it
    */
   estimatedDeploymentCostFactor: number;
+  /**
+   * Allow for adhoc properties
+   */
+  [propName: string]: any;
 }
 
 /**
@@ -564,6 +568,11 @@ export interface ISolutionItemProperties {
    * Id linking instances of Solution, e.g., "726a641112464ad7b98bc924f2ab361a"
    */
   id: string;
+
+  /**
+   * Solution schema version
+   */
+  schemaVersion?: number;
 }
 
 /**
