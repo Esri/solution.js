@@ -397,6 +397,10 @@ export interface IItemTemplate {
    * function calls made during while deploying it
    */
   estimatedDeploymentCostFactor: number;
+  /**
+   * Allow for adhoc properties
+   */
+  [propName: string]: any;
 }
 
 /**

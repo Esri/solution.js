@@ -22,6 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import * as createItemTemplate from "./createItemTemplate";
+import { CURRENT_SCHEMA_VERSION } from '@esri/solution-common';
 
 //#region Entry point ----------------------------------------------------------------------------------------------- //
 
@@ -319,7 +320,9 @@ export function _createSolutionItem(
       title: options?.title ?? common.createShortId(),
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
-      properties: {},
+      properties: {
+        schemaVersion: common.CURRENT_SCHEMA_VERSION
+      },
       thumbnailurl: options?.thumbnailurl ?? "",
       tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
       typeKeywords: ["Solution", "Template"].concat(
