@@ -4,15 +4,6 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased][HEAD]
 
-### Added
-- solution schema versioning
-
-### Changed
-### Fixed
-### Removed
-
-### Breaking
-
 ## [0.9.2] - April 14th 2020
 
 ## [0.9.1] - April 13th 2020

@@ -31,4 +31,3 @@ export * from "./resourceHelpers";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
 export * from "./templatization";
-export * from "./migrator";

@@ -372,8 +372,7 @@ export function _getDeploymentProperties(
 ): common.ISolutionItemProperties {
   return {
     version: _getDeploymentProperty("deploy.version.", tags) ?? "1.0",
-    id: _getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID(),
-    schemaVersion: common.CURRENT_SCHEMA_VERSION
+    id: _getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID()
   } as common.ISolutionItemProperties;
 }
 
