@@ -234,13 +234,21 @@ export function deploySolutionItems(
       itemId: string,
       status: common.EItemProgressStatus,
       costUsed: number,
-      createdItemId: string // supplied when status is EItemProgressStatus.Created
+      createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
     ) => {
       // ---------------------------------------------------------------------------------------------------------------
       percentDone += progressPercentStep * costUsed;
       /* istanbul ignore else */
       if (options.progressCallback) {
-        options.progressCallback(percentDone, options.jobId);
+        if (status === common.EItemProgressStatus.Finished) {
+          const event = {
+            event: common.SItemProgressStatus[status],
+            data: createdItemId
+          } as common.ISolutionProgressEvent;
+          options.progressCallback(percentDone, options.jobId, event);
+        } else {
+          options.progressCallback(percentDone, options.jobId);
+        }
       }
 
       /* istanbul ignore if */
