@@ -135,7 +135,7 @@ describe("Module `deployer`", () => {
             progressCallback: (pct: number) => pct
           };
 
-          // itemInfo for verify
+          // itemInfo that has not been mutated
           const _itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
 
           // create stub...
