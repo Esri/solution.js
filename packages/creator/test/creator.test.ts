@@ -937,7 +937,7 @@ describe("Module `creator`", () => {
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
-              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%2C%22schemaVersion%22%3A3%7D" +
+              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
               "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
@@ -995,7 +995,7 @@ describe("Module `creator`", () => {
                 encodeURIComponent(options.snippet) +
                 "&description=" +
                 encodeURIComponent(options.description) +
-                "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%2C%22schemaVersion%22%3A3%7D" +
+                "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
                 "&thumbnailurl=" +
                 encodeURIComponent(options.thumbnailurl) +
                 "&tags=" +
@@ -1161,7 +1161,7 @@ describe("Module `creator`", () => {
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
-              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%2C%22schemaVersion%22%3A3%7D" +
+              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%7D" +
               "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
@@ -1184,8 +1184,7 @@ describe("Module `creator`", () => {
       );
       expect(properties).toEqual({
         version: "12.3",
-        id: "abc",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
+        id: "abc"
       });
     });
 
@@ -1197,8 +1196,7 @@ describe("Module `creator`", () => {
       );
       expect(properties).toEqual({
         version: "12.3",
-        id: "guid",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
+        id: "guid"
       });
     });
 
@@ -1209,8 +1207,7 @@ describe("Module `creator`", () => {
       );
       expect(properties).toEqual({
         version: "1.0",
-        id: "abc",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
+        id: "abc"
       });
     });
 
@@ -1222,8 +1219,7 @@ describe("Module `creator`", () => {
       );
       expect(properties).toEqual({
         version: "1.0",
-        id: "guid",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
+        id: "guid"
       });
     });
   });
