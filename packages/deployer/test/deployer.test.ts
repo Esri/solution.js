@@ -135,6 +135,9 @@ describe("Module `deployer`", () => {
             progressCallback: (pct: number) => pct
           };
 
+          // itemInfo that has not been mutated
+          const _itemInfo = cloneObject(templates.getSolutionTemplateItem([]));
+
           // create stub...
           const pgStub = sinon.stub(opts, "progressCallback");
           return deployer
@@ -151,6 +154,10 @@ describe("Module `deployer`", () => {
               expect(deployFnStub.calledOnce).toBe(
                 true,
                 "_deploySolutionFromTemplate should be called once"
+              );
+              expect(deployFnStub.args[0][0]).toBe(
+                _itemInfo.item.id,
+                "_deploySolutionFromTemplate should be called with an item id"
               );
               // TODO: verify inputs to deployFn
               expect(pgStub.calledTwice).toBe(
