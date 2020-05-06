@@ -76,13 +76,15 @@ export function deploySolution(
       const item = common.sanitizeJSONAndReportChanges(itemBase, sanitizer);
       // TODO: we should delegate data sanization to the type-specific modules
       const data = common.sanitizeJSONAndReportChanges(itemData, sanitizer);
+      // get the item id before it is deleted
+      const itemId = item.id;
       // apply item props to deployOptions
       deployOptions = _updateDeployOptions(deployOptions, item, authentication);
       // Clone before mutating? This was messing me up in some testing...
       common.deleteItemProps(item);
 
       return _deploySolutionFromTemplate(
-        item.id,
+        itemId,
         item,
         data,
         itemMetadata,
