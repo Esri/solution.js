@@ -27,7 +27,6 @@ import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
-
 const UNSUPPORTED: common.moduleHandler = null;
 /**
  * Mapping from item type to module with type-specific template-handling code.

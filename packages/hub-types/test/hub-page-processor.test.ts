@@ -16,17 +16,21 @@
 import * as utils from "../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-import { HubPageProcessor } from '../src/index';
+import { HubPageProcessor } from "../src/index";
 
 describe("HubPageProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
-    it('exists', () => {
-      expect(HubPageProcessor.convertItemToTemplate).toBeDefined('Should have convertItemToTemplate method');
-    })
+    it("exists", () => {
+      expect(HubPageProcessor.convertItemToTemplate).toBeDefined(
+        "Should have convertItemToTemplate method"
+      );
+    });
   });
   describe("createItemFromTemplate: ", () => {
-    it('exists', () => {
-      expect(HubPageProcessor.createItemFromTemplate).toBeDefined('Should have createItemFromTemplate method');
-    })
+    it("exists", () => {
+      expect(HubPageProcessor.createItemFromTemplate).toBeDefined(
+        "Should have createItemFromTemplate method"
+      );
+    });
   });
 });

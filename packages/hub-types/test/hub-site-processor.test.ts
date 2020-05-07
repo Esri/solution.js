@@ -16,21 +16,26 @@
 import * as utils from "@esri/solution-common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-import { HubSiteProcessor } from '../src/index';
+import { HubSiteProcessor } from "../src/index";
 
 fdescribe("HubSiteProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
-    it('exists', () => {
-      expect(HubSiteProcessor.convertItemToTemplate).toBeDefined('Should have convertItemToTemplate method');
-    })
-    it('returns a promise', () => {
-      
-      expect(HubSiteProcessor.convertItemToTemplate).toBeDefined('Should have convertItemToTemplate method');
-    })
+    it("exists", () => {
+      expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(
+        "Should have convertItemToTemplate method"
+      );
+    });
+    it("returns a promise", () => {
+      expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(
+        "Should have convertItemToTemplate method"
+      );
+    });
   });
   describe("createItemFromTemplate: ", () => {
-    it('exists', () => {
-      expect(HubSiteProcessor.createItemFromTemplate).toBeDefined('Should have createItemFromTemplate method');
-    })
+    it("exists", () => {
+      expect(HubSiteProcessor.createItemFromTemplate).toBeDefined(
+        "Should have createItemFromTemplate method"
+      );
+    });
   });
 });

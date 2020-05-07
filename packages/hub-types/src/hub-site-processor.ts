@@ -28,10 +28,6 @@ import {
   UserSession
 } from "@esri/solution-common";
 
-
-
-
-
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
@@ -45,9 +41,9 @@ export function convertItemToTemplate(
     resources: [],
     type: "Hub Page",
     key: "page-bz3",
-    dependencies: [], 
+    dependencies: [],
     properties: {},
-    groups:[],
+    groups: [],
     estimatedDeploymentCostFactor: 1
   } as IItemTemplate);
 }
@@ -58,12 +54,7 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-
-  itemProgressCallback(
-    template.itemId,
-    EItemProgressStatus.Failed,
-    0
-  );
+  itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
 
   return Promise.resolve({
     id: "Next-gen Hub Site is not yet implemented", // temporary
@@ -72,25 +63,20 @@ export function createItemFromTemplate(
   });
 }
 
-export function secondPass(
-  model: any,
-  items: any[]
-): Promise<boolean> {
-
+export function secondPass(model: any, items: any[]): Promise<boolean> {
   return Promise.resolve(true);
-
 }
 
 /**
  * Check of an item type is a Site
  * Hub Site Application is for ArcGIS Online
  * Site Application is for ArcGIS Enterprise
- * @param itemType 
+ * @param itemType
  */
 export function isASite(itemType: string, itemUrl?: string): boolean {
   let result = false;
   if (itemType === "Hub Site Application" || itemType === "Site Application") {
     result = true;
-  } 
+  }
   return result;
 }
