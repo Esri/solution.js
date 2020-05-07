@@ -29,6 +29,9 @@ export function _deploySolutionFromTemplate(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Replacement dictionary and high-level deployment ids for cleanup
+    
+    // TODO: Extract all templateDictionary prep into a separate function
+    
     const templateDictionary = options.templateDictionary ?? {};
     let deployedFolderId: string;
     let deployedSolutionId: string;
@@ -99,6 +102,11 @@ export function _deploySolutionFromTemplate(
           templateDictionary.organization || {},
           portalResponse
         );
+        // TODO: Add more computed properties here
+        // portal: portalResponse
+        // orgextent as bbox for assignment onto items
+        // more info in #266 https://github.com/Esri/solution.js/issues/266
+
 
         // As of Spring 2020, only HTTPS (see
         // https://www.esri.com/arcgis-blog/products/product/administration/2019-arcgis-transport-security-improvements/)
@@ -175,7 +183,8 @@ export function _deploySolutionFromTemplate(
       })
       .then(createSolutionResponse => {
         deployedSolutionId = createSolutionResponse.id;
-
+        // TODO: Attach the whole solution model so we can 
+        // have stuff like `{{solution.item.title}}
         templateDictionary.solutionItemId = deployedSolutionId;
         solutionTemplateBase.id = deployedSolutionId;
 
