@@ -243,7 +243,7 @@ export function deploySolutionItems(
         if (status === common.EItemProgressStatus.Finished) {
           const event = {
             event: common.SItemProgressStatus[status],
-            data: createdItemId
+            data: itemId
           } as common.ISolutionProgressEvent;
           options.progressCallback(percentDone, options.jobId, event);
         } else {
