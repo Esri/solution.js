@@ -334,7 +334,10 @@ export function deploySolutionItems(
           }
         });
       },
-      e => reject(common.fail(e))
+      e => {
+        console.error(e);
+        reject(common.fail(e));
+      }
     );
   });
 }

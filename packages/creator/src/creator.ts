@@ -101,6 +101,7 @@ export function createSolution(
             if (createOptions.progressCallback) {
               createOptions.progressCallback(1);
             }
+            console.error(error);
             reject(error);
           }
         );
@@ -171,6 +172,21 @@ export function _addContentToSolution(
       }
 
       if (status === common.EItemProgressStatus.Failed) {
+        solutionTemplates.some(t => {
+          if (t.itemId === itemId) {
+            if (t.properties?.error) {
+              let error = t.properties.error;
+              try {
+                // parse for better console logging if we can
+                error = JSON.parse(error);
+              } catch (e) {
+                // do nothing and show the error as is
+              }
+              console.error(error);
+            }
+            return true;
+          }
+        });
         common.removeTemplate(solutionTemplates, itemId);
         if (failedItemIds.indexOf(itemId) < 0) {
           failedItemIds.push(itemId);
