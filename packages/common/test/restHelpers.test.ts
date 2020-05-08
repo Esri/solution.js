@@ -1985,6 +1985,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("getFeatureServiceProperties", () => {
+    it("checkes that the cacheMaxAge property is copied out of a service's adminServiceInfo", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const serviceResponse = mockItems.getAGOLService([
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ]);
+      fetchMock.post(adminUrl + "?f=json", serviceResponse);
+
+      restHelpers
+        .getFeatureServiceProperties(url, MOCK_USER_SESSION)
+        .then(response => {
+          expect(response.service.cacheMaxAge).toEqual(60);
+          done();
+        }, done.fail);
+    });
+
+    it("handles the absence of a service's adminServiceInfo", done => {
+      const url =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const adminUrl =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const serviceResponse = mockItems.getAGOLService([
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ]);
+      delete serviceResponse.adminServiceInfo;
+      serviceResponse.cacheMaxAge = 90;
+      fetchMock.post(adminUrl + "?f=json", serviceResponse);
+
+      restHelpers
+        .getFeatureServiceProperties(url, MOCK_USER_SESSION)
+        .then(response => {
+          expect(response.service.cacheMaxAge).toEqual(90);
+          done();
+        }, done.fail);
+    });
+  });
+
   describe("removeFolder", () => {
     it("removes a folder", done => {
       const folderId: string = "ABC123";

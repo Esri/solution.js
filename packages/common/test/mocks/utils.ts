@@ -81,14 +81,15 @@ export const ITEM_PROGRESS_CALLBACK: interfaces.IItemProgressCallback = function
   itemId: string,
   status: interfaces.EItemProgressStatus,
   costUsed: number,
-  createdItemId: string // supplied when status is EItemProgressStatus.Created
+  createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
 ): boolean {
   return true;
 };
 
 export const SOLUTION_PROGRESS_CALLBACK: interfaces.ISolutionProgressCallback = function(
   percentDone: number,
-  jobId: string
+  jobId: string,
+  progressEvent: interfaces.ISolutionProgressEvent
 ): void {
   const tick = "tok";
 };

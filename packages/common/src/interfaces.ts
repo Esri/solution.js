@@ -92,12 +92,13 @@ export type IItemProgressCallback = (
   itemId: string,
   status: EItemProgressStatus,
   costUsed: number,
-  createdItemId?: string // supplied when status is EItemProgressStatus.Created
+  createdItemId?: string // supplied when status is EItemProgressStatus.Created or .Finished
 ) => boolean;
 
 export type ISolutionProgressCallback = (
   percentDone: number,
-  jobId?: string
+  jobId?: string,
+  progressEvent?: ISolutionProgressEvent
 ) => void;
 
 export type INoArgFunction = () => any;
@@ -564,6 +565,21 @@ export interface ISolutionItemProperties {
    * Id linking instances of Solution, e.g., "726a641112464ad7b98bc924f2ab361a"
    */
   id: string;
+}
+
+/**
+ * Packet of supplemental information provided via a ISolutionProgressCallback call.
+ */
+export interface ISolutionProgressEvent {
+  /**
+   * Tag describing data
+   */
+  event: string;
+
+  /**
+   * Data
+   */
+  data?: any;
 }
 
 /**

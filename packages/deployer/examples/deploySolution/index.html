@@ -75,6 +75,7 @@
           document.getElementById("input").style.display = "none";
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
+          var createdItems = [];
 
           main.deploySolution(
             document.getElementById("id").value,
@@ -82,8 +83,14 @@
               username: document.getElementById("username").value,
               password: document.getElementById("password").value
             }),
-            percentDone => {
-              document.getElementById("output").innerHTML = "Deploying..." + percentDone.toFixed().toString() + "%";
+            (percentDone, jobId, progressEvent) => {
+              if (progressEvent) {
+                createdItems.push(progressEvent.data)
+              }
+              var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+              createdItems.forEach(item => html += "<li>" + item + "</li>");
+              html += "</ol>";
+              document.getElementById("output").innerHTML = html;
             }
           ).then(
             html => {

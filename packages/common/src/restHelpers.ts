@@ -836,8 +836,12 @@ export function getFeatureServiceProperties(
             properties.service = serviceData;
 
             // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
-            properties.service.cacheMaxAge =
-              serviceData.adminServiceInfo.cacheMaxAge;
+            // serviceData may have set it if there isn't an adminServiceInfo
+            /* istanbul ignore else */
+            if (serviceData.adminServiceInfo?.cacheMaxAge) {
+              properties.service.cacheMaxAge =
+                serviceData.adminServiceInfo.cacheMaxAge;
+            }
 
             // Move the layers and tables out of the service's data section
             /* istanbul ignore else */
