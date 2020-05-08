@@ -110,7 +110,7 @@ export default {
     extend: true // causes this module to extend the global specified by `moduleName`
   },
   context: "window",
-  external: packageNames.concat(arcgisRestJsPackageNames),
+  external: packageNames.concat(arcgisRestJsPackageNames, hubJsPackageNames),
   plugins: [
     typescript(),
     json(),
