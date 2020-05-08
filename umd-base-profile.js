@@ -47,6 +47,7 @@ const copyright = `/* @preserve
  */
 const moduleName = "arcgisSolution";
 const arcgisRestModuleName = 'arcgisRest'
+const hubModuleName = 'arcgisHub'
 
 /**
  * Now we need to discover all the `@esri/solution-*` package names so we can create
@@ -66,6 +67,9 @@ const packageNames = fs
 const arcgisRestJsPackageNames = Object.keys(pkg.dependencies)
   .filter(key => /@esri\/arcgis-rest/.test(key));
 
+const hubJsPackageNames = Object.keys(pkg.dependencies)
+  .filter(key => /@esri\/hub-/.test(key));
+
 /**
  * Rollup will use this map to determine where to lookup modules on the global
  * window object when neither AMD or CommonJS is being used. This configuration
@@ -83,6 +87,11 @@ const globals = packageNames.reduce((globals, p) => {
 */
 arcgisRestJsPackageNames.reduce((globals, p) => {
   globals[p] = arcgisRestModuleName;
+  return globals;
+}, globals);
+
+hubJsPackageNames.reduce((globals, p) => {
+  globals[p] = hubModuleName;
   return globals;
 }, globals);
 
