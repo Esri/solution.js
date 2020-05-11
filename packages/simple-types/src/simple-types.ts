@@ -168,11 +168,9 @@ export function convertItemToTemplate(
 
         wrapupPromise.then(
           () => {
-            webappPromise.then(resolve, err =>
-              reject(common.fail(err.response))
-            );
+            webappPromise.then(resolve, err => reject(common.fail(err)));
           },
-          err => reject(common.fail(err.response))
+          err => reject(common.fail(err))
         );
       },
       error => {

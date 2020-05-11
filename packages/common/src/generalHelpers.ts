@@ -365,7 +365,7 @@ export function deleteProps(obj: any, props: string[]): void {
  */
 export function fail(e?: any): any {
   if (e) {
-    return { success: false, error: e.error || e };
+    return { success: false, error: e.response?.error || e.error || e };
   } else {
     return { success: false };
   }
