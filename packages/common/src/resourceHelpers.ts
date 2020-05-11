@@ -256,13 +256,7 @@ export function copyFilesFromStorageItem(
                     mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
                     authentication: destinationAuthentication
                   }
-                ).then(
-                  result =>
-                    resolveData(
-                      generalHelpers.sanitizeJSONAndReportChanges(result)
-                    ),
-                  rejectData
-                );
+                ).then(result => resolveData(result), rejectData);
               }, msLag);
             }
           );
@@ -281,13 +275,7 @@ export function copyFilesFromStorageItem(
                     itemId: destinationItemId,
                     authentication: destinationAuthentication
                   }
-                ).then(
-                  result =>
-                    resolveInfo(
-                      generalHelpers.sanitizeJSONAndReportChanges(result)
-                    ),
-                  rejectInfo
-                );
+                ).then(result => resolveInfo(result), rejectInfo);
               }, msLag);
             }
           );

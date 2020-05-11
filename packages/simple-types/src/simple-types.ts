@@ -69,10 +69,7 @@ export function convertItemToTemplate(
         dataPromise = new Promise((resolveJSON, rejectJSON) => {
           common
             .getItemDataAsJson(itemTemplate.itemId, authentication)
-            .then(
-              json => resolveJSON(common.sanitizeJSONAndReportChanges(json)),
-              rejectJSON
-            );
+            .then(json => resolveJSON(json), rejectJSON);
         });
         break;
       case "Form":
