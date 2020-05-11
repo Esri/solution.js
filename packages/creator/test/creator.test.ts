@@ -975,7 +975,9 @@ describe("Module `creator`", () => {
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=&properties=%7B%7D" +
+            "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
+              "&properties=" +
+              encodeURIComponent(JSON.stringify({ schemaVersion: 3 })) +
               "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
@@ -1033,12 +1035,9 @@ describe("Module `creator`", () => {
                 encodeURIComponent(options.snippet) +
                 "&description=" +
                 encodeURIComponent(options.description) +
-<<<<<<< HEAD
-                "&properties=%7B%7D&thumbnailurl=" +
-=======
-                "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%2C%22schemaVersion%22%3A3%7D" +
+                "&properties=" +
+                encodeURIComponent(JSON.stringify({ schemaVersion: 3 })) +
                 "&thumbnailurl=" +
->>>>>>> add solution schemaVersion, migrations
                 encodeURIComponent(options.thumbnailurl) +
                 "&tags=" +
                 options.tags.map(encodeURIComponent).join("%2C") +
@@ -1207,14 +1206,10 @@ describe("Module `creator`", () => {
           const options: fetchMock.MockOptions = fetchMock.lastOptions(url);
           const fetchBody = (options as fetchMock.MockResponseObject).body;
           expect(fetchBody).toEqual(
-<<<<<<< HEAD
-            "f=json&type=Solution&title=xfakeidx&snippet=&description=&properties=%7B%7D" +
-              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
-=======
             "f=json&type=Solution&title=xfakeidx&snippet=&description=" +
-              "&properties=%7B%22version%22%3A%221.0%22%2C%22id%22%3A%22guid%22%2C%22schemaVersion%22%3A3%7D" +
-              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate" +
->>>>>>> add solution schemaVersion, migrations
+              "&properties=" +
+              encodeURIComponent(JSON.stringify({ schemaVersion: 3 })) +
+              "&thumbnailurl=&tags=&typeKeywords=Solution%2CTemplate%2Csolutionid-guid%2Csolutionversion-1.0" +
               "&text=%7B%22metadata%22%3A%7B%7D%2C%22templates%22%3A%5B%5D%7D&token=fake-token"
           );
           done();
@@ -1231,72 +1226,28 @@ describe("Module `creator`", () => {
         "another_tag",
         "deploy.version.12.3"
       ];
-<<<<<<< HEAD
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-abc", "solutionversion-12.3"]);
-=======
-      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
-        tags
-      );
-      expect(properties).toEqual({
-        version: "12.3",
-        id: "abc",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
-      });
->>>>>>> add solution schemaVersion, migrations
     });
 
     it("finds only version deployment property", () => {
       const tags = ["a_tag", "another_tag", "deploy.version.12.3"];
       spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
-<<<<<<< HEAD
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-12.3"]);
-=======
-      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
-        tags
-      );
-      expect(properties).toEqual({
-        version: "12.3",
-        id: "guid",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
-      });
->>>>>>> add solution schemaVersion, migrations
     });
 
     it("finds only id deployment property", () => {
       const tags = ["a_tag", "deploy.id.abc", "another_tag"];
-<<<<<<< HEAD
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-abc", "solutionversion-1.0"]);
-=======
-      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
-        tags
-      );
-      expect(properties).toEqual({
-        version: "1.0",
-        id: "abc",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
-      });
->>>>>>> add solution schemaVersion, migrations
     });
 
     it("doesn't find either deployment property", () => {
       const tags = ["a_tag", "another_tag"];
       spyOn(common, "createPseudoGUID").and.callFake(() => "guid");
-<<<<<<< HEAD
       const typeKeywords: string[] = creator._getDeploymentProperties(tags);
       expect(typeKeywords).toEqual(["solutionid-guid", "solutionversion-1.0"]);
-=======
-      const properties: common.ISolutionItemProperties = creator._getDeploymentProperties(
-        tags
-      );
-      expect(properties).toEqual({
-        version: "1.0",
-        id: "guid",
-        schemaVersion: common.CURRENT_SCHEMA_VERSION
-      });
->>>>>>> add solution schemaVersion, migrations
     });
   });
 
