@@ -319,10 +319,12 @@ export function _createSolutionItem(
       title: options?.title ?? common.createShortId(),
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
-      properties: _getDeploymentProperties(creationTags),
+      properties: {},
       thumbnailurl: options?.thumbnailurl ?? "",
       tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
-      typeKeywords: ["Solution", "Template"]
+      typeKeywords: ["Solution", "Template"].concat(
+        _getDeploymentProperties(creationTags)
+      )
     };
     if (Array.isArray(options?.additionalTypeKeywords)) {
       solutionItem.typeKeywords = solutionItem.typeKeywords.concat(
@@ -380,19 +382,19 @@ export function _createSolutionItem(
 }
 
 /**
- * Gets the deploy.version and deploy.id tag values.
+ * Gets the deploy.id and deploy.version tag values.
  *
  * @param tags A list of item tags
- * @return A list ocntaining the two values found in the tags, or defaulting to "1.0" and a new GUID, respectively,
+ * @return A list ocntaining the two values found in the tags, or defaulting to a new GUID and "1.0", respectively,
  * as needed
  */
-export function _getDeploymentProperties(
-  tags: string[]
-): common.ISolutionItemProperties {
-  return {
-    version: _getDeploymentProperty("deploy.version.", tags) ?? "1.0",
-    id: _getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID()
-  } as common.ISolutionItemProperties;
+export function _getDeploymentProperties(tags: string[]): string[] {
+  return [
+    "solutionid-" +
+      (_getDeploymentProperty("deploy.id.", tags) ?? common.createPseudoGUID()),
+    "solutionversion-" +
+      (_getDeploymentProperty("deploy.version.", tags) ?? "1.0")
+  ];
 }
 
 /**
