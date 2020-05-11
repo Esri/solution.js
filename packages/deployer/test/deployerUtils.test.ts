@@ -45,7 +45,12 @@ describe("Module: `_deployerUtils`", () => {
     it("returns true if correct item type and keywords", () => {
       const i = {
         type: "Solution",
-        typeKeywords: ["Solution", "Template"]
+        typeKeywords: [
+          "Solution",
+          "Template",
+          "solutionid-guid",
+          "solutionversion-1.0"
+        ]
       } as common.IItem;
       expect(isSolutionTemplateItem(i)).toBe(true);
     });

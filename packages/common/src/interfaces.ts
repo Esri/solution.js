@@ -527,14 +527,14 @@ export interface ISolutionItem {
   item: any;
 
   /**
-   * Deployment versioning
-   */
-  properties?: ISolutionItemProperties;
-
-  /**
    * Item data section JSON
    */
   data: ISolutionItemData;
+
+  /**
+   * Supplemental information
+   */
+  properties?: IStringValuePair;
 }
 
 /**
@@ -550,21 +550,6 @@ export interface ISolutionItemData {
    * The collection of templates
    */
   templates: IItemTemplate[];
-}
-
-/**
- * Deployment versioning information
- */
-export interface ISolutionItemProperties {
-  /**
-   * Version number of item, e.g., "1.0"
-   */
-  version: string;
-
-  /**
-   * Id linking instances of Solution, e.g., "726a641112464ad7b98bc924f2ab361a"
-   */
-  id: string;
 }
 
 /**
