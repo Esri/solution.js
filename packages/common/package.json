@@ -18,7 +18,7 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/hub-common": "^3.7.5",
+    "@esri/hub-common": "^3.9.2",
     "@esri/arcgis-html-sanitizer": "^2.2.0",
     "@esri/arcgis-rest-auth": "^2.11.0",
     "@esri/arcgis-rest-feature-layer": "^2.11.0",
