@@ -196,6 +196,7 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
 
   if (type1 !== type2) {
     // Ignore "undefined" vs. "null" and vice versa
+    /* istanbul ignore else */
     if (
       (type1 !== "undefined" && type1 !== "null") ||
       (type2 !== "null" && type2 !== "undefined")
