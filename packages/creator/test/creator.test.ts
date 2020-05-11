@@ -857,6 +857,43 @@ describe("Module `creator`", () => {
         ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
         .then(() => done());
     });
+
+    it("_addContentToSolution item progress callback with failed item", done => {
+      const solutionId = "sln1234567890";
+      const itemIds = ["map1234567890"];
+
+      staticRelatedItemsMocks.fetchMockRelatedItems("map1234567890", {
+        total: 0,
+        relatedItems: []
+      });
+
+      fetchMock
+        .get(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Web Map")
+        )
+        .post(
+          "https://myorg.maps.arcgis.com/sharing/rest/content/items/map1234567890/data",
+          mockItems.getAGOLItemData("Web Map")
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
+          mockItems.get400FailureResponse()
+        );
+      // tslint:disable-next-line: no-floating-promises
+      creator
+        ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
+        .then(
+          () => done.fail(),
+          e => {
+            expect(e.success).toBeFalse();
+            expect(e.error).toEqual(
+              "One or more items cannot be converted into templates"
+            );
+            done();
+          }
+        );
+    });
   });
 
   describe("_createSolutionFromItemIds", () => {
