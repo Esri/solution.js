@@ -372,7 +372,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         expect(convertedBlob.mimeType).toEqual("text/plain");
       });
 
-      it("uses alters blob name if the supplied filename indicates a MIME type not supported by AGO", () => {
+      it("uses alternate blob name if the supplied filename indicates a MIME type not supported by AGO", () => {
         const blob = utils.getSampleTextAsFile("");
         expect(blob.name).toEqual("");
         expect(blob.type).toEqual("text/plain");
