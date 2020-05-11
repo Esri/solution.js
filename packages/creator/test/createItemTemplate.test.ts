@@ -296,8 +296,12 @@ describe("Module `createItemTemplate`", () => {
               itemId
             );
             expect(createdTemplate.properties.error).not.toBeUndefined();
-            expect(createdTemplate.properties.error).toEqual(
-              '{"success":false}'
+            const parsedError: any = JSON.parse(
+              createdTemplate.properties.error
+            );
+            expect(parsedError.success).toBeFalse();
+            expect(parsedError.error.message).toEqual(
+              "Item does not have a file."
             );
             done();
           });
