@@ -95,6 +95,10 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/delete",
             utils.getSuccessResponse({ itemId: "sln1234567890" })
           );
+
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
+
         creator.createSolution(solutionGroupId, authentication, options).then(
           () => done.fail(),
           response => {
@@ -151,6 +155,9 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
+
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
           () => done.fail(),
@@ -206,6 +213,9 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
+
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(solutionGroupId, authentication).then(
           () => done.fail(),
@@ -638,6 +648,9 @@ describe("Module `creator`", () => {
             { success: true, id: expectedSolutionId }
           );
 
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
+
         const options: common.ICreateSolutionOptions = {
           title: solutionName,
           templatizeFields: true,
@@ -705,6 +718,9 @@ describe("Module `creator`", () => {
               "/content/users/casey/items/sln1234567890/update",
             utils.getSuccessResponse({ id: expectedSolutionId })
           );
+
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(itemIds, authentication).then(
           () => done.fail(),
@@ -780,6 +796,9 @@ describe("Module `creator`", () => {
           relatedItems: []
         });
 
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
+
         spyOn(common, "createShortId").and.callFake(() => "xfakeidx");
         creator.createSolution(itemIds, authentication).then(
           () => done.fail(),
@@ -852,6 +871,9 @@ describe("Module `creator`", () => {
         }
       );
 
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
+
       // tslint:disable-next-line: no-floating-promises
       creator
         ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})
@@ -881,6 +903,10 @@ describe("Module `creator`", () => {
             "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer/0",
             mockItems.get400FailureResponse()
           );
+
+        // tslint:disable-next-line: no-empty
+        spyOn(console, "error").and.callFake(() => {});
+
         // tslint:disable-next-line: no-floating-promises
         creator
           ._addContentToSolution(solutionId, itemIds, MOCK_USER_SESSION, {})

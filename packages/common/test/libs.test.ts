@@ -217,11 +217,6 @@ describe("Module `arcgis-html-sanitizer`: ", () => {
     });
 
     it("tests XSS cases", () => {
-      // console.log(
-      //   "Running " +
-      //     xssFilterEvasionTestCases.testCases.length +
-      //     " XSS test cases"
-      // );
       const sanitizer = new libs.Sanitizer();
 
       xssFilterEvasionTestCases.testCases.forEach(

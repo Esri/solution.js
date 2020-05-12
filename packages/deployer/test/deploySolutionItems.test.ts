@@ -646,6 +646,8 @@ describe("Module `deploySolutionItems`", () => {
         url: url
       };
 
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
       deploySolution
         .deploySolutionItems(
           utils.PORTAL_URL,
@@ -718,6 +720,9 @@ describe("Module `deploySolutionItems`", () => {
         title: "title",
         url: url
       };
+
+      // tslint:disable-next-line: no-empty
+      spyOn(console, "error").and.callFake(() => {});
 
       deploySolution
         .deploySolutionItems(
