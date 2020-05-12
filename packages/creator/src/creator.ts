@@ -22,7 +22,6 @@
 
 import * as common from "@esri/solution-common";
 import * as createItemTemplate from "./createItemTemplate";
-import { CURRENT_SCHEMA_VERSION } from '@esri/solution-common';
 
 //#region Entry point ----------------------------------------------------------------------------------------------- //
 
