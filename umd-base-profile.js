@@ -47,6 +47,7 @@ const copyright = `/* @preserve
  */
 const moduleName = "arcgisSolution";
 const arcgisRestModuleName = 'arcgisRest'
+const hubModuleName = 'arcgisHub'
 
 /**
  * Now we need to discover all the `@esri/solution-*` package names so we can create
@@ -65,6 +66,9 @@ const packageNames = fs
  */
 const arcgisRestJsPackageNames = Object.keys(pkg.dependencies)
   .filter(key => /@esri\/arcgis-rest/.test(key));
+
+const hubJsPackageNames = Object.keys(pkg.dependencies)
+  .filter(key => /@esri\/hub-/.test(key));
 
 /**
  * Rollup will use this map to determine where to lookup modules on the global
@@ -86,6 +90,11 @@ arcgisRestJsPackageNames.reduce((globals, p) => {
   return globals;
 }, globals);
 
+hubJsPackageNames.reduce((globals, p) => {
+  globals[p] = hubModuleName;
+  return globals;
+}, globals);
+
 /**
  * Now we can export the Rollup config!
  */
@@ -101,7 +110,7 @@ export default {
     extend: true // causes this module to extend the global specified by `moduleName`
   },
   context: "window",
-  external: packageNames.concat(arcgisRestJsPackageNames),
+  external: packageNames.concat(arcgisRestJsPackageNames, hubJsPackageNames),
   plugins: [
     typescript(),
     json(),

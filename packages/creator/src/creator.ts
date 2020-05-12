@@ -319,7 +319,9 @@ export function _createSolutionItem(
       title: options?.title ?? common.createShortId(),
       snippet: options?.snippet ?? "",
       description: options?.description ?? "",
-      properties: {},
+      properties: {
+        schemaVersion: common.CURRENT_SCHEMA_VERSION
+      },
       thumbnailurl: options?.thumbnailurl ?? "",
       tags: creationTags.filter(tag => !tag.startsWith("deploy.")),
       typeKeywords: ["Solution", "Template"].concat(
