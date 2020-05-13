@@ -129,7 +129,7 @@ export function runQuery(): void {
       additionalSearchOptions
     )
     .then(
-      (response: common.ISearchResult<common.IGroup>) => {
+      (response: common.ISearchResult<common.IItem>) => {
         const results = response.results;
         let html = "";
         if (results.length === 0) {
