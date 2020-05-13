@@ -13,6 +13,7 @@
 [license-url]: #license
 
 ## Solution.js
+> TypeScript wrappers running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another. [Video introduction](https://youtu.be/esmUmIf3hcI) from the 2020 Developer Summit.
 
 ### Table of Contents
 
