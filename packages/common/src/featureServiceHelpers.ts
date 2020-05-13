@@ -311,6 +311,7 @@ export function updateSettingsFieldInfos(
     if (id === settings[k].itemId) {
       dependencies.forEach((d: any) => {
         settingsKeys.forEach((_k: any) => {
+          /* istanbul ignore else */
           if (d === _k) {
             settings[k]["sourceServiceFields"] = generalHelpers.getProp(
               settings[_k],
@@ -570,7 +571,8 @@ export function updateFeatureServiceDefinition(
 
     // if the service has veiws keep track of the fields so we can use them to
     // compare with the view fields
-    if (itemTemplate.properties.service.hasViews) {
+    /* istanbul ignore else */
+    if (generalHelpers.getProp(itemTemplate, "properties.service.hasViews")) {
       _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
     }
 
@@ -728,13 +730,16 @@ export function postProcessFields(
     } else {
       const id = itemTemplate.itemId;
       const settingsKeys = Object.keys(templateDictionary);
-      const templateKey = settingsKeys.filter(
-        k => templateDictionary[k].itemId === id
-      )[0];
-      const templateInfo = generalHelpers.getProp(
-        templateDictionary,
-        templateKey
-      );
+
+      let templateInfo: any;
+      settingsKeys.some(k => {
+        if (templateDictionary[k].itemId === id) {
+          templateInfo = templateDictionary[k];
+          return true;
+        } else {
+          return false;
+        }
+      });
 
       // concat any layers and tables to process
       const layers: any[] = itemTemplate.properties.layers;
@@ -752,7 +757,7 @@ export function postProcessFields(
           layerInfos[item.id]["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
           // when the item is a view bring over the source service fields so we can compare the domains
-          if (item.isView) {
+          if (item.isView && templateInfo) {
             layerInfos[item.id]["sourceServiceFields"] = generalHelpers.getProp(
               templateInfo,
               `sourceServiceFields.${item.id}`
@@ -856,12 +861,14 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
   const domainFields: any[] = [];
   const domainNames: string[] = [];
 
-  fieldInfo.sourceServiceFields.forEach((field: any) => {
-    if (field.hasOwnProperty("domain") && field.domain) {
-      domainFields.push(field.domain);
-      domainNames.push(String(field.name).toLocaleLowerCase());
-    }
-  });
+  if (fieldInfo.sourceServiceFields) {
+    fieldInfo.sourceServiceFields.forEach((field: any) => {
+      if (field.hasOwnProperty("domain") && field.domain) {
+        domainFields.push(field.domain);
+        domainNames.push(String(field.name).toLocaleLowerCase());
+      }
+    });
+  }
 
   // loop through the fields from the new view service
   // add an update when the domains don't match
