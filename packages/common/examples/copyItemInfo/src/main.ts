@@ -90,6 +90,7 @@ export function copyItemInfo(
             undefined, // folder id
             authentication,
             itemThumbnailUrl,
+            authentication,
             itemDataFile,
             itemMetadataFile,
             itemResourceFiles,
