@@ -20,9 +20,9 @@
  * @module generalHelpers
  */
 
-import * as interfaces from "./interfaces";
-import * as libs from "./libs";
-import * as polyfills from "./polyfills";
+import { IDatasourceInfo, IItemTemplate } from "./interfaces";
+import { Sanitizer, sanitizeJSON } from "./libs";
+import { new_File } from "./polyfills";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -71,7 +71,7 @@ export function blobToFile(
   filename: string,
   mimeType?: string
 ): File {
-  return polyfills.new_File([blob], filename ? filename : "", {
+  return new_File([blob], filename ? filename : "", {
     type: mimeType || blob.type
   });
 }
@@ -269,9 +269,9 @@ export function compareJSONProperties(json1: any, json2: any): string[] {
  */
 export function sanitizeJSONAndReportChanges(
   json: any,
-  sanitizer?: libs.Sanitizer
+  sanitizer?: Sanitizer
 ): any {
-  const sanitizedJSON = libs.sanitizeJSON(json, sanitizer);
+  const sanitizedJSON = sanitizeJSON(json, sanitizer);
 
   const mismatches = compareJSONProperties(json, sanitizedJSON);
   if (mismatches.length > 0) {
@@ -554,7 +554,7 @@ export function getUniqueTitle(
  * @return Boolean indicating result
  */
 export function hasDatasource(
-  datasourceInfos: interfaces.IDatasourceInfo[],
+  datasourceInfos: IDatasourceInfo[],
   itemId: string,
   layerId: number
 ): boolean {
@@ -612,7 +612,7 @@ export function cleanLayerId(id: any) {
  * @return Template associated with the user provided id argument
  */
 export function getTemplateById(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
 ): any {
   let template;
