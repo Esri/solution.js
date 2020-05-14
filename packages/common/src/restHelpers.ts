@@ -20,11 +20,81 @@
  * @module restHelpers
  */
 
-import { appendQueryParam, blobToJson, blobToText, checkUrlPathTermination, deleteProp, deleteProps, fail, getProp, getUniqueTitle, setCreateProp } from "./generalHelpers";
-import { IAddFolderResponse, IAddGroupResponse, IAdditionalSearchOptions, ICreateItemResponse, ICreateServiceResult, IDependency, IExtent, IFeatureServiceProperties, IFolderStatusResponse, IGroup, IGroupAdd, IItem, IItemTemplate, IItemUpdate, IPostProcessArgs, IRelatedItems, ISpatialReference, IStatusResponse, ItemRelationshipType, IUpdate, IUpdateItemResponse, UserSession } from "./interfaces";
-import { addItemData as portalAddItemData, addItemRelationship, addItemResource, createFolder, createGroup, createItemInFolder, getItem, IAddItemDataOptions, ICreateItemOptions, IFolderIdOptions, IGroupSharingOptions, IItemResourceOptions, IManageItemRelationshipOptions, ISearchGroupContentOptions, ISearchOptions, ISearchResult, ISetAccessOptions, ISharingResponse, IUpdateItemOptions, IUserGroupOptions, IUserItemOptions, removeFolder as portalRemoveFolder, removeGroup as portalRemoveGroup, removeItem as portalRemoveItem, searchGroupContent, searchGroups as portalSearchGroups, searchItems as portalSearchItems, SearchQueryBuilder, setItemAccess, shareItemWithGroup, updateItem as portalUpdateItem } from "@esri/arcgis-rest-portal";
+import {
+  appendQueryParam,
+  blobToJson,
+  blobToText,
+  checkUrlPathTermination,
+  deleteProp,
+  deleteProps,
+  fail,
+  getProp,
+  getUniqueTitle,
+  setCreateProp
+} from "./generalHelpers";
+import {
+  IAddFolderResponse,
+  IAddGroupResponse,
+  IAdditionalSearchOptions,
+  ICreateItemResponse,
+  ICreateServiceResult,
+  IDependency,
+  IExtent,
+  IFeatureServiceProperties,
+  IFolderStatusResponse,
+  IGroup,
+  IGroupAdd,
+  IItem,
+  IItemTemplate,
+  IItemUpdate,
+  IPostProcessArgs,
+  IRelatedItems,
+  ISpatialReference,
+  IStatusResponse,
+  ItemRelationshipType,
+  IUpdate,
+  IUpdateItemResponse,
+  UserSession
+} from "./interfaces";
+import {
+  addItemData as portalAddItemData,
+  addItemRelationship,
+  addItemResource,
+  createFolder,
+  createGroup,
+  createItemInFolder,
+  getItem,
+  IAddItemDataOptions,
+  ICreateItemOptions,
+  IFolderIdOptions,
+  IGroupSharingOptions,
+  IItemResourceOptions,
+  IManageItemRelationshipOptions,
+  ISearchGroupContentOptions,
+  ISearchOptions,
+  ISearchResult,
+  ISetAccessOptions,
+  ISharingResponse,
+  IUpdateItemOptions,
+  IUserGroupOptions,
+  IUserItemOptions,
+  removeFolder as portalRemoveFolder,
+  removeGroup as portalRemoveGroup,
+  removeItem as portalRemoveItem,
+  searchGroupContent,
+  searchGroups as portalSearchGroups,
+  searchItems as portalSearchItems,
+  SearchQueryBuilder,
+  setItemAccess,
+  shareItemWithGroup,
+  updateItem as portalUpdateItem
+} from "@esri/arcgis-rest-portal";
 import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
-import { ICreateServiceParams, addToServiceDefinition as svcAdminAddToServiceDefinition, createFeatureService as svcAdminCreateFeatureService } from "@esri/arcgis-rest-service-admin";
+import {
+  ICreateServiceParams,
+  addToServiceDefinition as svcAdminAddToServiceDefinition,
+  createFeatureService as svcAdminCreateFeatureService
+} from "@esri/arcgis-rest-service-admin";
 import { replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -100,9 +170,7 @@ export function addForwardItemRelationships(
 ): Promise<IStatusResponse[]> {
   return new Promise<IStatusResponse[]>(resolve => {
     // Set up relationships using updated relationship information
-    const relationshipPromises = new Array<
-      Promise<IStatusResponse>
-    >();
+    const relationshipPromises = new Array<Promise<IStatusResponse>>();
     destinationRelationships.forEach(relationship => {
       relationship.relatedItemIds.forEach(relatedItemId => {
         relationshipPromises.push(
@@ -116,9 +184,9 @@ export function addForwardItemRelationships(
       });
     });
     // tslint:disable-next-line: no-floating-promises
-    Promise.all(
-      relationshipPromises
-    ).then((responses: IStatusResponse[]) => resolve(responses));
+    Promise.all(relationshipPromises).then((responses: IStatusResponse[]) =>
+      resolve(responses)
+    );
   });
 }
 
@@ -167,6 +235,76 @@ export function addToServiceDefinition(
 }
 
 /**
+ * Simple validate function to ensure all coordinates are numbers
+ * In some cases orgs can have null or undefined coordinate values associated with the org extent
+ *
+ * @param extent the extent to validate
+ * @return the provided extent or a default global extent if some coordinates are not numbers
+ * @protected
+ */
+export function _validateExtent(extent: IExtent): IExtent {
+  // in some cases orgs can have invalid extents defined
+  // this is a simple validate function that will ensure coordiantes are numbers
+  const hasInvalid =
+    typeof extent.xmin !== "number" ||
+    typeof extent.xmax !== "number" ||
+    typeof extent.ymax !== "number" ||
+    typeof extent.ymin !== "number";
+  if (hasInvalid) {
+    extent.xmin = -180;
+    extent.xmax = 180;
+    extent.ymax = 90;
+    extent.ymin = -90;
+    extent.spatialReference = { wkid: 4326 };
+  }
+  return extent;
+}
+
+/**
+ * If the request to convert the extent fails it has commonly been due to an invalid extent.
+ * This function will first attempt to use the provided extent. If it fails it will default to
+ * a global extent.
+ *
+ * @param extent the extent to convert
+ * @param outSR the spatial reference to project to
+ * @param geometryServiceUrl the service url for the geometry service to use
+ * @param authentication the credentials for the requests
+ * @return the extent projected to the provided spatial reference
+ * or the world extent projected to the provided spatial reference
+ * @protected
+ */
+export function convertExtentWithFallback(
+  extent: IExtent,
+  outSR: ISpatialReference,
+  geometryServiceUrl: string,
+  authentication: UserSession
+): Promise<any> {
+  return new Promise((resolve, reject) => {
+    convertExtent(extent, outSR, geometryServiceUrl, authentication).then(
+      extentResponse => resolve(_validateExtent(extentResponse)),
+      // if convert fails try again with default global extent
+      () => {
+        convertExtent(
+          {
+            xmin: -180,
+            xmax: 180,
+            ymin: -90,
+            ymax: 90,
+            spatialReference: { wkid: 4326 }
+          },
+          outSR,
+          geometryServiceUrl,
+          authentication
+        ).then(
+          extentResponse => resolve(_validateExtent(extentResponse)),
+          e => reject(fail(e))
+        );
+      }
+    );
+  });
+}
+
+/**
  * Converts an extent to a specified spatial reference.
  *
  * @param extent Extent object to check and (possibly) to project
@@ -195,68 +333,64 @@ export function convertExtent(
         extentOfInterest: JSON.stringify(extent)
       };
       request(
-          checkUrlPathTermination(geometryServiceUrl) +
-          "findTransformations",
-          _requestOptions
-        )
-        .then(
-          response => {
-            const transformations =
-              response && response.transformations
-                ? response.transformations
-                : undefined;
-            let transformation: any;
-            if (transformations && transformations.length > 0) {
-              // if a forward single transformation is found use that...otherwise check for and use composite
-              transformation = transformations[0].wkid
-                ? transformations[0].wkid
-                : transformations[0].geoTransforms
-                  ? transformations[0]
-                  : undefined;
-            }
+        checkUrlPathTermination(geometryServiceUrl) + "findTransformations",
+        _requestOptions
+      ).then(
+        response => {
+          const transformations =
+            response && response.transformations
+              ? response.transformations
+              : undefined;
+          let transformation: any;
+          if (transformations && transformations.length > 0) {
+            // if a forward single transformation is found use that...otherwise check for and use composite
+            transformation = transformations[0].wkid
+              ? transformations[0].wkid
+              : transformations[0].geoTransforms
+              ? transformations[0]
+              : undefined;
+          }
 
-            _requestOptions.params = {
-              f: "json",
-              outSR: outSR.wkid,
-              // tslint:disable-next-line:no-unnecessary-type-assertion
-              inSR: extent.spatialReference!.wkid,
-              geometries: {
-                geometryType: "esriGeometryPoint",
-                geometries: [
-                  { x: extent.xmin, y: extent.ymin },
-                  { x: extent.xmax, y: extent.ymax }
-                ]
-              },
-              transformation: transformation
-            };
-            request(
-                checkUrlPathTermination(geometryServiceUrl) +
-                "project",
-                _requestOptions
-              )
-              .then(
-                projectResponse => {
-                  const projectGeom: any =
-                    projectResponse.geometries.length === 2
-                      ? projectResponse.geometries
-                      : undefined;
-                  if (projectGeom) {
-                    resolve({
-                      xmin: projectGeom[0].x,
-                      ymin: projectGeom[0].y,
-                      xmax: projectGeom[1].x,
-                      ymax: projectGeom[1].y,
-                      spatialReference: outSR
-                    });
-                  } else {
-                    resolve(undefined);
-                  }
-                },
-                e => reject(fail(e))
-              );
-          },
-          e => reject(fail(e))
-        );
+          _requestOptions.params = {
+            f: "json",
+            outSR: outSR.wkid,
+            // tslint:disable-next-line:no-unnecessary-type-assertion
+            inSR: extent.spatialReference!.wkid,
+            geometries: {
+              geometryType: "esriGeometryPoint",
+              geometries: [
+                { x: extent.xmin, y: extent.ymin },
+                { x: extent.xmax, y: extent.ymax }
+              ]
+            },
+            transformation: transformation
+          };
+          request(
+            checkUrlPathTermination(geometryServiceUrl) + "project",
+            _requestOptions
+          ).then(
+            projectResponse => {
+              const projectGeom: any =
+                projectResponse.geometries.length === 2
+                  ? projectResponse.geometries
+                  : undefined;
+              if (projectGeom) {
+                resolve({
+                  xmin: projectGeom[0].x,
+                  ymin: projectGeom[0].y,
+                  xmax: projectGeom[1].x,
+                  ymax: projectGeom[1].y,
+                  spatialReference: outSR
+                });
+              } else {
+                resolve(undefined);
+              }
+            },
+            e => reject(fail(e))
+          );
+        },
+        e => reject(fail(e))
+      );
     }
   });
 }
@@ -402,9 +536,7 @@ export function createFullItem(
                           resourcesPrefix: filenameParts[0]
                         };
                       }
-                      updateDefs.push(
-                        addItemResource(addResourceOptions)
-                      );
+                      updateDefs.push(addItemResource(addResourceOptions));
                     });
                   }
 
@@ -534,10 +666,7 @@ export function createUniqueFolder(
       ok => resolve(ok),
       err => {
         // If the name already exists, we'll try again
-        const errorDetails = getProp(
-          err,
-          "response.error.details"
-        ) as string[];
+        const errorDetails = getProp(err, "response.error.details") as string[];
         if (Array.isArray(errorDetails) && errorDetails.length > 0) {
           const nameNotAvailMsg =
             "Folder title '" + folderTitle + "' not available.";
@@ -545,11 +674,7 @@ export function createUniqueFolder(
             // Create the user.folders property if it doesn't exist
             /* istanbul ignore else */
             if (!getProp(templateDictionary, "user.folders")) {
-              setCreateProp(
-                templateDictionary,
-                "user.folders",
-                []
-              );
+              setCreateProp(templateDictionary, "user.folders", []);
             }
             templateDictionary.user.folders.push({
               title: folderTitle
@@ -586,21 +711,14 @@ export function createUniqueGroup(
 ): Promise<IAddGroupResponse> {
   return new Promise<IAddGroupResponse>((resolve, reject) => {
     // Get a title that is not already in use
-    groupItem.title = getUniqueTitle(
-      title,
-      templateDictionary,
-      "user.groups"
-    );
+    groupItem.title = getUniqueTitle(title, templateDictionary, "user.groups");
     const groupCreationParam = {
       group: groupItem,
       authentication: authentication
     };
     createGroup(groupCreationParam).then(resolve, err => {
       // If the name already exists, we'll try again
-      const errorDetails = getProp(
-        err,
-        "response.error.details"
-      ) as string[];
+      const errorDetails = getProp(err, "response.error.details") as string[];
       if (Array.isArray(errorDetails) && errorDetails.length > 0) {
         const nameNotAvailMsg =
           "You already have a group named '" +
@@ -644,27 +762,25 @@ export function extractDependencies(
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
       request(
-          checkUrlPathTermination(itemTemplate.item.url) +
-          "sources?f=json",
-          {
-            authentication: authentication
-          }
-        )
-        .then(
-          response => {
-            /* istanbul ignore else */
-            if (response && response.services) {
-              response.services.forEach((layer: any) => {
-                dependencies.push({
-                  id: layer.serviceItemId,
-                  name: layer.name
-                });
+        checkUrlPathTermination(itemTemplate.item.url) + "sources?f=json",
+        {
+          authentication: authentication
+        }
+      ).then(
+        response => {
+          /* istanbul ignore else */
+          if (response && response.services) {
+            response.services.forEach((layer: any) => {
+              dependencies.push({
+                id: layer.serviceItemId,
+                name: layer.name
               });
-            }
-            resolve(dependencies);
-          },
-          e => reject(fail(e))
-        );
+            });
+          }
+          resolve(dependencies);
+        },
+        e => reject(fail(e))
+      );
     } else {
       resolve(dependencies);
     }
@@ -691,9 +807,7 @@ export function getLayers(
       };
       requestsDfd.push(
         request(
-          checkUrlPathTermination(serviceUrl) +
-          layer["id"] +
-          "?f=json",
+          checkUrlPathTermination(serviceUrl) + layer["id"] + "?f=json",
           requestOptions
         )
       );
@@ -714,9 +828,7 @@ export function getLayers(
  * @return An array of update instructions
  * @protected
  */
-export function getLayerUpdates(
-  args: IPostProcessArgs
-): IUpdate[] {
+export function getLayerUpdates(args: IPostProcessArgs): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
@@ -812,64 +924,61 @@ export function getFeatureServiceProperties(
   serviceUrl: string,
   authentication: UserSession
 ): Promise<IFeatureServiceProperties> {
-  return new Promise<IFeatureServiceProperties>(
-    (resolve, reject) => {
-      const properties: IFeatureServiceProperties = {
-        service: {},
-        layers: [],
-        tables: []
-      };
+  return new Promise<IFeatureServiceProperties>((resolve, reject) => {
+    const properties: IFeatureServiceProperties = {
+      service: {},
+      layers: [],
+      tables: []
+    };
 
-      // get the admin URL
-      serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
+    // get the admin URL
+    serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
 
-      // Get the service description
-      request(serviceUrl + "?f=json", {
-          authentication: authentication
-        })
-        .then(
-          serviceData => {
-            properties.service = serviceData;
+    // Get the service description
+    request(serviceUrl + "?f=json", {
+      authentication: authentication
+    }).then(
+      serviceData => {
+        properties.service = serviceData;
 
-            // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
-            // serviceData may have set it if there isn't an adminServiceInfo
-            /* istanbul ignore else */
-            if (serviceData.adminServiceInfo?.cacheMaxAge) {
-              properties.service.cacheMaxAge =
-                serviceData.adminServiceInfo.cacheMaxAge;
-            }
+        // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
+        // serviceData may have set it if there isn't an adminServiceInfo
+        /* istanbul ignore else */
+        if (serviceData.adminServiceInfo?.cacheMaxAge) {
+          properties.service.cacheMaxAge =
+            serviceData.adminServiceInfo.cacheMaxAge;
+        }
 
-            // Move the layers and tables out of the service's data section
-            /* istanbul ignore else */
-            if (serviceData.layers) {
-              properties.layers = serviceData.layers;
+        // Move the layers and tables out of the service's data section
+        /* istanbul ignore else */
+        if (serviceData.layers) {
+          properties.layers = serviceData.layers;
 
-              // Fill in properties that the service layer doesn't provide
-              properties.layers.forEach(layer => {
-                layer.serviceItemId = properties.service.serviceItemId;
-                layer.extent = null;
-              });
-            }
-            delete serviceData.layers;
+          // Fill in properties that the service layer doesn't provide
+          properties.layers.forEach(layer => {
+            layer.serviceItemId = properties.service.serviceItemId;
+            layer.extent = null;
+          });
+        }
+        delete serviceData.layers;
 
-            /* istanbul ignore else */
-            if (serviceData.tables) {
-              properties.tables = serviceData.tables;
+        /* istanbul ignore else */
+        if (serviceData.tables) {
+          properties.tables = serviceData.tables;
 
-              // Fill in properties that the service layer doesn't provide
-              properties.tables.forEach(table => {
-                table.serviceItemId = properties.service.serviceItemId;
-                table.extent = null;
-              });
-            }
-            delete serviceData.tables;
+          // Fill in properties that the service layer doesn't provide
+          properties.tables.forEach(table => {
+            table.serviceItemId = properties.service.serviceItemId;
+            table.extent = null;
+          });
+        }
+        delete serviceData.tables;
 
-            resolve(properties);
-          },
-          (e: any) => reject(fail(e))
-        );
-    }
-  );
+        resolve(properties);
+      },
+      (e: any) => reject(fail(e))
+    );
+  });
 }
 
 export function hasInvalidGroupDesignations(
@@ -897,11 +1006,10 @@ export function removeFolder(
       folderId: folderId,
       authentication: authentication
     };
-    portalRemoveFolder(requestOptions)
-      .then(
-        result => (result.success ? resolve(result) : reject(result)),
-        reject
-      );
+    portalRemoveFolder(requestOptions).then(
+      result => (result.success ? resolve(result) : reject(result)),
+      reject
+    );
   });
 }
 
@@ -921,11 +1029,10 @@ export function removeGroup(
       id: groupId,
       authentication: authentication
     };
-    portalRemoveGroup(requestOptions)
-      .then(
-        result => (result.success ? resolve(result) : reject(result)),
-        reject
-      );
+    portalRemoveGroup(requestOptions).then(
+      result => (result.success ? resolve(result) : reject(result)),
+      reject
+    );
   });
 }
 
@@ -945,11 +1052,10 @@ export function removeItem(
       id: itemId,
       authentication: authentication
     };
-    return portalRemoveItem(requestOptions)
-      .then(
-        result => (result.success ? resolve(result) : reject(result)),
-        reject
-      );
+    return portalRemoveItem(requestOptions).then(
+      result => (result.success ? resolve(result) : reject(result)),
+      reject
+    );
   });
 }
 
@@ -1286,7 +1392,7 @@ export function _getCreateServiceOptions(
     );
 
     // project the portals extent to match that of the service
-    convertExtent(
+    convertExtentWithFallback(
       templateDictionary.organization.defaultExtent,
       serviceInfo.service.spatialReference,
       templateDictionary.organization.helperServices.geometry.url,
@@ -1316,9 +1422,7 @@ export function _getCreateServiceOptions(
  * @return Any relationships that should be updated for the service
  * @protected
  */
-export function _getRelationshipUpdates(
-  args: IPostProcessArgs
-): any {
+export function _getRelationshipUpdates(args: IPostProcessArgs): any {
   const rels: any = {
     layers: []
   };
@@ -1356,10 +1460,7 @@ export function _getUpdate(
 ): IUpdate {
   const ops: any = {
     delete: {
-      url:
-        checkUrlPathTermination(url) +
-        id +
-        "/deleteFromDefinition",
+      url: checkUrlPathTermination(url) + id + "/deleteFromDefinition",
       params: {
         deleteFromDefinition: {
           fields:
@@ -1368,8 +1469,7 @@ export function _getUpdate(
       }
     },
     update: {
-      url:
-        checkUrlPathTermination(url) + id + "/updateDefinition",
+      url: checkUrlPathTermination(url) + id + "/updateDefinition",
       params: {
         updateDefinition: obj
       }
@@ -1423,14 +1523,13 @@ export function _setItemProperties(
   ];
 
   const capabilities =
-    getProp(serviceInfo, "service.capabilities") ||
-    (isPortal ? "" : []);
+    getProp(serviceInfo, "service.capabilities") || (isPortal ? "" : []);
 
   item.capabilities = isPortal
     ? capabilities
-      .split(",")
-      .filter((c: any) => portalCapabilities.indexOf(c) > -1)
-      .join(",")
+        .split(",")
+        .filter((c: any) => portalCapabilities.indexOf(c) > -1)
+        .join(",")
     : capabilities;
   if (serviceInfo.service.capabilities) {
     serviceInfo.service.capabilities = item.capabilities;
