@@ -39,6 +39,7 @@ export {
   IPortal,
   IUser,
   ItemRelationshipType,
+  ISearchOptions,
   ISearchResult,
   IUpdateItemResponse
 } from "@esri/arcgis-rest-portal";
