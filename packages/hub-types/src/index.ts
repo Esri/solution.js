@@ -20,5 +20,7 @@
  * @module storymap
  */
 
-export * as HubPageProcessor from "./hub-page-processor";
-export * as HubSiteProcessor from "./hub-site-processor";
+import * as HubPageProcessor from "./hub-page-processor";
+import * as HubSiteProcessor from "./hub-site-processor";
+
+export { HubPageProcessor, HubSiteProcessor };
