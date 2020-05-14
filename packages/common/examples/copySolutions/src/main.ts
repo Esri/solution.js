@@ -175,7 +175,8 @@ export function getRequestAuthentication(
  * @param authentication Authentication for server to query
  */
 export function getTemplates(
-  authentication: common.UserSession
+  authentication: common.UserSession,
+  getAllOrgSolutions?: boolean
 ): Promise<common.ISearchResult<common.IItem>> {
   return new Promise((resolve, reject) => {
     common.getPortal(null, authentication).then(
@@ -185,9 +186,10 @@ export function getTemplates(
           return;
         }
 
-        let availSolnsQuery =
-          "type:Solution typekeywords:Solution,Template owner:" +
-          portalResponse.user.username;
+        let availSolnsQuery = "type:Solution typekeywords:Solution,Template";
+        if (!getAllOrgSolutions) {
+          availSolnsQuery += " owner:" + portalResponse.user.username;
+        }
         if (portalResponse.user.orgId) {
           availSolnsQuery += " orgid:" + portalResponse.user.orgId;
         }
