@@ -20,12 +20,12 @@
  * @module restHelpers
  */
 
-import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
-import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
-import * as templatization from "./templatization";
+import { appendQueryParam, blobToJson, blobToText, checkUrlPathTermination, deleteProp, deleteProps, fail, getProp, getUniqueTitle, setCreateProp } from "./generalHelpers";
+import { IAddFolderResponse, IAddGroupResponse, IAdditionalSearchOptions, ICreateItemResponse, ICreateServiceResult, IDependency, IExtent, IFeatureServiceProperties, IFolderStatusResponse, IGroup, IGroupAdd, IItem, IItemTemplate, IItemUpdate, IPostProcessArgs, IRelatedItems, ISpatialReference, IStatusResponse, ItemRelationshipType, IUpdate, IUpdateItemResponse, UserSession } from "./interfaces";
+import { addItemData as portalAddItemData, addItemRelationship, addItemResource, createFolder, createGroup, createItemInFolder, getItem, IAddItemDataOptions, ICreateItemOptions, IFolderIdOptions, IGroupSharingOptions, IItemResourceOptions, IManageItemRelationshipOptions, ISearchGroupContentOptions, ISearchOptions, ISearchResult, ISetAccessOptions, ISharingResponse, IUpdateItemOptions, IUserGroupOptions, IUserItemOptions, removeFolder as portalRemoveFolder, removeGroup as portalRemoveGroup, removeItem as portalRemoveItem, searchGroupContent, searchGroups as portalSearchGroups, searchItems as portalSearchItems, SearchQueryBuilder, setItemAccess, shareItemWithGroup, updateItem as portalUpdateItem } from "@esri/arcgis-rest-portal";
+import { IParams, IRequestOptions, request } from "@esri/arcgis-rest-request";
+import { ICreateServiceParams, addToServiceDefinition as svcAdminAddToServiceDefinition, createFeatureService as svcAdminCreateFeatureService } from "@esri/arcgis-rest-service-admin";
+import { replaceInTemplate } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -41,9 +41,9 @@ export { request as rest_request } from "@esri/arcgis-rest-request";
  * @see https://developers.arcgis.com/rest/users-groups-and-items/search.htm
  */
 export function searchItems(
-  search: string | portal.ISearchOptions | portal.SearchQueryBuilder
-): Promise<interfaces.ISearchResult<interfaces.IItem>> {
-  return portal.searchItems(search);
+  search: string | ISearchOptions | SearchQueryBuilder
+): Promise<ISearchResult<IItem>> {
+  return portalSearchItems(search);
 }
 
 /**
@@ -58,28 +58,28 @@ export function searchItems(
 export function addForwardItemRelationship(
   originItemId: string,
   destinationItemId: string,
-  relationshipType: interfaces.ItemRelationshipType,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IStatusResponse> {
-  return new Promise<interfaces.IStatusResponse>(resolve => {
-    const requestOptions: portal.IManageItemRelationshipOptions = {
+  relationshipType: ItemRelationshipType,
+  authentication: UserSession
+): Promise<IStatusResponse> {
+  return new Promise<IStatusResponse>(resolve => {
+    const requestOptions: IManageItemRelationshipOptions = {
       originItemId,
       destinationItemId,
       relationshipType,
       authentication
     };
-    portal.addItemRelationship(requestOptions).then(
+    addItemRelationship(requestOptions).then(
       response => {
         resolve({
           success: response.success,
           itemId: originItemId
-        } as interfaces.IStatusResponse);
+        } as IStatusResponse);
       },
       () => {
         resolve({
           success: false,
           itemId: originItemId
-        } as interfaces.IStatusResponse);
+        } as IStatusResponse);
       }
     );
   });
@@ -95,13 +95,13 @@ export function addForwardItemRelationship(
  */
 export function addForwardItemRelationships(
   originItemId: string,
-  destinationRelationships: interfaces.IRelatedItems[],
-  authentication: interfaces.UserSession
-): Promise<interfaces.IStatusResponse[]> {
-  return new Promise<interfaces.IStatusResponse[]>(resolve => {
+  destinationRelationships: IRelatedItems[],
+  authentication: UserSession
+): Promise<IStatusResponse[]> {
+  return new Promise<IStatusResponse[]>(resolve => {
     // Set up relationships using updated relationship information
     const relationshipPromises = new Array<
-      Promise<interfaces.IStatusResponse>
+      Promise<IStatusResponse>
     >();
     destinationRelationships.forEach(relationship => {
       relationship.relatedItemIds.forEach(relatedItemId => {
@@ -109,7 +109,7 @@ export function addForwardItemRelationships(
           addForwardItemRelationship(
             originItemId,
             relatedItemId,
-            relationship.relationshipType as interfaces.ItemRelationshipType,
+            relationship.relationshipType as ItemRelationshipType,
             authentication
           )
         );
@@ -118,7 +118,7 @@ export function addForwardItemRelationships(
     // tslint:disable-next-line: no-floating-promises
     Promise.all(
       relationshipPromises
-    ).then((responses: interfaces.IStatusResponse[]) => resolve(responses));
+    ).then((responses: IStatusResponse[]) => resolve(responses));
   });
 }
 
@@ -132,7 +132,7 @@ export function addForwardItemRelationships(
  */
 export function addTokenToUrl(
   url: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<string> {
   return new Promise<string>(resolve => {
     if (!url || !authentication) {
@@ -142,7 +142,7 @@ export function addTokenToUrl(
         token => {
           /* istanbul ignore else */
           if (token) {
-            url = generalHelpers.appendQueryParam(url, "token=" + token);
+            url = appendQueryParam(url, "token=" + token);
           }
           resolve(url);
         },
@@ -157,11 +157,11 @@ export function addToServiceDefinition(
   options: any
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    serviceAdmin.addToServiceDefinition(url, options).then(
+    svcAdminAddToServiceDefinition(url, options).then(
       () => {
         resolve();
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -176,11 +176,11 @@ export function addToServiceDefinition(
  * @return Original extent if it's already using outSR or the extents projected into the outSR
  */
 export function convertExtent(
-  extent: interfaces.IExtent,
-  outSR: interfaces.ISpatialReference,
+  extent: IExtent,
+  outSR: ISpatialReference,
   geometryServiceUrl: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IExtent> {
+  authentication: UserSession
+): Promise<IExtent> {
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -194,10 +194,9 @@ export function convertExtent(
         outSR: outSR.wkid,
         extentOfInterest: JSON.stringify(extent)
       };
-      request
-        .request(
-          generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
-            "findTransformations",
+      request(
+          checkUrlPathTermination(geometryServiceUrl) +
+          "findTransformations",
           _requestOptions
         )
         .then(
@@ -212,8 +211,8 @@ export function convertExtent(
               transformation = transformations[0].wkid
                 ? transformations[0].wkid
                 : transformations[0].geoTransforms
-                ? transformations[0]
-                : undefined;
+                  ? transformations[0]
+                  : undefined;
             }
 
             _requestOptions.params = {
@@ -230,10 +229,9 @@ export function convertExtent(
               },
               transformation: transformation
             };
-            request
-              .request(
-                generalHelpers.checkUrlPathTermination(geometryServiceUrl) +
-                  "project",
+            request(
+                checkUrlPathTermination(geometryServiceUrl) +
+                "project",
                 _requestOptions
               )
               .then(
@@ -254,10 +252,10 @@ export function convertExtent(
                     resolve(undefined);
                   }
                 },
-                e => reject(generalHelpers.fail(e))
+                e => reject(fail(e))
               );
           },
-          e => reject(generalHelpers.fail(e))
+          e => reject(fail(e))
         );
     }
   });
@@ -274,10 +272,10 @@ export function convertExtent(
  * @return A promise that will resolve with an object reporting success and the Solution id
  */
 export function createFeatureService(
-  newItemTemplate: interfaces.IItemTemplate,
-  authentication: interfaces.UserSession,
+  newItemTemplate: IItemTemplate,
+  authentication: UserSession,
   templateDictionary: any
-): Promise<interfaces.ICreateServiceResult> {
+): Promise<ICreateServiceResult> {
   return new Promise((resolve, reject) => {
     // Create item
     _getCreateServiceOptions(
@@ -286,14 +284,14 @@ export function createFeatureService(
       templateDictionary
     ).then(
       createOptions => {
-        serviceAdmin.createFeatureService(createOptions).then(
+        svcAdminCreateFeatureService(createOptions).then(
           createResponse => {
             resolve(createResponse);
           },
-          e => reject(generalHelpers.fail(e))
+          e => reject(fail(e))
         );
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -316,17 +314,17 @@ export function createFeatureService(
 export function createFullItem(
   itemInfo: any,
   folderId: string | undefined,
-  destinationAuthentication: interfaces.UserSession,
+  destinationAuthentication: UserSession,
   itemThumbnailUrl?: string,
-  itemThumbnailAuthentication?: interfaces.UserSession,
+  itemThumbnailAuthentication?: UserSession,
   dataFile?: File,
   metadataFile?: File,
   resourcesFiles?: File[],
   access = "private"
-): Promise<interfaces.ICreateItemResponse> {
+): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
-    const createOptions: portal.ICreateItemOptions = {
+    const createOptions: ICreateItemOptions = {
       item: {
         ...itemInfo
       },
@@ -339,31 +337,31 @@ export function createFullItem(
       updatedThumbnailUrl => {
         /* istanbul ignore else */
         if (updatedThumbnailUrl) {
-          createOptions.item.thumbnailurl = generalHelpers.appendQueryParam(
+          createOptions.item.thumbnailurl = appendQueryParam(
             updatedThumbnailUrl,
             "w=400"
           );
         }
 
-        portal.createItemInFolder(createOptions).then(
+        createItemInFolder(createOptions).then(
           createResponse => {
             if (createResponse.success) {
-              let accessDef: Promise<portal.ISharingResponse>;
+              let accessDef: Promise<ISharingResponse>;
 
               // Set access if it is not AGOL default
               // Set the access manually since the access value in createItem appears to be ignored
               // Need to run serially; will not work reliably if done in parallel with adding the data section
               if (access !== "private") {
-                const accessOptions: portal.ISetAccessOptions = {
+                const accessOptions: ISetAccessOptions = {
                   id: createResponse.id,
                   access: access === "public" ? "public" : "org", // need to use constants rather than string
                   authentication: destinationAuthentication
                 };
-                accessDef = portal.setItemAccess(accessOptions);
+                accessDef = setItemAccess(accessOptions);
               } else {
                 accessDef = Promise.resolve({
                   itemId: createResponse.id
-                } as portal.ISharingResponse);
+                } as ISharingResponse);
               }
 
               // Now add attached items
@@ -388,7 +386,7 @@ export function createFullItem(
                     resourcesFiles.length > 0
                   ) {
                     resourcesFiles.forEach(file => {
-                      const addResourceOptions: portal.IItemResourceOptions = {
+                      const addResourceOptions: IItemResourceOptions = {
                         id: createResponse.id,
                         resource: file,
                         name: file.name,
@@ -405,7 +403,7 @@ export function createFullItem(
                         };
                       }
                       updateDefs.push(
-                        portal.addItemResource(addResourceOptions)
+                        addItemResource(addResourceOptions)
                       );
                     });
                   }
@@ -424,16 +422,16 @@ export function createFullItem(
                   // Wait until all adds are done
                   Promise.all(updateDefs).then(
                     () => resolve(createResponse),
-                    e => reject(generalHelpers.fail(e))
+                    e => reject(fail(e))
                   );
                 },
-                e => reject(generalHelpers.fail(e))
+                e => reject(fail(e))
               );
             } else {
-              reject(generalHelpers.fail());
+              reject(fail());
             }
           },
-          e => reject(generalHelpers.fail(e))
+          e => reject(fail(e))
         );
       }
     );
@@ -454,13 +452,13 @@ export function createFullItem(
 export function createItemWithData(
   itemInfo: any,
   dataInfo: any,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
   folderId: string | undefined,
   access = "private"
-): Promise<interfaces.ICreateItemResponse> {
+): Promise<ICreateItemResponse> {
   return new Promise((resolve, reject) => {
     // Create item
-    const createOptions: portal.ICreateItemOptions = {
+    const createOptions: ICreateItemOptions = {
       item: {
         ...itemInfo,
         data: dataInfo
@@ -469,18 +467,18 @@ export function createItemWithData(
       authentication: authentication
     };
 
-    portal.createItemInFolder(createOptions).then(
+    createItemInFolder(createOptions).then(
       createResponse => {
         if (createResponse.success) {
           if (access !== "private") {
             // Set access if it is not AGOL default
             // Set the access manually since the access value in createItem appears to be ignored
-            const accessOptions: portal.ISetAccessOptions = {
+            const accessOptions: ISetAccessOptions = {
               id: createResponse.id,
               access: access === "public" ? "public" : "org", // need to use constants rather than string
               authentication: authentication
             };
-            portal.setItemAccess(accessOptions).then(
+            setItemAccess(accessOptions).then(
               () => {
                 resolve({
                   folder: createResponse.folder,
@@ -488,7 +486,7 @@ export function createItemWithData(
                   success: true
                 });
               },
-              e => reject(generalHelpers.fail(e))
+              e => reject(fail(e))
             );
           } else {
             resolve({
@@ -498,10 +496,10 @@ export function createItemWithData(
             });
           }
         } else {
-          reject(generalHelpers.fail());
+          reject(fail());
         }
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -519,11 +517,11 @@ export function createItemWithData(
 export function createUniqueFolder(
   title: string,
   templateDictionary: any,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IAddFolderResponse> {
-  return new Promise<interfaces.IAddFolderResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IAddFolderResponse> {
+  return new Promise<IAddFolderResponse>((resolve, reject) => {
     // Get a title that is not already in use
-    const folderTitle: string = generalHelpers.getUniqueTitle(
+    const folderTitle: string = getUniqueTitle(
       title,
       templateDictionary,
       "user.folders"
@@ -532,11 +530,11 @@ export function createUniqueFolder(
       title: folderTitle,
       authentication: authentication
     };
-    portal.createFolder(folderCreationParam).then(
+    createFolder(folderCreationParam).then(
       ok => resolve(ok),
       err => {
         // If the name already exists, we'll try again
-        const errorDetails = generalHelpers.getProp(
+        const errorDetails = getProp(
           err,
           "response.error.details"
         ) as string[];
@@ -546,8 +544,8 @@ export function createUniqueFolder(
           if (errorDetails.indexOf(nameNotAvailMsg) >= 0) {
             // Create the user.folders property if it doesn't exist
             /* istanbul ignore else */
-            if (!generalHelpers.getProp(templateDictionary, "user.folders")) {
-              generalHelpers.setCreateProp(
+            if (!getProp(templateDictionary, "user.folders")) {
+              setCreateProp(
                 templateDictionary,
                 "user.folders",
                 []
@@ -582,13 +580,13 @@ export function createUniqueFolder(
  */
 export function createUniqueGroup(
   title: string,
-  groupItem: interfaces.IGroupAdd,
+  groupItem: IGroupAdd,
   templateDictionary: any,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IAddGroupResponse> {
-  return new Promise<interfaces.IAddGroupResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IAddGroupResponse> {
+  return new Promise<IAddGroupResponse>((resolve, reject) => {
     // Get a title that is not already in use
-    groupItem.title = generalHelpers.getUniqueTitle(
+    groupItem.title = getUniqueTitle(
       title,
       templateDictionary,
       "user.groups"
@@ -597,9 +595,9 @@ export function createUniqueGroup(
       group: groupItem,
       authentication: authentication
     };
-    portal.createGroup(groupCreationParam).then(resolve, err => {
+    createGroup(groupCreationParam).then(resolve, err => {
       // If the name already exists, we'll try again
-      const errorDetails = generalHelpers.getProp(
+      const errorDetails = getProp(
         err,
         "response.error.details"
       ) as string[];
@@ -638,17 +636,16 @@ export function createUniqueGroup(
  * @return A promise that will resolve a list of dependencies
  */
 export function extractDependencies(
-  itemTemplate: interfaces.IItemTemplate,
-  authentication?: interfaces.UserSession
-): Promise<interfaces.IDependency[]> {
+  itemTemplate: IItemTemplate,
+  authentication?: UserSession
+): Promise<IDependency[]> {
   const dependencies: any[] = [];
   return new Promise((resolve, reject) => {
     // Get service dependencies when the item is a view
     if (itemTemplate.properties.service.isView && itemTemplate.item.url) {
-      request
-        .request(
-          generalHelpers.checkUrlPathTermination(itemTemplate.item.url) +
-            "sources?f=json",
+      request(
+          checkUrlPathTermination(itemTemplate.item.url) +
+          "sources?f=json",
           {
             authentication: authentication
           }
@@ -666,7 +663,7 @@ export function extractDependencies(
             }
             resolve(dependencies);
           },
-          e => reject(generalHelpers.fail(e))
+          e => reject(fail(e))
         );
     } else {
       resolve(dependencies);
@@ -677,7 +674,7 @@ export function extractDependencies(
 export function getLayers(
   serviceUrl: string,
   layerList: any[],
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<any[]> {
   return new Promise<any[]>((resolve, reject) => {
     if (layerList.length === 0) {
@@ -689,14 +686,14 @@ export function getLayers(
 
     const requestsDfd: Array<Promise<any>> = [];
     layerList.forEach(layer => {
-      const requestOptions: request.IRequestOptions = {
+      const requestOptions: IRequestOptions = {
         authentication: authentication
       };
       requestsDfd.push(
-        request.request(
-          generalHelpers.checkUrlPathTermination(serviceUrl) +
-            layer["id"] +
-            "?f=json",
+        request(
+          checkUrlPathTermination(serviceUrl) +
+          layer["id"] +
+          "?f=json",
           requestOptions
         )
       );
@@ -705,7 +702,7 @@ export function getLayers(
     // Wait until all layers are heard from
     Promise.all(requestsDfd).then(
       layers => resolve(layers),
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -713,30 +710,30 @@ export function getLayers(
 /**
  * Add additional options to a layers definition.
  *
- * @param args The interfaces.IPostProcessArgs for the request(s)
+ * @param args The IPostProcessArgs for the request(s)
  * @return An array of update instructions
  * @protected
  */
 export function getLayerUpdates(
-  args: interfaces.IPostProcessArgs
-): interfaces.IUpdate[] {
+  args: IPostProcessArgs
+): IUpdate[] {
   const adminUrl: string = args.itemTemplate.item.url.replace(
     "rest/services",
     "rest/admin/services"
   );
 
-  const updates: interfaces.IUpdate[] = [];
+  const updates: IUpdate[] = [];
   const refresh: any = _getUpdate(adminUrl, null, null, args, "refresh");
   updates.push(refresh);
   Object.keys(args.objects).forEach(id => {
     const obj: any = Object.assign({}, args.objects[id]);
     // These properties cannot be set in the update definition when working with portal
-    generalHelpers.deleteProps(obj, ["type", "id", "relationships"]);
+    deleteProps(obj, ["type", "id", "relationships"]);
     // handle definition deletes
     // removes previous editFieldsInfo fields if their names were changed
     if (obj.hasOwnProperty("deleteFields")) {
       updates.push(_getUpdate(adminUrl, id, obj, args, "delete"));
-      generalHelpers.deleteProp(obj, "deleteFields");
+      deleteProp(obj, "deleteFields");
       updates.push(_getUpdate(adminUrl, null, null, args, "refresh"));
     }
     // handle definition updates
@@ -766,13 +763,13 @@ export function getLayerUpdates(
  * @return A promise that will resolve when service definition call has completed
  * @protected
  */
-export function getRequest(update: interfaces.IUpdate): Promise<void> {
+export function getRequest(update: IUpdate): Promise<void> {
   return new Promise((resolveFn, rejectFn) => {
-    const options: request.IRequestOptions = {
+    const options: IRequestOptions = {
       params: update.params,
       authentication: update.args.authentication
     };
-    request.request(update.url, options).then(
+    request(update.url, options).then(
       () => resolveFn(),
       (e: any) => rejectFn(e)
     );
@@ -788,10 +785,10 @@ export function getRequest(update: interfaces.IUpdate): Promise<void> {
  * @protected
  */
 export function getServiceLayersAndTables(
-  itemTemplate: interfaces.IItemTemplate,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IItemTemplate> {
-  return new Promise<interfaces.IItemTemplate>((resolve, reject) => {
+  itemTemplate: IItemTemplate,
+  authentication: UserSession
+): Promise<IItemTemplate> {
+  return new Promise<IItemTemplate>((resolve, reject) => {
     // To have enough information for reconstructing the service, we'll supplement
     // the item and data sections with sections for the service, full layers, and
     // full tables
@@ -803,7 +800,7 @@ export function getServiceLayersAndTables(
           itemTemplate.properties = properties;
           resolve(itemTemplate);
         },
-        e => reject(generalHelpers.fail(e))
+        e => reject(fail(e))
       );
     } else {
       resolve(itemTemplate);
@@ -813,11 +810,11 @@ export function getServiceLayersAndTables(
 
 export function getFeatureServiceProperties(
   serviceUrl: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IFeatureServiceProperties> {
-  return new Promise<interfaces.IFeatureServiceProperties>(
+  authentication: UserSession
+): Promise<IFeatureServiceProperties> {
+  return new Promise<IFeatureServiceProperties>(
     (resolve, reject) => {
-      const properties: interfaces.IFeatureServiceProperties = {
+      const properties: IFeatureServiceProperties = {
         service: {},
         layers: [],
         tables: []
@@ -827,8 +824,7 @@ export function getFeatureServiceProperties(
       serviceUrl = serviceUrl.replace("/rest/services", "/rest/admin/services");
 
       // Get the service description
-      request
-        .request(serviceUrl + "?f=json", {
+      request(serviceUrl + "?f=json", {
           authentication: authentication
         })
         .then(
@@ -870,7 +866,7 @@ export function getFeatureServiceProperties(
 
             resolve(properties);
           },
-          (e: any) => reject(generalHelpers.fail(e))
+          (e: any) => reject(fail(e))
         );
     }
   );
@@ -894,15 +890,14 @@ export function hasInvalidGroupDesignations(
  */
 export function removeFolder(
   folderId: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IFolderStatusResponse> {
-  return new Promise<interfaces.IFolderStatusResponse>((resolve, reject) => {
-    const requestOptions: portal.IFolderIdOptions = {
+  authentication: UserSession
+): Promise<IFolderStatusResponse> {
+  return new Promise<IFolderStatusResponse>((resolve, reject) => {
+    const requestOptions: IFolderIdOptions = {
       folderId: folderId,
       authentication: authentication
     };
-    portal
-      .removeFolder(requestOptions)
+    portalRemoveFolder(requestOptions)
       .then(
         result => (result.success ? resolve(result) : reject(result)),
         reject
@@ -919,15 +914,14 @@ export function removeFolder(
  */
 export function removeGroup(
   groupId: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IStatusResponse> {
-  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
-    const requestOptions: portal.IUserGroupOptions = {
+  authentication: UserSession
+): Promise<IStatusResponse> {
+  return new Promise<IStatusResponse>((resolve, reject) => {
+    const requestOptions: IUserGroupOptions = {
       id: groupId,
       authentication: authentication
     };
-    portal
-      .removeGroup(requestOptions)
+    portalRemoveGroup(requestOptions)
       .then(
         result => (result.success ? resolve(result) : reject(result)),
         reject
@@ -944,15 +938,14 @@ export function removeGroup(
  */
 export function removeItem(
   itemId: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IStatusResponse> {
-  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
-    const requestOptions: portal.IUserItemOptions = {
+  authentication: UserSession
+): Promise<IStatusResponse> {
+  return new Promise<IStatusResponse>((resolve, reject) => {
+    const requestOptions: IUserItemOptions = {
       id: itemId,
       authentication: authentication
     };
-    return portal
-      .removeItem(requestOptions)
+    return portalRemoveItem(requestOptions)
       .then(
         result => (result.success ? resolve(result) : reject(result)),
         reject
@@ -969,9 +962,9 @@ export function removeItem(
  */
 export function removeItemOrGroup(
   itemId: string,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IStatusResponse> {
-  return new Promise<interfaces.IStatusResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IStatusResponse> {
+  return new Promise<IStatusResponse>((resolve, reject) => {
     removeItem(itemId, authentication).then(resolve, error => {
       removeGroup(itemId, authentication).then(resolve, () => reject(error));
     });
@@ -987,7 +980,7 @@ export function removeItemOrGroup(
  */
 export function removeListOfItemsOrGroups(
   itemIds: string[],
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<void> {
   return new Promise<void>(resolve => {
     Promise.all(
@@ -1012,17 +1005,17 @@ export function removeListOfItemsOrGroups(
  */
 export function searchGroups(
   searchString: string,
-  authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.IAdditionalSearchOptions
-): Promise<interfaces.ISearchResult<interfaces.IGroup>> {
-  const searchOptions: portal.ISearchOptions = {
+  authentication: UserSession,
+  additionalSearchOptions?: IAdditionalSearchOptions
+): Promise<ISearchResult<IGroup>> {
+  const searchOptions: ISearchOptions = {
     q: searchString,
     params: {
       ...additionalSearchOptions
     },
     authentication: authentication
   };
-  return portal.searchGroups(searchOptions);
+  return portalSearchGroups(searchOptions);
 }
 
 /**
@@ -1041,11 +1034,11 @@ export function searchGroups(
 export function searchGroupContents(
   groupId: string,
   searchString: string,
-  authentication: interfaces.UserSession,
-  additionalSearchOptions?: interfaces.IAdditionalSearchOptions,
+  authentication: UserSession,
+  additionalSearchOptions?: IAdditionalSearchOptions,
   portalUrl?: string
-): Promise<interfaces.ISearchResult<interfaces.IItem>> {
-  const searchOptions: portal.ISearchGroupContentOptions = {
+): Promise<ISearchResult<IItem>> {
+  const searchOptions: ISearchGroupContentOptions = {
     groupId,
     q: searchString,
     params: {
@@ -1054,36 +1047,36 @@ export function searchGroupContents(
     authentication: authentication,
     portal: portalUrl
   };
-  return portal.searchGroupContent(searchOptions);
+  return searchGroupContent(searchOptions);
 }
 
 export function shareItem(
   groupId: string,
   id: string,
-  destinationAuthentication: interfaces.UserSession
+  destinationAuthentication: UserSession
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const shareOptions: portal.IGroupSharingOptions = {
+    const shareOptions: IGroupSharingOptions = {
       groupId,
       id,
       authentication: destinationAuthentication
     };
 
-    portal.shareItemWithGroup(shareOptions).then(
+    shareItemWithGroup(shareOptions).then(
       () => resolve(),
-      (e: any) => reject(generalHelpers.fail(e))
+      (e: any) => reject(fail(e))
     );
   });
 }
 
 export function updateItem(
-  itemInfo: interfaces.IItemUpdate,
-  authentication: interfaces.UserSession,
+  itemInfo: IItemUpdate,
+  authentication: UserSession,
   folderId?: string,
   additionalParams?: any
-): Promise<interfaces.IUpdateItemResponse> {
+): Promise<IUpdateItemResponse> {
   return new Promise((resolve, reject) => {
-    const updateOptions: portal.IUpdateItemOptions = {
+    const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       folderId: folderId,
       authentication: authentication,
@@ -1091,7 +1084,7 @@ export function updateItem(
         ...(additionalParams ?? {})
       }
     };
-    portal.updateItem(updateOptions).then(
+    portalUpdateItem(updateOptions).then(
       response => (response.success ? resolve(response) : reject(response)),
       err => reject(err)
     );
@@ -1100,38 +1093,38 @@ export function updateItem(
 
 export function updateItemExtended(
   serviceItemId: string,
-  itemInfo: interfaces.IItemUpdate,
+  itemInfo: IItemUpdate,
   data: any,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
   access?: string | undefined
 ): Promise<void> {
   return new Promise((resolve, reject) => {
-    const updateOptions: portal.IUpdateItemOptions = {
+    const updateOptions: IUpdateItemOptions = {
       item: itemInfo,
       params: {
         text: data
       },
       authentication: authentication
     };
-    portal.updateItem(updateOptions).then(
+    portalUpdateItem(updateOptions).then(
       () => {
         if (access && access !== "private") {
           // Set access if it is not AGOL default
           // Set the access manually since the access value in createItem appears to be ignored
-          const accessOptions: portal.ISetAccessOptions = {
+          const accessOptions: ISetAccessOptions = {
             id: serviceItemId,
             access: access === "public" ? "public" : "org", // need to use constants rather than string
             authentication: authentication
           };
-          portal.setItemAccess(accessOptions).then(
+          setItemAccess(accessOptions).then(
             () => resolve(),
-            e => reject(generalHelpers.fail(e))
+            e => reject(fail(e))
           );
         } else {
           resolve();
         }
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -1148,7 +1141,7 @@ export function updateItemExtended(
 export function updateItemURL(
   id: string,
   url: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<string> {
   const numAttempts = 3;
   return _updateItemURL(id, url, authentication, numAttempts);
@@ -1168,23 +1161,23 @@ export function updateItemURL(
 export function _addItemDataFile(
   itemId: string,
   dataFile: File,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IUpdateItemResponse> {
-  return new Promise<interfaces.IUpdateItemResponse>((resolve, reject) => {
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
     const addItemData: (data: any) => void = (data: any) => {
-      const addDataOptions: portal.IAddItemDataOptions = {
+      const addDataOptions: IAddItemDataOptions = {
         id: itemId,
         data: data,
         authentication: authentication
       };
-      portal.addItemData(addDataOptions).then(resolve, reject);
+      portalAddItemData(addDataOptions).then(resolve, reject);
     };
 
     // Item data has to be submitted as text or JSON for those file types
     if (dataFile.type.startsWith("text/plain")) {
-      generalHelpers.blobToText(dataFile).then(addItemData, reject);
+      blobToText(dataFile).then(addItemData, reject);
     } else if (dataFile.type === "application/json") {
-      generalHelpers.blobToJson(dataFile).then(addItemData, reject);
+      blobToJson(dataFile).then(addItemData, reject);
     } else {
       addItemData(dataFile);
     }
@@ -1203,10 +1196,10 @@ export function _addItemDataFile(
 export function _addItemMetadataFile(
   itemId: string,
   metadataFile: File,
-  authentication: interfaces.UserSession
-): Promise<interfaces.IUpdateItemResponse> {
-  return new Promise<interfaces.IUpdateItemResponse>((resolve, reject) => {
-    const addMetadataOptions: portal.IUpdateItemOptions = {
+  authentication: UserSession
+): Promise<IUpdateItemResponse> {
+  return new Promise<IUpdateItemResponse>((resolve, reject) => {
+    const addMetadataOptions: IUpdateItemOptions = {
       item: {
         id: itemId
       },
@@ -1217,7 +1210,7 @@ export function _addItemMetadataFile(
       authentication: authentication
     };
 
-    portal.updateItem(addMetadataOptions).then(resolve, reject);
+    portalUpdateItem(addMetadataOptions).then(resolve, reject);
   });
 }
 
@@ -1246,8 +1239,8 @@ export function _countRelationships(layers: any[]): number {
  * @protected
  */
 export function _getCreateServiceOptions(
-  newItemTemplate: interfaces.IItemTemplate,
-  authentication: interfaces.UserSession,
+  newItemTemplate: IItemTemplate,
+  authentication: UserSession,
   templateDictionary: any
 ): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -1258,7 +1251,7 @@ export function _getCreateServiceOptions(
     const solutionItemId: string = templateDictionary.solutionItemId;
     const itemId: string = newItemTemplate.itemId;
 
-    const params: request.IParams = {};
+    const params: IParams = {};
 
     // Retain the existing title but swap with name if it's missing
     itemInfo.title = newItemTemplate.item.title || newItemTemplate.item.name;
@@ -1273,7 +1266,7 @@ export function _getCreateServiceOptions(
       ? baseName.replace(regEx, solutionItemId)
       : baseName + "_" + solutionItemId;
 
-    const _item: serviceAdmin.ICreateServiceParams = {
+    const _item: ICreateServiceParams = {
       ...itemInfo,
       preserveLayerIds: true
     };
@@ -1301,17 +1294,17 @@ export function _getCreateServiceOptions(
     ).then(
       extent => {
         templateDictionary[itemId].solutionExtent = extent;
-        createOptions.item = templatization.replaceInTemplate(
+        createOptions.item = replaceInTemplate(
           createOptions.item,
           templateDictionary
         );
-        createOptions.params = templatization.replaceInTemplate(
+        createOptions.params = replaceInTemplate(
           createOptions.params,
           templateDictionary
         );
         resolve(createOptions);
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
@@ -1319,12 +1312,12 @@ export function _getCreateServiceOptions(
 /**
  * Add relationships to all layers in one call to retain fully functioning composite relationships
  *
- * @param args The interfaces.IPostProcessArgs for the request(s)
+ * @param args The IPostProcessArgs for the request(s)
  * @return Any relationships that should be updated for the service
  * @protected
  */
 export function _getRelationshipUpdates(
-  args: interfaces.IPostProcessArgs
+  args: IPostProcessArgs
 ): any {
   const rels: any = {
     layers: []
@@ -1338,7 +1331,7 @@ export function _getRelationshipUpdates(
         relationships: obj.relationships
       });
     }
-    generalHelpers.deleteProp(obj, "relationships");
+    deleteProp(obj, "relationships");
   });
   return rels;
 }
@@ -1351,7 +1344,7 @@ export function _getRelationshipUpdates(
  * @param obj parameters for the request
  * @param args various arguments to help support the request
  * @param type type of update the request will handle
- * @return interfaces.IUpdate that has the request url and arguments
+ * @return IUpdate that has the request url and arguments
  * @protected
  */
 export function _getUpdate(
@@ -1360,11 +1353,11 @@ export function _getUpdate(
   obj: any,
   args: any,
   type: "delete" | "update" | "add" | "refresh"
-): interfaces.IUpdate {
+): IUpdate {
   const ops: any = {
     delete: {
       url:
-        generalHelpers.checkUrlPathTermination(url) +
+        checkUrlPathTermination(url) +
         id +
         "/deleteFromDefinition",
       params: {
@@ -1376,19 +1369,19 @@ export function _getUpdate(
     },
     update: {
       url:
-        generalHelpers.checkUrlPathTermination(url) + id + "/updateDefinition",
+        checkUrlPathTermination(url) + id + "/updateDefinition",
       params: {
         updateDefinition: obj
       }
     },
     add: {
-      url: generalHelpers.checkUrlPathTermination(url) + "addToDefinition",
+      url: checkUrlPathTermination(url) + "addToDefinition",
       params: {
         addToDefinition: obj
       }
     },
     refresh: {
-      url: generalHelpers.checkUrlPathTermination(url) + "refresh",
+      url: checkUrlPathTermination(url) + "refresh",
       params: {
         f: "json"
       }
@@ -1414,7 +1407,7 @@ export function _getUpdate(
 export function _setItemProperties(
   item: any,
   serviceInfo: any,
-  params: request.IParams,
+  params: IParams,
   isPortal: boolean
 ): any {
   // Set the capabilities
@@ -1430,14 +1423,14 @@ export function _setItemProperties(
   ];
 
   const capabilities =
-    generalHelpers.getProp(serviceInfo, "service.capabilities") ||
+    getProp(serviceInfo, "service.capabilities") ||
     (isPortal ? "" : []);
 
   item.capabilities = isPortal
     ? capabilities
-        .split(",")
-        .filter((c: any) => portalCapabilities.indexOf(c) > -1)
-        .join(",")
+      .split(",")
+      .filter((c: any) => portalCapabilities.indexOf(c) > -1)
+      .join(",")
     : capabilities;
   if (serviceInfo.service.capabilities) {
     serviceInfo.service.capabilities = item.capabilities;
@@ -1468,7 +1461,7 @@ export function _setItemProperties(
   // Enable editor tracking on layer with related tables is not supported.
   if (
     item.isMultiServicesView &&
-    generalHelpers.getProp(item, "editorTrackingInfo.enableEditorTracking")
+    getProp(item, "editorTrackingInfo.enableEditorTracking")
   ) {
     item.editorTrackingInfo.enableEditorTracking = false;
     params["editorTrackingInfo"] = item.editorTrackingInfo;
@@ -1490,7 +1483,7 @@ export function _setItemProperties(
 export function _updateItemURL(
   id: string,
   url: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
   numAttempts = 1
 ): Promise<string> {
   // Introduce a lag because AGO update appears to choke with rapid subsequent calls
@@ -1500,15 +1493,15 @@ export function _updateItemURL(
     // Update the item's URL
     const options = { item: { id, url }, authentication: authentication };
 
-    portal.updateItem(options).then(
+    portalUpdateItem(options).then(
       result => {
         if (!result.success) {
-          reject(generalHelpers.fail(result));
+          reject(fail(result));
         } else {
           // Get the item to see if the URL really changed; we'll delay a bit before testing because AGO
           // has a timing problem with URL updates
           setTimeout(() => {
-            portal.getItem(id, { authentication: authentication }).then(
+            getItem(id, { authentication: authentication }).then(
               item => {
                 const iBrace = item.url.indexOf("{");
                 if (iBrace > -1) {
@@ -1542,12 +1535,12 @@ export function _updateItemURL(
                   }
                 }
               },
-              e => reject(generalHelpers.fail(e))
+              e => reject(fail(e))
             );
           }, msLag);
         }
       },
-      e => reject(generalHelpers.fail(e))
+      e => reject(fail(e))
     );
   });
 }
