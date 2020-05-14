@@ -86,6 +86,7 @@
     ]
   },
   "scripts": {
+    "start:deployer": "lerna run build && http-server ./demos/deploySolution",
     "build": "lerna run build",
     "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map}",
