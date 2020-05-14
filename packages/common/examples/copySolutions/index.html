@@ -84,6 +84,10 @@
       <div class="section-title">Credentials in source organization</div>
 
       <div class="labeledItem">
+        <input type="checkbox" id="srcOnlyMySolns" checked>
+        <label for="srcOnlyMySolns">Only show my solutions</label>
+      </div>
+      <div class="labeledItem">
         <label for="srcUsername">Username:&nbsp;</label>
         <input type="text" id="srcUsername">
       </div>
@@ -100,6 +104,11 @@
       <br/><br/>
 
       <div class="section-title">Credentials in destination organization</div>
+
+      <div class="labeledItem">
+        <input type="checkbox" id="destOnlyMySolns" checked>
+        <label for="destOnlyMySolns">Only show my solutions</label>
+      </div>
       <div class="labeledItem">
         <label for="destUsername">Username:&nbsp;</label>
         <input type="text" id="destUsername">
@@ -167,7 +176,7 @@
             document.getElementById("srcUsername").value, document.getElementById("srcPassword").value,
             document.getElementById("srcPortal").value + "/sharing/rest");
 
-          main.getTemplates(sourceAuthentication)
+          main.getTemplates(sourceAuthentication, !document.getElementById("srcOnlyMySolns").checked)
           .then(
             searchResponse => {
               removeItem("sourceSolutionsDiv_busySymbol");
@@ -209,7 +218,7 @@
             document.getElementById("destUsername").value, document.getElementById("destPassword").value,
             document.getElementById("destPortal").value + "/sharing/rest");
 
-          main.getTemplates(destinationAuthentication)
+          main.getTemplates(destinationAuthentication, !document.getElementById("destOnlyMySolns").checked)
           .then(
             searchResponse => {
               removeItem("destinationSolutionsDiv_busySymbol");
