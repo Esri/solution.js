@@ -20,8 +20,8 @@
  * @module templatization
  */
 
-import * as adlib from "adlib";
-import * as interfaces from "./interfaces";
+import { adlib } from "adlib";
+import { IItemTemplate } from "./interfaces";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -95,7 +95,7 @@ export function createShortId(): string {
 
 export function createInitializedGroupTemplate(
   itemInfo: any
-): interfaces.IItemTemplate {
+): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -110,7 +110,7 @@ export function createInitializedGroupTemplate(
 
 export function createInitializedItemTemplate(
   itemInfo: any
-): interfaces.IItemTemplate {
+): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -144,7 +144,7 @@ export function createInitializedItemTemplate(
 export function createPlaceholderTemplate(
   id: string,
   type = ""
-): interfaces.IItemTemplate {
+): IItemTemplate {
   return {
     itemId: id,
     type,
@@ -171,7 +171,7 @@ export function createPlaceholderTemplate(
  * @protected
  */
 export function findTemplateIndexInList(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
 ): number {
   const baseId = id;
@@ -188,9 +188,9 @@ export function findTemplateIndexInList(
  * @return Matching template or null
  */
 export function findTemplateInList(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
-): interfaces.IItemTemplate | null {
+): IItemTemplate | null {
   const iTemplate = findTemplateIndexInList(templates, id);
   return iTemplate >= 0 ? templates[iTemplate] : null;
 }
@@ -203,7 +203,7 @@ export function hasUnresolvedVariables(data: any): boolean {
 }
 
 export function getIdsInTemplatesList(
-  templates: interfaces.IItemTemplate[]
+  templates: IItemTemplate[]
 ): string[] {
   return templates.map(template => template.itemId);
 }
@@ -216,7 +216,7 @@ export function getIdsInTemplatesList(
  * @protected
  */
 export function removeTemplate(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string
 ): void {
   const i = findTemplateIndexInList(templates, id);
@@ -226,7 +226,7 @@ export function removeTemplate(
 }
 
 export function replaceInTemplate(template: any, replacements: any): any {
-  return adlib.adlib(template, replacements, TRANSFORMS);
+  return adlib(template, replacements, TRANSFORMS);
 }
 
 /**
@@ -239,9 +239,9 @@ export function replaceInTemplate(template: any, replacements: any): any {
  * @protected
  */
 export function replaceTemplate(
-  templates: interfaces.IItemTemplate[],
+  templates: IItemTemplate[],
   id: string,
-  template: interfaces.IItemTemplate
+  template: IItemTemplate
 ): boolean {
   const i = findTemplateIndexInList(templates, id);
   if (i >= 0) {

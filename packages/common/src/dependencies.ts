@@ -20,8 +20,8 @@
  * @module dependencies
  */
 
-import * as interfaces from "./interfaces";
-import * as templatization from "./templatization";
+import { IItemTemplate } from "./interfaces";
+import { findTemplateIndexInList } from "./templatization";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -35,7 +35,7 @@ import * as templatization from "./templatization";
  * @protected
  */
 export function topologicallySortItems(
-  templates: interfaces.IItemTemplate[]
+  templates: IItemTemplate[]
 ): string[] {
   // Cormen, Thomas H.; Leiserson, Charles E.; Rivest, Ronald L.; Stein, Clifford (2009)
   // Sections 22.3 (Depth-first search) & 22.4 (Topological sort), pp. 603-615
@@ -90,7 +90,7 @@ export function topologicallySortItems(
     // Visit dependents if not already visited; template has to be in templates list because calls to visit()
     // are based on verticiesToVisit[], which is initialized using the templates list
     const template =
-      templates[templatization.findTemplateIndexInList(templates, vertexId)];
+      templates[findTemplateIndexInList(templates, vertexId)];
     const dependencies: string[] = template.dependencies || [];
     dependencies.forEach(function(dependencyId) {
       if (verticesToVisit[dependencyId] === SortVisitColor.White) {

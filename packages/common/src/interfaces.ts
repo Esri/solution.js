@@ -18,8 +18,8 @@
  * Provides common interfaces.
  */
 
-import * as portal from "@esri/arcgis-rest-portal";
-import * as serviceAdmin from "@esri/arcgis-rest-service-admin";
+import { IGroup, IGetRelatedItemsResponse as IPortalGetRelatedItemsResponse, IItem } from "@esri/arcgis-rest-portal";
+import { ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
 //#region Re-exports -------------------------------------------------------------------------------------------------//
@@ -109,7 +109,7 @@ export type INoArgFunction = () => any;
 
 export interface IAddGroupResponse {
   success: boolean;
-  group: portal.IGroup;
+  group: IGroup;
 }
 
 export interface IAdditionalSearchOptions {
@@ -291,12 +291,12 @@ export interface IFolderStatusResponse {
 }
 
 export interface IGetRelatedItemsResponse
-  extends portal.IGetRelatedItemsResponse {
+  extends IPortalGetRelatedItemsResponse {
   total: number;
   start: number;
   num: number;
   nextStart: number;
-  relatedItems: portal.IItem[];
+  relatedItems: IItem[];
 }
 
 export interface IGetResourcesResponse {
@@ -329,7 +329,7 @@ export interface IItemGeneralized {
   id: string;
   properties?: any;
   snippet?: string;
-  spatialReference?: serviceAdmin.ISpatialReference;
+  spatialReference?: ISpatialReference;
   tags?: string[];
   title?: string;
   type: string;

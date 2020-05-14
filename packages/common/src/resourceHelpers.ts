@@ -47,14 +47,13 @@
  *   5. undo the unique folder and filename into the original folder and filename
  */
 
-import * as generalHelpers from "./generalHelpers";
-import * as interfaces from "./interfaces";
-import * as libs from "./libs";
-import * as polyfills from "./polyfills";
-import * as portal from "@esri/arcgis-rest-portal";
-import * as request from "@esri/arcgis-rest-request";
-import * as restHelpers from "./restHelpers";
-import * as restHelpersGet from "./restHelpersGet";
+import { appendQueryParam, checkUrlPathTermination, fail } from "./generalHelpers";
+import { EFileType, IDeployFileCopyPath, IDeployFilename, IFileMimeType, IItemTemplate, IItemUpdate, IMimeTypes, ISourceFileCopyPath, IUpdateItemResponse, UserSession } from "./interfaces";
+import { new_File } from "./polyfills";
+import { addItemResource, updateGroup, updateItem, updateItemInfo, updateItemResource } from "@esri/arcgis-rest-portal";
+import { ArcGISAuthError } from "@esri/arcgis-rest-request";
+import { updateItem as helpersUpdateItem } from "./restHelpers";
+import { getBlob, getBlobAsFile,getItemResources } from "./restHelpersGet";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -69,7 +68,7 @@ import * as restHelpersGet from "./restHelpersGet";
 export function addMetadataFromBlob(
   blob: Blob,
   itemId: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<any> {
   const updateOptions: any = {
     item: {
@@ -81,7 +80,7 @@ export function addMetadataFromBlob(
     },
     authentication: authentication
   };
-  return portal.updateItem(updateOptions);
+  return updateItem(updateOptions);
 }
 
 export function addResourceFromBlob(
@@ -89,13 +88,13 @@ export function addResourceFromBlob(
   itemId: string,
   folder: string,
   filename: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<any> {
   // Check that the filename has an extension because it is required by the addResources call
   if (filename && filename.indexOf(".") < 0) {
     return new Promise((resolve, reject) => {
       reject(
-        new request.ArcGISAuthError(
+        new ArcGISAuthError(
           "Filename must have an extension indicating its type"
         )
       );
@@ -114,13 +113,13 @@ export function addResourceFromBlob(
       resourcesPrefix: folder
     };
   }
-  return portal.addItemResource(addRsrcOptions);
+  return addItemResource(addRsrcOptions);
 }
 
 export function addThumbnailFromBlob(
   blob: any,
   itemId: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
   isGroup: boolean = false
 ): Promise<any> {
   const updateOptions: any = {
@@ -135,19 +134,18 @@ export function addThumbnailFromBlob(
   };
 
   return isGroup
-    ? portal.updateGroup(updateOptions)
-    : portal.updateItem(updateOptions);
+    ? updateGroup(updateOptions)
+    : updateItem(updateOptions);
 }
 
 export function addThumbnailFromUrl(
   url: string,
   itemId: string,
-  authentication: interfaces.UserSession,
+  authentication: UserSession,
   isGroup: boolean = false
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet
-      .getBlob(generalHelpers.appendQueryParam(url, "w=400"), authentication)
+    getBlob(appendQueryParam(url, "w=400"), authentication)
       .then(async blob => {
         addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
           resolve,
@@ -160,19 +158,19 @@ export function addThumbnailFromUrl(
 export function copyData(
   source: {
     url: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
     filename: string;
     mimeType: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet.getBlob(source.url, source.authentication).then(
+    getBlob(source.url, source.authentication).then(
       blob => {
-        const update: interfaces.IItemUpdate = {
+        const update: IItemUpdate = {
           id: destination.itemId,
           data: convertResourceToFile({
             blob: blob,
@@ -181,12 +179,12 @@ export function copyData(
           })
         };
 
-        restHelpers.updateItem(update, destination.authentication).then(
+        helpersUpdateItem(update, destination.authentication).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to add resource
+          e => reject(fail(e)) // unable to add resource
         );
       },
-      e => reject(generalHelpers.fail(e)) // unable to get resource
+      e => reject(fail(e)) // unable to get resource
     );
   });
 }
@@ -194,7 +192,7 @@ export function copyData(
 export function convertBlobToSupportableResource(
   blob: Blob,
   filename: string = ""
-): interfaces.IFileMimeType {
+): IFileMimeType {
   const originalFilename = (blob as File).name || filename;
   let filenameToUse = originalFilename;
   if (filenameToUse && !isSupportedFileType(filenameToUse)) {
@@ -202,16 +200,16 @@ export function convertBlobToSupportableResource(
   }
 
   return {
-    blob: polyfills.new_File([blob], filenameToUse, { type: blob.type }),
+    blob: new_File([blob], filenameToUse, { type: blob.type }),
     filename: originalFilename,
     mimeType: blob.type
   };
 }
 
 export function convertResourceToFile(
-  resource: interfaces.IFileMimeType
+  resource: IFileMimeType
 ): File {
-  return polyfills.new_File([resource.blob], resource.filename, {
+  return new_File([resource.blob], resource.filename, {
     type: resource.mimeType
   });
 }
@@ -228,12 +226,12 @@ export function convertResourceToFile(
  * @return A promise which resolves to a boolean indicating if the copies were successful
  */
 export function copyFilesFromStorageItem(
-  storageAuthentication: interfaces.UserSession,
-  filePaths: interfaces.IDeployFileCopyPath[],
+  storageAuthentication: UserSession,
+  filePaths: IDeployFileCopyPath[],
   destinationItemId: string,
-  destinationAuthentication: interfaces.UserSession,
+  destinationAuthentication: UserSession,
   isGroup: boolean = false,
-  mimeTypes?: interfaces.IMimeTypes
+  mimeTypes?: IMimeTypes
 ): Promise<boolean> {
   return new Promise<boolean>((resolve, reject) => {
     // Introduce a lag because AGO update appears to choke with rapid subsequent calls
@@ -241,8 +239,8 @@ export function copyFilesFromStorageItem(
 
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
-        case interfaces.EFileType.Data:
-          return new Promise<interfaces.IUpdateItemResponse>(
+        case EFileType.Data:
+          return new Promise<IUpdateItemResponse>(
             (resolveData, rejectData) => {
               setTimeout(() => {
                 copyData(
@@ -261,8 +259,8 @@ export function copyFilesFromStorageItem(
             }
           );
 
-        case interfaces.EFileType.Info:
-          return new Promise<interfaces.IUpdateItemResponse>(
+        case EFileType.Info:
+          return new Promise<IUpdateItemResponse>(
             (resolveInfo, rejectInfo) => {
               setTimeout(() => {
                 copyFormInfoFile(
@@ -280,8 +278,8 @@ export function copyFilesFromStorageItem(
             }
           );
 
-        case interfaces.EFileType.Metadata:
-          return new Promise<interfaces.IUpdateItemResponse>(
+        case EFileType.Metadata:
+          return new Promise<IUpdateItemResponse>(
             (resolveMetadata, rejectMetadata) => {
               setTimeout(() => {
                 copyMetadata(
@@ -298,8 +296,8 @@ export function copyFilesFromStorageItem(
             }
           );
 
-        case interfaces.EFileType.Resource:
-          return new Promise<interfaces.IUpdateItemResponse>(
+        case EFileType.Resource:
+          return new Promise<IUpdateItemResponse>(
             (resolveResource, rejectResource) => {
               setTimeout(() => {
                 copyResource(
@@ -318,8 +316,8 @@ export function copyFilesFromStorageItem(
             }
           );
 
-        case interfaces.EFileType.Thumbnail:
-          return new Promise<interfaces.IUpdateItemResponse>(
+        case EFileType.Thumbnail:
+          return new Promise<IUpdateItemResponse>(
             (resolveThumbnail, rejectThumbnail) => {
               setTimeout(() => {
                 addThumbnailFromUrl(
@@ -350,10 +348,10 @@ export function copyFilesFromStorageItem(
  * @return A promise which resolves to a list of the filenames under which the resource/metadata/thumbnails are stored
  */
 export function copyFilesToStorageItem(
-  sourceUserSession: interfaces.UserSession,
-  filePaths: interfaces.ISourceFileCopyPath[],
+  sourceUserSession: UserSession,
+  filePaths: ISourceFileCopyPath[],
   storageItemId: string,
-  storageAuthentication: interfaces.UserSession
+  storageAuthentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>(resolve => {
     const awaitAllItems: Array<Promise<string>> = filePaths.map(filePath => {
@@ -387,17 +385,16 @@ export function copyFormInfoFile(
   source: {
     url: string;
     filename: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     // Get the info file
-    restHelpersGet
-      .getBlobAsFile(
+    getBlobAsFile(
         source.url,
         source.filename,
         source.authentication,
@@ -406,8 +403,7 @@ export function copyFormInfoFile(
       )
       .then(file => {
         // Send it to the destination item
-        portal
-          .updateItemInfo({
+        updateItemInfo({
             id: destination.itemId,
             file,
             authentication: destination.authentication
@@ -420,18 +416,18 @@ export function copyFormInfoFile(
 export function copyMetadata(
   source: {
     url: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet.getBlob(source.url, source.authentication).then(
+    getBlob(source.url, source.authentication).then(
       blob => {
         if (blob.type !== "text/xml" && blob.type !== "application/xml") {
-          reject(generalHelpers.fail()); // unable to get resource
+          reject(fail()); // unable to get resource
           return;
         }
         addMetadataFromBlob(
@@ -440,10 +436,10 @@ export function copyMetadata(
           destination.authentication
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to add resource
+          e => reject(fail(e)) // unable to add resource
         );
       },
-      e => reject(generalHelpers.fail(e)) // unable to get resource
+      e => reject(fail(e)) // unable to get resource
     );
   });
 }
@@ -462,17 +458,17 @@ export function copyMetadata(
 export function copyResource(
   source: {
     url: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   },
   destination: {
     itemId: string;
     folder: string;
     filename: string;
-    authentication: interfaces.UserSession;
+    authentication: UserSession;
   }
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    restHelpersGet.getBlob(source.url, source.authentication).then(
+    getBlob(source.url, source.authentication).then(
       async blob => {
         if (
           blob.type.startsWith("text/plain") ||
@@ -499,10 +495,10 @@ export function copyResource(
           destination.authentication
         ).then(
           resolve,
-          e => reject(generalHelpers.fail(e)) // unable to add resource
+          e => reject(fail(e)) // unable to add resource
         );
       },
-      e => reject(generalHelpers.fail(e)) // unable to get resource
+      e => reject(fail(e)) // unable to get resource
     );
   });
 }
@@ -519,7 +515,7 @@ export function generateGroupFilePaths(
   portalSharingUrl: string,
   itemId: string,
   thumbnailUrlPart: string
-): interfaces.ISourceFileCopyPath[] {
+): ISourceFileCopyPath[] {
   if (!thumbnailUrlPart) {
     return [];
   }
@@ -588,23 +584,23 @@ export function generateMetadataStorageFilename(
  */
 export function generateResourceFilenameFromStorage(
   storageResourceFilename: string
-): interfaces.IDeployFilename {
-  let type = interfaces.EFileType.Resource;
+): IDeployFilename {
+  let type = EFileType.Resource;
   let [folder, filename] = storageResourceFilename.split("/");
 
   // Handle special "folders"
   if (folder.endsWith("_info_thumbnail")) {
-    type = interfaces.EFileType.Thumbnail;
+    type = EFileType.Thumbnail;
   } else if (folder.endsWith("_info_metadata")) {
-    type = interfaces.EFileType.Metadata;
+    type = EFileType.Metadata;
     filename = "metadata.xml";
   } else if (folder.endsWith("_info")) {
-    type = interfaces.EFileType.Info;
+    type = EFileType.Info;
   } else if (folder.endsWith("_info_data")) {
-    type = interfaces.EFileType.Data;
+    type = EFileType.Data;
   } else if (folder.endsWith("_info_dataz")) {
     filename = filename.replace(/\.zip$/, "");
-    type = interfaces.EFileType.Data;
+    type = EFileType.Data;
   } else {
     const folderStart = folder.indexOf("_");
     if (folderStart > 0) {
@@ -663,7 +659,7 @@ export function generateSourceFilePaths(
   thumbnailUrlPart: string,
   resourceFilenames: string[],
   isGroup: boolean = false
-): interfaces.ISourceFileCopyPath[] {
+): ISourceFileCopyPath[] {
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
       url: generateSourceResourceUrl(
@@ -683,7 +679,7 @@ export function generateSourceFilePaths(
   /* istanbul ignore else */
   if (thumbnailUrlPart) {
     const path = {
-      url: generalHelpers.appendQueryParam(
+      url: appendQueryParam(
         generateSourceThumbnailUrl(
           portalSharingUrl,
           itemId,
@@ -703,13 +699,13 @@ export function generateSourceFilePaths(
 export function generateSourceFormFilePaths(
   portalSharingUrl: string,
   itemId: string
-): interfaces.ISourceFileCopyPath[] {
+): ISourceFileCopyPath[] {
   const baseUrl =
-    generalHelpers.checkUrlPathTermination(portalSharingUrl) +
+    checkUrlPathTermination(portalSharingUrl) +
     "content/items/" +
     itemId +
     "/info/";
-  const filePaths: interfaces.ISourceFileCopyPath[] = [];
+  const filePaths: ISourceFileCopyPath[] = [];
   ["form.json", "forminfo.json"].forEach(filename =>
     filePaths.push({
       url: baseUrl + filename,
@@ -742,7 +738,7 @@ export function generateSourceMetadataUrl(
   isGroup = false
 ): string {
   return (
-    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    checkUrlPathTermination(sourcePortalSharingUrl) +
     (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/metadata/metadata.xml"
@@ -763,7 +759,7 @@ export function generateSourceResourceUrl(
   sourceResourceFilename: string
 ): string {
   return (
-    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    checkUrlPathTermination(sourcePortalSharingUrl) +
     "content/items/" +
     itemId +
     "/resources/" +
@@ -787,7 +783,7 @@ export function generateSourceThumbnailUrl(
   isGroup = false
 ): string {
   return (
-    generalHelpers.checkUrlPathTermination(sourcePortalSharingUrl) +
+    checkUrlPathTermination(sourcePortalSharingUrl) +
     (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/" +
@@ -808,7 +804,7 @@ export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
   resourceFilenames: string[]
-): interfaces.IDeployFileCopyPath[] {
+): IDeployFileCopyPath[] {
   return resourceFilenames && resourceFilenames.map
     ? resourceFilenames.map(resourceFilename => {
         return {
@@ -870,10 +866,10 @@ export function isSupportedFileType(filename: string): boolean {
  * @return A promise which resolves with an array of resources that have been added to the item
  */
 export function storeFormItemFiles(
-  itemTemplate: interfaces.IItemTemplate,
+  itemTemplate: IItemTemplate,
   itemData: any,
   solutionItemId: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     const storagePromises: Array<Promise<string[]>> = [];
@@ -908,7 +904,7 @@ export function storeFormItemFiles(
     }
 
     // Store form info files
-    const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFormFilePaths(
+    const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFormFilePaths(
       authentication.portal,
       itemTemplate.itemId
     );
@@ -945,21 +941,20 @@ export function storeFormItemFiles(
  * @return A promise which resolves with an array of resources that have been added to the item
  */
 export function storeItemResources(
-  itemTemplate: interfaces.IItemTemplate,
+  itemTemplate: IItemTemplate,
   solutionItemId: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<string[]> {
   return new Promise<string[]>((resolve, reject) => {
     // Request item resources
     // tslint:disable-next-line: no-floating-promises
-    restHelpersGet
-      .getItemResources(itemTemplate.itemId, authentication)
+    getItemResources(itemTemplate.itemId, authentication)
       .then(resourcesResponse => {
         // Save resources to solution item
         const itemResources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
         );
-        const resourceItemFilePaths: interfaces.ISourceFileCopyPath[] = generateSourceFilePaths(
+        const resourceItemFilePaths: ISourceFileCopyPath[] = generateSourceFilePaths(
           authentication.portal,
           itemTemplate.itemId,
           itemTemplate.item.thumbnail,
@@ -996,9 +991,9 @@ export function updateItemResourceText(
   itemId: string,
   filename: string,
   content: string,
-  authentication: interfaces.UserSession
+  authentication: UserSession
 ): Promise<any> {
-  return portal.updateItemResource({
+  return updateItemResource({
     id: itemId,
     name: filename,
     content: content,
