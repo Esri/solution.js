@@ -71,10 +71,10 @@ import {
   _templatizeTimeInfo,
   _templatizeDefinitionQuery,
   _getNameMapping,
+  _updateTemplateDictionaryFields,
   IPopupInfos
 } from "../src/featureServiceHelpers";
 
-import * as generalHelpers from "../src/generalHelpers";
 import * as interfaces from "../src/interfaces";
 import * as utils from "../../common/test/mocks/utils";
 
@@ -82,7 +82,7 @@ import { IUserRequestOptions, UserSession } from "@esri/arcgis-rest-auth";
 
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as mockSolutions from "../../common/test/mocks/templates";
+import * as templates from "../../common/test/mocks/templates";
 
 let itemTemplate: interfaces.IItemTemplate;
 const itemId: string = "cd766cba0dd44ec080420acc10990282";
@@ -1350,34 +1350,51 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         }
       };
 
-      const settings: any = {
-        solutionName: "test",
-        folderId: "4437cab3aa154f5f85fa35dca36ddccb",
-        organization: {},
-        isPortal: false,
-        "0998341a7a2a4e9c86c553287a1f3e94": {
-          itemId: "166657ce19f34c32846cd12022e2c33a",
-          url: "",
-          name: "ElectionResults_20190425_2018_51947",
-          layer0: layer0,
-          layer1: layer1
-        },
-        ab766cba0dd44ec080420acc10990282: {
-          itemId: "ebe7e53cc218423c9225ceb783d412b5",
-          url: "",
-          name: "ElectionResults_join_20190425_2019_12456"
+      const item0 = {
+        itemId: "svc0123456789",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947"
+      };
+
+      const item1 = {
+        itemId: "svc987654321",
+        url: "",
+        name: "ElectionResults_join_20190425_2019_12456",
+        layer0: layer0,
+        layer1: layer1,
+        fieldInfos: {
+          "0": layer0.fields,
+          "1": layer1.fields
         }
       };
 
+      const expectedItem0 = {
+        itemId: "svc0123456789",
+        url: "",
+        name: "ElectionResults_20190425_2018_51947",
+        layer0: layer0,
+        layer1: layer1,
+        sourceServiceFields: item1.fieldInfos
+      };
+
+      const settings: any = {
+        solutionName: "test",
+        folderId: "fdr0123456789",
+        organization: {},
+        isPortal: false,
+        svc0123456789_org: item0,
+        svc9876543210_org: item1
+      };
+
       itemTemplate = {
-        itemId: "ebe7e53cc218423c9225ceb783d412b5",
+        itemId: "svc0123456789",
         type: "Feature Service",
         key: "ixxi7v97b",
         item: {
-          id: "ebe7e53cc218423c9225ceb783d412b5",
+          id: "svc0123456789",
           type: "Feature Service"
         },
-        dependencies: ["166657ce19f34c32846cd12022e2c33a"],
+        dependencies: ["svc9876543210_org"],
         groups: [],
         estimatedDeploymentCostFactor: 5,
         data: {},
@@ -1387,23 +1404,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
       const expectedSettings: any = {
         solutionName: "test",
-        folderId: "4437cab3aa154f5f85fa35dca36ddccb",
+        folderId: "fdr0123456789",
         organization: {},
         isPortal: false,
-        "0998341a7a2a4e9c86c553287a1f3e94": {
-          itemId: "166657ce19f34c32846cd12022e2c33a",
-          url: "",
-          name: "ElectionResults_20190425_2018_51947",
-          layer0: layer0,
-          layer1: layer1
-        },
-        ab766cba0dd44ec080420acc10990282: {
-          itemId: "ebe7e53cc218423c9225ceb783d412b5",
-          url: "",
-          name: "ElectionResults_join_20190425_2019_12456",
-          layer0: layer0,
-          layer1: layer1
-        }
+        svc0123456789_org: expectedItem0,
+        svc9876543210_org: item1
       };
 
       // test that the settings transfer
@@ -2681,7 +2686,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplate(
+      itemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2746,7 +2751,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const expectedUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplate(
+      itemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2802,7 +2807,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplate(
+      itemTemplate = templates.getItemTemplate(
         "Feature Service",
         [],
         expectedUrl
@@ -2873,7 +2878,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const tableDefQuery: string =
         "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
 
-      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.itemId = expectedId;
       itemTemplate.item.id = id;
       itemTemplate.estimatedDeploymentCostFactor = 0;
@@ -2881,6 +2886,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       itemTemplate.properties.service.spatialReference = {
         wkid: 102100
       };
+      itemTemplate.properties.service.hasViews = true;
 
       itemTemplate.properties.layers[0].serviceItemId = id;
       itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
@@ -2927,7 +2933,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
   describe("updateLayerFieldReferences", () => {
     it("should handle error from postProcessFields", done => {
-      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
       updateLayerFieldReferences(
@@ -2951,7 +2957,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = url;
 
       const settings = utils.createMockSettings();
@@ -3049,7 +3055,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
 
     it("should handle missing url", done => {
-      itemTemplate = mockSolutions.getItemTemplate("Feature Service");
+      itemTemplate = templates.getItemTemplate("Feature Service");
       itemTemplate.item.url = null;
 
       postProcessFields(
@@ -3079,11 +3085,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
       const adminUrl: string =
         "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
 
-      itemTemplate = mockSolutions.getItemTemplate(
-        "Feature Service",
-        null,
-        url
-      );
+      itemTemplate = templates.getItemTemplate("Feature Service", null, url);
       itemTemplate.data = {
         tables: [],
         layers: []
@@ -5498,10 +5500,38 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
     });
   });
 
+  describe("_updateTemplateDictionaryFields", () => {
+    it("should update the template dictionary with field info", () => {
+      const template: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
+      template.itemId = "svc987654321";
+      template.properties.layers = [
+        mockItems.getAGOLLayerOrTable(0, "A", "Feature Layer", [{}])
+      ];
+      template.properties.tables = [];
+      const templateDictionary = {
+        svc0123456789: {
+          itemId: "svc987654321"
+        }
+      };
+      _updateTemplateDictionaryFields(template, templateDictionary);
+
+      const expected = {
+        svc0123456789: {
+          itemId: "svc987654321",
+          fieldInfos: {
+            "0": template.properties.layers[0].fields
+          }
+        }
+      };
+
+      expect(templateDictionary).toEqual(expected);
+    });
+  });
+
   describe("_validateDomains", () => {
     it("should not update field when domains match", () => {
       const fieldInfos: any = {
-        sourceFields: [
+        sourceServiceFields: [
           {
             name: "A"
           },
@@ -5553,7 +5583,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
 
     it("should update field when domains don't match", () => {
       const fieldInfos: any = {
-        sourceFields: [
+        sourceServiceFields: [
           {
             name: "A"
           },
@@ -5575,14 +5605,7 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           },
           {
             name: "D",
-            domain: {
-              codedValues: [
-                {
-                  name: "DDD_1",
-                  value: "DDD_2"
-                }
-              ]
-            }
+            domain: null
           },
           {
             name: "E",
@@ -5654,8 +5677,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           domain: {
             codedValues: [
               {
-                name: "DDD_1",
-                value: "DDD_2"
+                name: "D_1",
+                value: "D_2"
               }
             ]
           }
@@ -5665,8 +5688,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           domain: {
             codedValues: [
               {
-                name: "EEE_1",
-                value: "EEE_2"
+                name: "E_1",
+                value: "E_2"
               }
             ]
           }

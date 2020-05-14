@@ -311,7 +311,12 @@ export function updateSettingsFieldInfos(
     if (id === settings[k].itemId) {
       dependencies.forEach((d: any) => {
         settingsKeys.forEach((_k: any) => {
-          if (d === settings[_k].itemId) {
+          /* istanbul ignore else */
+          if (d === _k) {
+            settings[k]["sourceServiceFields"] = generalHelpers.getProp(
+              settings[_k],
+              "fieldInfos"
+            );
             const layerKeys = Object.keys(settings[_k]);
             layerKeys.forEach(layerKey => {
               if (layerKey.startsWith("layer")) {
@@ -562,6 +567,13 @@ export function updateFeatureServiceDefinition(
       authentication
     };
 
+    // if the service has veiws keep track of the fields so we can use them to
+    // compare with the view fields
+    /* istanbul ignore else */
+    if (generalHelpers.getProp(itemTemplate, "properties.service.hasViews")) {
+      _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
+    }
+
     listToAdd.forEach(toAdd => {
       const item = toAdd.item;
       const originalId = item.id;
@@ -606,6 +618,38 @@ export function updateFeatureServiceDefinition(
       () => resolve(),
       e => reject(fail(e))
     );
+  });
+}
+
+/**
+ * Add the fields to the templateDictionary when a service has views
+ * these are used to compare with fields from the view when domains are involved
+ * when a view field has a domain that differs from that of the source service
+ * the definition needs to be modified in an update call rather than when it is first added.
+ * This should only happen when the domain differs.
+ *
+ * @param itemTemplate
+ * @param templateDictionary Hash mapping Solution source id to id of its clone (and name & URL for feature service)
+ * @protected
+ */
+export function _updateTemplateDictionaryFields(
+  itemTemplate: interfaces.IItemTemplate,
+  templateDictionary: any
+): void {
+  const layers: any[] = itemTemplate.properties.layers;
+  const tables: any[] = itemTemplate.properties.tables;
+  const layersAndTables: any[] = layers.concat(tables);
+  const fieldInfos: any = {};
+  layersAndTables.forEach(layerOrTable => {
+    fieldInfos[layerOrTable.id] = layerOrTable.fields;
+  });
+  Object.keys(templateDictionary).some(k => {
+    if (templateDictionary[k].itemId === itemTemplate.itemId) {
+      templateDictionary[k].fieldInfos = fieldInfos;
+      return true;
+    } else {
+      return false;
+    }
   });
 }
 
@@ -685,6 +729,16 @@ export function postProcessFields(
       const id = itemTemplate.itemId;
       const settingsKeys = Object.keys(templateDictionary);
 
+      let templateInfo: any;
+      settingsKeys.some(k => {
+        if (templateDictionary[k].itemId === id) {
+          templateInfo = templateDictionary[k];
+          return true;
+        } else {
+          return false;
+        }
+      });
+
       // concat any layers and tables to process
       const layers: any[] = itemTemplate.properties.layers;
       const tables: any[] = itemTemplate.properties.tables;
@@ -700,6 +754,13 @@ export function postProcessFields(
           layerInfos[item.id]["newFields"] = item.fields;
           layerInfos[item.id]["sourceSchemaChangesAllowed"] =
             item.sourceSchemaChangesAllowed;
+          // when the item is a view bring over the source service fields so we can compare the domains
+          if (item.isView && templateInfo) {
+            layerInfos[item.id]["sourceServiceFields"] = generalHelpers.getProp(
+              templateInfo,
+              `sourceServiceFields.${item.id}`
+            );
+          }
           /* istanbul ignore else */
           if (item.editFieldsInfo) {
             // more than case change when deployed to protal so keep track of the new names
@@ -798,13 +859,14 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
   const domainFields: any[] = [];
   const domainNames: string[] = [];
 
-  // loop through the cached fields from the source view we are cloning
-  fieldInfo.sourceFields.forEach((field: any) => {
-    if (field.hasOwnProperty("domain") && field.domain) {
-      domainFields.push(field.domain);
-      domainNames.push(String(field.name).toLocaleLowerCase());
-    }
-  });
+  if (fieldInfo.sourceServiceFields) {
+    fieldInfo.sourceServiceFields.forEach((field: any) => {
+      if (field.hasOwnProperty("domain") && field.domain) {
+        domainFields.push(field.domain);
+        domainNames.push(String(field.name).toLocaleLowerCase());
+      }
+    });
+  }
 
   // loop through the fields from the new view service
   // add an update when the domains don't match
@@ -812,19 +874,22 @@ export function _validateDomains(fieldInfo: any, fieldUpdates: any[]) {
     const i: number = domainNames.indexOf(
       String(field.name).toLocaleLowerCase()
     );
-    if (i > -1 && field.hasOwnProperty("domain") && field.domain) {
-      if (JSON.stringify(field.domain) !== JSON.stringify(domainFields[i])) {
+    if (field.hasOwnProperty("domain") && field.domain) {
+      if (
+        JSON.stringify(field.domain) !==
+        (i > -1 ? JSON.stringify(domainFields[i]) : "")
+      ) {
         // should mixin the update if the field already has some other update
         let hasUpdate: boolean = false;
         fieldUpdates.some((update: any) => {
           if (update.name === field.name) {
             hasUpdate = true;
-            update.domain = domainFields[i];
+            update.domain = field.domain;
           }
           return hasUpdate;
         });
         if (!hasUpdate) {
-          fieldUpdates.push({ name: field.name, domain: domainFields[i] });
+          fieldUpdates.push({ name: field.name, domain: field.domain });
         }
       }
     }
