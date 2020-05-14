@@ -313,7 +313,7 @@ export function updateSettingsFieldInfos(
         settingsKeys.forEach((_k: any) => {
           /* istanbul ignore else */
           if (d === _k) {
-            settings[k]["sourceServiceFields"] = generalHelpers.getProp(
+            settings[k]["sourceServiceFields"] = getProp(
               settings[_k],
               "fieldInfos"
             );
@@ -570,7 +570,7 @@ export function updateFeatureServiceDefinition(
     // if the service has veiws keep track of the fields so we can use them to
     // compare with the view fields
     /* istanbul ignore else */
-    if (generalHelpers.getProp(itemTemplate, "properties.service.hasViews")) {
+    if (getProp(itemTemplate, "properties.service.hasViews")) {
       _updateTemplateDictionaryFields(itemTemplate, templateDictionary);
     }
 
@@ -633,7 +633,7 @@ export function updateFeatureServiceDefinition(
  * @protected
  */
 export function _updateTemplateDictionaryFields(
-  itemTemplate: interfaces.IItemTemplate,
+  itemTemplate: IItemTemplate,
   templateDictionary: any
 ): void {
   const layers: any[] = itemTemplate.properties.layers;
@@ -756,7 +756,7 @@ export function postProcessFields(
             item.sourceSchemaChangesAllowed;
           // when the item is a view bring over the source service fields so we can compare the domains
           if (item.isView && templateInfo) {
-            layerInfos[item.id]["sourceServiceFields"] = generalHelpers.getProp(
+            layerInfos[item.id]["sourceServiceFields"] = getProp(
               templateInfo,
               `sourceServiceFields.${item.id}`
             );
