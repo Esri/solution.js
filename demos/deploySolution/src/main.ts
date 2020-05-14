@@ -17,6 +17,7 @@
 
 import * as common from "@esri/solution-common";
 import * as deployer from "@esri/solution-deployer";
+
 import * as getItemInfo from "./getItemInfo";
 
 export function deploySolution(
