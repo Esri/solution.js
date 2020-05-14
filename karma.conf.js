@@ -42,7 +42,7 @@ module.exports = function(config) {
       compilerOptions: {
         module: "commonjs"
       },
-      tsconfig: "./tsconfig.json",
+      tsconfig: "./tsconfig.test.json",
       bundlerOptions: {
         transforms: [require("karma-typescript-es6-transform")()],
         exclude: ["@esri/arcgis-rest-common-types"],
