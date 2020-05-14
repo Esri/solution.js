@@ -37,6 +37,7 @@
     <i>For private items or info:</i><br />
     <label for="username">username:&nbsp;</label><input type="text" id="username">
     <label for="password">password:&nbsp;</label><input type="password" id="password">
+    <label for="srcPortal">portal:&nbsp;</label><input type="text" id="srcPortal" style="width:256px">
     <br /><br />
     <button onclick="goFcn()">Go</button>
   </div>
@@ -45,6 +46,7 @@
   <script src="lib/require.js"></script>
   <script>
     var goFcn;
+    document.getElementById("srcPortal").value = "https://www.arcgis.com/sharing/rest";
 
     require.config({
       paths: {
@@ -71,7 +73,8 @@
             document.getElementById("id").value,
             new auth.UserSession({
               username: document.getElementById("username").value,
-              password: document.getElementById("password").value
+              password: document.getElementById("password").value,
+              portal: document.getElementById("srcPortal").value
             })
           ).then(
             html => {
