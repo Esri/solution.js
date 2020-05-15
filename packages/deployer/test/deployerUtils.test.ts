@@ -54,6 +54,18 @@ describe("Module: `_deployerUtils`", () => {
       } as common.IItem;
       expect(isSolutionTemplateItem(i)).toBe(true);
     });
+    it("returns true for hub solution keywords", () => {
+      const i = {
+        type: "Solution",
+        typeKeywords: [
+          "Solution",
+          "solutionTemplate",
+          "solutionid-guid",
+          "solutionversion-1.0"
+        ]
+      } as common.IItem;
+      expect(isSolutionTemplateItem(i)).toBe(true);
+    });
     it("returns false if missing item type or keywords", () => {
       const i = {
         type: "Solution",

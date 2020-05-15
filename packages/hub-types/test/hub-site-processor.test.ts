@@ -18,7 +18,7 @@ const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 import { HubSiteProcessor } from "../src/index";
 
-fdescribe("HubSiteProcessor: ", () => {
+describe("HubSiteProcessor: ", () => {
   describe("convertItemToTemplate: ", () => {
     it("exists", () => {
       expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(

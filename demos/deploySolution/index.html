@@ -19,7 +19,7 @@
    | limitations under the License.
   -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
   button {
     cursor: pointer;
@@ -37,15 +37,28 @@
     <div class="row">
       <div class="col-sm-12">
         <h1>Deployer Example App</h1>
-        <div id="input" style="display:none">
-          <label for="id">ID of the solution item to deploy:&nbsp;</label><input type="text" id="id" style="width:256px">
+      </div>
+      <div class="col-sm-6 col-sm-offset-3">
+        <div id="input" class="form-group" style="display:none">
+          <label for="id">ID of the solution item to deploy:</label>
+          <select name="Solution Item" id="id" class="form-control">
+            <option value="140242ff369a4da2aab7860a709d3e13">Corona Response ( 140242ff369a4da2aab7860a709d3e13 ) </option>
+            <option value="5fb1779bf3424e6592d45132b472b480">Open Data Dave ( 5fb1779bf3424e6592d45132b472b480 )</option>
+            <option value="a9920828b2d3419584f65bbdb5278105">Open Data Site ( a9920828b2d3419584f65bbdb5278105 )</option>
+          </select>
           <br /><br />
           <i>Credentials in destination organization:</i><br />
-          <label for="username">username:&nbsp;</label><input type="text" id="username">
-          <label for="password">password:&nbsp;</label><input type="password" id="password">
+          <label for="username">username:</label>
+          <input type="text" id="username" class="form-control" value="">
+          <label for="password">password:</label>
+          <input type="password" id="password" class="form-control" value="">
+          <label for="password">Portal:</label>
+          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com/sharing/rest">
           <br /><br />
           <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
         </div>
+      </div>
+      <div class="col-sm-12">
         <div id="output" style="display:none">Deploying...</div>
       </div>
     </div>
@@ -57,20 +70,22 @@
     var goFcn;
     require.config({
       paths: {
+        // load the local versions
         "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
         "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
         "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
         "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
-
-        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd.min",
-        "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd.min",
-        "@esri/solution-feature-layer": "node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd.min",
-        "@esri/solution-file": "node_modules/@esri/solution-file/dist/umd/file.umd.min",
-        "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd.min",
-        "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd.min",
-        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd.min"
+        // load the unminified so we can debug things
+        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": "node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": "node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-hub-types": "node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd"
       }
     });
 
@@ -90,7 +105,8 @@
             document.getElementById("id").value,
             new auth.UserSession({
               username: document.getElementById("username").value,
-              password: document.getElementById("password").value
+              password: document.getElementById("password").value,
+              portal: document.getElementById("portal").value
             }),
             (percentDone, jobId, progressEvent) => {
               if (progressEvent) {

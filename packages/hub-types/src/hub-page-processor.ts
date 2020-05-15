@@ -27,13 +27,14 @@ import {
   EItemProgressStatus,
   UserSession
 } from "@esri/solution-common";
-
+/* istanbul ignore next */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
   // TODO: add implementation
+  console.info(`Hub Site Application is not supported yet`);
   return Promise.resolve({
     item: {},
     data: {},
@@ -47,7 +48,7 @@ export function convertItemToTemplate(
     estimatedDeploymentCostFactor: 1
   } as IItemTemplate);
 }
-
+/* istanbul ignore next */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
@@ -55,15 +56,16 @@ export function createItemFromTemplate(
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
   itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
-
+  console.info(`Hub Site Application is not supported yet`);
   return Promise.resolve({
     id: "Next-gen Hub Page is not yet implemented", // temporary
     type: template.type,
     postProcess: false
   });
 }
-
+/* istanbul ignore next */
 export function secondPass(model: any, items: any[]): Promise<boolean> {
+  console.info(`Hub Site Application is not supported yet`);
   return Promise.resolve(true);
 }
 
@@ -73,6 +75,7 @@ export function secondPass(model: any, items: any[]): Promise<boolean> {
  * Site Page is for ArcGIS Enterprise
  * @param itemType
  */
+/* istanbul ignore next */
 export function isAPage(itemType: string): boolean {
   let result = false;
 

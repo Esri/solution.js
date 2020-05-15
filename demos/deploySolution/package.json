@@ -28,6 +28,7 @@
   "@esri/solution-file": "^0.9.2",
   "@esri/solution-group": "^0.9.2",
   "@esri/solution-simple-types": "^0.9.2",
+  "@esri/solution-hub-types": "^0.9.2",
   "@esri/solution-storymap": "^0.9.2"
  }
 }
