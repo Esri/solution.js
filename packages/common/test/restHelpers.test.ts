@@ -3172,7 +3172,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             hasViews: true, // should be skipped
             capabilities: ["Query"], // should be added to item and params
             spatialReference: {
-              wkid: 4326
+              wkid: 3857
             }
           },
           layers: [
@@ -3252,6 +3252,52 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           enableEditorTracking: false
         }
       });
+    });
+  });
+
+  describe("_validateExtent", () => {
+    it("will not change valid SR", () => {
+      const expected = {
+        xmin: -9821384.714217981,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      };
+      const actual = restHelpers._validateExtent({
+        xmin: -9821384.714217981,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      });
+      expect(actual).toEqual(expected);
+    });
+
+    it("will return default extent for invalid input", () => {
+      const expected = {
+        xmin: -180,
+        ymin: -90,
+        xmax: 180,
+        ymax: 90,
+        spatialReference: {
+          wkid: 4326
+        }
+      };
+      const actual = restHelpers._validateExtent({
+        xmin: undefined,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      });
+      expect(actual).toEqual(expected);
     });
   });
 });
