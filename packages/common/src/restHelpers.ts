@@ -245,16 +245,17 @@ export function addToServiceDefinition(
 export function _validateExtent(extent: IExtent): IExtent {
   // in some cases orgs can have invalid extents defined
   // this is a simple validate function that will ensure coordiantes are numbers
+  // using -179,-89,179,89 because the project call is returning "NaN" when using -180,-90,180,90
   const hasInvalid =
     typeof extent.xmin !== "number" ||
     typeof extent.xmax !== "number" ||
     typeof extent.ymax !== "number" ||
     typeof extent.ymin !== "number";
   if (hasInvalid) {
-    extent.xmin = -180;
-    extent.xmax = 180;
-    extent.ymax = 90;
-    extent.ymin = -90;
+    extent.xmin = -179;
+    extent.xmax = 179;
+    extent.ymax = 89;
+    extent.ymin = -89;
     extent.spatialReference = { wkid: 4326 };
   }
   return extent;
@@ -280,25 +281,43 @@ export function convertExtentWithFallback(
   authentication: UserSession
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    convertExtent(extent, outSR, geometryServiceUrl, authentication).then(
-      extentResponse => resolve(_validateExtent(extentResponse)),
+    const defaultExtent = {
+      xmin: -179,
+      xmax: 179,
+      ymin: -89,
+      ymax: 89,
+      spatialReference: { wkid: 4326 }
+    };
+    convertExtent(
+      _validateExtent(extent),
+      outSR,
+      geometryServiceUrl,
+      authentication
+    ).then(
+      extentResponse => {
+        // in some cases project will complete successfully but return "NaN" values
+        // check for this and call convert again if it does
+        const extentResponseString = JSON.stringify(extentResponse);
+        const validatedExtent = JSON.stringify(_validateExtent(extentResponse));
+        if (extentResponseString === validatedExtent) {
+          resolve(extentResponse);
+        } else {
+          convertExtent(
+            defaultExtent,
+            outSR,
+            geometryServiceUrl,
+            authentication
+          ).then(resolve, e => reject(fail(e)));
+        }
+      },
       // if convert fails try again with default global extent
       () => {
         convertExtent(
-          {
-            xmin: -180,
-            xmax: 180,
-            ymin: -90,
-            ymax: 90,
-            spatialReference: { wkid: 4326 }
-          },
+          defaultExtent,
           outSR,
           geometryServiceUrl,
           authentication
-        ).then(
-          extentResponse => resolve(_validateExtent(extentResponse)),
-          e => reject(fail(e))
-        );
+        ).then(resolve, e => reject(fail(e)));
       }
     );
   });
