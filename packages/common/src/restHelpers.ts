@@ -337,7 +337,7 @@ export function convertExtent(
   outSR: ISpatialReference,
   geometryServiceUrl: string,
   authentication: UserSession
-): Promise<IExtent> {
+): Promise<any> {
   const _requestOptions: any = Object.assign({}, authentication);
   return new Promise<any>((resolve, reject) => {
     // tslint:disable-next-line:no-unnecessary-type-assertion
