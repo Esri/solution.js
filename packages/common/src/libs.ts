@@ -17,6 +17,41 @@
  * Provides connectors to third-party helper functions.
  */
 
+//#region JSZip ----------------------------------------------------------------------------------------------------- //
+
+import JSZip from "./libs/jszip.min";
+import { IFile } from "./interfaces";
+import { blobToFile } from "./generalHelpers";
+
+export function createZip(
+  zipFilename: string,
+  files: IFile[]
+): Promise<File> {
+  return new Promise<File>((resolve, reject) => {
+    const zip = new JSZip();
+
+    // Add the files
+    files.forEach(
+      file => {
+        let filename = file.filename;
+        if (file.folder) {
+          filename = file.folder + "/" + filename;
+        }
+        zip.file(filename, file.blob, { binary: true });
+      }
+    );
+
+    // Create the ZIP
+    zip.generateAsync({ type: "blob" })
+      .then(
+        (content: Blob) => resolve(blobToFile(content, zipFilename, "application/zip")),
+        reject
+      );
+  });
+}
+
+//#endregion ---------------------------------------------------------------------------------------------------------//
+
 //#region arcgis-html-sanitizer ------------------------------------------------------------------------------------- //
 
 import { Sanitizer } from "@esri/arcgis-html-sanitizer";
@@ -107,4 +142,4 @@ export function validateHTML(
   return sanitizer.validate(html);
 }
 
-//#endregion ------------------------------------------------------------------------------------------------------------//
+//#endregion ---------------------------------------------------------------------------------------------------------//
