@@ -1,0 +1,34 @@
+{
+ "name": "deploysolution",
+ "version": "1.0.0",
+ "private": true,
+ "description": "Example App for solutions.js deployer",
+ "main": "main.js",
+ "author": "",
+ "license": "Apache-2.0",
+ "scripts": {
+  "build": "tsc -p ./tsconfig.json --outDir ./dist --declaration",
+  "start": "http-server ."
+ },
+ "devDependencies": {
+  "http-server": "0.12.3",
+  "typescript": "^3.9.2"
+ },
+ "dependencies": {
+  "@esri/arcgis-rest-auth": "^2.11.0",
+  "@esri/arcgis-rest-feature-layer": "^2.13.1",
+  "@esri/arcgis-rest-portal": "^2.11.0",
+  "@esri/arcgis-rest-request": "^2.11.0",
+  "@esri/arcgis-rest-service-admin": "^2.13.1",
+  "@esri/arcgis-rest-types": "^2.11.0",
+  "@esri/hub-common": "^3.9.2",
+  "@esri/solution-common": "^0.9.2",
+  "@esri/solution-deployer": "^0.9.2",
+  "@esri/solution-feature-layer": "^0.9.2",
+  "@esri/solution-file": "^0.9.2",
+  "@esri/solution-group": "^0.9.2",
+  "@esri/solution-simple-types": "^0.9.2",
+  "@esri/solution-hub-types": "^0.9.2",
+  "@esri/solution-storymap": "^0.9.2"
+ }
+}

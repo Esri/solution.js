@@ -26,7 +26,8 @@ import * as file from "@esri/solution-file";
 import * as group from "@esri/solution-group";
 import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
-
+import { HubSiteProcessor, HubPageProcessor } from "@esri/solution-hub-types";
+import { getProp, maybePush } from "@esri/hub-common";
 const UNSUPPORTED: common.moduleHandler = null;
 /**
  * Mapping from item type to module with type-specific template-handling code.
@@ -76,9 +77,9 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
   Form: simpleTypes,
-  "Hub Initiative": undefined,
-  "Hub Page": undefined,
-  "Hub Site Application": undefined,
+  "Hub Initiative": UNSUPPORTED,
+  "Hub Page": HubPageProcessor,
+  "Hub Site Application": HubSiteProcessor,
   "Insights Model": undefined,
   "Insights Page": undefined,
   "Insights Theme": undefined,
@@ -89,9 +90,9 @@ export const moduleMap: common.IItemTypeModuleMap = {
   Notebook: simpleTypes,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": simpleTypes,
-  "Site Application": undefined,
-  "Site Initiative": undefined,
-  "Site Page": undefined,
+  "Site Application": HubSiteProcessor,
+  "Site Initiative": UNSUPPORTED,
+  "Site Page": HubPageProcessor,
   Solution: UNSUPPORTED,
   StoryMap: undefined,
   "Urban Model": undefined,
@@ -230,6 +231,8 @@ export function deploySolutionItems(
     const failedTemplateItemIds: string[] = [];
     const deployedItemIds: string[] = [];
     let statusOK = true;
+
+    // TODO: move to separate fn
     const itemProgressCallback: common.IItemProgressCallback = (
       itemId: string,
       status: common.EItemProgressStatus,
@@ -298,6 +301,8 @@ export function deploySolutionItems(
 
     existingItemsDef.then(
       () => {
+        // why is the return not used?
+
         cloneOrderChecklist.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
@@ -341,8 +346,6 @@ export function deploySolutionItems(
     );
   });
 }
-
-// ------------------------------------------------------------------------------------------------------------------ //
 
 /**
  * Search for existing items and update the templateDictionary with key details
@@ -584,16 +587,29 @@ export function _createItemFromTemplateWhenReady(
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   let itemDef;
+  // ensure this is present
+  template.dependencies = template.dependencies || [];
+
   if (!templateDictionary.hasOwnProperty(template.itemId)) {
     templateDictionary[template.itemId] = {};
     itemDef = new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
       // Wait until all of the item's dependencies are deployed
-      const awaitDependencies = [] as Array<
-        Promise<common.ICreateItemFromTemplateResponse>
-      >;
-      (template.dependencies || []).forEach(dependencyId => {
-        awaitDependencies.push(templateDictionary[dependencyId].def);
-      });
+      // maybePush will only add the entry if it exists, allowing
+      // templates to have entries in the depenedency array that are
+      // invalid or don't refer to a template
+      const awaitDependencies = template.dependencies.reduce((acc, id) => {
+        return maybePush(templateDictionary[id].def, acc);
+      }, []);
+
+      // const awaitDependencies = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
+      // (template.dependencies || []).forEach(dependencyId => {
+      //   // ensure we actually have an entry before a trying to push into the array
+      //   if(templateDictionary[dependencyId].def) {
+      //     awaitDependencies.push(templateDictionary[dependencyId].def);
+      //   }
+
+      // });
+
       Promise.all(awaitDependencies).then(
         () => {
           // Find the conversion handler for this item type
@@ -694,6 +710,33 @@ export function _createItemFromTemplateWhenReady(
   return itemDef;
 }
 
+// export function _createItemFromTemplateWhenReadyNew(
+//   template: common.IItemTemplate,
+//   resourceFilePaths: common.IDeployFileCopyPath[],
+//   storageAuthentication: common.UserSession,
+//   templateDictionary: any,
+//   destinationAuthentication: common.UserSession,
+//   itemProgressCallback: common.IItemProgressCallback
+// ): Promise<common.ICreateItemFromTemplateResponse> {
+//   // ensure it's an array...
+//   template.dependencies = template.dependencies || [];
+//   // if it's already processed, return it
+//   if (getProp(templateDictionary, template.itemId)) {
+//     console.log(`_createItemFromTemplateWhenReady::Template ${template.itemId} already present in template dictionary - returning`);
+//     return Promise.resolve(getProp(templateDictionary, `${template.itemId}.def`));
+//   } else {
+//     // do the work
+//     let entry = {};
+//     // get the dependencies
+//     return Promise.all(template.dependencies.map((id) => {}))
+
+//     templateDictionary[template.itemId] = entry;
+//   }
+//   return itemDef;
+// }
+
+// export function getItemsById()
+
 /**
  * Accumulates the estimated deployment cost of a set of templates.
  *
@@ -740,6 +783,7 @@ export function postProcessDependencies(
   authentication: common.UserSession,
   templateDictionary: any
 ): Promise<any> {
+  // TODO: rework to remove extra promise wrapper
   return new Promise<any>((resolve, reject) => {
     // In most cases this is a generic item update
     // However, if an item needs special handeling it should be listed here and...
