@@ -40,7 +40,9 @@
       </div>
       <div class="col-sm-6 col-sm-offset-3">
         <div id="input" class="form-group" style="display:none">
-          <label for="id">ID of the solution item to deploy:</label>
+          <label for="solutionId">Enter a Solution ID:</label>
+          <input class="form-control" type="text" id="solutionId">
+          <label for="id">Or pick from the list below:</label>
           <select name="Solution Item" id="id" class="form-control">
             <option value="140242ff369a4da2aab7860a709d3e13">Corona Response ( 140242ff369a4da2aab7860a709d3e13 ) </option>
             <option value="5fb1779bf3424e6592d45132b472b480">Open Data Dave ( 5fb1779bf3424e6592d45132b472b480 )</option>
@@ -70,6 +72,7 @@
     var goFcn;
     require.config({
       paths: {
+        "tslib": "node_modules/tslib/tslib",
         // load the local versions
         "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
@@ -101,8 +104,11 @@
           var startTime = Date.now();
           var createdItems = [];
 
+          // use the manually entered value, but fall back to the select list
+          var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
+  
           main.deploySolution(
-            document.getElementById("id").value,
+            solutionId,
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
