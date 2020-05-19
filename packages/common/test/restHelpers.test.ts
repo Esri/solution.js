@@ -1593,6 +1593,143 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("convertExtentWithFallback", () => {
+    if (typeof window !== "undefined") {
+      it("can handle NaN", done => {
+        const expected: interfaces.IExtent = {
+          xmin: -19926188.85199597,
+          ymin: -30240971.958386146,
+          xmax: 19926188.85199597,
+          ymax: 30240971.95838615,
+          spatialReference: { wkid: 102100 }
+        };
+
+        // "NaN" extent values are returned when you try to project this to 102100
+        const ext: interfaces.IExtent = {
+          xmax: 180,
+          xmin: -180,
+          ymax: 90,
+          ymin: -90,
+          spatialReference: {
+            wkid: 4326
+          }
+        };
+
+        restHelpers
+          .convertExtentWithFallback(
+            ext,
+            expected.spatialReference,
+            geometryServiceUrl,
+            MOCK_USER_SESSION
+          )
+          .then(actual => {
+            expect(actual).toEqual(expected);
+            done();
+          }, done.fail);
+      });
+
+      it("can handle mocked NaN", done => {
+        // "NaN" extent values are returned when you try to project this to 102100
+        const ext: interfaces.IExtent = {
+          xmax: 180,
+          xmin: -180,
+          ymax: 90,
+          ymin: -90,
+          spatialReference: {
+            wkid: 4326
+          }
+        };
+
+        const NaNGeoms = [
+          {
+            x: "NaN",
+            y: "NaN"
+          },
+          {
+            x: "NaN",
+            y: "NaN"
+          }
+        ];
+
+        fetchMock
+          .post(geometryServiceUrl + "/findTransformations", {})
+          .postOnce(
+            geometryServiceUrl + "/project",
+            {
+              geometries: NaNGeoms
+            },
+            { overwriteRoutes: false }
+          )
+          .postOnce(
+            geometryServiceUrl + "/project",
+            {
+              geometries: projectedGeometries
+            },
+            { overwriteRoutes: false }
+          );
+
+        restHelpers
+          .convertExtentWithFallback(
+            ext,
+            serviceSR,
+            geometryServiceUrl,
+            MOCK_USER_SESSION
+          )
+          .then(actual => {
+            expect(actual).toEqual(expectedExtent);
+            done();
+          }, done.fail);
+      });
+
+      it("can handle error on failover", done => {
+        const ext: interfaces.IExtent = {
+          xmax: 180,
+          xmin: -180,
+          ymax: 90,
+          ymin: -90,
+          spatialReference: {
+            wkid: 4326
+          }
+        };
+
+        const NaNGeoms = [
+          {
+            x: "NaN",
+            y: "NaN"
+          },
+          {
+            x: "NaN",
+            y: "NaN"
+          }
+        ];
+
+        fetchMock
+          .post(geometryServiceUrl + "/findTransformations", {})
+          .postOnce(
+            geometryServiceUrl + "/project",
+            {
+              geometries: NaNGeoms
+            },
+            { overwriteRoutes: false }
+          )
+          .postOnce(
+            geometryServiceUrl + "/project",
+            mockItems.get400Failure(),
+            { overwriteRoutes: false }
+          );
+
+        restHelpers
+          .convertExtentWithFallback(
+            ext,
+            serviceSR,
+            geometryServiceUrl,
+            MOCK_USER_SESSION
+          )
+          .then(done.fail, done);
+      });
+    }
+  });
+
   describe("getLayers", () => {
     it("can handle success", done => {
       const url =
@@ -3172,7 +3309,7 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
             hasViews: true, // should be skipped
             capabilities: ["Query"], // should be added to item and params
             spatialReference: {
-              wkid: 4326
+              wkid: 3857
             }
           },
           layers: [
@@ -3252,6 +3389,52 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
           enableEditorTracking: false
         }
       });
+    });
+  });
+
+  describe("_validateExtent", () => {
+    it("will not change valid SR", () => {
+      const expected = {
+        xmin: -9821384.714217981,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      };
+      const actual = restHelpers._validateExtent({
+        xmin: -9821384.714217981,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      });
+      expect(actual).toEqual(expected);
+    });
+
+    it("will return default extent for invalid input", () => {
+      const expected = {
+        xmin: -179,
+        ymin: -89,
+        xmax: 179,
+        ymax: 89,
+        spatialReference: {
+          wkid: 4326
+        }
+      };
+      const actual = restHelpers._validateExtent({
+        xmin: undefined,
+        ymin: 5117339.123090005,
+        xmax: -9797228.384715842,
+        ymax: 5137789.39951188,
+        spatialReference: {
+          wkid: 102100
+        }
+      });
+      expect(actual).toEqual(expected);
     });
   });
 });

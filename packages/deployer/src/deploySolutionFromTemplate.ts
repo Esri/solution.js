@@ -130,7 +130,7 @@ export function _deploySolutionFromTemplate(
 
         // Apply the portal extents to the solution
         const portalExtent: any = portalResponse.defaultExtent;
-        const extentsPromise = common.convertExtent(
+        const extentsPromise = common.convertExtentWithFallback(
           portalExtent,
           { wkid: 4326 },
           portalResponse.helperServices.geometry.url,
