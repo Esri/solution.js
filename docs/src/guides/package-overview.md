@@ -1,6 +1,6 @@
 ---
 title: Package Overview
-description: Overview of packages provided by Solutions.js.
+description: Overview of packages provided by Solution.js.
 order: 10
 group: 0-introduction
 ---

@@ -12,6 +12,8 @@ const packages = [
   "creator",
   "deployer",
   "feature-layer",
+  "file",
+  "group",
   "simple-types",
   "storymap",
   "viewer"
