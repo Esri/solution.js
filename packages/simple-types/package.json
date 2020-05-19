@@ -14,7 +14,7 @@
   ],
   "devDependencies": {
     "rollup": "^1.22.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.9.2"
   },
   "dependencies": {
     "@esri/solution-common": "^0.9.2",
@@ -28,7 +28,8 @@
     "build:node": "tsc -p ./tsconfig.json --module commonjs --outDir ./dist/node",
     "dev:esm": "tsc -w --module esnext --outDir ./dist/esm --declaration",
     "dev:umd": "rollup -w -c ../../umd-base-profile.js",
-    "dev:node": "tsc -w --module commonjs --outDir ./dist/node"
+    "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
+    "tsc:v": "tsc -v"
   },
   "publishConfig": {
     "access": "public"
