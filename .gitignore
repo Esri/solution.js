@@ -94,3 +94,5 @@ packages/**/*.map
 packages/**/*.d.ts
 !packages/**/tslib.js
 
+TODO.md
+demos/deploy-harness
