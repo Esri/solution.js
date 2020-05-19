@@ -79,19 +79,21 @@
   },
   "dependencies": {},
   "lint-staged": {
-    "*.ts": [
+    "packages/**/*.ts": [
       "prettier --write --parser typescript --tab-width 2 --use-tabs false",
       "tslint --project tsconfig.json",
       "git add"
     ]
   },
   "scripts": {
+    "start:deployer": "lerna run build && http-server ./demos/deploySolution",
     "build": "lerna run build",
+    "build:umd": "lerna run build:umd",
     "clean": "npm run clean:src && npm run clean:dist",
     "clean:src": "rm -rf packages/*/{src,test}/*.{d.ts,js,js.map} && rm -rf packages/*/{src,test}/**/*.{d.ts,js,js.map}",
     "clean:dist": "rm -rf packages/*/dist/ && rm -rf packages/*/.rpt2_cache",
     "deepclean": "rm -rf ./node_modules && rm -rf packages/*/node_modules && npm run clean && npm i",
-    "lint": "tslint --project tsconfig.json --exclude '**/*.d.ts'",
+    "lint": "tslint --project tsconfig.json --exclude '**/*.d.ts demos/**/*'",
     "lint:fix": "tslint --project tsconfig.json --exclude '**/*.d.ts' --fix",
     "prettify": "prettier --write --parser typescript --tab-width 2 --use-tabs false \"packages/**/+(src|test)/**/*.ts\"",
     "dev": "support/dev.sh",

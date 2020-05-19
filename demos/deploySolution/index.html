@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>@esri/solution-deployer deploySolution example</title>
+  <!--
+   | Copyright 2019 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+  button {
+    cursor: pointer;
+  }
+  td {
+    border: none;
+  }
+  li {
+    margin-bottom: 12px;
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12">
+        <h1>Deployer Example App</h1>
+      </div>
+      <div class="col-sm-6 col-sm-offset-3">
+        <div id="input" class="form-group" style="display:none">
+          <label for="solutionId">Enter a Solution ID:</label>
+          <input class="form-control" type="text" id="solutionId">
+          <label for="id">Or pick from the list below:</label>
+          <select name="Solution Item" id="id" class="form-control">
+            <option value="140242ff369a4da2aab7860a709d3e13">Corona Response ( 140242ff369a4da2aab7860a709d3e13 ) </option>
+            <option value="5fb1779bf3424e6592d45132b472b480">Open Data Dave ( 5fb1779bf3424e6592d45132b472b480 )</option>
+            <option value="a9920828b2d3419584f65bbdb5278105">Open Data Site ( a9920828b2d3419584f65bbdb5278105 )</option>
+          </select>
+          <br /><br />
+          <i>Credentials in destination organization:</i><br />
+          <label for="username">username:</label>
+          <input type="text" id="username" class="form-control" value="">
+          <label for="password">password:</label>
+          <input type="password" id="password" class="form-control" value="">
+          <label for="password">Portal:</label>
+          <input type="text" id="portal" class="form-control" value="https://www.arcgis.com/sharing/rest">
+          <br /><br />
+          <button class="btn btn-default" onclick="goFcn()">Deploy Solution</button>
+        </div>
+      </div>
+      <div class="col-sm-12">
+        <div id="output" style="display:none">Deploying...</div>
+      </div>
+    </div>
+  </div>
+  
+
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script>
+    var goFcn;
+    require.config({
+      paths: {
+        "tslib": "node_modules/tslib/tslib",
+        // load the local versions
+        "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
+        // load the unminified so we can debug things
+        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": "node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": "node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-hub-types": "node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd"
+      }
+    });
+
+    require(["@esri/arcgis-rest-auth", "dist/main"],
+      function (auth, main) {
+        "use strict";
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
+
+        function go () {
+          document.getElementById("input").style.display = "none";
+          document.getElementById("output").style.display = "block";
+          var startTime = Date.now();
+          var createdItems = [];
+
+          // use the manually entered value, but fall back to the select list
+          var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
+  
+          main.deploySolution(
+            solutionId,
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value,
+              portal: document.getElementById("portal").value
+            }),
+            (percentDone, jobId, progressEvent) => {
+              if (progressEvent) {
+                createdItems.push(progressEvent.data)
+              }
+              var html = "Deploying..." + percentDone.toFixed().toString() + "%" + "<br><br>Finished items:<ol>";
+              createdItems.forEach(item => html += "<li>" + item + "</li>");
+              html += "</ol>";
+              document.getElementById("output").innerHTML = html;
+            }
+          ).then(
+            html => {
+              reportElapsedTime(startTime);
+              document.getElementById("output").innerHTML = html;
+            },
+            error => {
+              var message = error.error || JSON.stringify(error);
+              reportElapsedTime(startTime);
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + message + "</span>";
+            }
+          );
+        }
+
+        function reportElapsedTime (startTime) {
+          var endTime = Date.now();
+          console.log("Elapsed time: " + ((endTime - startTime) / 1000).toFixed(1) + " seconds");
+        }
+      }
+    );
+  </script>
+</body>
+</html>

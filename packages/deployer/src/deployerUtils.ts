@@ -114,6 +114,7 @@ export function isSolutionTemplateItem(item: common.IItem): boolean {
   return (
     item.type === "Solution" &&
     item.typeKeywords.indexOf("Solution") > -1 &&
-    item.typeKeywords.indexOf("Template") > -1
+    (item.typeKeywords.indexOf("Template") > -1 ||
+      item.typeKeywords.indexOf("solutionTemplate") > -1)
   );
 }
