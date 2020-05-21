@@ -1,0 +1,60 @@
+{
+  "name": "@esri/hub-common",
+  "version": "3.9.3-4a5e3a52",
+  "description": "Common TypeScript types and utility functions for @esri/hub.js.",
+  "main": "dist/node/index.js",
+  "unpkg": "dist/umd/common.umd.js",
+  "module": "dist/esm/index.js",
+  "js:next": "dist/esm/index.js",
+  "sideEffects": false,
+  "types": "dist/esm/index.d.ts",
+  "author": "",
+  "license": "Apache-2.0",
+  "files": [
+    "dist/**"
+  ],
+  "dependencies": {
+    "adlib": "3.0.5",
+    "tslib": "^1.11.1"
+  },
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.0.0",
+    "@esri/arcgis-rest-portal": "^2.0.0",
+    "@esri/arcgis-rest-request": "^2.0.0",
+    "@esri/arcgis-rest-types": "^2.0.0"
+  },
+  "scripts": {
+    "prepare": "npm run build",
+    "build": "npm run build:node && npm run build:umd && npm run build:esm",
+    "build:esm": "tsc --module es2015 --outDir ./dist/esm --declaration",
+    "build:umd": "rollup -c ../../umd-base-profile.js && rollup -c ../../umd-production-profile.js",
+    "build:node": "tsc --module commonjs --outDir ./dist/node",
+    "dev:esm": "tsc -w --module es2015 --outDir ./dist/esm --declaration",
+    "dev:umd": "rollup -w -c ../../umd-base-profile.js",
+    "dev:node": "tsc -w --module commonjs --outDir ./dist/node",
+    "y:publish": "yalc publish",
+    "y:push": "yalc push"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": "github:/Esri/hub.js",
+  "contributors": [
+    {
+      "name": "Dave Bouwman",
+      "email": "dbouwman@esri.com"
+    },
+    {
+      "name": "John Gravois",
+      "email": "john@esri.com"
+    },
+    {
+      "name": "Tom Wayson",
+      "email": "twayson@esri.com"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/Esri/hub.js/issues"
+  },
+  "homepage": "https://github.com/Esri/hub.js#readme"
+}
