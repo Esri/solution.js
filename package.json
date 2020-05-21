@@ -77,9 +77,6 @@
     "typescript": "^3.8.3",
     "uuid": "^8.0.0"
   },
-  "dependencies": {
-    "@esri/hub-common": "file:.yalc/@esri/hub-common"
-  },
   "lint-staged": {
     "packages/**/*.ts": [
       "prettier --write --parser typescript --tab-width 2 --use-tabs false",
