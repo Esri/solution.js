@@ -1,6 +1,6 @@
 ---
 title: Get Started
-description: Get started with Solutions.js.
+description: Get started with Solution.js.
 ---
 
 # Get Started
@@ -13,16 +13,16 @@ Solutions.js can be deployed with a variety of build tools, including:
 
 ## Requirements
 
-Solutions.js takes advantage of web standards that are supported in all modern desktop browsers and most mobile browsers.
+Solution.js takes advantage of web standards that are supported in all modern desktop browsers and most mobile browsers.
 
 * [`Fetch` Support](https://caniuse.com/#feat=fetch)
 * [`Promises` Support](https://caniuse.com/#feat=promises)
 * [`FormData` Support](https://caniuse.com/#feat=xhr2)
-* [`ECMAScript 5` Support](https://caniuse.com/#feat=es5)
+* [`ECMAScript 6` Support](https://caniuse.com/#feat=es6)
 
 ## Browser Support
 
-Solutions.js is supported in
+Solution.js is supported in
 
 * Chrome
 * Chromium Edge
@@ -32,7 +32,7 @@ Solutions.js is supported in
 
 ## Node.js Support
 
-Solutions.js is supported in Node.js 8.x, 10.x, and 12.x. It requires additional packages to polyfill `Fetch` and `FormData`.
+Solution.js is supported in Node.js 8.x, 10.x, and 12.x. It requires additional packages to polyfill `Fetch` and `FormData`.
 
 We recommend the ones below:
 

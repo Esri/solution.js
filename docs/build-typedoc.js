@@ -21,7 +21,7 @@ const md = new MarkdownIt();
         "**/*test.ts",
         "--ignoreCompilerErrors",
         "--module",
-        "common",
+        "es6",
         "--tsconfig",
         "./tsconfig.json"
       ],

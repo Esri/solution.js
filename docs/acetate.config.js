@@ -221,7 +221,7 @@ module.exports = function(acetate) {
       `{% highlight "html" %}<script src="https://unpkg.com/${package.name}@${
         package.version
       }/dist/umd/${package.name.replace(
-        "@esri/arcgis-rest-",
+        "@esri/solution-",
         ""
       )}.umd.min.js"></script>{% endhighlight %}`
     );

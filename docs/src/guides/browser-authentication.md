@@ -1,7 +1,7 @@
 ---
-title: Browser-based authentication with Solutions.js
+title: Browser-based authentication with Solution.js
 navTitle: Browser-based OAuth 2.0
-description: Learn how to authenticate users with Solutions.js and OAuth 2.0 in a browser.
+description: Learn how to authenticate users with Solution.js and OAuth 2.0 in a browser.
 order: 1
 group: 2-authentication
 ---
