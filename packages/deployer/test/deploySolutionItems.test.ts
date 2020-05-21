@@ -1218,7 +1218,7 @@ describe("Module `deploySolutionItems`", () => {
 
   describe("postProcessDependencies", () => {
     if (typeof window !== "undefined") {
-      it("should update unresolved variables in an items data", done => {
+      it("should update unresolved variables in an item and it's data", done => {
         const _templates: any[] = [
           {
             type: "Group",
@@ -1236,6 +1236,18 @@ describe("Module `deploySolutionItems`", () => {
           unresolved: {
             itemId: "resolved"
           }
+        };
+
+        const workforceItem = {
+          id: "NEW123ABC",
+          owner: "jdoe",
+          tags: ["tag1"],
+          created: 1590063887071,
+          modified: 1590063887071,
+          numViews: 1,
+          size: 50,
+          protected: false,
+          other: "{{unresolved.itemId}}"
         };
 
         const workforceData: any = {
@@ -1263,6 +1275,10 @@ describe("Module `deploySolutionItems`", () => {
 
         fetchMock
           .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC",
+            workforceItem
+          )
+          .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
             workforceData
           )
@@ -1289,7 +1305,7 @@ describe("Module `deploySolutionItems`", () => {
           }, done.fail);
       });
 
-      it("should update unresolved variables in Notebook item data", done => {
+      it("should update unresolved variables in Notebook item and it's data", done => {
         const _templates: any[] = [
           {
             type: "Notebook",
@@ -1303,11 +1319,25 @@ describe("Module `deploySolutionItems`", () => {
           }
         };
 
+        const notebookItem = {
+          id: "NEW123ABC",
+          owner: "jdoe",
+          tags: ["tag1"],
+          created: 1590063887071,
+          modified: 1590063887071,
+          numViews: 1,
+          size: 50,
+          protected: false,
+          other: "{{unresolved.itemId}}"
+        };
+
         const notebookData: any = {
           unresolvedVariable: "{{unresolved.itemId}}"
         };
 
-        const expected: any = { unresolvedVariable: "resolved" };
+        const expectedData: any = { unresolvedVariable: "resolved" };
+
+        const expectedItem = { ...notebookItem, other: "resolved" };
 
         const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
           {
@@ -1318,6 +1348,10 @@ describe("Module `deploySolutionItems`", () => {
         ];
 
         fetchMock
+          .post(
+            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC",
+            notebookItem
+          )
           .post(
             utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
             notebookData
@@ -1339,8 +1373,8 @@ describe("Module `deploySolutionItems`", () => {
           )
           .then(() => {
             expect(notebook.postProcessItemDependencies).toHaveBeenCalledWith(
-              clonedSolutionsResponse[0].id,
-              expected,
+              expectedItem,
+              expectedData,
               MOCK_USER_SESSION
             );
             done();

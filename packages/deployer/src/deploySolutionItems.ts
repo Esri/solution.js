@@ -28,6 +28,7 @@ import * as simpleTypes from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 import { HubSiteProcessor, HubPageProcessor } from "@esri/solution-hub-types";
 import { getProp, maybePush } from "@esri/hub-common";
+import * as deployUtils from "./deployerUtils";
 const UNSUPPORTED: common.moduleHandler = null;
 /**
  * Mapping from item type to module with type-specific template-handling code.
@@ -790,39 +791,42 @@ export function postProcessDependencies(
     // uniqueUpdateTypes must implement postProcessDependencies that should return a promise for the update
     const uniqueUpdateTypes: string[] = ["Notebook"];
 
-    const dataRequests: Array<Promise<any>> = [];
+    const modelRequests: Array<Promise<any>> = [];
     const requestedItemInfos: any = clonedSolutionsResponse.filter(
       solutionInfo => {
         if (solutionInfo.postProcess) {
-          dataRequests.push(
-            common.getItemDataAsJson(solutionInfo.id, authentication)
+          modelRequests.push(
+            deployUtils._getSolutionTemplateItem(
+              solutionInfo.id,
+              authentication
+            )
           );
           return true;
         }
       }
     );
 
-    Promise.all(dataRequests).then(
-      data => {
+    Promise.all(modelRequests).then(
+      models => {
         let updates: Array<Promise<any>> = [Promise.resolve()];
         for (let i = 0; i < requestedItemInfos.length; i++) {
           const itemInfo = requestedItemInfos[i];
           /* istanbul ignore else */
-          if (common.hasUnresolvedVariables(data[i])) {
+          if (common.hasUnresolvedVariables(models[i])) {
             const template: common.IItemTemplate = common.getTemplateById(
               templates,
               itemInfo.id
             );
-            const update: any = common.replaceInTemplate(
-              data[i],
+            const { item, data } = common.replaceInTemplate(
+              models[i],
               templateDictionary
             );
             if (uniqueUpdateTypes.indexOf(template.type) < 0) {
               updates.push(
                 common.updateItemExtended(
                   itemInfo.id,
-                  { id: itemInfo.id },
-                  update,
+                  item,
+                  data,
                   authentication
                 )
               );
@@ -832,9 +836,9 @@ export function postProcessDependencies(
               if (itemHandler.postProcessItemDependencies) {
                 updates.push(
                   itemHandler.postProcessItemDependencies(
-                    itemInfo.id,
+                    item,
                     template.type,
-                    update,
+                    data,
                     authentication
                   )
                 );

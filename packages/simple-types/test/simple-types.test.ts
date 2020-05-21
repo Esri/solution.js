@@ -401,6 +401,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       it("should handle item resource", done => {
         const solutionItemId = "sln1234567890";
         const itemTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.item.item = itemTemplate.itemId = itemTemplate.item.id;
         itemTemplate.item.thumbnail = "thumbnail/banner.png";
@@ -1454,9 +1455,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data = mockItems.getAGOLItemData("Workforce Project");
 
       const newItemID: string = "abc1cab401af4828a25cc6eaeb59fb69";
-      const expected: any = {};
+      const wrk1234567890 = { itemId: "wrk1234567890" };
+      const solutionItemExtent = [
+        [0, 0],
+        [1, 1]
+      ];
+      const expected: any = { wrk1234567890, solutionItemExtent };
       expected[itemTemplate.itemId] = { itemId: newItemID };
-      const templateDictionary: any = {};
+      const templateDictionary: any = { wrk1234567890, solutionItemExtent };
 
       const userUrl: string =
         utils.PORTAL_SUBSET.restUrl +
@@ -1809,17 +1815,22 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         { total: 0, relatedItems: [] }
       );
 
+      const templateDictionary = {
+        portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
+        folderId: "folderb401af4828a25cc6eaeb59fb69",
+        myMapId: {
+          itemId: "map0cab401af4828a25cc6eaeb59fb69"
+        },
+        abc0cab401af4828a25cc6eaeb59fb69: {
+          itemId: "abc0cab401af4828a25cc6eaeb59fb69"
+        }
+      };
+
       // tslint:disable-next-line: no-floating-promises
       simpleTypes
         .createItemFromTemplate(
           itemTemplate,
-          {
-            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
-            folderId: "folderb401af4828a25cc6eaeb59fb69",
-            myMapId: {
-              itemId: "map0cab401af4828a25cc6eaeb59fb69"
-            }
-          },
+          templateDictionary,
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK
         )
@@ -2093,6 +2104,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
             folderId: "folderb401af4828a25cc6eaeb59fb69",
             myMapId: {
               itemId: "map0cab401af4828a25cc6eaeb59fb69"
+            },
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              itemId: "bbc0cab401af4828a25cc6eaeb59fb69"
             }
           },
           MOCK_USER_SESSION,
@@ -2167,7 +2181,10 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         .createItemFromTemplate(
           itemTemplate,
           {
-            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl
+            portalBaseUrl: utils.PORTAL_SUBSET.portalUrl,
+            abc0cab401af4828a25cc6eaeb59fb69: {
+              itemId: "bbc0cab401af4828a25cc6eaeb59fb69"
+            }
           },
           MOCK_USER_SESSION,
           utils.ITEM_PROGRESS_CALLBACK

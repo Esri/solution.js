@@ -271,9 +271,10 @@ export function createItemFromTemplate(
                   createResponse.id
                 );
               }
-              const postProcess: boolean = common.hasUnresolvedVariables(
-                newItemTemplate.data
-              );
+              const postProcess: boolean = common.hasUnresolvedVariables({
+                data: newItemTemplate.data,
+                item: newItemTemplate.item
+              });
 
               // Update the template again now that we have the new item id
               const originalURL = newItemTemplate.item.url;
@@ -472,7 +473,7 @@ export function postProcessFieldReferences(
  * @return A promise that will resolve once any updates have been made
  */
 export function postProcessItemDependencies(
-  itemId: string,
+  item: common.IItemUpdate,
   type: string,
   data: any,
   authentication: common.UserSession
@@ -480,7 +481,7 @@ export function postProcessItemDependencies(
   let p: Promise<any> = Promise.resolve();
   switch (type) {
     case "Notebook":
-      p = notebook.postProcessItemDependencies(itemId, data, authentication);
+      p = notebook.postProcessItemDependencies(item, data, authentication);
       break;
   }
   return p;

@@ -34,9 +34,10 @@ beforeEach(() => {
 describe("Module `notebook`: manages the creation and deployment of notebook project item types", () => {
   describe("_updateItemData", () => {
     it("handles update error", done => {
+      const item = { id: "itm1234567890" };
       const data = {};
 
-      notebook._updateItemData("itm1234567890", data, MOCK_USER_SESSION).then(
+      notebook._updateItemData(item, data, MOCK_USER_SESSION).then(
         () => done.fail(),
         () => done()
       );

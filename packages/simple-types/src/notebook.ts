@@ -104,21 +104,21 @@ export function fineTuneCreatedItem(
  * @return A promise that will resolve once any updates have been made
  */
 export function postProcessItemDependencies(
-  itemId: string,
+  item: common.IItemUpdate,
   data: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return _updateItemData(itemId, data, authentication);
+  return _updateItemData(item, data, authentication);
 }
 
 export function _updateItemData(
-  itemId: string,
+  item: common.IItemUpdate,
   data: any,
   authentication: common.UserSession
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     const updateOptions: common.IItemUpdate = {
-      id: itemId,
+      ...item,
       data: common.jsonToBlob(data)
     };
     common.updateItem(updateOptions, authentication).then(

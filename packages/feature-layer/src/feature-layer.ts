@@ -248,9 +248,10 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables(
-                                  newItemTemplate.data
-                                )
+                                postProcess: common.hasUnresolvedVariables({
+                                  data: newItemTemplate.data,
+                                  item: newItemTemplate.item
+                                })
                               });
                             }
                           },

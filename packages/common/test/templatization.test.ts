@@ -473,6 +473,32 @@ describe("Module `templatization`: common functions involving the adlib library"
 
       expect(templatizedObj).toEqual(expectedTemplatizedObj);
     });
+
+    it("gracefully handles multiple occurrences of the same id", () => {
+      // i.e. prevents things like: {{{{bef773a670c0419f89194a4012320db3.itemId}}.itemId}}
+      const obj = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["bef773a670c0419f89194a4012320db3"],
+          properties: {
+            anotherReference: "bef773a670c0419f89194a4012320db3"
+          }
+        }
+      ];
+      const expectedTemplatizedObj = [
+        {
+          relationshipType: "Survey2Service",
+          relatedItemIds: ["{{bef773a670c0419f89194a4012320db3.itemId}}"],
+          properties: {
+            anotherReference: "{{bef773a670c0419f89194a4012320db3.itemId}}"
+          }
+        }
+      ];
+
+      const templatizedObj: any = templatization.templatizeIds(obj);
+
+      expect(templatizedObj).toEqual(expectedTemplatizedObj);
+    });
   });
 });
 
