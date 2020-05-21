@@ -312,11 +312,10 @@ export function templatizeIds(obj: any): any {
   if (obj && idTest.test(objString)) {
     // Templatize ids
     const ids: string[] = objString.match(idTest).filter(unique);
-    const toTokenizedString = (memo: string, id: string) => {
-      const pat = new RegExp(id, "gm");
-      return memo.replace(pat, `{{${id + ".itemId"}}}`);
-    };
-    objString = ids.reduce(toTokenizedString, objString);
+    ids.forEach(id => {
+      const regEx = new RegExp(id, "gm");
+      objString = objString.replace(regEx, "{{" + id + ".itemId}}");
+    });
     obj = JSON.parse(objString);
   }
   return obj;
