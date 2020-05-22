@@ -27,7 +27,119 @@ import {
   EItemProgressStatus,
   UserSession
 } from "@esri/solution-common";
+import { createSiteModelFromTemplate, createSite } from "@esri/hub-sites";
+import { IModel, cloneObject } from "@esri/hub-common";
+import { moveSiteToFolder } from "./helpers/move-site-to-folder";
+import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 
+/**
+ * Handle deployment of Site item templates
+ *
+ * @export
+ * @param {IItemTemplate} template
+ * @param {*} templateDictionary
+ * @param {UserSession} destinationAuthentication
+ * @param {IItemProgressCallback} itemProgressCallback
+ * @returns {Promise<ICreateItemFromTemplateResponse>}
+ */
+/* istanbul ignore next */
+export function createItemFromTemplate(
+  template: IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: UserSession,
+  itemProgressCallback: IItemProgressCallback
+): Promise<ICreateItemFromTemplateResponse> {
+  const hubRo = createHubRequestOptions(
+    destinationAuthentication,
+    templateDictionary
+  );
+
+  // convert the templateDictionary to a settings hash
+  const settings = cloneObject(templateDictionary);
+
+  // solutionItemExtent is in geographic, but it's a string, and we want/need a bbox
+  // and Hub templates expect it in organization.defaultExtentBBox
+  if (settings.solutionItemExtent) {
+    const parts = settings.solutionItemExtent.split(",");
+    settings.organization.defaultExtentBBox = [
+      [parts[0], parts[1]],
+      [parts[2], parts[3]]
+    ];
+  }
+
+  // TODO: Understand how/where the Solution title is passed in and fall back to fetching the Solution Template
+  if (!settings.solution) {
+    settings.solution = {
+      title: "TODO GET SOLN TITLE"
+    };
+  }
+  // TODO: Determine if we need any transforms in this new env
+  const transforms = {};
+
+  // create an object to hold the created site through
+  // subsequent promise calls
+  let siteModel: IModel;
+
+  // Create the "siteModel" from the template. Does not save the site item yet
+  // Note: depending on licensing and user privs, will also create the team groups
+  // and initiative item.
+  return createSiteModelFromTemplate(template, settings, transforms, hubRo)
+    .then(interpolated => {
+      const options = {
+        assets: interpolated.assets || []
+      };
+      // Now create the item, register for oAuth, register domain etc
+      return createSite(interpolated, options, hubRo);
+    })
+    .then(site => {
+      // hold onto the site
+      siteModel = site;
+      // Move the site and initiative to the solution folder
+      // this is essentially fire and forget. We fail-safe the actual moveItem
+      // call since it's not critical to the outcome
+      return moveSiteToFolder(
+        site,
+        templateDictionary.folderId,
+        destinationAuthentication
+      );
+    })
+    .then(_ => {
+      // Update the template dictionary
+      // TODO: This should be done in whatever recieves
+      // the outcome of this promise chain
+      templateDictionary[template.itemId] = {
+        itemId: siteModel.item.id
+      };
+      // call the progress callback, which also mutates templateDictionary
+      itemProgressCallback(
+        template.itemId,
+        EItemProgressStatus.Finished,
+        template.estimatedDeploymentCostFactor,
+        siteModel.item.id
+      );
+      // finally, return something
+      // TODO: Figure out how/where this is used, if at all
+      return {
+        id: siteModel.item.id,
+        type: template.type,
+        postProcess: true
+      };
+    })
+    .catch(ex => {
+      itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
+      throw ex;
+    });
+}
+
+/***
+ *    ##    ##  #######  ########    #### ##     ## ########
+ *    ###   ## ##     ##    ##        ##  ###   ### ##     ##
+ *    ####  ## ##     ##    ##        ##  #### #### ##     ##
+ *    ## ## ## ##     ##    ##        ##  ## ### ## ########
+ *    ##  #### ##     ##    ##        ##  ##     ## ##
+ *    ##   ### ##     ##    ##        ##  ##     ## ##        ###
+ *    ##    ##  #######     ##       #### ##     ## ##        ###
+ */
 /* istanbul ignore next */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -50,23 +162,7 @@ export function convertItemToTemplate(
 }
 
 /* istanbul ignore next */
-export function createItemFromTemplate(
-  template: IItemTemplate,
-  templateDictionary: any,
-  destinationAuthentication: UserSession,
-  itemProgressCallback: IItemProgressCallback
-): Promise<ICreateItemFromTemplateResponse> {
-  itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
-  console.info(`Hub Page is not supported yet`);
-  return Promise.resolve({
-    id: `${template.type} is not yet implemented`, // temporary
-    type: template.type,
-    postProcess: true
-  });
-}
-
-/* istanbul ignore next */
-export function secondPass(model: any, items: any[]): Promise<boolean> {
+export function postProcess(model: any, items: any[]): Promise<boolean> {
   console.info(`Hub Page is not supported yet`);
   return Promise.resolve(true);
 }

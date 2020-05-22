@@ -15,24 +15,34 @@
   "devDependencies": {
     "@types/adlib": "^3.0.1",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
-  },
-  "dependencies": {
-    "@esri/hub-common": "^3.9.2",
-    "@esri/arcgis-html-sanitizer": "^2.2.0",
+    "typescript": "^3.9.2",
     "@esri/arcgis-rest-auth": "^2.11.0",
     "@esri/arcgis-rest-feature-layer": "^2.11.0",
     "@esri/arcgis-rest-portal": "^2.11.0",
     "@esri/arcgis-rest-request": "^2.11.0",
     "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.0.0",
+    "@esri/hub-sites": "^4.0.0",
+    "@esri/hub-initiatives": "^4.0.0"
+  },
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.0.0",
+    "@esri/hub-sites": "^4.0.0",
+    "@esri/hub-initiatives": "^4.0.0"
+  },
+  "dependencies": {
+    "@esri/hub-common": "^3.9.2",
+    "@esri/arcgis-html-sanitizer": "^2.2.0",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
     "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.10.0",
     "xss": "^1.0.6"
-  },
-  "peerDependencies": {
-    
   },
   "scripts": {
     "prepare": "npm run build",
