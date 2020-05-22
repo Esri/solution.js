@@ -17,7 +17,7 @@
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getProp, getWithDefault } from "@esri/hub-common";
-import { postProcessDependencies } from "./helpers/post-process-dependencies";
+import { postProcess } from "./helpers/post-process-dependencies";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
@@ -246,7 +246,7 @@ export function _deploySolutionFromTemplate(
             return itemTemplate;
           }
         );
-        return postProcessDependencies(
+        return postProcess(
           solutionTemplateData.templates,
           clonedSolutionsResponse,
           authentication,

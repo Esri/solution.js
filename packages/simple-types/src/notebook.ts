@@ -16,22 +16,23 @@
 
 import * as common from "@esri/solution-common";
 import { _updateDependencies } from "./quickcapture";
-import {
-  convertItemToTemplate as genericConvertItemToTemplate,
-  createItemFromTemplate as genericCreateItemFromTemplate
-} from "./simple-types";
+import { simpleTypeShareItemToGroups } from "./simpleTypeHelpers/simple-type-share-item-to-groups";
+import { simpleTypeCreateItemFromTemplate } from "./simpleTypeHelpers/simple-type-create-item-from-template";
+import { simpleTypeConvertItemToTemplate } from "./simpleTypeHelpers/simple-type-convert-item-to-template";
 
-//#region Publish Process ---------------------------------------------------------------------------------------//
-
-// Delegate back to simple-types, which will in-turn delegate to convertNotebookToTemplate
-// at the correct point in the process
+// Delegate back to simple-types, which will in-turn delegate
+// to convertNotebookToTemplate at the correct point in the process
 // This is a temporary refactor step
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return genericConvertItemToTemplate(solutionItemId, itemInfo, authentication);
+  return simpleTypeConvertItemToTemplate(
+    solutionItemId,
+    itemInfo,
+    authentication
+  );
 }
 
 // Delegate back to simple-types
@@ -42,7 +43,7 @@ export function createItemFromTemplate(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return genericCreateItemFromTemplate(
+  return simpleTypeCreateItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
@@ -88,10 +89,6 @@ export function convertNotebookToTemplate(
   return itemTemplate;
 }
 
-//#endregion
-
-//#region Deploy Process ---------------------------------------------------------------------------------------//
-
 /**
  * Update the notebooks data
  *
@@ -126,37 +123,47 @@ export function fineTuneCreatedItem(
 }
 
 /**
- * Update the notebooks data
- *
- * @param itemId The AGO item id
- * @param data The notebooks data as JSON
- * @param authentication Credentials for the requests to the destination
- *
- * @return A promise that will resolve once any updates have been made
+ * Notebook specific post-processing actions
+ * @param itemId
+ * @param type
+ * @param templates
+ * @param templateDictionary
+ * @param authentication
  */
-export function postProcessItemDependencies(
+export function postProcess(
+  itemId: string,
+  type: string,
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return common
+    .getItemDataAsJson(itemId, authentication)
+    .then(data => {
+      if (common.hasUnresolvedVariables(data)) {
+        const updatedData = common.replaceInTemplate(data, templateDictionary);
+        return _updateNotebookData(itemId, updatedData, authentication);
+      } else {
+        return Promise.resolve({ success: true });
+      }
+    })
+    .then(_ => {
+      return simpleTypeShareItemToGroups(
+        templates,
+        authentication,
+        templateDictionary
+      );
+    });
+}
+
+export function _updateNotebookData(
   itemId: string,
   data: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return _updateItemData(itemId, data, authentication);
+  const updateOptions: common.IItemUpdate = {
+    id: itemId,
+    data: common.jsonToBlob(data)
+  };
+  return common.updateItem(updateOptions, authentication);
 }
-
-export function _updateItemData(
-  itemId: string,
-  data: any,
-  authentication: common.UserSession
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const updateOptions: common.IItemUpdate = {
-      id: itemId,
-      data: common.jsonToBlob(data)
-    };
-    common.updateItem(updateOptions, authentication).then(
-      () => resolve(),
-      e => reject(common.fail(e))
-    );
-  });
-}
-
-//#endregion
