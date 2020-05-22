@@ -17,7 +17,7 @@
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
 import { getProp, getWithDefault } from "@esri/hub-common";
-import { postProcess } from "./helpers/post-process-dependencies";
+import { postProcess } from "./helpers/post-process";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 

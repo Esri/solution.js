@@ -25,10 +25,10 @@ import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
 import * as deployUtils from "../src/deployerUtils";
 import * as deployer from "../src/deployer";
-import * as deployItems from "../src/deploySolutionItems";
 import * as sinon from "sinon";
 import * as deploySolutionFromTemplate from "../src/deploySolutionFromTemplate";
 import { cloneObject } from "@esri/hub-common";
+import * as postProcessModule from "../src/helpers/post-process";
 import M from "minimatch";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -634,7 +634,7 @@ describe("Module `deployer`", () => {
           );
       });
 
-      it("can handle error on postProcessDependencies", done => {
+      it("can handle error on postProcess", done => {
         const itemInfoCard: any = {
           id: "c38e59126368495694ca23b7ccacefba",
           title: "Election Management",
@@ -940,7 +940,7 @@ describe("Module `deployer`", () => {
             })
           );
 
-        spyOn(deployItems, "postProcessDependencies").and.callFake(() =>
+        spyOn(postProcessModule, "postProcess").and.callFake(() =>
           Promise.reject()
         );
 

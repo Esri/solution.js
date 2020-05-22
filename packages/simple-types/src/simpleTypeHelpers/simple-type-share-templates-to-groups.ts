@@ -12,7 +12,7 @@ import { maybePush } from "@esri/hub-common";
  * @param templateDictionary
  * @param authentication
  */
-export function simpleTypeShareItemToGroups(
+export function simpleTypeShareTemplatesToGroups(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession
@@ -26,11 +26,11 @@ export function simpleTypeShareItemToGroups(
     templatesWithGroups.map(tmpl => {
       const groupIds = tmpl.groups.reduce((acc, sourceGroupId) => {
         return maybePush(
-          acc,
-          getProp(templateDictionary, `${sourceGroupId}.itemId`)
+          getProp(templateDictionary, `${sourceGroupId}.itemId`),
+          acc
         );
       }, []);
-      return shareItemToGroups(groupIds, tmpl.itemId, templateDictionary);
+      return shareItemToGroups(groupIds, tmpl.itemId, authentication);
     })
   );
 }

@@ -1408,7 +1408,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data = null;
       const expected = common.cloneObject(itemTemplate);
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);
@@ -1424,7 +1424,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);
@@ -1440,7 +1440,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);

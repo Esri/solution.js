@@ -37,7 +37,7 @@ import {
   UserSession
 } from "@esri/solution-common";
 
-import { simpleTypeShareItemToGroups } from "./simpleTypeHelpers/simple-type-share-item-to-groups";
+import { simpleTypeShareTemplatesToGroups } from "./simpleTypeHelpers/simple-type-share-templates-to-groups";
 import { simpleTypeCreateItemFromTemplate } from "./simpleTypeHelpers/simple-type-create-item-from-template";
 import { simpleTypeConvertItemToTemplate } from "./simpleTypeHelpers/simple-type-convert-item-to-template";
 
@@ -141,7 +141,7 @@ export function postProcess(
       }
     })
     .then(_ => {
-      return simpleTypeShareItemToGroups(
+      return simpleTypeShareTemplatesToGroups(
         templates,
         authentication,
         templateDictionary

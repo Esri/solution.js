@@ -32,14 +32,14 @@ beforeEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `notebook`: manages the creation and deployment of notebook project item types", () => {
-  describe("_updateItemData", () => {
+  describe("_updateNotebookData", () => {
     it("handles update error", done => {
       const data = {};
 
-      notebook._updateItemData("itm1234567890", data, MOCK_USER_SESSION).then(
-        () => done.fail(),
-        () => done()
-      );
+      notebook
+        ._updateNotebookData("itm1234567890", data, MOCK_USER_SESSION)
+        .then(() => done.fail())
+        .catch(() => done());
     });
   });
 });
