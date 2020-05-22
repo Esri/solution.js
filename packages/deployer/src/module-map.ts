@@ -2,11 +2,10 @@ import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as file from "@esri/solution-file";
 import * as group from "@esri/solution-group";
-import * as simpleTypes from "@esri/solution-simple-types";
+import { simpleTypes, notebookProcessor } from "@esri/solution-simple-types";
 
 const UNSUPPORTED: common.moduleHandler = null;
 import { HubSiteProcessor, HubPageProcessor } from "@esri/solution-hub-types";
-
 
 /**
  * Mapping from item type to module with type-specific template-handling code.
@@ -66,7 +65,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
   Mission: undefined,
   "Mobile Application": undefined,
   "Native Application": undefined,
-  Notebook: simpleTypes,
+  Notebook: notebookProcessor,
   "Ortho Mapping Project": undefined,
   "QuickCapture Project": simpleTypes,
   "Site Application": HubSiteProcessor,

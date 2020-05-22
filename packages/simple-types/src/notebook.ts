@@ -16,8 +16,39 @@
 
 import * as common from "@esri/solution-common";
 import { _updateDependencies } from "./quickcapture";
+import {
+  convertItemToTemplate as genericConvertItemToTemplate,
+  createItemFromTemplate as genericCreateItemFromTemplate
+} from "./simple-types";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
+
+// Delegate back to simple-types, which will in-turn delegate to convertNotebookToTemplate
+// at the correct point in the process
+// This is a temporary refactor step
+export function convertItemToTemplate(
+  solutionItemId: string,
+  itemInfo: any,
+  authentication: common.UserSession
+): Promise<common.IItemTemplate> {
+  return genericConvertItemToTemplate(solutionItemId, itemInfo, authentication);
+}
+
+// Delegate back to simple-types
+// This is a temporary refactor step
+export function createItemFromTemplate(
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+  itemProgressCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return genericCreateItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
+  );
+}
 
 /**
  * Converts a Python Notebook item to a template.
@@ -25,7 +56,7 @@ import { _updateDependencies } from "./quickcapture";
  * @param itemTemplate template for the Python Notebook
  * @return templatized itemTemplate
  */
-export function convertItemToTemplate(
+export function convertNotebookToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
   // The templates data to process

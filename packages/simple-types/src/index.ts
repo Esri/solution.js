@@ -20,4 +20,7 @@
  * @module simple-types
  */
 
-export * from "./simple-types";
+import * as simpleTypes from "./simple-types";
+import * as notebookProcessor from "./notebook";
+
+export { simpleTypes, notebookProcessor };

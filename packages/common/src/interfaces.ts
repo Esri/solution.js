@@ -18,7 +18,11 @@
  * Provides common interfaces.
  */
 
-import { IGroup, IGetRelatedItemsResponse as IPortalGetRelatedItemsResponse, IItem } from "@esri/arcgis-rest-portal";
+import {
+  IGroup,
+  IGetRelatedItemsResponse as IPortalGetRelatedItemsResponse,
+  IItem
+} from "@esri/arcgis-rest-portal";
 import { ISpatialReference } from "@esri/arcgis-rest-service-admin";
 import { UserSession } from "@esri/arcgis-rest-auth";
 
@@ -135,6 +139,8 @@ export interface ICreateItemFromTemplateResponse {
    * Does the item need post processing to handle unresolved variables
    */
   postProcess: boolean;
+  item?: any;
+  itemData?: any;
 }
 
 /**

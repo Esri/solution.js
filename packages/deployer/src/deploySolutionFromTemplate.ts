@@ -16,6 +16,8 @@
 
 import * as common from "@esri/solution-common";
 import * as deployItems from "./deploySolutionItems";
+import { getProp, getWithDefault } from "@esri/hub-common";
+import { postProcessDependencies } from "./helpers/post-process-dependencies";
 
 // NOTE: Moved to separate file to allow stubbing in main deploySolution tests
 
@@ -221,25 +223,30 @@ export function _deploySolutionFromTemplate(
         );
       })
       .then(clonedSolutionsResponse => {
+        // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
+        // we could add that at this point vs mutating
+        // why is this a reassignment?
         solutionTemplateData.templates = solutionTemplateData.templates.map(
           (itemTemplate: common.IItemTemplate) => {
             // Update ids present in template dictionary
-            const itemId = common.getProp(
+            const itemId = getProp(
               templateDictionary,
-              itemTemplate.itemId + ".itemId"
+              `${itemTemplate.itemId}.itemId`
             );
+            // why a guard? can this ever be false? what happens if so?
+            // why are we updating this same property vs adding a new one? seems confusing
             /* istanbul ignore else */
             if (itemId) {
               itemTemplate.itemId = itemId;
             }
+            // update the dependencies hash to point to the new item ids
             itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-              _getNewItemId(id, templateDictionary)
+              getWithDefault(templateDictionary, "${id}.itemId", id)
             );
             return itemTemplate;
           }
         );
-
-        return deployItems.postProcessDependencies(
+        return postProcessDependencies(
           solutionTemplateData.templates,
           clonedSolutionsResponse,
           authentication,

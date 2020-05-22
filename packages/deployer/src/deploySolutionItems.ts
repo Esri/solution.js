@@ -541,33 +541,6 @@ export function _createItemFromTemplateWhenReady(
   return itemDef;
 }
 
-// export function _createItemFromTemplateWhenReadyNew(
-//   template: common.IItemTemplate,
-//   resourceFilePaths: common.IDeployFileCopyPath[],
-//   storageAuthentication: common.UserSession,
-//   templateDictionary: any,
-//   destinationAuthentication: common.UserSession,
-//   itemProgressCallback: common.IItemProgressCallback
-// ): Promise<common.ICreateItemFromTemplateResponse> {
-//   // ensure it's an array...
-//   template.dependencies = template.dependencies || [];
-//   // if it's already processed, return it
-//   if (getProp(templateDictionary, template.itemId)) {
-//     console.log(`_createItemFromTemplateWhenReady::Template ${template.itemId} already present in template dictionary - returning`);
-//     return Promise.resolve(getProp(templateDictionary, `${template.itemId}.def`));
-//   } else {
-//     // do the work
-//     let entry = {};
-//     // get the dependencies
-//     return Promise.all(template.dependencies.map((id) => {}))
-
-//     templateDictionary[template.itemId] = entry;
-//   }
-//   return itemDef;
-// }
-
-// export function getItemsById()
-
 /**
  * Accumulates the estimated deployment cost of a set of templates.
  *
@@ -596,120 +569,20 @@ export function _generateEmptyCreationResponse(
   };
 }
 
-/**
- * Checks all item types with data and group references after all other processing has completed.
- * Evaluates if the items data has any remaining variables that have not been swapped.
- * Also shares any items that have group references with the appropriate group.
- *
- * @param templates Array of item templates to evaluate
- * @param clonedSolutionsResponse Has the item id, type, and data
- * @param authentication Credentials for the requests to the destination
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- *
- * @return A promise that will resolve once any updates have been made
- */
-export function postProcessDependencies(
-  templates: common.IItemTemplate[],
-  clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
-  authentication: common.UserSession,
-  templateDictionary: any
-): Promise<any> {
-  // TODO: rework to remove extra promise wrapper
-  return new Promise<any>((resolve, reject) => {
-    // In most cases this is a generic item update
-    // However, if an item needs special handeling it should be listed here and...
-    // uniqueUpdateTypes must implement postProcessDependencies that should return a promise for the update
-    const uniqueUpdateTypes: string[] = ["Notebook"];
-
-    const dataRequests: Array<Promise<any>> = [];
-    const requestedItemInfos: any = clonedSolutionsResponse.filter(
-      solutionInfo => {
-        if (solutionInfo.postProcess) {
-          dataRequests.push(
-            common.getItemDataAsJson(solutionInfo.id, authentication)
-          );
-          return true;
-        }
-      }
-    );
-
-    Promise.all(dataRequests).then(
-      data => {
-        let updates: Array<Promise<any>> = [Promise.resolve()];
-        for (let i = 0; i < requestedItemInfos.length; i++) {
-          const itemInfo = requestedItemInfos[i];
-          /* istanbul ignore else */
-          if (common.hasUnresolvedVariables(data[i])) {
-            const template: common.IItemTemplate = common.getTemplateById(
-              templates,
-              itemInfo.id
-            );
-            const update: any = common.replaceInTemplate(
-              data[i],
-              templateDictionary
-            );
-            if (uniqueUpdateTypes.indexOf(template.type) < 0) {
-              updates.push(
-                common.updateItemExtended(
-                  itemInfo.id,
-                  { id: itemInfo.id },
-                  update,
-                  authentication
-                )
-              );
-            } else {
-              const itemHandler: any = moduleMap[template.type];
-              /* istanbul ignore else */
-              if (itemHandler.postProcessItemDependencies) {
-                updates.push(
-                  itemHandler.postProcessItemDependencies(
-                    itemInfo.id,
-                    template.type,
-                    update,
-                    authentication
-                  )
-                );
-              }
-            }
-          }
-        }
-
-        // share the template with any groups it references
-        templates.forEach(template => {
-          updates = updates.concat(
-            _getGroupUpdates(template, authentication, templateDictionary)
-          );
-        });
-
-        Promise.all(updates).then(
-          () => resolve(),
-          e => reject(common.fail(e))
-        );
-      },
-      e => reject(common.fail(e))
-    );
-  });
-}
-
+// TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,
   authentication: common.UserSession,
   templateDictionary: any
 ): Array<Promise<any>> {
-  const updates = [] as Array<Promise<any>>;
-  // share the template with any groups it references
-  if (template.groups?.length > 0) {
-    template.groups.forEach((sourceGroupId: string) => {
-      updates.push(
-        common.shareItem(
-          templateDictionary[sourceGroupId].itemId,
-          template.itemId,
-          authentication
-        )
-      );
-    });
-  }
-  return updates;
+  const groups = template.groups || [];
+  return groups.map(sourceGroupId => {
+    return common.shareItem(
+      templateDictionary[sourceGroupId].itemId,
+      template.itemId,
+      authentication
+    );
+  });
 }
 
 export function _isEmptyCreationResponse(

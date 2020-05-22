@@ -142,7 +142,7 @@ export function convertItemToTemplate(
             );
             break;
           case "Notebook":
-            notebook.convertItemToTemplate(itemTemplate);
+            notebook.convertNotebookToTemplate(itemTemplate);
             break;
           case "Web Map":
             webappPromise = webmap.convertItemToTemplate(
