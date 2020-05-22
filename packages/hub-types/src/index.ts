@@ -22,5 +22,5 @@
 
 import * as HubPageProcessor from "./hub-page-processor";
 import * as HubSiteProcessor from "./hub-site-processor";
-
+// Re-export as modules
 export { HubPageProcessor, HubSiteProcessor };

@@ -55,6 +55,10 @@ typings/
 # Yarn Integrity file
 .yarn-integrity
 
+#yalc files and folders
+.yalc 
+yalc.lock
+
 # dotenv environment variables file
 .env
 
