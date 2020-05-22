@@ -6,9 +6,39 @@ import {
   hasUnresolvedVariables,
   getTemplateById,
   replaceInTemplate,
-  updateItemExtended,
-  
-} from '@esri/solution-common';
+  updateItemExtended
+} from "@esri/solution-common";
+import { moduleMap } from "../module-map";
+
+export function postProcess(
+  templates: IItemTemplate[],
+  clonedSolutions: ICreateItemFromTemplateResponse[],
+  authentication: UserSession,
+  templateDictionary: any
+): Promise<any> {
+  // what needs post processing?
+  const itemsToProcess = clonedSolutions.filter(entry => entry.postProcess);
+
+  // map over these items
+  const postProcessPromises = itemsToProcess.reduce((acc, entry) => {
+    const itemHandler: any = moduleMap[entry.type];
+    // only delegate if the handler has a postProcess method
+    if (itemHandler.postProcess) {
+      acc.push(
+        itemHandler.postProcess(
+          entry.id,
+          entry.type,
+          templates,
+          templateDictionary,
+          authentication
+        )
+      );
+    }
+    return acc;
+  }, []);
+
+  return Promise.all(postProcessPromises);
+}
 
 /**
  * Checks all item types with data and group references after all other processing has completed.
@@ -39,9 +69,7 @@ export function postProcessDependencies(
     const requestedItemInfos: any = clonedSolutionsResponse.filter(
       solutionInfo => {
         if (solutionInfo.postProcess) {
-          dataRequests.push(
-            getItemDataAsJson(solutionInfo.id, authentication)
-          );
+          dataRequests.push(getItemDataAsJson(solutionInfo.id, authentication));
           return true;
         }
       }
@@ -58,10 +86,7 @@ export function postProcessDependencies(
               templates,
               itemInfo.id
             );
-            const update: any = replaceInTemplate(
-              data[i],
-              templateDictionary
-            );
+            const update: any = replaceInTemplate(data[i], templateDictionary);
             if (uniqueUpdateTypes.indexOf(template.type) < 0) {
               updates.push(
                 updateItemExtended(

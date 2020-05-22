@@ -1,11 +1,5 @@
-import {
-  UserSession,
-  IItemTemplate,
-  shareItem
-} from '@esri/solution-common';
-import {
-  getProp
-} from '@esri/hub-common';
+import { UserSession, IItemTemplate, shareItem } from "@esri/solution-common";
+import { getProp } from "@esri/hub-common";
 
 /**
  * Share the newly created item to the newly created groups
@@ -21,7 +15,6 @@ export function shareItemsToGroups(
   authentication: UserSession,
   templateDictionary: any
 ): Promise<any> {
-  
   const groups = template.groups || [];
   // Unclear why typescript complains if we return Promise.all(groups.reduce(...));
   const sharePromises = groups.reduce((acc, groupId) => {
@@ -29,7 +22,7 @@ export function shareItemsToGroups(
     const targetGroupId = getProp(templateDictionary, `${groupId}.itemId`);
     if (targetGroupId) {
       // share it up
-      acc.push(shareItem(targetGroupId,template.itemId,authentication));
+      acc.push(shareItem(targetGroupId, template.itemId, authentication));
     }
     return acc;
   }, []);

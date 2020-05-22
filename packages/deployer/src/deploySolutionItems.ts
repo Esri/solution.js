@@ -21,7 +21,7 @@
  */
 
 import * as common from "@esri/solution-common";
-import { moduleMap } from './module-map';
+import { moduleMap } from "./module-map";
 import { maybePush } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -425,9 +425,12 @@ export function _createItemFromTemplateWhenReady(
       // maybePush will only add the entry if it exists, allowing
       // templates to have entries in the depenedency array that are
       // invalid or don't refer to a template
-      const awaitDependencies = template.dependencies.reduce((acc, id) => {
-        return maybePush(templateDictionary[id].def, acc);
-      }, []);
+      const awaitDependencies = template.dependencies.reduce(
+        (acc: any[], id: string) => {
+          return maybePush(templateDictionary[id].def, acc);
+        },
+        []
+      );
 
       // const awaitDependencies = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
       // (template.dependencies || []).forEach(dependencyId => {
@@ -696,7 +699,7 @@ export function _getGroupUpdates(
   const updates = [] as Array<Promise<any>>;
   // share the template with any groups it references
   if (template.groups?.length > 0) {
-    template.groups.forEach(sourceGroupId => {
+    template.groups.forEach((sourceGroupId: string) => {
       updates.push(
         common.shareItem(
           templateDictionary[sourceGroupId].itemId,
