@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-common",
-  "version": "0.9.2",
+  "version": "0.10.0",
   "description": "Provides general helper functions for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/common.umd.min.js",
@@ -18,21 +18,18 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
-    "@esri/hub-common": "^3.9.2",
     "@esri/arcgis-html-sanitizer": "^2.2.0",
     "@esri/arcgis-rest-auth": "^2.11.0",
     "@esri/arcgis-rest-feature-layer": "^2.11.0",
     "@esri/arcgis-rest-portal": "^2.11.0",
     "@esri/arcgis-rest-request": "^2.11.0",
     "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^3.9.2",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
     "lodash.isplainobject": "^4.0.6",
     "tslib": "^1.10.0",
     "xss": "^1.0.6"
-  },
-  "peerDependencies": {
-    
   },
   "scripts": {
     "prepare": "npm run build",
