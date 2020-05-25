@@ -9,7 +9,7 @@ import { shareItemWithGroup } from "@esri/arcgis-rest-portal";
  * @param authentication UserSession
  */
 export function shareItemToGroups(
-  groupIds: string[] = [],
+  groupIds: string[],
   itemId: string,
   authentication: UserSession
 ): Promise<any> {

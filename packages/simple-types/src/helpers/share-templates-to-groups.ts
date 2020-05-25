@@ -12,7 +12,7 @@ import { maybePush } from "@esri/hub-common";
  * @param templateDictionary
  * @param authentication
  */
-export function simpleTypeShareTemplatesToGroups(
+export function shareTemplatesToGroups(
   templates: IItemTemplate[],
   templateDictionary: any,
   authentication: UserSession

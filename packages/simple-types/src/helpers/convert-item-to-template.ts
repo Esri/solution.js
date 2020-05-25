@@ -7,7 +7,7 @@ import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
 import * as quickcapture from "../quickcapture";
 
-export function simpleTypeConvertItemToTemplate(
+export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: common.UserSession

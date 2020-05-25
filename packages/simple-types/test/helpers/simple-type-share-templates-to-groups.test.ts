@@ -1,4 +1,4 @@
-import { simpleTypeShareTemplatesToGroups } from "../../src/simpleTypeHelpers/simple-type-share-templates-to-groups";
+import { shareTemplatesToGroups } from "../../src/helpers/share-templates-to-groups";
 import * as common from "@esri/solution-common";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 
@@ -22,13 +22,11 @@ describe("simpleTypeShareItemsToGroups", () => {
         itemId: "newBc4"
       }
     };
-    return simpleTypeShareTemplatesToGroups(
-      [tmpl],
-      tmplDict,
-      MOCK_USER_SESSION
-    ).then(() => {
-      expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
-    });
+    return shareTemplatesToGroups([tmpl], tmplDict, MOCK_USER_SESSION).then(
+      () => {
+        expect(shareSpy.calls.count()).toBe(1, "call shareItemToGroups once");
+      }
+    );
   });
 
   it("shares templates to groups", () => {
@@ -54,13 +52,11 @@ describe("simpleTypeShareItemsToGroups", () => {
         itemId: "newBc4"
       }
     };
-    return simpleTypeShareTemplatesToGroups(
-      tmpls,
-      tmplDict,
-      MOCK_USER_SESSION
-    ).then(() => {
-      expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
-    });
+    return shareTemplatesToGroups(tmpls, tmplDict, MOCK_USER_SESSION).then(
+      () => {
+        expect(shareSpy.calls.count()).toBe(2, "call shareItemToGroups twice");
+      }
+    );
   });
 
   it("handles a template without a groups property", () => {
@@ -68,11 +64,9 @@ describe("simpleTypeShareItemsToGroups", () => {
     const tmpl = {
       itemId: "3ef"
     } as common.IItemTemplate;
-    return simpleTypeShareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
-      }
-    );
+    return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+    });
   });
   it("handles empty groups array", () => {
     const shareSpy = spyOn(common, "shareItemToGroups").and.resolveTo();
@@ -80,10 +74,8 @@ describe("simpleTypeShareItemsToGroups", () => {
       itemId: "3ef",
       groups: []
     } as common.IItemTemplate;
-    return simpleTypeShareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(
-      () => {
-        expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
-      }
-    );
+    return shareTemplatesToGroups([tmpl], {}, MOCK_USER_SESSION).then(() => {
+      expect(shareSpy.calls.count()).toBe(0, "should not attempt to share");
+    });
   });
 });

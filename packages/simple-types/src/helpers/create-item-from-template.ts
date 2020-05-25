@@ -5,7 +5,7 @@ import * as workforce from "../workforce";
 import * as quickcapture from "../quickcapture";
 import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
 
-export function simpleTypeCreateItemFromTemplate(
+export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: common.UserSession,

@@ -1600,4 +1600,46 @@ describe("Module `deploySolutionItems`", () => {
         });
     });
   });
+
+  describe("_getGroupUpdates:: ", () => {
+    it("handles template with no groups", () => {
+      const shareSpy = spyOn(common, "shareItem").and.resolveTo();
+      const tmpl = {} as common.IItemTemplate;
+      const td = {};
+      // TODO: refactor target function to return a Promise vs an array of promises
+      return Promise.all(
+        deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, {})
+      ).then(() => {
+        expect(shareSpy.calls.count()).toBe(
+          0,
+          "should not make share calls if no groups"
+        );
+      });
+    });
+    it("makes sharing calls for all groups", () => {
+      const shareSpy = spyOn(common, "shareItem").and.resolveTo();
+      const tmpl = {
+        groups: ["bc4", "bc5"],
+        itemId: "3ef"
+      } as common.IItemTemplate;
+      const td = {
+        bc4: {
+          itemId: "bc6"
+        },
+        bc5: {
+          itemId: "bc7"
+        }
+      };
+      // TODO: refactor target function to return a Promise vs an array of promises
+      return Promise.all(
+        deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, td)
+      ).then(() => {
+        expect(shareSpy.calls.count()).toBe(2, "should share to both groups");
+        expect(shareSpy.calls.argsFor(0)[0]).toBe("bc6");
+        expect(shareSpy.calls.argsFor(0)[1]).toBe("3ef");
+        expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");
+        expect(shareSpy.calls.argsFor(1)[1]).toBe("3ef");
+      });
+    });
+  });
 });

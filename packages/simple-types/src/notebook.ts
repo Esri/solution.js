@@ -16,9 +16,8 @@
 
 import * as common from "@esri/solution-common";
 import { _updateDependencies } from "./quickcapture";
-import { simpleTypeShareTemplatesToGroups } from "./simpleTypeHelpers/simple-type-share-templates-to-groups";
-import { simpleTypeCreateItemFromTemplate } from "./simpleTypeHelpers/simple-type-create-item-from-template";
-import { simpleTypeConvertItemToTemplate } from "./simpleTypeHelpers/simple-type-convert-item-to-template";
+// Need to import collectively to enable spying
+import * as notebookHelpers from "./helpers/notebook-helpers";
 
 // Delegate back to simple-types, which will in-turn delegate
 // to convertNotebookToTemplate at the correct point in the process
@@ -28,7 +27,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return simpleTypeConvertItemToTemplate(
+  return notebookHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
     authentication
@@ -43,7 +42,7 @@ export function createItemFromTemplate(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return simpleTypeCreateItemFromTemplate(
+  return notebookHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
@@ -142,28 +141,20 @@ export function postProcess(
     .then(data => {
       if (common.hasUnresolvedVariables(data)) {
         const updatedData = common.replaceInTemplate(data, templateDictionary);
-        return _updateNotebookData(itemId, updatedData, authentication);
+        return notebookHelpers.updateNotebookData(
+          itemId,
+          updatedData,
+          authentication
+        );
       } else {
         return Promise.resolve({ success: true });
       }
     })
     .then(_ => {
-      return simpleTypeShareTemplatesToGroups(
+      return notebookHelpers.shareTemplatesToGroups(
         templates,
         authentication,
         templateDictionary
       );
     });
-}
-
-export function _updateNotebookData(
-  itemId: string,
-  data: any,
-  authentication: common.UserSession
-): Promise<any> {
-  const updateOptions: common.IItemUpdate = {
-    id: itemId,
-    data: common.jsonToBlob(data)
-  };
-  return common.updateItem(updateOptions, authentication);
 }

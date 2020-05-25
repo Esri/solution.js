@@ -1,4 +1,4 @@
-import { generateEmptyCreationResponse } from "../../src/simpleTypeHelpers/generate-empty-creation-response";
+import { generateEmptyCreationResponse } from "../../src/helpers/generate-empty-creation-response";
 
 describe("generateEmptyCreationResponse", () => {
   it("returns an empty response", () => {

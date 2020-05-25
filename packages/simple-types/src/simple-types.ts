@@ -21,7 +21,6 @@
  */
 
 import * as dashboard from "./dashboard";
-import * as notebook from "./notebook";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
 
@@ -37,9 +36,8 @@ import {
   UserSession
 } from "@esri/solution-common";
 
-import { simpleTypeShareTemplatesToGroups } from "./simpleTypeHelpers/simple-type-share-templates-to-groups";
-import { simpleTypeCreateItemFromTemplate } from "./simpleTypeHelpers/simple-type-create-item-from-template";
-import { simpleTypeConvertItemToTemplate } from "./simpleTypeHelpers/simple-type-convert-item-to-template";
+// Need to import collectively to enable spying
+import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 
 /**
  * Delegate to the simpleType converter
@@ -52,7 +50,7 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: UserSession
 ): Promise<IItemTemplate> {
-  return simpleTypeConvertItemToTemplate(
+  return simpleTypeHelpers.convertItemToTemplate(
     solutionItemId,
     itemInfo,
     authentication
@@ -72,7 +70,7 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return simpleTypeCreateItemFromTemplate(
+  return simpleTypeHelpers.createItemFromTemplate(
     template,
     templateDictionary,
     destinationAuthentication,
@@ -141,7 +139,7 @@ export function postProcess(
       }
     })
     .then(_ => {
-      return simpleTypeShareTemplatesToGroups(
+      return simpleTypeHelpers.shareTemplatesToGroups(
         templates,
         authentication,
         templateDictionary
