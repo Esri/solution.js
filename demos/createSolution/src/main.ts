@@ -15,8 +15,9 @@
  */
 // @esri/solution-creator createSolution example
 
-import * as common from "../lib/common.umd.min";
-import * as creator from "../lib/creator.umd.min";
+import * as common from "@esri/solution-common";
+import * as creator from "@esri/solution-creator";
+
 import * as getItemInfo from "./getItemInfo";
 
 export function createSolution(
