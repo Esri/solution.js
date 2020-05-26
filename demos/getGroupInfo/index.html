@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>@esri/solution-common getGroupInfo example</title>
+  <!--
+   | Copyright 2019 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+  button {
+    cursor: pointer;
+  }
+  td {
+    border: none;
+  }
+  li {
+    margin-bottom: 12px;
+  }
+  </style>
+</head>
+<body>
+  <div id="input" style="display:none">
+    <label for="id">ID of the group to be fetched:&nbsp;</label><input type="text" id="id" style="width:256px">
+    <br /><br />
+    <i>For private groups or info:</i><br />
+    <label for="username">username:&nbsp;</label><input type="text" id="username">
+    <label for="password">password:&nbsp;</label><input type="password" id="password">
+    <br /><br />
+    <button onclick="goFcn()">Go</button>
+  </div>
+  <div id="output" style="display:none">Fetching...</div>
+
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
+  <script>
+    var goFcn;
+    require.config({
+      paths: {
+        "tslib": "node_modules/tslib/tslib",
+
+        // load the local versions
+        "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
+        "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
+        "@esri/arcgis-rest-portal": "node_modules/@esri/arcgis-rest-portal/dist/umd/portal.umd.min",
+        "@esri/arcgis-rest-request": "node_modules/@esri/arcgis-rest-request/dist/umd/request.umd.min",
+        "@esri/arcgis-rest-service-admin": "node_modules/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min",
+        "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
+        "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
+        "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
+
+        // load the unminified so we can debug things
+        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd"
+      }
+    });
+
+    require(["@esri/arcgis-rest-auth", "dist/main"],
+      function (auth, main) {
+        "use strict";
+        goFcn = go;
+        document.getElementById("input").style.display = "block";
+
+        function go () {
+          document.getElementById("input").style.display = "none";
+          document.getElementById("output").style.display = "block";
+
+          main.getGroupInfo(
+            document.getElementById("id").value,
+            new auth.UserSession({
+              username: document.getElementById("username").value,
+              password: document.getElementById("password").value
+            })
+          ).then(
+            html => {
+              document.getElementById("output").innerHTML = html;
+            },
+            error => {
+              document.getElementById("output").innerHTML = "<span style=\"color:red\">" + error + "</span>";
+            }
+          );
+        }
+      }
+    );
+  </script>
+</body>
+</html>

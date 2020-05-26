@@ -56,7 +56,6 @@
   },
   "exclude": [],
   "include": [
-    "lib",
     "src"
   ]
 }
