@@ -18,6 +18,8 @@
    | See the License for the specific language governing permissions and
    | limitations under the License.
   -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
   button {
     cursor: pointer;
@@ -33,13 +35,16 @@
 <body>
   <div id="output">Fetching...</div>
 
-  <script src="lib/require.js"></script>
+  <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
     var goFcn;
 
     var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     require.config({
       paths: {
+        "tslib": "node_modules/tslib/tslib",
+
+        // load the local versions
         "@esri/arcgis-rest-auth": "https://unpkg.com/@esri/arcgis-rest-auth@2.11.0/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "https://unpkg.com/@esri/arcgis-rest-feature-layer@2.11.0/dist/umd/feature-layer.umd.min",
         "@esri/arcgis-rest-portal": "https://unpkg.com/@esri/arcgis-rest-portal@2.11.0/dist/umd/portal.umd.min",
@@ -47,21 +52,22 @@
         "@esri/arcgis-rest-service-admin": "https://unpkg.com/@esri/arcgis-rest-service-admin@2.11.0/dist/umd/service-admin.umd.min",
         "@esri/hub-common": "https://unpkg.com/@esri/hub-common@3.9.2/dist/umd/common.umd",
 
-        "@esri/solution-common": package_path + "/lib/common.umd.min",
-        "@esri/solution-creator": package_path + "/lib/creator.umd.min",
-        "@esri/solution-deployer": package_path + "/lib/deployer.umd.min",
-        "@esri/solution-feature-layer": package_path + "/lib/feature-layer.umd.min",
-        "@esri/solution-file": package_path + "/lib/file.umd.min",
-        "@esri/solution-group": package_path + "/lib/group.umd.min",
-        "@esri/solution-simple-types": package_path + "/lib/simple-types.umd.min",
-        "@esri/solution-storymap": package_path + "/lib/storymap.umd.min"
+        // load the unminified so we can debug things
+        "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
+        "@esri/solution-creator": "node_modules/@esri/solution-creator/dist/umd/creator.umd",
+        "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
+        "@esri/solution-feature-layer": "node_modules/@esri/solution-feature-layer/dist/umd/feature-layer.umd",
+        "@esri/solution-file": "node_modules/@esri/solution-file/dist/umd/file.umd",
+        "@esri/solution-group": "node_modules/@esri/solution-group/dist/umd/group.umd",
+        "@esri/solution-simple-types": "node_modules/@esri/solution-simple-types/dist/umd/simple-types.umd",
+        "@esri/solution-hub-types": "node_modules/@esri/solution-hub-types/dist/umd/hub-types.umd",
+        "@esri/solution-storymap": "node_modules/@esri/solution-storymap/dist/umd/storymap.umd"
       }
     });
 
-    require(["src/main"],
+    require(["dist/main"],
       function (main) {
         "use strict";
-
         document.getElementById("output").innerHTML = main.implementedTypes();
       }
     );
