@@ -94,7 +94,9 @@ export function createShortId(): string {
   );
 }
 
-export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
+export function createInitializedGroupTemplate(
+  itemInfo: any
+): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -107,7 +109,9 @@ export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   return itemTemplate;
 }
 
-export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
+export function createInitializedItemTemplate(
+  itemInfo: any
+): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -199,7 +203,9 @@ export function hasUnresolvedVariables(data: any): boolean {
   return getUnresolved(data).length > 0;
 }
 
-export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
+export function getIdsInTemplatesList(
+  templates: IItemTemplate[]
+): string[] {
   return templates.map(template => template.itemId);
 }
 
@@ -210,7 +216,10 @@ export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
  * @param id Id of item in templates list to find; if not found, no replacement is done
  * @protected
  */
-export function removeTemplate(templates: IItemTemplate[], id: string): void {
+export function removeTemplate(
+  templates: IItemTemplate[],
+  id: string
+): void {
   const i = findTemplateIndexInList(templates, id);
   if (i >= 0) {
     templates.splice(i, 1);
