@@ -248,9 +248,10 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables(
-                                  newItemTemplate.data
-                                )
+                                postProcess: common.hasUnresolvedVariables({
+                                  item: newItemTemplate.item,
+                                  data: newItemTemplate.data
+                                })
                               });
                             }
                           },
@@ -325,6 +326,30 @@ export function createItemFromTemplate(
           }
         );
     }
+  });
+}
+
+export function postProcess(
+  itemId: string,
+  type: string,
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
+  authentication: common.UserSession
+): Promise<any> {
+  return Promise.all([
+    common.getItemBase(itemId, authentication),
+    common.getItemDataAsJson(itemId, authentication)
+  ]).then(([item, data]) => {
+    const { item: updatedItem, data: updatedData } = common.replaceInTemplate(
+      { item, data },
+      templateDictionary
+    );
+    return common.updateItemExtended(
+      itemId,
+      updatedItem,
+      updatedData,
+      authentication
+    );
   });
 }
 

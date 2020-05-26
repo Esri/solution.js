@@ -529,6 +529,234 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         });
     });
 
+    it("should set postProcess to true when the item has unprocessed interpolation tokens", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      itemTemplate.item.other = "{{unprocessed.itemId}}";
+
+      // verify the state up front
+      expect(itemTemplate.item.id).toEqual(id);
+      expect(itemTemplate.item.url).toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+
+      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.layers[0].relationships[0].keyField
+      ).toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
+        layerDefQuery
+      );
+      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
+        layerDefQuery
+      );
+
+      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.tables[0].relationships[0].keyField
+      ).toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
+        tableDefQuery
+      );
+      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
+        tableDefQuery
+      );
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        );
+
+      // tslint:disable-next-line: no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            svc1234567890: {},
+            organization: _organization,
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expect(r).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: true
+          });
+          done();
+        });
+    });
+
+    it("should set postProcess to true when the item data has unprocessed interpolation tokens", done => {
+      const expectedId: string = "svc1234567890";
+      const id: string = "{{" + expectedId + ".itemId}}";
+
+      const expectedUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/services/ROWPermits_publiccomment/FeatureServer";
+      const url: string = "{{" + expectedId + ".url}}";
+
+      const adminUrl: string =
+        "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer";
+
+      const layerKeyField: string =
+        "{{" + expectedId + ".layer0.fields.globalid.name}}";
+      const tableKeyField: string =
+        "{{" + expectedId + ".layer1.fields.globalid.name}}";
+      const layerDefQuery: string =
+        "status = '{{" + expectedId + ".layer0.fields.boardreview.name}}'";
+      const tableDefQuery: string =
+        "status = '{{" + expectedId + ".layer1.fields.boardreview.name}}'";
+
+      itemTemplate.properties.layers[0].relationships[0].keyField = layerKeyField;
+      itemTemplate.properties.layers[0].definitionQuery = layerDefQuery;
+      itemTemplate.properties.layers[0].viewDefinitionQuery = layerDefQuery;
+
+      itemTemplate.properties.tables[0].relationships[0].keyField = tableKeyField;
+      itemTemplate.properties.tables[0].definitionQuery = tableDefQuery;
+      itemTemplate.properties.tables[0].viewDefinitionQuery = tableDefQuery;
+
+      itemTemplate.data.other = "{{unprocessed.itemId}}";
+
+      // verify the state up front
+      expect(itemTemplate.item.id).toEqual(id);
+      expect(itemTemplate.item.url).toEqual(expectedUrl);
+      expect(itemTemplate.dependencies.length).toEqual(0);
+      expect(itemTemplate.properties.service.serviceItemId).toEqual(id);
+
+      expect(itemTemplate.properties.layers[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.layers[0].relationships[0].keyField
+      ).toEqual(layerKeyField);
+      expect(itemTemplate.properties.layers[0].viewDefinitionQuery).toEqual(
+        layerDefQuery
+      );
+      expect(itemTemplate.properties.layers[0].definitionQuery).toEqual(
+        layerDefQuery
+      );
+
+      expect(itemTemplate.properties.tables[0].serviceItemId).toEqual(id);
+      expect(
+        itemTemplate.properties.tables[0].relationships[0].keyField
+      ).toEqual(tableKeyField);
+      expect(itemTemplate.properties.tables[0].viewDefinitionQuery).toEqual(
+        tableDefQuery
+      );
+      expect(itemTemplate.properties.tables[0].definitionQuery).toEqual(
+        tableDefQuery
+      );
+
+      const createResponse: any = mockItems.getAGOLService([], [], true);
+      createResponse.success = true;
+
+      fetchMock
+        .post(url + "?f=json", itemTemplate.properties.service)
+        .post(adminUrl + "/0?f=json", itemTemplate.properties.layers[0])
+        .post(adminUrl + "/1?f=json", itemTemplate.properties.tables[0])
+        .post(url + "/sources?f=json", mockItems.getAGOLServiceSources())
+        .post(
+          utils.PORTAL_SUBSET.restUrl + "/content/users/casey/createService",
+          createResponse
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/addToDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/refresh",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/0/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          "https://services123.arcgis.com/org1234567890/arcgis/rest/admin/services/ROWPermits_publiccomment/FeatureServer/1/updateDefinition",
+          '{"success":true}'
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/svc1234567890/update",
+          '{"success":true}'
+        );
+
+      // tslint:disable-next-line: no-floating-promises
+      featureLayer
+        .createItemFromTemplate(
+          itemTemplate,
+          {
+            svc1234567890: {},
+            organization: _organization,
+            solutionItemExtent: _solutionItemExtent
+          },
+          MOCK_USER_SESSION,
+          utils.ITEM_PROGRESS_CALLBACK
+        )
+        .then(r => {
+          expect(r).toEqual({
+            id: "svc1234567890",
+            type: itemTemplate.type,
+            postProcess: true
+          });
+          done();
+        });
+    });
+
     it("should create a solution from a template in portal", done => {
       const expectedId: string = "svc1234567890";
       const id: string = "{{" + expectedId + ".itemId}}";

@@ -20,6 +20,7 @@
  * @module templatization
  */
 
+import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
 import { IItemTemplate } from "./interfaces";
 
@@ -93,9 +94,7 @@ export function createShortId(): string {
   );
 }
 
-export function createInitializedGroupTemplate(
-  itemInfo: any
-): IItemTemplate {
+export function createInitializedGroupTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -108,9 +107,7 @@ export function createInitializedGroupTemplate(
   return itemTemplate;
 }
 
-export function createInitializedItemTemplate(
-  itemInfo: any
-): IItemTemplate {
+export function createInitializedItemTemplate(itemInfo: any): IItemTemplate {
   const itemTemplate = createPlaceholderTemplate(itemInfo.id, itemInfo.type);
   itemTemplate.item = {
     ...itemTemplate.item,
@@ -202,9 +199,7 @@ export function hasUnresolvedVariables(data: any): boolean {
   return getUnresolved(data).length > 0;
 }
 
-export function getIdsInTemplatesList(
-  templates: IItemTemplate[]
-): string[] {
+export function getIdsInTemplatesList(templates: IItemTemplate[]): string[] {
   return templates.map(template => template.itemId);
 }
 
@@ -215,10 +210,7 @@ export function getIdsInTemplatesList(
  * @param id Id of item in templates list to find; if not found, no replacement is done
  * @protected
  */
-export function removeTemplate(
-  templates: IItemTemplate[],
-  id: string
-): void {
+export function removeTemplate(templates: IItemTemplate[], id: string): void {
   const i = findTemplateIndexInList(templates, id);
   if (i >= 0) {
     templates.splice(i, 1);
@@ -319,7 +311,7 @@ export function templatizeIds(obj: any): any {
   const idTest: RegExp = /[0-9A-F]{32}/gim;
   if (obj && idTest.test(objString)) {
     // Templatize ids
-    const ids: string[] = objString.match(idTest) as string[];
+    const ids: string[] = objString.match(idTest).filter(unique);
     ids.forEach(id => {
       const regEx = new RegExp(id, "gm");
       objString = objString.replace(regEx, "{{" + id + ".itemId}}");
