@@ -4,7 +4,7 @@ import * as testUtils from "@esri/solution-common/test/mocks/utils";
 
 let MOCK_USER_SESSION: common.UserSession;
 
-describe("simpleTypeShareItemsToGroups", () => {
+describe("shareItemsToGroups", () => {
   beforeEach(() => {
     MOCK_USER_SESSION = testUtils.createRuntimeMockUserSession();
   });

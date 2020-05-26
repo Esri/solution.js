@@ -69,15 +69,17 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         });
     });
   });
-  describe("_updateNotebookData", () => {
-    it("handles update error", done => {
-      const data = {};
-      // TODO: Use fetchMock to simulate failure - makes tests faster
-      updateHelper
-        .updateNotebookData("itm1234567890", data, MOCK_USER_SESSION)
-        .then(() => done.fail())
-        .catch(() => done());
-    });
+  describe("_updateNotebookData :: ", () => {
+    if (typeof window !== "undefined") {
+      it("handles update error", done => {
+        const data = {};
+        // TODO: Use fetchMock to simulate failure - makes tests faster
+        updateHelper
+          .updateNotebookData("itm1234567890", data, MOCK_USER_SESSION)
+          .then(() => done.fail())
+          .catch(() => done());
+      });
+    }
   });
   describe("postProcess hook ::", () => {
     it("fetch, interpolate and share", () => {

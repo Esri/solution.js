@@ -1,6 +1,6 @@
 import * as simpleTypeHelpers from "../../src/helpers/simple-type-helpers";
 
-describe("notebookHelpers:: ", () => {
+describe("simpleTypeHelpers:: ", () => {
   it("should have createItemFromTemplate", () => {
     expect(simpleTypeHelpers.createItemFromTemplate).toBeDefined();
   });
