@@ -44,7 +44,11 @@ import {
   fail,
   getProp
 } from "./generalHelpers";
-import { replaceInTemplate, templatizeTerm } from "./templatization";
+import {
+  replaceInTemplate,
+  templatizeTerm,
+  templatizeIds
+} from "./templatization";
 import {
   addToServiceDefinition,
   getLayerUpdates,
