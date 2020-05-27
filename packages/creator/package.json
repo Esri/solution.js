@@ -16,6 +16,7 @@
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
+  "peerDependencies": {},
   "dependencies": {
     "@esri/solution-common": "^0.12.0",
     "@esri/solution-feature-layer": "^0.12.0",

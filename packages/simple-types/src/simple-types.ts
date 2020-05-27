@@ -123,26 +123,18 @@ export function postProcess(
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {
-  return getItemDataAsJson(itemId, authentication)
-    .then(data => {
-      if (hasUnresolvedVariables(data)) {
-        const updatedData = replaceInTemplate(data, templateDictionary);
-        // TODO: update return type on updateItemExtended
-        return updateItemExtended(
-          itemId,
-          { id: itemId },
-          updatedData,
-          authentication
-        ) as Promise<any>;
-      } else {
-        return Promise.resolve({ success: true });
-      }
-    })
-    .then(_ => {
-      return simpleTypeHelpers.shareTemplatesToGroups(
-        templates,
-        authentication,
-        templateDictionary
-      );
-    });
+  return getItemDataAsJson(itemId, authentication).then(data => {
+    if (hasUnresolvedVariables(data)) {
+      const updatedData = replaceInTemplate(data, templateDictionary);
+      // TODO: update return type on updateItemExtended
+      return updateItemExtended(
+        itemId,
+        { id: itemId },
+        updatedData,
+        authentication
+      ) as Promise<any>;
+    } else {
+      return Promise.resolve({ success: true });
+    }
+  });
 }

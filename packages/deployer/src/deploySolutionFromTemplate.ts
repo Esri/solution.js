@@ -33,7 +33,6 @@ export function _deploySolutionFromTemplate(
     // Replacement dictionary and high-level deployment ids for cleanup
 
     // TODO: Extract all templateDictionary prep into a separate function
-
     const templateDictionary = options.templateDictionary ?? {};
     let deployedFolderId: string;
     let deployedSolutionId: string;
@@ -42,6 +41,8 @@ export function _deploySolutionFromTemplate(
       property => {
         if (options[property]) {
           solutionTemplateBase[property] = options[property];
+          // carry these options forward on the templateDict
+          templateDictionary[property] = options[property];
         }
       }
     );

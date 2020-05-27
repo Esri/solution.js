@@ -12,6 +12,7 @@
   "files": [
     "dist/**"
   ],
+  "peerDependencies": {},
   "devDependencies": {
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"

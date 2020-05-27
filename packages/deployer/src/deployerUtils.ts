@@ -64,7 +64,6 @@ export function _updateDeployOptions(
   item: common.IItem,
   authentication: common.UserSession
 ): any {
-  // TODO: Move into a fn
   deployOptions.jobId = deployOptions.jobId ?? item.id;
   deployOptions.title = deployOptions.title ?? item.title;
   deployOptions.snippet = deployOptions.snippet ?? item.snippet;
