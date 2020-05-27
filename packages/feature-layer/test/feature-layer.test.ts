@@ -24,6 +24,7 @@ import * as utils from "../../common/test/mocks/utils";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as mockSolutions from "../../common/test/mocks/templates";
+import { assert } from "console";
 
 let MOCK_USER_SESSION: common.UserSession;
 let itemTemplate: common.IItemTemplate;
@@ -523,7 +524,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r).toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
-            postProcess: false
+            postProcess: true
           });
           done();
         });
@@ -880,7 +881,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           expect(r).toEqual({
             id: "svc1234567890",
             type: itemTemplate.type,
-            postProcess: false
+            postProcess: true
           });
           done();
         });
@@ -1865,20 +1866,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
   });
 
   describe("postProcess", () => {
-    it("fetch and update the item and data", () => {
-      const item: common.IItem = {
+    it("fetches and updates the item and data", () => {
+      const item = {
+        ...mockItems.getAGOLItem("Feature Service"),
         id: "a369baed619441cfb5e862694d33d44c",
-        owner: "brubble",
-        tags: ["tag1"],
-        created: 1590520700158,
-        modified: 1590520700158,
-        numViews: 10,
-        size: 50,
-        title: "My Form",
-        type: "Form",
         typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
       };
       const data = {
+        ...mockItems.getAGOLItemData("Feature Service"),
         someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
       };
       const templates = [itemTemplate];
@@ -1910,6 +1905,14 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         common,
         "updateItemExtended"
       ).and.resolveTo();
+      const findTemplateInListSpy = spyOn(
+        common,
+        "findTemplateInList"
+      ).and.returnValue(itemTemplate);
+      const shareTemplatesToGroupsSpy = spyOn(
+        common,
+        "shareTemplatesToGroups"
+      ).and.resolveTo();
       return featureLayer
         .postProcess(
           item.id,
@@ -1921,7 +1924,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
         .then(result => {
           expect(getItemBaseSpy.calls.count()).toBe(1, "fetches item base");
           expect(getItemBaseSpy.calls.argsFor(0)).toEqual(
-            ["a369baed619441cfb5e862694d33d44c", MOCK_USER_SESSION],
+            [item.id, MOCK_USER_SESSION],
             "calls getItemBase with expected args"
           );
           expect(getItemDataAsJsonSpy.calls.count()).toBe(
@@ -1929,7 +1932,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             "fetches item data"
           );
           expect(getItemDataAsJsonSpy.calls.argsFor(0)).toEqual(
-            ["a369baed619441cfb5e862694d33d44c", MOCK_USER_SESSION],
+            [item.id, MOCK_USER_SESSION],
             "calls getItemDataAsJson with expected args"
           );
           expect(replaceInTemplateSpy.calls.count()).toBe(
@@ -1948,8 +1951,99 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
             [item.id, expected.item, expected.data, MOCK_USER_SESSION],
             "Calls updateItemExtendedSpy with the expected args"
           );
+          expect(findTemplateInListSpy.calls.count()).toBe(
+            1,
+            "gets the feature service template"
+          );
+          expect(findTemplateInListSpy.calls.argsFor(0)).toEqual(
+            [templates, item.id],
+            "Calls findTemplateInListSpy with the expected args"
+          );
+          expect(shareTemplatesToGroupsSpy.calls.count()).toBe(
+            1,
+            "shares templates to groups"
+          );
+          expect(shareTemplatesToGroupsSpy.calls.argsFor(0)).toEqual(
+            [[itemTemplate], templateDictionary, MOCK_USER_SESSION],
+            "Calls shareTemplatesToGroupsSpy with the expected args"
+          );
           expect(result).toBeUndefined("resolves void");
         });
+    });
+
+    it("rejects when any errors occur", done => {
+      const item = {
+        ...mockItems.getAGOLItem("Feature Service"),
+        id: "a369baed619441cfb5e862694d33d44c",
+        typeKeywords: ["{{a369baed619441cfb5e862694d33d44c.itemId}}"]
+      };
+      const data = {
+        ...mockItems.getAGOLItemData("Feature Service"),
+        someProp: "{{a369baed619441cfb5e862694d33d44c.itemId}}"
+      };
+      const templates = [itemTemplate];
+      const templateDictionary = {
+        a369baed619441cfb5e862694d33d44c: {
+          itemId: "b369baed619441cfb5e862694d33d44c"
+        }
+      };
+      const expected = {
+        item: {
+          ...item,
+          typeKeywords: ["b369baed619441cfb5e862694d33d44c"]
+        },
+        data: {
+          ...data,
+          someProp: "b369baed619441cfb5e862694d33d44c"
+        }
+      };
+      const errorFns = {
+        resolveTo: "rejectWith",
+        returnValue: "throwError"
+      };
+      const getItemBaseSpy = spyOn(common, "getItemBase");
+      const getItemDataAsJsonSpy = spyOn(common, "getItemDataAsJson");
+      const replaceInTemplateSpy = spyOn(common, "replaceInTemplate");
+      const updateItemExtendedSpy = spyOn(common, "updateItemExtended");
+      const shareTemplatesToGroupsSpy = spyOn(common, "shareTemplatesToGroups");
+      const findTemplateInListSpy = spyOn(common, "findTemplateInList");
+      const spies = [
+        [getItemBaseSpy, "resolveTo", item],
+        [getItemDataAsJsonSpy, "resolveTo", data],
+        [replaceInTemplateSpy, "returnValue", expected],
+        [updateItemExtendedSpy, "resolveTo"],
+        [findTemplateInListSpy, "returnValue", itemTemplate],
+        [shareTemplatesToGroupsSpy, "resolveTo"]
+      ];
+      // exercise each spy rejecting or throwing
+      let failingIndex = 0;
+      spies.forEach(async ([spy, strategy, value], idx) => {
+        spies.forEach(async (_, idx2) => {
+          if (idx === idx2) {
+            // reject or throw error
+            spy.and[errorFns[strategy]](new Error(`Failed ${idx}`));
+            failingIndex = idx;
+          } else {
+            // resolve or return value
+            spy.and[strategy](value);
+          }
+        });
+        try {
+          await featureLayer.postProcess(
+            item.id,
+            item.type,
+            templates,
+            templateDictionary,
+            MOCK_USER_SESSION
+          );
+          done.fail(
+            new Error(`Spy at index ${idx} did not ${strategy} as expected`)
+          );
+        } catch (e) {
+          expect(e.message).toBe(`Failed ${failingIndex}`);
+        }
+      });
+      done();
     });
   });
 });

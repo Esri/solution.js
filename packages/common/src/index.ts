@@ -29,6 +29,7 @@ export * from "./libs/uuidv4";
 export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./restHelpers";
+export * from "./sharingHelpers";
 export * from "./restHelpersGet";
 export * from "./sharing";
 export * from "./templatization";

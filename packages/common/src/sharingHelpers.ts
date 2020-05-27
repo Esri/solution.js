@@ -1,10 +1,5 @@
-import {
-  IItemTemplate,
-  UserSession,
-  getProp,
-  shareItemToGroups
-} from "@esri/solution-common";
 import { maybePush } from "@esri/hub-common";
+import { IItemTemplate, UserSession, getProp, shareItemToGroups } from "./";
 
 /**
  * Given the created templates

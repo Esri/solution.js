@@ -20,7 +20,6 @@
 
 import * as common from "@esri/solution-common";
 import * as utils from "../../common/test/mocks/utils";
-import * as shareHelper from "../src/helpers/share-templates-to-groups";
 import * as updateHelper from "../src/helpers/update-notebook-data";
 import * as createHelper from "../src/helpers/create-item-from-template";
 import * as convertHelper from "../src/helpers/convert-item-to-template";
@@ -91,10 +90,9 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         updateHelper,
         "updateNotebookData"
       ).and.resolveTo();
-      const shareSpy = spyOn(
-        shareHelper,
-        "shareTemplatesToGroups"
-      ).and.resolveTo([]);
+      const shareSpy = spyOn(common, "shareTemplatesToGroups").and.resolveTo(
+        []
+      );
       return notebookProcessor
         .postProcess("3ef", "Notebook", [], td, MOCK_USER_SESSION)
         .then(() => {
@@ -119,10 +117,9 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         updateHelper,
         "updateNotebookData"
       ).and.resolveTo();
-      const shareSpy = spyOn(
-        shareHelper,
-        "shareTemplatesToGroups"
-      ).and.resolveTo([]);
+      const shareSpy = spyOn(common, "shareTemplatesToGroups").and.resolveTo(
+        []
+      );
       return notebookProcessor
         .postProcess("3ef", "Notebook", [], {}, MOCK_USER_SESSION)
         .then(() => {

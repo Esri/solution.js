@@ -426,6 +426,11 @@ describe("Module `deployer`", () => {
               "/content/users/casey/items/map1234567890/update",
             testUtils.getSuccessResponse({ id: "map1234567890" })
           )
+          .get(
+            testUtils.PORTAL_SUBSET.restUrl +
+              "/content/items/svc1234567890?f=json&token=fake-token",
+            testUtils.getSuccessResponse({ id: "svc1234567890" })
+          )
           .post(
             testUtils.PORTAL_SUBSET.restUrl +
               "/content/items/svc1234567890/data",

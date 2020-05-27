@@ -19,7 +19,6 @@
  */
 
 import * as simpleTypes from "../src/simple-types";
-import * as shareHelper from "../src/helpers/share-templates-to-groups";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
@@ -2586,10 +2585,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
       const td = { owner: "Luke Skywalker" };
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
-      const shareSpy = spyOn(
-        shareHelper,
-        "shareTemplatesToGroups"
-      ).and.resolveTo([]);
+      const shareSpy = spyOn(common, "shareTemplatesToGroups").and.resolveTo(
+        []
+      );
       return simpleTypes
         .postProcess("3ef", "Web Map", [], td, MOCK_USER_SESSION)
         .then(() => {
@@ -2611,10 +2609,9 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         value: "Larry"
       });
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
-      const shareSpy = spyOn(
-        shareHelper,
-        "shareTemplatesToGroups"
-      ).and.resolveTo([]);
+      const shareSpy = spyOn(common, "shareTemplatesToGroups").and.resolveTo(
+        []
+      );
       return simpleTypes
         .postProcess("3ef", "Web Map", [], {}, MOCK_USER_SESSION)
         .then(() => {

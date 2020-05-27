@@ -1,6 +1,6 @@
-import { shareTemplatesToGroups } from "../../src/helpers/share-templates-to-groups";
-import * as common from "@esri/solution-common";
-import * as testUtils from "@esri/solution-common/test/mocks/utils";
+import * as common from "../src";
+import * as testUtils from "./mocks/utils";
+import { shareTemplatesToGroups } from "../src/sharingHelpers";
 
 let MOCK_USER_SESSION: common.UserSession;
 

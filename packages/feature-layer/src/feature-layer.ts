@@ -248,10 +248,7 @@ export function createItemFromTemplate(
                               resolve({
                                 id: createResponse.serviceItemId,
                                 type: newItemTemplate.type,
-                                postProcess: common.hasUnresolvedVariables({
-                                  item: newItemTemplate.item,
-                                  data: newItemTemplate.data
-                                })
+                                postProcess: true
                               });
                             }
                           },
@@ -336,20 +333,27 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return Promise.all([
-    common.getItemBase(itemId, authentication),
-    common.getItemDataAsJson(itemId, authentication)
-  ]).then(([item, data]) => {
-    const { item: updatedItem, data: updatedData } = common.replaceInTemplate(
-      { item, data },
-      templateDictionary
-    );
-    return common.updateItemExtended(
-      itemId,
-      updatedItem,
-      updatedData,
-      authentication
-    );
+  return new Promise((resolve, reject) => {
+    Promise.all([
+      common.getItemBase(itemId, authentication),
+      common.getItemDataAsJson(itemId, authentication)
+    ])
+      .then(([item, data]) => {
+        return common.replaceInTemplate({ item, data }, templateDictionary);
+      })
+      .then(({ item, data }) => {
+        return common.updateItemExtended(itemId, item, data, authentication);
+      })
+      .then(_ => {
+        const template = common.findTemplateInList(templates, itemId);
+        return common.shareTemplatesToGroups(
+          [template],
+          templateDictionary,
+          authentication
+        );
+      })
+      .then(_ => resolve())
+      .catch(reject);
   });
 }
 
