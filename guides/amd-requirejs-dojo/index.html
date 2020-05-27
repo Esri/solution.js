@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <title>Using Solution.js in AMD with Require.js or Dojo | Guide | solution.js library</title>
+    
+    <meta name="description" content="A modular, high quality toolkit.">
+    
+    <link rel="icon" type="image/png" href="./img/favicon.png">
+    <link rel="stylesheet" href="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/css/calcite-web.min.css">
+    <link rel="stylesheet" href="/solution.js/css/style.css">
+    
+  </head>
+  <body>
+  <!-- Drawer -->
+    <div class="drawer drawer-left js-drawer" data-drawer="top-nav" tabindex="0">
+      <nav class="drawer-nav" role="navigation">
+        <aside class="side-nav">
+          <h2 class="side-nav-title">solution.js library</h2>
+          <a href="/solution.js/guides/" class="is-active side-nav-link">Guides</a>
+          <a href="/solution.js/api/" class="side-nav-link">API Reference</a>
+        </aside>
+      </nav>
+    </div>
+
+    <div id="page" class="wrapper">
+      <!-- Sample HTML -->
+      <header class="top-nav">
+        <div class="grid-container">
+          <div class="column-24">
+            <!-- desktop sized navigation -->
+            <div class="tablet-hide">
+              <!-- logo / home -->
+              <a href="/solution.js/" class="top-nav-title">solution.js library</a>
+              <!-- primary navigation sections -->
+              <nav class="top-nav-list" role="navigation" aria-labelledby="topnav">
+                <a href="/solution.js/guides/" class="is-active top-nav-link">Guides</a>
+                <a href="/solution.js/api/" class="top-nav-link">API Reference</a>
+                <a href="https://github.com/Esri/solution.js" class="top-nav-link">GitHub</a>
+              </nav>
+            </div>
+
+            <!-- tablet and mobile sized navigation -->
+            <div class="tablet-show top-nav-flex">
+              <!-- open primary navigation drawer -->
+              <nav class="top-nav-flex-list" role="navigation" aria-labelledby="topnav">
+                <a href="/solution.js/" class="icon-ui-menu top-nav-link js-drawer-toggle" data-drawer="top-nav"><span class="phone-hide">Menu</span></a>
+              </nav>
+              <!-- logo / home -->
+              <header class="top-nav-flex-title">
+                <a href="/solution.js/" class="top-nav-link">ArcGIS REST API JavaScript Client</a>
+              </header>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+
+      <main id="#skip-to-content">
+        
+  <div class="grid-container trailer-1 leader-1">
+    <div class="column-6">
+      <ul class="list-plain">
+        
+          <li>Introduction</li>
+          <ul class="list-plain margin-left-1">
+            
+              <li><a href="/solution.js/guides/package-overview/">Package Overview</a></li>
+            
+          </ul>
+        
+          <li>Get Started</li>
+          <ul class="list-plain margin-left-1">
+            
+              <li><a href="/solution.js/guides/from-a-cdn/">From a CDN</a></li>
+            
+              <li><a href="/solution.js/guides/amd-requirejs-dojo/" class="is-active">AMD (Require.js or Dojo)</a></li>
+            
+              <li><a href="/solution.js/guides/node/">Node.js</a></li>
+            
+          </ul>
+        
+          <li>Authentication</li>
+          <ul class="list-plain margin-left-1">
+            
+              <li><a href="/solution.js/guides/browser-authentication/">Browser-based OAuth 2.0</a></li>
+            
+              <li><a href="/solution.js/guides/server-authentication/">Server-based OAuth 2.0</a></li>
+            
+              <li><a href="/solution.js/guides/client-server-authentication/">Shared client server authentication</a></li>
+            
+              <li><a href="/solution.js/guides/cli-authentication/">Authentication for CLI Apps</a></li>
+            
+          </ul>
+        
+      </ul>
+    </div>
+
+    <div class="column-18">
+      <div class="panel">
+        <h1>Get Started with Solution.js and AMD</h1>
+<pre><code class="html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">"utf-8"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">"viewport"</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"width=device-width"</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Using Solution.js in AMD with Require.js or Dojo<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+  Open your console to see the demo.
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+  <span class="hljs-comment">&lt;!-- require polyfills for fetch and Promise from https://polyfill.io --&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://polyfill.io/v3/polyfill.min.js?features=es5%2Cfetch%2CPromise"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="actionscript">
+    dojoConfig = {
+      paths: {
+        <span class="hljs-string">"@esri/arcgis-rest-auth"</span>: <span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-auth/dist/umd/auth.umd.min"</span>,
+        <span class="hljs-string">"@esri/arcgis-rest-feature-layer"</span>: <span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min"</span>,
+        <span class="hljs-string">"@esri/arcgis-rest-portal"</span>: <span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-portal/dist/umd/portal.umd.min"</span>,
+        <span class="hljs-string">"@esri/arcgis-rest-request"</span>: <span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-request/dist/umd/request.umd.min"</span>,
+        <span class="hljs-string">"@esri/arcgis-rest-service-admin"</span>: <span class="hljs-string">"https://unpkg.com/@esri/arcgis-rest-service-admin/dist/umd/service-admin.umd.min"</span>,
+        <span class="hljs-string">"@esri/solution-common"</span>: <span class="hljs-string">"https://unpkg.com/@esri/solution-common/dist/umd/common.umd.min"</span>
+      }
+    };
+  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https:////ajax.googleapis.com/ajax/libs/dojo/1.10.4/dojo/dojo.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+
+  <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+    <span class="hljs-built_in">require</span>([<span class="hljs-string">"@esri/solution-common"</span>], <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">solutionCommon</span>) </span>{
+      <span class="hljs-keyword">var</span> originalExtent = {
+        <span class="hljs-attr">xmin</span>: <span class="hljs-number">-9821384</span>,
+        <span class="hljs-attr">ymin</span>: <span class="hljs-number">5117339</span>,
+        <span class="hljs-attr">xmax</span>: <span class="hljs-number">-9797228</span>,
+        <span class="hljs-attr">ymax</span>: <span class="hljs-number">5137789</span>,
+        <span class="hljs-attr">spatialReference</span>: { <span class="hljs-attr">wkid</span>: <span class="hljs-number">102100</span> }
+      };
+      <span class="hljs-keyword">var</span> desiredSpatialRef = { <span class="hljs-attr">wkid</span>: <span class="hljs-number">4326</span> };
+
+      solutionCommon.convertExtent(
+        originalExtent,
+        desiredSpatialRef,
+        <span class="hljs-string">"http://sampleserver6.arcgisonline.com/arcgis/rest/services/Utilities/Geometry/GeometryServer"</span>
+      ).then(
+        <span class="hljs-function"><span class="hljs-params">response</span> =&gt;</span> <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">JSON</span>.stringify(response, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>)),
+        response =&gt; <span class="hljs-built_in">console</span>.error(<span class="hljs-built_in">JSON</span>.stringify(response, <span class="hljs-literal">null</span>, <span class="hljs-number">2</span>))
+      );
+    });
+  </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span>
+</code></pre>
+      </div>
+    </div>
+  </div>
+
+      </main>
+    </div>
+
+    <footer class="footer">
+      
+      <div class="panel panel-white">
+        <div class="grid-container">
+          <div class="column-24">
+            <a href="https://github.com/Esri/solution.js" class="font-size--2">Fork this project on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://s3-us-west-1.amazonaws.com/patterns.esri.com/files/calcite-web/1.2.5/js/calcite-web.min.js"></script>
+
+    <script>
+       calcite.init()
+    </script>
+
+    
+  </body>
+</html>
