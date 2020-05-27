@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@esri/arcgis-html-sanitizer": "^2.2.0",
-    "@esri/hub-common": "^3.9.2",
     "@types/lodash.isplainobject": "^4.0.6",
     "adlib": "^3.0.4",
     "lodash.isplainobject": "^4.0.6",
