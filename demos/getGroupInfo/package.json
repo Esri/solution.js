@@ -1,6 +1,6 @@
 {
  "name": "getGroupInfo",
- "version": "1.0.0",
+ "version": "0.11.0",
  "private": true,
  "description": "Example App for solutions.js common: Gets information about an ArcGIS Online group.",
  "main": "main.js",
@@ -24,6 +24,6 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.10.0"
+  "@esri/solution-common": "^0.11.0"
  }
 }

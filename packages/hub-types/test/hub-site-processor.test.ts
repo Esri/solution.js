@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as utils from "@esri/solution-common/test/mocks/utils";
+import * as utils from "../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 import { HubSiteProcessor } from "../src/index";
