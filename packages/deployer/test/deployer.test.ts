@@ -451,6 +451,9 @@ describe("Module `deployer`", () => {
           .layers[0].subLayerIds;
         delete portalsSelfResponse.portalProperties.sharedTheme.logo.small;
         const expectedTemplate: any = {
+          title: "title",
+          thumbnailurl:
+            "https://myorg.maps.arcgis.com/sharing/rest/content/items/sln1234567890/info/thumbnail/ago_downloaded.png",
           organization: portalsSelfResponse,
           portalBaseUrl: "https://myorg.maps.arcgis.com",
           user: Object.assign({ folders: [] }, testUtils.getUserResponse()),

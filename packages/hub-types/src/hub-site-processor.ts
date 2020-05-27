@@ -27,11 +27,21 @@ import {
   EItemProgressStatus,
   UserSession
 } from "@esri/solution-common";
-import { createSiteModelFromTemplate, createSite } from "@esri/hub-sites";
-import { IModel, cloneObject } from "@esri/hub-common";
+import {
+  createSiteModelFromTemplate,
+  createSite,
+  getSiteById,
+  _getSecondPassSharingOptions,
+  _shareItemsToSiteGroups,
+  _updatePages
+} from "@esri/hub-sites";
+
+import { IModel, cloneObject, maybePush, getProp } from "@esri/hub-common";
+
 import { moveSiteToFolder } from "./helpers/move-site-to-folder";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
-
+import { _postProcessSite } from "./helpers/_post-process-site";
+import { _updateSitePages } from "./helpers/_update-site-pages";
 /**
  * Handle deployment of Site item templates
  *
@@ -42,7 +52,6 @@ import { createHubRequestOptions } from "./helpers/create-hub-request-options";
  * @param {IItemProgressCallback} itemProgressCallback
  * @returns {Promise<ICreateItemFromTemplateResponse>}
  */
-/* istanbul ignore next */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
@@ -66,13 +75,13 @@ export function createItemFromTemplate(
       [parts[2], parts[3]]
     ];
   }
-
-  // TODO: Understand how/where the Solution title is passed in and fall back to fetching the Solution Template
+  // ensure we have a solution object in the settings hash
   if (!settings.solution) {
-    settings.solution = {
-      title: "TODO GET SOLN TITLE"
-    };
+    settings.solution = {};
   }
+  // .title should always be set on the templateDictionary
+  settings.solution.title = templateDictionary.title;
+
   // TODO: Determine if we need any transforms in this new env
   const transforms = {};
 
@@ -117,8 +126,7 @@ export function createItemFromTemplate(
         template.estimatedDeploymentCostFactor,
         siteModel.item.id
       );
-      // finally, return something
-      // TODO: Figure out how/where this is used, if at all
+      // finally, return ICreateItemFromTemplateResponse
       return {
         id: siteModel.item.id,
         type: template.type,
@@ -161,10 +169,46 @@ export function convertItemToTemplate(
   } as IItemTemplate);
 }
 
-/* istanbul ignore next */
-export function postProcess(model: any, items: any[]): Promise<boolean> {
-  console.info(`Hub Site is not supported yet`);
-  return Promise.resolve(true);
+/**
+ * Deployer life-cycle hook allowing the Site Processor
+ * a chance to apply final processes to all the items that
+ * were created as part of the solution.
+ * Specifically this will:
+ * - share all items to the content team, and (if created)
+ *   the core team (depends on user privs)
+ * - link all Page items that were created, to the Site
+ * @param model
+ * @param items
+ * @param authentication
+ * @param templateDictionary
+ */
+export function postProcess(
+  id: string,
+  type: string,
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
+): Promise<boolean> {
+  // Get the Id's out of the templates array
+  const templateIds = templates.map(t => t.itemId);
+  // use them to look up the itemInfo on the template dictionary
+  const itemInfos = templateIds.reduce((acc, tmplId) => {
+    return maybePush(getProp(templateDictionary, `${tmplId}.id`), acc);
+  }, []);
+
+  // create the requestOptions
+  const hubRo = createHubRequestOptions(authentication, templateDictionary);
+
+  // get the site model
+  return getSiteById(id, hubRo)
+    .then(siteModel => {
+      // Hub.js does not expect the same structures, so we delegat to a local fn
+      return _postProcessSite(siteModel, itemInfos, hubRo);
+    })
+    .then(() => {
+      // resolve w/ a boolean
+      return Promise.resolve(true);
+    });
 }
 
 /**
