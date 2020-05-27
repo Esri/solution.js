@@ -15,6 +15,7 @@
  */
 import { postProcess } from "../../src/helpers/post-process";
 import { HubSiteProcessor } from "@esri/solution-hub-types";
+import * as shareHelper from "../../src/helpers/share-templates-to-groups";
 import * as testUtils from "@esri/solution-common/test/mocks/utils";
 import {
   UserSession,
@@ -35,6 +36,11 @@ describe("postProcess Module", () => {
       "postProcess"
     ).and.resolveTo();
 
+    const shareSpy = spyOn(
+      shareHelper,
+      "shareTemplatesToGroups"
+    ).and.resolveTo();
+
     const sols = [
       {
         id: "bc3",
@@ -44,7 +50,8 @@ describe("postProcess Module", () => {
     ] as ICreateItemFromTemplateResponse[];
 
     return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(resp.length).toBe(1, "should return one promise");
+      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+      expect(resp.length).toBe(2, "should return two promises");
       expect(siteProcessorSpy.calls.count()).toBe(
         1,
         "should delegate to item type processor"
@@ -62,7 +69,10 @@ describe("postProcess Module", () => {
       HubSiteProcessor,
       "postProcess"
     ).and.resolveTo();
-
+    const shareSpy = spyOn(
+      shareHelper,
+      "shareTemplatesToGroups"
+    ).and.resolveTo();
     const sols = [
       {
         id: "bc3",
@@ -77,7 +87,8 @@ describe("postProcess Module", () => {
     ] as ICreateItemFromTemplateResponse[];
 
     return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(resp.length).toBe(2, "should return two promises");
+      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+      expect(resp.length).toBe(3, "should return three promises");
       expect(siteProcessorSpy.calls.count()).toBe(
         2,
         "should call postProcess twice"
@@ -89,7 +100,10 @@ describe("postProcess Module", () => {
       HubSiteProcessor,
       "postProcess"
     ).and.resolveTo();
-
+    const shareSpy = spyOn(
+      shareHelper,
+      "shareTemplatesToGroups"
+    ).and.resolveTo();
     const sols = [
       {
         id: "bc3",
@@ -104,7 +118,8 @@ describe("postProcess Module", () => {
     ] as ICreateItemFromTemplateResponse[];
 
     return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(resp.length).toBe(1, "should return one promise");
+      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+      expect(resp.length).toBe(2, "should return two promises");
       expect(siteProcessorSpy.calls.count()).toBe(
         1,
         "should call postProcess once"
@@ -120,9 +135,13 @@ describe("postProcess Module", () => {
         postProcess: true
       }
     ] as ICreateItemFromTemplateResponse[];
-
+    const shareSpy = spyOn(
+      shareHelper,
+      "shareTemplatesToGroups"
+    ).and.resolveTo();
     return postProcess(tmpls, sols, MOCK_USER_SESSION, tmplDict).then(resp => {
-      expect(resp.length).toBe(0, "should not process anything");
+      expect(shareSpy.calls.count()).toBe(1, "should call the shareHelper");
+      expect(resp.length).toBe(1, "should only delegate to group sharing");
     });
   });
 });

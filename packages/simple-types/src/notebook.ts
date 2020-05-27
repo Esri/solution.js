@@ -136,25 +136,16 @@ export function postProcess(
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return common
-    .getItemDataAsJson(itemId, authentication)
-    .then(data => {
-      if (common.hasUnresolvedVariables(data)) {
-        const updatedData = common.replaceInTemplate(data, templateDictionary);
-        return notebookHelpers.updateNotebookData(
-          itemId,
-          updatedData,
-          authentication
-        );
-      } else {
-        return Promise.resolve({ success: true });
-      }
-    })
-    .then(_ => {
-      return notebookHelpers.shareTemplatesToGroups(
-        templates,
-        authentication,
-        templateDictionary
+  return common.getItemDataAsJson(itemId, authentication).then(data => {
+    if (common.hasUnresolvedVariables(data)) {
+      const updatedData = common.replaceInTemplate(data, templateDictionary);
+      return notebookHelpers.updateNotebookData(
+        itemId,
+        updatedData,
+        authentication
       );
-    });
+    } else {
+      return Promise.resolve({ success: true });
+    }
+  });
 }
