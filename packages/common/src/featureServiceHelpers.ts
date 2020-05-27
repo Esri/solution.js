@@ -86,7 +86,9 @@ export function templatize(
     );
   }
   /* istanbul ignore else */
-  if (getProp(itemTemplate, "properties.service.initialExtent")) {
+  if (
+    getProp(itemTemplate, "properties.service.initialExtent")
+  ) {
     itemTemplate.properties.service.initialExtent = templatizeTerm(
       id,
       id,
