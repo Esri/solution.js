@@ -1,6 +1,6 @@
 {
  "name": "createSolution",
- "version": "0.12.0",
+ "version": "0.13.0",
  "private": true,
  "description": "Example App for solutions.js creator: Creates a solution using the AGO id of an item or a group.",
  "main": "main.js",
@@ -24,12 +24,12 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.12.0",
-  "@esri/solution-creator": "^0.12.0",
-  "@esri/solution-feature-layer": "^0.12.0",
-  "@esri/solution-file": "^0.12.0",
-  "@esri/solution-group": "^0.12.0",
-  "@esri/solution-simple-types": "^0.12.0",
-  "@esri/solution-storymap": "^0.12.0"
+  "@esri/solution-common": "^0.13.0",
+  "@esri/solution-creator": "^0.13.0",
+  "@esri/solution-feature-layer": "^0.13.0",
+  "@esri/solution-file": "^0.13.0",
+  "@esri/solution-group": "^0.13.0",
+  "@esri/solution-simple-types": "^0.13.0",
+  "@esri/solution-storymap": "^0.13.0"
  }
 }
