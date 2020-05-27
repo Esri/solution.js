@@ -20,6 +20,7 @@
  * @module templatization
  */
 
+import { unique } from "@esri/hub-common";
 import { adlib } from "adlib";
 import { IItemTemplate } from "./interfaces";
 
@@ -319,7 +320,7 @@ export function templatizeIds(obj: any): any {
   const idTest: RegExp = /[0-9A-F]{32}/gim;
   if (obj && idTest.test(objString)) {
     // Templatize ids
-    const ids: string[] = objString.match(idTest) as string[];
+    const ids: string[] = objString.match(idTest).filter(unique);
     ids.forEach(id => {
       const regEx = new RegExp(id, "gm");
       objString = objString.replace(regEx, "{{" + id + ".itemId}}");

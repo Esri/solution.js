@@ -31,7 +31,7 @@ export {
 
 import { IDependency, IItemTemplate, INumberValuePair, IPostProcessArgs, IStringValuePair, IUpdate, UserSession } from "./interfaces";
 import { checkUrlPathTermination, deleteProp, fail, getProp } from "./generalHelpers";
-import { replaceInTemplate, templatizeTerm } from "./templatization";
+import { replaceInTemplate, templatizeTerm, templatizeIds } from "./templatization";
 import { addToServiceDefinition, getLayerUpdates, getRequest, rest_request } from "./restHelpers";
 
 //#endregion ------------------------------------------------------------------------------------------------------------//
@@ -54,8 +54,12 @@ export function templatize(
   // Common templatizations
   const id: string = itemTemplate.item.id;
 
-  itemTemplate.item.url = _templatize(id, "url");
-  itemTemplate.item.id = templatizeTerm(id, id, ".itemId");
+  itemTemplate.item = {
+    ...itemTemplate.item,
+    id: templatizeTerm(id, id, ".itemId"),
+    url: _templatize(id, "url"),
+    typeKeywords: templatizeIds(itemTemplate.item.typeKeywords)
+  };
 
   const jsonLayers: any[] = itemTemplate.properties.layers || [];
   const jsonTables: any[] = itemTemplate.properties.tables || [];

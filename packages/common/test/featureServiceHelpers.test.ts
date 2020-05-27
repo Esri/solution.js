@@ -130,7 +130,8 @@ beforeEach(() => {
     type: "",
     item: {
       id: "",
-      type: ""
+      type: "",
+      typeKeywords: []
     },
     data: {},
     resources: [],
@@ -174,7 +175,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         item: {
           id: "{{ABC123.itemId}}",
           type: "",
-          url: "{{ABC123.url}}"
+          url: "{{ABC123.url}}",
+          typeKeywords: []
         },
         data: {},
         resources: [],
@@ -242,7 +244,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         item: {
           extent: "",
           id: "ab766cba0dd44ec080420acc10990282",
-          type: ""
+          type: "",
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "typeKeyword2"]
         },
         data: {
           layers: [
@@ -324,7 +327,11 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           extent: "", // only set through createItemTemplate
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           type: "",
-          url: "{{ab766cba0dd44ec080420acc10990282.url}}"
+          url: "{{ab766cba0dd44ec080420acc10990282.url}}",
+          typeKeywords: [
+            "{{ab766cba0dd44ec080420acc10990282.itemId}}",
+            "typeKeyword2"
+          ]
         },
         data: {
           layers: [
@@ -374,7 +381,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
         item: {
           extent: "",
           id: "ab766cba0dd44ec080420acc10990282",
-          type: ""
+          type: "",
+          typeKeywords: ["ab766cba0dd44ec080420acc10990282", "two"]
         },
         data: {},
         resources: [],
@@ -397,7 +405,8 @@ describe("Module `featureServiceHelpers`: utility functions for feature-service 
           extent: "", // only set through createItemTemplate
           id: "{{ab766cba0dd44ec080420acc10990282.itemId}}",
           type: "",
-          url: "{{ab766cba0dd44ec080420acc10990282.url}}"
+          url: "{{ab766cba0dd44ec080420acc10990282.url}}",
+          typeKeywords: ["{{ab766cba0dd44ec080420acc10990282.itemId}}", "two"]
         },
         data: {},
         resources: [],
