@@ -64,8 +64,8 @@ export function createItemFromTemplate(
   });
 }
 /* istanbul ignore next */
-export function secondPass(model: any, items: any[]): Promise<boolean> {
-  console.info(`Hub Site Application is not supported yet`);
+export function postProcess(model: any, items: any[]): Promise<boolean> {
+  console.info(`Hub Page is not supported yet`);
   return Promise.resolve(true);
 }
 

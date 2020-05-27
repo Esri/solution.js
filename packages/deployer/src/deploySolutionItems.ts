@@ -21,182 +21,10 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as featureLayer from "@esri/solution-feature-layer";
-import * as file from "@esri/solution-file";
-import * as group from "@esri/solution-group";
-import * as simpleTypes from "@esri/solution-simple-types";
-import * as storyMap from "@esri/solution-storymap";
-import { HubSiteProcessor, HubPageProcessor } from "@esri/solution-hub-types";
-import { getProp, maybePush } from "@esri/hub-common";
+import { moduleMap } from "./module-map";
+import { maybePush } from "@esri/hub-common";
+
 const UNSUPPORTED: common.moduleHandler = null;
-/**
- * Mapping from item type to module with type-specific template-handling code.
- * AGO types come from a blend of arcgis-portal-app\src\js\arcgisonline\pages\item\_Info.js and
- * arcgis-portal-app\src\js\arcgis-components\src\_utils\metadata\item\displayName.ts
- */
-export const moduleMap: common.IItemTypeModuleMap = {
-  Group: group,
-
-  ////////////////////////////////////////////////////////
-  // Layer types
-  "Big Data Analytic": undefined,
-  "Feature Collection": undefined,
-  "Feature Service": featureLayer,
-  Feed: undefined,
-  "Geocoding Service": undefined,
-  "Geodata Service": undefined,
-  "Geometry Service": undefined,
-  "Geoprocessing Service": undefined,
-  "Globe Service": undefined,
-  "Image Service": undefined,
-  KML: undefined,
-  "Map Service": featureLayer,
-  "Network Analysis Service": undefined,
-  "Real Time Analytic": undefined,
-  "Relational Database Connection": undefined,
-  "Scene Service": undefined,
-  "Stream Service": undefined,
-  Tool: undefined,
-  "Vector Tile Service": undefined,
-  WFS: undefined,
-  WMS: undefined,
-  WMTS: undefined,
-  "Workflow Manager Service": undefined,
-
-  ////////////////////////////////////////////////////////
-  // Map types
-  "3D Web Scene": undefined,
-  "Web Map": simpleTypes,
-  "Web Scene": undefined,
-
-  ////////////////////////////////////////////////////////
-  // App types
-  Application: undefined,
-  Dashboard: simpleTypes,
-  "Data Store": undefined,
-  "Desktop Application": undefined,
-  "Excalibur Imagery Project": undefined,
-  Form: simpleTypes,
-  "Hub Initiative": UNSUPPORTED,
-  "Hub Page": HubPageProcessor,
-  "Hub Site Application": HubSiteProcessor,
-  "Insights Model": undefined,
-  "Insights Page": undefined,
-  "Insights Theme": undefined,
-  "Insights Workbook": undefined,
-  Mission: undefined,
-  "Mobile Application": undefined,
-  "Native Application": undefined,
-  Notebook: simpleTypes,
-  "Ortho Mapping Project": undefined,
-  "QuickCapture Project": simpleTypes,
-  "Site Application": HubSiteProcessor,
-  "Site Initiative": UNSUPPORTED,
-  "Site Page": HubPageProcessor,
-  Solution: UNSUPPORTED,
-  StoryMap: undefined,
-  "Urban Model": undefined,
-  "Web Experience Template": undefined,
-  "Web Experience": undefined,
-  "Web Mapping Application": simpleTypes,
-  "Workforce Project": simpleTypes,
-
-  ////////////////////////////////////////////////////////
-  // File types
-  "360 VR Experience": file,
-  "AppBuilder Extension": file,
-  "AppBuilder Widget Package": file,
-  "Application Configuration": file,
-  "ArcGIS Pro Add In": file,
-  "ArcGIS Pro Configuration": file,
-  "ArcPad Package": file,
-  "Basemap Package": file,
-  "CAD Drawing": file,
-  "CityEngine Web Scene": file,
-  "Code Attachment": UNSUPPORTED,
-  "Code Sample": file,
-  "Color Set": file,
-  "Compact Tile Package": file,
-  "CSV Collection": file,
-  CSV: file,
-  "Deep Learning Package": file,
-  "Desktop Add In": file,
-  "Desktop Application Template": file,
-  "Desktop Style": file,
-  "Document Link": file,
-  "Explorer Add In": file,
-  "Explorer Layer": file,
-  "Explorer Map": file,
-  "Feature Collection Template": file,
-  "File Geodatabase": file,
-  GeoJson: file,
-  GeoPackage: file,
-  "Geoprocessing Package": file,
-  "Geoprocessing Sample": file,
-  "Globe Document": file,
-  "Image Collection": file,
-  Image: file,
-  "iWork Keynote": file,
-  "iWork Numbers": file,
-  "iWork Pages": file,
-  "KML Collection": file,
-  "Layer Package": file,
-  "Layer Template": file,
-  Layer: file,
-  Layout: file,
-  "Locator Package": file,
-  "Map Document": file,
-  "Map Package": file,
-  "Map Template": file,
-  "Microsoft Excel": file,
-  "Microsoft Powerpoint": file,
-  "Microsoft Word": file,
-  "Mobile Basemap Package": file,
-  "Mobile Map Package": file,
-  "Mobile Scene Package": file,
-  "Native Application Installer": file,
-  "Native Application Template": file,
-  netCDF: file,
-  "Operation View": file,
-  "Operations Dashboard Add In": file,
-  "Operations Dashboard Extension": file,
-  PDF: file,
-  "Pro Layer Package": file,
-  "Pro Layer": file,
-  "Pro Map Package": file,
-  "Pro Map": file,
-  "Pro Report": file,
-  "Project Package": file,
-  "Project Template": file,
-  "Published Map": file,
-  "Raster function template": file,
-  "Report Template": file,
-  "Rule Package": file,
-  "Scene Document": file,
-  "Scene Package": file,
-  "Service Definition": file,
-  Shapefile: file,
-  "Statistical Data Collection": file,
-  Style: file,
-  "Survey123 Add In": file,
-  "Symbol Set": file,
-  "Task File": file,
-  "Tile Package": file,
-  "Toolbox Package": file,
-  "Vector Tile Package": file,
-  "Viewer Configuration": file,
-  "Visio Document": file,
-  "Window Mobile Package": file,
-  "Windows Mobile Package": file,
-  "Windows Viewer Add In": file,
-  "Windows Viewer Configuration": file,
-  "Workflow Manager Package": file,
-
-  ////////////////////////////////////////////////////////
-  // Testing "types"
-  Undefined: undefined,
-  Unsupported: UNSUPPORTED
-};
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -597,9 +425,12 @@ export function _createItemFromTemplateWhenReady(
       // maybePush will only add the entry if it exists, allowing
       // templates to have entries in the depenedency array that are
       // invalid or don't refer to a template
-      const awaitDependencies = template.dependencies.reduce((acc, id) => {
-        return maybePush(templateDictionary[id].def, acc);
-      }, []);
+      const awaitDependencies = template.dependencies.reduce(
+        (acc: any[], id: string) => {
+          return maybePush(templateDictionary[id].def, acc);
+        },
+        []
+      );
 
       // const awaitDependencies = [] as Array<Promise<common.ICreateItemFromTemplateResponse>>;
       // (template.dependencies || []).forEach(dependencyId => {
@@ -710,33 +541,6 @@ export function _createItemFromTemplateWhenReady(
   return itemDef;
 }
 
-// export function _createItemFromTemplateWhenReadyNew(
-//   template: common.IItemTemplate,
-//   resourceFilePaths: common.IDeployFileCopyPath[],
-//   storageAuthentication: common.UserSession,
-//   templateDictionary: any,
-//   destinationAuthentication: common.UserSession,
-//   itemProgressCallback: common.IItemProgressCallback
-// ): Promise<common.ICreateItemFromTemplateResponse> {
-//   // ensure it's an array...
-//   template.dependencies = template.dependencies || [];
-//   // if it's already processed, return it
-//   if (getProp(templateDictionary, template.itemId)) {
-//     console.log(`_createItemFromTemplateWhenReady::Template ${template.itemId} already present in template dictionary - returning`);
-//     return Promise.resolve(getProp(templateDictionary, `${template.itemId}.def`));
-//   } else {
-//     // do the work
-//     let entry = {};
-//     // get the dependencies
-//     return Promise.all(template.dependencies.map((id) => {}))
-
-//     templateDictionary[template.itemId] = entry;
-//   }
-//   return itemDef;
-// }
-
-// export function getItemsById()
-
 /**
  * Accumulates the estimated deployment cost of a set of templates.
  *
@@ -765,120 +569,20 @@ export function _generateEmptyCreationResponse(
   };
 }
 
-/**
- * Checks all item types with data and group references after all other processing has completed.
- * Evaluates if the items data has any remaining variables that have not been swapped.
- * Also shares any items that have group references with the appropriate group.
- *
- * @param templates Array of item templates to evaluate
- * @param clonedSolutionsResponse Has the item id, type, and data
- * @param authentication Credentials for the requests to the destination
- * @param templateDictionary Hash of facts: org URL, adlib replacements, deferreds for dependencies
- *
- * @return A promise that will resolve once any updates have been made
- */
-export function postProcessDependencies(
-  templates: common.IItemTemplate[],
-  clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[],
-  authentication: common.UserSession,
-  templateDictionary: any
-): Promise<any> {
-  // TODO: rework to remove extra promise wrapper
-  return new Promise<any>((resolve, reject) => {
-    // In most cases this is a generic item update
-    // However, if an item needs special handeling it should be listed here and...
-    // uniqueUpdateTypes must implement postProcessDependencies that should return a promise for the update
-    const uniqueUpdateTypes: string[] = ["Notebook"];
-
-    const dataRequests: Array<Promise<any>> = [];
-    const requestedItemInfos: any = clonedSolutionsResponse.filter(
-      solutionInfo => {
-        if (solutionInfo.postProcess) {
-          dataRequests.push(
-            common.getItemDataAsJson(solutionInfo.id, authentication)
-          );
-          return true;
-        }
-      }
-    );
-
-    Promise.all(dataRequests).then(
-      data => {
-        let updates: Array<Promise<any>> = [Promise.resolve()];
-        for (let i = 0; i < requestedItemInfos.length; i++) {
-          const itemInfo = requestedItemInfos[i];
-          /* istanbul ignore else */
-          if (common.hasUnresolvedVariables(data[i])) {
-            const template: common.IItemTemplate = common.getTemplateById(
-              templates,
-              itemInfo.id
-            );
-            const update: any = common.replaceInTemplate(
-              data[i],
-              templateDictionary
-            );
-            if (uniqueUpdateTypes.indexOf(template.type) < 0) {
-              updates.push(
-                common.updateItemExtended(
-                  itemInfo.id,
-                  { id: itemInfo.id },
-                  update,
-                  authentication
-                )
-              );
-            } else {
-              const itemHandler: any = moduleMap[template.type];
-              /* istanbul ignore else */
-              if (itemHandler.postProcessItemDependencies) {
-                updates.push(
-                  itemHandler.postProcessItemDependencies(
-                    itemInfo.id,
-                    template.type,
-                    update,
-                    authentication
-                  )
-                );
-              }
-            }
-          }
-        }
-
-        // share the template with any groups it references
-        templates.forEach(template => {
-          updates = updates.concat(
-            _getGroupUpdates(template, authentication, templateDictionary)
-          );
-        });
-
-        Promise.all(updates).then(
-          () => resolve(),
-          e => reject(common.fail(e))
-        );
-      },
-      e => reject(common.fail(e))
-    );
-  });
-}
-
+// TODO: Return a Promise vs array of promises
 export function _getGroupUpdates(
   template: common.IItemTemplate,
   authentication: common.UserSession,
   templateDictionary: any
 ): Array<Promise<any>> {
-  const updates = [] as Array<Promise<any>>;
-  // share the template with any groups it references
-  if (template.groups?.length > 0) {
-    template.groups.forEach(sourceGroupId => {
-      updates.push(
-        common.shareItem(
-          templateDictionary[sourceGroupId].itemId,
-          template.itemId,
-          authentication
-        )
-      );
-    });
-  }
-  return updates;
+  const groups = template.groups || [];
+  return groups.map(sourceGroupId => {
+    return common.shareItem(
+      templateDictionary[sourceGroupId].itemId,
+      template.itemId,
+      authentication
+    );
+  });
 }
 
 export function _isEmptyCreationResponse(

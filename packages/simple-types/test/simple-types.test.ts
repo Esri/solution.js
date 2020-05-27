@@ -19,6 +19,7 @@
  */
 
 import * as simpleTypes from "../src/simple-types";
+import * as shareHelper from "../src/helpers/share-templates-to-groups";
 import * as utils from "../../common/test/mocks/utils";
 import * as staticDashboardMocks from "../../common/test/mocks/staticDashboardMocks";
 import * as staticRelatedItemsMocks from "../../common/test/mocks/staticRelatedItemsMocks";
@@ -1408,7 +1409,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data = null;
       const expected = common.cloneObject(itemTemplate);
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);
@@ -1424,7 +1425,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);
@@ -1440,7 +1441,7 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       itemTemplate.data.cells[0].source = "3b927de78a784a5aa3981469d85cf45d";
       itemTemplate.data.cells[1].source = "3b927de78a784a5aa3981469d85cf45d";
 
-      const result: common.IItemTemplate = notebook.convertItemToTemplate(
+      const result: common.IItemTemplate = notebook.convertNotebookToTemplate(
         itemTemplate
       );
       expect(result).toEqual(expected);
@@ -2575,6 +2576,56 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeTruthy();
       expect(progressCallback(itemId, status, costUsed)).toBeFalsy();
+    });
+  });
+
+  describe("postProcess hook", () => {
+    it("fetch, interpolate and share", () => {
+      const dataSpy = spyOn(common, "getItemDataAsJson").and.resolveTo({
+        value: "{{owner}}"
+      });
+      const td = { owner: "Luke Skywalker" };
+      const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
+      const shareSpy = spyOn(
+        shareHelper,
+        "shareTemplatesToGroups"
+      ).and.resolveTo([]);
+      return simpleTypes
+        .postProcess("3ef", "Web Map", [], td, MOCK_USER_SESSION)
+        .then(() => {
+          expect(dataSpy.calls.count()).toBe(1, "should fetch data");
+          expect(dataSpy.calls.argsFor(0)[0]).toBe(
+            "3ef",
+            "should fetch data for specified item"
+          );
+          expect(updateSpy.calls.count()).toBe(1, "should update the item");
+          expect(updateSpy.calls.argsFor(0)[2].value).toBe(
+            "Luke Skywalker",
+            "should interpolate value"
+          );
+          expect(shareSpy.calls.count()).toBe(1, "should always try to share");
+        });
+    });
+    it("should update only if interpolation needed", () => {
+      const dataSpy = spyOn(common, "getItemDataAsJson").and.resolveTo({
+        value: "Larry"
+      });
+      const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
+      const shareSpy = spyOn(
+        shareHelper,
+        "shareTemplatesToGroups"
+      ).and.resolveTo([]);
+      return simpleTypes
+        .postProcess("3ef", "Web Map", [], {}, MOCK_USER_SESSION)
+        .then(() => {
+          expect(dataSpy.calls.count()).toBe(1, "should fetch data");
+          expect(dataSpy.calls.argsFor(0)[0]).toBe(
+            "3ef",
+            "should fetch data for specified item"
+          );
+          expect(updateSpy.calls.count()).toBe(0, "should not update the item");
+          expect(shareSpy.calls.count()).toBe(1, "should always try to share");
+        });
     });
   });
 });

@@ -2444,7 +2444,48 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
-  describe("shareItem", () => {
+  describe("shareItem ::", () => {
+    it("shared the item", done => {
+      const groupId: string = "grp1234567890";
+      const id: string = "itm1234567890";
+      fetchMock
+        .post(utils.PORTAL_SUBSET.restUrl + "/search", {
+          query: {
+            q: `id: itm1234567890 AND group: grp1234567890`,
+            start: 1,
+            num: 10,
+            sortField: "title"
+          },
+          total: 0,
+          start: 1,
+          nextStart: -1,
+          results: []
+        })
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/groups/grp1234567890?f=json&token=fake-token",
+          mockItems.getAGOLItem("Group")
+        )
+        .get(
+          utils.PORTAL_SUBSET.restUrl +
+            "/community/users/casey?f=json&token=fake-token",
+          mockItems.getAGOLUser(MOCK_USER_SESSION.username)
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/itm1234567890/share",
+          {
+            itemId: "itm1234567980",
+            notSharedWith: []
+          }
+        );
+      restHelpers
+        .shareItem(groupId, id, MOCK_USER_SESSION)
+        .then(() => done())
+        .catch(ex => {
+          done.fail();
+        });
+    });
     it("can handle error on shareItem", done => {
       const groupId: string = "grp1234567890";
       const id: string = "itm1234567890";

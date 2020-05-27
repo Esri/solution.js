@@ -28,6 +28,14 @@ describe("Module `deploySolutionFromTemplate`", () => {
       const actualResult = _getNewItemId(sourceId, templateDictionary);
       expect(actualResult).toEqual(sourceId);
     });
+    it("handles id found in template dictionary", () => {
+      const sourceId = "itm1234567890";
+      const templateDictionary = {
+        itm1234567890: { itemId: "bc4" }
+      };
+      const actualResult = _getNewItemId(sourceId, templateDictionary);
+      expect(actualResult).toEqual("bc4");
+    });
   });
 
   describe("_checkedReplaceAll", () => {

@@ -15,8 +15,8 @@
  */
 // @esri/solution-deployer implementedTypes example
 
-import * as creatorModuleMap from "@esri/solution-creator";
-import * as deployerModuleMap from "@esri/solution-deployer";
+import * as creator from "@esri/solution-creator";
+import * as deployer from "@esri/solution-deployer";
 
 export function implementedTypes(): string {
   let html: string =
@@ -196,8 +196,8 @@ function getImplementedTypes(title: string, typeNames: string[]): string {
 
   html += "<ul>";
   typeNames.forEach(typeName => {
-    const createable = creatorModuleMap.moduleMap[typeName];
-    const deployable = deployerModuleMap.moduleMap[typeName];
+    const createable = creator.moduleMap[typeName];
+    const deployable = deployer.moduleMap[typeName];
     if (
       typeof createable !== "undefined" &&
       createable !== null &&

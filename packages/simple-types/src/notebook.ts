@@ -16,8 +16,39 @@
 
 import * as common from "@esri/solution-common";
 import { _updateDependencies } from "./quickcapture";
+// Need to import collectively to enable spying
+import * as notebookHelpers from "./helpers/notebook-helpers";
 
-//#region Publish Process ---------------------------------------------------------------------------------------//
+// Delegate back to simple-types, which will in-turn delegate
+// to convertNotebookToTemplate at the correct point in the process
+// This is a temporary refactor step
+export function convertItemToTemplate(
+  solutionItemId: string,
+  itemInfo: any,
+  authentication: common.UserSession
+): Promise<common.IItemTemplate> {
+  return notebookHelpers.convertItemToTemplate(
+    solutionItemId,
+    itemInfo,
+    authentication
+  );
+}
+
+// Delegate back to simple-types
+// This is a temporary refactor step
+export function createItemFromTemplate(
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+  itemProgressCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return notebookHelpers.createItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
+  );
+}
 
 /**
  * Converts a Python Notebook item to a template.
@@ -25,7 +56,7 @@ import { _updateDependencies } from "./quickcapture";
  * @param itemTemplate template for the Python Notebook
  * @return templatized itemTemplate
  */
-export function convertItemToTemplate(
+export function convertNotebookToTemplate(
   itemTemplate: common.IItemTemplate
 ): common.IItemTemplate {
   // The templates data to process
@@ -56,10 +87,6 @@ export function convertItemToTemplate(
 
   return itemTemplate;
 }
-
-//#endregion
-
-//#region Deploy Process ---------------------------------------------------------------------------------------//
 
 /**
  * Update the notebooks data
@@ -95,37 +122,39 @@ export function fineTuneCreatedItem(
 }
 
 /**
- * Update the notebooks data
- *
- * @param itemId The AGO item id
- * @param data The notebooks data as JSON
- * @param authentication Credentials for the requests to the destination
- *
- * @return A promise that will resolve once any updates have been made
+ * Notebook specific post-processing actions
+ * @param itemId
+ * @param type
+ * @param templates
+ * @param templateDictionary
+ * @param authentication
  */
-export function postProcessItemDependencies(
+export function postProcess(
   itemId: string,
-  data: any,
+  type: string,
+  templates: common.IItemTemplate[],
+  templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return _updateItemData(itemId, data, authentication);
+  return common
+    .getItemDataAsJson(itemId, authentication)
+    .then(data => {
+      if (common.hasUnresolvedVariables(data)) {
+        const updatedData = common.replaceInTemplate(data, templateDictionary);
+        return notebookHelpers.updateNotebookData(
+          itemId,
+          updatedData,
+          authentication
+        );
+      } else {
+        return Promise.resolve({ success: true });
+      }
+    })
+    .then(_ => {
+      return notebookHelpers.shareTemplatesToGroups(
+        templates,
+        authentication,
+        templateDictionary
+      );
+    });
 }
-
-export function _updateItemData(
-  itemId: string,
-  data: any,
-  authentication: common.UserSession
-): Promise<any> {
-  return new Promise((resolve, reject) => {
-    const updateOptions: common.IItemUpdate = {
-      id: itemId,
-      data: common.jsonToBlob(data)
-    };
-    common.updateItem(updateOptions, authentication).then(
-      () => resolve(),
-      e => reject(common.fail(e))
-    );
-  });
-}
-
-//#endregion

@@ -1216,359 +1216,359 @@ describe("Module `deploySolutionItems`", () => {
     });
   });
 
-  describe("postProcessDependencies", () => {
-    if (typeof window !== "undefined") {
-      it("should update unresolved variables in an items data", done => {
-        const _templates: any[] = [
-          {
-            type: "Group",
-            itemId: "NEWABC123",
-            dependencies: []
-          },
-          {
-            type: "Workforce Project",
-            itemId: "NEW123ABC",
-            dependencies: []
-          }
-        ];
+  // describe("postProcessDependencies", () => {
+  //   if (typeof window !== "undefined") {
+  //     it("should update unresolved variables in an items data", done => {
+  //       const _templates: any[] = [
+  //         {
+  //           type: "Group",
+  //           itemId: "NEWABC123",
+  //           dependencies: []
+  //         },
+  //         {
+  //           type: "Workforce Project",
+  //           itemId: "NEW123ABC",
+  //           dependencies: []
+  //         }
+  //       ];
 
-        const templateDictionary: any = {
-          unresolved: {
-            itemId: "resolved"
-          }
-        };
+  //       const templateDictionary: any = {
+  //         unresolved: {
+  //           itemId: "resolved"
+  //         }
+  //       };
 
-        const workforceData: any = {
-          unresolvedVariable: "{{unresolved.itemId}}"
-        };
+  //       const workforceData: any = {
+  //         unresolvedVariable: "{{unresolved.itemId}}"
+  //       };
 
-        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
-          {
-            id: "NEWABC123",
-            type: "Group",
-            postProcess: false
-          },
-          {
-            id: "NEW123ABC",
-            type: "Workforce Project",
-            postProcess: true
-          }
-        ];
+  //       const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+  //         {
+  //           id: "NEWABC123",
+  //           type: "Group",
+  //           postProcess: false
+  //         },
+  //         {
+  //           id: "NEW123ABC",
+  //           type: "Workforce Project",
+  //           postProcess: true
+  //         }
+  //       ];
 
-        const updateUrl: string =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/NEW123ABC/update";
-        const expectedBody: string =
-          "f=json&text=%7B%22unresolvedVariable%22%3A%22resolved%22%7D&id=NEW123ABC&token=fake-token";
+  //       const updateUrl: string =
+  //         utils.PORTAL_SUBSET.restUrl +
+  //         "/content/users/casey/items/NEW123ABC/update";
+  //       const expectedBody: string =
+  //         "f=json&text=%7B%22unresolvedVariable%22%3A%22resolved%22%7D&id=NEW123ABC&token=fake-token";
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
-            workforceData
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/NEW123ABC/update",
-            utils.getSuccessResponse({ id: "NEW123ABC" })
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
+  //           workforceData
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/casey/items/NEW123ABC/update",
+  //           utils.getSuccessResponse({ id: "NEW123ABC" })
+  //         );
 
-        deploySolution
-          .postProcessDependencies(
-            _templates,
-            clonedSolutionsResponse,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(() => {
-            const options: fetchMock.MockOptions = fetchMock.lastOptions(
-              updateUrl
-            );
-            const fetchBody = (options as fetchMock.MockResponseObject).body;
-            expect(fetchBody).toEqual(expectedBody);
-            done();
-          }, done.fail);
-      });
+  //       deploySolution
+  //         .postProcessDependencies(
+  //           _templates,
+  //           clonedSolutionsResponse,
+  //           MOCK_USER_SESSION,
+  //           templateDictionary
+  //         )
+  //         .then(() => {
+  //           const options: fetchMock.MockOptions = fetchMock.lastOptions(
+  //             updateUrl
+  //           );
+  //           const fetchBody = (options as fetchMock.MockResponseObject).body;
+  //           expect(fetchBody).toEqual(expectedBody);
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("should update unresolved variables in Notebook item data", done => {
-        const _templates: any[] = [
-          {
-            type: "Notebook",
-            itemId: "NEW123ABC"
-          }
-        ];
+  //     it("should update unresolved variables in Notebook item data", done => {
+  //       const _templates: any[] = [
+  //         {
+  //           type: "Notebook",
+  //           itemId: "NEW123ABC"
+  //         }
+  //       ];
 
-        const templateDictionary: any = {
-          unresolved: {
-            itemId: "resolved"
-          }
-        };
+  //       const templateDictionary: any = {
+  //         unresolved: {
+  //           itemId: "resolved"
+  //         }
+  //       };
 
-        const notebookData: any = {
-          unresolvedVariable: "{{unresolved.itemId}}"
-        };
+  //       const notebookData: any = {
+  //         unresolvedVariable: "{{unresolved.itemId}}"
+  //       };
 
-        const expected: any = { unresolvedVariable: "resolved" };
+  //       const expected: any = { unresolvedVariable: "resolved" };
 
-        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
-          {
-            id: "NEW123ABC",
-            type: "Notebook",
-            postProcess: true
-          }
-        ];
+  //       const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+  //         {
+  //           id: "NEW123ABC",
+  //           type: "Notebook",
+  //           postProcess: true
+  //         }
+  //       ];
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
-            notebookData
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/NEW123ABC/update",
-            utils.getSuccessResponse({ id: "NEW123ABC" })
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
+  //           notebookData
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/casey/items/NEW123ABC/update",
+  //           utils.getSuccessResponse({ id: "NEW123ABC" })
+  //         );
 
-        spyOn(notebook, "postProcessItemDependencies").and.callThrough();
+  //       spyOn(notebook, "postProcessItemDependencies").and.callThrough();
 
-        deploySolution
-          .postProcessDependencies(
-            _templates,
-            clonedSolutionsResponse,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(() => {
-            expect(notebook.postProcessItemDependencies).toHaveBeenCalledWith(
-              clonedSolutionsResponse[0].id,
-              expected,
-              MOCK_USER_SESSION
-            );
-            done();
-          }, done.fail);
-      });
+  //       deploySolution
+  //         .postProcessDependencies(
+  //           _templates,
+  //           clonedSolutionsResponse,
+  //           MOCK_USER_SESSION,
+  //           templateDictionary
+  //         )
+  //         .then(() => {
+  //           expect(notebook.postProcessItemDependencies).toHaveBeenCalledWith(
+  //             clonedSolutionsResponse[0].id,
+  //             expected,
+  //             MOCK_USER_SESSION
+  //           );
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("should share items with groups", done => {
-        const _templates: any[] = [
-          {
-            type: "Group",
-            itemId: "NEWABC123",
-            dependencies: []
-          },
-          {
-            type: "Workforce Project",
-            itemId: "NEW123ABC",
-            dependencies: [],
-            groups: ["ABC123"]
-          }
-        ];
+  //     it("should share items with groups", done => {
+  //       const _templates: any[] = [
+  //         {
+  //           type: "Group",
+  //           itemId: "NEWABC123",
+  //           dependencies: []
+  //         },
+  //         {
+  //           type: "Workforce Project",
+  //           itemId: "NEW123ABC",
+  //           dependencies: [],
+  //           groups: ["ABC123"]
+  //         }
+  //       ];
 
-        const templateDictionary: any = {
-          ABC123: {
-            itemId: "NEWABC123"
-          },
-          "123ABC": {
-            itemId: "NEW123ABC"
-          },
-          unresolved: {
-            itemId: "resolved"
-          }
-        };
+  //       const templateDictionary: any = {
+  //         ABC123: {
+  //           itemId: "NEWABC123"
+  //         },
+  //         "123ABC": {
+  //           itemId: "NEW123ABC"
+  //         },
+  //         unresolved: {
+  //           itemId: "resolved"
+  //         }
+  //       };
 
-        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
-          {
-            id: "NEWABC123",
-            type: "Group",
-            postProcess: false
-          },
-          {
-            id: "NEW123ABC",
-            type: "Workforce Project",
-            postProcess: false
-          }
-        ];
+  //       const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+  //         {
+  //           id: "NEWABC123",
+  //           type: "Group",
+  //           postProcess: false
+  //         },
+  //         {
+  //           id: "NEW123ABC",
+  //           type: "Workforce Project",
+  //           postProcess: false
+  //         }
+  //       ];
 
-        const groupResponse: any = {
-          id: "ABC123",
-          title:
-            "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
-          isInvitationOnly: true,
-          owner: "casey",
-          description:
-            "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
-          snippet: null,
-          tags: ["workforce"],
-          phone: null,
-          sortField: "title",
-          sortOrder: "asc",
-          isViewOnly: true,
-          thumbnail: null,
-          created: 1561667160000,
-          modified: 1561667160000,
-          access: "public",
-          capabilities: [],
-          isFav: false,
-          isReadOnly: false,
-          protected: false,
-          autoJoin: false,
-          notificationsEnabled: false,
-          provider: null,
-          providerGroupName: null,
-          leavingDisallowed: false,
-          hiddenMembers: false,
-          displaySettings: {
-            itemTypes: ""
-          },
-          userMembership: {
-            username: "casey",
-            memberType: "owner",
-            applications: 0
-          },
-          collaborationInfo: {}
-        };
+  //       const groupResponse: any = {
+  //         id: "ABC123",
+  //         title:
+  //           "Dam Inspection Assignments_9402a6f176f54415ad4b8cb07598f42d_20190627_2025_59807",
+  //         isInvitationOnly: true,
+  //         owner: "casey",
+  //         description:
+  //           "<span style='color: rgb(77, 77, 77); font-family: &quot;Lucida Grande&quot;, &quot;Segoe UI&quot;, Arial, sans-serif; font-size: 14px;'>A group used to configure the Dam Inspection Assignments application.</span>",
+  //         snippet: null,
+  //         tags: ["workforce"],
+  //         phone: null,
+  //         sortField: "title",
+  //         sortOrder: "asc",
+  //         isViewOnly: true,
+  //         thumbnail: null,
+  //         created: 1561667160000,
+  //         modified: 1561667160000,
+  //         access: "public",
+  //         capabilities: [],
+  //         isFav: false,
+  //         isReadOnly: false,
+  //         protected: false,
+  //         autoJoin: false,
+  //         notificationsEnabled: false,
+  //         provider: null,
+  //         providerGroupName: null,
+  //         leavingDisallowed: false,
+  //         hiddenMembers: false,
+  //         displaySettings: {
+  //           itemTypes: ""
+  //         },
+  //         userMembership: {
+  //           username: "casey",
+  //           memberType: "owner",
+  //           applications: 0
+  //         },
+  //         collaborationInfo: {}
+  //       };
 
-        fetchMock
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/users/casey?f=json&token=fake-token",
-            {}
-          )
-          .get(
-            utils.PORTAL_SUBSET.restUrl +
-              "/community/groups/NEWABC123?f=json&token=fake-token",
-            groupResponse
-          )
-          .post(utils.PORTAL_SUBSET.restUrl + "/search", {
-            results: []
-          })
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/NEW123ABC/share",
-            { notSharedWith: [], itemId: "NEW123ABC" }
-          );
+  //       fetchMock
+  //         .get(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/community/users/casey?f=json&token=fake-token",
+  //           {}
+  //         )
+  //         .get(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/community/groups/NEWABC123?f=json&token=fake-token",
+  //           groupResponse
+  //         )
+  //         .post(utils.PORTAL_SUBSET.restUrl + "/search", {
+  //           results: []
+  //         })
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/casey/items/NEW123ABC/share",
+  //           { notSharedWith: [], itemId: "NEW123ABC" }
+  //         );
 
-        deploySolution
-          .postProcessDependencies(
-            _templates,
-            clonedSolutionsResponse,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(() => {
-            done();
-          }, done.fail);
-      });
+  //       deploySolution
+  //         .postProcessDependencies(
+  //           _templates,
+  //           clonedSolutionsResponse,
+  //           MOCK_USER_SESSION,
+  //           templateDictionary
+  //         )
+  //         .then(() => {
+  //           done();
+  //         }, done.fail);
+  //     });
 
-      it("should handle error on update", done => {
-        const _templates: any[] = [
-          {
-            type: "Group",
-            itemId: "NEWABC123",
-            dependencies: []
-          },
-          {
-            type: "Workforce Project",
-            itemId: "NEW123ABC",
-            dependencies: []
-          }
-        ];
+  //     it("should handle error on update", done => {
+  //       const _templates: any[] = [
+  //         {
+  //           type: "Group",
+  //           itemId: "NEWABC123",
+  //           dependencies: []
+  //         },
+  //         {
+  //           type: "Workforce Project",
+  //           itemId: "NEW123ABC",
+  //           dependencies: []
+  //         }
+  //       ];
 
-        const templateDictionary: any = {
-          unresolved: {
-            itemId: "resolved"
-          }
-        };
+  //       const templateDictionary: any = {
+  //         unresolved: {
+  //           itemId: "resolved"
+  //         }
+  //       };
 
-        const workforceData: any = {
-          unresolvedVariable: "{{unresolved.itemId}}"
-        };
+  //       const workforceData: any = {
+  //         unresolvedVariable: "{{unresolved.itemId}}"
+  //       };
 
-        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
-          {
-            id: "NEWABC123",
-            type: "Group",
-            postProcess: false
-          },
-          {
-            id: "NEW123ABC",
-            type: "Workforce Project",
-            postProcess: true
-          }
-        ];
+  //       const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+  //         {
+  //           id: "NEWABC123",
+  //           type: "Group",
+  //           postProcess: false
+  //         },
+  //         {
+  //           id: "NEW123ABC",
+  //           type: "Workforce Project",
+  //           postProcess: true
+  //         }
+  //       ];
 
-        fetchMock
-          .post(
-            utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
-            workforceData
-          )
-          .post(
-            utils.PORTAL_SUBSET.restUrl +
-              "/content/users/casey/items/NEW123ABC/update",
-            mockItems.get400Failure()
-          );
+  //       fetchMock
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
+  //           workforceData
+  //         )
+  //         .post(
+  //           utils.PORTAL_SUBSET.restUrl +
+  //             "/content/users/casey/items/NEW123ABC/update",
+  //           mockItems.get400Failure()
+  //         );
 
-        deploySolution
-          .postProcessDependencies(
-            _templates,
-            clonedSolutionsResponse,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(() => done.fail(), done);
-      });
+  //       deploySolution
+  //         .postProcessDependencies(
+  //           _templates,
+  //           clonedSolutionsResponse,
+  //           MOCK_USER_SESSION,
+  //           templateDictionary
+  //         )
+  //         .then(() => done.fail(), done);
+  //     });
 
-      it("should handle error on get data", done => {
-        const _templates: any[] = [
-          {
-            type: "Group",
-            itemId: "NEWABC123",
-            dependencies: []
-          },
-          {
-            type: "Workforce Project",
-            itemId: "NEW123ABC",
-            dependencies: []
-          }
-        ];
+  //     it("should handle error on get data", done => {
+  //       const _templates: any[] = [
+  //         {
+  //           type: "Group",
+  //           itemId: "NEWABC123",
+  //           dependencies: []
+  //         },
+  //         {
+  //           type: "Workforce Project",
+  //           itemId: "NEW123ABC",
+  //           dependencies: []
+  //         }
+  //       ];
 
-        const templateDictionary: any = {
-          unresolved: {
-            itemId: "resolved"
-          }
-        };
+  //       const templateDictionary: any = {
+  //         unresolved: {
+  //           itemId: "resolved"
+  //         }
+  //       };
 
-        const workforceData: any = {
-          unresolvedVariable: "{{unresolved.itemId}}"
-        };
+  //       const workforceData: any = {
+  //         unresolvedVariable: "{{unresolved.itemId}}"
+  //       };
 
-        const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
-          {
-            id: "NEWABC123",
-            type: "Group",
-            postProcess: false
-          },
-          {
-            id: "NEW123ABC",
-            type: "Workforce Project",
-            postProcess: true
-          }
-        ];
+  //       const clonedSolutionsResponse: common.ICreateItemFromTemplateResponse[] = [
+  //         {
+  //           id: "NEWABC123",
+  //           type: "Group",
+  //           postProcess: false
+  //         },
+  //         {
+  //           id: "NEW123ABC",
+  //           type: "Workforce Project",
+  //           postProcess: true
+  //         }
+  //       ];
 
-        fetchMock.post(
-          utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
-          mockItems.get400Failure()
-        );
+  //       fetchMock.post(
+  //         utils.PORTAL_SUBSET.restUrl + "/content/items/NEW123ABC/data",
+  //         mockItems.get400Failure()
+  //       );
 
-        deploySolution
-          .postProcessDependencies(
-            _templates,
-            clonedSolutionsResponse,
-            MOCK_USER_SESSION,
-            templateDictionary
-          )
-          .then(done.fail, done);
-      });
-    }
-  });
+  //       deploySolution
+  //         .postProcessDependencies(
+  //           _templates,
+  //           clonedSolutionsResponse,
+  //           MOCK_USER_SESSION,
+  //           templateDictionary
+  //         )
+  //         .then(done.fail, done);
+  //     });
+  //   }
+  // });
 
   describe("_moveResourcesIntoTemplate", () => {
     it("can move a thumbnail resource into a template", () => {
@@ -1598,6 +1598,48 @@ describe("Module `deploySolutionItems`", () => {
               "?token=fake-token&w=400"
           );
         });
+    });
+  });
+
+  describe("_getGroupUpdates:: ", () => {
+    it("handles template with no groups", () => {
+      const shareSpy = spyOn(common, "shareItem").and.resolveTo();
+      const tmpl = {} as common.IItemTemplate;
+      const td = {};
+      // TODO: refactor target function to return a Promise vs an array of promises
+      return Promise.all(
+        deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, {})
+      ).then(() => {
+        expect(shareSpy.calls.count()).toBe(
+          0,
+          "should not make share calls if no groups"
+        );
+      });
+    });
+    it("makes sharing calls for all groups", () => {
+      const shareSpy = spyOn(common, "shareItem").and.resolveTo();
+      const tmpl = {
+        groups: ["bc4", "bc5"],
+        itemId: "3ef"
+      } as common.IItemTemplate;
+      const td = {
+        bc4: {
+          itemId: "bc6"
+        },
+        bc5: {
+          itemId: "bc7"
+        }
+      };
+      // TODO: refactor target function to return a Promise vs an array of promises
+      return Promise.all(
+        deploySolution._getGroupUpdates(tmpl, MOCK_USER_SESSION, td)
+      ).then(() => {
+        expect(shareSpy.calls.count()).toBe(2, "should share to both groups");
+        expect(shareSpy.calls.argsFor(0)[0]).toBe("bc6");
+        expect(shareSpy.calls.argsFor(0)[1]).toBe("3ef");
+        expect(shareSpy.calls.argsFor(1)[0]).toBe("bc7");
+        expect(shareSpy.calls.argsFor(1)[1]).toBe("3ef");
+      });
     });
   });
 });

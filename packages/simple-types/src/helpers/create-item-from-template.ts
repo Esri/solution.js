@@ -1,0 +1,256 @@
+import * as common from "@esri/solution-common";
+import * as notebook from "../notebook";
+import * as webmappingapplication from "../webmappingapplication";
+import * as workforce from "../workforce";
+import * as quickcapture from "../quickcapture";
+import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
+
+export function createItemFromTemplate(
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+  itemProgressCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
+    // Interrupt process if progress callback returns `false`
+    if (
+      !itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Started,
+        0
+      )
+    ) {
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Ignored,
+        0
+      );
+      resolve(generateEmptyCreationResponse(template.type));
+    } else {
+      // Replace the templatized symbols in a copy of the template
+      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
+      newItemTemplate = common.replaceInTemplate(
+        newItemTemplate,
+        templateDictionary
+      );
+
+      // Create the item, then update its URL with its new id
+
+      // some fieldnames are used as keys for objects
+      // when we templatize field references for web applications we first stringify the components of the
+      // web application that could contain field references and then serach for them with a regular expression.
+      // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
+      if (template.type === "Web Mapping Application" && template.data) {
+        newItemTemplate = JSON.parse(
+          common.replaceInTemplate(
+            JSON.stringify(newItemTemplate),
+            templateDictionary
+          )
+        );
+      }
+      common
+        .createItemWithData(
+          newItemTemplate.item,
+          newItemTemplate.data,
+          destinationAuthentication,
+          templateDictionary.folderId
+        )
+        .then(
+          createResponse => {
+            // Interrupt process if progress callback returns `false`
+            if (
+              !itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Created,
+                template.estimatedDeploymentCostFactor / 2,
+                createResponse.id
+              )
+            ) {
+              itemProgressCallback(
+                template.itemId,
+                common.EItemProgressStatus.Cancelled,
+                0
+              );
+              common
+                .removeItem(createResponse.id, destinationAuthentication)
+                .then(
+                  () => resolve(generateEmptyCreationResponse(template.type)),
+                  () => resolve(generateEmptyCreationResponse(template.type))
+                );
+            } else {
+              // Add the new item to the settings
+              templateDictionary[template.itemId] = {
+                itemId: createResponse.id
+              };
+              newItemTemplate.itemId = createResponse.id;
+
+              // Set the appItemId manually to get around cases where the path was incorrectly set
+              // in legacy deployments
+              if (
+                newItemTemplate.type === "Web Mapping Application" &&
+                template.data
+              ) {
+                common.setProp(
+                  newItemTemplate,
+                  "data.appItemId",
+                  createResponse.id
+                );
+              }
+              const postProcess: boolean = common.hasUnresolvedVariables(
+                newItemTemplate.data
+              );
+
+              // Update the template again now that we have the new item id
+              const originalURL = newItemTemplate.item.url;
+              newItemTemplate = common.replaceInTemplate(
+                newItemTemplate,
+                templateDictionary
+              );
+
+              // Update relationships
+              let relationshipsDef = Promise.resolve(
+                [] as common.IStatusResponse[]
+              );
+              if (newItemTemplate.relatedItems) {
+                // Templatize references in relationships obj
+                const updatedRelatedItems = common.replaceInTemplate(
+                  common.templatizeIds(newItemTemplate.relatedItems),
+                  templateDictionary
+                ) as common.IRelatedItems[];
+
+                // Add the relationships
+                relationshipsDef = common.addForwardItemRelationships(
+                  newItemTemplate.itemId,
+                  updatedRelatedItems,
+                  destinationAuthentication
+                );
+              }
+
+              // Check for extra processing for web mapping application et al.
+              let customProcDef: Promise<void>;
+              if (
+                template.type === "Web Mapping Application" &&
+                template.data &&
+                common.hasAnyKeyword(template, [
+                  "WAB2D",
+                  "WAB3D",
+                  "Web AppBuilder"
+                ])
+              ) {
+                // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
+                customProcDef = webmappingapplication.fineTuneCreatedItem(
+                  template,
+                  newItemTemplate,
+                  templateDictionary,
+                  destinationAuthentication
+                );
+              } else if (template.type === "Workforce Project") {
+                customProcDef = workforce.fineTuneCreatedItem(
+                  newItemTemplate,
+                  destinationAuthentication
+                );
+              } else if (template.type === "Notebook") {
+                customProcDef = notebook.fineTuneCreatedItem(
+                  template,
+                  newItemTemplate,
+                  templateDictionary,
+                  destinationAuthentication
+                );
+              } else if (originalURL !== newItemTemplate.item.url) {
+                // For web mapping applications that are not Web AppBuilder apps
+                customProcDef = new Promise<void>((resolve2, reject2) => {
+                  common
+                    .updateItemURL(
+                      createResponse.id,
+                      newItemTemplate.item.url,
+                      destinationAuthentication
+                    )
+                    .then(() => resolve2(), reject2);
+                });
+              } else {
+                customProcDef = Promise.resolve();
+              }
+
+              Promise.all([relationshipsDef, customProcDef]).then(
+                results => {
+                  const [relationships, customProcs] = results;
+
+                  let updateResourceDef: Promise<void> = Promise.resolve();
+                  if (template.type === "QuickCapture Project") {
+                    updateResourceDef = quickcapture.fineTuneCreatedItem(
+                      newItemTemplate,
+                      destinationAuthentication
+                    );
+                  }
+                  updateResourceDef.then(
+                    () => {
+                      // Interrupt process if progress callback returns `false`
+                      if (
+                        !itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Finished,
+                          template.estimatedDeploymentCostFactor / 2,
+                          createResponse.id
+                        )
+                      ) {
+                        itemProgressCallback(
+                          template.itemId,
+                          common.EItemProgressStatus.Cancelled,
+                          0
+                        );
+                        common
+                          .removeItem(
+                            createResponse.id,
+                            destinationAuthentication
+                          )
+                          .then(
+                            () =>
+                              resolve(
+                                generateEmptyCreationResponse(template.type)
+                              ),
+                            () =>
+                              resolve(
+                                generateEmptyCreationResponse(template.type)
+                              )
+                          );
+                      } else {
+                        resolve({
+                          id: createResponse.id,
+                          type: newItemTemplate.type,
+                          postProcess: postProcess
+                        });
+                      }
+                    },
+                    () => {
+                      itemProgressCallback(
+                        template.itemId,
+                        common.EItemProgressStatus.Failed,
+                        0
+                      );
+                      resolve(generateEmptyCreationResponse(template.type)); // fails to update after fine tuning
+                    }
+                  );
+                },
+                () => {
+                  itemProgressCallback(
+                    template.itemId,
+                    common.EItemProgressStatus.Failed,
+                    0
+                  );
+                  resolve(generateEmptyCreationResponse(template.type)); // fails to deploy all resources to the item
+                }
+              );
+            }
+          },
+          () => {
+            itemProgressCallback(
+              template.itemId,
+              common.EItemProgressStatus.Failed,
+              0
+            );
+            resolve(generateEmptyCreationResponse(template.type)); // fails to create item
+          }
+        );
+    }
+  });
+}

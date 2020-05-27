@@ -56,7 +56,7 @@ typings/
 .yarn-integrity
 
 #yalc files and folders
-.yalc 
+.yalc/
 yalc.lock
 
 # dotenv environment variables file
@@ -93,10 +93,12 @@ __*
 .vscode/
 
 # Temporary build products
+demos/**/*.js
+demos/**/*.map
+demos/**/*.d.ts
 packages/**/*.js
 packages/**/*.map
 packages/**/*.d.ts
-!packages/**/tslib.js
 
 TODO.md
 demos/deploy-harness

@@ -30,5 +30,6 @@ export * from "./polyfills";
 export * from "./resourceHelpers";
 export * from "./restHelpers";
 export * from "./restHelpersGet";
+export * from "./sharing";
 export * from "./templatization";
 export * from "./migrator";

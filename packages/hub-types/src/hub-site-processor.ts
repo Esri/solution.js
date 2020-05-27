@@ -163,7 +163,7 @@ export function convertItemToTemplate(
 
 /* istanbul ignore next */
 export function postProcess(model: any, items: any[]): Promise<boolean> {
-  console.info(`Hub Page is not supported yet`);
+  console.info(`Hub Site is not supported yet`);
   return Promise.resolve(true);
 }
 

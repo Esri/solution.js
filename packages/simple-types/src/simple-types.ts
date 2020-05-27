@@ -20,414 +20,62 @@
  * @module simple-types
  */
 
-import * as common from "@esri/solution-common";
 import * as dashboard from "./dashboard";
-import * as form from "./form";
-import * as notebook from "./notebook";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
-import * as workforce from "./workforce";
-import * as quickcapture from "./quickcapture";
 
-// ------------------------------------------------------------------------------------------------------------------ //
+import {
+  getItemDataAsJson,
+  hasUnresolvedVariables,
+  ICreateItemFromTemplateResponse,
+  IDatasourceInfo,
+  IItemProgressCallback,
+  IItemTemplate,
+  replaceInTemplate,
+  updateItemExtended,
+  UserSession
+} from "@esri/solution-common";
 
+// Need to import collectively to enable spying
+import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
+
+/**
+ * Delegate to the simpleType converter
+ * @param solutionItemId
+ * @param itemInfo
+ * @param authentication
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession
-): Promise<common.IItemTemplate> {
-  return new Promise<common.IItemTemplate>((resolve, reject) => {
-    // Init template
-    const itemTemplate: common.IItemTemplate = common.createInitializedItemTemplate(
-      itemInfo
-    );
-
-    // Templatize item info property values
-    itemTemplate.item.id = common.templatizeTerm(
-      itemTemplate.item.id,
-      itemTemplate.item.id,
-      ".itemId"
-    );
-
-    // Request related items
-    const relatedPromise = common.getItemRelatedItemsInSameDirection(
-      itemTemplate.itemId,
-      "forward",
-      authentication
-    );
-
-    // Perform type-specific handling
-    let dataPromise = Promise.resolve({});
-    switch (itemInfo.type) {
-      case "Dashboard":
-      case "Feature Service":
-      case "Project Package":
-      case "Workforce Project":
-      case "Web Map":
-      case "Web Mapping Application":
-      case "Notebook":
-        dataPromise = new Promise((resolveJSON, rejectJSON) => {
-          common
-            .getItemDataAsJson(itemTemplate.itemId, authentication)
-            .then(json => resolveJSON(json), rejectJSON);
-        });
-        break;
-      case "Form":
-        dataPromise = common.getItemDataAsFile(
-          itemTemplate.itemId,
-          itemTemplate.item.name,
-          authentication
-        );
-        break;
-      case "QuickCapture Project":
-        dataPromise = common.getItemResourcesFiles(
-          itemTemplate.itemId,
-          authentication
-        );
-        break;
-    }
-
-    // Errors are handled as resolved empty values; this means that there's no `reject` clause to handle, hence:
-    // tslint:disable-next-line:no-floating-promises
-    Promise.all([dataPromise, relatedPromise]).then(
-      responses => {
-        const [itemDataResponse, relatedItemsResponse] = responses;
-        itemTemplate.data = itemDataResponse;
-        const relationships = relatedItemsResponse;
-
-        // Save the mappings to related items & add those items to the dependencies, but not WMA Code Attachments
-        itemTemplate.dependencies = [] as string[];
-        itemTemplate.relatedItems = [] as common.IRelatedItems[];
-
-        relationships.forEach(relationship => {
-          /* istanbul ignore else */
-          if (relationship.relationshipType !== "WMA2Code") {
-            itemTemplate.relatedItems!.push(relationship);
-            relationship.relatedItemIds.forEach(relatedItemId => {
-              if (itemTemplate.dependencies.indexOf(relatedItemId) < 0) {
-                itemTemplate.dependencies.push(relatedItemId);
-              }
-            });
-          }
-        });
-
-        let wrapupPromise = Promise.resolve();
-        let webappPromise = Promise.resolve(itemTemplate);
-        switch (itemInfo.type) {
-          case "Dashboard":
-            dashboard.convertItemToTemplate(itemTemplate, authentication);
-            break;
-          case "Form":
-            // Store the form's data in the solution resources, not in template
-            itemTemplate.data = null;
-            form.convertItemToTemplate(itemTemplate);
-
-            wrapupPromise = new Promise(
-              (resolveFormStorage, rejectFormStorage) => {
-                common
-                  .storeFormItemFiles(
-                    itemTemplate,
-                    itemDataResponse,
-                    solutionItemId,
-                    authentication
-                  )
-                  .then(formFilenames => {
-                    // update the templates resources
-                    itemTemplate.resources = itemTemplate.resources.concat(
-                      formFilenames
-                    );
-                    resolveFormStorage();
-                  }, rejectFormStorage);
-              }
-            );
-            break;
-          case "Notebook":
-            notebook.convertItemToTemplate(itemTemplate);
-            break;
-          case "Web Map":
-            webappPromise = webmap.convertItemToTemplate(
-              itemTemplate,
-              authentication
-            );
-            break;
-          case "Web Mapping Application":
-            if (itemDataResponse) {
-              webappPromise = webmappingapplication.convertItemToTemplate(
-                itemTemplate,
-                authentication
-              );
-            }
-            break;
-          case "Workforce Project":
-            workforce.convertItemToTemplate(itemTemplate);
-            break;
-          case "QuickCapture Project":
-            webappPromise = quickcapture.convertItemToTemplate(itemTemplate);
-            break;
-        }
-
-        wrapupPromise.then(
-          () => {
-            webappPromise.then(resolve, err => reject(common.fail(err)));
-          },
-          err => reject(common.fail(err))
-        );
-      },
-      error => {
-        reject(error);
-      }
-    );
-  });
+  authentication: UserSession
+): Promise<IItemTemplate> {
+  return simpleTypeHelpers.convertItemToTemplate(
+    solutionItemId,
+    itemInfo,
+    authentication
+  );
 }
 
+/**
+ * Delegate to simpleType creator
+ * @param template
+ * @param templateDictionary
+ * @param destinationAuthentication
+ * @param itemProgressCallback
+ */
 export function createItemFromTemplate(
-  template: common.IItemTemplate,
+  template: IItemTemplate,
   templateDictionary: any,
-  destinationAuthentication: common.UserSession,
-  itemProgressCallback: common.IItemProgressCallback
-): Promise<common.ICreateItemFromTemplateResponse> {
-  return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
-    // Interrupt process if progress callback returns `false`
-    if (
-      !itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Started,
-        0
-      )
-    ) {
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Ignored,
-        0
-      );
-      resolve(_generateEmptyCreationResponse(template.type));
-    } else {
-      // Replace the templatized symbols in a copy of the template
-      let newItemTemplate: common.IItemTemplate = common.cloneObject(template);
-      newItemTemplate = common.replaceInTemplate(
-        newItemTemplate,
-        templateDictionary
-      );
-
-      // Create the item, then update its URL with its new id
-
-      // some fieldnames are used as keys for objects
-      // when we templatize field references for web applications we first stringify the components of the
-      // web application that could contain field references and then serach for them with a regular expression.
-      // We also need to stringify the web application when de-templatizing so it will find all of these occurrences as well.
-      if (template.type === "Web Mapping Application" && template.data) {
-        newItemTemplate = JSON.parse(
-          common.replaceInTemplate(
-            JSON.stringify(newItemTemplate),
-            templateDictionary
-          )
-        );
-      }
-      common
-        .createItemWithData(
-          newItemTemplate.item,
-          newItemTemplate.data,
-          destinationAuthentication,
-          templateDictionary.folderId
-        )
-        .then(
-          createResponse => {
-            // Interrupt process if progress callback returns `false`
-            if (
-              !itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Created,
-                template.estimatedDeploymentCostFactor / 2,
-                createResponse.id
-              )
-            ) {
-              itemProgressCallback(
-                template.itemId,
-                common.EItemProgressStatus.Cancelled,
-                0
-              );
-              common
-                .removeItem(createResponse.id, destinationAuthentication)
-                .then(
-                  () => resolve(_generateEmptyCreationResponse(template.type)),
-                  () => resolve(_generateEmptyCreationResponse(template.type))
-                );
-            } else {
-              // Add the new item to the settings
-              templateDictionary[template.itemId] = {
-                itemId: createResponse.id
-              };
-              newItemTemplate.itemId = createResponse.id;
-
-              // Set the appItemId manually to get around cases where the path was incorrectly set
-              // in legacy deployments
-              if (
-                newItemTemplate.type === "Web Mapping Application" &&
-                template.data
-              ) {
-                common.setProp(
-                  newItemTemplate,
-                  "data.appItemId",
-                  createResponse.id
-                );
-              }
-              const postProcess: boolean = common.hasUnresolvedVariables(
-                newItemTemplate.data
-              );
-
-              // Update the template again now that we have the new item id
-              const originalURL = newItemTemplate.item.url;
-              newItemTemplate = common.replaceInTemplate(
-                newItemTemplate,
-                templateDictionary
-              );
-
-              // Update relationships
-              let relationshipsDef = Promise.resolve(
-                [] as common.IStatusResponse[]
-              );
-              if (newItemTemplate.relatedItems) {
-                // Templatize references in relationships obj
-                const updatedRelatedItems = common.replaceInTemplate(
-                  common.templatizeIds(newItemTemplate.relatedItems),
-                  templateDictionary
-                ) as common.IRelatedItems[];
-
-                // Add the relationships
-                relationshipsDef = common.addForwardItemRelationships(
-                  newItemTemplate.itemId,
-                  updatedRelatedItems,
-                  destinationAuthentication
-                );
-              }
-
-              // Check for extra processing for web mapping application et al.
-              let customProcDef: Promise<void>;
-              if (
-                template.type === "Web Mapping Application" &&
-                template.data &&
-                common.hasAnyKeyword(template, [
-                  "WAB2D",
-                  "WAB3D",
-                  "Web AppBuilder"
-                ])
-              ) {
-                // If this is a Web AppBuilder application, we will create a Code Attachment for downloading
-                customProcDef = webmappingapplication.fineTuneCreatedItem(
-                  template,
-                  newItemTemplate,
-                  templateDictionary,
-                  destinationAuthentication
-                );
-              } else if (template.type === "Workforce Project") {
-                customProcDef = workforce.fineTuneCreatedItem(
-                  newItemTemplate,
-                  destinationAuthentication
-                );
-              } else if (template.type === "Notebook") {
-                customProcDef = notebook.fineTuneCreatedItem(
-                  template,
-                  newItemTemplate,
-                  templateDictionary,
-                  destinationAuthentication
-                );
-              } else if (originalURL !== newItemTemplate.item.url) {
-                // For web mapping applications that are not Web AppBuilder apps
-                customProcDef = new Promise<void>((resolve2, reject2) => {
-                  common
-                    .updateItemURL(
-                      createResponse.id,
-                      newItemTemplate.item.url,
-                      destinationAuthentication
-                    )
-                    .then(() => resolve2(), reject2);
-                });
-              } else {
-                customProcDef = Promise.resolve();
-              }
-
-              Promise.all([relationshipsDef, customProcDef]).then(
-                results => {
-                  const [relationships, customProcs] = results;
-
-                  let updateResourceDef: Promise<void> = Promise.resolve();
-                  if (template.type === "QuickCapture Project") {
-                    updateResourceDef = quickcapture.fineTuneCreatedItem(
-                      newItemTemplate,
-                      destinationAuthentication
-                    );
-                  }
-                  updateResourceDef.then(
-                    () => {
-                      // Interrupt process if progress callback returns `false`
-                      if (
-                        !itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Finished,
-                          template.estimatedDeploymentCostFactor / 2,
-                          createResponse.id
-                        )
-                      ) {
-                        itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Cancelled,
-                          0
-                        );
-                        common
-                          .removeItem(
-                            createResponse.id,
-                            destinationAuthentication
-                          )
-                          .then(
-                            () =>
-                              resolve(
-                                _generateEmptyCreationResponse(template.type)
-                              ),
-                            () =>
-                              resolve(
-                                _generateEmptyCreationResponse(template.type)
-                              )
-                          );
-                      } else {
-                        resolve({
-                          id: createResponse.id,
-                          type: newItemTemplate.type,
-                          postProcess: postProcess
-                        });
-                      }
-                    },
-                    () => {
-                      itemProgressCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Failed,
-                        0
-                      );
-                      resolve(_generateEmptyCreationResponse(template.type)); // fails to update after fine tuning
-                    }
-                  );
-                },
-                () => {
-                  itemProgressCallback(
-                    template.itemId,
-                    common.EItemProgressStatus.Failed,
-                    0
-                  );
-                  resolve(_generateEmptyCreationResponse(template.type)); // fails to deploy all resources to the item
-                }
-              );
-            }
-          },
-          () => {
-            itemProgressCallback(
-              template.itemId,
-              common.EItemProgressStatus.Failed,
-              0
-            );
-            resolve(_generateEmptyCreationResponse(template.type)); // fails to create item
-          }
-        );
-    }
-  });
+  destinationAuthentication: UserSession,
+  itemProgressCallback: IItemProgressCallback
+): Promise<ICreateItemFromTemplateResponse> {
+  return simpleTypeHelpers.createItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
+  );
 }
 
 /**
@@ -440,10 +88,10 @@ export function createItemFromTemplate(
  * @return The updated solution template
  */
 export function postProcessFieldReferences(
-  solutionTemplate: common.IItemTemplate,
-  datasourceInfos: common.IDatasourceInfo[],
+  solutionTemplate: IItemTemplate,
+  datasourceInfos: IDatasourceInfo[],
   type: string
-): common.IItemTemplate {
+): IItemTemplate {
   switch (type) {
     case "Web Mapping Application":
       webmappingapplication.postProcessFieldReferences(
@@ -460,40 +108,41 @@ export function postProcessFieldReferences(
   }
   return solutionTemplate;
 }
-
 /**
- * Items that require unique updates
- *
- * @param itemId The AGO item id
- * @param type The AGO item type
- * @param data The notebooks data as JSON
- * @param authentication Credentials for the requests to the destination
- *
- * @return A promise that will resolve once any updates have been made
+ * Simple Type post-processing actions
+ * @param itemId
+ * @param type
+ * @param templates
+ * @param templateDictionary
+ * @param authentication
  */
-export function postProcessItemDependencies(
+export function postProcess(
   itemId: string,
   type: string,
-  data: any,
-  authentication: common.UserSession
+  templates: IItemTemplate[],
+  templateDictionary: any,
+  authentication: UserSession
 ): Promise<any> {
-  let p: Promise<any> = Promise.resolve();
-  switch (type) {
-    case "Notebook":
-      p = notebook.postProcessItemDependencies(itemId, data, authentication);
-      break;
-  }
-  return p;
-}
-
-// ------------------------------------------------------------------------------------------------------------------ //
-
-export function _generateEmptyCreationResponse(
-  templateType: string
-): common.ICreateItemFromTemplateResponse {
-  return {
-    id: "",
-    type: templateType,
-    postProcess: false
-  };
+  return getItemDataAsJson(itemId, authentication)
+    .then(data => {
+      if (hasUnresolvedVariables(data)) {
+        const updatedData = replaceInTemplate(data, templateDictionary);
+        // TODO: update return type on updateItemExtended
+        return updateItemExtended(
+          itemId,
+          { id: itemId },
+          updatedData,
+          authentication
+        ) as Promise<any>;
+      } else {
+        return Promise.resolve({ success: true });
+      }
+    })
+    .then(_ => {
+      return simpleTypeHelpers.shareTemplatesToGroups(
+        templates,
+        authentication,
+        templateDictionary
+      );
+    });
 }

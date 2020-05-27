@@ -6,8 +6,9 @@ node_js:
   - 12
   - 10
   - 8
-before_script:
-  - npm install
+# travis will run  `npm ci` which does the install
+# before_script:
+#   - npm install
 script:
   - npm run test:ci
 deploy:
