@@ -65,7 +65,6 @@
       </div>
     </div>
   </div>
-  
 
   <script src="https://requirejs.org/docs/release/2.3.6/minified/require.js"></script>
   <script>
@@ -73,6 +72,7 @@
     require.config({
       paths: {
         "tslib": "node_modules/tslib/tslib",
+
         // load the local versions
         "@esri/arcgis-rest-auth": "node_modules/@esri/arcgis-rest-auth/dist/umd/auth.umd.min",
         "@esri/arcgis-rest-feature-layer": "node_modules/@esri/arcgis-rest-feature-layer/dist/umd/feature-layer.umd.min",
@@ -82,7 +82,7 @@
         "@esri/hub-common": "node_modules/@esri/hub-common/dist/umd/common.umd",
         "@esri/hub-sites": "node_modules/@esri/hub-sites/dist/umd/sites.umd",
         "@esri/hub-initiatives": "node_modules/@esri/hub-initiatives/dist/umd/initiatives.umd",
-        
+
         // load the unminified so we can debug things
         "@esri/solution-common": "node_modules/@esri/solution-common/dist/umd/common.umd",
         "@esri/solution-deployer": "node_modules/@esri/solution-deployer/dist/umd/deployer.umd",
@@ -109,7 +109,7 @@
 
           // use the manually entered value, but fall back to the select list
           var solutionId = document.getElementById("solutionId").value || document.getElementById('id').value;
-  
+
           main.deploySolution(
             solutionId,
             new auth.UserSession({

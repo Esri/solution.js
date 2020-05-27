@@ -1,0 +1,29 @@
+{
+ "name": "compareJSON",
+ "version": "0.11.0",
+ "private": true,
+ "description": "Example App for solutions.js common: Compares two JSON structures; the second structure may be a sanitized version of the first structure.",
+ "main": "main.js",
+ "author": "",
+ "license": "Apache-2.0",
+ "scripts": {
+  "build": "tsc -p ./tsconfig.json --outDir ./dist --declaration",
+  "start": "http-server ."
+ },
+ "devDependencies": {
+  "http-server": "0.12.3",
+  "typescript": "^3.9.2"
+ },
+ "dependencies": {
+  "@esri/arcgis-rest-auth": "^2.11.0",
+  "@esri/arcgis-rest-feature-layer": "^2.13.1",
+  "@esri/arcgis-rest-portal": "^2.11.0",
+  "@esri/arcgis-rest-request": "^2.11.0",
+  "@esri/arcgis-rest-service-admin": "^2.13.1",
+  "@esri/arcgis-rest-types": "^2.11.0",
+  "@esri/hub-common": "^4.0.0",
+  "@esri/hub-initiatives": "^4.0.0",
+  "@esri/hub-sites": "^4.0.0",
+  "@esri/solution-common": "^0.11.0"
+ }
+}

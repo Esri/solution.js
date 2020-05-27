@@ -14,6 +14,7 @@
 * \[ \] Merge `release` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
 * \[ \] Push `master` branch to GitHub
+* \[ \] Run `npm run docs:deploy`
 * \[ \] Delete `release` branch
 * \[ \] Switch to `develop` branch
 * \[ \] Merge `master` branch into `develop` branch
@@ -122,9 +123,11 @@ git merge --no-ff --no-commit release
 
 13. Push your `master` branch to GitHub.
 
-14. Delete the `release` branch locally and in GitHub.
+14. Update the repository's API doc by running `npm run docs:deploy`.
 
-15. Merge `master` into `develop` and push `develop` to GitHub.
+15. Delete the `release` branch locally and in GitHub.
+
+16. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 
