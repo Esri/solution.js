@@ -52,6 +52,9 @@ export function convertItemToTemplate(
     switch (itemInfo.type) {
       case "Dashboard":
       case "Feature Service":
+      case "Hub Initiative":
+      case "Hub Page":
+      case "Hub Site Application":
       case "Project Package":
       case "Workforce Project":
       case "Web Map":
