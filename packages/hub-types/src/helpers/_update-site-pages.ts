@@ -30,7 +30,7 @@ export function _updateSitePages(
     .filter(e => {
       return e.type.indexOf("Page") > -1;
     })
-    .map(e => e.itemId);
+    .map(e => e.id);
 
   // now get all those models
   return Promise.all(

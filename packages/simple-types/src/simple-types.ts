@@ -114,14 +114,14 @@ export function postProcessFieldReferences(
  * Simple Type post-processing actions
  * @param itemId
  * @param type
- * @param templates
+ * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param templateDictionary
  * @param authentication
  */
 export function postProcess(
   itemId: string,
   type: string,
-  templates: IItemTemplate[],
+  itemInfos: any[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {

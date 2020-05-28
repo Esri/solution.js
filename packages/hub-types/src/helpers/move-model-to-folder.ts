@@ -25,7 +25,7 @@ import { moveItem } from "@esri/arcgis-rest-portal";
  * @param folderId
  * @param authentication
  */
-export function moveSiteToFolder(
+export function moveModelToFolder(
   siteModel: IModel,
   folderId: string,
   authentication: UserSession

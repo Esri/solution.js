@@ -125,14 +125,14 @@ export function fineTuneCreatedItem(
  * Notebook specific post-processing actions
  * @param itemId
  * @param type
- * @param templates
+ * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param templateDictionary
  * @param authentication
  */
 export function postProcess(
   itemId: string,
   type: string,
-  templates: common.IItemTemplate[],
+  itemInfos: any[],
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
