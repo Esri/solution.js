@@ -21,6 +21,12 @@
  */
 
 import * as common from "@esri/solution-common";
+// import * as deployer from "@esri/solution-deployer";
+import {
+  isAStoryMap,
+  isNextGenStoryMap,
+  isClassicStoryMap
+} from "./storymap-helpers";
 import * as simpleTypes from "@esri/solution-simple-types";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -31,9 +37,9 @@ export function convertItemToTemplate(
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
-    if (itemInfo.type === "StoryMap") {
+    if (isNextGenStoryMap(itemInfo.itemType)) {
       reject(common.fail("Next-gen StoryMap is not yet implemented"));
-    } else if (isAStoryMap(itemInfo.type, itemInfo.url)) {
+    } else if (isClassicStoryMap(itemInfo.url)) {
       reject(common.fail("First-gen StoryMap is not yet implemented"));
     } else {
       reject(common.fail(itemInfo.id + " is not a StoryMap"));
@@ -48,31 +54,9 @@ export function createItemFromTemplate(
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
   return new Promise<common.ICreateItemFromTemplateResponse>(resolve => {
-    if (template.type === "StoryMap") {
-      // Not yet implemented
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Failed,
-        0
-      );
-      resolve({
-        id: "Next-gen StoryMap is not yet implemented", // temporary
-        type: template.type,
-        postProcess: false
-      });
-    } else if (isAStoryMap(template.type, template.item.url)) {
-      // Not yet implemented
-      itemProgressCallback(
-        template.itemId,
-        common.EItemProgressStatus.Failed,
-        0
-      );
-      resolve({
-        id: "First-gen StoryMap is not yet implemented", // temporary
-        type: template.type,
-        postProcess: false
-      });
-    } else {
+    const tD = templateDictionary;
+    debugger;
+    if (!isAStoryMap(template.item.type, template.item.url)) {
       // Not valid
       itemProgressCallback(
         template.itemId,
@@ -84,24 +68,30 @@ export function createItemFromTemplate(
         type: template.type,
         postProcess: false
       });
+    } else if (isNextGenStoryMap(template.item.type)) {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "Next-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
+    } else {
+      // Not yet implemented
+      itemProgressCallback(
+        template.itemId,
+        common.EItemProgressStatus.Failed,
+        0
+      );
+      resolve({
+        id: "First-gen StoryMap is not yet implemented", // temporary
+        type: template.type,
+        postProcess: false
+      });
     }
   });
-}
-
-export function isAStoryMap(itemType: string, itemUrl?: string): boolean {
-  if (itemType === "StoryMap") {
-    return true;
-  } else if (itemUrl) {
-    return [
-      /\/apps\/Cascade\//i,
-      /\/apps\/MapJournal\//i,
-      /\/apps\/MapSeries\//i,
-      /\/apps\/MapTour\//i,
-      /\/apps\/Shortlist\//i,
-      /\/apps\/StoryMap\//i,
-      /\/apps\/StoryMapBasic\//i,
-      /\/apps\/StorytellingSwipe\//i
-    ].some(pattern => pattern.test(itemUrl));
-  }
-  return false;
 }

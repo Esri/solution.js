@@ -21,3 +21,4 @@
  */
 
 export * from "./storymap";
+export * from "./storymap-helpers";

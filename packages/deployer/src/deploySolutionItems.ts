@@ -53,6 +53,7 @@ export function deploySolutionItems(
   return new Promise((resolve, reject) => {
     // Prepare feedback mechanism
     const totalEstimatedCost = _estimateDeploymentCost(templates) + 1; // solution items, plus avoid divide by 0
+    debugger;
     let percentDone: number = 10; // allow for previous deployment work
     const progressPercentStep = (99 - percentDone) / totalEstimatedCost; // leave some % for caller for wrapup
 
@@ -553,7 +554,8 @@ export function _estimateDeploymentCost(
 ): number {
   return templates.reduce(
     (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
-      return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
+      const { estimatedDeploymentCostFactor = 1 } = template;
+      return accumulatedEstimatedCost + estimatedDeploymentCostFactor;
     },
     0
   );

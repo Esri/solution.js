@@ -2,6 +2,7 @@ import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as file from "@esri/solution-file";
 import * as group from "@esri/solution-group";
+import * as storymap from "@esri/solution-storymap";
 import { simpleTypes, notebookProcessor } from "@esri/solution-simple-types";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -72,7 +73,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Site Initiative": UNSUPPORTED,
   "Site Page": HubPageProcessor,
   Solution: UNSUPPORTED,
-  StoryMap: undefined,
+  StoryMap: storymap,
   "Urban Model": undefined,
   "Web Experience Template": undefined,
   "Web Experience": undefined,

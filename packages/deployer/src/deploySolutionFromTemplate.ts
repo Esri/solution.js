@@ -31,7 +31,6 @@ export function _deploySolutionFromTemplate(
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     // Replacement dictionary and high-level deployment ids for cleanup
-
     // TODO: Extract all templateDictionary prep into a separate function
     const templateDictionary = options.templateDictionary ?? {};
     let deployedFolderId: string;
@@ -224,6 +223,7 @@ export function _deploySolutionFromTemplate(
         );
       })
       .then(clonedSolutionsResponse => {
+        debugger;
         // TODO: if deploySolutionItems returned what was pushed into the templateDictionary
         // we could add that at this point vs mutating
         // why is this a reassignment?
