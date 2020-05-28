@@ -1,0 +1,72 @@
+/** @license
+ * Copyright 2018 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { _upgradeTwoDotFour } from "../../src/migrations/upgrade-two-dot-four";
+import { cloneObject, IItemTemplate } from "@esri/hub-common";
+import { ISolutionItem, ISolutionItemData } from "../../src/interfaces";
+
+describe("Upgrade 2.2 ::", () => {
+  const defaultModel = {
+    item: {
+      type: "Solution",
+      typeKeywords: ["Solution", "Template"],
+      properties: {
+        schemaVersion: 2.3
+      }
+    },
+    data: {
+      metadata: {
+        chk1: "behold {{fakeKey.item.id}} it changed",
+        chk2: "{{fakeKey.item.id}} {{fakeKey2.item.id}}"
+      },
+      templates: [
+        {
+          key: "fakeKey",
+          itemId: "fakeId"
+        },
+        {
+          key: "fakeKey2",
+          itemId: "fakeId2"
+        }
+      ] as IItemTemplate[]
+    }
+  } as ISolutionItem;
+
+  it("returns same model if on or above 2.4", () => {
+    const m = cloneObject(defaultModel);
+    m.item.properties.schemaVersion = 2.4;
+    const chk = _upgradeTwoDotFour(m);
+    expect(chk).toBe(m, "should return the exact same object");
+  });
+
+  it("replaces key tokens with ids", () => {
+    const m = cloneObject(defaultModel);
+    // add something with one of the old tags into the .data
+    m.data.metadata.chk = {
+      solName: "{{solution.name}}"
+    };
+    const chk = _upgradeTwoDotFour(m);
+    expect(chk).not.toBe(m, "should not return the exact same object");
+    expect(chk.data.metadata.chk1).toBe(
+      "behold {{fakeId.itemId}} it changed",
+      "should swap key.item.id => id.itemId"
+    );
+    expect(chk.data.metadata.chk2).toBe(
+      "{{fakeId.itemId}} {{fakeId2.itemId}}",
+      "should swap multiple entries in the same string"
+    );
+  });
+});

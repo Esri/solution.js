@@ -62,7 +62,6 @@ export function createItemFromTemplate(
     destinationAuthentication,
     templateDictionary
   );
-
   // convert the templateDictionary to a settings hash
   const settings = cloneObject(templateDictionary);
 
@@ -185,17 +184,10 @@ export function convertItemToTemplate(
 export function postProcess(
   id: string,
   type: string,
-  templates: IItemTemplate[],
+  itemInfos: any[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
-  // Get the Id's out of the templates array
-  const templateIds = templates.map(t => t.itemId);
-  // use them to look up the itemInfo on the template dictionary
-  const itemInfos = templateIds.reduce((acc, tmplId) => {
-    return maybePush(getProp(templateDictionary, `${tmplId}.id`), acc);
-  }, []);
-
   // create the requestOptions
   const hubRo = createHubRequestOptions(authentication, templateDictionary);
 

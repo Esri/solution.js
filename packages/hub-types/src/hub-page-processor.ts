@@ -142,7 +142,7 @@ export function createItemFromTemplate(
       return {
         id: pageModel.item.id,
         type: template.type,
-        postProcess: true
+        postProcess: false
       };
     })
     .catch(ex => {

@@ -29,11 +29,6 @@ describe("HubSiteProcessor: ", () => {
         "Should have convertItemToTemplate method"
       );
     });
-    it("returns a promise", () => {
-      expect(HubSiteProcessor.convertItemToTemplate).toBeDefined(
-        "Should have convertItemToTemplate method"
-      );
-    });
   });
   describe("createItemFromTemplate: ", () => {
     // objects used in following tests

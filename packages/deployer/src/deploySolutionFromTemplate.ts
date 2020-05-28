@@ -242,6 +242,7 @@ export function _deploySolutionFromTemplate(
             // why are we updating this same property vs adding a new one? seems confusing
             /* istanbul ignore else */
             if (itemId) {
+              itemTemplate.originalItemId = itemTemplate.itemId;
               itemTemplate.itemId = itemId;
             }
             // update the dependencies hash to point to the new item ids
