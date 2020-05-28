@@ -56,7 +56,7 @@ export function postProcess(
         itemHandler.postProcess(
           entry.id,
           entry.type,
-          templates,
+          clonedSolutions,
           templateDictionary,
           authentication
         )

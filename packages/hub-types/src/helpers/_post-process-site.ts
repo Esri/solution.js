@@ -34,13 +34,14 @@ export function _postProcessSite(
   const pseudoModels = itemInfos.map(e => {
     return {
       item: {
-        id: e.itemId,
+        id: e.id,
         type: e.type
       }
     };
   });
 
   let secondPassPromises: Array<Promise<any>> = [];
+
   secondPassPromises = secondPassPromises.concat(
     _shareItemsToSiteGroups(
       siteModel,

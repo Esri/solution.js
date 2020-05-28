@@ -27,6 +27,19 @@ import {
   EItemProgressStatus,
   UserSession
 } from "@esri/solution-common";
+import { createHubRequestOptions } from "./helpers/create-hub-request-options";
+import {
+  IModel,
+  cloneObject,
+  maybePush,
+  getProp,
+  IModelTemplate,
+  interpolate,
+  ITemplateAsset,
+  IItemResource
+} from "@esri/hub-common";
+import { createPageModelFromTemplate, createPage } from "@esri/hub-sites";
+import { moveModelToFolder } from "./helpers/move-model-to-folder";
 /* istanbul ignore next */
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -34,7 +47,7 @@ export function convertItemToTemplate(
   authentication: UserSession
 ): Promise<IItemTemplate> {
   // TODO: add implementation
-  console.info(`Hub Site Application is not supported yet`);
+  console.info(`Hub Page is not supported yet`);
   return Promise.resolve({
     item: {},
     data: {},
@@ -48,24 +61,99 @@ export function convertItemToTemplate(
     estimatedDeploymentCostFactor: 1
   } as IItemTemplate);
 }
-/* istanbul ignore next */
+/**
+ * Handle deployment of Page item templates
+ *
+ * @export
+ * @param {IItemTemplate} template
+ * @param {*} templateDictionary
+ * @param {UserSession} destinationAuthentication
+ * @param {IItemProgressCallback} itemProgressCallback
+ * @returns {Promise<ICreateItemFromTemplateResponse>}
+ */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
-  console.info(`Hub Site Application is not supported yet`);
-  return Promise.resolve({
-    id: "Next-gen Hub Page is not yet implemented", // temporary
-    type: template.type,
-    postProcess: false
-  });
+  const hubRo = createHubRequestOptions(
+    destinationAuthentication,
+    templateDictionary
+  );
+
+  // convert the templateDictionary to a settings hash
+  const settings = cloneObject(templateDictionary);
+
+  // solutionItemExtent is in geographic, but it's a string, and we want/need a bbox
+  // and Hub templates expect it in organization.defaultExtentBBox
+  if (settings.solutionItemExtent) {
+    const parts = settings.solutionItemExtent.split(",");
+    settings.organization.defaultExtentBBox = [
+      [parts[0], parts[1]],
+      [parts[2], parts[3]]
+    ];
+  }
+
+  // TODO: Determine if we need any transforms in this new env
+  const transforms = {};
+
+  // create an object to hold the created site through
+  // subsequent promise calls
+  let pageModel: IModel;
+  return createPageModelFromTemplate(template, settings, transforms, hubRo)
+    .then((interpolated: unknown) => {
+      // --------------------------------------------
+      // TODO: Update hub.js to take an IModel in createPage
+      // then remove this silliness
+      const modelTmpl = interpolated as IModelTemplate;
+      const options = {
+        assets: modelTmpl.assets || []
+      } as unknown;
+      // --------------------------------------------
+      return createPage(modelTmpl, options, hubRo);
+    })
+    .then(page => {
+      pageModel = page;
+      // Move the site and initiative to the solution folder
+      // this is essentially fire and forget. We fail-safe the actual moveItem
+      // call since it's not critical to the outcome
+      return moveModelToFolder(
+        page,
+        templateDictionary.folderId,
+        destinationAuthentication
+      );
+    })
+    .then(_ => {
+      // Update the template dictionary
+      // TODO: This should be done in whatever recieves
+      // the outcome of this promise chain
+      templateDictionary[template.itemId] = {
+        itemId: pageModel.item.id
+      };
+      // call the progress callback, which also mutates templateDictionary
+      itemProgressCallback(
+        template.itemId,
+        EItemProgressStatus.Finished,
+        template.estimatedDeploymentCostFactor,
+        pageModel.item.id
+      );
+      // finally, return ICreateItemFromTemplateResponse
+      return {
+        id: pageModel.item.id,
+        type: template.type,
+        postProcess: false
+      };
+    })
+    .catch(ex => {
+      itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);
+      throw ex;
+    });
 }
+
 /* istanbul ignore next */
 export function postProcess(model: any, items: any[]): Promise<boolean> {
-  console.info(`Hub Page is not supported yet`);
+  // Hub Page does not need to do anything in the post-processing
   return Promise.resolve(true);
 }
 

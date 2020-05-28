@@ -22,7 +22,6 @@ import * as common from "@esri/solution-common";
 import * as deploySolution from "../src/deploySolutionItems";
 import * as fetchMock from "fetch-mock";
 import * as mockItems from "../../common/test/mocks/agolItems";
-import * as notebook from "../../simple-types/src/notebook";
 import * as templates from "../../common/test/mocks/templates";
 import * as utils from "../../common/test/mocks/utils";
 
