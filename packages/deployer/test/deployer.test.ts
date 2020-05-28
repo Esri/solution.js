@@ -450,6 +450,11 @@ describe("Module `deployer`", () => {
         delete portalsSelfResponse.defaultBasemap.baseMapLayers[0].resourceInfo
           .layers[0].subLayerIds;
         delete portalsSelfResponse.portalProperties.sharedTheme.logo.small;
+        portalsSelfResponse.defaultExtentBBox = [
+          [-88.226, 41.708],
+          [-88.009, 41.844]
+        ];
+
         const expectedTemplate: any = {
           title: "title",
           thumbnailurl:
@@ -458,6 +463,7 @@ describe("Module `deployer`", () => {
           portalBaseUrl: "https://myorg.maps.arcgis.com",
           user: Object.assign({ folders: [] }, testUtils.getUserResponse()),
           solutionItemExtent: "-88.226,41.708,-88.009,41.844", // [[xmin, ymin], [xmax, ymax]]
+
           folderId: "a4468da125a64526b359b70d8ba4a9dd",
           isPortal: false,
           solutionItemId: "map1234567890",
