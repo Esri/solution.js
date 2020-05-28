@@ -19,6 +19,7 @@ import { _isLegacySolution } from "./migrations/is-legacy-solution";
 import { _upgradeThreeDotZero } from "./migrations/upgrade-three-dot-zero";
 import { _upgradeTwoDotTwo } from "./migrations/upgrade-two-dot-two";
 import { _upgradeTwoDotThree } from "./migrations/upgrade-two-dot-three";
+import { _upgradeTwoDotFour } from "./migrations/upgrade-two-dot-four";
 import { getProp } from "@esri/hub-common";
 
 // Starting at 3.0 because Hub has been versioning Solution items up to 2.x
@@ -56,6 +57,7 @@ export function migrateSchema(model: ISolutionItem): ISolutionItem {
         model = _upgradeTwoDotTwo(model);
         model = _upgradeTwoDotThree(model);
         model = _upgradeThreeDotZero(model);
+        model = _upgradeTwoDotFour(model);
       }
       // When we need to apply schema upgrades 3.0+ we add those here...
     }

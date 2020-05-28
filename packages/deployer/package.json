@@ -42,7 +42,9 @@
     "@esri/solution-storymap": "^0.13.0",
     "@esri/hub-common":"^4.2.0",
     "@esri/hub-initiatives":"^4.2.0",
-    "@esri/hub-sites":"^4.2.0"
+    "@esri/hub-sites":"^4.2.0",
+    "rollup": "^1.22.0",
+    "typescript": "^3.9.2"
   },
   "dependencies": {
     "tslib": "^1.10.0"

@@ -38,7 +38,7 @@ import {
 
 import { IModel, cloneObject, maybePush, getProp } from "@esri/hub-common";
 
-import { moveSiteToFolder } from "./helpers/move-site-to-folder";
+import { moveModelToFolder } from "./helpers/move-model-to-folder";
 import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import { _postProcessSite } from "./helpers/_post-process-site";
 import { _updateSitePages } from "./helpers/_update-site-pages";
@@ -106,7 +106,7 @@ export function createItemFromTemplate(
       // Move the site and initiative to the solution folder
       // this is essentially fire and forget. We fail-safe the actual moveItem
       // call since it's not critical to the outcome
-      return moveSiteToFolder(
+      return moveModelToFolder(
         site,
         templateDictionary.folderId,
         destinationAuthentication

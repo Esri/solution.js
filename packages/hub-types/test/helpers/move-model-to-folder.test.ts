@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { moveSiteToFolder } from "../../src/helpers/move-site-to-folder";
+import { moveModelToFolder } from "../../src/helpers/move-model-to-folder";
 import { IModel } from "@esri/hub-common";
 import * as portal from "@esri/arcgis-rest-portal";
 
 import * as utils from "../../../common/test/mocks/utils";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
-describe("moveSiteToFolder", () => {
+describe("moveModelToFolder", () => {
   describe("just a site", () => {
     it("moves just the site", () => {
       const m = {
@@ -34,7 +34,7 @@ describe("moveSiteToFolder", () => {
         success: true
       } as portal.IMoveItemResponse);
 
-      return moveSiteToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
         expect(result[0].success).toBe(true, "should return true");
         expect(moveItemSpy.calls.count()).toEqual(
           1,
@@ -55,7 +55,7 @@ describe("moveSiteToFolder", () => {
         success: false
       } as portal.IMoveItemResponse);
 
-      return moveSiteToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
         expect(result[0].success).toBe(true, "should return true");
         expect(moveItemSpy.calls.count()).toEqual(
           1,
@@ -81,7 +81,7 @@ describe("moveSiteToFolder", () => {
         success: true
       } as portal.IMoveItemResponse);
 
-      return moveSiteToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
+      return moveModelToFolder(m, "bc4", MOCK_USER_SESSION).then(result => {
         expect(result.length).toBe(2, "should fire two promises");
         expect(result[0].success).toBe(true, "should return true");
         expect(result[1].success).toBe(true, "should return true");

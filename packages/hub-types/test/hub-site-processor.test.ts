@@ -14,7 +14,7 @@
  */
 import * as utils from "@esri/solution-common/test/mocks/utils";
 import * as sitesPackage from "@esri/hub-sites";
-import * as moveHelper from "../src/helpers/move-site-to-folder";
+import * as moveHelper from "../src/helpers/move-model-to-folder";
 const MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 
 import * as HubSiteProcessor from "../src/hub-site-processor";
@@ -61,7 +61,10 @@ describe("HubSiteProcessor: ", () => {
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
         fakeSite
       );
-      const moveSiteSpy = spyOn(moveHelper, "moveSiteToFolder").and.resolveTo();
+      const moveSiteSpy = spyOn(
+        moveHelper,
+        "moveModelToFolder"
+      ).and.resolveTo();
 
       const td = {
         organization: {
@@ -105,7 +108,10 @@ describe("HubSiteProcessor: ", () => {
       const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
         fakeSite
       );
-      const moveSiteSpy = spyOn(moveHelper, "moveSiteToFolder").and.resolveTo();
+      const moveSiteSpy = spyOn(
+        moveHelper,
+        "moveModelToFolder"
+      ).and.resolveTo();
 
       const td = {
         organization: {

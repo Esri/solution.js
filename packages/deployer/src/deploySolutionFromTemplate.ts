@@ -162,7 +162,11 @@ export function _deploySolutionFromTemplate(
           wgs84Extent.xmax +
           "," +
           wgs84Extent.ymax;
-
+        // Hub Solutions depend on organization defaultExtentBBox as a nested array not a string
+        templateDictionary.organization.defaultExtentBBox = [
+          [wgs84Extent.xmin, wgs84Extent.ymin],
+          [wgs84Extent.xmax, wgs84Extent.ymax]
+        ];
         // Create a deployed Solution item
         const createSolutionItemBase = {
           ...common.sanitizeJSONAndReportChanges(solutionTemplateBase),

@@ -15,9 +15,9 @@
  */
 
 /**
- * Manages the creation and deployment of Story Map item types.
+ * Manages the creation and deployment of Hub Site and Page item types.
  *
- * @module storymap
+ * @module hubTypes
  */
 
 import * as HubPageProcessor from "./hub-page-processor";
