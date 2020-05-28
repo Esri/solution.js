@@ -23,9 +23,11 @@
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
+import * as quickcapture from "./quickcapture";
 
 import {
   getItemDataAsJson,
+  getTemplateById,
   hasUnresolvedVariables,
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
@@ -123,18 +125,24 @@ export function postProcess(
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {
-  return getItemDataAsJson(itemId, authentication).then(data => {
-    if (hasUnresolvedVariables(data)) {
-      const updatedData = replaceInTemplate(data, templateDictionary);
-      // TODO: update return type on updateItemExtended
-      return updateItemExtended(
-        itemId,
-        { id: itemId },
-        updatedData,
-        authentication
-      ) as Promise<any>;
-    } else {
-      return Promise.resolve({ success: true });
-    }
-  });
+  if (type === "QuickCapture Project") {
+    const template: IItemTemplate = getTemplateById(templates, itemId);
+    template.data = replaceInTemplate(template.data, templateDictionary);
+    return quickcapture.fineTuneCreatedItem(template, authentication);
+  } else {
+    return getItemDataAsJson(itemId, authentication).then(data => {
+      if (hasUnresolvedVariables(data)) {
+        const updatedData = replaceInTemplate(data, templateDictionary);
+        // TODO: update return type on updateItemExtended
+        return updateItemExtended(
+          itemId,
+          { id: itemId },
+          updatedData,
+          authentication
+        ) as Promise<any>;
+      } else {
+        return Promise.resolve({ success: true });
+      }
+    });
+  }
 }

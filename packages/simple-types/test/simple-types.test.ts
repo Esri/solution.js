@@ -27,7 +27,6 @@ import * as mockItems from "../../common/test/mocks/agolItems";
 import * as notebook from "../src/notebook";
 import * as templates from "../../common/test/mocks/templates";
 import * as common from "@esri/solution-common";
-import * as quickcapture from "../src/quickcapture";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -1583,32 +1582,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         name: "qc.project.json"
       };
 
-      const expectedData: any = {
-        application: {
-          basemap: {},
-          dataSources: [
-            {
-              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
-              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-              url: "https://abc123/name/FeatureServer/0"
-            },
-            {
-              featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
-              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-              url: "https://abc123/name/FeatureServer/1"
-            }
-          ],
-          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
-          preferences: {
-            adminEmail: "casey@esri.com"
-          },
-          templateGroups: [],
-          userInputs: [],
-          version: 0.1
-        },
-        name: "qc.project.json"
-      };
-
       fetchMock
         .post(
           utils.PORTAL_SUBSET.restUrl + "/content/users/casey/addItem",
@@ -1625,13 +1598,16 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.PORTAL_SUBSET.restUrl +
             "/content/users/casey/items/" +
             newItemId +
+            "/addResources",
+          { success: true }
+        )
+        .post(
+          utils.PORTAL_SUBSET.restUrl +
+            "/content/users/casey/items/" +
+            newItemId +
             "/updateResources",
           { success: true }
         );
-
-      spyOn(quickcapture, "fineTuneCreatedItem").and.returnValue(
-        Promise.resolve()
-      );
 
       // tslint:disable-next-line: no-floating-promises
       simpleTypes
@@ -1642,12 +1618,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           utils.ITEM_PROGRESS_CALLBACK
         )
         .then(actual => {
-          itemTemplate.itemId = newItemId;
-          itemTemplate.data = expectedData;
-          expect(quickcapture.fineTuneCreatedItem).toHaveBeenCalledWith(
-            itemTemplate,
-            MOCK_USER_SESSION
-          );
           expect(actual).toEqual({
             id: newItemId,
             type: itemTemplate.type,
@@ -1656,6 +1626,110 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
           expect(templateDictionary).toEqual(expectedTemplateDictionary);
           done();
         });
+    });
+
+    it("postProcess QuickCapture projects", done => {
+      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
+
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      qcTemplate.itemId = newItemId;
+      qcTemplate.data = {
+        application: {
+          basemap: {},
+          dataSources: [
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
+            },
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
+            }
+          ],
+          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
+          preferences: {
+            adminEmail: "{{user.email}}"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
+
+      const templateDictionary: any = {
+        user: {
+          email: "casey@esri.com"
+        },
+        "4efe5f693de34620934787ead6693f10": {
+          itemId: "xxxe5f693de34620934787ead6693f10",
+          layer0: {
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          layer1: {
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        },
+        "9da79c91fc7642ebb4c0bbacfbacd510": {
+          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
+        }
+      };
+
+      const expectedData: any = JSON.stringify({
+        basemap: {},
+        dataSources: [
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        ],
+        itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
+        preferences: {
+          adminEmail: "casey@esri.com"
+        },
+        templateGroups: [],
+        userInputs: [],
+        version: 0.1
+      });
+
+      const updateSpy = spyOn(
+        common,
+        "updateItemResourceText"
+      ).and.callThrough();
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          newItemId +
+          "/updateResources",
+        { success: true }
+      );
+
+      simpleTypes
+        .postProcess(
+          newItemId,
+          "QuickCapture Project",
+          [qcTemplate],
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const args = updateSpy.calls.argsFor(0) as any[];
+          expect(args[0]).toBe(newItemId);
+          expect(args[1]).toBe(qcTemplate.data.name);
+          expect(args[2]).toBe(expectedData);
+          done();
+        }, done.fail);
     });
 
     it("should handle error on update resources", done => {
