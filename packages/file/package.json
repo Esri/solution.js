@@ -13,12 +13,12 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.12.0",
+    "@esri/solution-common": "^0.14.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
   "peerDependencies": {
-    "@esri/solution-common": "^0.12.0"
+    "@esri/solution-common": "^0.14.0"
   },
   "dependencies": {
     "@esri/solution-common": "^0.14.0",

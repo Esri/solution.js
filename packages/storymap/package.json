@@ -13,8 +13,8 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.12.0",
-    "@esri/solution-simple-types": "^0.12.0",
+    "@esri/solution-common": "^0.14.0",
+    "@esri/solution-simple-types": "^0.14.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
@@ -24,8 +24,8 @@
     "tslib": "^1.10.0"
   },
   "peerDependencies": {
-    "@esri/solution-common": "^0.12.0",
-    "@esri/solution-simple-types": "^0.12.0"
+    "@esri/solution-common": "^0.14.0",
+    "@esri/solution-simple-types": "^0.14.0"
   },
   "scripts": {
     "prepare": "npm run build",
