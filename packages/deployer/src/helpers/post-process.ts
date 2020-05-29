@@ -16,7 +16,8 @@
 import {
   UserSession,
   IItemTemplate,
-  ICreateItemFromTemplateResponse
+  ICreateItemFromTemplateResponse,
+  getTemplateById
 } from "@esri/solution-common";
 import { _getGroupUpdates } from "../deploySolutionItems";
 import { moduleMap } from "../module-map";
@@ -57,6 +58,7 @@ export function postProcess(
           entry.id,
           entry.type,
           clonedSolutions,
+          getTemplateById(templates, entry.id),
           templateDictionary,
           authentication
         )

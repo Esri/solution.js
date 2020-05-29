@@ -60,8 +60,9 @@ describe("postProcess Module", () => {
       expect(args[0]).toBe("bc3");
       expect(args[1]).toBe("Hub Site Application");
       expect(args[2]).toBe(sols, "should pass solutions through");
-      expect(args[3]).toBe(tmplDict, "should pass template dictionary through");
-      expect(args[4]).toBe(MOCK_USER_SESSION, "should pass auth through");
+      expect(args[3]).toBeUndefined();
+      expect(args[4]).toBe(tmplDict, "should pass template dictionary through");
+      expect(args[5]).toBe(MOCK_USER_SESSION, "should pass auth through");
     });
   });
   it("only processes multiple solutions with postProcess true", () => {

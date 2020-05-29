@@ -21,7 +21,16 @@
  */
 import * as simpleTypeHelpers from "./helpers/simple-type-helpers";
 import * as notebookHelpers from "./helpers/notebook-helpers";
+import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
 import * as simpleTypes from "./simple-types";
 import * as notebookProcessor from "./notebook";
+import * as quickcaptureProcessor from "./quickcapture";
 
-export { simpleTypes, notebookProcessor, notebookHelpers, simpleTypeHelpers };
+export {
+  simpleTypes,
+  notebookProcessor,
+  notebookHelpers,
+  simpleTypeHelpers,
+  quickcaptureHelpers,
+  quickcaptureProcessor
+};

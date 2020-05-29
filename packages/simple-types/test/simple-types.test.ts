@@ -1628,110 +1628,6 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
         });
     });
 
-    it("postProcess QuickCapture projects", done => {
-      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
-
-      const qcTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
-      qcTemplate.itemId = newItemId;
-      qcTemplate.data = {
-        application: {
-          basemap: {},
-          dataSources: [
-            {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
-              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
-            },
-            {
-              featureServiceItemId:
-                "{{4efe5f693de34620934787ead6693f10.itemId}}",
-              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
-            }
-          ],
-          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
-          preferences: {
-            adminEmail: "{{user.email}}"
-          },
-          templateGroups: [],
-          userInputs: [],
-          version: 0.1
-        },
-        name: "qc.project.json"
-      };
-
-      const templateDictionary: any = {
-        user: {
-          email: "casey@esri.com"
-        },
-        "4efe5f693de34620934787ead6693f10": {
-          itemId: "xxxe5f693de34620934787ead6693f10",
-          layer0: {
-            url: "https://abc123/name/FeatureServer/0"
-          },
-          layer1: {
-            url: "https://abc123/name/FeatureServer/1"
-          }
-        },
-        "9da79c91fc7642ebb4c0bbacfbacd510": {
-          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
-        }
-      };
-
-      const expectedData: any = JSON.stringify({
-        basemap: {},
-        dataSources: [
-          {
-            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
-            dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
-            url: "https://abc123/name/FeatureServer/0"
-          },
-          {
-            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
-            dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
-            url: "https://abc123/name/FeatureServer/1"
-          }
-        ],
-        itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
-        preferences: {
-          adminEmail: "casey@esri.com"
-        },
-        templateGroups: [],
-        userInputs: [],
-        version: 0.1
-      });
-
-      const updateSpy = spyOn(
-        common,
-        "updateItemResourceText"
-      ).and.callThrough();
-
-      fetchMock.post(
-        utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/" +
-          newItemId +
-          "/updateResources",
-        { success: true }
-      );
-
-      simpleTypes
-        .postProcess(
-          newItemId,
-          "QuickCapture Project",
-          [qcTemplate],
-          templateDictionary,
-          MOCK_USER_SESSION
-        )
-        .then(() => {
-          const args = updateSpy.calls.argsFor(0) as any[];
-          expect(args[0]).toBe(newItemId);
-          expect(args[1]).toBe(qcTemplate.data.name);
-          expect(args[2]).toBe(expectedData);
-          done();
-        }, done.fail);
-    });
-
     it("should handle error on update resources", done => {
       const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
 
@@ -2660,7 +2556,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       const td = { owner: "Luke Skywalker" };
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
       return simpleTypes
-        .postProcess("3ef", "Web Map", [], td, MOCK_USER_SESSION)
+        .postProcess(
+          "3ef",
+          "Web Map",
+          [],
+          templates.getItemTemplateSkeleton(),
+          td,
+          MOCK_USER_SESSION
+        )
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(
@@ -2680,7 +2583,14 @@ describe("Module `simple-types`: manages the creation and deployment of simple i
       });
       const updateSpy = spyOn(common, "updateItemExtended").and.resolveTo();
       return simpleTypes
-        .postProcess("3ef", "Web Map", [], {}, MOCK_USER_SESSION)
+        .postProcess(
+          "3ef",
+          "Web Map",
+          [],
+          templates.getItemTemplateSkeleton(),
+          {},
+          MOCK_USER_SESSION
+        )
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(

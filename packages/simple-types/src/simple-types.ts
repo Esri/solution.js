@@ -122,27 +122,22 @@ export function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
+  template: IItemTemplate,
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {
-  if (type === "QuickCapture Project") {
-    const template: IItemTemplate = getTemplateById(templates, itemId);
-    template.data = replaceInTemplate(template.data, templateDictionary);
-    return quickcapture.fineTuneCreatedItem(template, authentication);
-  } else {
-    return getItemDataAsJson(itemId, authentication).then(data => {
-      if (hasUnresolvedVariables(data)) {
-        const updatedData = replaceInTemplate(data, templateDictionary);
-        // TODO: update return type on updateItemExtended
-        return updateItemExtended(
-          itemId,
-          { id: itemId },
-          updatedData,
-          authentication
-        ) as Promise<any>;
-      } else {
-        return Promise.resolve({ success: true });
-      }
-    });
-  }
+  return getItemDataAsJson(itemId, authentication).then(data => {
+    if (hasUnresolvedVariables(data)) {
+      const updatedData = replaceInTemplate(data, templateDictionary);
+      // TODO: update return type on updateItemExtended
+      return updateItemExtended(
+        itemId,
+        { id: itemId },
+        updatedData,
+        authentication
+      ) as Promise<any>;
+    } else {
+      return Promise.resolve({ success: true });
+    }
+  });
 }
