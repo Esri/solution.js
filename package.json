@@ -16,7 +16,7 @@
     "changelog-parser": "^2.7.0",
     "cheerio": "^1.0.0-rc.3",
     "codecov": "^3.6.5",
-    "commitizen": "^3.1.1",
+    "commitizen": "^4.1.2",
     "concurrently": "^3.5.1",
     "core-js": "^3.6.1",
     "coveralls": "^3.1.0",
