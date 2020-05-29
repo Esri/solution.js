@@ -20,21 +20,24 @@
 
 import * as common from "@esri/solution-common";
 import * as utils from "../../common/test/mocks/utils";
+import * as templates from "../../common/test/mocks/templates";
 import * as updateHelper from "../src/helpers/update-notebook-data";
 import * as createHelper from "../src/helpers/create-item-from-template";
 import * as convertHelper from "../src/helpers/convert-item-to-template";
 import * as notebookProcessor from "../src/notebook";
 
 let MOCK_USER_SESSION: common.UserSession;
+let template: common.IItemTemplate;
 
 beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
+  template = templates.getItemTemplateSkeleton();
 });
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `notebook`: manages the creation and deployment of notebook project item types", () => {
-  describe("convertItemToTemplate :: ", () => {
+  describe("createItemFromTemplate :: ", () => {
     it("delegated to helper", () => {
       const createSpy = spyOn(
         createHelper,
@@ -91,7 +94,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "updateNotebookData"
       ).and.resolveTo();
       return notebookProcessor
-        .postProcess("3ef", "Notebook", [], td, MOCK_USER_SESSION)
+        .postProcess("3ef", "Notebook", [], template, td, MOCK_USER_SESSION)
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(
@@ -114,7 +117,7 @@ describe("Module `notebook`: manages the creation and deployment of notebook pro
         "updateNotebookData"
       ).and.resolveTo();
       return notebookProcessor
-        .postProcess("3ef", "Notebook", [], {}, MOCK_USER_SESSION)
+        .postProcess("3ef", "Notebook", [], template, {}, MOCK_USER_SESSION)
         .then(() => {
           expect(dataSpy.calls.count()).toBe(1, "should fetch data");
           expect(dataSpy.calls.argsFor(0)[0]).toBe(

@@ -133,6 +133,7 @@ export function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
+  template: common.IItemTemplate,
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {

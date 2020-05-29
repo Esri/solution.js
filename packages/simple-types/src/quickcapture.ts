@@ -15,8 +15,24 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as quickcaptureHelpers from "./helpers/quickcapture-helpers";
 
 //#region Publish Process ---------------------------------------------------------------------------------------//
+
+// Delegate back to simple-types, which will in-turn delegate
+// to convertNotebookToTemplate at the correct point in the process
+// This is a temporary refactor step
+export function convertItemToTemplate(
+  solutionItemId: string,
+  itemInfo: any,
+  authentication: common.UserSession
+): Promise<common.IItemTemplate> {
+  return quickcaptureHelpers.convertItemToTemplate(
+    solutionItemId,
+    itemInfo,
+    authentication
+  );
+}
 
 /**
  * Converts an quick capture item to a template.
@@ -24,7 +40,7 @@ import * as common from "@esri/solution-common";
  * @param itemTemplate template for the quick capture project item
  * @return templatized itemTemplate
  */
-export function convertItemToTemplate(
+export function convertQuickCaptureToTemplate(
   itemTemplate: common.IItemTemplate
 ): Promise<common.IItemTemplate> {
   return new Promise<common.IItemTemplate>((resolve, reject) => {
@@ -160,22 +176,44 @@ export function _templatizeId(obj: any, path: string): void {
 
 //#region Deploy Process ---------------------------------------------------------------------------------------//
 
+// Delegate back to simple-types
+// This is a temporary refactor step
+export function createItemFromTemplate(
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  destinationAuthentication: common.UserSession,
+  itemProgressCallback: common.IItemProgressCallback
+): Promise<common.ICreateItemFromTemplateResponse> {
+  return quickcaptureHelpers.createItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
+  );
+}
+
 /**
- * Updates the items resource with the changes after deployment
- *
- * @param newlyCreatedItem The item template with updated information after dependant items have been deployed
- * @param destinationAuthentication Credential for the organization we are deploying to
- * @return A promise that will resolve with success true/fale type response
+ * QuickCapture post-processing actions
+ * @param itemId
+ * @param type
+ * @param itemInfos
+ * @param templateDictionary
+ * @param authentication
  */
-export function fineTuneCreatedItem(
-  newlyCreatedItem: common.IItemTemplate,
-  destinationAuthentication: common.UserSession
+export function postProcess(
+  itemId: string,
+  type: string,
+  itemInfos: any[],
+  template: common.IItemTemplate,
+  templateDictionary: any,
+  authentication: common.UserSession
 ): Promise<any> {
+  template.data = common.replaceInTemplate(template.data, templateDictionary);
   return common.updateItemResourceText(
-    newlyCreatedItem.itemId,
-    newlyCreatedItem.data.name,
-    JSON.stringify(newlyCreatedItem.data.application),
-    destinationAuthentication
+    itemId,
+    template.data.name,
+    JSON.stringify(template.data.application),
+    authentication
   );
 }
 
