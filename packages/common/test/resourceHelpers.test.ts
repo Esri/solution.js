@@ -27,6 +27,8 @@ import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
 import * as fetchMock from "fetch-mock";
+import * as copyResourceModule from "../src/resources/copy-resource";
+import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -36,7 +38,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
+fdescribe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   const SERVER_INFO = {
     currentVersion: 10.1,
     fullVersion: "10.1",
@@ -90,7 +92,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -120,7 +122,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "Filename must have an extension indicating its type"
         );
 
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -148,7 +150,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -403,12 +405,58 @@ describe("Module `resourceHelpers`: common functions involving the management of
           storageAuthentication,
           filePaths,
           destinationItemId,
-          destinationAuthentication
+          destinationAuthentication,
+          false,
+          {}
         )
         .then((response: any) => {
           expect(response).toEqual(expected);
           done();
         }, done.fail);
+    });
+
+    it("remaps hub files", done => {
+      const storageAuthentication = MOCK_USER_SESSION;
+      const filePaths: interfaces.IDeployFileCopyPath[] = [
+        {
+          type: interfaces.EFileType.Resource,
+          folder: "",
+          filename: "bc3-storageFilename.png",
+          url: "https://myserver/images/bc3-storageFilename.png"
+        }
+      ];
+      const tmpl = { itemId: "bc3" };
+      // Spies
+      const copyResourceSpy = spyOn(
+        copyResourceModule,
+        "copyResource"
+      ).and.resolveTo({ success: true });
+      return resourceHelpers
+        .copyFilesFromStorageItem(
+          storageAuthentication,
+          filePaths,
+          "3ef",
+          storageAuthentication,
+          false,
+          tmpl
+        )
+        .then(resp => {
+          expect(copyResourceSpy.calls.count()).toBe(
+            1,
+            "should call copyResource once"
+          );
+          const firstArg = copyResourceSpy.calls.argsFor(0)[0];
+          expect(firstArg.url).toBe(filePaths[0].url, "url should be the same");
+          const secondArg = copyResourceSpy.calls.argsFor(0)[1];
+          expect(secondArg.filename).toBe(
+            "storageFilename.png",
+            "should strip the id off the filename"
+          );
+          done();
+        })
+        .catch(ex => {
+          done.fail();
+        });
     });
 
     // Blobs are only available in the browser
@@ -488,7 +536,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             destinationItemId,
             destinationAuthentication,
             false,
-            mimeTypes
+            { properties: mimeTypes }
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -527,7 +575,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            false,
+            {}
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -569,7 +619,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            false,
+            {}
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -608,7 +660,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            false,
+            {}
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -646,7 +700,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication
+            destinationAuthentication,
+            false,
+            {}
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -891,7 +947,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
           .post(updateUrl, expected);
-        resourceHelpers
+        copyResourceModule
           .copyResource(source, destination)
           .then((response: any) => {
             expect(response).toEqual(expected);
@@ -922,7 +978,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
         new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
         { sendAsJson: false }
       );
-      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+      copyResourceModule
+        .copyResource(source, destination)
+        .then(done.fail, done);
     });
 
     it("handles inability to get resource", done => {
@@ -943,7 +1001,9 @@ describe("Module `resourceHelpers`: common functions involving the management of
         "/content/items/c6732556e299f1/resources/image.png";
 
       fetchMock.post(fetchUrl, 500);
-      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+      copyResourceModule
+        .copyResource(source, destination)
+        .then(done.fail, done);
     });
 
     it("handles inability to copy resource, hard error", done => {
@@ -970,7 +1030,14 @@ describe("Module `resourceHelpers`: common functions involving the management of
       fetchMock
         .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
         .post(updateUrl, expected);
-      resourceHelpers.copyResource(source, destination).then(done.fail, done);
+      return copyResourceModule
+        .copyResource(source, destination)
+        .then(r => {
+          done.fail();
+        })
+        .catch(ex => {
+          done();
+        });
     });
   }
 
@@ -1586,13 +1653,11 @@ describe("Module `resourceHelpers`: common functions involving the management of
     it("handles the absence of resource filenames", () => {
       const portalSharingUrl = utils.PORTAL_SUBSET.restUrl;
       const storageItemId = "03744d6b7a9b4b76bfd45dc2d1e642a5";
-      const resourceFilenames = null as string[];
       const expected: interfaces.IDeployFileCopyPath[] = [];
 
       const actual = resourceHelpers.generateStorageFilePaths(
         portalSharingUrl,
-        storageItemId,
-        resourceFilenames
+        storageItemId
       );
       expect(actual.length).toEqual(0);
       expect(actual).toEqual(expected);
@@ -1908,7 +1973,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           }, done.fail);
       });
 
-      it("can handle error on add resources", done => {
+      fit("can handle error on add resources", done => {
         const itemTemplate: interfaces.IItemTemplate = templates.getItemTemplateSkeleton();
         itemTemplate.item = mockItems.getAGOLItem("Web Map", null);
         itemTemplate.itemId = itemTemplate.item.id;
@@ -1979,12 +2044,19 @@ describe("Module `resourceHelpers`: common functions involving the management of
             mockItems.get400Failure()
           );
 
-        resourceHelpers
+        return resourceHelpers
           .storeItemResources(itemTemplate, solutionItemId, MOCK_USER_SESSION)
           .then(actual => {
             expect(actual).toEqual([]);
+            expect(fetchMock.done()).toBe(
+              true,
+              "should use all the fetch mocks"
+            );
             done();
-          }, done.fail);
+          })
+          .catch(ex => {
+            done.fail(ex);
+          });
       });
     });
   }

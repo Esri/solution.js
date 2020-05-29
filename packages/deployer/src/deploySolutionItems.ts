@@ -67,9 +67,6 @@ export function deploySolutionItems(
       costUsed: number = 1, // default to 1
       createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
     ) => {
-      console.log(
-        `Progress callback fored for template ${itemId} with status ${status} and cost ${costUsed} of  ${totalEstimatedCost} in chunks of ${progressPercentStep}`
-      );
       percentDone += progressPercentStep * costUsed;
       /* istanbul ignore else */
       if (options.progressCallback) {
