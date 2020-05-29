@@ -106,7 +106,6 @@ git merge --no-ff --no-commit release
 
 12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
 
- *Note: The last message in this step shows the error message "Error: missing required options: body", which appears to be wrong and ignorable.*
  ```
  npm run release:publish
      :        :
