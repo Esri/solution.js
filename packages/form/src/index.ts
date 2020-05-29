@@ -17,7 +17,7 @@
 /**
  * Manages the creation and deployment of form item types.
  *
- * @module file
+ * @module solution-form
  */
 
 export * from "./form";
