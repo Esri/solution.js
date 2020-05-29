@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-group",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "Manages the creation and deployment of group item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/group.umd.min.js",
@@ -13,15 +13,15 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/solution-common": "^0.12.0",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2",
-    "@esri/solution-common": "^0.12.0"
+    "typescript": "^3.9.2"
   },
   "peerDependencies": {
     "@esri/solution-common": "^0.12.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.13.0",
+    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
