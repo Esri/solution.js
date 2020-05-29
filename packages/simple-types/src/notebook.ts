@@ -1,17 +1,17 @@
-/*
- | Copyright 2020 Esri
- |
- | Licensed under the Apache License, Version 2.0 (the "License");
- | you may not use this file except in compliance with the License.
- | You may obtain a copy of the License at
- |
- |    http://www.apache.org/licenses/LICENSE-2.0
- |
- | Unless required by applicable law or agreed to in writing, software
- | distributed under the License is distributed on an "AS IS" BASIS,
- | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- | See the License for the specific language governing permissions and
- | limitations under the License.
+/** @license
+ * Copyright 2020 Esri
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 import * as common from "@esri/solution-common";
@@ -125,36 +125,27 @@ export function fineTuneCreatedItem(
  * Notebook specific post-processing actions
  * @param itemId
  * @param type
- * @param templates
+ * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param templateDictionary
  * @param authentication
  */
 export function postProcess(
   itemId: string,
   type: string,
-  templates: common.IItemTemplate[],
+  itemInfos: any[],
   templateDictionary: any,
   authentication: common.UserSession
 ): Promise<any> {
-  return common
-    .getItemDataAsJson(itemId, authentication)
-    .then(data => {
-      if (common.hasUnresolvedVariables(data)) {
-        const updatedData = common.replaceInTemplate(data, templateDictionary);
-        return notebookHelpers.updateNotebookData(
-          itemId,
-          updatedData,
-          authentication
-        );
-      } else {
-        return Promise.resolve({ success: true });
-      }
-    })
-    .then(_ => {
-      return notebookHelpers.shareTemplatesToGroups(
-        templates,
-        authentication,
-        templateDictionary
+  return common.getItemDataAsJson(itemId, authentication).then(data => {
+    if (common.hasUnresolvedVariables(data)) {
+      const updatedData = common.replaceInTemplate(data, templateDictionary);
+      return notebookHelpers.updateNotebookData(
+        itemId,
+        updatedData,
+        authentication
       );
-    });
+    } else {
+      return Promise.resolve({ success: true });
+    }
+  });
 }

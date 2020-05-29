@@ -10,7 +10,4 @@ describe("simpleTypeHelpers:: ", () => {
   it("should have generateEmptyCreationResponse", () => {
     expect(simpleTypeHelpers.generateEmptyCreationResponse).toBeDefined();
   });
-  it("should have shareTemplatesToGroups", () => {
-    expect(simpleTypeHelpers.shareTemplatesToGroups).toBeDefined();
-  });
 });

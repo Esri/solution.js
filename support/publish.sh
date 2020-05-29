@@ -26,8 +26,8 @@ git commit -am "v$VERSION" --no-verify --amend
 # tag this version
 git tag v$VERSION
 
-# push everything up to this point to develop
-git push https://github.com/Esri/solution.js.git develop
+# push everything up to this point to master
+git push https://github.com/Esri/arcgis-rest-js.git master
 
 # push the new tag, not the old tags
 git push https://github.com/Esri/solution.js.git v$VERSION
@@ -36,7 +36,28 @@ git push https://github.com/Esri/solution.js.git v$VERSION
 # create a ZIP archive of the dist files
 TEMP_FOLDER=solution.js-v$VERSION;
 mkdir $TEMP_FOLDER
-cp packages/*/dist/umd/* $TEMP_FOLDER
+
+mkdir $TEMP_FOLDER/common
+cp -r packages/common/dist/umd/* $TEMP_FOLDER/common/
+mkdir $TEMP_FOLDER/creator
+cp -r packages/creator/dist/umd/* $TEMP_FOLDER/creator/
+mkdir $TEMP_FOLDER/deployer
+cp -r packages/deployer/dist/umd/* $TEMP_FOLDER/deployer/
+mkdir $TEMP_FOLDER/feature-layer
+cp -r packages/feature-layer/dist/umd/* $TEMP_FOLDER/feature-layer/
+mkdir $TEMP_FOLDER/file
+cp -r packages/file/dist/umd/* $TEMP_FOLDER/file/
+mkdir $TEMP_FOLDER/group
+cp -r packages/group/dist/umd/* $TEMP_FOLDER/group/
+mkdir $TEMP_FOLDER/hub-types
+cp -r packages/hub-types/dist/umd/* $TEMP_FOLDER/hub-types/
+mkdir $TEMP_FOLDER/simple-types
+cp -r packages/simple-types/dist/umd/* $TEMP_FOLDER/simple-types/
+mkdir $TEMP_FOLDER/storymap
+cp -r packages/storymap/dist/umd/* $TEMP_FOLDER/storymap/
+mkdir $TEMP_FOLDER/viewer
+cp -r packages/viewer/dist/umd/* $TEMP_FOLDER/viewer/
+
 zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
 

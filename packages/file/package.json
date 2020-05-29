@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-file",
-  "version": "0.12.0",
+  "version": "0.14.0",
   "description": "Manages the creation and deployment of  item types that contain files for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -13,11 +13,15 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/solution-common": "^0.12.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
+  "peerDependencies": {
+    "@esri/solution-common": "^0.12.0"
+  },
   "dependencies": {
-    "@esri/solution-common": "^0.12.0",
+    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -70,5 +74,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "6c681610170b146bb5325d66714ddee94e9f421d"
+  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
 }

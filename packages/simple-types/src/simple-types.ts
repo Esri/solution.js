@@ -112,37 +112,29 @@ export function postProcessFieldReferences(
  * Simple Type post-processing actions
  * @param itemId
  * @param type
- * @param templates
+ * @param itemInfos Array of {id: 'ef3', type: 'Web Map'} objects
  * @param templateDictionary
  * @param authentication
  */
 export function postProcess(
   itemId: string,
   type: string,
-  templates: IItemTemplate[],
+  itemInfos: any[],
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {
-  return getItemDataAsJson(itemId, authentication)
-    .then(data => {
-      if (hasUnresolvedVariables(data)) {
-        const updatedData = replaceInTemplate(data, templateDictionary);
-        // TODO: update return type on updateItemExtended
-        return updateItemExtended(
-          itemId,
-          { id: itemId },
-          updatedData,
-          authentication
-        ) as Promise<any>;
-      } else {
-        return Promise.resolve({ success: true });
-      }
-    })
-    .then(_ => {
-      return simpleTypeHelpers.shareTemplatesToGroups(
-        templates,
-        authentication,
-        templateDictionary
-      );
-    });
+  return getItemDataAsJson(itemId, authentication).then(data => {
+    if (hasUnresolvedVariables(data)) {
+      const updatedData = replaceInTemplate(data, templateDictionary);
+      // TODO: update return type on updateItemExtended
+      return updateItemExtended(
+        itemId,
+        { id: itemId },
+        updatedData,
+        authentication
+      ) as Promise<any>;
+    } else {
+      return Promise.resolve({ success: true });
+    }
+  });
 }

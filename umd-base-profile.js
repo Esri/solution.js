@@ -64,10 +64,12 @@ const packageNames = fs
  * Now we need to discover all the `@esri/arcgis-rest-*` package names so we can create
  * the `globals` and `externals` to pass to Rollup.
  */
-const arcgisRestJsPackageNames = Object.keys(pkg.dependencies)
+const peerDependencies = pkg.peerDependencies || [];
+
+const arcgisRestJsPackageNames = Object.keys(peerDependencies)
   .filter(key => /@esri\/arcgis-rest/.test(key));
 
-const hubJsPackageNames = Object.keys(pkg.dependencies)
+const hubJsPackageNames = Object.keys(peerDependencies)
   .filter(key => /@esri\/hub-/.test(key));
 
 /**

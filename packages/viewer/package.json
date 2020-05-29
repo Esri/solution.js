@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.12.0",
+  "version": "0.14.0",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -12,12 +12,15 @@
   "files": [
     "dist/**"
   ],
+  "peerDependencies": {
+    "@esri/solution-common": "^0.14.0"
+  },
   "devDependencies": {
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.12.0",
+    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -70,5 +73,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "6c681610170b146bb5325d66714ddee94e9f421d"
+  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
 }

@@ -10,9 +10,6 @@ describe("notebookHelpers:: ", () => {
   it("should have generateEmptyCreationResponse", () => {
     expect(notebookHelpers.generateEmptyCreationResponse).toBeDefined();
   });
-  it("should have shareTemplatesToGroups", () => {
-    expect(notebookHelpers.shareTemplatesToGroups).toBeDefined();
-  });
   it("should have updateNotebookData", () => {
     expect(notebookHelpers.updateNotebookData).toBeDefined();
   });
