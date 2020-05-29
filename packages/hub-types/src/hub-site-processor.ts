@@ -65,15 +65,6 @@ export function createItemFromTemplate(
   // convert the templateDictionary to a settings hash
   const settings = cloneObject(templateDictionary);
 
-  // solutionItemExtent is in geographic, but it's a string, and we want/need a bbox
-  // and Hub templates expect it in organization.defaultExtentBBox
-  if (settings.solutionItemExtent) {
-    const parts = settings.solutionItemExtent.split(",");
-    settings.organization.defaultExtentBBox = [
-      [parts[0], parts[1]],
-      [parts[2], parts[3]]
-    ];
-  }
   // ensure we have a solution object in the settings hash
   if (!settings.solution) {
     settings.solution = {};
