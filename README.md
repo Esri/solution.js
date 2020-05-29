@@ -51,6 +51,7 @@ The API is divided into packages to make it easier to use just the parts that yo
 * `deployer`, which contains functions for deploying item templates into items in a destination organization
 * `feature-layer`, which contains functions for Feature Service items
 * `file`, which contains functions for items that contain files
+* `form`, which contains functions for form items
 * `group`, which contains functions for Groups
 * `simple-types`, which contains functions for the simpler item types Dashboard, Form, Web Map, Web Mapping Application, and Workforce Project
 * `storymap`, which contains functions for Storymap items
