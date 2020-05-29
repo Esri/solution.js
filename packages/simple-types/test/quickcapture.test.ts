@@ -19,9 +19,13 @@
  */
 
 import * as common from "@esri/solution-common";
+import * as createHelper from "../src/helpers/create-item-from-template";
+import * as convertHelper from "../src/helpers/convert-item-to-template";
+import * as fetchMock from "fetch-mock";
 import * as quickcapture from "../src/quickcapture";
 import * as mockItems from "../../common/test/mocks/agolItems";
 import * as utils from "../../common/test/mocks/utils";
+import * as templates from "../../common/test/mocks/templates";
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 20000; // default is 5000 ms
 
@@ -31,10 +35,49 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
+afterEach(() => {
+  fetchMock.restore();
+});
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `quick capture`: manages the creation and deployment of quick capture project item types", () => {
-  describe("convertItemToTemplate", () => {
+  describe("createItemFromTemplate :: ", () => {
+    it("delegated to helper", () => {
+      const createSpy = spyOn(
+        createHelper,
+        "createItemFromTemplate"
+      ).and.resolveTo();
+      const cb = (): boolean => {
+        return true;
+      };
+      return quickcapture
+        .createItemFromTemplate(
+          {} as common.IItemTemplate,
+          {},
+          MOCK_USER_SESSION,
+          cb
+        )
+        .then(() => {
+          expect(createSpy.calls.count()).toBe(1, "should delegate");
+        });
+    });
+  });
+  describe("convertItemToTemplate :: ", () => {
+    it("delegated to helper", () => {
+      const convertSpy = spyOn(
+        convertHelper,
+        "convertItemToTemplate"
+      ).and.resolveTo();
+      return quickcapture
+        .convertItemToTemplate("3ef", {}, MOCK_USER_SESSION)
+        .then(() => {
+          expect(convertSpy.calls.count()).toBe(1, "should delegate");
+        });
+    });
+  });
+
+  describe("convertQuickCaptureToTemplate", () => {
     it("templatize application data", done => {
       const itemTemplate: common.IItemTemplate = mockItems.getAGOLItem(
         "QuickCapture Project",
@@ -75,7 +118,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         name: "qc.project.json"
       };
 
-      quickcapture.convertItemToTemplate(itemTemplate).then(actual => {
+      quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
         expect(actual.data).toEqual(expectedData);
         expect(actual.dependencies).toEqual(expectedDependencies);
         done();
@@ -88,7 +131,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
         null
       );
       itemTemplate.data = {};
-      quickcapture.convertItemToTemplate(itemTemplate).then(actual => {
+      quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
         expect(actual).toEqual(itemTemplate);
         done();
       }, done.fail);
@@ -109,7 +152,7 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
     const expectedDependencies: string[] = [];
     const expectedData: any = {};
 
-    quickcapture.convertItemToTemplate(itemTemplate).then(actual => {
+    quickcapture.convertQuickCaptureToTemplate(itemTemplate).then(actual => {
       expect(actual.data).toEqual(expectedData);
       expect(actual.dependencies).toEqual(expectedDependencies);
       done();
@@ -164,6 +207,111 @@ describe("Module `quick capture`: manages the creation and deployment of quick c
       quickcapture._templatizeUrl(obj, idPath, urlPath);
 
       expect(common.getProp(obj, urlPath)).toEqual(expectedUpdatedUrl);
+    });
+
+    it("postProcess QuickCapture projects", done => {
+      const newItemId: string = "xxx79c91fc7642ebb4c0bbacfbacd510";
+
+      const qcTemplate: common.IItemTemplate = templates.getItemTemplateSkeleton();
+      qcTemplate.itemId = newItemId;
+      qcTemplate.data = {
+        application: {
+          basemap: {},
+          dataSources: [
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+              url: "{{4efe5f693de34620934787ead6693f10.layer0.url}}"
+            },
+            {
+              featureServiceItemId:
+                "{{4efe5f693de34620934787ead6693f10.itemId}}",
+              dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+              url: "{{4efe5f693de34620934787ead6693f10.layer1.url}}"
+            }
+          ],
+          itemId: "{{9da79c91fc7642ebb4c0bbacfbacd510.itemId}}",
+          preferences: {
+            adminEmail: "{{user.email}}"
+          },
+          templateGroups: [],
+          userInputs: [],
+          version: 0.1
+        },
+        name: "qc.project.json"
+      };
+
+      const templateDictionary: any = {
+        user: {
+          email: "casey@esri.com"
+        },
+        "4efe5f693de34620934787ead6693f10": {
+          itemId: "xxxe5f693de34620934787ead6693f10",
+          layer0: {
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          layer1: {
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        },
+        "9da79c91fc7642ebb4c0bbacfbacd510": {
+          itemId: "xxx79c91fc7642ebb4c0bbacfbacd510"
+        }
+      };
+
+      const expectedData: any = JSON.stringify({
+        basemap: {},
+        dataSources: [
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1d4de1e4-ef58-4e02-9159-7a6e6701cada",
+            url: "https://abc123/name/FeatureServer/0"
+          },
+          {
+            featureServiceItemId: "xxxe5f693de34620934787ead6693f10",
+            dataSourceId: "1687a71b-cf77-48ed-b948-c66e228a0f74",
+            url: "https://abc123/name/FeatureServer/1"
+          }
+        ],
+        itemId: "xxx79c91fc7642ebb4c0bbacfbacd510",
+        preferences: {
+          adminEmail: "casey@esri.com"
+        },
+        templateGroups: [],
+        userInputs: [],
+        version: 0.1
+      });
+
+      const updateSpy = spyOn(
+        common,
+        "updateItemResourceText"
+      ).and.callThrough();
+
+      fetchMock.post(
+        utils.PORTAL_SUBSET.restUrl +
+          "/content/users/casey/items/" +
+          newItemId +
+          "/updateResources",
+        { success: true }
+      );
+
+      quickcapture
+        .postProcess(
+          newItemId,
+          "QuickCapture Project",
+          [],
+          qcTemplate,
+          templateDictionary,
+          MOCK_USER_SESSION
+        )
+        .then(() => {
+          const args = updateSpy.calls.argsFor(0) as any[];
+          expect(args[0]).toBe(newItemId);
+          expect(args[1]).toBe(qcTemplate.data.name);
+          expect(args[2]).toBe(expectedData);
+          done();
+        }, done.fail);
     });
   });
 });

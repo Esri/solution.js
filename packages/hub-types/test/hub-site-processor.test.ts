@@ -201,6 +201,7 @@ describe("HubSiteProcessor: ", () => {
         "bc3",
         "Hub Site Application",
         tmpls,
+        {},
         td,
         MOCK_USER_SESSION
       ).then(result => {
