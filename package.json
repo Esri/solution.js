@@ -74,7 +74,7 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.3",
     "uuid": "^8.0.0"
   },
   "lint-staged": {

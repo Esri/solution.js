@@ -12,11 +12,16 @@
   "files": [
     "dist/**"
   ],
+  "devDependencies": {
+    "rollup": "^1.22.0",
+    "typescript": "^3.9.3"
+  },
   "peerDependencies": {
     "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
     "@esri/arcgis-rest-portal": "^2.11.0",
     "@esri/arcgis-rest-request": "^2.11.0",
-    "@esri/arcgis-rest-types": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
@@ -24,27 +29,8 @@
     "@esri/solution-feature-layer": "^0.14.0",
     "@esri/solution-file": "^0.14.0",
     "@esri/solution-group": "^0.14.0",
-    "@esri/solution-hub-types": "^0.14.0",
     "@esri/solution-simple-types": "^0.14.0",
     "@esri/solution-storymap": "^0.14.0"
-  },
-  "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.11.0",
-    "@esri/arcgis-rest-portal": "^2.11.0",
-    "@esri/arcgis-rest-request": "^2.11.0",
-    "@esri/arcgis-rest-types": "^2.11.0",
-    "@esri/hub-common": "^4.2.0",
-    "@esri/hub-initiatives": "^4.2.0",
-    "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.14.0",
-    "@esri/solution-feature-layer": "^0.14.0",
-    "@esri/solution-file": "^0.14.0",
-    "@esri/solution-group": "^0.14.0",
-    "@esri/solution-hub-types": "^0.14.0",
-    "@esri/solution-simple-types": "^0.14.0",
-    "@esri/solution-storymap": "^0.14.0",
-    "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
   },
   "dependencies": {
     "tslib": "^1.10.0"
