@@ -27,7 +27,7 @@ git commit -am "v$VERSION" --no-verify --amend
 git tag v$VERSION
 
 # push everything up to this point to master
-git push https://github.com/Esri/arcgis-rest-js.git master
+git push https://github.com/Esri/solution.js.git master
 
 # push the new tag, not the old tags
 git push https://github.com/Esri/solution.js.git v$VERSION
