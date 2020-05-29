@@ -62,7 +62,7 @@ zip -r $TEMP_FOLDER.zip $TEMP_FOLDER
 rm -rf $TEMP_FOLDER
 
 # Run gh-release to create a new release with our changelog changes and ZIP archive
-gh-release --t v$VERSION --repo solution.js --owner Esri -a $TEMP_FOLDER.zip
+npx gh-release -t v$VERSION -b v$VERSION -r solution.js -o Esri -a $TEMP_FOLDER.zip
 
 # Delete the ZIP archive
 rm $TEMP_FOLDER.zip
