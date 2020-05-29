@@ -22,7 +22,7 @@
 
 import * as common from "@esri/solution-common";
 import { moduleMap } from "./module-map";
-import { maybePush } from "@esri/hub-common";
+import { maybePush, getProp } from "@esri/hub-common";
 
 const UNSUPPORTED: common.moduleHandler = null;
 
@@ -64,10 +64,12 @@ export function deploySolutionItems(
     const itemProgressCallback: common.IItemProgressCallback = (
       itemId: string,
       status: common.EItemProgressStatus,
-      costUsed: number,
+      costUsed: number = 1, // default to 1
       createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
     ) => {
-      // ---------------------------------------------------------------------------------------------------------------
+      console.log(
+        `Progress callback fored for template ${itemId} with status ${status} and cost ${costUsed} of  ${totalEstimatedCost} in chunks of ${progressPercentStep}`
+      );
       percentDone += progressPercentStep * costUsed;
       /* istanbul ignore else */
       if (options.progressCallback) {
@@ -134,6 +136,7 @@ export function deploySolutionItems(
         cloneOrderChecklist.forEach(id => {
           // Get the item's template out of the list of templates
           const template = common.findTemplateInList(templates, id);
+
           awaitAllItems.push(
             _createItemFromTemplateWhenReady(
               template!,
@@ -427,7 +430,7 @@ export function _createItemFromTemplateWhenReady(
       // invalid or don't refer to a template
       const awaitDependencies = template.dependencies.reduce(
         (acc: any[], id: string) => {
-          return maybePush(templateDictionary[id].def, acc);
+          return maybePush(getProp(templateDictionary, `${id}.def`), acc);
         },
         []
       );
@@ -508,7 +511,7 @@ export function _createItemFromTemplateWhenReady(
                         createResponse.id,
                         destinationAuthentication,
                         templateType === "Group",
-                        template.properties
+                        template
                       )
                       .then(
                         () => resolve(createResponse),
@@ -553,7 +556,9 @@ export function _estimateDeploymentCost(
 ): number {
   return templates.reduce(
     (accumulatedEstimatedCost: number, template: common.IItemTemplate) => {
-      return accumulatedEstimatedCost + template.estimatedDeploymentCostFactor;
+      return (
+        accumulatedEstimatedCost + (template.estimatedDeploymentCostFactor || 1)
+      );
     },
     0
   );
