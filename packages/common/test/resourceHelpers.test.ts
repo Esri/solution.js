@@ -27,8 +27,8 @@ import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-import * as copyResourceModule from "../src/resources/copy-resource";
-import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
+// import * as copyResourceModule from "../src/resources/copy-resource";
+// import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,7 +38,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
+fdescribe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   const SERVER_INFO = {
     currentVersion: 10.1,
     fullVersion: "10.1",
@@ -92,7 +92,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        addResourceFromBlobModule
+        resourceHelpers
           .addResourceFromBlob(
             blob,
             itemId,
@@ -122,7 +122,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           "Filename must have an extension indicating its type"
         );
 
-        addResourceFromBlobModule
+        resourceHelpers
           .addResourceFromBlob(
             blob,
             itemId,
@@ -150,7 +150,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        addResourceFromBlobModule
+        resourceHelpers
           .addResourceFromBlob(
             blob,
             itemId,
@@ -405,9 +405,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           storageAuthentication,
           filePaths,
           destinationItemId,
-          destinationAuthentication,
-          false,
-          {}
+          destinationAuthentication
         )
         .then((response: any) => {
           expect(response).toEqual(expected);
@@ -415,7 +413,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         }, done.fail);
     });
 
-    it("remaps hub files", done => {
+    xit("remaps hub files", done => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -428,7 +426,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       const tmpl = { itemId: "bc3" };
       // Spies
       const copyResourceSpy = spyOn(
-        copyResourceModule,
+        resourceHelpers,
         "copyResource"
       ).and.resolveTo({ success: true });
       return resourceHelpers
@@ -455,7 +453,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
           done();
         })
         .catch(ex => {
-          done.fail();
+          done.fail(ex);
         });
     });
 
@@ -536,7 +534,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             destinationItemId,
             destinationAuthentication,
             false,
-            { properties: mimeTypes }
+            mimeTypes
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -575,9 +573,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication,
-            false,
-            {}
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -619,9 +615,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication,
-            false,
-            {}
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -660,9 +654,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication,
-            false,
-            {}
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -700,9 +692,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
             storageAuthentication,
             filePaths,
             destinationItemId,
-            destinationAuthentication,
-            false,
-            {}
+            destinationAuthentication
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -947,7 +937,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         fetchMock
           .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
           .post(updateUrl, expected);
-        copyResourceModule
+        resourceHelpers
           .copyResource(source, destination)
           .then((response: any) => {
             expect(response).toEqual(expected);
@@ -978,9 +968,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
         { sendAsJson: false }
       );
-      copyResourceModule
-        .copyResource(source, destination)
-        .then(done.fail, done);
+      resourceHelpers.copyResource(source, destination).then(done.fail, done);
     });
 
     it("handles inability to get resource", done => {
@@ -1001,9 +989,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
         "/content/items/c6732556e299f1/resources/image.png";
 
       fetchMock.post(fetchUrl, 500);
-      copyResourceModule
-        .copyResource(source, destination)
-        .then(done.fail, done);
+      resourceHelpers.copyResource(source, destination).then(done.fail, done);
     });
 
     it("handles inability to copy resource, hard error", done => {
@@ -1030,7 +1016,7 @@ describe("Module `resourceHelpers`: common functions involving the management of
       fetchMock
         .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
         .post(updateUrl, expected);
-      return copyResourceModule
+      return resourceHelpers
         .copyResource(source, destination)
         .then(r => {
           done.fail();

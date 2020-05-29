@@ -61,7 +61,8 @@ import {
   IItemUpdate,
   ISourceFileCopyPath,
   IUpdateItemResponse,
-  UserSession
+  UserSession,
+  IMimeTypes
 } from "./interfaces";
 import { new_File } from "./polyfills";
 import {
@@ -258,14 +259,14 @@ export function copyFilesFromStorageItem(
   const mimeTypes = template.properties || null;
 
   // remove the template.itemId from the fileName in the filePaths
-  // if (template.itemId) {
-  //   filePaths = filePaths.map(fp => {
-  //     if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
-  //       fp.filename = fp.filename.replace(`${template.itemId}-`, "");
-  //     }
-  //     return fp;
-  //   });
-  // }
+  if (template.itemId) {
+    filePaths = filePaths.map(fp => {
+      if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
+        fp.filename = fp.filename.replace(`${template.itemId}-`, "");
+      }
+      return fp;
+    });
+  }
 
   return new Promise<boolean>((resolve, reject) => {
     // Introduce a lag because AGO update appears to choke with rapid subsequent calls
@@ -623,6 +624,7 @@ export function generateResourceFilenameFromStorage(
   if (storageResourceFilename.indexOf("/") > -1) {
     [folder, filename] = storageResourceFilename.split("/");
   }
+  // let [folder, filename] = storageResourceFilename.split("/");
 
   // Handle special "folders"
   if (folder.endsWith("_info_thumbnail")) {
