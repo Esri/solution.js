@@ -156,7 +156,9 @@ export function convertItemToTemplate(
             workforce.convertItemToTemplate(itemTemplate);
             break;
           case "QuickCapture Project":
-            webappPromise = quickcapture.convertItemToTemplate(itemTemplate);
+            webappPromise = quickcapture.convertQuickCaptureToTemplate(
+              itemTemplate
+            );
             break;
         }
 

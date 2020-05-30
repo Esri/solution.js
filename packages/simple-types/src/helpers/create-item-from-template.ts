@@ -17,7 +17,6 @@ import * as common from "@esri/solution-common";
 import * as notebook from "../notebook";
 import * as webmappingapplication from "../webmappingapplication";
 import * as workforce from "../workforce";
-import * as quickcapture from "../quickcapture";
 import { generateEmptyCreationResponse } from "./generate-empty-creation-response";
 
 export function createItemFromTemplate(
@@ -190,61 +189,35 @@ export function createItemFromTemplate(
                 results => {
                   const [relationships, customProcs] = results;
 
-                  let updateResourceDef: Promise<void> = Promise.resolve();
-                  if (template.type === "QuickCapture Project") {
-                    updateResourceDef = quickcapture.fineTuneCreatedItem(
-                      newItemTemplate,
-                      destinationAuthentication
+                  // Interrupt process if progress callback returns `false`
+                  if (
+                    !itemProgressCallback(
+                      template.itemId,
+                      common.EItemProgressStatus.Finished,
+                      template.estimatedDeploymentCostFactor / 2,
+                      createResponse.id
+                    )
+                  ) {
+                    itemProgressCallback(
+                      template.itemId,
+                      common.EItemProgressStatus.Cancelled,
+                      0
                     );
-                  }
-                  updateResourceDef.then(
-                    () => {
-                      // Interrupt process if progress callback returns `false`
-                      if (
-                        !itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Finished,
-                          template.estimatedDeploymentCostFactor / 2,
-                          createResponse.id
-                        )
-                      ) {
-                        itemProgressCallback(
-                          template.itemId,
-                          common.EItemProgressStatus.Cancelled,
-                          0
-                        );
-                        common
-                          .removeItem(
-                            createResponse.id,
-                            destinationAuthentication
-                          )
-                          .then(
-                            () =>
-                              resolve(
-                                generateEmptyCreationResponse(template.type)
-                              ),
-                            () =>
-                              resolve(
-                                generateEmptyCreationResponse(template.type)
-                              )
-                          );
-                      } else {
-                        resolve({
-                          id: createResponse.id,
-                          type: newItemTemplate.type,
-                          postProcess: postProcess
-                        });
-                      }
-                    },
-                    () => {
-                      itemProgressCallback(
-                        template.itemId,
-                        common.EItemProgressStatus.Failed,
-                        0
+                    common
+                      .removeItem(createResponse.id, destinationAuthentication)
+                      .then(
+                        () =>
+                          resolve(generateEmptyCreationResponse(template.type)),
+                        () =>
+                          resolve(generateEmptyCreationResponse(template.type))
                       );
-                      resolve(generateEmptyCreationResponse(template.type)); // fails to update after fine tuning
-                    }
-                  );
+                  } else {
+                    resolve({
+                      id: createResponse.id,
+                      type: newItemTemplate.type,
+                      postProcess: postProcess
+                    });
+                  }
                 },
                 () => {
                   itemProgressCallback(

@@ -47,6 +47,8 @@ mkdir $TEMP_FOLDER/feature-layer
 cp -r packages/feature-layer/dist/umd/* $TEMP_FOLDER/feature-layer/
 mkdir $TEMP_FOLDER/file
 cp -r packages/file/dist/umd/* $TEMP_FOLDER/file/
+mkdir $TEMP_FOLDER/form
+cp -r packages/form/dist/umd/* $TEMP_FOLDER/form/
 mkdir $TEMP_FOLDER/group
 cp -r packages/group/dist/umd/* $TEMP_FOLDER/group/
 mkdir $TEMP_FOLDER/hub-types

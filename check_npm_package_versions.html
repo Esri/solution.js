@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <title>Checks publication of packages to npm</title>
+  <!--
+   | Copyright 2020 Esri
+   |
+   | Licensed under the Apache License, Version 2.0 (the "License");
+   | you may not use this file except in compliance with the License.
+   | You may obtain a copy of the License at
+   |
+   |    http://www.apache.org/licenses/LICENSE-2.0
+   |
+   | Unless required by applicable law or agreed to in writing, software
+   | distributed under the License is distributed on an "AS IS" BASIS,
+   | WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   | See the License for the specific language governing permissions and
+   | limitations under the License.
+  -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
+  <style>
+    table, th, td {
+      border: 1px solid lightgray;
+    }
+    th, td {
+      padding: 10px;
+    }
+    th, td {
+      width: 100px;
+      text-align: center;
+    }
+    th.package, td.package {
+      width: 220px;
+      text-align: left;
+    }
+    .good {
+      color: green;
+      font-weight: bold;
+    }
+    .good:before {
+      content: "\2714";
+    }
+    .bad {
+      color: red;
+      font-weight: bold;
+    }
+    .bad:before {
+      content: "\2716";
+    }
+  </style>
+</head>
+<body>
+  <div id="output">Fetching...</div>
+
+  <script>
+    let currentVersion = "";
+
+    fetch("package.json").then(
+      package_file => package_file.json()
+    ).then(
+      package_json => {
+        currentVersion = package_json.version;
+        html = "<b>Current repository version: " + currentVersion + "</b><br><br>" +
+          "<table><tr><th class='package'>Package in unpkg</th><th>.umd.js</th><th>.umd.min.js</th></tr>";
+
+        html += addPackageVersionsToTable("@esri/solution-common", "common");
+        html += addPackageVersionsToTable("@esri/solution-creator", "creator");
+        html += addPackageVersionsToTable("@esri/solution-deployer", "deployer");
+        html += addPackageVersionsToTable("@esri/solution-feature-layer", "feature-layer");
+        html += addPackageVersionsToTable("@esri/solution-file", "file");
+        html += addPackageVersionsToTable("@esri/solution-form", "form");
+        html += addPackageVersionsToTable("@esri/solution-group", "group");
+        html += addPackageVersionsToTable("@esri/solution-simple-types", "simple-types");
+        html += addPackageVersionsToTable("@esri/solution-hub-types", "hub-types");
+        html += addPackageVersionsToTable("@esri/solution-storymap", "storymap");
+
+        html += "</table>";
+        const resultsElement = document.getElementById("output");
+        resultsElement.innerHTML = html;
+        window.getComputedStyle(resultsElement, null);
+      }
+    );
+
+    function addPackageVersionsToTable(packageName, packageFileName) {
+      setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, false), 10);
+      setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, true), 10);
+      return "<tr><td class='package'>" + packageName + "</td><td id='" +
+        packageFileName + "_reg'></td><td id='" + packageFileName + "_min'></td></tr>";
+    }
+
+    function addSpecificPackageVersionToTable(packageName, packageFileName, useMinimized) {
+      fetch("https://unpkg.com/" + packageName + "/dist/umd/" +
+        packageFileName + ".umd" + (useMinimized ? ".min" : "") + ".js").then(
+        packageFile => {
+          const packageUrl = packageFile.url;
+          const iVersionStart = packageUrl.indexOf(packageName) + packageName.length + 1;
+          const iVersionEnd = packageUrl.indexOf("/", iVersionStart);
+          let packageVersion = packageUrl.substring(iVersionStart, iVersionEnd);
+
+          if (packageVersion === "dist") {
+            packageVersion = "<i>none</i>";
+          } else if (packageVersion !== currentVersion) {
+            packageVersion = "<span class='bad'>&nbsp;&nbsp;" + packageVersion + "</span>";
+          } else {
+            packageVersion = "<span class='good'>&nbsp;&nbsp;" + packageVersion + "</span>";
+          }
+
+          document.getElementById(packageFileName + (useMinimized ? "_min" : "_reg")).innerHTML = packageVersion;
+        }
+      );
+    }
+  </script>
+</body>
+</html>

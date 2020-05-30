@@ -24,7 +24,11 @@ import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as fileProcessor from "@esri/solution-file";
 import * as group from "@esri/solution-group";
-import { simpleTypes, notebookProcessor } from "@esri/solution-simple-types";
+import {
+  simpleTypes,
+  notebookProcessor,
+  quickcaptureProcessor
+} from "@esri/solution-simple-types";
 import * as storyMap from "@esri/solution-storymap";
 
 const UNSUPPORTED: common.moduleHandler = null;
@@ -90,7 +94,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Native Application": undefined,
   Notebook: notebookProcessor,
   "Ortho Mapping Project": undefined,
-  "QuickCapture Project": simpleTypes,
+  "QuickCapture Project": quickcaptureProcessor,
   "Site Application": undefined,
   "Site Initiative": undefined,
   "Site Page": undefined,

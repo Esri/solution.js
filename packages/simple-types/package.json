@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "0.14.0",
+  "version": "0.15.1",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -13,21 +13,38 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
-    "@esri/solution-common": "^0.14.0",
-    "typescript": "^3.9.2"
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.1",
+    "@esri/solution-feature-layer": "^0.15.1",
+    "@esri/solution-file": "^0.15.1",
+    "@esri/solution-group": "^0.15.1",
+    "@esri/solution-storymap": "^0.15.1",
+    "rollup": "^1.22.0",
+    "typescript": "^3.9.3"
   },
   "peerDependencies": {
-    "@esri/arcgis-rest-auth": "^2.13.1",
-    "@esri/arcgis-rest-portal": "^2.13.1",
-    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
     "@esri/hub-common": "^4.2.0",
-    "@esri/solution-common": "^0.14.0"
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.12.0",
+    "@esri/solution-feature-layer": "^0.12.0",
+    "@esri/solution-file": "^0.12.0",
+    "@esri/solution-group": "^0.12.0",
+    "@esri/solution-storymap": "^0.12.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -81,5 +98,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
+  "gitHead": "5567c982c1ce17c84daa7b44dd37d06ed3783262"
 }

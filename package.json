@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.14.0",
+  "version": "0.15.1",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",
@@ -16,10 +16,10 @@
     "changelog-parser": "^2.7.0",
     "cheerio": "^1.0.0-rc.3",
     "codecov": "^3.6.5",
-    "commitizen": "^3.1.1",
+    "commitizen": "^4.1.2",
     "concurrently": "^3.5.1",
     "core-js": "^3.6.1",
-    "coveralls": "^2.11.16",
+    "coveralls": "^3.1.0",
     "cpx": "^1.5.0",
     "cross-spawn": "^5.1.0",
     "cz-lerna-changelog": "^2.0.2",
@@ -36,7 +36,7 @@
     "isomorphic-form-data": "^2.0.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
-    "karma": "^4.4.1",
+    "karma": "^5.0.9",
     "karma-chrome-launcher": "^2.2.0",
     "karma-edge-launcher": "^0.4.2",
     "karma-firefox-launcher": "^1.1.0",
@@ -74,7 +74,7 @@
     "tslint-config-prettier": "^1.6.0",
     "tslint-config-standard": "^8.0.1",
     "typedoc": "^0.15.0",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.3",
     "uuid": "^8.0.0"
   },
   "lint-staged": {

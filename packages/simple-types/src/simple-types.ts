@@ -23,9 +23,11 @@
 import * as dashboard from "./dashboard";
 import * as webmap from "./webmap";
 import * as webmappingapplication from "./webmappingapplication";
+import * as quickcapture from "./quickcapture";
 
 import {
   getItemDataAsJson,
+  getTemplateById,
   hasUnresolvedVariables,
   ICreateItemFromTemplateResponse,
   IDatasourceInfo,
@@ -120,6 +122,7 @@ export function postProcess(
   itemId: string,
   type: string,
   itemInfos: any[],
+  template: IItemTemplate,
   templateDictionary: any,
   authentication: UserSession
 ): Promise<any> {

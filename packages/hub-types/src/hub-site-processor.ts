@@ -176,6 +176,7 @@ export function postProcess(
   id: string,
   type: string,
   itemInfos: any[],
+  template: any,
   templateDictionary: any,
   authentication: UserSession
 ): Promise<boolean> {
