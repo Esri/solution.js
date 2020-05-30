@@ -21,17 +21,19 @@
  */
 
 import * as common from "@esri/solution-common";
+import { simpleTypes } from "@esri/solution-simple-types";
+import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
-  authentication: common.UserSession,
-  isGroup?: boolean
+  authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return Promise.reject(
-    common.fail(
-      "convertItemToTemplate not yet implemented in solution-form package"
-    )
+  // Delegate to simple types
+  return simpleTypes.convertItemToTemplate(
+    solutionItemId,
+    itemInfo,
+    authentication
   );
 }
 
@@ -41,9 +43,20 @@ export function createItemFromTemplate(
   destinationAuthentication: common.UserSession,
   itemProgressCallback: common.IItemProgressCallback
 ): Promise<common.ICreateItemFromTemplateResponse> {
-  return Promise.reject(
-    common.fail(
-      "createItemFromTemplate not yet implemented in solution-form package"
-    )
+  // Hub Form template custom processing
+  if (isHubFormTemplate(template)) {
+    return Promise.reject(
+      common.fail(
+        "createItemFromTemplate not yet implemented for Hub templates in solution-form package"
+      )
+    );
+  }
+
+  // otherwise delegate to simple types
+  return simpleTypes.createItemFromTemplate(
+    template,
+    templateDictionary,
+    destinationAuthentication,
+    itemProgressCallback
   );
 }

@@ -23,6 +23,7 @@
 import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as fileProcessor from "@esri/solution-file";
+import * as formProcessor from "@esri/solution-form";
 import * as group from "@esri/solution-group";
 import {
   simpleTypes,
@@ -81,7 +82,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: simpleTypes,
+  Form: formProcessor,
   "Hub Initiative": simpleTypes,
   "Hub Page": simpleTypes,
   "Hub Site Application": simpleTypes,
