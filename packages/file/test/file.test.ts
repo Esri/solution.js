@@ -57,7 +57,7 @@ afterEach(() => {
 // ------------------------------------------------------------------------------------------------------------------ //
 
 describe("Module `file`: manages the creation and deployment of item types that contain files", () => {
-  describe("convertItemToTemplate", () => {
+  describe("convertItemToTemplate :: ", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("handles GeoJson with no data", done => {

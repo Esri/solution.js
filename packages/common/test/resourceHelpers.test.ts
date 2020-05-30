@@ -27,8 +27,8 @@ import * as templates from "./mocks/templates";
 import * as utils from "./mocks/utils";
 import * as mockItems from "./mocks/agolItems";
 import * as fetchMock from "fetch-mock";
-// import * as copyResourceModule from "../src/resources/copy-resource";
-// import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
+import * as copyResourceModule from "../src/resources/copy-resource";
+import * as addResourceFromBlobModule from "../src/resources/add-resource-from-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -38,7 +38,7 @@ beforeEach(() => {
   MOCK_USER_SESSION = utils.createRuntimeMockUserSession();
 });
 
-fdescribe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
+describe("Module `resourceHelpers`: common functions involving the management of item and group resources", () => {
   const SERVER_INFO = {
     currentVersion: 10.1,
     fullVersion: "10.1",
@@ -92,7 +92,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -122,7 +122,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
           "Filename must have an extension indicating its type"
         );
 
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -150,7 +150,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
         const expected = { success: true, id: itemId };
 
         fetchMock.post(updateUrl, expected);
-        resourceHelpers
+        addResourceFromBlobModule
           .addResourceFromBlob(
             blob,
             itemId,
@@ -263,7 +263,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
     describe("copyData", () => {
       it("should handle error getting data", done => {
         const source: any = {
-          url: undefined,
+          url: undefined, // <-- Why test this? is this ever possible?
           authentication: MOCK_USER_SESSION
         };
 
@@ -274,12 +274,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
           authentication: MOCK_USER_SESSION
         };
 
-        fetchMock.post(
-          "https://myserver/files/filename.txt/rest/info",
-          mockItems.get400Failure()
-        );
-
-        resourceHelpers
+        return resourceHelpers
           .copyData(source, destination)
           .then(() => done.fail, done);
       });
@@ -413,7 +408,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
         }, done.fail);
     });
 
-    xit("remaps hub files", done => {
+    it("remaps hub files", done => {
       const storageAuthentication = MOCK_USER_SESSION;
       const filePaths: interfaces.IDeployFileCopyPath[] = [
         {
@@ -426,7 +421,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
       const tmpl = { itemId: "bc3" };
       // Spies
       const copyResourceSpy = spyOn(
-        resourceHelpers,
+        copyResourceModule,
         "copyResource"
       ).and.resolveTo({ success: true });
       return resourceHelpers
@@ -534,7 +529,7 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
             destinationItemId,
             destinationAuthentication,
             false,
-            mimeTypes
+            { properties: mimeTypes }
           )
           .then((response: any) => {
             expect(response).toEqual(expectedUpdate);
@@ -912,119 +907,118 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
       });
     });
 
-    describe("copyResource", () => {
-      it("copies resource", done => {
-        const source = {
-          url:
-            utils.PORTAL_SUBSET.restUrl +
-            "/content/items/c6732556e299f1/resources/image.png",
-          authentication: MOCK_USER_SESSION
-        };
-        const destination = {
-          itemId: "itm1234567890",
-          folder: "storageFolder",
-          filename: "storageFilename.png",
-          authentication: MOCK_USER_SESSION
-        };
-        const fetchUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/resources/image.png";
-        const updateUrl =
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/users/casey/items/itm1234567890/addResources";
-        const expected = { success: true, id: destination.itemId };
+    // describe("copyResource", () => {
+    //   it("copies resource", done => {
+    //     const source = {
+    //       url:
+    //         utils.PORTAL_SUBSET.restUrl +
+    //         "/content/items/c6732556e299f1/resources/image.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const destination = {
+    //       itemId: "itm1234567890",
+    //       folder: "storageFolder",
+    //       filename: "storageFilename.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const fetchUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/items/c6732556e299f1/resources/image.png";
+    //     const updateUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/users/casey/items/itm1234567890/addResources";
+    //     const expected = { success: true, id: destination.itemId };
 
-        fetchMock
-          .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
-          .post(updateUrl, expected);
-        resourceHelpers
-          .copyResource(source, destination)
-          .then((response: any) => {
-            expect(response).toEqual(expected);
-            done();
-          }, done.fail);
-      });
-    });
+    //     fetchMock
+    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(updateUrl, expected);
+    //     copyResourceModule
+    //       .copyResource(source, destination)
+    //       .then((response: any) => {
+    //         expect(response).toEqual(expected);
+    //         done();
+    //       }, done.fail);
+    //   });
+    //   it("handles inexplicable response", done => {
+    //     const source = {
+    //       url:
+    //         utils.PORTAL_SUBSET.restUrl +
+    //         "/content/items/c6732556e299f1/resources/image.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const destination = {
+    //       itemId: "itm1234567890",
+    //       folder: "storageFolder",
+    //       filename: "storageFilename.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const fetchUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/items/c6732556e299f1/resources/image.png";
 
-    it("handles inexplicable response", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/resources/image.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        folder: "storageFolder",
-        filename: "storageFilename.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/resources/image.png";
+    //     fetchMock.post(
+    //       fetchUrl,
+    //       new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
+    //       { sendAsJson: false }
+    //     );
+    //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
+    //   });
 
-      fetchMock.post(
-        fetchUrl,
-        new Blob(["[1, 2, 3, 4, ]"], { type: "text/plain" }),
-        { sendAsJson: false }
-      );
-      resourceHelpers.copyResource(source, destination).then(done.fail, done);
-    });
+    //   it("handles inability to get resource", done => {
+    //     const source = {
+    //       url:
+    //         utils.PORTAL_SUBSET.restUrl +
+    //         "/content/items/c6732556e299f1/resources/image.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const destination = {
+    //       itemId: "itm1234567890",
+    //       folder: "storageFolder",
+    //       filename: "storageFilename.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const fetchUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/items/c6732556e299f1/resources/image.png";
 
-    it("handles inability to get resource", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/resources/image.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        folder: "storageFolder",
-        filename: "storageFilename.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/resources/image.png";
+    //     fetchMock.post(fetchUrl, 500);
+    //     copyResourceModule.copyResource(source, destination).then(done.fail, done);
+    //   });
 
-      fetchMock.post(fetchUrl, 500);
-      resourceHelpers.copyResource(source, destination).then(done.fail, done);
-    });
+    //   it("handles inability to copy resource, hard error", done => {
+    //     const source = {
+    //       url:
+    //         utils.PORTAL_SUBSET.restUrl +
+    //         "/content/items/c6732556e299f1/resources/image.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const destination = {
+    //       itemId: "itm1234567890",
+    //       folder: "storageFolder",
+    //       filename: "storageFilename.png",
+    //       authentication: MOCK_USER_SESSION
+    //     };
+    //     const fetchUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/items/c6732556e299f1/resources/image.png";
+    //     const updateUrl =
+    //       utils.PORTAL_SUBSET.restUrl +
+    //       "/content/users/casey/items/itm1234567890/addResources";
+    //     const expected = 500;
 
-    it("handles inability to copy resource, hard error", done => {
-      const source = {
-        url:
-          utils.PORTAL_SUBSET.restUrl +
-          "/content/items/c6732556e299f1/resources/image.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const destination = {
-        itemId: "itm1234567890",
-        folder: "storageFolder",
-        filename: "storageFilename.png",
-        authentication: MOCK_USER_SESSION
-      };
-      const fetchUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/items/c6732556e299f1/resources/image.png";
-      const updateUrl =
-        utils.PORTAL_SUBSET.restUrl +
-        "/content/users/casey/items/itm1234567890/addResources";
-      const expected = 500;
-
-      fetchMock
-        .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
-        .post(updateUrl, expected);
-      return resourceHelpers
-        .copyResource(source, destination)
-        .then(r => {
-          done.fail();
-        })
-        .catch(ex => {
-          done();
-        });
-    });
+    //     fetchMock
+    //       .post(fetchUrl, utils.getSampleImage(), { sendAsJson: false })
+    //       .post(updateUrl, expected);
+    //     return copyResourceModule
+    //       .copyResource(source, destination)
+    //       .then(r => {
+    //         done.fail();
+    //       })
+    //       .catch(ex => {
+    //         done();
+    //       });
+    //   });
+    // });
   }
 
   describe("generateGroupFilePaths", () => {
@@ -1120,6 +1114,21 @@ fdescribe("Module `resourceHelpers`: common functions involving the management o
         type: interfaces.EFileType.Resource,
         folder: "aFolder",
         filename: "git_merge.png"
+      };
+
+      const actual = resourceHelpers.generateResourceFilenameFromStorage(
+        storageResourceFilename
+      );
+      expect(actual).toEqual(expected);
+    });
+
+    it("handles Hub image file at the root", () => {
+      const storageResourceFilename =
+        "8f7ec78195d0479784036387d522e29f-git_merge.png";
+      const expected: interfaces.IDeployFilename = {
+        type: interfaces.EFileType.Resource,
+        folder: "",
+        filename: "8f7ec78195d0479784036387d522e29f-git_merge.png"
       };
 
       const actual = resourceHelpers.generateResourceFilenameFromStorage(

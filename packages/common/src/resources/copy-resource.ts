@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { UserSession } from "../interfaces";
-import { getBlob } from "../restHelpersGet";
+import { getBlob } from "./get-blob";
 import { addResourceFromBlob } from "./add-resource-from-blob";
 
 /**
@@ -40,38 +40,40 @@ export function copyResource(
     authentication: UserSession;
   }
 ): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(source.url, source.authentication).then(
-      async blob => {
-        if (
-          blob.type.startsWith("text/plain") ||
-          blob.type === "application/json"
-        ) {
+  return getBlob(source.url, source.authentication)
+    .then(blob => {
+      // By default, we want to jump to the next block with the blob
+      let prms = Promise.resolve(blob);
+      // Ok, if the blob has a text-y type, we need to look deeper b/c it may
+      // be an ago error. But if not, we return the blob
+      if (
+        blob.type.startsWith("text/plain") ||
+        blob.type === "application/json"
+      ) {
+        prms = new Response(blob).text().then(text => {
           try {
-            const text = await new Response(blob).text();
             const json = JSON.parse(text);
             if (json.error) {
-              reject(); // unable to get resource
-              return;
+              return Promise.reject();
             }
           } catch (Ignore) {
-            reject(); // unable to get resource
-            return;
+            return Promise.reject();
           }
-        }
-
-        addResourceFromBlob(
-          blob,
-          destination.itemId,
-          destination.folder,
-          destination.filename,
-          destination.authentication
-        ).then(
-          resolve,
-          e => reject(fail(e)) // unable to add resource
-        );
-      },
-      e => reject(fail(e)) // unable to get resource
-    );
-  });
+          return blob;
+        });
+      }
+      return prms;
+    })
+    .then(verifiedBlob => {
+      return addResourceFromBlob(
+        verifiedBlob,
+        destination.itemId,
+        destination.folder,
+        destination.filename,
+        destination.authentication
+      );
+    })
+    .catch(ex => {
+      throw ex;
+    });
 }

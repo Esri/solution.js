@@ -64,7 +64,7 @@ export function deploySolutionItems(
     const itemProgressCallback: common.IItemProgressCallback = (
       itemId: string,
       status: common.EItemProgressStatus,
-      costUsed: number = 1, // default to 1
+      costUsed: number,
       createdItemId: string // supplied when status is EItemProgressStatus.Created or .Finished
     ) => {
       percentDone += progressPercentStep * costUsed;

@@ -51,7 +51,7 @@ export function _upgradeTwoDotFour(model: ISolutionItem): ISolutionItem {
       ) as ISolutionItemData;
     });
     // TODO: Unify Hub Solution Editor and Solution.js handling of resources
-    // convert assets back to resources
+    // convert assets back to resources that include the templateId
     clone.data.templates = clone.data.templates.map(tmpl => {
       if (tmpl.assets) {
         tmpl.resources = tmpl.assets.map((a: any) => {

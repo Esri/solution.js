@@ -72,11 +72,12 @@ import {
   updateItemResource,
   addItemResource
 } from "@esri/arcgis-rest-portal";
-// import { addResourceFromBlob } from "./resources/add-resource-from-blob";
-// import { copyResource } from "./resources/copy-resource";
+import { addResourceFromBlob } from "./resources/add-resource-from-blob";
+import { copyResource } from "./resources/copy-resource";
+import { getBlob } from "./resources/get-blob";
 
 import { updateItem as helpersUpdateItem } from "./restHelpers";
-import { getBlob, getBlobAsFile, getItemResources } from "./restHelpersGet";
+import { getBlobAsFile, getItemResources } from "./restHelpersGet";
 import { ArcGISAuthError } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
@@ -107,38 +108,38 @@ export function addMetadataFromBlob(
   return updateItem(updateOptions);
 }
 
-export function addResourceFromBlob(
-  blob: any,
-  itemId: string,
-  folder: string,
-  filename: string,
-  authentication: UserSession
-): Promise<any> {
-  // Check that the filename has an extension because it is required by the addResources call
-  if (filename && filename.indexOf(".") < 0) {
-    return new Promise((resolve, reject) => {
-      reject(
-        new ArcGISAuthError(
-          "Filename must have an extension indicating its type"
-        )
-      );
-    });
-  }
+// export function addResourceFromBlob(
+//   blob: any,
+//   itemId: string,
+//   folder: string,
+//   filename: string,
+//   authentication: UserSession
+// ): Promise<any> {
+//   // Check that the filename has an extension because it is required by the addResources call
+//   if (filename && filename.indexOf(".") < 0) {
+//     return new Promise((resolve, reject) => {
+//       reject(
+//         new ArcGISAuthError(
+//           "Filename must have an extension indicating its type"
+//         )
+//       );
+//     });
+//   }
 
-  const addRsrcOptions = {
-    id: itemId,
-    resource: blob,
-    name: filename,
-    authentication: authentication,
-    params: {}
-  };
-  if (folder) {
-    addRsrcOptions.params = {
-      resourcesPrefix: folder
-    };
-  }
-  return addItemResource(addRsrcOptions);
-}
+//   const addRsrcOptions = {
+//     id: itemId,
+//     resource: blob,
+//     name: filename,
+//     authentication: authentication,
+//     params: {}
+//   };
+//   if (folder) {
+//     addRsrcOptions.params = {
+//       resourcesPrefix: folder
+//     };
+//   }
+//   return addItemResource(addRsrcOptions);
+// }
 
 export function addThumbnailFromBlob(
   blob: any,
@@ -464,65 +465,6 @@ export function copyMetadata(
         addMetadataFromBlob(
           blob,
           destination.itemId,
-          destination.authentication
-        ).then(
-          resolve,
-          e => reject(fail(e)) // unable to add resource
-        );
-      },
-      e => reject(fail(e)) // unable to get resource
-    );
-  });
-}
-
-/**
- * Copies a resource from a URL to an item.
- *
- * @param source.url URL to source resource
- * @param source.authentication Credentials for the request to source
- * @param destination.itemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destination.folderName Folder in destination for resource/metadata/thumbnail; defaults to top level
- * @param destination.filename Filename in destination for resource/metadata/thumbnail
- * @param destination.authentication Credentials for the request to destination
- * @return A promise which resolves to the filename under which the resource/metadata/thumbnail is stored
- */
-export function copyResource(
-  source: {
-    url: string;
-    authentication: UserSession;
-  },
-  destination: {
-    itemId: string;
-    folder: string;
-    filename: string;
-    authentication: UserSession;
-  }
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(source.url, source.authentication).then(
-      async blob => {
-        if (
-          blob.type.startsWith("text/plain") ||
-          blob.type === "application/json"
-        ) {
-          try {
-            const text = await new Response(blob).text();
-            const json = JSON.parse(text);
-            if (json.error) {
-              reject(); // unable to get resource
-              return;
-            }
-          } catch (Ignore) {
-            reject(); // unable to get resource
-            return;
-          }
-        }
-
-        addResourceFromBlob(
-          blob,
-          destination.itemId,
-          destination.folder,
-          destination.filename,
           destination.authentication
         ).then(
           resolve,

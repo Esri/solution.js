@@ -130,41 +130,41 @@ describe("Module `restHelpersGet`: common REST fetch functions shared across pac
   });
 
   // Blobs are only available in the browser
-  if (typeof window !== "undefined") {
-    describe("getBlob", () => {
-      it("can get a blob from a URL", done => {
-        const url: string = "https://myserver/images/thumbnail.png";
+  // if (typeof window !== "undefined") {
+  //   describe("getBlob", () => {
+  //     it("can get a blob from a URL", done => {
+  //       const url: string = "https://myserver/images/thumbnail.png";
 
-        const getUrl = "https://myserver/images/thumbnail.png";
-        const expectedServerInfo = SERVER_INFO;
-        const expected = mockItems.getAnImageResponse();
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
-          .post(getUrl + "/rest/info", expectedServerInfo)
-          .post(getUrl, expected, { sendAsJson: false });
+  //       const getUrl = "https://myserver/images/thumbnail.png";
+  //       const expectedServerInfo = SERVER_INFO;
+  //       const expected = mockItems.getAnImageResponse();
+  //       fetchMock
+  //         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+  //         .post(getUrl + "/rest/info", expectedServerInfo)
+  //         .post(getUrl, expected, { sendAsJson: false });
 
-        restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(response => {
-          expect(response).toEqual(expected);
-          done();
-        }, done.fail);
-      });
+  //       restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(response => {
+  //         expect(response).toEqual(expected);
+  //         done();
+  //       }, done.fail);
+  //     });
 
-      it("can handle an error from the REST endpoint request.request", done => {
-        const url: string = "https://myserver/images/thumbnail.png";
+  //     it("can handle an error from the REST endpoint request.request", done => {
+  //       const url: string = "https://myserver/images/thumbnail.png";
 
-        const getUrl = "https://myserver/images/thumbnail.png";
-        const expectedServerInfo = SERVER_INFO;
-        fetchMock
-          .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
-          .post(getUrl + "/rest/info", expectedServerInfo)
-          .post(getUrl, 503);
-        restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(
-          () => done.fail(),
-          () => done()
-        );
-      });
-    });
-  }
+  //       const getUrl = "https://myserver/images/thumbnail.png";
+  //       const expectedServerInfo = SERVER_INFO;
+  //       fetchMock
+  //         .post(utils.PORTAL_SUBSET.restUrl + "/info", expectedServerInfo)
+  //         .post(getUrl + "/rest/info", expectedServerInfo)
+  //         .post(getUrl, 503);
+  //       restHelpersGet.getBlob(url, MOCK_USER_SESSION).then(
+  //         () => done.fail(),
+  //         () => done()
+  //       );
+  //     });
+  //   });
+  // }
 
   describe("getBlobAsFile", () => {
     // Blobs are only available in the browser
