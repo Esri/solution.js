@@ -173,7 +173,7 @@ describe("Module `deployer`", () => {
       }
     });
   });
-  describe("deploySolution", () => {
+  fdescribe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("reports an error if the solution id is not supplied", done => {
@@ -1139,7 +1139,10 @@ describe("Module `deployer`", () => {
           );
       });
 
-      it("can handle error on project", done => {
+      fit("can handle error on project", done => {
+        // TODO: This test is making unmocked calls, however because
+        // this is so complex, it's extremely difficult to understand
+        // what the expected responses should be.
         // get templates
         const itemInfo: any = templates.getSolutionTemplateItem([
           templates.getItemTemplate("Feature Service")
@@ -1210,6 +1213,15 @@ describe("Module `deployer`", () => {
             geometryServer + "/findTransformations",
             testUtils.getTransformationsResponse()
           )
+          // TODO: Tried adding this, but then we incurred more unmatched calls
+          // .post(
+          //   testUtils.PORTAL_SUBSET.restUrl +
+          //     "/content/users/casey/a4468da125a64526b359b70d8ba4a9dd/addItem",
+          //   testUtils.getSuccessResponse({
+          //     id: "map1234567890",
+          //     folder: "44468da125a64526b359b70d8ba4a9dd"
+          //   })
+          // )
           .post(geometryServer + "/project", mockItems.get400Failure());
 
         const options: common.IDeploySolutionOptions = {
