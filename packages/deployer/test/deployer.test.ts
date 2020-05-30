@@ -173,7 +173,7 @@ describe("Module `deployer`", () => {
       }
     });
   });
-  fdescribe("deploySolution", () => {
+  describe("deploySolution", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
       it("reports an error if the solution id is not supplied", done => {
@@ -1139,7 +1139,7 @@ describe("Module `deployer`", () => {
           );
       });
 
-      fit("can handle error on project", done => {
+      it("can handle error on project", done => {
         // TODO: This test is making unmocked calls, however because
         // this is so complex, it's extremely difficult to understand
         // what the expected responses should be.
