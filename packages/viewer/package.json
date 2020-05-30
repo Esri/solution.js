@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.14.0",
+  "version": "0.15.0",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -13,6 +13,15 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.3"
   },
@@ -25,12 +34,7 @@
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.14.0",
-    "@esri/solution-feature-layer": "^0.14.0",
-    "@esri/solution-file": "^0.14.0",
-    "@esri/solution-group": "^0.14.0",
-    "@esri/solution-simple-types": "^0.14.0",
-    "@esri/solution-storymap": "^0.14.0"
+    "@esri/solution-common": "^0.12.0"
   },
   "dependencies": {
     "tslib": "^1.10.0"

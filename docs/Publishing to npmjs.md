@@ -13,6 +13,7 @@
 * \[ \] Switch to `master` branch
 * \[ \] Merge `release` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
+* \[ \] Check that publishing worked using `check_npm_package_versions.html`
 * \[ \] Push `master` branch to GitHub
 * \[ \] Run `npm run docs:deploy`
 * \[ \] Delete `release` branch
@@ -84,7 +85,7 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version.
+The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version. There doesn't seem to be a way to type in a custom version.
 ```
 npm run prerelease:prepare
 npm run release:prepare
@@ -120,13 +121,15 @@ git merge --no-ff --no-commit release
 
  Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
 
-13. Push your `master` branch to GitHub.
+13. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm.
 
-14. Update the repository's API doc by running `npm run docs:deploy`.
+14. Push your `master` branch to GitHub.
 
-15. Delete the `release` branch locally and in GitHub.
+15. Update the repository's API doc by running `npm run docs:deploy`.
 
-16. Merge `master` into `develop` and push `develop` to GitHub.
+16. Delete the `release` branch locally and in GitHub.
+
+17. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 

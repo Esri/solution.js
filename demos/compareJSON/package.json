@@ -1,6 +1,6 @@
 {
  "name": "compareJSON",
- "version": "0.14.0",
+ "version": "0.15.0",
  "private": true,
  "description": "Example App for solutions.js common: Compares two JSON structures; the second structure may be a sanitized version of the first structure.",
  "main": "main.js",
@@ -24,6 +24,6 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.14.0"
+  "@esri/solution-common": "^0.15.0"
  }
 }

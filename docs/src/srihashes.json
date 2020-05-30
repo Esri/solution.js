@@ -1,5 +1,5 @@
 {
-  "version": "0.14.0",
+  "version": "0.12.0",
   "packages": {
     "@esri/solution-common": "sha384-Ifx6jPgAFEYws5s0/EIHpKHUJW6CDtL21Cts7J3DX+XaNVTiX/U4yWe/2gVavRXW",
     "@esri/solution-creator": "sha384-Sc5Uhw/Lqfho8y3oFKqSVNwMRKykvbMja8iQ1WgZMeJlrQkG9bU12Q0oEdToBHV+",
