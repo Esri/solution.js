@@ -1,6 +1,7 @@
 import * as common from "@esri/solution-common";
 import * as featureLayer from "@esri/solution-feature-layer";
 import * as file from "@esri/solution-file";
+import * as formProcessor from "@esri/solution-form";
 import * as group from "@esri/solution-group";
 import { simpleTypes, notebookProcessor } from "@esri/solution-simple-types";
 
@@ -54,7 +55,7 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Data Store": undefined,
   "Desktop Application": undefined,
   "Excalibur Imagery Project": undefined,
-  Form: simpleTypes,
+  Form: formProcessor,
   "Hub Initiative": UNSUPPORTED,
   "Hub Page": HubPageProcessor,
   "Hub Site Application": HubSiteProcessor,

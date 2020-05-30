@@ -3,7 +3,7 @@
   "version": "0.14.0",
   "description": "Manages the creation and deployment of form item types for @esri/solution.js.",
   "main": "dist/node/index.js",
-  "unpkg": "dist/umd/file.umd.min.js",
+  "unpkg": "dist/umd/form.umd.min.js",
   "module": "dist/esm/index.js",
   "js:next": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -15,13 +15,16 @@
   "devDependencies": {
     "rollup": "^1.22.0",
     "typescript": "^3.9.2",
-    "@esri/solution-common": "^0.14.0"
+    "@esri/solution-common": "^0.14.0",
+    "@esri/solution-simple-types": "^0.14.0"
   },
   "peerDependencies": {
-    "@esri/solution-common": "^0.14.0"
+    "@esri/solution-common": "^0.14.0",
+    "@esri/solution-simple-types": "^0.14.0"
   },
   "dependencies": {
     "@esri/solution-common": "^0.14.0",
+    "@esri/solution-simple-types": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
