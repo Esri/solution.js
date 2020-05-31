@@ -1915,6 +1915,7 @@ describe("Module `feature-layer`: manages the creation and deployment of feature
           item.id,
           item.type,
           templates,
+          itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION
         )
