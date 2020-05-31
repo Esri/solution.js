@@ -52,7 +52,7 @@ afterEach(() => {
   fetchMock.restore();
 });
 
-fdescribe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
+describe("Module `feature-layer`: manages the creation and deployment of feature service types", () => {
   describe("convertItemToTemplate", () => {
     // Blobs are only available in the browser
     if (typeof window !== "undefined") {
@@ -1915,7 +1915,6 @@ fdescribe("Module `feature-layer`: manages the creation and deployment of featur
           item.id,
           item.type,
           templates,
-          itemTemplate,
           templateDictionary,
           MOCK_USER_SESSION
         )
