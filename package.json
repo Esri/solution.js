@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution.js",
-  "version": "0.15.2",
+  "version": "0.15.3",
   "description": "A library running in Node.js and modern browsers for transferring ArcGIS Online items from one organization to another.",
   "devDependencies": {
     "@rollup/plugin-commonjs": "^11.1.0",
@@ -128,7 +128,7 @@
     "docs:deploy": "npm run docs:build && node support/deploy-doc-site.js",
     "docs:srihash": "node docs/generate-srihashes.js",
     "prerelease:prepare": "git fetch --all && npm run clean && lerna bootstrap && npm run clean:src && npm test",
-    "release:prepare": "lerna publish --no-git-tag-version --no-push --skip-npm --yes && node ./support/changelog.js",
+    "release:prepare": "lerna publish --skip-git --skip-npm --yes && node ./support/changelog.js",
     "release:review": "git --no-pager diff --word-diff",
     "release:publish": "bash ./support/publish.sh",
     "postinstall": "npm run bootstrap",

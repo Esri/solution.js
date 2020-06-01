@@ -6,15 +6,15 @@ npm whoami || exit 1
 # Extract the version from lerna.json (this was updated by `npm run release:prepare`)
 VERSION=$(node --eval "console.log(require('./lerna.json').version);")
 
+# publish each package on npm
+lerna publish from-package --skip-git --yes --force-publish=*
+
 # generate `docs/src/srihashes.json` after release and before committing
 npm run docs:srihash
 
 # commit the changes from `npm run release:prepare`
 git add --all
 git commit -am "v$VERSION" --no-verify
-
-# publish each package on npm
-lerna publish from-package --no-git-tag-version --no-push --yes --force-publish=*
 
 # increment the package.json version to the lerna version so gh-release works
 npm version $VERSION --allow-same-version --no-git-tag-version
