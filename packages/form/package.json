@@ -21,7 +21,6 @@
     "@esri/solution-common": "^0.14.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -43,23 +42,8 @@
   },
   "contributors": [
     {
-      "name": "Mike Tschudi",
-      "email": "mtschudi@esri.com"
-    },
-    {
-      "name": "Chris Fox",
-      "email": "cfox@esri.com"
-    },
-    {
-      "name": "John Hauck",
-      "email": "jhauck@esri.com"
-    },
-    {
-      "name": "Dave Bouwman",
-      "email": "dbouwman@esri.com"
-    },
-    {
-      "name": "John Gravois"
+      "name": "Randy Weber",
+      "email": "rweber@esri.com"
     }
   ],
   "bugs": {

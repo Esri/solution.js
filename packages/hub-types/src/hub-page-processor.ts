@@ -31,14 +31,14 @@ import { createHubRequestOptions } from "./helpers/create-hub-request-options";
 import {
   IModel,
   cloneObject,
-  maybePush,
-  getProp,
   IModelTemplate,
-  interpolate,
-  ITemplateAsset,
-  IItemResource
+  failSafe
 } from "@esri/hub-common";
-import { createPageModelFromTemplate, createPage } from "@esri/hub-sites";
+import {
+  createPageModelFromTemplate,
+  createPage,
+  removePage
+} from "@esri/hub-sites";
 import { moveModelToFolder } from "./helpers/move-model-to-folder";
 /* istanbul ignore next */
 export function convertItemToTemplate(
@@ -77,6 +77,18 @@ export function createItemFromTemplate(
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
+  // let the progress system know we've started...
+  const startStatus = itemProgressCallback(
+    template.itemId,
+    EItemProgressStatus.Started,
+    0
+  );
+
+  // and if it returned false, just resolve out
+  if (!startStatus) {
+    return Promise.resolve({ id: "", type: template.type, postProcess: false });
+  }
+
   const hubRo = createHubRequestOptions(
     destinationAuthentication,
     templateDictionary
@@ -132,18 +144,30 @@ export function createItemFromTemplate(
         itemId: pageModel.item.id
       };
       // call the progress callback, which also mutates templateDictionary
-      itemProgressCallback(
+      const finalStatus = itemProgressCallback(
         template.itemId,
         EItemProgressStatus.Finished,
-        template.estimatedDeploymentCostFactor,
+        template.estimatedDeploymentCostFactor || 2,
         pageModel.item.id
       );
-      // finally, return ICreateItemFromTemplateResponse
-      return {
-        id: pageModel.item.id,
-        type: template.type,
-        postProcess: false
-      };
+      if (!finalStatus) {
+        // clean up the site we just created
+        const failSafeRemove = failSafe(removePage, { success: true });
+        return failSafeRemove(pageModel, hubRo).then(() => {
+          return Promise.resolve({
+            id: "",
+            type: template.type,
+            postProcess: false
+          });
+        });
+      } else {
+        // finally, return ICreateItemFromTemplateResponse
+        return {
+          id: pageModel.item.id,
+          type: template.type,
+          postProcess: false
+        };
+      }
     })
     .catch(ex => {
       itemProgressCallback(template.itemId, EItemProgressStatus.Failed, 0);

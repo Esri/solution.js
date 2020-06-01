@@ -20,10 +20,39 @@
  * @module restHelpersGet
  */
 
-import { blobToFile, blobToJson, blobToText, checkUrlPathTermination, getProp } from "./generalHelpers";
-import { IGetResourcesResponse, IGroup, IItem, IPagingParams, IPortal, IRelatedItems, ItemRelationshipType, IUser, UserSession } from "./interfaces";
-import { IGetGroupContentOptions, IGetRelatedItemsResponse, IGroupCategorySchema, IItemRelationshipOptions, getGroup, getGroupCategorySchema as portalGetGroupCategorySchema, getGroupContent, getItem, getItemResources as portalGetItemResources, getPortal as portalGetPortal, getRelatedItems } from "@esri/arcgis-rest-portal";
+import {
+  blobToFile,
+  blobToJson,
+  blobToText,
+  checkUrlPathTermination,
+  getProp
+} from "./generalHelpers";
+import {
+  IGetResourcesResponse,
+  IGroup,
+  IItem,
+  IPagingParams,
+  IPortal,
+  IRelatedItems,
+  ItemRelationshipType,
+  IUser,
+  UserSession
+} from "./interfaces";
+import {
+  IGetGroupContentOptions,
+  IGetRelatedItemsResponse,
+  IGroupCategorySchema,
+  IItemRelationshipOptions,
+  getGroup,
+  getGroupCategorySchema as portalGetGroupCategorySchema,
+  getGroupContent,
+  getItem,
+  getItemResources as portalGetItemResources,
+  getPortal as portalGetPortal,
+  getRelatedItems
+} from "@esri/arcgis-rest-portal";
 import { IRequestOptions, request } from "@esri/arcgis-rest-request";
+import { getBlob } from "./resources/get-blob";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -39,15 +68,11 @@ export function getPortal(
   return portalGetPortal(id, requestOptions);
 }
 
-export function getUser(
-  authentication: UserSession
-): Promise<IUser> {
+export function getUser(authentication: UserSession): Promise<IUser> {
   return authentication.getUser();
 }
 
-export function getUsername(
-  authentication: UserSession
-): Promise<string> {
+export function getUsername(authentication: UserSession): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     getUser(authentication).then(
       (user: IUser) => resolve(user.username),
@@ -56,9 +81,7 @@ export function getUsername(
   });
 }
 
-export function getFoldersAndGroups(
-  authentication: UserSession
-): Promise<any> {
+export function getFoldersAndGroups(authentication: UserSession): Promise<any> {
   return new Promise<any>((resolve, reject) => {
     const requestOptions = {
       httpMethod: "GET",
@@ -92,37 +115,6 @@ export function getFoldersAndGroups(
 }
 
 /**
- * Gets a Blob from a web site.
- *
- * @param url Address of Blob
- * @param authentication Credentials for the request
- * @return Promise that will resolve with Blob or an AGO-style JSON failure response
- */
-export function getBlob(
-  url: string,
-  authentication: UserSession
-): Promise<Blob> {
-  return new Promise<Blob>((resolve, reject) => {
-    try {
-      // Get the blob from the URL
-      const blobRequestOptions = {
-        authentication: authentication,
-        rawResponse: true
-      } as IRequestOptions;
-      request(url, blobRequestOptions).then(
-        response => {
-          // Extract the blob from the response
-          response.blob().then(resolve);
-        },
-        err => reject(err)
-      );
-    } catch (err) {
-      reject(err);
-    }
-  });
-}
-
-/**
  * Gets a Blob from a web site and casts it as a file using the supplied name.
  *
  * @param url Address of Blob
@@ -141,9 +133,7 @@ export function getBlobAsFile(
     // Get the blob from the URL
     getBlobCheckForError(url, authentication, ignoreErrors).then(
       blob =>
-        !blob
-          ? resolve()
-          : resolve(blobToFile(blob, filename, mimeType)),
+        !blob ? resolve() : resolve(blobToFile(blob, filename, mimeType)),
       reject
     );
   });
@@ -224,9 +214,7 @@ export function getInfoFiles(
     return new Promise<File>((resolve, reject) => {
       getItemInfoBlob(itemId, filename, authentication).then(
         blob =>
-          blob === undefined
-            ? resolve()
-            : resolve(blobToFile(blob, filename)),
+          blob === undefined ? resolve() : resolve(blobToFile(blob, filename)),
         reject
       );
     });
@@ -329,8 +317,7 @@ export function getItemDataAsFile(
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     getItemDataBlob(itemId, authentication).then(
-      blob =>
-        !blob ? resolve() : resolve(blobToFile(blob, filename)),
+      blob => (!blob ? resolve() : resolve(blobToFile(blob, filename))),
       () => {
         reject();
       }
@@ -447,10 +434,7 @@ export function getItemMetadataAsFile(
 ): Promise<File> {
   return new Promise<File>((resolve, reject) => {
     getItemMetadataBlob(itemId, authentication).then(
-      blob =>
-        !blob
-          ? resolve()
-          : resolve(blobToFile(blob, "metadata.xml")),
+      blob => (!blob ? resolve() : resolve(blobToFile(blob, "metadata.xml"))),
       reject
     );
   });
@@ -504,9 +488,7 @@ export function getItemMetadataBlobUrl(
  */
 export function getItemRelatedItems(
   itemId: string,
-  relationshipType:
-    | ItemRelationshipType
-    | ItemRelationshipType[],
+  relationshipType: ItemRelationshipType | ItemRelationshipType[],
   direction: "forward" | "reverse",
   authentication: UserSession
 ): Promise<IGetRelatedItemsResponse> {
@@ -705,9 +687,7 @@ export function getItemThumbnailUrl(
   authentication: UserSession
 ): string {
   return (
-    checkUrlPathTermination(
-      getPortalSharingUrlFromAuth(authentication)
-    ) +
+    checkUrlPathTermination(getPortalSharingUrlFromAuth(authentication)) +
     (isGroup ? "community/groups/" : "content/items/") +
     itemId +
     "/info/" +
@@ -734,9 +714,7 @@ export function getPortalSharingUrlFromAuth(
  * @param authentication Credentials for the request to AGO
  * @returns Portal url to be used in API requests, defaulting to `https://www.arcgis.com`
  */
-export function getPortalUrlFromAuth(
-  authentication: UserSession
-): string {
+export function getPortalUrlFromAuth(authentication: UserSession): string {
   return getPortalSharingUrlFromAuth(authentication).replace(
     "/sharing/rest",
     ""
