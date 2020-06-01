@@ -21,6 +21,9 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
   <link rel="stylesheet" href="http://esri.github.io/calcite-bootstrap/styles/calcite-bootstrap.min.css">
   <style>
+    html {
+      padding:16px;
+    }
     table, th, td {
       border: 1px solid lightgray;
     }
@@ -71,9 +74,9 @@
         html += addPackageVersionsToTable("@esri/solution-feature-layer", "feature-layer");
         html += addPackageVersionsToTable("@esri/solution-file", "file");
         html += addPackageVersionsToTable("@esri/solution-form", "form");
+        html += addPackageVersionsToTable("@esri/solution-hub-types", "hub-types");
         html += addPackageVersionsToTable("@esri/solution-group", "group");
         html += addPackageVersionsToTable("@esri/solution-simple-types", "simple-types");
-        html += addPackageVersionsToTable("@esri/solution-hub-types", "hub-types");
         html += addPackageVersionsToTable("@esri/solution-storymap", "storymap");
 
         html += "</table>";
@@ -83,10 +86,11 @@
       }
     );
 
+
     function addPackageVersionsToTable(packageName, packageFileName) {
       setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, false), 10);
       setTimeout(() => addSpecificPackageVersionToTable(packageName, packageFileName, true), 10);
-      return "<tr><td class='package'>" + packageName + "</td><td id='" +
+      return "<tr><td class='package'><a href='https://www.npmjs.com/package/" + packageName + "' target='_blank'>" + packageName + "</td><td id='" +
         packageFileName + "_reg'></td><td id='" + packageFileName + "_min'></td></tr>";
     }
 
