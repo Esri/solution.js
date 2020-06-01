@@ -1,6 +1,6 @@
 {
  "name": "sanitizer",
- "version": "0.15.4",
+ "version": "0.15.7",
  "private": true,
  "description": "Example App for solutions.js common: Sanitizes HTML snippets.",
  "main": "main.js",
