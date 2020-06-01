@@ -3,7 +3,7 @@
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
-* \[ \] Create `release` branch
+* \[ \] Create `release-candidate` branch
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run prerelease:prepare`
 * \[ \] Run `npm run release:prepare` and pick new version number
