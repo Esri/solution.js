@@ -1,6 +1,6 @@
 {
  "name": "addResource",
- "version": "0.15.1",
+ "version": "0.15.2",
  "private": true,
  "description": "Example App for solutions.js common: Adds a resource.",
  "main": "main.js",
@@ -24,6 +24,6 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.15.1"
+  "@esri/solution-common": "^0.15.2"
  }
 }
