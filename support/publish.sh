@@ -5,7 +5,6 @@ npm whoami || exit 1
 
 # Extract the version from lerna.json (this was updated by `npm run release:prepare`)
 VERSION=$(node --eval "console.log(require('./lerna.json').version);")
-lerna version $VERSION
 
 # generate `docs/src/srihashes.json` after release and before committing
 npm run docs:srihash
@@ -22,6 +21,7 @@ git add --all
 git commit -am "v$VERSION" --no-verify --amend
 
 # publish each package on npm
+lerna version $VERSION
 lerna publish from-git --force-publish=* --yes
 
 # create a ZIP archive of the dist files
