@@ -5,6 +5,7 @@ npm whoami || exit 1
 
 # Extract the version from lerna.json (this was updated by `npm run release:prepare`)
 VERSION=$(node --eval "console.log(require('./lerna.json').version);")
+lerna version $VERSION
 
 # generate `docs/src/srihashes.json` after release and before committing
 npm run docs:srihash
@@ -19,15 +20,6 @@ npm version $VERSION --allow-same-version --no-git-tag-version
 # amend the changes from `npm version` to the release commit
 git add --all
 git commit -am "v$VERSION" --no-verify --amend
-
-# tag this version
-git tag v$VERSION
-
-# push everything up to this point to master
-git push https://github.com/Esri/solution.js.git master
-
-# push the new tag, not the old tags
-git push https://github.com/Esri/solution.js.git v$VERSION
 
 # publish each package on npm
 lerna publish from-git --force-publish=* --yes
