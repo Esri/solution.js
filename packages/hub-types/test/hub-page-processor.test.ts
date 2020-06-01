@@ -120,5 +120,77 @@ describe("HubPageProcessor: ", () => {
           done();
         });
     });
+    it("it early-exits correctly", () => {
+      const td = {};
+      const cb = () => false;
+      return HubPageProcessor.createItemFromTemplate(
+        tmpl,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("", "should return empty result");
+        expect(result.postProcess).toBe(
+          false,
+          "should return postProcess false"
+        );
+      });
+    });
+    it("cleans up if job is cancelled late", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createPageModelFromTemplate"
+      ).and.resolveTo(fakePage);
+      const createPageSpy = spyOn(sitesPackage, "createPage").and.resolveTo(
+        fakePage
+      );
+      const movePageSpy = spyOn(
+        moveHelper,
+        "moveModelToFolder"
+      ).and.resolveTo();
+      const removePageSpy = spyOn(sitesPackage, "removePage").and.resolveTo({
+        success: true,
+        itemId: "FAKE3ef"
+      });
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      // fn that returns a fn that closes over a counter so that
+      // it can return false after the first call
+      const createCb = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 2;
+        };
+      };
+      return HubPageProcessor.createItemFromTemplate(
+        tmpl,
+        td,
+        MOCK_USER_SESSION,
+        createCb()
+      ).then(result => {
+        expect(result.id).toBe("", "should return empty result");
+        expect(result.type).toBe("Hub Page", "should return the type");
+        expect(result.postProcess).toBe(false, "should not flag postProcess");
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createPageSpy.calls.count()).toBe(1, "should call createPage");
+        expect(movePageSpy.calls.count()).toBe(1, "should call move");
+        expect(removePageSpy.calls.count()).toBe(1, "should call removePage");
+      });
+    });
   });
 });
