@@ -958,7 +958,7 @@ export function getFeatureServiceProperties(
       authentication: authentication
     }).then(
       serviceData => {
-        properties.service = serviceData;
+        properties.service = _parseAdminServiceData(serviceData);
 
         // Copy cacheMaxAge to top level so that AGO sees it when deploying the service
         // serviceData may have set it if there isn't an adminServiceInfo
@@ -998,6 +998,31 @@ export function getFeatureServiceProperties(
       (e: any) => reject(fail(e))
     );
   });
+}
+
+/**
+ * Parses the layers array and will filter subsets of Layers and Tables
+ * Layers and Tables are both returned in the layers array when we access a feature service from the admin api.
+ *
+ * @param adminData The data of the feature service
+ * @return A mutated version of the provided adminData
+ */
+export function _parseAdminServiceData(adminData: any): any {
+  const layers: any[] = adminData.layers || [];
+  const tables: any[] = adminData.tables || [];
+  setCreateProp(
+    adminData,
+    "layers",
+    layers.filter(l => l.type === "Feature Layer")
+  );
+  // TODO understand if the concat is necessary.
+  // Not sure if the admin api will ever actually return a tables collection here.
+  setCreateProp(
+    adminData,
+    "tables",
+    tables.concat(layers.filter(l => l.type === "Table"))
+  );
+  return adminData;
 }
 
 export function hasInvalidGroupDesignations(
