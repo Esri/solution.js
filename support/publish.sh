@@ -9,27 +9,8 @@ VERSION=$(node --eval "console.log(require('./lerna.json').version);")
 # generate `docs/src/srihashes.json` after release and before committing
 npm run docs:srihash
 
-# commit the changes from `npm run release:prepare`
-git add --all
-git commit -am "v$VERSION" --no-verify
-
-# increment the package.json version to the lerna version so gh-release works
-npm version $VERSION --allow-same-version --no-git-tag-version
-
-# amend the changes from `npm version` to the release commit
-git add --all
-git commit -am "v$VERSION" --no-verify --amend
-
-# tag this version
-git tag v$VERSION
-
-# push everything up to this point to master
-git push https://github.com/Esri/solution.js.git master
-
-# push the new tag, not the old tags
-git push https://github.com/Esri/solution.js.git v$VERSION
-
 # publish each package on npm
+lerna version $VERSION
 lerna publish from-git --force-publish=* --yes
 
 # create a ZIP archive of the dist files
