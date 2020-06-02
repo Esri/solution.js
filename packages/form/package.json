@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-form",
-  "version": "0.14.0",
+  "version": "0.15.10",
   "description": "Manages the creation and deployment of form item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -13,12 +13,38 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.10",
+    "@esri/solution-feature-layer": "^0.15.10",
+    "@esri/solution-file": "^0.15.10",
+    "@esri/solution-group": "^0.15.10",
+    "@esri/solution-simple-types": "^0.15.10",
+    "@esri/solution-storymap": "^0.15.10",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2",
-    "@esri/solution-common": "^0.14.0"
+    "typescript": "^3.9.3"
   },
   "peerDependencies": {
-    "@esri/solution-common": "^0.14.0"
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.9",
+    "@esri/solution-feature-layer": "^0.15.9",
+    "@esri/solution-file": "^0.15.9",
+    "@esri/solution-group": "^0.15.9",
+    "@esri/solution-simple-types": "^0.15.9",
+    "@esri/solution-storymap": "^0.15.9"
   },
   "dependencies": {
     "tslib": "^1.10.0"
@@ -58,5 +84,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "3c6ec47455470fba467c431527e4e9a35a0ab277"
+  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
 }
