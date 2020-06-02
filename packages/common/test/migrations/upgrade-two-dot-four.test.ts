@@ -18,7 +18,7 @@ import { _upgradeTwoDotFour } from "../../src/migrations/upgrade-two-dot-four";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
 import { ISolutionItem } from "../../src/interfaces";
 
-describe("Upgrade 2.3 ::", () => {
+describe("Upgrade 2.4 ::", () => {
   const defaultModel = {
     item: {
       type: "Solution",
