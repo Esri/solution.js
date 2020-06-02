@@ -25,6 +25,13 @@ import { simpleTypes } from "@esri/solution-simple-types";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
 import { createItemFromHubTemplate } from "./helpers/create-item-from-hub-template";
 
+/**
+ * Creates a template from a Form item
+ * @param {string} solutionItemId The solution item ID
+ * @param {any} itemInfo: The base item info
+ * @param {UserSession} authentication The source user session information
+ * @returns {Promise<IItemTemplate>}
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
@@ -38,6 +45,14 @@ export function convertItemToTemplate(
   );
 }
 
+/**
+ * Creates a Form item from a template
+ * @param {IItemTemplate} template The template
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} destinationAuthentication The destination user session info
+ * @param itemProgressCallback An item progress callback
+ * @returns {Promise<ICreateItemFromTemplateResponse>}
+ */
 export function createItemFromTemplate(
   template: common.IItemTemplate,
   templateDictionary: any,
