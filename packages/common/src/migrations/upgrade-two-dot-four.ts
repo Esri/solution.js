@@ -50,6 +50,20 @@ export function _upgradeTwoDotFour(model: ISolutionItem): ISolutionItem {
         swap.val
       ) as ISolutionItemData;
     });
+    // TODO: Unify Hub Solution Editor and Solution.js handling of resources
+    // convert assets back to resources that include the templateId
+    clone.data.templates = clone.data.templates.map(tmpl => {
+      if (tmpl.assets) {
+        tmpl.resources = tmpl.assets.map((a: any) => {
+          return `${tmpl.itemId}-${a.name}`;
+        });
+      }
+      // ensure this property is present
+      if (!tmpl.estimatedDeploymentCostFactor) {
+        tmpl.estimatedDeploymentCostFactor = 1;
+      }
+      return tmpl;
+    });
     // update the schema version
     clone.item.properties.schemaVersion = 2.4;
     return clone;

@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-simple-types",
-  "version": "0.15.10",
+  "version": "0.16.0",
   "description": "Manages the creation and deployment of simple item types for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/simple-types.umd.min.js",
@@ -21,11 +21,11 @@
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.15.10",
-    "@esri/solution-feature-layer": "^0.15.10",
-    "@esri/solution-file": "^0.15.10",
-    "@esri/solution-group": "^0.15.10",
-    "@esri/solution-storymap": "^0.15.10",
+    "@esri/solution-common": "^0.16.0",
+    "@esri/solution-feature-layer": "^0.16.0",
+    "@esri/solution-file": "^0.16.0",
+    "@esri/solution-group": "^0.16.0",
+    "@esri/solution-storymap": "^0.16.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.3"
   },
@@ -38,11 +38,11 @@
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.15.9",
-    "@esri/solution-feature-layer": "^0.15.9",
-    "@esri/solution-file": "^0.15.9",
-    "@esri/solution-group": "^0.15.9",
-    "@esri/solution-storymap": "^0.15.9"
+    "@esri/solution-common": "^0.16.0",
+    "@esri/solution-feature-layer": "^0.16.0",
+    "@esri/solution-file": "^0.16.0",
+    "@esri/solution-group": "^0.16.0",
+    "@esri/solution-storymap": "^0.16.0"
   },
   "dependencies": {
     "tslib": "^1.10.0"

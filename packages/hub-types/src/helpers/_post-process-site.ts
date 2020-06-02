@@ -18,7 +18,8 @@ import { IModel, IHubRequestOptions } from "@esri/hub-common";
 import {
   _getSecondPassSharingOptions,
   _shareItemsToSiteGroups,
-  _updatePages
+  _updatePages,
+  updateSite
 } from "@esri/hub-sites";
 
 import { _updateSitePages } from "./_update-site-pages";
@@ -56,6 +57,11 @@ export function _postProcessSite(
   secondPassPromises = secondPassPromises.concat(
     _updateSitePages(siteModel, itemInfos, hubRequestOptions)
   );
+  // need to get all the child items and add into site.item.properties.children
+  const childItemIds = itemInfos.map(i => i.id);
+  siteModel.item.properties.children = childItemIds;
+  secondPassPromises.push(updateSite(siteModel, null, hubRequestOptions));
+
   return Promise.all(secondPassPromises).then(() => {
     return true;
   });

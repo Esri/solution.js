@@ -167,6 +167,86 @@ describe("HubSiteProcessor: ", () => {
           done();
         });
     });
+    it("it early-exits correctly", () => {
+      const td = {};
+      const cb = () => false;
+      return HubSiteProcessor.createItemFromTemplate(
+        tmpl,
+        td,
+        MOCK_USER_SESSION,
+        cb
+      ).then(result => {
+        expect(result.id).toBe("", "should return empty result");
+        expect(result.postProcess).toBe(
+          false,
+          "should return postProcess false"
+        );
+      });
+    });
+    it("it cleans up if job is cancelled late", () => {
+      const createFromTmplSpy = spyOn(
+        sitesPackage,
+        "createSiteModelFromTemplate"
+      ).and.resolveTo({ assets: [] });
+      const createSiteSpy = spyOn(sitesPackage, "createSite").and.resolveTo(
+        fakeSite
+      );
+      const moveSiteSpy = spyOn(
+        moveHelper,
+        "moveModelToFolder"
+      ).and.resolveTo();
+
+      const removeSiteSpy = spyOn(sitesPackage, "removeSite").and.resolveTo({
+        success: true
+      });
+
+      const td = {
+        organization: {
+          id: "somePortalId",
+          portalHostname: "www.arcgis.com"
+        },
+        user: {
+          username: "vader"
+        },
+        solutionItemExtent: "10,10,20,20",
+        solution: {
+          title: "Some Title"
+        }
+      };
+      // fn that returns a fn that closes over a counter so that
+      // it can return false after the first call
+      const createCb = () => {
+        let calls = 0;
+        return () => {
+          calls = calls + 1;
+          return calls < 2;
+        };
+      };
+
+      return HubSiteProcessor.createItemFromTemplate(
+        tmpl,
+        td,
+        MOCK_USER_SESSION,
+        createCb()
+      ).then(result => {
+        expect(result.id).toBe("", "should return empty result");
+        expect(result.postProcess).toBe(
+          false,
+          "should return postProcess false"
+        );
+        expect(result.type).toBe(
+          "Hub Site Application",
+          "should return the type"
+        );
+        expect(createFromTmplSpy.calls.count()).toBe(
+          1,
+          "should call createFromTemplate"
+        );
+        expect(createSiteSpy.calls.count()).toBe(1, "should call createSite");
+        expect(moveSiteSpy.calls.count()).toBe(1, "should call moveSite");
+        expect(removeSiteSpy.calls.count()).toBe(1, "should call removeSite");
+      });
+    });
   });
   describe("postProcess ::", () => {
     it("delegates to _postProcessSite", () => {
