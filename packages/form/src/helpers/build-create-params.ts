@@ -8,6 +8,19 @@ import {
 } from "@esri/solution-common";
 import { encodeSurveyForm } from "./encode-survey-form";
 
+/**
+ * Utility method for creating Survey123 parameters
+ *
+ * @module build-create-params
+ */
+
+/**
+ * Builds the Survey123 create API parameters
+ * @param {IItemTemplate} template The template
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} destinationAuthentication The destination session info
+ * @returns {Promise<ISurvey123CreateParams>}
+ */
 export function buildCreateParams(
   template: IItemTemplate,
   templateDictionary: any,

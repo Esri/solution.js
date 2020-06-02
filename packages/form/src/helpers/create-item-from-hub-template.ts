@@ -7,14 +7,27 @@ import {
   removeFolder,
   replaceInTemplate,
   ISurvey123CreateParams,
-  ISurvey123CreateResult,
-  getProp,
-  setCreateProp
+  ISurvey123CreateResult
 } from "@esri/solution-common";
 import { moveItem } from "@esri/arcgis-rest-portal";
 import { createSurvey } from "./create-survey";
 import { buildCreateParams } from "./build-create-params";
 
+/**
+ * Manages the creation of Surveys from Hub Templates
+ * via the Survey123 API
+ *
+ * @module create-item-from-hub-template
+ */
+
+/**
+ * Orchestrates creation of Surveys from Hub templates
+ * @param {IItemTemplate} template The template
+ * @param {any} templateDictionary The template dictionary
+ * @param {UserSession} destinationAuthentication The destination session info
+ * @param {Function} itemProgressCallback A progress callback
+ * @returns {Promise<ICreateItemFromTemplateResponse>}
+ */
 export function createItemFromHubTemplate(
   template: IItemTemplate,
   templateDictionary: any,

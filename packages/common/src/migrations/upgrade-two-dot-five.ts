@@ -17,6 +17,11 @@
 import { ISolutionItem } from "../interfaces";
 import { getProp, cloneObject, deleteProp } from "@esri/hub-common";
 
+/**
+ * Applies Survey123 Form Config Schema migrations.
+ * @param {ISolutionItem} model A Solution model
+ * @returns {ISolutionItem}
+ */
 export function _upgradeTwoDotFive(model: ISolutionItem): ISolutionItem {
   if (getProp(model, "item.properties.schemaVersion") >= 2.5) {
     return model;

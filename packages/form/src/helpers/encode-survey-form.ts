@@ -1,5 +1,17 @@
 import { cloneObject } from "@esri/solution-common";
 
+/**
+ * Manages Survey123 parameter encoding
+ *
+ * @module encode-survey-form
+ */
+
+/**
+ * URI Encodes Survey123 form content parameter
+ * values
+ * @param {any} form Unencoded form data
+ * @returns {any} Encoded form data
+ */
 export const encodeSurveyForm = function encodeForm(form: any) {
   const clone = cloneObject(form);
   const props = [

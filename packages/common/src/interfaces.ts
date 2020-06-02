@@ -638,46 +638,160 @@ export interface IUpdate {
   args: IPostProcessArgs;
 }
 
+/**
+ * Survey 123 create API parameters
+ */
 export interface ISurvey123CreateParams {
+  /**
+   * Title for the survey Form item & folder
+   */
   title: string;
+
+  /**
+   * Array of tags for the survey Form item
+   */
   tags: string[];
+
+  /**
+   * Array of typeKeywords for the survey Form item
+   */
   typeKeywords: string[];
+
+  /**
+   * Description for the survey Form item
+   */
   description: string;
+
+  /**
+   * The survey form configuration schema. This defines configurable
+   * content like the theme, questions, & header/footer text, etc.
+   */
   form: any;
+
+  /**
+   * The username from the current session
+   */
   username: string;
+
+  /**
+   * The token from the current session
+   */
   token: string;
+
+  /**
+   * The portalUrl for Survey123 to direct API requests to
+   */
   portalUrl: string;
+
+  /**
+   * Binary image data represented as a File
+   */
   thumbnailFile: File;
 }
 
+/**
+ * Successful Survey123 create API response
+ */
 export interface ISurvey123CreateSuccess {
+  /**
+   * Statically defined, always true for success
+   */
   success: true;
+
+  /**
+   * Resulting Form item ID
+   */
   id: string;
+
+  /**
+   * Subset of resulting Form item details
+   */
   formItemInfo: {
+    /**
+     * Resulting Form item typeKeywords
+     */
     typeKeywords: string[];
+
+    /**
+     * Resulting Form item ownerFolder
+     */
     ownerFolder: string;
+
+    /**
+     * Resulting Form item access
+     */
     access: string;
+
+    /**
+     * Resulting Form item owner
+     */
     owner: string;
   };
+  /**
+   * Subset of resulting Feature Service(s) details
+   */
   featureService: {
+    /**
+     * Subset of source Feature Service details
+     */
     source: {
+      /**
+       * Resulting Feature Service item ID
+       */
       itemId: string;
+
+      /**
+       * Generically definines remaining/unused properties
+       */
       [key: string]: any;
     };
+
+    /**
+     * Generically definines remaining/unused properties
+     */
     [key: string]: any;
   };
+
+  /**
+   * Generically definines remaining/unused properties
+   */
   [key: string]: any;
 }
 
+/**
+ * Unsuccessful Survey123 create API response
+ */
 export interface ISurvey123CreateError {
+  /**
+   * Statically defined, always false when unsuccessful
+   */
   success: false;
+
+  /**
+   * Error details
+   */
   error: {
+    /**
+     * HTTP error code
+     */
     code: number;
+
+    /**
+     * Optional, additional details about the error
+     */
     details: string[];
+
+    /**
+     * Message describing the error
+     */
     message: string;
   };
 }
 
+/**
+ * Result details for a successful Survey123 create
+ * API request
+ */
 export interface ISurvey123CreateResult {
   formId: string;
   featureServiceId: string;
