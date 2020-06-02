@@ -1,6 +1,6 @@
 {
  "name": "copyItemInfo",
- "version": "0.15.7",
+ "version": "0.15.8",
  "private": true,
  "description": "Example App for solutions.js common: Makes a copy of an ArcGIS Online item.",
  "main": "main.js",
@@ -24,6 +24,6 @@
   "@esri/hub-common": "^4.0.0",
   "@esri/hub-initiatives": "^4.0.0",
   "@esri/hub-sites": "^4.0.0",
-  "@esri/solution-common": "^0.15.7"
+  "@esri/solution-common": "^0.15.8"
  }
 }
