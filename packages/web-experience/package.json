@@ -15,6 +15,10 @@
   "devDependencies": {
     "@esri/solution-common": "^0.14.0",
     "@esri/solution-simple-types": "^0.14.0",
+    "@esri/arcgis-rest-auth": "^2.13.1",
+    "@esri/arcgis-rest-portal": "^2.13.1",
+    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/hub-common": "^4.2.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.2"
   },
@@ -23,7 +27,11 @@
   },
   "peerDependencies": {
     "@esri/solution-common": "^0.14.0",
-    "@esri/solution-simple-types": "^0.14.0"
+    "@esri/solution-simple-types": "^0.14.0",
+    "@esri/arcgis-rest-auth": "^2.13.1",
+    "@esri/arcgis-rest-portal": "^2.13.1",
+    "@esri/arcgis-rest-request": "^2.13.1",
+    "@esri/hub-common": "^4.2.0"
   },
   "scripts": {
     "prepare": "npm run build",

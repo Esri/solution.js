@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
+import { IModel, getProp } from "@esri/hub-common";
+
 /**
- * Manages the creation and deployment of Story Map item types.
- *
- * @module storymap
+ * Extract a list of Items this storymap depends on
+ * At this point we are just extracting webmaps
+ * @param model IModel
  */
-
-import * as StoryMapProcessor from "./storymap-processor";
-import * as ClassicStoryMapProcessor from "./classic-storymap-processor";
-
-export { StoryMapProcessor, ClassicStoryMapProcessor };
+export function getStoryMapDependencies(model: IModel): any[] {
+  const resources = getProp(model, "data.resources") || {};
+  return Object.keys(resources).reduce((acc, key) => {
+    if (getProp(resources, `${key}.type`) === "webmap") {
+      acc.push(getProp(model, `${key}.data.itemId`));
+    }
+    return acc;
+  }, []);
+}

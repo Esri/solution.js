@@ -24,32 +24,74 @@ import {
   UserSession,
   IItemProgressCallback,
   IItemTemplate,
-  ICreateItemFromTemplateResponse,
-  fail
+  ICreateItemFromTemplateResponse
 } from "@esri/solution-common";
+import { cloneObject, IModel } from "@esri/hub-common";
+import { getItemData } from "@esri/arcgis-rest-portal";
+import { createWebExperienceModelFromTemplate } from "./helpers/create-web-experience-model-from-template";
+import { createWebExperience } from "./helpers/create-web-experience";
+import { convertWebExperienceToTemplate } from "./helpers/convert-web-experience-to-template";
 
+/**
+ * Convert a Web Experience item into a Template
+ * @param solutionItemId
+ * @param itemInfo
+ * @param authentication
+ * @param isGroup
+ */
 export function convertItemToTemplate(
   solutionItemId: string,
   itemInfo: any,
   authentication: UserSession,
   isGroup?: boolean
 ): Promise<IItemTemplate> {
-  return Promise.reject(
-    fail(
-      "convertItemToTemplate not yet implemented in solution-web-experience package"
-    )
-  );
+  // use the itemInfo to setup a model
+  const model = {
+    item: itemInfo,
+    data: {}
+  } as IModel;
+  // fetch the data.json
+  return getItemData(itemInfo.id, authentication).then(data => {
+    // append into the model
+    model.data = data;
+    // and use that to create a template
+    return convertWebExperienceToTemplate(model, authentication);
+  });
 }
 
+/**
+ * Create a Web Experience from a Template
+ * @param template
+ * @param templateDictionary
+ * @param destinationAuthentication
+ * @param itemProgressCallback
+ */
 export function createItemFromTemplate(
   template: IItemTemplate,
   templateDictionary: any,
   destinationAuthentication: UserSession,
   itemProgressCallback: IItemProgressCallback
 ): Promise<ICreateItemFromTemplateResponse> {
-  return Promise.reject(
-    fail(
-      "createItemFromTemplate not yet implemented in solution-web-experience package"
-    )
-  );
+  // convert the templateDictionary to a settings hash
+  const settings = cloneObject(templateDictionary);
+
+  let exbModel: IModel;
+  return createWebExperienceModelFromTemplate(
+    template,
+    settings,
+    {},
+    destinationAuthentication
+  )
+    .then(model => {
+      exbModel = model;
+      return createWebExperience(model, {}, destinationAuthentication);
+    })
+    .then(result => {
+      exbModel.item.id = result.id;
+      return {
+        id: exbModel.item.id,
+        type: template.type,
+        postProcess: false
+      };
+    });
 }
