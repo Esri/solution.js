@@ -16,7 +16,7 @@
 
 import { _upgradeTwoDotFour } from "../../src/migrations/upgrade-two-dot-four";
 import { cloneObject, IItemTemplate } from "@esri/hub-common";
-import { ISolutionItem, ISolutionItemData } from "../../src/interfaces";
+import { ISolutionItem } from "../../src/interfaces";
 
 describe("Upgrade 2.2 ::", () => {
   const defaultModel = {
@@ -67,6 +67,27 @@ describe("Upgrade 2.2 ::", () => {
     expect(chk.data.metadata.chk2).toBe(
       "{{fakeId.itemId}} {{fakeId2.itemId}}",
       "should swap multiple entries in the same string"
+    );
+  });
+  it("reworks hub asset names", () => {
+    const m = cloneObject(defaultModel);
+    m.data.templates[0].assets = [{ name: "somefile.png" }];
+    const chk = _upgradeTwoDotFour(m);
+    const tmpl = chk.data.templates[0];
+    expect(Array.isArray(tmpl.resources)).toBe(true, "should add resources");
+    expect(Array.isArray(tmpl.assets)).toBe(true, "should leave assets");
+    expect(tmpl.resources[0]).toBe(
+      "fakeId-somefile.png",
+      "should strip the old id out of the filename"
+    );
+  });
+  it("adds estimatedDeploymentCostFactor", () => {
+    const m = cloneObject(defaultModel);
+    m.data.templates[0].estimatedDeploymentCostFactor = 2;
+    const chk = _upgradeTwoDotFour(m);
+    expect(chk.data.templates[1].estimatedDeploymentCostFactor).toBe(
+      1,
+      "should add cost factor of 1 if missing"
     );
   });
 });

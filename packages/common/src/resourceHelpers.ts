@@ -47,13 +47,38 @@
  *   5. undo the unique folder and filename into the original folder and filename
  */
 
-import { appendQueryParam, checkUrlPathTermination, fail } from "./generalHelpers";
-import { EFileType, IDeployFileCopyPath, IDeployFilename, IFileMimeType, IItemTemplate, IItemUpdate, IMimeTypes, ISourceFileCopyPath, IUpdateItemResponse, UserSession } from "./interfaces";
+import {
+  appendQueryParam,
+  checkUrlPathTermination,
+  fail
+} from "./generalHelpers";
+import {
+  EFileType,
+  IDeployFileCopyPath,
+  IDeployFilename,
+  IFileMimeType,
+  IItemTemplate,
+  IItemUpdate,
+  ISourceFileCopyPath,
+  IUpdateItemResponse,
+  UserSession,
+  IMimeTypes
+} from "./interfaces";
 import { new_File } from "./polyfills";
-import { addItemResource, updateGroup, updateItem, updateItemInfo, updateItemResource } from "@esri/arcgis-rest-portal";
-import { ArcGISAuthError } from "@esri/arcgis-rest-request";
+import {
+  updateGroup,
+  updateItem,
+  updateItemInfo,
+  updateItemResource,
+  addItemResource
+} from "@esri/arcgis-rest-portal";
+import { addResourceFromBlob } from "./resources/add-resource-from-blob";
+import { copyResource } from "./resources/copy-resource";
+import { getBlob } from "./resources/get-blob";
+
 import { updateItem as helpersUpdateItem } from "./restHelpers";
-import { getBlob, getBlobAsFile,getItemResources } from "./restHelpersGet";
+import { getBlobAsFile, getItemResources } from "./restHelpersGet";
+import { ArcGISAuthError } from "@esri/arcgis-rest-request";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 
@@ -83,38 +108,38 @@ export function addMetadataFromBlob(
   return updateItem(updateOptions);
 }
 
-export function addResourceFromBlob(
-  blob: any,
-  itemId: string,
-  folder: string,
-  filename: string,
-  authentication: UserSession
-): Promise<any> {
-  // Check that the filename has an extension because it is required by the addResources call
-  if (filename && filename.indexOf(".") < 0) {
-    return new Promise((resolve, reject) => {
-      reject(
-        new ArcGISAuthError(
-          "Filename must have an extension indicating its type"
-        )
-      );
-    });
-  }
+// export function addResourceFromBlob(
+//   blob: any,
+//   itemId: string,
+//   folder: string,
+//   filename: string,
+//   authentication: UserSession
+// ): Promise<any> {
+//   // Check that the filename has an extension because it is required by the addResources call
+//   if (filename && filename.indexOf(".") < 0) {
+//     return new Promise((resolve, reject) => {
+//       reject(
+//         new ArcGISAuthError(
+//           "Filename must have an extension indicating its type"
+//         )
+//       );
+//     });
+//   }
 
-  const addRsrcOptions = {
-    id: itemId,
-    resource: blob,
-    name: filename,
-    authentication: authentication,
-    params: {}
-  };
-  if (folder) {
-    addRsrcOptions.params = {
-      resourcesPrefix: folder
-    };
-  }
-  return addItemResource(addRsrcOptions);
-}
+//   const addRsrcOptions = {
+//     id: itemId,
+//     resource: blob,
+//     name: filename,
+//     authentication: authentication,
+//     params: {}
+//   };
+//   if (folder) {
+//     addRsrcOptions.params = {
+//       resourcesPrefix: folder
+//     };
+//   }
+//   return addItemResource(addRsrcOptions);
+// }
 
 export function addThumbnailFromBlob(
   blob: any,
@@ -133,9 +158,7 @@ export function addThumbnailFromBlob(
     id: itemId
   };
 
-  return isGroup
-    ? updateGroup(updateOptions)
-    : updateItem(updateOptions);
+  return isGroup ? updateGroup(updateOptions) : updateItem(updateOptions);
 }
 
 export function addThumbnailFromUrl(
@@ -145,13 +168,12 @@ export function addThumbnailFromUrl(
   isGroup: boolean = false
 ): Promise<any> {
   return new Promise<any>((resolve, reject) => {
-    getBlob(appendQueryParam(url, "w=400"), authentication)
-      .then(async blob => {
-        addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
-          resolve,
-          reject
-        );
-      }, reject);
+    getBlob(appendQueryParam(url, "w=400"), authentication).then(async blob => {
+      addThumbnailFromBlob(blob, itemId, authentication, isGroup).then(
+        resolve,
+        reject
+      );
+    }, reject);
   });
 }
 
@@ -206,9 +228,7 @@ export function convertBlobToSupportableResource(
   };
 }
 
-export function convertResourceToFile(
-  resource: IFileMimeType
-): File {
+export function convertResourceToFile(resource: IFileMimeType): File {
   return new_File([resource.blob], resource.filename, {
     type: resource.mimeType
   });
@@ -231,52 +251,66 @@ export function copyFilesFromStorageItem(
   destinationItemId: string,
   destinationAuthentication: UserSession,
   isGroup: boolean = false,
-  mimeTypes?: IMimeTypes
+  template: any = {}
 ): Promise<boolean> {
+  // TODO: This is only used in deployer, so move there
+  // changed to allow the template to be passed in
+  // because Hub templates need to swap out the templateId
+  // in the reseource filename
+  const mimeTypes = template.properties || null;
+
+  // remove the template.itemId from the fileName in the filePaths
+  if (template.itemId) {
+    filePaths = filePaths.map(fp => {
+      if (fp.filename.indexOf(template.itemId) === 0 && fp.folder === "") {
+        fp.filename = fp.filename.replace(`${template.itemId}-`, "");
+      }
+      return fp;
+    });
+  }
+
   return new Promise<boolean>((resolve, reject) => {
     // Introduce a lag because AGO update appears to choke with rapid subsequent calls
+    // Note: This is not actually delaying. The map returns an array of promises
+    // all of which will start firing in `lagMs` milliseconds
     const msLag = 1000;
 
     const awaitAllItems = filePaths.map(filePath => {
       switch (filePath.type) {
         case EFileType.Data:
-          return new Promise<IUpdateItemResponse>(
-            (resolveData, rejectData) => {
-              setTimeout(() => {
-                copyData(
-                  {
-                    url: filePath.url,
-                    authentication: storageAuthentication
-                  },
-                  {
-                    itemId: destinationItemId,
-                    filename: filePath.filename,
-                    mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
-                    authentication: destinationAuthentication
-                  }
-                ).then(result => resolveData(result), rejectData);
-              }, msLag);
-            }
-          );
+          return new Promise<IUpdateItemResponse>((resolveData, rejectData) => {
+            setTimeout(() => {
+              copyData(
+                {
+                  url: filePath.url,
+                  authentication: storageAuthentication
+                },
+                {
+                  itemId: destinationItemId,
+                  filename: filePath.filename,
+                  mimeType: mimeTypes ? mimeTypes[filePath.filename] : "",
+                  authentication: destinationAuthentication
+                }
+              ).then(result => resolveData(result), rejectData);
+            }, msLag);
+          });
 
         case EFileType.Info:
-          return new Promise<IUpdateItemResponse>(
-            (resolveInfo, rejectInfo) => {
-              setTimeout(() => {
-                copyFormInfoFile(
-                  {
-                    url: filePath.url,
-                    filename: filePath.filename,
-                    authentication: storageAuthentication
-                  },
-                  {
-                    itemId: destinationItemId,
-                    authentication: destinationAuthentication
-                  }
-                ).then(result => resolveInfo(result), rejectInfo);
-              }, msLag);
-            }
-          );
+          return new Promise<IUpdateItemResponse>((resolveInfo, rejectInfo) => {
+            setTimeout(() => {
+              copyFormInfoFile(
+                {
+                  url: filePath.url,
+                  filename: filePath.filename,
+                  authentication: storageAuthentication
+                },
+                {
+                  itemId: destinationItemId,
+                  authentication: destinationAuthentication
+                }
+              ).then(result => resolveInfo(result), rejectInfo);
+            }, msLag);
+          });
 
         case EFileType.Metadata:
           return new Promise<IUpdateItemResponse>(
@@ -395,21 +429,19 @@ export function copyFormInfoFile(
   return new Promise<any>((resolve, reject) => {
     // Get the info file
     getBlobAsFile(
-        source.url,
-        source.filename,
-        source.authentication,
-        [],
-        "application/json"
-      )
-      .then(file => {
-        // Send it to the destination item
-        updateItemInfo({
-            id: destination.itemId,
-            file,
-            authentication: destination.authentication
-          })
-          .then(resolve, reject);
-      }, reject);
+      source.url,
+      source.filename,
+      source.authentication,
+      [],
+      "application/json"
+    ).then(file => {
+      // Send it to the destination item
+      updateItemInfo({
+        id: destination.itemId,
+        file,
+        authentication: destination.authentication
+      }).then(resolve, reject);
+    }, reject);
   });
 }
 
@@ -433,65 +465,6 @@ export function copyMetadata(
         addMetadataFromBlob(
           blob,
           destination.itemId,
-          destination.authentication
-        ).then(
-          resolve,
-          e => reject(fail(e)) // unable to add resource
-        );
-      },
-      e => reject(fail(e)) // unable to get resource
-    );
-  });
-}
-
-/**
- * Copies a resource from a URL to an item.
- *
- * @param source.url URL to source resource
- * @param source.authentication Credentials for the request to source
- * @param destination.itemId Id of item to receive copy of resource/metadata/thumbnail
- * @param destination.folderName Folder in destination for resource/metadata/thumbnail; defaults to top level
- * @param destination.filename Filename in destination for resource/metadata/thumbnail
- * @param destination.authentication Credentials for the request to destination
- * @return A promise which resolves to the filename under which the resource/metadata/thumbnail is stored
- */
-export function copyResource(
-  source: {
-    url: string;
-    authentication: UserSession;
-  },
-  destination: {
-    itemId: string;
-    folder: string;
-    filename: string;
-    authentication: UserSession;
-  }
-): Promise<any> {
-  return new Promise<any>((resolve, reject) => {
-    getBlob(source.url, source.authentication).then(
-      async blob => {
-        if (
-          blob.type.startsWith("text/plain") ||
-          blob.type === "application/json"
-        ) {
-          try {
-            const text = await new Response(blob).text();
-            const json = JSON.parse(text);
-            if (json.error) {
-              reject(); // unable to get resource
-              return;
-            }
-          } catch (Ignore) {
-            reject(); // unable to get resource
-            return;
-          }
-        }
-
-        addResourceFromBlob(
-          blob,
-          destination.itemId,
-          destination.folder,
-          destination.filename,
           destination.authentication
         ).then(
           resolve,
@@ -586,7 +559,14 @@ export function generateResourceFilenameFromStorage(
   storageResourceFilename: string
 ): IDeployFilename {
   let type = EFileType.Resource;
-  let [folder, filename] = storageResourceFilename.split("/");
+  // Older Hub Solution Templates don't have folders, so
+  // we have some extra logic to handle this
+  let folder = "";
+  let filename = storageResourceFilename;
+  if (storageResourceFilename.indexOf("/") > -1) {
+    [folder, filename] = storageResourceFilename.split("/");
+  }
+  // let [folder, filename] = storageResourceFilename.split("/");
 
   // Handle special "folders"
   if (folder.endsWith("_info_thumbnail")) {
@@ -803,20 +783,18 @@ export function generateSourceThumbnailUrl(
 export function generateStorageFilePaths(
   portalSharingUrl: string,
   storageItemId: string,
-  resourceFilenames: string[]
+  resourceFilenames: string[] = []
 ): IDeployFileCopyPath[] {
-  return resourceFilenames && resourceFilenames.map
-    ? resourceFilenames.map(resourceFilename => {
-        return {
-          url: generateSourceResourceUrl(
-            portalSharingUrl,
-            storageItemId,
-            resourceFilename
-          ),
-          ...generateResourceFilenameFromStorage(resourceFilename)
-        };
-      })
-    : [];
+  return resourceFilenames.map(resourceFilename => {
+    return {
+      url: generateSourceResourceUrl(
+        portalSharingUrl,
+        storageItemId,
+        resourceFilename
+      ),
+      ...generateResourceFilenameFromStorage(resourceFilename)
+    };
+  });
 }
 
 /**
@@ -948,8 +926,8 @@ export function storeItemResources(
   return new Promise<string[]>((resolve, reject) => {
     // Request item resources
     // tslint:disable-next-line: no-floating-promises
-    getItemResources(itemTemplate.itemId, authentication)
-      .then(resourcesResponse => {
+    getItemResources(itemTemplate.itemId, authentication).then(
+      resourcesResponse => {
         // Save resources to solution item
         const itemResources = (resourcesResponse.resources as any[]).map(
           (resourceDetail: any) => resourceDetail.resource
@@ -974,7 +952,8 @@ export function storeItemResources(
           );
           resolve(resources);
         });
-      });
+      }
+    );
   });
 }
 

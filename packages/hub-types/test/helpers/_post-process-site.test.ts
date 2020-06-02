@@ -17,6 +17,10 @@ import * as hubCommon from "@esri/hub-common";
 import * as hubSites from "@esri/hub-sites";
 import * as postProcessSiteModule from "../../src/helpers/_post-process-site";
 import * as updateSitePagesModule from "../../src/helpers/_update-site-pages";
+import {
+  IItemUpdate,
+  IUpdateItemResponse
+} from "../../../common/node_modules/@esri/arcgis-rest-portal/dist/esm";
 
 describe("_postProcessSite :: ", () => {
   let model: hubCommon.IModel;
@@ -53,6 +57,9 @@ describe("_postProcessSite :: ", () => {
       updateSitePagesModule,
       "_updateSitePages"
     ).and.resolveTo([]);
+    const updateSiteSpy = spyOn(hubSites, "updateSite").and.resolveTo(
+      {} as IUpdateItemResponse
+    );
     return postProcessSiteModule
       ._postProcessSite(model, infos, fakeRo)
       .then(result => {
@@ -66,6 +73,7 @@ describe("_postProcessSite :: ", () => {
           1,
           "should call _updateSitePages"
         );
+        expect(updateSiteSpy.calls.count()).toBe(1, "should update the site");
       });
   });
 });

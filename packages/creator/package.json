@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-creator",
-  "version": "0.14.0",
+  "version": "0.16.0",
   "description": "Manages the creation of a Solution item for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/creator.umd.min.js",
@@ -13,17 +13,44 @@
     "dist/**"
   ],
   "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.16.0",
+    "@esri/solution-feature-layer": "^0.16.0",
+    "@esri/solution-file": "^0.16.0",
+    "@esri/solution-form": "^0.16.0",
+    "@esri/solution-group": "^0.16.0",
+    "@esri/solution-hub-types": "^0.16.0",
+    "@esri/solution-simple-types": "^0.16.0",
+    "@esri/solution-storymap": "^0.16.0",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
+  },
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.16.0",
+    "@esri/solution-feature-layer": "^0.16.0",
+    "@esri/solution-file": "^0.16.0",
+    "@esri/solution-form": "^0.16.0",
+    "@esri/solution-group": "^0.16.0",
+    "@esri/solution-hub-types": "^0.16.0",
+    "@esri/solution-simple-types": "^0.16.0",
+    "@esri/solution-storymap": "^0.16.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.14.0",
-    "@esri/solution-feature-layer": "^0.14.0",
-    "@esri/solution-file": "^0.14.0",
-    "@esri/solution-form": "^0.14.0",
-    "@esri/solution-group": "^0.14.0",
-    "@esri/solution-simple-types": "^0.14.0",
-    "@esri/solution-storymap": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -76,5 +103,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
+  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
 }

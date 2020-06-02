@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-file",
-  "version": "0.14.0",
+  "version": "0.16.0",
   "description": "Manages the creation and deployment of  item types that contain files for @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/file.umd.min.js",
@@ -13,15 +13,30 @@
     "dist/**"
   ],
   "devDependencies": {
-    "@esri/solution-common": "^0.14.0",
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.16.0",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
   },
   "peerDependencies": {
-    "@esri/solution-common": "^0.14.0"
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.16.0"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -74,5 +89,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
+  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
 }
