@@ -21,7 +21,6 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as simpleTypes from "@esri/solution-simple-types";
 
 // ------------------------------------------------------------------------------------------------------------------ //
 

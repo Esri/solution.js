@@ -21,6 +21,7 @@
 * \[ \] Switch to `develop` branch
 * \[ \] Merge `master` branch into `develop` branch
 * \[ \] Push `develop` branch to GitHub
+* \[ \] Update documentation via `npm run docs:deploy`
 
 #### Versioning
 
@@ -126,6 +127,8 @@ git merge --no-ff --no-commit release
 
  Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
 
+ It's OK to push the version to GitHub even if not all packages appear to have been published. "Publishing" is sending them to npm and is a separate process that we can patch below.
+
 15. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take five or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
 16. Due to the large number of packages and the very sort validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
@@ -137,6 +140,8 @@ git merge --no-ff --no-commit release
 19. Delete the `release` branch locally and in GitHub.
 
 20. Merge `master` into `develop` and push `develop` to GitHub.
+
+21. Update documentation (see "Publishing API documentation to GitHub" section below).
 
 ---
 

@@ -3397,6 +3397,55 @@ describe("Module `restHelpers`: common REST utility functions shared across pack
     });
   });
 
+  describe("_parseAdminServiceData", () => {
+    it("will add tables from layers array as tables", () => {
+      const adminData: any = {
+        layers: [
+          {
+            type: "Feature Layer"
+          },
+          {
+            type: "Table"
+          }
+        ]
+      };
+      const expected: any = {
+        layers: [
+          {
+            type: "Feature Layer"
+          }
+        ],
+        tables: [
+          {
+            type: "Table"
+          }
+        ]
+      };
+      const actual: any = restHelpers._parseAdminServiceData(adminData);
+      expect(actual).toEqual(expected);
+    });
+
+    it("will handle a tables array", () => {
+      const adminData: any = {
+        tables: [
+          {
+            type: "Table"
+          }
+        ]
+      };
+      const expected: any = {
+        layers: [],
+        tables: [
+          {
+            type: "Table"
+          }
+        ]
+      };
+      const actual: any = restHelpers._parseAdminServiceData(adminData);
+      expect(actual).toEqual(expected);
+    });
+  });
+
   describe("_setItemProperties", () => {
     it("can get options for HOSTED empty service", () => {
       const item: any = {
