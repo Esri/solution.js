@@ -638,4 +638,50 @@ export interface IUpdate {
   args: IPostProcessArgs;
 }
 
+export interface ISurvey123CreateParams {
+  title: string;
+  tags: string[];
+  typeKeywords: string[];
+  description: string;
+  form: any;
+  username: string;
+  token: string;
+  portalUrl: string;
+  thumbnailFile: File;
+}
+
+export interface ISurvey123CreateSuccess {
+  success: true;
+  id: string;
+  formItemInfo: {
+    typeKeywords: string[];
+    ownerFolder: string;
+    access: string;
+    owner: string;
+  };
+  featureService: {
+    source: {
+      itemId: string;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+export interface ISurvey123CreateError {
+  success: false;
+  error: {
+    code: number;
+    details: string[];
+    message: string;
+  };
+}
+
+export interface ISurvey123CreateResult {
+  formId: string;
+  featureServiceId: string;
+  folderId: string;
+}
+
 //#endregion ---------------------------------------------------------------------------------------------------------//

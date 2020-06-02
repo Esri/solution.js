@@ -23,6 +23,7 @@
 import * as common from "@esri/solution-common";
 import { simpleTypes } from "@esri/solution-simple-types";
 import { isHubFormTemplate } from "./helpers/is-hub-form-template";
+import { createItemFromHubTemplate } from "./helpers/create-item-from-hub-template";
 
 export function convertItemToTemplate(
   solutionItemId: string,
@@ -45,10 +46,11 @@ export function createItemFromTemplate(
 ): Promise<common.ICreateItemFromTemplateResponse> {
   // Hub Form template custom processing
   if (isHubFormTemplate(template)) {
-    return Promise.reject(
-      common.fail(
-        "createItemFromTemplate not yet implemented for Hub templates in solution-form package"
-      )
+    return createItemFromHubTemplate(
+      template,
+      templateDictionary,
+      destinationAuthentication,
+      itemProgressCallback
     );
   }
 
