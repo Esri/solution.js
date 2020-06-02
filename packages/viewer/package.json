@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.15.10",
+  "version": "0.16.0",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -21,7 +21,7 @@
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.15.10",
+    "@esri/solution-common": "^0.16.0",
     "rollup": "^1.22.0",
     "typescript": "^3.9.3"
   },
@@ -34,7 +34,7 @@
     "@esri/hub-common": "^4.2.0",
     "@esri/hub-initiatives": "^4.2.0",
     "@esri/hub-sites": "^4.2.0",
-    "@esri/solution-common": "^0.15.9"
+    "@esri/solution-common": "^0.16.0"
   },
   "dependencies": {
     "tslib": "^1.10.0"
