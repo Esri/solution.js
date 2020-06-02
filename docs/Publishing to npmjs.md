@@ -3,16 +3,18 @@
 #### Checklist
 
 * \[ \] Stop automatic recompilation software
-* \[ \] Create `release` branch
+* \[ \] Create `release-candidate` branch
 * \[ \] Remove node_modules and run `npm install`
 * \[ \] Run `npm run prerelease:prepare`
 * \[ \] Run `npm run release:prepare` and pick new version number
 * \[ \] Run `npm run release:review`
-* \[ \] Fix CHANGELOG.md
+* \[ \] Fix CHANGELOG.md and solution.js package references
 * \[ \] Commit changes as a release prep
 * \[ \] Switch to `master` branch
 * \[ \] Merge `release` branch into `master` branch but don't commit
 * \[ \] Run `npm run release:publish`
+* \[ \] Check that publishing worked using `check_npm_package_versions.html`
+* \[ \] Run `npm run release:publish-retry` as needed until all packages are published
 * \[ \] Push `master` branch to GitHub
 * \[ \] Run `npm run docs:deploy`
 * \[ \] Delete `release` branch
@@ -84,7 +86,7 @@ Copyright (c) 1990-2008 Info-ZIP...
  ```
 
 8. Prepare the release.
-The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version.
+The second command, `release:prepare`, gives you the opportunity to select the new version number. The default choice increments the patch version (i.e., the third number in the [*major.minor.patch* version numbering scheme](https://semver.org/)). If a different version is desired, use the keyboard arrow keys to select the line ***above*** the desired version. There doesn't seem to be a way to type in a custom version.
 ```
 npm run prerelease:prepare
 npm run release:prepare
@@ -97,14 +99,18 @@ npm run release:review
 git tag -d tagName
 ```
 
-10. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub.
+10. Update the solution.js package references in the *peerDependencies* sections of the package package.json files; don't change the package.version or the references in the devDependencies section. Update all solution.js package references in the demo package.json files to the new release.
 
-11. Switch to the `master` branch and merge in the `release` branch, but without committing it.
+11. Commit the changed files in the repo: CHANGELOG.md, lerna.json, package.json files, package-lock.json files. (While the publishing step will do the commit for you, lerna doesn't notice the package.json changes and doesn't publish correctly.) This is just an intermediate publishing step and should not be labeled or tagged for the release. It is not necessary to push the commit to GitHub.
+
+12. If you wish to test the release before it is created, you can push `release-candidate` to GitHub for sharing.
+
+13. Switch to the `master` branch and merge in the `release` branch, but without committing it.
 ```
 git merge --no-ff --no-commit release
 ```
 
-12. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.)
+14. Publish the release, supplying a two-factor code (e.g., from Okta Verify) when prompted. (While `release:publish` accepts a two-factor command-line parameter, the code expires by the time that publishing get around to using it and the release will not be uploaded to npmjs.) Use the freshest possible code: pick it right after it updates in the two-factor app.
 
  ```
  npm run release:publish
@@ -114,19 +120,23 @@ git merge --no-ff --no-commit release
  ```
 
  The publish step
- 1. commits and pushes the publishing changes to GitHub
+ 1. commits the publishing changes
  2. tags the commit with the new version number that you chose in `release:prepare`
  3. pushes the version to npmjs and unpkg
 
- Note that you won't see the new version in your GitHub client until the next time that you pull from the repository.
+ Note that you won't see the new version in your GitHub client until the next time that you refresh the repository.
 
-13. Push your `master` branch to GitHub.
+15. Check that publishing worked using the repository's web page `check_npm_package_versions.html`; sometimes, only some of the packages show up in npm. It may take five or more minutes for a general request such as `https://unpkg.com/@esri/solution-simple-types/dist/umd/simple-types.umd.js` to 302 resolve to the latest version.
 
-14. Update the repository's API doc by running `npm run docs:deploy`.
+16. Due to the large number of packages and the very sort validity window of the two-factor code, not all packages may get published. In this case, repeat `npm run release:publish-retry` until it reports "lerna notice from-package No unpublished release found; lerna success No changed packages to publish".
 
-15. Delete the `release` branch locally and in GitHub.
+17. Push your `master` branch to GitHub.
 
-16. Merge `master` into `develop` and push `develop` to GitHub.
+18. Update the repository's API doc by running `npm run docs:deploy`.
+
+19. Delete the `release` branch locally and in GitHub.
+
+20. Merge `master` into `develop` and push `develop` to GitHub.
 
 ---
 

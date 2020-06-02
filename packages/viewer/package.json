@@ -1,6 +1,6 @@
 {
   "name": "@esri/solution-viewer",
-  "version": "0.14.0",
+  "version": "0.15.10",
   "description": "Simplifies access to @esri/solution.js.",
   "main": "dist/node/index.js",
   "unpkg": "dist/umd/viewer.umd.min.js",
@@ -12,15 +12,31 @@
   "files": [
     "dist/**"
   ],
-  "peerDependencies": {
-    "@esri/solution-common": "^0.14.0"
-  },
   "devDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.10",
     "rollup": "^1.22.0",
-    "typescript": "^3.9.2"
+    "typescript": "^3.9.3"
+  },
+  "peerDependencies": {
+    "@esri/arcgis-rest-auth": "^2.11.0",
+    "@esri/arcgis-rest-feature-layer": "^2.11.0",
+    "@esri/arcgis-rest-portal": "^2.11.0",
+    "@esri/arcgis-rest-request": "^2.11.0",
+    "@esri/arcgis-rest-service-admin": "^2.11.0",
+    "@esri/hub-common": "^4.2.0",
+    "@esri/hub-initiatives": "^4.2.0",
+    "@esri/hub-sites": "^4.2.0",
+    "@esri/solution-common": "^0.15.9"
   },
   "dependencies": {
-    "@esri/solution-common": "^0.14.0",
     "tslib": "^1.10.0"
   },
   "scripts": {
@@ -73,5 +89,5 @@
     "esri",
     "ES6"
   ],
-  "gitHead": "562d2d76710eebac4280b05c176088a639f6b377"
+  "gitHead": "2862c957d85fddf3eb7680a9f2b4d97884403a54"
 }
