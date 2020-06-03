@@ -35,17 +35,21 @@
 <body>
   <div class="container">
     <div class="row">
-      <div class="col-sm-12">
-        <h1>Create Solution</h1>
-      </div>
       <div class="col-sm-6 col-sm-offset-3">
+        <h1>Convert to Solution</h1>
+        <p>Create a solution item from the content of a group, or from a single item and it's dependencies.</p>
         <div id="input" class="form-group" style="display:none">
-          <label for="id">ID of the group or item to be put into a solution:&nbsp;</label>
-          <input type="text" class="form-control" id="id" value="5cef7eab57874d26bca907ac611e4520">
+          <label for="itemOrGroupId">Enter an Item or Group ID:</label>
+          <input class="form-control" type="text" id="itemOrGroupId">
+          <label for="id">Or pick from the list below:</label>
+          <select name="Solution Item" id="id" class="form-control">
+            <option value="b6413231e0a543b2953df70f68a4b578">StoryMap  ( b6413231e0a543b2953df70f68a4b578) </option>
+            <option value="5cef7eab57874d26bca907ac611e4520">ExB  ( 5cef7eab57874d26bca907ac611e4520) </option>
+          </select>
           <br />
           <i>Credentials in destination organization:</i><br />
-          <label for="username">username:&nbsp;</label><input type="text" class="form-control" id="username" value="">
-          <label for="password">password:&nbsp;</label><input type="password" class="form-control" id="password" value="">
+          <label for="username">username:&nbsp;</label><input type="text" class="form-control" id="username" value="dbouwman_dc">
+          <label for="password">password:&nbsp;</label><input type="password" class="form-control" id="password" value="cmrs1996">
           <label for="password">Portal:</label>
           <input type="text" id="portal" class="form-control" value="https://qaext.arcgis.com/sharing/rest">
           <br>
@@ -99,8 +103,11 @@
           document.getElementById("output").style.display = "block";
           var startTime = Date.now();
 
+          // use the manually entered value, but fall back to the select list
+          var id = document.getElementById("itemOrGroupId").value || document.getElementById('id').value;
+
           main.createSolution(
-            document.getElementById("id").value,
+            id,
             new auth.UserSession({
               username: document.getElementById("username").value,
               password: document.getElementById("password").value,
