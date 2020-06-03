@@ -247,7 +247,7 @@ export function _deploySolutionFromTemplate(
             }
             // update the dependencies hash to point to the new item ids
             itemTemplate.dependencies = itemTemplate.dependencies.map(id =>
-              getWithDefault(templateDictionary, "${id}.itemId", id)
+              getWithDefault(templateDictionary, `${id}.itemId`, id)
             );
             return itemTemplate;
           }
