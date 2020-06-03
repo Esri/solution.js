@@ -45,18 +45,23 @@ export function convertItemToTemplate(
   authentication: UserSession,
   isGroup?: boolean
 ): Promise<IItemTemplate> {
+  debugger;
   // use the itemInfo to setup a model
   const model = {
     item: itemInfo,
     data: {}
   } as IModel;
   // fetch the data.json
-  return getItemData(itemInfo.id, authentication).then(data => {
+  return getItemData(itemInfo.id, { authentication }).then(data => {
     // append into the model
     model.data = data;
     // and use that to create a template
     return convertWebExperienceToTemplate(model, authentication);
-  });
+  })
+  .catch((ex) => {
+    debugger;
+    throw ex;
+  })
 }
 
 /**

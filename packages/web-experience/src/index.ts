@@ -14,4 +14,6 @@
  * limitations under the License.
  */
 
-export * from "./web-experience-processor";
+import * as WebExperienceProcessor from "./web-experience-processor";
+
+export { WebExperienceProcessor };

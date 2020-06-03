@@ -21,8 +21,11 @@
  */
 
 import * as common from "@esri/solution-common";
-import * as simpleTypes from "@esri/solution-simple-types";
-
+import { cloneObject, IModel } from "@esri/hub-common";
+import { getItemData } from "@esri/arcgis-rest-portal";
+import {
+  convertStoryMapToTemplate
+} from './helpers/convert-storymap-to-template';
 // ------------------------------------------------------------------------------------------------------------------ //
 
 export function convertItemToTemplate(
@@ -30,7 +33,23 @@ export function convertItemToTemplate(
   itemInfo: any,
   authentication: common.UserSession
 ): Promise<common.IItemTemplate> {
-  return Promise.reject(common.fail("StoryMap is not yet implemented"));
+
+  const model = {
+    item: itemInfo,
+    data: {}
+  } as IModel;
+  // fetch the data.json
+  return getItemData(itemInfo.id, authentication).then(data => {
+    // append into the model
+    model.data = data;
+    // and use that to create a template
+    return convertStoryMapToTemplate(model, authentication);
+  })
+  .then((tmpl) => {
+    debugger;
+    return tmpl;
+  })
+
 }
 
 export function createItemFromTemplate(

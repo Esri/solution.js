@@ -1213,37 +1213,37 @@ describe("Module `resourceHelpers`: common functions involving the management of
     });
   });
 
-  describe("generateResourceStorageFilename", () => {
-    it("top-level", () => {
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceFilename = "gtnp2.jpg";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f",
-        filename: "gtnp2.jpg"
-      };
+  // describe("generateResourceStorageFilename", () => {
+  //   it("top-level", () => {
+  //     const itemId = "8f7ec78195d0479784036387d522e29f";
+  //     const sourceResourceFilename = "gtnp2.jpg";
+  //     const expected = {
+  //       folder: "8f7ec78195d0479784036387d522e29f",
+  //       filename: "gtnp2.jpg"
+  //     };
 
-      const actual = resourceHelpers.generateResourceStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
-      expect(actual).toEqual(expected);
-    });
+  //     const actual = resourceHelpers.generateResourceStorageFilename(
+  //       itemId,
+  //       sourceResourceFilename
+  //     );
+  //     expect(actual).toEqual(expected);
+  //   });
 
-    it("in folder", () => {
-      const itemId = "8f7ec78195d0479784036387d522e29f";
-      const sourceResourceFilename = "aFolder/git_merge.png";
-      const expected = {
-        folder: "8f7ec78195d0479784036387d522e29f_aFolder",
-        filename: "git_merge.png"
-      };
+  //   it("in folder", () => {
+  //     const itemId = "8f7ec78195d0479784036387d522e29f";
+  //     const sourceResourceFilename = "aFolder/git_merge.png";
+  //     const expected = {
+  //       folder: "8f7ec78195d0479784036387d522e29f_aFolder",
+  //       filename: "git_merge.png"
+  //     };
 
-      const actual = resourceHelpers.generateResourceStorageFilename(
-        itemId,
-        sourceResourceFilename
-      );
-      expect(actual).toEqual(expected);
-    });
-  });
+  //     const actual = resourceHelpers.generateResourceStorageFilename(
+  //       itemId,
+  //       sourceResourceFilename
+  //     );
+  //     expect(actual).toEqual(expected);
+  //   });
+  // });
 
   describe("generateSourceFilePaths", () => {
     it("without resources", () => {

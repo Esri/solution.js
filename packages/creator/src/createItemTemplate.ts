@@ -30,7 +30,8 @@ import {
   notebookProcessor,
   quickcaptureProcessor
 } from "@esri/solution-simple-types";
-import * as storyMap from "@esri/solution-storymap";
+import { StoryMapProcessor } from "@esri/solution-storymap";
+import { WebExperienceProcessor } from "@esri/solution-web-experience";
 
 const UNSUPPORTED: common.moduleHandler = null;
 /**
@@ -100,10 +101,10 @@ export const moduleMap: common.IItemTypeModuleMap = {
   "Site Initiative": undefined,
   "Site Page": undefined,
   Solution: UNSUPPORTED,
-  StoryMap: undefined,
+  StoryMap: StoryMapProcessor,
   "Urban Model": undefined,
   "Web Experience Template": undefined,
-  "Web Experience": undefined,
+  "Web Experience": WebExperienceProcessor,
   "Web Mapping Application": simpleTypes,
   "Workforce Project": simpleTypes,
 

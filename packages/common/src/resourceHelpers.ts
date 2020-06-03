@@ -73,6 +73,8 @@ import {
   addItemResource
 } from "@esri/arcgis-rest-portal";
 import { addResourceFromBlob } from "./resources/add-resource-from-blob";
+import { convertItemResourceToStorageResource } from "./resources/convert-item-resource-to-storage-resource";
+
 import { copyResource } from "./resources/copy-resource";
 import { getBlob } from "./resources/get-blob";
 
@@ -551,7 +553,7 @@ export function generateMetadataStorageFilename(
  * @param storageResourceFilename Filename used to store the resource, metadata, or thumbnail of an item
  * @return Folder and filename for storing information in an item, as well as the type (resource, metadata,
  * or thumbnail) of the information; the folder property is only meaningful for the resource type
- * @see generateResourceStorageFilename
+ * @see convertItemResourceToStorageResource
  * @see generateMetadataStorageFilename
  * @see generateThumbnailStorageFilename
  */
@@ -593,34 +595,34 @@ export function generateResourceFilenameFromStorage(
   return { type, folder, filename };
 }
 
-/**
- * Generates a folder and filename for storing a copy of an item's resource in a storage item.
- *
- * @param itemId Id of item
- * @param sourceResourceFilename Either filename or folder/filename to resource
- * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
- * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
- * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
- * file is sourceResourceFilename
- * @see generateResourceFilenameFromStorage
- */
-export function generateResourceStorageFilename(
-  itemId: string,
-  sourceResourceFilename: string,
-  storageFolder = ""
-): {
-  folder: string;
-  filename: string;
-} {
-  let folder = itemId + (storageFolder ? "_" + storageFolder : "");
-  let filename = sourceResourceFilename;
-  const sourceResourceFilenameParts = sourceResourceFilename.split("/");
-  if (sourceResourceFilenameParts.length > 1) {
-    folder += "_" + sourceResourceFilenameParts[0];
-    filename = sourceResourceFilenameParts[1];
-  }
-  return { folder, filename };
-}
+// /**
+//  * Generates a folder and filename for storing a copy of an item's resource in a storage item.
+//  *
+//  * @param itemId Id of item
+//  * @param sourceResourceFilename Either filename or folder/filename to resource
+//  * @param storageFolder An additional folder level inserted between the itemId and the sourceResourceFilename
+//  * @return Folder and filename for storage; folder is the itemID plus ("_" + storageFolder) if storageFolder
+//  * exists plus ("_" + part of sourceResourceFilename before "/" if that separator exists);
+//  * file is sourceResourceFilename
+//  * @see generateResourceFilenameFromStorage
+//  */
+// export function convertItemResourceToStorageResource(
+//   itemId: string,
+//   sourceResourceFilename: string,
+//   storageFolder = ""
+// ): {
+//   folder: string;
+//   filename: string;
+// } {
+//   let folder = itemId + (storageFolder ? "_" + storageFolder : "");
+//   let filename = sourceResourceFilename;
+//   const sourceResourceFilenameParts = sourceResourceFilename.split("/");
+//   if (sourceResourceFilenameParts.length > 1) {
+//     folder += "_" + sourceResourceFilenameParts[0];
+//     filename = sourceResourceFilenameParts[1];
+//   }
+//   return { folder, filename };
+// }
 
 /**
  * Generates a list of full URLs and storage folder/filename combinations for storing the resources, metadata,
@@ -640,6 +642,7 @@ export function generateSourceFilePaths(
   resourceFilenames: string[],
   isGroup: boolean = false
 ): ISourceFileCopyPath[] {
+  debugger;
   const filePaths = resourceFilenames.map(resourceFilename => {
     return {
       url: generateSourceResourceUrl(
@@ -647,7 +650,7 @@ export function generateSourceFilePaths(
         itemId,
         resourceFilename
       ),
-      ...generateResourceStorageFilename(itemId, resourceFilename)
+      ...convertItemResourceToStorageResource(itemId, resourceFilename)
     };
   });
 
@@ -857,7 +860,7 @@ export function storeFormItemFiles(
       const filename =
         itemTemplate.item.name || (itemData as File).name || "formData.zip";
       itemTemplate.item.name = filename;
-      const storageName = generateResourceStorageFilename(
+      const storageName = convertItemResourceToStorageResource(
         itemTemplate.itemId,
         filename,
         "info_data"
